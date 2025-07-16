@@ -1,3 +1,4 @@
+HEAD
 
 venv/
 .venv/
@@ -7,3 +8,12 @@ __pycache__/
 chroma_db_data/
 postgres_data/
 redis_data/
+
+venv/
+*.pyc
+__pycache__/
+.env
+*.log
+*.exe
+*.dll
+d9ebe6e0ba3be9b33e6524a2596f407daa05f475
