@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "subtask_id": { "type": "string", "format": "uuid" },
+    "progress_percentage": { "type": "number", "minimum": 0, "maximum": 100 },
+    "status_description": { "type": "string" }, // Human-readable status
+    "intermediate_results": { "type": "object" } // Optional: Partial results if applicable
+  },
+  "required": ["subtask_id", "progress_percentage", "status_description"]
+}

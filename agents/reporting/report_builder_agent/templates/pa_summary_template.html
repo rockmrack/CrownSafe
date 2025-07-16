@@ -1,0 +1,308 @@
+<!-- pa_summary_template.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Prior Authorization Summary - CureViaX</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 0.8in;
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 0.8in; width: 6.7in; bottom: 0.4in; height: 0.5in;
+            }
+        }
+        
+        body { 
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
+            font-size: 11pt;
+            color: #242729;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #2980b9;
+        }
+        
+        .header h1 {
+            color: #1a237e;
+            font-size: 24pt;
+            margin: 15px 0 10px 0;
+        }
+        
+        .header .subtitle {
+            color: #223962;
+            font-size: 14pt;
+            margin-bottom: 10px;
+        }
+        
+        .header .report-info {
+            font-size: 10pt;
+            color: #657384;
+        }
+        
+        .section { 
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .section-title { 
+            font-size: 16pt;
+            font-weight: bold;
+            color: #2980b9;
+            border-bottom: 2px solid #2980b9;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+        }
+        
+        .decision-approve { 
+            color: #28a745;
+            font-weight: bold;
+            font-size: 14pt;
+        }
+        
+        .decision-deny { 
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 14pt;
+        }
+        
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .metric-value {
+            color: #212529;
+            font-weight: 500;
+        }
+        
+        .rationale-text {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #2980b9;
+            margin: 10px 0;
+            font-style: italic;
+            color: #495057;
+        }
+        
+        .gaps-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .gaps-list li {
+            background: white;
+            margin: 8px 0;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border-left: 4px solid #dc3545;
+            position: relative;
+            padding-left: 35px;
+        }
+        
+        .gaps-list li:before {
+            content: "⚠";
+            position: absolute;
+            left: 12px;
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .evidence-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .evidence-list li {
+            background: white;
+            margin: 8px 0;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+            position: relative;
+            padding-left: 35px;
+        }
+        
+        .evidence-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 12px;
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .company-info {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            font-size: 9pt;
+            color: #6c757d;
+        }
+        
+        .company-info a {
+            color: #2561b1;
+            text-decoration: none;
+        }
+        
+        .highlight-box {
+            background: #e8f4f8;
+            border: 2px solid #17a2b8;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .confidence-meter {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(to right, #28a745, #17a2b8);
+            transition: width 0.3s ease;
+        }
+        
+        .metadata-section {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 9pt;
+            color: #666;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{{ logo_path }}" alt="CureViaX Logo" width="180" />
+        <h1>Prior Authorization Intelligence Report</h1>
+        <div class="subtitle">AI-Powered Decision Support</div>
+        <div class="report-info">
+            <strong>Report Date:</strong> {{ report_date }} | 
+            <strong>Workflow ID:</strong> {{ workflow_id }}
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <h2 style="margin-top: 0; color: #17a2b8;">Predicted Decision</h2>
+        <div style="font-size: 28pt; margin: 10px 0;">
+            {% if prediction_data.decision_prediction|lower == 'approve' %}
+                <span class="decision-approve">APPROVE</span>
+            {% else %}
+                <span class="decision-deny">DENY</span>
+            {% endif %}
+        </div>
+        <div style="font-size: 14pt; color: #495057;">
+            Approval Likelihood: <strong>{{ prediction_data.approval_likelihood_percent }}%</strong>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Analysis Metrics</div>
+        
+        <div class="metric-row">
+            <span class="metric-label">Predicted Decision:</span>
+            <span class="metric-value {% if prediction_data.decision_prediction|lower == 'approve' %}decision-approve{% else %}decision-deny{% endif %}">
+                {{ prediction_data.decision_prediction }}
+            </span>
+        </div>
+        
+        <div class="metric-row">
+            <span class="metric-label">Approval Likelihood:</span>
+            <span class="metric-value">{{ prediction_data.approval_likelihood_percent }}%</span>
+        </div>
+        
+        <div class="metric-row">
+            <span class="metric-label">Confidence Score:</span>
+            <span class="metric-value">{{ (prediction_data.confidence_score * 100)|round(1) }}%</span>
+        </div>
+        
+        <div class="confidence-meter">
+            <div class="confidence-fill" style="width: {{ (prediction_data.confidence_score * 100) }}%;"></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Clinical Rationale</div>
+        <div class="rationale-text">
+            {{ prediction_data.clinical_rationale }}
+        </div>
+    </div>
+
+    {% if prediction_data.supporting_evidence %}
+    <div class="section">
+        <div class="section-title">Supporting Evidence</div>
+        <ul class="evidence-list">
+            {% for evidence in prediction_data.supporting_evidence %}
+            <li>{{ evidence }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if prediction_data.identified_gaps %}
+    <div class="section">
+        <div class="section-title">Identified Gaps / Potential Denial Reasons</div>
+        <ul class="gaps-list">
+            {% for gap in prediction_data.identified_gaps %}
+            <li>{{ gap }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="metadata-section">
+        <p>
+            <strong>Generated by:</strong> CureViaX PA Intelligence System<br>
+            <strong>Report Type:</strong> Prior Authorization Summary<br>
+            <strong>Workflow ID:</strong> {{ workflow_id }}
+        </p>
+    </div>
+
+    <div class="company-info">
+        <p>
+            <strong>CureViaX</strong> - Intelligent Biomedical Research, Verified by AI<br>
+            <a href="https://www.cureviax.com">www.cureviax.com</a> | 
+            <a href="mailto:support@cureviax.com">support@cureviax.com</a>
+        </p>
+        <p style="font-size: 8pt; color: #999;">
+            This report is AI-generated for informational purposes only and should not replace professional medical judgment.
+        </p>
+    </div>
+
+    <div id="footer_content" style="text-align:center; font-size:9pt; color:#808080;">
+        Page <pdf:pagenumber /> of <pdf:pagecount /> &nbsp;|&nbsp; Prior Authorization Intelligence &nbsp;|&nbsp; CureViaX Confidential
+    </div>
+</body>
+</html>

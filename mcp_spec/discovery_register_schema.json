@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "agent_id": { "type": "string" }, // The unique ID of the agent registering
+    "agent_type": { "type": "string" }, // e.g., 'RESEARCH', 'REPORTING', 'TOOL'
+    "address": { "type": "string" }, // Network address for direct communication if applicable, or MCP ID
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" }, // Name of the capability/function
+          "description": { "type": "string" },
+          "input_schema": { "type": "object" }, // JSON schema of expected input
+          "output_schema": { "type": "object" } // JSON schema of expected output
+        },
+        "required": ["name", "input_schema", "output_schema"]
+      }
+    },
+    "status": { "enum": ["ACTIVE", "INACTIVE", "DEGRADED"] } // Current operational status
+  },
+  "required": ["agent_id", "agent_type", "capabilities", "status"]
+}

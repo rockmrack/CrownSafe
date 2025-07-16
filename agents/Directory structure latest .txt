@@ -1,0 +1,6 @@
+agents/
+└── research/
+    └── clinical_trials_agent/
+        ├── __init__.py          # NEW, empty file
+        ├── agent_logic.py       # NEW, will contain logic
+        └── main.py              # NEW, will be agent's entrypoint

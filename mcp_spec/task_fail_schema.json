@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "subtask_id": { "type": "string", "format": "uuid" },
+    "error_code": { "type": "string" }, // Defined error code (See Section 7)
+    "error_message": { "type": "string" }, // Detailed error description
+    "is_retryable": { "type": "boolean" } // Indicates if the task might succeed on retry
+  },
+  "required": ["subtask_id", "error_code", "error_message", "is_retryable"]
+}

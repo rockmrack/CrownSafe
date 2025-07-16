@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "subtask_id": { "type": "string", "format": "uuid" },
+    "output_data": { "type": "object" }, // The results of the completed task
+    "metrics": {                         // Optional: Performance metrics
+       "type": "object",
+       "properties": {
+         "duration_ms": { "type": "integer" },
+         "cost_units": { "type": "number" } // e.g., LLM tokens, API calls
+         // Other relevant metrics...
+       }
+     }
+  },
+  "required": ["subtask_id", "output_data"]
+}
