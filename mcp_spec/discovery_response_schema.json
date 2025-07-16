@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "properties": {
+    "query": { "type": "object" }, // The original query payload
+    "results": {
+      "type": "array",
+      "items": { // Contains objects matching the DISCOVERY_REGISTER payload schema
+        "$ref": "#/definitions/discovery_register_payload"
+        // Reference to the schema defined in 4.6 for brevity
+      }
+    }
+  },
+  "required": ["query", "results"]
+},
+"definitions": { // Reusable definition for clarity
+  "discovery_register_payload": {
+    "type": "object",
+    "properties": {
+      "agent_id": { "type": "string" },
+      "agent_type": { "type": "string" },
+      "address": { "type": "string" },
+      "capabilities": { /* ... as in 4.6 ... */ },
+      "status": { "enum": ["ACTIVE", "INACTIVE", "DEGRADED"] }
+    }
+  }
+}

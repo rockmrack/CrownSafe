@@ -1,0 +1,24 @@
+RossNetAgents/
+├── agents/
+│   ├── planning/
+│   │   └── planner_agent/
+│   │       └── (...)
+│   ├── research/
+│   │   └── web_research_agent/
+│   │       └── (...)
+│   └── routing/              # New folder
+│       └── router_agent/     # New folder
+│           ├── __init__.py
+│           ├── main.py
+│           └── agent_logic.py
+├── config/
+├── core_infra/
+│   └── (...)
+├── docs/
+├── mcp_spec/
+├── query_analysis_agent/   # Old folder
+├── scripts/
+│   └── (...)
+├── shared/
+├── tests/
+└── web_research_agent/     # Old folder

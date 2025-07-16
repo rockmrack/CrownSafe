@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "query_by_capability": { "type": "string" }, // Optional: Name of capability required
+    "query_by_id": { "type": "string" }, // Optional: Specific agent ID
+    "required_status": { "enum": ["ACTIVE", "ANY"], "default": "ACTIVE" }
+  }
+  // Note: At least one query parameter must be provided
+}

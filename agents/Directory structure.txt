@@ -1,0 +1,15 @@
+agents/
+├── processing/  (New directory for agents that process/transform data)
+│   ├── __init__.py
+│   └── summarize_agent/
+│       ├── __init__.py
+│       ├── agent_logic.py  (Step 108 - New File)
+│       └── main.py         (Step 108 - New File)
+├── command/
+│   └── ...
+├── planning/
+│   └── ...
+└── research/
+    └── ...
+└── routing/
+    └── ...

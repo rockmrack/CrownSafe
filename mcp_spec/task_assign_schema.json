@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "subtask_id": { "type": "string", "format": "uuid" }, // Unique ID for this specific subtask instance
+    "task_name": { "type": "string" }, // Human-readable name or identifier for the task type
+    "task_description": { "type": "string" }, // Detailed description of the work to be done
+    "input_data": { "type": "object" }, // Input data required for the task
+    "required_capabilities": {          // Optional: Specific capabilities needed
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "deadline": { "type": "string", "format": "date-time" } // Optional: ISO 8601 deadline
+  },
+  "required": ["subtask_id", "task_name", "input_data"]
+}

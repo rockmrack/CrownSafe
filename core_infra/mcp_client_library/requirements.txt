@@ -1,0 +1,8 @@
+# RossNetAgents/core_infra/mcp_client_library/requirements.txt
+
+websockets>=11.0,<13.0 # For WebSocket client connections (asyncio-based)
+pydantic>=2.0.0,<3.0.0 # Used for potential message models (optional)
+pydantic-settings>=2.0.0,<3.0.0 # For loading configuration
+
+# Add other dependencies if needed later, e.g.:
+# httpx>=0.24.0 # If needing to fetch auth tokens via HTTP

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prior Authorization Intelligence Report - CureViaX</title>
+    <style>
+        @page { 
+            size: A4; 
+            margin: 1.5cm;
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 1.5cm; width: 18cm; bottom: 1cm; height: 1cm;
+            }
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body { 
+            font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
+            color: #2c3e50; 
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Header Styles */
+        .header { 
+            text-align: center; 
+            margin-bottom: 35px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #3949ab;
+        }
+        
+        .header img { 
+            width: 180px; 
+            margin-bottom: 15px; 
+        }
+        
+        .header h1 { 
+            margin: 0 0 10px 0; 
+            color: #1a237e; 
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        
+        .header .subtitle {
+            font-size: 16px;
+            color: #5c6bc0;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .header p { 
+            margin: 5px 0; 
+            color: #546e7a;
+            font-size: 12px;
+        }
+        
+        /* Decision Box Styles */
+        .decision-box { 
+            text-align: center; 
+            padding: 25px; 
+            border-radius: 12px; 
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .decision-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: currentColor;
+        }
+        
+        .decision-approve { 
+            background-color: #e8f5e9; 
+            border: 2px solid #4caf50;
+        }
+        
+        .decision-approve::before {
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+        }
+        
+        .decision-deny { 
+            background-color: #ffebee; 
+            border: 2px solid #f44336;
+        }
+        
+        .decision-deny::before {
+            background: linear-gradient(90deg, #f44336, #ff5722);
+        }
+        
+        .decision-text { 
+            font-size: 32px; 
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .decision-approve .decision-text { 
+            color: #2e7d32; 
+        }
+        
+        .decision-deny .decision-text { 
+            color: #c62828; 
+        }
+        
+        .decision-metrics {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+        }
+        
+        .metric {
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Confidence Meter */
+        .confidence-meter {
+            width: 200px;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px auto 10px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3f51b5, #5c6bc0);
+            transition: width 0.3s ease;
+            box-shadow: 0 2px 4px rgba(63,81,181,0.3);
+        }
+        
+        /* Section Styles */
+        .section { 
+            border: 1px solid #e0e0e0; 
+            border-radius: 12px; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            background-color: #fafafa;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .section-title { 
+            font-size: 20px; 
+            font-weight: 600; 
+            color: #3949ab; 
+            border-bottom: 3px solid #3949ab; 
+            padding-bottom: 8px; 
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+        }
+        
+        /* Details Grid */
+        .details-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 15px;
+        }
+        
+        .detail-item { 
+            background-color: #fff; 
+            padding: 12px 16px; 
+            border-radius: 8px;
+            border: 1px solid #e3e3e3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .detail-item strong { 
+            color: #546e7a;
+            font-weight: 600;
+        }
+        
+        .detail-value {
+            color: #1a237e;
+            font-weight: 500;
+        }
+        
+        /* Rationale Styles */
+        .rationale { 
+            background-color: #fff; 
+            padding: 20px; 
+            border-radius: 8px;
+            border-left: 4px solid #3949ab;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #37474f;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        /* Evidence and Gaps Lists */
+        .evidence-list, .gaps-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .evidence-item, .gap-item {
+            background: #fff;
+            margin: 10px 0;
+            padding: 12px 16px 12px 40px;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .evidence-item {
+            border-left: 4px solid #4caf50;
+        }
+        
+        .gap-item {
+            border-left: 4px solid #f44336;
+        }
+        
+        .evidence-item::before {
+            content: "✓";
+            position: absolute;
+            left: 12px;
+            color: #4caf50;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .gap-item::before {
+            content: "⚠";
+            position: absolute;
+            left: 12px;
+            color: #f44336;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        /* Metadata Section */
+        .metadata {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+        }
+        
+        #footer_content {
+            text-align: center;
+            font-size: 10px;
+            color: #777;
+        }
+        
+        /* Print Optimization */
+        @media print {
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+        
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-approved {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+        }
+        
+        .status-denied {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{{ logo_path }}" alt="CureViaX Logo">
+        <h1>Prior Authorization Intelligence Report</h1>
+        <div class="subtitle">AI-Powered Decision Support System</div>
+        <p>
+            <strong>Generated by:</strong> {{ agent_id }} | 
+            <strong>Report Date:</strong> {{ report_date }} | 
+            <strong>Workflow ID:</strong> {{ workflow_id }}
+        </p>
+    </div>
+
+    <div class="decision-box {% if is_approved %}decision-approve{% else %}decision-deny{% endif %}">
+        <div class="decision-text">
+            DECISION: {{ decision_formatted }}
+        </div>
+        
+        <div class="decision-metrics">
+            {% if confidence_percentage and confidence_percentage != 'N/A' %}
+            <div class="metric">
+                <span class="metric-value">{{ confidence_percentage }}</span>
+                <span class="metric-label">Confidence Score</span>
+            </div>
+            {% endif %}
+            <div class="metric">
+                <span class="metric-value">{{ report_metadata.total_evidence }}</span>
+                <span class="metric-label">Supporting Evidence</span>
+            </div>
+        </div>
+        
+        {% if prediction_data.confidence_score and prediction_data.confidence_score != None %}
+        <div class="confidence-meter">
+            <div class="confidence-fill" style="width: {% if prediction_data.confidence_score <= 1 %}{{ (prediction_data.confidence_score * 100)|int }}{% else %}{{ prediction_data.confidence_score|int }}{% endif %}%;"></div>
+        </div>
+        {% endif %}
+        
+        <div class="status-badge {% if is_approved %}status-approved{% else %}status-denied{% endif %}">
+            {% if is_approved %}
+                Likely Approved
+            {% else %}
+                Likely Denied
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span class="section-icon">📋</span>
+            Case Details
+        </div>
+        <div class="details-grid">
+            <div class="detail-item">
+                <strong>Patient ID:</strong>
+                <span class="detail-value">{{ patient_id_masked }}</span>
+            </div>
+            <div class="detail-item">
+                <strong>Insurer:</strong>
+                <span class="detail-value">{{ insurer_name }}</span>
+            </div>
+            <div class="detail-item">
+                <strong>Requested Drug:</strong>
+                <span class="detail-value">{{ drug_name_formatted }}</span>
+            </div>
+            <div class="detail-item">
+                <strong>Analysis Date:</strong>
+                <span class="detail-value">{{ report_date }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span class="section-icon">🔬</span>
+            Clinical Rationale
+        </div>
+        <div class="rationale">
+            {{ prediction_data.clinical_rationale|safe_unicode }}
+        </div>
+    </div>
+
+    {% if prediction_data.supporting_evidence %}
+    <div class="section">
+        <div class="section-title">
+            <span class="section-icon">✅</span>
+            Supporting Evidence
+        </div>
+        <ul class="evidence-list">
+            {% for evidence in prediction_data.supporting_evidence %}
+            <li class="evidence-item">{{ evidence|safe_unicode }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if prediction_data.identified_gaps %}
+    <div class="section">
+        <div class="section-title">
+            <span class="section-icon">⚠️</span>
+            Identified Gaps / Potential Denial Reasons
+        </div>
+        <ul class="gaps-list">
+            {% for gap in prediction_data.identified_gaps %}
+            <li class="gap-item">{{ gap|safe_unicode }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="metadata">
+        <div class="metadata-grid">
+            <div><strong>Report Version:</strong> 2.0</div>
+            <div><strong>Agent Version:</strong> {{ agent_version }}</div>
+            <div><strong>Generation Time:</strong> {{ generation_timestamp }}</div>
+            <div><strong>Data Sources:</strong> Multi-Agent Analysis</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>
+            <strong>{{ company.company_name }}</strong> - {{ company.company_tagline }}<br>
+            <a href="{{ company.company_url }}" style="color: #3949ab;">{{ company.company_url }}</a> | 
+            <a href="mailto:{{ company.company_email }}" style="color: #3949ab;">{{ company.company_email }}</a>
+        </p>
+        <p style="font-size: 10px; color: #999; margin-top: 10px;">
+            This report is AI-generated for informational purposes only and should not replace professional medical judgment.<br>
+            All predictions are based on available data and may not reflect all clinical factors.
+        </p>
+    </div>
+
+    <div id="footer_content">
+        Page <pdf:pagenumber /> of <pdf:pagecount /> | Workflow ID: {{ workflow_id }} | CureViaX Confidential
+    </div>
+</body>
+</html>

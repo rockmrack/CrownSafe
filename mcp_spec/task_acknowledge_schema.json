@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "subtask_id": { "type": "string", "format": "uuid" },
+    "status": { "enum": ["ACCEPTED", "REJECTED"] },
+    "reason": { "type": "string" } // Optional: Reason for rejection
+  },
+  "required": ["subtask_id", "status"]
+}
