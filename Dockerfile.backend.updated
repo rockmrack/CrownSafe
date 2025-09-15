@@ -1,0 +1,55 @@
+# Use Python 3.11 slim as the base image
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /usr/src/app
+
+# Environment settings
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/usr/src/app
+
+# Install system dependencies required for psycopg2 and other packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    postgresql-client \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the entire application
+COPY . .
+
+# Create necessary directories with proper permissions
+RUN mkdir -p /usr/src/app/logs \
+    && mkdir -p /usr/src/app/static/admin \
+    && mkdir -p /usr/src/app/static/legal \
+    && mkdir -p /usr/src/app/assets/store/icons/ios \
+    && mkdir -p /usr/src/app/assets/store/icons/android \
+    && mkdir -p /usr/src/app/assets/store/screenshots/ios \
+    && mkdir -p /usr/src/app/assets/store/screenshots/android \
+    && mkdir -p /usr/src/app/assets/store/graphics
+
+# Set proper permissions
+RUN chmod -R 755 /usr/src/app
+
+# Expose port for the API
+EXPOSE 8001
+
+# Health check to ensure the container is running properly
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8001/api/v1/healthz || exit 1
+
+# Run migrations and start the application
+# Note: In production, you might want to run migrations separately
+ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["alembic upgrade head && uvicorn api.main_babyshield:app --host 0.0.0.0 --port 8001 --workers 1"]

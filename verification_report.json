@@ -1,0 +1,21 @@
+{
+  "timestamp": 1756054862.7546537,
+  "success_rate": 75.0,
+  "passed": [
+    "1. Async Helpers",
+    "2. Memory Safety",
+    "4. Security Headers",
+    "6. Pagination",
+    "7. Transactions",
+    "9. Unit Tests",
+    "10. Graceful Shutdown",
+    "11. API Compatibility",
+    "12. Dependencies"
+  ],
+  "warnings": [
+    "3. Input Validators: Validation issue: The `field` and `config` parameters are not available in Pydantic V2, please use the `info` parameter instead.\n\nFor further information visit https://errors.pydantic.dev/2.11/u/validator-field-config-info",
+    "5. Encryption: Encryption issue: cannot import name 'PBKDF2' from 'cryptography.hazmat.primitives.kdf.pbkdf2' (C:\\Users\\rossd\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\cryptography\\hazmat\\primitives\\kdf\\pbkdf2.py)",
+    "8. Audit Logging: Audit logging issue: Attribute name 'metadata' is reserved when using the Declarative API."
+  ],
+  "failed": []
+}

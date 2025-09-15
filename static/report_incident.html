@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Report Unsafe Product - BabyShield</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .safety-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        
+        .form-container {
+            padding: 20px;
+        }
+        
+        .step {
+            margin-bottom: 30px;
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .step-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .photo-upload {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .photo-upload:hover {
+            background: #f8f9ff;
+        }
+        
+        .photo-upload-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .photo-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .photo-preview img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        
+        .severity-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .severity-option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .severity-option:hover {
+            border-color: #667eea;
+        }
+        
+        .severity-option.selected {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .severity-option .icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .severity-option .label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .anonymous-notice {
+            background: #f0f8ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .anonymous-notice .icon {
+            color: #0066cc;
+            margin-right: 5px;
+        }
+        
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .success-icon {
+            font-size: 60px;
+            color: #4caf50;
+            margin-bottom: 20px;
+        }
+        
+        .success-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .success-text {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .close-btn {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .required {
+            color: #ff4444;
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 0;
+            }
+            
+            .container {
+                border-radius: 0;
+                min-height: 100vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚨 Report Unsafe Product</h1>
+            <p>Your report helps protect all children</p>
+            <div class="safety-badge">✓ Secure & Confidential</div>
+        </div>
+        
+        <div class="form-container" id="reportForm">
+            <div class="anonymous-notice">
+                <span class="icon">🔒</span>
+                <strong>Privacy Protected:</strong> You can submit this report anonymously. 
+                Your identity will never be shared without your explicit consent.
+            </div>
+            
+            <form id="incidentForm">
+                <!-- Step 1: Product Information -->
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Product Details</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Product Name <span class="required">*</span></label>
+                        <input type="text" id="productName" name="productName" required 
+                               placeholder="e.g., Baby Monitor Pro 2000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Brand</label>
+                        <input type="text" id="brandName" name="brandName" 
+                               placeholder="e.g., SafetyFirst">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Model Number (if known)</label>
+                        <input type="text" id="modelNumber" name="modelNumber" 
+                               placeholder="e.g., SM-2000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Barcode (optional)</label>
+                        <input type="text" id="barcode" name="barcode" 
+                               placeholder="e.g., 012345678901">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Product Photo</label>
+                        <div class="photo-upload" onclick="document.getElementById('productPhoto').click()">
+                            <div class="photo-upload-icon">📷</div>
+                            <div>Tap to upload product photo</div>
+                            <input type="file" id="productPhoto" accept="image/*" style="display: none;" multiple>
+                        </div>
+                        <div class="photo-preview" id="productPhotoPreview"></div>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Incident Type -->
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <div class="step-title">What Happened?</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Type of Incident <span class="required">*</span></label>
+                        <select id="incidentType" name="incidentType" required>
+                            <option value="">Select incident type...</option>
+                            <option value="injury">Injury Occurred</option>
+                            <option value="choking_hazard">Choking Hazard</option>
+                            <option value="sharp_edges">Sharp Edges/Points</option>
+                            <option value="toxic_material">Toxic Material Concern</option>
+                            <option value="structural_failure">Broke/Collapsed</option>
+                            <option value="burn_hazard">Burn Hazard</option>
+                            <option value="strangulation">Strangulation Risk</option>
+                            <option value="suffocation">Suffocation Risk</option>
+                            <option value="allergic_reaction">Allergic Reaction</option>
+                            <option value="other">Other Safety Issue</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>When did this happen? <span class="required">*</span></label>
+                        <input type="date" id="incidentDate" name="incidentDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Severity Level <span class="required">*</span></label>
+                        <div class="severity-options">
+                            <div class="severity-option" data-severity="minor">
+                                <div class="icon">😟</div>
+                                <div class="label">Minor</div>
+                                <small>No medical attention</small>
+                            </div>
+                            <div class="severity-option" data-severity="moderate">
+                                <div class="icon">😰</div>
+                                <div class="label">Moderate</div>
+                                <small>First aid/Doctor visit</small>
+                            </div>
+                            <div class="severity-option" data-severity="severe">
+                                <div class="icon">🚑</div>
+                                <div class="label">Severe</div>
+                                <small>Emergency room</small>
+                            </div>
+                            <div class="severity-option" data-severity="critical">
+                                <div class="icon">🚨</div>
+                                <div class="label">Critical</div>
+                                <small>Hospitalization</small>
+                            </div>
+                        </div>
+                        <input type="hidden" id="severityLevel" name="severityLevel" required>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Details -->
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <div class="step-title">Tell Us More</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Describe what happened <span class="required">*</span></label>
+                        <textarea id="description" name="description" required 
+                                  placeholder="Please describe the incident in detail..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Child's Age (optional)</label>
+                        <input type="number" id="childAge" name="childAge" 
+                               placeholder="Age in months" min="0" max="216">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Incident Photos (optional)</label>
+                        <div class="photo-upload" onclick="document.getElementById('incidentPhotos').click()">
+                            <div class="photo-upload-icon">📸</div>
+                            <div>Upload photos of the incident/hazard</div>
+                            <input type="file" id="incidentPhotos" accept="image/*" style="display: none;" multiple>
+                        </div>
+                        <div class="photo-preview" id="incidentPhotoPreview"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Your Email (optional - for updates only)</label>
+                        <input type="email" id="reporterEmail" name="reporterEmail" 
+                               placeholder="your@email.com">
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    Submit Report Anonymously
+                </button>
+            </form>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Submitting your report...</p>
+            </div>
+        </div>
+        
+        <div class="success-message" id="successMessage">
+            <div class="success-icon">✅</div>
+            <div class="success-title">Thank You!</div>
+            <div class="success-text">
+                Your report has been submitted successfully.<br>
+                You're helping keep all children safe.
+            </div>
+            <div class="success-text">
+                <strong>Report ID:</strong> <span id="reportId"></span>
+            </div>
+            <button class="close-btn" onclick="closeWebView()">
+                Return to App
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Get URL parameters (for pre-filling)
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('product_id');
+        const barcodeParam = urlParams.get('barcode');
+        const productNameParam = urlParams.get('product_name');
+        
+        // Pre-fill form if parameters provided
+        if (productNameParam) {
+            document.getElementById('productName').value = decodeURIComponent(productNameParam);
+        }
+        if (barcodeParam) {
+            document.getElementById('barcode').value = barcodeParam;
+        }
+        
+        // Set today's date as max for incident date
+        document.getElementById('incidentDate').max = new Date().toISOString().split('T')[0];
+        
+        // Handle severity selection
+        document.querySelectorAll('.severity-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.severity-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('severityLevel').value = this.dataset.severity;
+            });
+        });
+        
+        // Handle photo uploads
+        function handlePhotoUpload(input, previewId) {
+            const preview = document.getElementById(previewId);
+            preview.innerHTML = '';
+            
+            for (let file of input.files) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        document.getElementById('productPhoto').addEventListener('change', function() {
+            handlePhotoUpload(this, 'productPhotoPreview');
+        });
+        
+        document.getElementById('incidentPhotos').addEventListener('change', function() {
+            handlePhotoUpload(this, 'incidentPhotoPreview');
+        });
+        
+        // Handle form submission
+        document.getElementById('incidentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Show loading
+            document.getElementById('reportForm').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            
+            // Prepare form data
+            const formData = new FormData();
+            
+            // Add text fields
+            formData.append('product_name', document.getElementById('productName').value);
+            formData.append('brand_name', document.getElementById('brandName').value || '');
+            formData.append('model_number', document.getElementById('modelNumber').value || '');
+            formData.append('barcode', document.getElementById('barcode').value || '');
+            formData.append('incident_type', document.getElementById('incidentType').value);
+            formData.append('incident_date', document.getElementById('incidentDate').value);
+            formData.append('severity_level', document.getElementById('severityLevel').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('child_age_months', document.getElementById('childAge').value || '');
+            formData.append('reporter_email', document.getElementById('reporterEmail').value || '');
+            
+            // Add photos
+            const productPhotos = document.getElementById('productPhoto').files;
+            for (let i = 0; i < productPhotos.length; i++) {
+                formData.append('product_photos', productPhotos[i]);
+            }
+            
+            const incidentPhotos = document.getElementById('incidentPhotos').files;
+            for (let i = 0; i < incidentPhotos.length; i++) {
+                formData.append('incident_photos', incidentPhotos[i]);
+            }
+            
+            try {
+                // Submit to API
+                const response = await fetch('/api/v1/incidents/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show success message
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('reportId').textContent = result.report_id;
+                    
+                    // Send message to app if in WebView
+                    if (window.webkit && window.webkit.messageHandlers) {
+                        window.webkit.messageHandlers.reportSubmitted.postMessage({
+                            report_id: result.report_id
+                        });
+                    }
+                } else {
+                    throw new Error(result.message || 'Submission failed');
+                }
+            } catch (error) {
+                alert('Error submitting report: ' + error.message);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('reportForm').style.display = 'block';
+            }
+        });
+        
+        // Close WebView function
+        function closeWebView() {
+            // Try different methods to close/return to app
+            if (window.webkit && window.webkit.messageHandlers) {
+                // iOS WebView
+                window.webkit.messageHandlers.closeWebView.postMessage({});
+            } else if (window.Android) {
+                // Android WebView
+                window.Android.closeWebView();
+            } else if (window.ReactNativeWebView) {
+                // React Native WebView
+                window.ReactNativeWebView.postMessage(JSON.stringify({action: 'close'}));
+            } else {
+                // Fallback - try to go back
+                window.history.back();
+            }
+        }
+    </script>
+</body>
+</html>

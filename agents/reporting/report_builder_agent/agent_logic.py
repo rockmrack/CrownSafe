@@ -5,17 +5,57 @@ import logging
 import json
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timezone
-import os
+import os, base64
 import uuid
 from enum import Enum
 from dataclasses import asdict
+from collections import Counter
 from pathlib import Path
 
-import markdown
-from xhtml2pdf import pisa
-import matplotlib.pyplot as plt
-import qrcode
-from jinja2 import Environment, FileSystemLoader
+try:
+    import markdown
+    MARKDOWN_AVAILABLE = True
+except ImportError:
+    MARKDOWN_AVAILABLE = False
+    markdown = None
+
+try:
+    from xhtml2pdf import pisa
+    XHTML2PDF_AVAILABLE = True
+except ImportError:
+    XHTML2PDF_AVAILABLE = False
+    pisa = None
+
+try:
+    # Optional high-fidelity HTML renderer
+    from weasyprint import HTML as WEASY_HTML, CSS as WEASY_CSS  # type: ignore
+    WEASYPRINT_AVAILABLE = True
+except Exception:
+    WEASYPRINT_AVAILABLE = False
+    WEASY_HTML = None  # type: ignore
+    WEASY_CSS = None  # type: ignore
+
+try:
+    import matplotlib.pyplot as plt
+    MATPLOTLIB_AVAILABLE = True
+except ImportError:
+    MATPLOTLIB_AVAILABLE = False
+    plt = None
+
+try:
+    import qrcode
+    QRCODE_AVAILABLE = True
+except ImportError:
+    QRCODE_AVAILABLE = False
+    qrcode = None
+
+try:
+    from jinja2 import Environment, FileSystemLoader
+    JINJA2_AVAILABLE = True
+except ImportError:
+    JINJA2_AVAILABLE = False
+    Environment = None
+    FileSystemLoader = None
 
 # ====== Configuration ======
 COMPANY_NAME = "CureViaX"
@@ -322,13 +362,67 @@ class ReportBuilderAgentLogic:
 
     def _convert_html_to_pdf(self, html_content: str, pdf_filepath: str) -> bool:
         try:
-            with open(pdf_filepath, "wb") as pdf_file_handle:
-                pdf_context = pisa.CreatePDF(html_content, dest=pdf_file_handle, encoding='utf-8')
-                if pdf_context.err:
-                    self.logger.error(f"pisa.CreatePDF error: {pdf_context.err}")
+            # Renderer selection via env with graceful fallback
+            preferred_renderer = (os.getenv("HTML_RENDERER") or "").strip().lower()
+
+            # 1) WeasyPrint (if requested or xhtml2pdf unavailable)
+            if (preferred_renderer == "weasyprint" and WEASYPRINT_AVAILABLE) or (not XHTML2PDF_AVAILABLE and WEASYPRINT_AVAILABLE):
+                try:
+                    WEASY_HTML(string=html_content).write_pdf(pdf_filepath)
+                except Exception as we_err:
+                    self.logger.error(f"WeasyPrint render failed: {we_err}")
+                    # Fall through to other renderers
+                else:
+                    # validate below
+                    pass
+
+            # 2) xhtml2pdf (default path)
+            if XHTML2PDF_AVAILABLE and pisa is not None and not os.path.exists(pdf_filepath):
+                with open(pdf_filepath, "wb") as pdf_file_handle:
+                    pdf_context = pisa.CreatePDF(html_content, dest=pdf_file_handle, encoding='utf-8')
+                    if pdf_context.err:
+                        self.logger.error(f"pisa.CreatePDF error: {pdf_context.err}")
+                        # Remove incomplete file if any
+                        try:
+                            if os.path.exists(pdf_filepath):
+                                os.remove(pdf_filepath)
+                        except Exception:
+                            pass
+
+            # 3) Fallback: generate a valid PDF using ReportLab (no HTML rendering)
+            if not os.path.exists(pdf_filepath):
+                try:
+                    from reportlab.pdfgen import canvas
+                    from reportlab.lib.pagesizes import A4
+                except Exception as imp_err:
+                    self.logger.error(f"PDF fallback unavailable (reportlab import failed): {imp_err}")
                     return False
-            if os.path.exists(pdf_filepath) and os.path.getsize(pdf_filepath) > 0:
-                return True
+                tmp_path = pdf_filepath + ".tmp"
+                c = canvas.Canvas(tmp_path, pagesize=A4)
+                c.setTitle("BabyShield Report")
+                c.drawString(72, 800, "BabyShield Report")
+                c.drawString(72, 784, "Note: HTML renderer not available; using PDF fallback content.")
+                c.showPage()
+                c.save()
+                try:
+                    os.replace(tmp_path, pdf_filepath)
+                except Exception:
+                    # Best-effort move
+                    import shutil
+                    shutil.copyfile(tmp_path, pdf_filepath)
+                    try:
+                        os.remove(tmp_path)
+                    except Exception:
+                        pass
+
+            # Validate header is %PDF
+            if os.path.exists(pdf_filepath) and os.path.getsize(pdf_filepath) > 4:
+                with open(pdf_filepath, "rb") as fh:
+                    sig = fh.read(4)
+                if sig == b"%PDF":
+                    return True
+                self.logger.error("Generated file is not a valid PDF (missing %PDF header)")
+                return False
             else:
                 self.logger.error("PDF file created but empty or missing.")
                 return False
@@ -402,10 +496,334 @@ class ReportBuilderAgentLogic:
             self.logger.error(f"Failed to build PA summary report: {e}", exc_info=True)
             return {"status": "error", "message": str(e)}
 
+    def _compute_composite_risk(self, recalls: List[dict], community: dict, hazards: dict) -> Dict[str, Any]:
+        """Compute a simple deterministic composite risk score and level."""
+        score = 0
+        level = "LOW"
+        # recalls weight
+        if recalls:
+            # weight by count and severity proxy
+            score += min(80, 40 + len(recalls) * 10)
+        # community incidents weight
+        incidents = int(community.get("incident_count", 0)) if community else 0
+        score += min(15, incidents * 2)
+        # hazards high flags
+        high_flags = 0
+        if hazards and isinstance(hazards.get("hazards_identified"), list):
+            for h in hazards["hazards_identified"]:
+                if (h.get("severity") or "").upper() in ("HIGH", "CRITICAL"):
+                    high_flags += 1
+        score += min(20, high_flags * 5)
+        score = max(0, min(100, score))
+        if score >= 85:
+            level = "CRITICAL"
+        elif score >= 70:
+            level = "HIGH"
+        elif score >= 40:
+            level = "MEDIUM"
+        else:
+            level = "LOW"
+        return {"score": score, "level": level}
+
+    def _build_product_safety_report(self, data: dict, workflow_id: Optional[str] = None) -> dict:
+        """
+        Build BabyShield Product Safety Report (Level 1). Expects a pre-aggregated 'data' dict
+        with keys: product, recalls, personalized, community, manufacturer, hazards.
+        This method renders the product_safety_report.html template to PDF.
+        """
+        try:
+            template_name = "product_safety_report.html"
+            # Validate template exists
+            if not (TEMPLATES_DIR / template_name).exists():
+                return {"status": "error", "message": f"Template not found: {TEMPLATES_DIR / template_name}"}
+
+            # Coerce expected fields with defaults
+            product = data.get("product", {}) or {}
+            recalls = data.get("recalls", []) or []
+            personalized = data.get("personalized", {}) or {}
+            community = data.get("community", {}) or {}
+            manufacturer = data.get("manufacturer", {}) or {}
+            hazards = data.get("hazards", {}) or {}
+
+            # Compute composite risk
+            risk = self._compute_composite_risk(recalls=recalls, community=community, hazards=hazards)
+
+            # Final assessment text (deterministic)
+            final_assessment = {
+                "CRITICAL": "CRITICAL RISK - Immediate action recommended",
+                "HIGH": "HIGH RISK - Action recommended",
+                "MEDIUM": "MEDIUM RISK - Use caution and monitor",
+                "LOW": "LOW RISK - No issues detected at this time"
+            }[risk["level"]]
+
+            # Executive summary
+            if recalls:
+                hazard_summary = (recalls[0].get("hazard") or "safety issue").strip()
+                exec_summary = f"Active recall(s) detected. Primary issue: {hazard_summary}. Discontinue use until resolved."
+            else:
+                exec_summary = "No official recalls detected. No community spikes observed. Continue normal use with standard safety precautions."
+
+            # Generate QR (optional) - Link to live web version of report
+            basename = f"product_{uuid.uuid4().hex[:8]}"
+            report_id = workflow_id or uuid.uuid4().hex[:8]
+            # QR code links to live web version for easy sharing with partners/pediatricians
+            live_report_url = f"{COMPANY_URL}/reports/view/{report_id}"
+            qr_path = generate_qr_code(live_report_url, REPORTS_OUTPUT_DIR, basename) if QRCODE_AVAILABLE else None
+
+            # Determine which data sources were checked
+            data_sources_checked = []
+            if recalls:
+                # Extract unique agencies from recalls
+                agencies_in_recalls = set()
+                for r in recalls:
+                    agency = r.get("agency") or r.get("source_agency") or ""
+                    if agency:
+                        agencies_in_recalls.add(agency)
+                data_sources_checked = list(agencies_in_recalls)
+            
+            # If no recalls, show default agencies we check
+            if not data_sources_checked:
+                data_sources_checked = ["CPSC", "FDA", "EU Safety Gate", "Health Canada", "ACCC (Australia)"]
+
+            # Conditional section visibility based on risk level
+            show_recall_details = len(recalls) > 0
+            show_critical_warning = risk["level"] in ["CRITICAL", "HIGH"]
+            
+            # Build context
+            context = {
+                "company_name": COMPANY_NAME,
+                "report_date": datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
+                "workflow_id": workflow_id or f"WF_{uuid.uuid4().hex[:8]}",
+                "logo_path": f"file:///{LOGO_PATH.replace(chr(92), '/')}" if LOGO_PATH else None,
+                "data_sources_checked": data_sources_checked,
+                "show_recall_details": show_recall_details,
+                "show_critical_warning": show_critical_warning,
+                "product": {
+                    "product_name": product.get("product_name"),
+                    "brand": product.get("brand"),
+                    "upc_gtin": product.get("upc_gtin") or product.get("upc") or product.get("gtin"),
+                    "model_number": product.get("model_number"),
+                    "lot_or_serial": product.get("lot_or_serial") or product.get("lot_number") or product.get("serial_number"),
+                },
+                "risk": {
+                    "score": risk["score"],
+                    "level": risk["level"],
+                    "final_assessment": final_assessment,
+                    "summary": exec_summary,
+                },
+                "recalls": [
+                    {
+                        "id": r.get("id") or r.get("recall_id"),
+                        "agency": r.get("agency") or r.get("source_agency"),
+                        "date": r.get("date") or (r.get("recall_date") or ""),
+                        "hazard": r.get("hazard"),
+                        "remedy": r.get("remedy"),
+                        "match_confidence": float(r.get("match_confidence", 1.0)),
+                        "match_type": r.get("match_type", "exact"),
+                    }
+                    for r in recalls
+                ],
+                "personalized": {
+                    "pregnancy_status": personalized.get("pregnancy_status"),
+                    "allergy_status": personalized.get("allergy_status"),
+                    "notes": personalized.get("notes"),
+                },
+                "community": {
+                    "incident_count": community.get("incident_count"),
+                    "sentiment": community.get("sentiment"),
+                    "summary": community.get("summary"),
+                },
+                "manufacturer": {
+                    "name": manufacturer.get("name"),
+                    "compliance_score": manufacturer.get("compliance_score"),
+                    "recall_history": manufacturer.get("recall_history"),
+                },
+                "disclaimers": [
+                    "This report is for informational purposes only and does not guarantee safety.",
+                    "Always verify with official agency notices and manufacturer guidance.",
+                    "Discontinue use if a recall is active or a serious hazard is suspected.",
+                    "Keep products within age-appropriate guidelines and follow instructions.",
+                    "Personalized checks (allergy/pregnancy) are best-effort and not exhaustive.",
+                    "This is not medical or legal advice.",
+                    "Use at your own discretion; BabyShield is not liable for misuse."
+                ],
+                "qr_path": ("file:///" + qr_path.replace("\\", "/")) if qr_path else None,
+            }
+
+            # Render
+            template = self.jinja_env.get_template(template_name)
+            html_content = template.render(**context)
+
+            # Output PDF
+            pdf_filename = f"Product_Safety_Report_{uuid.uuid4().hex[:8]}.pdf"
+            pdf_filepath = os.path.join(REPORTS_OUTPUT_DIR, pdf_filename)
+
+            if not self._convert_html_to_pdf(html_content, pdf_filepath):
+                return {"status": "error", "message": "PDF conversion failed"}
+
+            return {
+                "status": "success",
+                "pdf_path": pdf_filepath,
+                "report_type": "product_safety",
+                "generation_timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        except Exception as e:
+            self.logger.error(f"Failed to build product safety report: {e}", exc_info=True)
+            return {"status": "error", "message": str(e)}
+
+    def _build_nursery_quarterly_report(self, data: dict, workflow_id: Optional[str] = None) -> dict:
+        """
+        Build Nursery Quarterly Report over multiple products.
+        Expects data: { products: [ {product, recalls, personalized, community, manufacturer, hazards}, ... ] }
+        """
+        try:
+            template_name = "nursery_quarterly_report.html"
+            if not (TEMPLATES_DIR / template_name).exists():
+                return {"status": "error", "message": f"Template not found: {TEMPLATES_DIR / template_name}"}
+
+            items = data.get("products", []) or []
+            rendered_items = []
+            high_risk = 0
+            new_recalls = 0
+            nearing_expiry = 0
+
+            for entry in items:
+                product = entry.get("product", {}) or {}
+                recalls = entry.get("recalls", []) or []
+                community = entry.get("community", {}) or {}
+                hazards = entry.get("hazards", {}) or {}
+                risk = self._compute_composite_risk(recalls, community, hazards)
+                if risk["level"] in ("HIGH", "CRITICAL"):
+                    high_risk += 1
+                final_assessment = {
+                    "CRITICAL": "CRITICAL RISK - Immediate action recommended",
+                    "HIGH": "HIGH RISK - Action recommended",
+                    "MEDIUM": "MEDIUM RISK - Use caution and monitor",
+                    "LOW": "LOW RISK - No issues detected at this time"
+                }[risk["level"]]
+                if recalls:
+                    hazard_summary = (recalls[0].get("hazard") or "safety issue").strip()
+                    summary = f"Active recall(s) detected. Primary issue: {hazard_summary}."
+                else:
+                    summary = "No official recalls detected in the period."
+                rendered_items.append({
+                    "product": {
+                        "product_name": product.get("product_name"),
+                        "brand": product.get("brand"),
+                        "upc_gtin": product.get("upc_gtin") or product.get("upc") or product.get("gtin"),
+                        "model_number": product.get("model_number"),
+                        "lot_or_serial": product.get("lot_or_serial") or product.get("lot_number") or product.get("serial_number"),
+                    },
+                    "recalls": [
+                        {
+                            "id": r.get("id") or r.get("recall_id"),
+                            "agency": r.get("agency") or r.get("source_agency"),
+                            "date": r.get("date") or (r.get("recall_date") or ""),
+                            "hazard": r.get("hazard"),
+                            "remedy": r.get("remedy"),
+                        }
+                        for r in recalls
+                    ],
+                    "risk": {"score": risk["score"], "level": risk["level"], "final_assessment": final_assessment, "summary": summary},
+                })
+
+            # Collect all unique data sources from all products
+            all_agencies = set()
+            for item in items:
+                recalls = item.get("recalls", []) or []
+                for r in recalls:
+                    agency = r.get("agency") or r.get("source_agency") or ""
+                    if agency:
+                        all_agencies.add(agency)
+            
+            data_sources_checked = list(all_agencies) if all_agencies else ["CPSC", "FDA", "EU Safety Gate", "Health Canada", "ACCC (Australia)"]
+
+            context = {
+                "company_name": COMPANY_NAME,
+                "report_date": datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
+                "workflow_id": workflow_id or f"WF_{uuid.uuid4().hex[:8]}",
+                "logo_path": f"file:///{LOGO_PATH.replace(chr(92), '/')}" if LOGO_PATH else None,
+                "data_sources_checked": data_sources_checked,
+                "summary": {
+                    "total_products": len(rendered_items),
+                    "high_risk_count": high_risk,
+                    "new_recalls_count": new_recalls,
+                    "nearing_expiry_count": nearing_expiry,
+                },
+                "products": rendered_items,
+                "disclaimers": [
+                    "This report is for informational purposes only and does not guarantee safety.",
+                    "Always verify with official agency notices and manufacturer guidance.",
+                    "Discontinue use if a recall is active or a serious hazard is suspected.",
+                    "Keep products within age-appropriate guidelines and follow instructions.",
+                    "Personalized checks (allergy/pregnancy) are best-effort and not exhaustive.",
+                    "This is not medical or legal advice.",
+                    "Use at your own discretion; BabyShield is not liable for misuse."
+                ],
+            }
+            template = self.jinja_env.get_template(template_name)
+            html_content = template.render(**context)
+            pdf_filename = f"Nursery_Quarterly_Report_{uuid.uuid4().hex[:8]}.pdf"
+            pdf_filepath = os.path.join(REPORTS_OUTPUT_DIR, pdf_filename)
+            if not self._convert_html_to_pdf(html_content, pdf_filepath):
+                return {"status": "error", "message": "PDF conversion failed"}
+            return {"status": "success", "pdf_path": pdf_filepath, "report_type": "nursery_quarterly", "generation_timestamp": datetime.now(timezone.utc).isoformat()}
+        except Exception as e:
+            self.logger.error(f"Failed to build nursery quarterly report: {e}", exc_info=True)
+            return {"status": "error", "message": str(e)}
+
     def _build_default_research_report(self, data: dict) -> dict:
         """Keep the existing logic for building the old research reports"""
         self.logger.info("Building default research report...")
         return {"status": "success", "message": "Default research report built"}
+
+    def _render_pdf(self, html_content: str, filename_prefix: str) -> dict:
+        pdf_filename = f"{filename_prefix}_{uuid.uuid4().hex[:8]}.pdf"
+        pdf_filepath = os.path.join(REPORTS_OUTPUT_DIR, pdf_filename)
+        if not self._convert_html_to_pdf(html_content, pdf_filepath):
+            return {"status": "error", "message": "PDF conversion failed"}
+        return {"status": "success", "pdf_path": pdf_filepath, "report_type": filename_prefix, "generation_timestamp": datetime.now(timezone.utc).isoformat()}
+
+    def build_safety_summary(self, db, user_id: int, window_days: int = 90) -> dict:
+        """Generate a simple safety summary report over recent recalls."""
+        try:
+            from core_infra.database import RecallDB as RecallModel
+        except Exception:
+            RecallModel = None
+
+        recalls = []
+        if RecallModel and db is not None:
+            try:
+                recalls = db.query(RecallModel).order_by(RecallModel.recall_date.desc()).limit(15).all()
+            except Exception as e:
+                self.logger.error(f"Failed to fetch recalls for summary: {e}")
+                recalls = []
+
+        hazards = [(getattr(r, "hazard_category", None) or getattr(r, "hazard", None)) for r in recalls if r]
+        brands = [getattr(r, "brand", None) for r in recalls if r]
+        def top(xs, k):
+            return [v for v,_ in Counter([x for x in xs if x]).most_common(k)]
+
+        ctx = {
+            "title": "Nursery Safety Summary",
+            "generated_at": datetime.utcnow().isoformat(timespec="seconds"),
+            "window_days": window_days,
+            "stats": {
+                "total_recalls": len(recalls),
+                "top_hazards": top(hazards, 3),
+                "top_brands": top(brands, 4),
+            },
+            "recalls": recalls,
+            "header_logo": "",
+        }
+
+        try:
+            template = self.jinja_env.get_template("safety_summary_template.html")
+            html = template.render(**ctx)
+            return self._render_pdf(html, filename_prefix="safety_summary")
+        except Exception as e:
+            self.logger.error(f"Safety summary build failed: {e}", exc_info=True)
+            return {"status": "error", "message": str(e)}
 
     async def build_report(self, task_payload: dict) -> dict:
         """Main method to build reports based on type"""
@@ -418,6 +836,14 @@ class ReportBuilderAgentLogic:
         if report_type == "prior_authorization_summary":
             # Call the dedicated method for PA reports
             return self._build_pa_summary_report(report_data, workflow_id)
+        elif report_type == "product_safety":
+            return self._build_product_safety_report(report_data, workflow_id)
+        elif report_type == "nursery_quarterly":
+            return self._build_nursery_quarterly_report(report_data, workflow_id)
+        elif report_type == "safety_summary":
+            db = report_data.get("db") if isinstance(report_data, dict) else None
+            user_id = report_data.get("user_id") if isinstance(report_data, dict) else None
+            return self.build_safety_summary(db, user_id=user_id or 0)
         else:
             # Keep the existing logic for building the old research reports
             return self._build_default_research_report(report_data)

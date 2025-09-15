@@ -1,0 +1,11 @@
+# RossNetAgents/core_infra/mcp_router_service/requirements.txt
+
+fastapi>=0.100.0,<0.112.0 # Core web framework
+uvicorn[standard]>=0.22.0,<0.30.0 # ASGI server (includes websockets support)
+pydantic-settings>=2.0.0,<3.0.0 # For loading configuration from .env/environment
+pyjwt>=2.8.0,<3.0.0 # For JWT handling (even placeholders need the library)
+
+# Add other dependencies as needed later, e.g.:
+# redis>=5.0.0 # If using Redis for state/cache
+# protobuf>=4.0.0 # If switching message format
+# databases[postgresql] # If using a persistent DB for discovery/state

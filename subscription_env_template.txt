@@ -1,0 +1,21 @@
+# Add these to your .env file
+
+# Apple App Store Product IDs
+APPLE_PRODUCT_ID_MONTHLY=babyshield_monthly
+APPLE_PRODUCT_ID_ANNUAL=babyshield_annual
+
+# Google Play Store Product IDs  
+GOOGLE_PRODUCT_ID_MONTHLY=babyshield_monthly
+GOOGLE_PRODUCT_ID_ANNUAL=babyshield_annual
+
+# Apple IAP Configuration
+APPLE_SHARED_SECRET=your-apple-shared-secret
+APPLE_ENVIRONMENT=sandbox  # or "production"
+
+# Google Play Configuration
+GOOGLE_SERVICE_ACCOUNT_KEY_PATH=path/to/google-service-account.json
+GOOGLE_PACKAGE_NAME=com.babyshield.app
+
+# Subscription Pricing (for reference)
+MONTHLY_PRICE=7.99
+ANNUAL_PRICE=79.99

@@ -1,0 +1,523 @@
+openapi: 3.0.3
+info:
+  title: BabyShield API
+  version: 1.2.0
+  description: >
+    BabyShield v1 API for recall search and recall detail.
+    Headers:
+      - X-API-Version (response header)
+    Notes:
+      - Use **/api/v1/search/advanced** for all search in apps.
+      - Aliases accepted: risk_level→severity, product_category→riskCategory, agency→agencies.
+      - Fuzzy search using pg_trgm with similarity threshold 0.08
+      - Keyword AND logic for precise matching
+      - Deterministic sorting: score DESC, recall_date DESC, id ASC
+servers:
+  - url: https://babyshield.cureviax.ai
+    description: Production server
+  - url: http://localhost:8000
+    description: Local development
+tags:
+  - name: system
+    description: System health and status endpoints
+  - name: search
+    description: Recall search endpoints
+  - name: recalls
+    description: Individual recall operations
+components:
+  schemas:
+    Severity:
+      type: string
+      enum: [low, medium, high, critical]
+      description: Risk severity level
+    RiskCategory:
+      type: string
+      enum: [drug, device, food, cosmetic, supplement, toy, baby_product, other]
+      description: Product risk category
+    RecallItem:
+      type: object
+      required: [id, agencyCode, title, recallDate]
+      properties:
+        id: 
+          type: string
+          example: "2024-FDA-12345"
+          description: Unique recall identifier
+        agencyCode: 
+          type: string
+          example: "FDA"
+          description: Source agency code
+        title: 
+          type: string
+          example: "Children's Cold Medicine Recall"
+          description: Recall title
+        productName: 
+          type: string
+          nullable: true
+          example: "Children's Triacting Night Time Cold"
+        brand: 
+          type: string
+          nullable: true
+          example: "P&L Developments, LLC"
+        manufacturer:
+          type: string
+          nullable: true
+          example: "ABC Manufacturing Co."
+        model: 
+          type: string
+          nullable: true
+          example: "Model XYZ-123"
+        modelNumber:
+          type: string
+          nullable: true
+          example: "XYZ-123"
+        upc: 
+          type: string
+          nullable: true
+          example: "012345678901"
+        hazard: 
+          type: string
+          nullable: true
+          example: "Incorrect dosing instructions"
+        riskCategory: 
+          $ref: "#/components/schemas/RiskCategory"
+        severity: 
+          $ref: "#/components/schemas/Severity"
+        status: 
+          type: string
+          example: "open"
+          enum: [open, closed]
+        imageUrl: 
+          type: string
+          nullable: true
+        affectedCountries:
+          type: array
+          items: 
+            type: string
+          example: ["USA", "Canada"]
+        country:
+          type: string
+          nullable: true
+          example: "USA"
+        recallDate: 
+          type: string
+          format: date
+          example: "2024-01-15"
+        lastUpdated: 
+          type: string
+          format: date-time
+          nullable: true
+          example: "2024-01-15T10:30:00Z"
+        sourceUrl: 
+          type: string
+          nullable: true
+          example: "https://www.fda.gov/recall/12345"
+        description:
+          type: string
+          nullable: true
+          example: "Product may contain incorrect dosing information"
+        url:
+          type: string
+          nullable: true
+          example: "https://www.fda.gov/recall/12345"
+        relevanceScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          nullable: true
+          example: 0.875
+          description: Fuzzy match relevance score (0-1)
+    AdvancedSearchRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        # Text search fields
+        query: 
+          type: string
+          description: "Free text search (fuzzy trigram match)"
+          example: "pacifier"
+        product: 
+          type: string
+          description: "Product text search (fuzzy trigram match, preferred over query)"
+          example: "baby bottle"
+        keywords:
+          type: array
+          items: 
+            type: string
+          description: "All keywords must match across any text field (AND logic)"
+          example: ["sensor", "smart"]
+        id: 
+          type: string
+          description: "Exact recall ID match for direct lookup"
+          example: "2024-FDA-12345"
+        # Filter fields
+        agencies:
+          type: array
+          items: 
+            type: string
+          example: ["FDA", "CPSC"]
+          description: "Filter by source agencies"
+        agency:
+          type: string
+          description: "Single agency filter (alias for agencies)"
+          example: "FDA"
+        severity: 
+          $ref: "#/components/schemas/Severity"
+        risk_level:
+          type: string
+          description: "Alias for severity"
+          example: "high"
+        riskCategory: 
+          $ref: "#/components/schemas/RiskCategory"
+        product_category:
+          type: string
+          description: "Alias for riskCategory"
+          example: "food"
+        date_from: 
+          type: string
+          format: date
+          description: "Recall date from (inclusive)"
+          example: "2024-01-01"
+        date_to: 
+          type: string
+          format: date
+          description: "Recall date to (inclusive)"
+          example: "2024-12-31"
+        limit:
+          type: integer
+          default: 20
+          minimum: 1
+          maximum: 50
+          description: "Maximum results to return"
+        nextCursor: 
+          type: string
+          nullable: true
+          description: "Pagination cursor (not yet implemented)"
+      description: |
+        Search request with multiple options:
+        - Use 'product' or 'query' for fuzzy text search
+        - Use 'keywords' for precise AND logic matching
+        - Use 'id' for exact recall lookup
+        - Combine with filters for refined results
+        
+        Aliases accepted (mapped server-side): 
+        - `risk_level` → `severity`
+        - `product_category` → `riskCategory`
+        - `agency` → `agencies`
+    AdvancedSearchResponse:
+      type: object
+      properties:
+        ok: 
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items: 
+                $ref: "#/components/schemas/RecallItem"
+            nextCursor: 
+              type: string
+              nullable: true
+              description: "Cursor for next page (not yet implemented)"
+            total: 
+              type: integer
+              example: 42
+              description: "Total matching results"
+            limit:
+              type: integer
+              example: 20
+              description: "Results limit used"
+            offset:
+              type: integer
+              example: 0
+              description: "Results offset"
+        traceId: 
+          type: string
+          example: "trace_abc123_1234567890"
+          description: "Request trace ID for debugging"
+        responseTimeMs:
+          type: number
+          nullable: true
+          description: "Response time in milliseconds"
+    ErrorResponse:
+      type: object
+      properties:
+        ok: 
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code: 
+              type: string
+              example: "INVALID_PARAMETERS"
+              enum: [BAD_REQUEST, NOT_FOUND, INVALID_PARAMETERS, INTERNAL_ERROR, SEARCH_ERROR]
+            message: 
+              type: string
+              example: "Product search term must be at least 2 characters"
+            unknown:
+              type: array
+              items: 
+                type: string
+              description: "List of unknown/invalid fields"
+        traceId: 
+          type: string
+          example: "trace_xyz789_1234567890"
+    HealthResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        status:
+          type: string
+          example: "healthy"
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+          example: "1.2.0"
+        service:
+          type: string
+          example: "babyshield-api"
+paths:
+  /api/v1/healthz:
+    get:
+      tags: [system]
+      summary: Health check endpoint
+      operationId: getHealth
+      responses:
+        "200":
+          description: Service is healthy
+          headers:
+            X-API-Version:
+              schema: 
+                type: string
+                example: "v1.2.0"
+              description: API version header
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/HealthResponse"
+  /api/v1/search/advanced:
+    post:
+      tags: [search]
+      summary: Advanced recall search with fuzzy matching and filters
+      operationId: searchAdvanced
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: "#/components/schemas/AdvancedSearchRequest"
+            examples:
+              product_fuzzy:
+                summary: Fuzzy product search
+                value:
+                  product: "Triacting Night Time Cold"
+                  agencies: ["FDA"]
+                  severity: "medium"
+                  riskCategory: "drug"
+                  limit: 5
+              query_simple:
+                summary: Simple query search
+                value:
+                  query: "pacifier"
+                  agencies: ["FDA", "CPSC"]
+                  limit: 10
+              keywords_and:
+                summary: Keywords with AND logic
+                value:
+                  keywords: ["baby", "formula", "organic"]
+                  agencies: ["FDA"]
+                  limit: 20
+              id_exact:
+                summary: Exact ID lookup
+                value:
+                  id: "2024-FDA-12345"
+              combined_search:
+                summary: Combined search features
+                value:
+                  product: "bottle"
+                  keywords: ["bpa", "free"]
+                  agencies: ["FDA", "CPSC"]
+                  severity: "high"
+                  date_from: "2024-01-01"
+                  date_to: "2024-12-31"
+                  limit: 15
+              with_aliases:
+                summary: Using parameter aliases
+                value:
+                  product: "toy"
+                  risk_level: "high"
+                  product_category: "toy"
+                  agency: "CPSC"
+                  limit: 10
+      responses:
+        "200":
+          description: Search results
+          headers:
+            X-API-Version:
+              schema: 
+                type: string
+              description: API version header
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/AdvancedSearchResponse"
+              example:
+                ok: true
+                data:
+                  items:
+                    - id: "2024-FDA-12345"
+                      agencyCode: "FDA"
+                      title: "Children's Cold Medicine Recall"
+                      productName: "Children's Triacting Night Time Cold"
+                      brand: "P&L Developments, LLC"
+                      hazard: "Incorrect dosing instructions"
+                      severity: "medium"
+                      riskCategory: "drug"
+                      recallDate: "2024-01-15"
+                      relevanceScore: 0.875
+                  total: 1
+                  limit: 20
+                  offset: 0
+                  nextCursor: null
+                traceId: "trace_abc123_1234567890"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missing_search:
+                  summary: Missing search term
+                  value:
+                    ok: false
+                    error:
+                      code: "BAD_REQUEST"
+                      message: "Either 'product', 'query', 'id', or 'keywords' field is required"
+                    traceId: "trace_xyz789_1234567890"
+                invalid_date:
+                  summary: Invalid date range
+                  value:
+                    ok: false
+                    error:
+                      code: "BAD_REQUEST"
+                      message: "Invalid date range: date_from must be before or equal to date_to"
+                    traceId: "trace_xyz789_1234567890"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/recall/{id}:
+    get:
+      tags: [recalls]
+      summary: Get recall details by ID
+      operationId: getRecallById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: 
+            type: string
+          description: Recall ID
+          example: "2024-FDA-12345"
+      responses:
+        "200":
+          description: Recall found
+          headers:
+            X-API-Version:
+              schema: 
+                type: string
+              description: API version header
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/RecallItem"
+        "404":
+          description: Recall not found
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                ok: false
+                error:
+                  code: "NOT_FOUND"
+                  message: "Recall with ID '2024-FDA-99999' not found"
+                traceId: "trace_xyz789_1234567890"
+  /api/v1/fda:
+    get:
+      tags: [search]
+      summary: FDA quick search (simple GET endpoint)
+      operationId: searchFDA
+      parameters:
+        - in: query
+          name: product
+          schema: 
+            type: string
+          description: Product search term
+          example: "doll"
+        - in: query
+          name: limit
+          schema: 
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+          description: Maximum results
+      responses:
+        "200":
+          description: FDA search results
+          headers:
+            X-API-Version:
+              schema: 
+                type: string
+              description: API version header
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/AdvancedSearchResponse"
+  /api/v1/agencies:
+    get:
+      tags: [system]
+      summary: List available agencies
+      operationId: getAgencies
+      responses:
+        "200":
+          description: List of agencies
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      agencies:
+                        type: array
+                        items:
+                          type: string
+                        example: ["FDA", "CPSC", "NHTSA", "USDA", "EU_SAFETY_GATE"]

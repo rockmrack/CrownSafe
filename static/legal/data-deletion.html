@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Deletion - BabyShield</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        h2 {
+            color: #2d3748;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            font-size: 24px;
+        }
+        
+        h3 {
+            color: #4a5568;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        p, ul, ol {
+            margin-bottom: 15px;
+        }
+        
+        ul, ol {
+            padding-left: 30px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .action-box {
+            background: #f0fff4;
+            border: 2px solid #48bb78;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .warning-box {
+            background: #fff5f5;
+            border: 2px solid #f56565;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .info-box {
+            background: #edf2f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .timeline {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .timeline-icon {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+        }
+        
+        .button-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .button-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .button-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        .button-danger:hover {
+            background: #e53e3e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 101, 101, 0.4);
+        }
+        
+        .button-secondary {
+            background: #4a5568;
+            color: white;
+        }
+        
+        .button-secondary:hover {
+            background: #2d3748;
+        }
+        
+        code {
+            background: #f7fafc;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .api-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .api-example code {
+            background: transparent;
+            color: #48bb78;
+        }
+        
+        .contact-card {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .faq-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .faq-question {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .footer-links {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            text-align: center;
+        }
+        
+        .footer-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 500;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .icon {
+            display: inline-block;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ Data Deletion & Export</h1>
+        <div class="subtitle">Your data, your control. Request export or deletion anytime.</div>
+        
+        <div class="action-box">
+            <h2 style="margin-top: 0; border-top: none;">Quick Actions</h2>
+            <p>Choose how you'd like to manage your data:</p>
+            <button class="button button-primary" onclick="requestExport()">
+                <span class="icon">📦</span> Export My Data
+            </button>
+            <button class="button button-danger" onclick="requestDeletion()">
+                <span class="icon">🗑️</span> Delete My Data
+            </button>
+        </div>
+
+        <h2>Data Rights Overview</h2>
+        <p>
+            Under privacy laws including GDPR, CCPA, and others, you have the right to control your personal data. 
+            BabyShield makes it easy to exercise these rights through our self-service tools.
+        </p>
+
+        <div class="info-box">
+            <h3>🔍 What Data We May Have</h3>
+            <ul>
+                <li><strong>Email address</strong> - Only if you contacted support or made a DSAR request</li>
+                <li><strong>Support tickets</strong> - Any inquiries you've sent us</li>
+                <li><strong>Crash logs</strong> - Technical diagnostics (if enabled, anonymous)</li>
+                <li><strong>API usage logs</strong> - Non-identifying technical data</li>
+            </ul>
+            <p style="margin-top: 15px;">
+                <strong>Note:</strong> BabyShield collects minimal data. We don't track users, store searches, 
+                or maintain profiles.
+            </p>
+        </div>
+
+        <h2>Data Export</h2>
+        <p>
+            Request a copy of any personal data we have about you. This includes all information associated 
+            with your email address.
+        </p>
+
+        <h3>What You'll Receive</h3>
+        <ul>
+            <li>A JSON or CSV file with your data</li>
+            <li>Explanation of data categories</li>
+            <li>Information about data sources</li>
+            <li>Details about any data sharing (typically none)</li>
+        </ul>
+
+        <div class="timeline">
+            <h3>Export Process Timeline</h3>
+            <div class="timeline-item">
+                <div class="timeline-icon">1</div>
+                <div>Submit request via API or email</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-icon">2</div>
+                <div>Verification email sent (1-2 days)</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-icon">3</div>
+                <div>Data compiled (3-5 days)</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-icon">4</div>
+                <div>Secure download link emailed (within 30 days)</div>
+            </div>
+        </div>
+
+        <h2>Data Deletion</h2>
+        <p>
+            Request permanent deletion of your personal data from our systems. This action is irreversible.
+        </p>
+
+        <div class="warning-box">
+            <h3>⚠️ Before You Delete</h3>
+            <ul>
+                <li>Deletion is <strong>permanent and cannot be undone</strong></li>
+                <li>We may retain certain data if legally required</li>
+                <li>Deletion requests are processed within 30 days</li>
+                <li>You'll receive email confirmation when complete</li>
+            </ul>
+        </div>
+
+        <h3>What Gets Deleted</h3>
+        <ul>
+            <li>✅ Your email address from our records</li>
+            <li>✅ Support ticket history</li>
+            <li>✅ Any provided personal information</li>
+            <li>✅ Associated diagnostic data</li>
+        </ul>
+
+        <h3>What May Be Retained</h3>
+        <ul>
+            <li>Anonymized/aggregated data</li>
+            <li>Data required for legal compliance</li>
+            <li>Security logs (temporarily, without PII)</li>
+        </ul>
+
+        <h2>How to Submit Requests</h2>
+
+        <h3>Method 1: API (Recommended)</h3>
+        <div class="api-example">
+            <strong># Export Request</strong><br>
+            curl -X POST https://babyshield.cureviax.ai/api/v1/user/data/export \<br>
+            &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
+            &nbsp;&nbsp;-d '{"email": "your@email.com", "jurisdiction": "gdpr"}'<br><br>
+            
+            <strong># Deletion Request</strong><br>
+            curl -X POST https://babyshield.cureviax.ai/api/v1/user/data/delete \<br>
+            &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
+            &nbsp;&nbsp;-d '{"email": "your@email.com", "jurisdiction": "gdpr"}'
+        </div>
+
+        <h3>Method 2: Email</h3>
+        <p>Send your request to <a href="mailto:support@babyshield.app">support@babyshield.app</a> with:</p>
+        <ul>
+            <li>Subject: "Data Export Request" or "Data Deletion Request"</li>
+            <li>Your email address</li>
+            <li>Your jurisdiction (optional but helpful)</li>
+            <li>Any additional context</li>
+        </ul>
+
+        <h3>Method 3: Mobile App</h3>
+        <p>
+            If using the BabyShield mobile app, go to Settings → Privacy → Manage My Data
+        </p>
+
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+            <div class="faq-question">How long does it take to process my request?</div>
+            <p>
+                We process requests within 30 days as required by law. Most requests are completed 
+                within 5-7 business days.
+            </p>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">How do I know my request was received?</div>
+            <p>
+                You'll receive an automated confirmation immediately via API, or within 24 hours if 
+                submitted via email.
+            </p>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Can I request data for someone else?</div>
+            <p>
+                Only if you're their legal guardian or have power of attorney. Additional verification 
+                will be required.
+            </p>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">What if I don't receive my data export?</div>
+            <p>
+                Check your spam folder. If still missing after 30 days, contact 
+                <a href="mailto:support@babyshield.app">support@babyshield.app</a>.
+            </p>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Is there a fee for these requests?</div>
+            <p>
+                No. Data export and deletion requests are free. However, excessive or manifestly 
+                unfounded requests may be refused or charged a reasonable fee.
+            </p>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">What format will my exported data be in?</div>
+            <p>
+                Typically JSON format for technical users, or CSV for easier viewing. You can specify 
+                your preference in your request.
+            </p>
+        </div>
+
+        <h2>Your Privacy Rights by Region</h2>
+
+        <div class="info-box">
+            <h3>🇪🇺 European Union (GDPR)</h3>
+            <ul>
+                <li>Right to access (data export)</li>
+                <li>Right to erasure ("right to be forgotten")</li>
+                <li>Right to rectification</li>
+                <li>Right to data portability</li>
+                <li>Right to object</li>
+                <li>Right to restrict processing</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h3>🇺🇸 California (CCPA/CPRA)</h3>
+            <ul>
+                <li>Right to know what data is collected</li>
+                <li>Right to delete personal information</li>
+                <li>Right to opt-out of sale (we don't sell data)</li>
+                <li>Right to non-discrimination</li>
+                <li>Right to correct inaccurate information</li>
+                <li>Right to limit use of sensitive data</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h3>🌍 Other Jurisdictions</h3>
+            <p>
+                We honor data rights requests from all users regardless of location. Specific rights 
+                may vary by jurisdiction (UK GDPR, PIPEDA, Privacy Act, etc.).
+            </p>
+        </div>
+
+        <div class="contact-card">
+            <h3>Need Help?</h3>
+            <p>
+                <strong>Data Protection Officer</strong><br>
+                Email: <a href="mailto:support@babyshield.app">support@babyshield.app</a><br>
+                Response time: 1-2 business days<br><br>
+                
+                <strong>For urgent privacy concerns:</strong><br>
+                Mark email subject as "URGENT - Privacy"
+            </p>
+        </div>
+
+        <div class="footer-links">
+            <a href="/legal/privacy">Privacy Policy</a>
+            <a href="/legal/terms">Terms of Service</a>
+            <a href="/api/v1/user/privacy/summary">Privacy API</a>
+            <a href="/">Home</a>
+        </div>
+    </div>
+
+    <script>
+        function requestExport() {
+            const email = prompt("Enter your email address for data export:");
+            if (email) {
+                fetch('/api/v1/user/data/export', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        email: email,
+                        jurisdiction: detectJurisdiction(),
+                        source: 'web'
+                    })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.ok) {
+                        alert('Export request submitted! Check your email within 30 days.');
+                    } else {
+                        alert('Error: ' + (data.error?.message || 'Request failed'));
+                    }
+                })
+                .catch(err => alert('Request failed. Please try again.'));
+            }
+        }
+        
+        function requestDeletion() {
+            const email = prompt("Enter your email address for data deletion:");
+            if (email) {
+                if (confirm("⚠️ WARNING: Data deletion is permanent and cannot be undone. Continue?")) {
+                    fetch('/api/v1/user/data/delete', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            email: email,
+                            jurisdiction: detectJurisdiction(),
+                            source: 'web'
+                        })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.ok) {
+                            alert('Deletion request submitted. You will receive confirmation via email.');
+                        } else {
+                            alert('Error: ' + (data.error?.message || 'Request failed'));
+                        }
+                    })
+                    .catch(err => alert('Request failed. Please try again.'));
+                }
+            }
+        }
+        
+        function detectJurisdiction() {
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            if (tz.includes('Europe')) return 'gdpr';
+            if (tz.includes('America/Los_Angeles') || tz.includes('America/San_Francisco')) return 'ccpa';
+            return 'other';
+        }
+    </script>
+</body>
+</html>

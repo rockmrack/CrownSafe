@@ -1,0 +1,102 @@
+{
+    "name":  "babyshield-backend",
+    "image":  "180703226577.dkr.ecr.eu-north-1.amazonaws.com/babyshield-backend:production-fixed-20250901",
+    "cpu":  0,
+    "portMappings":  [
+                         {
+                             "containerPort":  8001,
+                             "hostPort":  8001,
+                             "protocol":  "tcp"
+                         }
+                     ],
+    "essential":  true,
+    "environment":  [
+                        {
+                            "name":  "DEV_OVERRIDE_ENABLED",
+                            "value":  "false"
+                        },
+                        {
+                            "name":  "DATABASE_URL",
+                            "value":  "postgresql://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
+                        },
+                        {
+                            "name":  "JWT_ALGORITHM",
+                            "value":  "HS256"
+                        },
+                        {
+                            "name":  "ACCESS_TOKEN_EXPIRE_MINUTES",
+                            "value":  "1440"
+                        },
+                        {
+                            "name":  "IS_PRODUCTION",
+                            "value":  "true"
+                        },
+                        {
+                            "name":  "ENVIRONMENT",
+                            "value":  "production"
+                        },
+                        {
+                            "name":  "MOCK_DATA_ENABLED",
+                            "value":  "false"
+                        },
+                        {
+                            "name":  "S3_UPLOAD_BUCKET_REGION",
+                            "value":  "us-east-1"
+                        },
+                        {
+                            "name":  "S3_UPLOAD_BUCKET",
+                            "value":  "babyshield-images"
+                        },
+                        {
+                            "name":  "RATE_LIMIT_REDIS_URL",
+                            "value":  "redis://babyshield-redis.h4xvut.0001.eun1.cache.amazonaws.com:6379/0"
+                        },
+                        {
+                            "name":  "REDIS_URL",
+                            "value":  "redis://babyshield-redis.h4xvut.0001.eun1.cache.amazonaws.com:6379/0"
+                        },
+                        {
+                            "value":  "true",
+                            "name":  "OAUTH_ENABLED"
+                        },
+                        {
+                            "value":  "google,apple",
+                            "name":  "OAUTH_PROVIDERS"
+                        },
+                        {
+                            "value":  "demo-client-id",
+                            "name":  "GOOGLE_CLIENT_ID"
+                        }
+                    ],
+    "mountPoints":  [
+
+                    ],
+    "volumesFrom":  [
+
+                    ],
+    "secrets":  [
+                    {
+                        "name":  "JWT_SECRET",
+                        "valueFrom":  "/babyshield/prod/JWT_SECRET"
+                    },
+                    {
+                        "name":  "JWT_SECRET_KEY",
+                        "valueFrom":  "/babyshield/prod/JWT_SECRET_KEY"
+                    },
+                    {
+                        "name":  "SECRET_KEY",
+                        "valueFrom":  "/babyshield/prod/SECRET_KEY"
+                    }
+                ],
+    "logConfiguration":  {
+                             "logDriver":  "awslogs",
+                             "options":  {
+                                             "awslogs-group":  "/ecs/babyshield-backend",
+                                             "awslogs-region":  "eu-north-1",
+                                             "awslogs-stream-prefix":  "ecs"
+                                         }
+                         },
+    "systemControls":  [
+
+                       ]
+}

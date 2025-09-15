@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BabyShield Mobile App - Complete Safety Implementation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Phone Container */
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #F7FAFC;
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            background: white;
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Header */
+        .app-header {
+            background: white;
+            height: 56px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .notification-icon {
+            position: relative;
+            font-size: 20px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #EF4444;
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Content Area */
+        .content {
+            height: calc(100% - 44px - 56px - 70px);
+            overflow-y: auto;
+            background: #F7FAFC;
+        }
+
+        /* Screen States */
+        .screen {
+            display: none;
+            height: 100%;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Agency Banner */
+        .agency-banner {
+            background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%);
+            padding: 20px;
+            color: white;
+        }
+
+        /* AI Notice */
+        .ai-notice {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .ai-notice-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Product Check Section */
+        .product-check-section {
+            background: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .check-icon-circle {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 28px;
+        }
+
+        .check-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1A202C;
+        }
+
+        .check-subtitle {
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .privacy-note {
+            font-size: 11px;
+            color: #718096;
+            opacity: 0.8;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .primary-scan-btn {
+            background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%);
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .btn-helper {
+            font-size: 11px;
+            color: #718096;
+            margin-bottom: 20px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .secondary-option {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .secondary-btn {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1A202C;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .option-helper {
+            font-size: 11px;
+            color: #718096;
+            margin-top: 5px;
+            margin-left: 8px;
+        }
+
+        /* Tooltip Styles */
+        .info-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: #E2E8F0;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 16px;
+            font-size: 10px;
+            color: #718096;
+            cursor: pointer;
+            margin-left: 6px;
+            position: relative;
+        }
+
+        .tooltip {
+            display: none;
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1A202C;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            width: 200px;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .tooltip.show {
+            display: block;
+        }
+
+        .tooltip-title {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tooltip-text {
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        /* Scan Result Screen */
+        .scan-result {
+            background: white;
+            padding: 20px;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .result-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .result-icon.danger {
+            background: #FEE2E2;
+        }
+
+        .result-icon.safe {
+            background: #D1FAE5;
+        }
+
+        .result-icon.medium {
+            background: #FEF3C7;
+        }
+
+        .result-icon.inconclusive {
+            background: #E2E8F0;
+        }
+
+        .result-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .result-title.danger {
+            color: #DC2626;
+        }
+
+        .result-title.safe {
+            color: #059669;
+        }
+
+        .result-title.medium {
+            color: #D97706;
+        }
+
+        .result-title.inconclusive {
+            color: #6B7280;
+        }
+
+        /* Confidence Warning Box */
+        .confidence-warning {
+            background: #FEF3C7;
+            border: 2px solid #F59E0B;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .confidence-warning-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #92400E;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .confidence-warning-text {
+            font-size: 13px;
+            color: #78350F;
+            line-height: 1.5;
+        }
+
+        /* Inconclusive Result Box */
+        .inconclusive-box {
+            background: #F3F4F6;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .inconclusive-text {
+            font-size: 14px;
+            color: #4B5563;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .inconclusive-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .product-info {
+            background: #F9FAFB;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .product-details {
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        .recall-info {
+            background: #FEF2F2;
+            border: 1px solid #FCA5A5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .recall-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #991B1B;
+            margin-bottom: 8px;
+        }
+
+        .recall-details {
+            font-size: 13px;
+            color: #7F1D1D;
+            line-height: 1.5;
+        }
+
+        .download-report-btn {
+            background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%);
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .share-btn {
+            background: white;
+            color: #1A202C;
+            border: 1px solid #E2E8F0;
+            padding: 14px 30px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* History Screen */
+        .history-screen {
+            background: #F7FAFC;
+        }
+
+        .history-header {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .history-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1A202C;
+        }
+
+        .history-list {
+            padding: 10px;
+        }
+
+        .history-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .history-product-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1A202C;
+            flex: 1;
+        }
+
+        .history-date {
+            font-size: 12px;
+            color: #6B7280;
+        }
+
+        .history-status {
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .history-status.danger {
+            color: #DC2626;
+        }
+
+        .history-status.safe {
+            color: #059669;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .history-download-btn {
+            background: #F3F4F6;
+            border: 1px solid #E5E7EB;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1A202C;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .history-view-btn {
+            background: white;
+            border: 1px solid #E5E7EB;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #6B7280;
+            cursor: pointer;
+        }
+
+        /* Reports Dashboard */
+        .reports-section {
+            background: white;
+            padding: 20px;
+            margin: 15px;
+            border-radius: 12px;
+        }
+
+        .reports-header {
+            margin-bottom: 20px;
+        }
+
+        .reports-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 5px;
+        }
+
+        .reports-subtitle {
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        .report-card {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .report-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .report-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .report-info {
+            flex: 1;
+        }
+
+        .report-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1A202C;
+        }
+
+        .report-description {
+            font-size: 12px;
+            color: #6B7280;
+        }
+
+        .generate-report-btn {
+            background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #E2E8F0;
+            border-radius: 0 0 30px 30px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: #A0AEC0;
+            font-size: 10px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: #00D4AA;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        /* Scrollbar */
+        .content::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .content::-webkit-scrollbar-thumb {
+            background: #CBD5E0;
+            border-radius: 10px;
+        }
+
+        /* Notch */
+        .notch {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 30px;
+            background: black;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+
+        /* Pulse Animation for Live Indicator */
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.4;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Safety Detail Screen Styles */
+        .safety-detail {
+            background: white;
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .safety-detail-header {
+            margin-bottom: 20px;
+        }
+
+        .safety-detail-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .safety-detail-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 10px;
+        }
+
+        .safety-detail-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: #6B7280;
+            margin-bottom: 20px;
+        }
+
+        .safety-detail-content {
+            font-size: 14px;
+            color: #4B5563;
+            line-height: 1.6;
+        }
+
+        .safety-detail-content h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1A202C;
+            margin: 20px 0 10px;
+        }
+
+        .safety-detail-content ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .safety-detail-content li {
+            margin: 8px 0;
+        }
+
+        .safety-action-box {
+            background: #F3F4F6;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .safety-action-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1A202C;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="notch"></div>
+        <div class="phone-screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="status-left">
+                    <span>9:41</span>
+                </div>
+                <div class="status-right">
+                    <span>📶</span>
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+
+            <!-- App Header -->
+            <div class="app-header">
+                <div class="logo">BabyShield™</div>
+                <div class="notification-icon">
+                    🔔
+                    <span class="notification-badge">3</span>
+                </div>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="content">
+                <!-- Home Screen (default visible) -->
+                <div id="home-screen" class="screen active">
+                    <!-- Agency Banner -->
+                    <div class="agency-banner">
+                        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.35); padding: 6px 12px; border-radius: 999px; backdrop-filter: blur(6px); font-weight: 700; font-size: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.12);">
+                            🛡️ <span>39+ Official Safety Agencies</span>
+                        </div>
+
+                        <h1 style="font-size: 22px; font-weight: 800; line-height: 1.25; margin-top: 10px; text-align: left;">Is this safe for your baby?</h1>
+                        <p style="margin-top: 6px; font-size: 13px; opacity: 0.95; line-height: 1.5;">We check 39+ official recall sources for baby and child products across the US, UK, EU, Canada and Australia.</p>
+
+                        <!-- Evidence Cards -->
+                        <div style="margin-top: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                            <div style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 12px; padding: 8px; backdrop-filter: blur(6px);">
+                                <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: rgba(255,255,255,0.85);">Live recalls tracked</div>
+                                <div style="margin-top: 2px; font-size: 18px; font-weight: 800;">131,743+</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 12px; padding: 8px; backdrop-filter: blur(6px);">
+                                <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: rgba(255,255,255,0.85);">Sources monitored</div>
+                                <div style="margin-top: 2px; font-size: 18px; font-weight: 800;">39+</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 12px; padding: 8px; backdrop-filter: blur(6px);">
+                                <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: rgba(255,255,255,0.85);">Last updated</div>
+                                <div style="margin-top: 2px; font-size: 18px; font-weight: 800;">just now</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 6px; font-size: 10px; color: rgba(255,255,255,0.85);">Numbers update in real time from official databases.</div>
+
+                        <!-- Trust Card -->
+                        <div style="margin-top: 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 12px; padding: 12px; backdrop-filter: blur(8px); box-shadow: 0 6px 14px rgba(0,0,0,0.15);">
+                            <ul style="list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 12px;">
+                                <li style="display: flex; align-items: center; gap: 6px;">✅ <span>Official sources only</span></li>
+                                <li style="display: flex; align-items: center; gap: 6px;">⚡ <span>Fast & accurate</span></li>
+                                <li style="display: flex; align-items: center; gap: 6px;">🔒 <span>Privacy-first</span></li>
+                            </ul>
+                        </div>
+
+                        <!-- AI Transparency Notice -->
+                        <div class="ai-notice">
+                            <div class="ai-notice-title">
+                                <span>🤖</span>
+                                <span>AI-Powered Visual Search</span>
+                            </div>
+                            <div>Our camera uses advanced AI to identify products even without barcodes. Results show confidence levels to help you verify accuracy.</div>
+                        </div>
+                    </div>
+
+                    <!-- Agency Logos Strip -->
+                    <div style="display: flex; gap: 10px; overflow-x: auto; padding: 10px 20px; background: white; -ms-overflow-style: none; scrollbar-width: none;">
+                        <span style="flex: 0 0 auto; background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%); color: white; border-radius: 10px; padding: 6px 12px; font-size: 12px; font-weight: 700;">CPSC</span>
+                        <span style="flex: 0 0 auto; background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%); color: white; border-radius: 10px; padding: 6px 12px; font-size: 12px; font-weight: 700;">FDA</span>
+                        <span style="flex: 0 0 auto; background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%); color: white; border-radius: 10px; padding: 6px 12px; font-size: 12px; font-weight: 700;">EU Safety Gate</span>
+                        <span style="flex: 0 0 auto; background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%); color: white; border-radius: 10px; padding: 6px 12px; font-size: 12px; font-weight: 700;">UK OPSS</span>
+                        <span style="flex: 0 0 auto; background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%); color: white; border-radius: 10px; padding: 6px 12px; font-size: 12px; font-weight: 700;">Health Canada</span>
+                        <span style="flex: 0 0 auto; background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%); color: white; border-radius: 10px; padding: 6px 12px; font-size: 12px; font-weight: 700;">ACCC</span>
+                        <span style="flex: 0 0 auto; background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%); color: white; border-radius: 10px; padding: 6px 12px; font-size: 12px; font-weight: 700;">MHRA</span>
+                    </div>
+
+                    <!-- TODAY'S SAFETY BRIEFING SECTION -->
+                    <div style="background: #F7FAFC; padding: 20px 0;">
+                        <div style="padding: 0 20px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h2 style="font-size: 20px; font-weight: 700; color: #1A202C;">Today's Safety Briefing</h2>
+                                <span style="display: inline-flex; align-items: center; gap: 4px; background: #E0F2FE; color: #0369A1; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;">
+                                    <span style="width: 6px; height: 6px; background: #0369A1; border-radius: 50%; animation: pulse 1.5s infinite;"></span>
+                                    Updated 2h ago
+                                </span>
+                            </div>
+                            <p style="font-size: 13px; color: #6B7280; margin-top: 4px;">Essential safety updates from trusted agencies</p>
+                        </div>
+
+                        <!-- Horizontally Scrolling Cards Container -->
+                        <div style="display: flex; gap: 15px; overflow-x: auto; padding: 0 20px 10px; -ms-overflow-style: none; scrollbar-width: none;">
+                            
+                            <!-- Card 1: Featured Campaign with Image -->
+                            <div style="flex: 0 0 280px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer;" onclick="showSafetyDetail('anchor')">
+                                <div style="height: 140px; background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%); position: relative; overflow: hidden;">
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 60px;">🔒</div>
+                                    <div style="position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.95); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; color: #667EEA;">CPSC CAMPAIGN</div>
+                                </div>
+                                <div style="padding: 15px;">
+                                    <h3 style="font-size: 16px; font-weight: 700; color: #1A202C; margin-bottom: 6px;">Anchor It! Prevent Tip-Overs</h3>
+                                    <p style="font-size: 13px; color: #6B7280; line-height: 1.4; margin-bottom: 12px;">Furniture tip-overs are a leading cause of injury. Learn how to properly secure furniture.</p>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="color: #00D4AA; font-size: 13px; font-weight: 600;">Learn More →</span>
+                                        <span style="font-size: 11px; color: #9CA3AF;">3 min read</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Safe Sleep Guidelines -->
+                            <div style="flex: 0 0 240px; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer;" onclick="showSafetyDetail('sleep')">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                    <div style="width: 40px; height: 40px; background: #FEE2E2; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">🛏️</div>
+                                    <div style="flex: 1;">
+                                        <div style="font-size: 10px; color: #DC2626; font-weight: 600; text-transform: uppercase;">AAP UPDATE</div>
+                                        <div style="font-size: 11px; color: #9CA3AF;">New guidelines</div>
+                                    </div>
+                                </div>
+                                <h3 style="font-size: 15px; font-weight: 600; color: #1A202C; margin-bottom: 6px;">Safe Sleep Guidelines 2025</h3>
+                                <p style="font-size: 12px; color: #6B7280; line-height: 1.4; margin-bottom: 12px;">Updated recommendations for reducing SIDS risk and ensuring safe infant sleep.</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: #00D4AA; font-size: 13px; font-weight: 600;">Read Guidelines →</span>
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <span style="background: #FEF3C7; color: #92400E; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;">CRITICAL</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 3: Product Safety Checklist -->
+                            <div style="flex: 0 0 240px; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer;" onclick="showSafetyDetail('stroller')">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                    <div style="width: 40px; height: 40px; background: #E0F2FE; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">👶</div>
+                                    <div style="flex: 1;">
+                                        <div style="font-size: 10px; color: #0369A1; font-weight: 600; text-transform: uppercase;">HEALTH CANADA</div>
+                                        <div style="font-size: 11px; color: #9CA3AF;">Buying guide</div>
+                                    </div>
+                                </div>
+                                <h3 style="font-size: 15px; font-weight: 600; color: #1A202C; margin-bottom: 6px;">Choosing a Safe Stroller</h3>
+                                <p style="font-size: 12px; color: #6B7280; line-height: 1.4; margin-bottom: 12px;">Essential safety features to check when buying new or used strollers.</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: #00D4AA; font-size: 13px; font-weight: 600;">View Checklist →</span>
+                                    <span style="font-size: 11px; color: #9CA3AF;">5 min read</span>
+                                </div>
+                            </div>
+
+                            <!-- Card 4: Seasonal Alert -->
+                            <div style="flex: 0 0 240px; background: linear-gradient(135deg, #FEF3C7 0%, #FEE2E2 100%); border-radius: 12px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer;" onclick="showSafetyDetail('winter')">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                    <div style="width: 40px; height: 40px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">❄️</div>
+                                    <div style="flex: 1;">
+                                        <div style="font-size: 10px; color: #92400E; font-weight: 600; text-transform: uppercase;">SEASONAL ALERT</div>
+                                        <div style="font-size: 11px; color: #78350F;">Winter 2025</div>
+                                    </div>
+                                </div>
+                                <h3 style="font-size: 15px; font-weight: 600; color: #1A202C; margin-bottom: 6px;">Winter Car Seat Safety</h3>
+                                <p style="font-size: 12px; color: #4B5563; line-height: 1.4; margin-bottom: 12px;">Why bulky coats are dangerous in car seats and safer alternatives.</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: #92400E; font-size: 13px; font-weight: 600;">Important Info →</span>
+                                    <div style="background: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; color: #92400E;">NEW</div>
+                                </div>
+                            </div>
+
+                            <!-- Card 5: Quick Tip -->
+                            <div style="flex: 0 0 200px; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer;">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                                    <span style="font-size: 20px;">💡</span>
+                                    <span style="font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase;">QUICK TIP</span>
+                                </div>
+                                <h3 style="font-size: 14px; font-weight: 600; color: #1A202C; margin-bottom: 6px;">Check Battery Compartments</h3>
+                                <p style="font-size: 12px; color: #6B7280; line-height: 1.4;">Ensure all battery compartments on toys have secure, screw-fastened covers.</p>
+                            </div>
+                        </div>
+
+                        <!-- View All Updates Link -->
+                        <div style="text-align: center; padding: 10px 20px 0;">
+                            <a href="#" style="color: #667EEA; font-size: 14px; font-weight: 600; text-decoration: none;">View All Safety Updates →</a>
+                        </div>
+                    </div>
+
+                    <!-- Product Check Section -->
+                    <div class="product-check-section">
+                        <div class="check-icon-circle">📷</div>
+                        <h2 class="check-title">Check a Product for Recalls</h2>
+                        <p class="check-subtitle">Choose a simple way to see if it's safe.</p>
+                        <!-- FULLY TRANSPARENT PRIVACY MESSAGE -->
+                        <p class="privacy-note">We use your photos to identify products and continuously improve our AI models to make the app safer for everyone. All data is handled anonymously.</p>
+                        
+                        <!-- Primary Action with COMPLETE messaging -->
+                        <button class="primary-scan-btn" onclick="showScanResult('high')">
+                            <span>📷</span> Scan with Camera
+                        </button>
+                        <!-- FULLY UPDATED HELPER TEXT -->
+                        <p class="btn-helper">Instantly identify a product by its label OR its appearance. Our AI can recognize products even without a barcode.</p>
+                        
+                        <!-- Secondary Options with Tooltips -->
+                        <div class="secondary-option">
+                            <button class="secondary-btn" onclick="showSafeResult()">
+                                <span>Upload a Photo</span>
+                                <span class="info-icon" onclick="event.stopPropagation(); toggleTooltip('photo-tooltip')">ℹ</span>
+                                <span style="font-size: 18px;">📸</span>
+                            </button>
+                            <div id="photo-tooltip" class="tooltip">
+                                <div class="tooltip-title">AI Visual Recognition</div>
+                                <div class="tooltip-text">Uses AI to identify products from photos. Shows confidence level with results.</div>
+                            </div>
+                            <p class="option-helper">Our AI will analyze your photo to identify the product.</p>
+                        </div>
+                        
+                        <div class="secondary-option">
+                            <button class="secondary-btn">
+                                <span>
+                                    Enter Model Number
+                                    <span class="info-icon" onclick="event.stopPropagation(); toggleTooltip('model-tooltip')">ℹ</span>
+                                </span>
+                                <span style="font-size: 18px;">#️⃣</span>
+                            </button>
+                            <div id="model-tooltip" class="tooltip">
+                                <div class="tooltip-title">Most Reliable Identifier</div>
+                                <div class="tooltip-text">Model numbers provide the most accurate recall matches. Find it on your product label.</div>
+                            </div>
+                            <p class="option-helper">The most accurate way to check for recalls. Look for "Model #" on the label.</p>
+                        </div>
+                        
+                        <div class="secondary-option">
+                            <button class="secondary-btn" onclick="showMediumConfidence()">
+                                <span>
+                                    Type Barcode/UPC
+                                    <span class="info-icon" onclick="event.stopPropagation(); toggleTooltip('number-tooltip')">ℹ</span>
+                                </span>
+                                <span style="font-size: 16px;">||||||</span>
+                            </button>
+                            <div id="number-tooltip" class="tooltip">
+                                <div class="tooltip-title">Universal Product Code</div>
+                                <div class="tooltip-text">Enter the 12-14 digit number found under the barcode for quick product identification.</div>
+                            </div>
+                            <p class="option-helper">Enter the digits under the barcode (12-14 numbers).</p>
+                        </div>
+
+                        <!-- NEW LOT/SERIAL NUMBER OPTION -->
+                        <div class="secondary-option">
+                            <button class="secondary-btn">
+                                <span>
+                                    Enter Lot or Serial Number
+                                    <span class="info-icon" onclick="event.stopPropagation(); toggleTooltip('lot-tooltip')">ℹ</span>
+                                </span>
+                                <span style="font-size: 18px;">🔢</span>
+                            </button>
+                            <div id="lot-tooltip" class="tooltip">
+                                <div class="tooltip-title">Unit-Level Precision</div>
+                                <div class="tooltip-text">Essential for recalls affecting specific production batches. Check your product label for these numbers.</div>
+                            </div>
+                            <p class="option-helper">Critical for batch-specific recalls. Found on product labels.</p>
+                        </div>
+                        
+                        <div class="secondary-option">
+                            <button class="secondary-btn" onclick="showInconclusive()">
+                                <span>
+                                    Search by Name
+                                    <span class="info-icon" onclick="event.stopPropagation(); toggleTooltip('name-tooltip')">ℹ</span>
+                                </span>
+                                <span style="font-size: 18px;">🔍</span>
+                            </button>
+                            <div id="name-tooltip" class="tooltip">
+                                <div class="tooltip-title">Good for General Searches</div>
+                                <div class="tooltip-text">A great fallback for products without a barcode or model number. Results may be less specific.</div>
+                            </div>
+                            <p class="option-helper">No barcode? Try the product or brand name.</p>
+                        </div>
+                    </div>
+
+                    <!-- Reports Dashboard Section -->
+                    <div class="reports-section">
+                        <div class="reports-header">
+                            <h3 class="reports-title">My Safety Reports</h3>
+                            <p class="reports-subtitle">Generate comprehensive safety summaries</p>
+                        </div>
+
+                        <div class="report-card">
+                            <div class="report-card-header">
+                                <div class="report-icon">📊</div>
+                                <div class="report-info">
+                                    <div class="report-name">90-Day Safety Summary</div>
+                                    <div class="report-description">Overview of all products scanned in the last 90 days</div>
+                                </div>
+                            </div>
+                            <button class="generate-report-btn">Generate My 90-Day Report</button>
+                        </div>
+
+                        <div class="report-card">
+                            <div class="report-card-header">
+                                <div class="report-icon">🏠</div>
+                                <div class="report-info">
+                                    <div class="report-name">Quarterly Nursery Report</div>
+                                    <div class="report-description">Comprehensive safety audit of your nursery products</div>
+                                </div>
+                            </div>
+                            <button class="generate-report-btn">Generate Quarterly Report</button>
+                        </div>
+
+                        <!-- Report Unsafe Product Button -->
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #E5E7EB;">
+                            <button onclick="window.open('https://www.babyshield.com', '_blank')" style="background: #DC2626; color: white; border: none; padding: 16px 20px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <span>⚠️</span> Report Unsafe Product
+                            </button>
+                            <p style="font-size: 11px; color: #6B7280; text-align: center; margin-top: 8px;">Help keep all babies safe by reporting dangerous products</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scan Result Screen - HIGH CONFIDENCE (hidden by default) -->
+                <div id="scan-result-high" class="screen">
+                    <div class="scan-result">
+                        <div class="result-header">
+                            <div class="result-icon danger">⚠️</div>
+                            <h2 class="result-title danger">High Risk - Recall Found</h2>
+                        </div>
+
+                        <div class="product-info">
+                            <div class="product-name">Fisher-Price Rock 'n Play Sleeper</div>
+                            <div class="product-details">
+                                Model: #HBD27<br>
+                                Barcode: 887961524758<br>
+                                Manufactured: 2018-2019<br>
+                                <strong>Identification Method: Official CPSC Data Match</strong>
+                            </div>
+                            <div style="display: inline-block; background: #FEE2E2; color: #991B1B; padding: 6px 12px; border-radius: 6px; font-size: 12px; margin-top: 10px; font-weight: 600;">
+                                Barcode Verified Against CPSC Database
+                            </div>
+                        </div>
+
+                        <div class="recall-info">
+                            <div class="recall-title">⚠️ CPSC Recall #19-094</div>
+                            <div class="recall-details">
+                                Issued: April 12, 2019<br>
+                                Hazard: Risk of infant fatality<br>
+                                Affected Lots: All units manufactured 2018-2019<br>
+                                Action: Stop use immediately and contact Fisher-Price for refund
+                            </div>
+                        </div>
+
+                        <button class="download-report-btn">
+                            <span>📄</span> Download Full Safety Report (PDF)
+                        </button>
+
+                        <button class="share-btn">
+                            <span>📤</span> Share Results
+                        </button>
+
+                        <div style="margin-top: 20px; text-align: center;">
+                            <a href="#" onclick="showHomeScreen()" style="color: #6B7280; font-size: 14px;">← Back to Scanner</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scan Result Screen - MEDIUM CONFIDENCE -->
+                <div id="scan-result-medium" class="screen">
+                    <div class="scan-result">
+                        <div class="result-header">
+                            <div class="result-icon medium">🔍</div>
+                            <h2 class="result-title medium">Possible Match Found</h2>
+                        </div>
+
+                        <!-- CONFIDENCE WARNING BOX -->
+                        <div class="confidence-warning">
+                            <div class="confidence-warning-title">
+                                <span>⚠️</span>
+                                <span>AI Visual Identification</span>
+                            </div>
+                            <div class="confidence-warning-text">
+                                This appears to be the product below with <strong>82% confidence</strong>. Please confirm the Model Number on the product label for a definitive result. AI visual recognition can sometimes mistake similar-looking products.
+                            </div>
+                        </div>
+
+                        <div class="product-info">
+                            <div class="product-name">Graco Pack 'n Play Portable Playard</div>
+                            <div class="product-details">
+                                Possible Model: #1927544<br>
+                                Visual Match Confidence: 82%<br>
+                                Category: Playards & Play Pens<br>
+                                <strong>Identification Method: AI Visual Analysis</strong>
+                            </div>
+                        </div>
+
+                        <div class="recall-info">
+                            <div class="recall-title">⚠️ Potential Recall Match</div>
+                            <div class="recall-details">
+                                Based on visual analysis<br>
+                                Please verify model number<br>
+                                Check lot/serial number on product label<br>
+                                If confirmed: Contact manufacturer for inspection
+                            </div>
+                        </div>
+
+                        <button class="download-report-btn">
+                            <span>📄</span> Download Preliminary Report (PDF)
+                        </button>
+
+                        <button class="secondary-btn" onclick="showHomeScreen()">
+                            <span>Verify with Model Number</span>
+                            <span style="font-size: 16px;">||||||</span>
+                        </button>
+
+                        <div style="margin-top: 20px; text-align: center;">
+                            <a href="#" onclick="showHomeScreen()" style="color: #6B7280; font-size: 14px;">← Back to Scanner</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scan Result Screen - INCONCLUSIVE -->
+                <div id="scan-result-inconclusive" class="screen">
+                    <div class="scan-result">
+                        <div class="result-header">
+                            <div class="result-icon inconclusive">❓</div>
+                            <h2 class="result-title inconclusive">Could Not Identify Product</h2>
+                        </div>
+
+                        <div class="inconclusive-box">
+                            <div class="inconclusive-text">
+                                <strong>This does not mean the product is safe.</strong> Our AI could not identify it from the photo provided (confidence below 70%). 
+                                
+                                <div style="margin-top: 10px;">
+                                    For accurate results, please:
+                                    • Take a clearer photo with good lighting
+                                    • Search by the Model Number on the product label
+                                    • Enter the Lot or Serial Number if available
+                                </div>
+                            </div>
+
+                            <div class="inconclusive-actions">
+                                <button class="primary-scan-btn" onclick="showHomeScreen()">
+                                    <span>📷</span> Try Again with Camera
+                                </button>
+                                <button class="secondary-btn" onclick="showHomeScreen()">
+                                    <span>Search by Model Number</span>
+                                    <span style="font-size: 16px;">||||||</span>
+                                </button>
+                                <button class="secondary-btn" onclick="showHomeScreen()">
+                                    <span>Enter Lot/Serial Number</span>
+                                    <span style="font-size: 18px;">🔢</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px; text-align: center;">
+                            <a href="#" onclick="showHomeScreen()" style="color: #6B7280; font-size: 14px;">← Back to Home</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Safety Detail Screens -->
+                <div id="safety-detail-anchor" class="screen">
+                    <div class="safety-detail">
+                        <div class="safety-detail-header">
+                            <span class="safety-detail-badge">
+                                <span>🔒</span>
+                                <span>CPSC CAMPAIGN</span>
+                            </span>
+                            <h1 class="safety-detail-title">Anchor It! Prevent Furniture Tip-Overs</h1>
+                            <div class="safety-detail-meta">
+                                <span>Updated: Today</span>
+                                <span>•</span>
+                                <span>3 min read</span>
+                                <span>•</span>
+                                <span>Source: CPSC</span>
+                            </div>
+                        </div>
+
+                        <div class="safety-detail-content">
+                            <p><strong>Every 17 minutes</strong>, a child in the U.S. is injured by furniture or TV tip-over. These preventable accidents can cause serious injuries or death.</p>
+
+                            <h3>Why Furniture Tips Over</h3>
+                            <ul>
+                                <li>Children climb on dressers, bookcases, and TV stands</li>
+                                <li>Heavy items placed on top make furniture top-heavy</li>
+                                <li>Multiple drawers opened at once shift weight forward</li>
+                                <li>Unstable or lightweight furniture is easily pulled over</li>
+                            </ul>
+
+                            <div class="safety-action-box">
+                                <div class="safety-action-title">✅ Action Steps</div>
+                                <ol style="margin: 10px 0; padding-left: 20px;">
+                                    <li style="margin: 8px 0;">Anchor ALL furniture to the wall using appropriate hardware</li>
+                                    <li style="margin: 8px 0;">Place TVs on low, stable bases or mount to wall</li>
+                                    <li style="margin: 8px 0;">Keep heavy items on lower shelves</li>
+                                    <li style="margin: 8px 0;">Install drawer stops to prevent full extension</li>
+                                    <li style="margin: 8px 0;">Never place toys or remotes on top of furniture</li>
+                                </ol>
+                            </div>
+
+                            <h3>Free Anchor Kits Available</h3>
+                            <p>Many manufacturers offer free anti-tip kits. Contact your furniture manufacturer or visit CPSC.gov/AnchorIt for more information.</p>
+
+                            <div style="background: #FEF3C7; border: 1px solid #F59E0B; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                                <div style="font-size: 14px; font-weight: 600; color: #92400E; margin-bottom: 8px;">⚠️ High-Risk Areas</div>
+                                <div style="font-size: 13px; color: #78350F;">Children's bedrooms and playrooms have the highest risk. Prioritize anchoring furniture in these spaces first.</div>
+                            </div>
+                        </div>
+
+                        <button class="download-report-btn">
+                            <span>📄</span> Download Safety Checklist (PDF)
+                        </button>
+
+                        <div style="margin-top: 20px; text-align: center;">
+                            <a href="#" onclick="showHomeScreen()" style="color: #6B7280; font-size: 14px;">← Back to Home</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="safety-detail-sleep" class="screen">
+                    <div class="safety-detail">
+                        <div class="safety-detail-header">
+                            <span class="safety-detail-badge" style="background: #DC2626;">
+                                <span>🛏️</span>
+                                <span>AAP GUIDELINES</span>
+                            </span>
+                            <h1 class="safety-detail-title">Safe Sleep Guidelines 2025</h1>
+                            <div class="safety-detail-meta">
+                                <span>Updated: This week</span>
+                                <span>•</span>
+                                <span>5 min read</span>
+                                <span>•</span>
+                                <span>Source: American Academy of Pediatrics</span>
+                            </div>
+                        </div>
+
+                        <div class="safety-detail-content">
+                            <p><strong>Safe sleep practices reduce SIDS risk by up to 50%.</strong> The AAP has updated its recommendations based on the latest research.</p>
+
+                            <h3>Essential Safe Sleep Rules</h3>
+                            <div class="safety-action-box" style="background: #FEE2E2; border: 1px solid #FCA5A5;">
+                                <div class="safety-action-title">🚨 Always Follow These</div>
+                                <ul style="margin: 10px 0; padding-left: 20px;">
+                                    <li style="margin: 8px 0;"><strong>Back to sleep</strong> for every sleep, including naps</li>
+                                    <li style="margin: 8px 0;">Use a <strong>firm sleep surface</strong> (crib mattress covered by fitted sheet)</li>
+                                    <li style="margin: 8px 0;">Keep baby's sleep area <strong>in your room</strong> for at least 6 months</li>
+                                    <li style="margin: 8px 0;"><strong>Nothing in the crib</strong> except baby and fitted sheet</li>
+                                    <li style="margin: 8px 0;">Breastfeed if possible</li>
+                                    <li style="margin: 8px 0;">Offer a pacifier at sleep time (after breastfeeding established)</li>
+                                </ul>
+                            </div>
+
+                            <h3>Never Do These</h3>
+                            <ul style="color: #DC2626;">
+                                <li>No blankets, pillows, or bumper pads</li>
+                                <li>No stuffed animals or toys in sleep area</li>
+                                <li>No sleeping on couches, armchairs, or adult beds</li>
+                                <li>No weighted sleep products</li>
+                                <li>No inclined sleep surfaces (recalled)</li>
+                            </ul>
+
+                            <div style="background: #F3F4F6; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                                <div style="font-size: 14px; font-weight: 600; color: #1A202C; margin-bottom: 8px;">💡 New in 2025 Guidelines</div>
+                                <ul style="font-size: 13px; color: #4B5563; margin: 10px 0; padding-left: 20px;">
+                                    <li style="margin: 6px 0;">Updated guidance on swaddling (stop at 8 weeks or signs of rolling)</li>
+                                    <li style="margin: 6px 0;">Clarification on room temperature (68-72°F recommended)</li>
+                                    <li style="margin: 6px 0;">New research on pacifier use timing</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <button class="download-report-btn">
+                            <span>📄</span> Download Complete Guidelines (PDF)
+                        </button>
+
+                        <div style="margin-top: 20px; text-align: center;">
+                            <a href="#" onclick="showHomeScreen()" style="color: #6B7280; font-size: 14px;">← Back to Home</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Screen (hidden by default) -->
+                <div id="history-screen" class="screen">
+                    <div class="history-screen">
+                        <div class="history-header">
+                            <h2 class="history-title">Scan History</h2>
+                        </div>
+
+                        <div class="history-list">
+                            <!-- History Item 1 - High Risk with Model Verification -->
+                            <div class="history-item">
+                                <div class="history-item-header">
+                                    <div class="history-product-name">Fisher-Price Rock 'n Play</div>
+                                    <div class="history-date">2 hours ago</div>
+                                </div>
+                                <div class="history-status danger">⚠️ Recall Found - High Risk (Official CPSC Data Match)</div>
+                                <div class="recall-method-badge" style="display: inline-block; background: #FEE2E2; color: #991B1B; padding: 4px 8px; border-radius: 4px; font-size: 11px; margin-bottom: 8px;">
+                                    Model # Verified Against CPSC Database
+                                </div>
+                                <div class="history-actions">
+                                    <button class="history-download-btn">
+                                        <span>📄</span> Download PDF
+                                    </button>
+                                    <button class="history-view-btn">View Details</button>
+                                </div>
+                            </div>
+
+                            <!-- History Item 2 - Safe with Premium Verification -->
+                            <div class="history-item" style="border-left: 3px solid #059669;">
+                                <div class="history-item-header">
+                                    <div class="history-product-name">Pampers Swaddlers Size 1</div>
+                                    <div class="history-date">Yesterday</div>
+                                </div>
+                                <div class="history-status safe" style="font-weight: 600; color: #047857;">✅ No Recalls - Safe (Model # Verified)</div>
+                                <div class="verification-badge" style="display: inline-block; background: #D1FAE5; color: #047857; padding: 4px 8px; border-radius: 4px; font-size: 11px; margin-bottom: 8px;">
+                                    ⭐ Highest Confidence - Model Number Match
+                                </div>
+                                <div class="history-actions">
+                                    <button class="history-download-btn">
+                                        <span>📄</span> Download PDF
+                                    </button>
+                                    <button class="history-view-btn">View Details</button>
+                                </div>
+                            </div>
+
+                            <!-- History Item 3 - Safe with Standard Verification -->
+                            <div class="history-item">
+                                <div class="history-item-header">
+                                    <div class="history-product-name">Graco Pack 'n Play</div>
+                                    <div class="history-date">3 days ago</div>
+                                </div>
+                                <div class="history-status safe">✅ No Recalls - Safe (Barcode Scan)</div>
+                                <div class="verification-badge" style="display: inline-block; background: #E6F4EA; color: #059669; padding: 4px 8px; border-radius: 4px; font-size: 11px; margin-bottom: 8px;">
+                                    Standard Confidence - UPC Match
+                                </div>
+                                <div class="history-actions">
+                                    <button class="history-download-btn">
+                                        <span>📄</span> Download PDF
+                                    </button>
+                                    <button class="history-view-btn">View Details</button>
+                                </div>
+                            </div>
+
+                            <!-- History Item 4 - AI Match with Verification Prompt -->
+                            <div class="history-item" style="border: 2px solid #F59E0B;">
+                                <div class="history-item-header">
+                                    <div class="history-product-name">Baby Einstein Activity Jumper</div>
+                                    <div class="history-date">1 week ago</div>
+                                </div>
+                                <div class="history-status danger">⚠️ Possible Recall - Needs Verification</div>
+                                <div class="ai-warning" style="background: #FEF3C7; border: 1px solid #F59E0B; padding: 8px; border-radius: 6px; margin: 8px 0;">
+                                    <div style="font-size: 12px; color: #92400E; font-weight: 600; margin-bottom: 4px;">
+                                        🤖 AI Visual Match (85% Confidence)
+                                    </div>
+                                    <div style="font-size: 11px; color: #78350F;">
+                                        Please verify the model number on your product label to confirm this recall applies to your specific item.
+                                    </div>
+                                </div>
+                                <div class="history-actions">
+                                    <button class="history-download-btn" style="background: #FEF3C7; border-color: #F59E0B;">
+                                        <span>📄</span> Download Report
+                                    </button>
+                                    <button class="history-view-btn" style="background: #F59E0B; color: white; border: none; font-weight: 600;">
+                                        Verify Now
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- History Item 5 - Safe with Lot Verification -->
+                            <div class="history-item" style="border-left: 3px solid #059669;">
+                                <div class="history-item-header">
+                                    <div class="history-product-name">Huggies Little Snugglers</div>
+                                    <div class="history-date">2 weeks ago</div>
+                                </div>
+                                <div class="history-status safe" style="font-weight: 600; color: #047857;">✅ No Recalls - Safe (Lot # Verified)</div>
+                                <div class="verification-badge" style="display: inline-block; background: #D1FAE5; color: #047857; padding: 4px 8px; border-radius: 4px; font-size: 11px; margin-bottom: 8px;">
+                                    ⭐ Unit-Level Verification - Lot Number Match
+                                </div>
+                                <div class="history-actions">
+                                    <button class="history-download-btn">
+                                        <span>📄</span> Download PDF
+                                    </button>
+                                    <button class="history-view-btn">View Details</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+                <div class="nav-item active" onclick="showHomeScreen()">
+                    <span class="nav-icon">🏠</span>
+                    <span>Home</span>
+                </div>
+                <div class="nav-item" onclick="showHistoryScreen()">
+                    <span class="nav-icon">📋</span>
+                    <span>History</span>
+                </div>
+                <div class="nav-item" onclick="var screens = document.querySelectorAll('.screen'); screens.forEach(function(s) { s.classList.remove('active'); }); document.getElementById('scan-result-high').classList.add('active');">
+                    <span class="nav-icon" style="color: #00D4AA; font-size: 24px;">📷</span>
+                    <span style="color: #00D4AA; font-weight: 600;">Scan</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">🔔</span>
+                    <span>Alerts</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showScanResult(confidence) {
+            document.getElementById('home-screen').classList.remove('active');
+            document.getElementById('scan-result-high').classList.add('active');
+            document.getElementById('scan-result-medium').classList.remove('active');
+            document.getElementById('scan-result-inconclusive').classList.remove('active');
+            document.getElementById('history-screen').classList.remove('active');
+        }
+
+        function showMediumConfidence() {
+            document.getElementById('home-screen').classList.remove('active');
+            document.getElementById('scan-result-high').classList.remove('active');
+            document.getElementById('scan-result-medium').classList.add('active');
+            document.getElementById('scan-result-inconclusive').classList.remove('active');
+            document.getElementById('history-screen').classList.remove('active');
+        }
+
+        function showInconclusive() {
+            document.getElementById('home-screen').classList.remove('active');
+            document.getElementById('scan-result-high').classList.remove('active');
+            document.getElementById('scan-result-medium').classList.remove('active');
+            document.getElementById('scan-result-inconclusive').classList.add('active');
+            document.getElementById('history-screen').classList.remove('active');
+        }
+
+        function showHomeScreen() {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+            document.getElementById('home-screen').classList.add('active');
+            
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.nav-item')[0].classList.add('active');
+        }
+
+        function showHistoryScreen() {
+            document.getElementById('home-screen').classList.remove('active');
+            document.getElementById('scan-result-high').classList.remove('active');
+            document.getElementById('scan-result-medium').classList.remove('active');
+            document.getElementById('scan-result-inconclusive').classList.remove('active');
+            document.getElementById('history-screen').classList.add('active');
+            
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.nav-item')[1].classList.add('active');
+        }
+
+        function showSafetyDetail(topic) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+            
+            if (topic === 'anchor') {
+                document.getElementById('safety-detail-anchor').classList.add('active');
+            } else if (topic === 'sleep') {
+                document.getElementById('safety-detail-sleep').classList.add('active');
+            } else if (topic === 'stroller' || topic === 'winter') {
+                // For demo purposes, show the anchor detail for other topics
+                // In a real app, each would have its own detail screen
+                document.getElementById('safety-detail-anchor').classList.add('active');
+            }
+        }
+
+        function toggleTooltip(tooltipId) {
+            const tooltip = document.getElementById(tooltipId);
+            const allTooltips = document.querySelectorAll('.tooltip');
+            
+            // Hide all other tooltips
+            allTooltips.forEach(t => {
+                if (t.id !== tooltipId) {
+                    t.classList.remove('show');
+                }
+            });
+            
+            // Toggle current tooltip
+            tooltip.classList.toggle('show');
+            
+            // Hide tooltip when clicking outside
+            setTimeout(() => {
+                document.addEventListener('click', function hideTooltip(e) {
+                    if (!e.target.classList.contains('info-icon')) {
+                        tooltip.classList.remove('show');
+                        document.removeEventListener('click', hideTooltip);
+                    }
+                });
+            }, 100);
+        }
+        // Initialize app and fix any missing screens
+        window.onload = function() {
+            console.log('Initializing BabyShield app...');
+            
+            // Check if alerts screen exists
+            var alertsScreen = document.getElementById('alerts-screen');
+            if (!alertsScreen) {
+                console.log('Alerts screen missing, creating it now...');
+                
+                // Find the content div
+                var contentDiv = document.querySelector('.content');
+                
+                // Create the alerts screen HTML
+                var alertsHTML = `
+                    <div id="alerts-screen" class="screen">
+                        <div style="background: #F7FAFC; min-height: 100%; padding: 20px;">
+                            <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 20px;">Safety Alerts</h2>
+                            
+                            <h3 style="color: #DC2626; margin-bottom: 10px;">🚨 Critical Alerts</h3>
+                            
+                            <div style="background: white; border-left: 4px solid #DC2626; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
+                                <h4 style="color: #DC2626;">Fisher-Price Rock 'n Play Sleeper</h4>
+                                <p style="color: #991B1B;">Risk of Infant Fatality - Stop Use Immediately</p>
+                                <p style="font-size: 12px; color: #6B7280;">CPSC Alert #19-094</p>
+                                <button onclick="alert('Viewing report')" style="background: #DC2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 10px; cursor: pointer;">View Full Report</button>
+                            </div>
+                            
+                            <h3 style="color: #F59E0B; margin: 20px 0 10px;">🔍 Verification Needed</h3>
+                            
+                            <div style="background: white; border-left: 4px solid #F59E0B; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
+                                <h4 style="color: #F59E0B;">Baby Einstein Activity Jumper</h4>
+                                <p style="color: #92400E;">AI identified possible recall (85% confidence)</p>
+                                <button onclick="alert('Starting verification')" style="background: #F59E0B; color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 10px; cursor: pointer;">Verify Now</button>
+                            </div>
+                            
+                            <h3 style="color: #3B82F6; margin: 20px 0 10px;">📰 Safety News</h3>
+                            
+                            <div style="background: white; border-left: 4px solid #3B82F6; padding: 15px; border-radius: 10px;">
+                                <h4>New Safety Standard for Water Beads</h4>
+                                <p style="color: #4B5563;">CPSC approves new federal rule</p>
+                                <button onclick="alert('Reading article')" style="background: white; color: #3B82F6; border: 1px solid #3B82F6; padding: 10px 20px; border-radius: 8px; margin-top: 10px; cursor: pointer;">Read More</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add it to the content div
+                if (contentDiv) {
+                    contentDiv.insertAdjacentHTML('beforeend', alertsHTML);
+                    console.log('Alerts screen created successfully');
+                }
+            } else {
+                console.log('Alerts screen already exists');
+            }
+            
+            // Make sure home screen is active by default
+            showHomeScreen();
+            
+            // Log screens found
+            console.log('Total screens:', document.querySelectorAll('.screen').length);
+            console.log('Alerts screen ready:', document.getElementById('alerts-screen') ? 'YES' : 'NO');
+            
+            // FORCE CONNECT THE ALERTS BUTTON
+            var navItems = document.querySelectorAll('.nav-item');
+            if (navItems[3]) {
+                console.log('Connecting alerts button...');
+                navItems[3].addEventListener('click', function() {
+                    console.log('Alerts nav button clicked!');
+                    
+                    // Hide all screens
+                    document.querySelectorAll('.screen').forEach(function(s) {
+                        s.classList.remove('active');
+                    });
+                    
+                    // Show alerts
+                    var alerts = document.getElementById('alerts-screen');
+                    if (alerts) {
+                        alerts.classList.add('active');
+                        console.log('Alerts screen shown');
+                    }
+                    
+                    // Update nav
+                    document.querySelectorAll('.nav-item').forEach(function(item) {
+                        item.classList.remove('active');
+                    });
+                    navItems[3].classList.add('active');
+                    
+                    // Clear badges
+                    var badge1 = document.getElementById('alerts-badge');
+                    var badge2 = document.getElementById('header-badge');
+                    if (badge1) badge1.style.display = 'none';
+                    if (badge2) badge2.style.display = 'none';
+                });
+            }
+            
+            // Also connect header bell
+            var headerBell = document.querySelector('.app-header div[onclick*="showAlerts"]');
+            if (headerBell) {
+                headerBell.addEventListener('click', function() {
+                    console.log('Header bell clicked!');
+                    navItems[3].click();
+                });
+            }
+        };
+    </script>
+</body>
+</html>

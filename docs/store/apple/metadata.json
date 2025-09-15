@@ -1,0 +1,210 @@
+{
+  "appStoreVersion": "1.0.0",
+  "buildVersion": "1",
+  "releaseType": "MANUAL",
+  "appName": "BabyShield Recall Scanner",
+  "subtitle": "Instant safety checks for families",
+  "primaryCategory": "Utilities",
+  "secondaryCategory": "Health & Fitness",
+  "bundleId": "ai.cureviax.babyshield",
+  "sku": "BSHLD-IOS-001",
+  "copyright": "© 2025 Cureviax Research LLC. All rights reserved.",
+  "privacyPolicyUrl": "https://babyshield.cureviax.ai/legal/privacy",
+  "supportUrl": "https://babyshield.cureviax.ai/support",
+  "marketingUrl": "https://babyshield.cureviax.ai",
+  "termsOfServiceUrl": "https://babyshield.cureviax.ai/legal/terms",
+  
+  "keywords": [
+    "recall",
+    "safety",
+    "baby",
+    "product",
+    "scanner",
+    "FDA",
+    "CPSC",
+    "EU Safety Gate",
+    "consumer protection",
+    "family safety",
+    "barcode scanner",
+    "product safety",
+    "recall alerts",
+    "child safety",
+    "safety check"
+  ],
+  
+  "languages": ["en-US"],
+  "primaryLanguage": "en-US",
+  
+  "ageRating": {
+    "ageRatingOverride": "FOUR_PLUS",
+    "alcoholTobaccoDrugs": "NONE",
+    "contests": "NONE",
+    "gambling": false,
+    "horrorFear": "NONE",
+    "matureContent": "NONE",
+    "medical": "INFREQUENT_OR_MILD",
+    "profanityOrCrudeHumor": "NONE",
+    "sexualContentOrNudity": "NONE",
+    "violence": "NONE",
+    "violenceCartoonOrFantasy": "NONE",
+    "violenceRealistic": "NONE",
+    "violenceRealisticProlongedGraphic": "NONE",
+    "kidsAgeBand": null,
+    "madeForKids": false,
+    "ageRatingSummary": "Informational safety data only. Not medical advice. No user-generated content. Safe for all ages."
+  },
+  
+  "encryption": {
+    "itsAppUsesNonExemptEncryption": false,
+    "itsAppIsExempt": true,
+    "itsAppQualifiesForExemption": true,
+    "includesVPNApi": false,
+    "usesStandardEncryptionOnly": true,
+    "encryptionExportRegulationsCompliance": "HTTPS/TLS only for API communication",
+    "notes": "Uses only HTTPS/TLS for secure communication. No custom encryption algorithms."
+  },
+  
+  "contentRights": {
+    "containsThirdPartyContent": true,
+    "hasRightsToContent": true,
+    "copyrightInfo": "Recall data from official government sources (FDA, CPSC, EU Safety Gate). Used under public domain/fair use. All trademarks belong to respective owners."
+  },
+  
+  "tradeRepresentativeContactInfo": {
+    "firstName": "Ross",
+    "lastName": "Alinari",
+    "email": "support@babyshield.cureviax.ai",
+    "phone": "+1-561-581-3322",
+    "addressLine1": "1111B S Governors Ave",
+    "addressLine2": "STE 34726",
+    "city": "Dover",
+    "state": "Delaware",
+    "stateCode": "DE",
+    "postalCode": "19904",
+    "country": "United States",
+    "countryCode": "US",
+    "organizationName": "Cureviax Research LLC",
+    "organizationType": "LLC",
+    "taxId": "88-2918866"
+  },
+  
+  "attachments": {
+    "appIcon": {
+      "path": "assets/store/icons/ios/AppIcon1024.png",
+      "size": "1024x1024",
+      "format": "PNG",
+      "colorSpace": "sRGB",
+      "noAlphaChannel": true
+    },
+    "screenshots": {
+      "iphone67": {
+        "required": true,
+        "dimensions": "1290x2796",
+        "minCount": 3,
+        "maxCount": 10,
+        "files": [
+          "assets/store/screenshots/ios/iphone67-01-home.png",
+          "assets/store/screenshots/ios/iphone67-02-search.png",
+          "assets/store/screenshots/ios/iphone67-03-scanner.png",
+          "assets/store/screenshots/ios/iphone67-04-detail.png",
+          "assets/store/screenshots/ios/iphone67-05-filter.png"
+        ]
+      },
+      "iphone65": {
+        "required": true,
+        "dimensions": "1242x2688",
+        "minCount": 3,
+        "maxCount": 10,
+        "files": [
+          "assets/store/screenshots/ios/iphone65-01-home.png",
+          "assets/store/screenshots/ios/iphone65-02-search.png",
+          "assets/store/screenshots/ios/iphone65-03-scanner.png"
+        ]
+      },
+      "iphone55": {
+        "required": false,
+        "dimensions": "1242x2208",
+        "minCount": 0,
+        "maxCount": 10,
+        "files": []
+      },
+      "ipad129": {
+        "required": false,
+        "dimensions": "2048x2732",
+        "minCount": 0,
+        "maxCount": 10,
+        "files": []
+      },
+      "ipad129_3rdGen": {
+        "required": false,
+        "dimensions": "2048x2732",
+        "minCount": 0,
+        "maxCount": 10,
+        "files": []
+      }
+    }
+  },
+  
+  "reviewInformation": {
+    "contactFirstName": "Ross",
+    "contactLastName": "Alinari",
+    "contactEmail": "support@babyshield.cureviax.ai",
+    "contactPhone": "+1-561-581-3322",
+    "signInRequired": true,
+    "demoAccount": {
+      "required": false,
+      "notes": "Sign in with Apple or Google (OAuth). No demo account needed."
+    },
+    "attachments": [],
+    "reviewNotes": "IMPORTANT FOR REVIEW:\n\n1. AUTHENTICATION:\n- Sign in with Apple or Google OAuth\n- We store only: internal UUID + provider subject ID\n- NO email addresses stored\n- User can delete account in Settings\n\n2. HOW TO TEST:\n- Launch app → Sign in with Apple/Google\n- Search 'pacifier' or 'doll' for live recalls\n- Tap any result → View source (FDA/CPSC/EU)\n- Try barcode scanner with any product\n\n3. DATA & PRIVACY:\n- No ads, no tracking, no analytics\n- Crash reporting: Firebase Crashlytics (OPT-IN only)\n- Privacy dashboard in Settings\n- GDPR/CCPA compliant\n\n4. KEY FEATURES:\n- Real-time recall data from government sources\n- Barcode scanning (camera permission)\n- Advanced filtering\n- Offline cache support\n\n5. MEDICAL DISCLAIMER:\nInformational safety data only. NOT medical advice.\n\n6. SUPPORT:\nEmail: support@babyshield.cureviax.ai\nPhone: +1-561-581-3322 (US Eastern)\nBusiness hours: Mon-Fri 9AM-5PM EST",
+    "additionalNotes": "App is production-ready with live API at https://babyshield.cureviax.ai/api/v1/"
+  },
+  
+  "appVersions": {
+    "minimumOsVersion": "15.0",
+    "targetOsVersion": "17.0",
+    "supportsIPad": false,
+    "supportsAppleWatch": false,
+    "supportsAppleTV": false,
+    "supportsMac": false,
+    "supportsVisionPro": false
+  },
+  
+  "permissions": {
+    "camera": {
+      "required": false,
+      "purpose": "NSCameraUsageDescription",
+      "description": "Camera access is used to scan product barcodes for instant safety checks. You can also search manually without camera access."
+    }
+  },
+  
+  "monetization": {
+    "priceTier": "0",
+    "businessModel": "FREE",
+    "inAppPurchases": false,
+    "subscriptions": false,
+    "ads": false
+  },
+  
+  "distribution": {
+    "availableInAllTerritories": true,
+    "territories": [],
+    "educationDiscount": false,
+    "volumePurchaseProgram": false
+  },
+  
+  "submission": {
+    "autoReleaseDate": null,
+    "phasedRelease": false,
+    "reviewAccelerated": false,
+    "idfa": false,
+    "usesLocationServices": false,
+    "usesBackgroundModes": false,
+    "usesHealthKit": false,
+    "usesHomeKit": false,
+    "usesPushNotifications": false,
+    "usesGameCenter": false,
+    "usesSiriKit": false,
+    "usesARKit": false
+  }
+}

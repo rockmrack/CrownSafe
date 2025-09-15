@@ -1,0 +1,48 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install minimal dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Python packages
+RUN pip install --no-cache-dir \
+    fastapi==0.104.1 \
+    uvicorn==0.24.0 \
+    sqlalchemy==2.0.23 \
+    psycopg2-binary==2.9.9 \
+    pydantic==2.5.0 \
+    python-multipart==0.0.6 \
+    httpx==0.25.1 \
+    python-jose==3.3.0 \
+    passlib==1.7.4 \
+    bcrypt==4.1.1 \
+    requests==2.31.0 \
+    psutil==5.9.6 \
+    python-dotenv==1.0.0 \
+    redis==5.0.1 \
+    celery==5.3.4 \
+    aiofiles==23.2.1 \
+    email-validator==2.1.0 \
+    cryptography==41.0.7 \
+    boto3==1.34.2 \
+    opencv-python-headless==4.8.1.78 \
+    numpy==1.26.2 \
+    Pillow==10.1.0
+
+# Copy application
+COPY . .
+
+# Environment
+ENV PYTHONUNBUFFERED=1
+
+# Port
+EXPOSE 8001
+
+# Health check
+HEALTHCHECK CMD curl -f http://localhost:8001/health || exit 1
+
+# Run
+CMD ["python", "startup_robust.py"]

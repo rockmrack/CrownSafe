@@ -1,0 +1,51 @@
+# FINAL WORKING Dockerfile with ALL dependencies
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install ALL system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libpq-dev \
+    curl \
+    libzbar0 \
+    libgl1 \
+    libglib2.0-0 \
+    libpango-1.0-0 libcairo2 libgdk-pixbuf-2.0-0 shared-mime-info fonts-dejavu-core \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements-complete.txt requirements.txt
+
+# Install ALL Python packages
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Optional HTML renderer (WeasyPrint)
+RUN pip install --no-cache-dir weasyprint
+
+# Copy application
+COPY . .
+
+# Environment variables (non-sensitive only)
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    API_HOST=0.0.0.0 \
+    API_PORT=8001 \
+    DATABASE_URL=sqlite:///./babyshield.db \
+    DISABLE_REDIS_WARNING=true \
+    TEST_MODE=false \
+    HTML_RENDERER=weasyprint
+
+# Port
+EXPOSE 8001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8001/health || exit 1
+
+# Run with production startup
+CMD ["python", "startup_production.py"]

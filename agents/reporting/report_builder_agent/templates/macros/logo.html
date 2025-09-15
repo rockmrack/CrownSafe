@@ -1,0 +1,5 @@
+﻿{% macro render_logo(src=None, width=160, style="margin-bottom:12px;") -%}
+{% if src %}
+  <img src="{{ src }}" width="{{ width }}" style="{{ style }}"/>
+{% endif %}
+{%- endmacro %}

@@ -1,0 +1,64 @@
+{
+  "timestamp": "2025-08-28T01:19:11.743005",
+  "api_url": "https://babyshield.cureviax.ai",
+  "results": {
+    "api_endpoints": [
+      {
+        "endpoint": "/api/v1/healthz",
+        "status": "pass",
+        "response_time": 615.264
+      },
+      {
+        "endpoint": "/api/v1/version",
+        "status": "pass",
+        "response_time": 484.328
+      },
+      {
+        "endpoint": "/api/v1/agencies",
+        "status": "pass",
+        "response_time": 398.08
+      },
+      {
+        "endpoint": "/api/v1/search/advanced",
+        "status": "error",
+        "error": "HTTPSConnectionPool(host='babyshield.cureviax.ai', port=443): Read timed out. (read timeout=5)"
+      },
+      {
+        "endpoint": "/api/v1/categories",
+        "status": "fail",
+        "error": "Status 404"
+      },
+      {
+        "endpoint": "/legal/privacy",
+        "status": "fail",
+        "error": "Status 404"
+      },
+      {
+        "endpoint": "/legal/terms",
+        "status": "fail",
+        "error": "Status 404"
+      }
+    ],
+    "API Endpoints": false,
+    "Security Headers": true,
+    "Store Metadata": false,
+    "Screenshots": true,
+    "App Icons": true,
+    "Text Content": true,
+    "Legal Documents": false,
+    "Postman Tests": true
+  },
+  "warnings": [
+    "iOS App Icon may not be a valid PNG",
+    "Android App Icon may not be a valid PNG",
+    "Play Feature Graphic may not be a valid PNG",
+    "Newman not installed - cannot run Postman tests"
+  ],
+  "errors": [],
+  "summary": {
+    "total_tests": 9,
+    "passed": 6,
+    "warnings": 4,
+    "errors": 0
+  }
+}

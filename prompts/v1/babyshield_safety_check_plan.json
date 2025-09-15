@@ -1,0 +1,59 @@
+{
+  "plan_name": "BabyShield Product Safety Check",
+  "plan_id_prefix": "bby-sfty-",
+  "steps": [
+    {
+      "step_id": "step0_visual_search",
+      "task_description": "Identify product from an image using visual AI.",
+      "agent_capability_required": "identify_product_from_image",
+      "target_agent_type": "VisualSearchAgent",
+      "inputs": {
+        "image_url": "{{{image_url}}}",
+        "mode": "identify"
+      },
+      "dependencies": [],
+      "priority": "high",
+      "conditional": "image_url"
+    },
+    {
+      "step_id": "step1_identify_product",
+      "task_description": "Identify product from barcode or image.",
+      "agent_capability_required": "identify_product",
+      "target_agent_type": "ProductIdentifierAgent",
+      "inputs": {
+        "barcode": "{{{barcode}}}",
+        "model_number": "{{{model_number}}}",
+        "image_url": "{{{image_url}}}"
+      },
+      "dependencies": [],
+      "priority": "high",
+      "conditional": "barcode or model_number"
+    },
+    {
+      "step_id": "step2_check_recalls",
+      "task_description": "Check official recall databases for the identified product.",
+      "agent_capability_required": "query_recalls_by_product",
+      "target_agent_type": "RecallDataAgent",
+      "inputs": {
+        "product_name": "{{step0_visual_search.result.product_name or step1_identify_product.result.product_name}}",
+        "model_number": "{{step0_visual_search.result.model_number or step1_identify_product.result.model_number or {{{model_number}}}}}",
+        "upc": "{{step1_identify_product.result.upc}}"
+      },
+      "dependencies": ["step0_visual_search", "step1_identify_product"],
+      "priority": "high"
+    },
+    {
+      "step_id": "step3_analyze_hazard",
+      "task_description": "Analyze and summarize any found hazards.",
+      "agent_capability_required": "analyze_hazards",
+      "target_agent_type": "HazardAnalysisAgent",
+      "inputs": {
+        "recall_data": "{{step2_check_recalls.result}}",
+        "product_name": "{{step0_visual_search.result.product_name or step1_identify_product.result.product_name}}",
+        "visual_confidence": "{{step0_visual_search.result.confidence}}"
+      },
+      "dependencies": ["step2_check_recalls"],
+      "priority": "critical"
+    }
+  ]
+}

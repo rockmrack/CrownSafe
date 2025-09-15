@@ -1,0 +1,226 @@
+groups:
+  - name: babyshield_slo_alerts
+    interval: 30s
+    rules:
+      # Uptime SLO Alert
+      - alert: ServiceDown
+        expr: up{job="babyshield-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          slo: uptime
+        annotations:
+          summary: "BabyShield API is down"
+          description: "{{ $labels.instance }} has been down for more than 1 minute."
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/ServiceDown.md"
+
+      - alert: UptimeSLOViolation
+        expr: |
+          (1 - (
+            rate(http_requests_total{status=~"5.."}[30m]) / 
+            rate(http_requests_total[30m])
+          )) < 0.999
+        for: 5m
+        labels:
+          severity: warning
+          slo: uptime
+        annotations:
+          summary: "Uptime SLO violation (< 99.9%)"
+          description: "Service uptime is {{ $value | humanizePercentage }}, below 99.9% SLO"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/UptimeSLO.md"
+
+      # Latency SLO Alerts
+      - alert: HighLatencyP95
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le)
+          ) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          slo: latency
+        annotations:
+          summary: "High p95 latency (> 800ms)"
+          description: "p95 latency is {{ $value | humanizeDuration }}, exceeding 800ms SLO"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/HighLatency.md"
+
+      - alert: HighLatencyP99
+        expr: |
+          histogram_quantile(0.99,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le)
+          ) > 2.0
+        for: 5m
+        labels:
+          severity: critical
+          slo: latency
+        annotations:
+          summary: "Very high p99 latency (> 2s)"
+          description: "p99 latency is {{ $value | humanizeDuration }}"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/HighLatency.md"
+
+      # Error Rate Alerts
+      - alert: HighErrorRate
+        expr: |
+          sum(rate(http_requests_total{status=~"5.."}[5m])) /
+          sum(rate(http_requests_total[5m])) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High 5xx error rate (> 1%)"
+          description: "Error rate is {{ $value | humanizePercentage }}"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/HighErrorRate.md"
+
+      - alert: High4xxRate
+        expr: |
+          sum(rate(http_requests_total{status=~"4.."}[5m])) /
+          sum(rate(http_requests_total[5m])) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High 4xx rate (> 10%)"
+          description: "4xx rate is {{ $value | humanizePercentage }}, possible client issues"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/High4xxRate.md"
+
+  - name: babyshield_rate_limiting
+    interval: 30s
+    rules:
+      - alert: RateLimitExhausted
+        expr: rate_limit_remaining < 10
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Rate limit nearly exhausted"
+          description: "User {{ $labels.user }} has only {{ $value }} requests remaining for {{ $labels.endpoint }}"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/RateLimit.md"
+
+      - alert: HighRateLimitHits
+        expr: sum(rate(rate_limit_hits_total[5m])) by (endpoint) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate limit hits"
+          description: "{{ $labels.endpoint }} is seeing {{ $value }} rate limit hits per second"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/RateLimit.md"
+
+  - name: babyshield_infrastructure
+    interval: 30s
+    rules:
+      # Database Alerts
+      - alert: DatabaseConnectionPoolExhausted
+        expr: database_connections_active > 90
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection pool nearly exhausted"
+          description: "{{ $value }} active database connections (pool size 100)"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/DatabaseConnections.md"
+
+      - alert: SlowDatabaseQueries
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(database_query_duration_seconds_bucket[5m])) by (le, query_type)
+          ) > 1.0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow database queries detected"
+          description: "{{ $labels.query_type }} queries p95 is {{ $value | humanizeDuration }}"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/SlowQueries.md"
+
+      # Resource Alerts
+      - alert: HighMemoryUsage
+        expr: system_memory_usage_bytes / 1024 / 1024 / 1024 > 7
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value }}GB (> 7GB threshold)"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/HighMemory.md"
+
+      - alert: HighCPUUsage
+        expr: system_cpu_usage_percent > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value }}%"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/HighCPU.md"
+
+      # Cache Alerts
+      - alert: LowCacheHitRate
+        expr: |
+          sum(rate(cache_hits_total[5m])) / 
+          (sum(rate(cache_hits_total[5m])) + sum(rate(cache_misses_total[5m]))) < 0.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low cache hit rate"
+          description: "Cache hit rate is {{ $value | humanizePercentage }} (< 50%)"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/LowCacheHit.md"
+
+  - name: babyshield_synthetic_monitoring
+    interval: 30s
+    rules:
+      - alert: SyntheticProbeFailure
+        expr: probe_success == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Synthetic probe failing"
+          description: "{{ $labels.probe }} probe has been failing for 2 minutes"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/ProbeFailure.md"
+
+      - alert: SyntheticProbeHighLatency
+        expr: probe_duration_seconds > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Synthetic probe slow"
+          description: "{{ $labels.probe }} probe taking {{ $value | humanizeDuration }}"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/ProbeLatency.md"
+
+  - name: babyshield_business_metrics
+    interval: 60s
+    rules:
+      - alert: NoBarcodeScanActivity
+        expr: sum(rate(barcode_scans_total[30m])) == 0
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "No barcode scan activity"
+          description: "No barcode scans in the last 30 minutes"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/NoActivity.md"
+
+      - alert: NoSearchActivity
+        expr: sum(rate(search_queries_total[30m])) == 0
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "No search activity"
+          description: "No search queries in the last 30 minutes"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/NoActivity.md"
+
+      - alert: HighRecallMatchRate
+        expr: |
+          sum(rate(recalls_found_total[5m])) /
+          sum(rate(barcode_scans_total[5m])) > 0.5
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "High recall match rate"
+          description: "{{ $value | humanizePercentage }} of scans finding recalls"
+          runbook_url: "https://github.com/babyshield/runbooks/blob/main/HighRecallRate.md"

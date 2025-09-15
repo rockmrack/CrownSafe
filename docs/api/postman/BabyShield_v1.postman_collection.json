@@ -1,0 +1,376 @@
+{
+  "info": {
+    "name": "BabyShield API v1",
+    "_postman_id": "bsh-v1-collection-2025",
+    "description": "BabyShield API v1 Collection for recall search and management",
+    "version": "1.2.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base",
+      "value": "https://babyshield.cureviax.ai",
+      "type": "string"
+    },
+    {
+      "key": "local",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/v1/healthz",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "healthz"]
+            },
+            "description": "Check if the API is healthy and running"
+          }
+        },
+        {
+          "name": "Get Agencies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/v1/agencies",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "agencies"]
+            },
+            "description": "Get list of available agencies"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Search • Advanced (fuzzy product)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product\": \"Triacting Night Time Cold\",\n  \"agencies\": [\"FDA\"],\n  \"severity\": \"medium\",\n  \"limit\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base}}/api/v1/search/advanced",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "search", "advanced"]
+            },
+            "description": "Fuzzy product search with pg_trgm similarity"
+          }
+        },
+        {
+          "name": "Search • Advanced (simple query)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"pacifier\",\n  \"agencies\": [\"FDA\", \"CPSC\"],\n  \"limit\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base}}/api/v1/search/advanced",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "search", "advanced"]
+            },
+            "description": "Simple query search across agencies"
+          }
+        },
+        {
+          "name": "Search • Advanced (keywords AND)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"keywords\": [\"baby\", \"formula\", \"organic\"],\n  \"agencies\": [\"FDA\"],\n  \"limit\": 20\n}"
+            },
+            "url": {
+              "raw": "{{base}}/api/v1/search/advanced",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "search", "advanced"]
+            },
+            "description": "Keywords with AND logic - all keywords must be present"
+          }
+        },
+        {
+          "name": "Search • Advanced (exact ID)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"2024-FDA-12345\"\n}"
+            },
+            "url": {
+              "raw": "{{base}}/api/v1/search/advanced",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "search", "advanced"]
+            },
+            "description": "Exact recall ID lookup"
+          }
+        },
+        {
+          "name": "Search • Advanced (combined)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product\": \"bottle\",\n  \"keywords\": [\"bpa\", \"free\"],\n  \"agencies\": [\"FDA\", \"CPSC\"],\n  \"severity\": \"high\",\n  \"date_from\": \"2024-01-01\",\n  \"date_to\": \"2024-12-31\",\n  \"limit\": 15\n}"
+            },
+            "url": {
+              "raw": "{{base}}/api/v1/search/advanced",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "search", "advanced"]
+            },
+            "description": "Combined search with fuzzy match, keywords, and filters"
+          }
+        },
+        {
+          "name": "Search • Advanced (with aliases)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product\": \"toy\",\n  \"risk_level\": \"high\",\n  \"product_category\": \"toy\",\n  \"agency\": \"CPSC\",\n  \"limit\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base}}/api/v1/search/advanced",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "search", "advanced"]
+            },
+            "description": "Using parameter aliases (risk_level, product_category, agency)"
+          }
+        },
+        {
+          "name": "Search • FDA Quick",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/v1/fda?product=doll&limit=5",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "fda"],
+              "query": [
+                {
+                  "key": "product",
+                  "value": "doll"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            },
+            "description": "Quick FDA search endpoint (GET)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recalls",
+      "item": [
+        {
+          "name": "Get Recall by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/v1/recall/2024-FDA-12345",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "recall", "2024-FDA-12345"]
+            },
+            "description": "Get detailed information for a specific recall"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Cases",
+      "item": [
+        {
+          "name": "Test • Fuzzy Search (typo tolerance)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product\": \"Triacting Nite Time\",\n  \"limit\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base}}/api/v1/search/advanced",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "search", "advanced"]
+            },
+            "description": "Test fuzzy matching with typos"
+          }
+        },
+        {
+          "name": "Test • Empty Results",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"keywords\": [\"impossibleword123\", \"nonexistent456\"],\n  \"limit\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base}}/api/v1/search/advanced",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "search", "advanced"]
+            },
+            "description": "Test graceful handling of no results"
+          }
+        },
+        {
+          "name": "Test • Invalid Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"foo\": \"bar\",\n  \"invalid_field\": 123\n}"
+            },
+            "url": {
+              "raw": "{{base}}/api/v1/search/advanced",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "search", "advanced"]
+            },
+            "description": "Test error handling for invalid parameters"
+          }
+        },
+        {
+          "name": "Test • Date Range Filter",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product\": \"toy\",\n  \"date_from\": \"2024-01-01\",\n  \"date_to\": \"2024-06-30\",\n  \"limit\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base}}/api/v1/search/advanced",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "search", "advanced"]
+            },
+            "description": "Test date range filtering"
+          }
+        },
+        {
+          "name": "Test • Special Characters",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product\": \"P&L Developments\",\n  \"limit\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base}}/api/v1/search/advanced",
+              "host": ["{{base}}"],
+              "path": ["api", "v1", "search", "advanced"]
+            },
+            "description": "Test handling of special characters in search"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Add timestamp to requests for debugging",
+          "pm.variables.set('timestamp', new Date().toISOString());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Common tests for all requests",
+          "pm.test('Response time is less than 1000ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+          "});",
+          "",
+          "// Check for API version header",
+          "pm.test('X-API-Version header present', function () {",
+          "    pm.response.to.have.header('X-API-Version');",
+          "});"
+        ]
+      }
+    }
+  ]
+}

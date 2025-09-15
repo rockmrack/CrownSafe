@@ -1,0 +1,45 @@
+{
+  "family": "babyshield-api-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "containerDefinitions": [
+    {
+      "name": "babyshield-api",
+      "image": "REPLACE_WITH_ECR_IMAGE_URI",
+      "portMappings": [
+        {
+          "containerPort": 8001,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {"name": "API_HOST", "value": "0.0.0.0"},
+        {"name": "API_PORT", "value": "8001"},
+        {"name": "TEST_MODE", "value": "false"},
+        {"name": "ENABLE_CACHE", "value": "false"},
+        {"name": "LOG_LEVEL", "value": "INFO"},
+        {"name": "DATABASE_URL", "value": "sqlite:///./babyshield_production.db"}
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/babyshield-api",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:8001/health || exit 1"],
+        "interval": 30,
+        "timeout": 10,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ],
+  "executionRoleArn": "arn:aws:iam::REPLACE_ACCOUNT_ID:role/ecsTaskExecutionRole"
+}

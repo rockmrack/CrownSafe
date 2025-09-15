@@ -1,0 +1,40 @@
+# Complete Dockerfile with ALL dependencies
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies including libraries for OpenCV
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    libpq-dev \
+    curl \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    libgl1-mesa-glx \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install ALL Python packages
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application
+COPY . .
+
+# Environment
+ENV PYTHONUNBUFFERED=1 \
+    API_HOST=0.0.0.0 \
+    API_PORT=8001
+
+# Port
+EXPOSE 8001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8001/health || exit 1
+
+# Run
+CMD ["python", "startup_robust.py"]

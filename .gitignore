@@ -1,19 +1,52 @@
-HEAD
-
-venv/
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.so
+*.egg-info/
+build/
+dist/
+.venv*/
 .venv/
-__pycache__/
-*.pyc
-.env
-chroma_db_data/
-postgres_data/
-redis_data/
-
 venv/
-*.pyc
-__pycache__/
-.env
+ENV/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.pyre/
+.pytype/
+.cache/
+ruff_cache/
+.mruff_cache/
+
+# Editors/OS
+.DS_Store
+.idea/
+.vscode/
+Thumbs.db
+
+# Logs
+logs/
 *.log
-*.exe
-*.dll
-d9ebe6e0ba3be9b33e6524a2596f407daa05f475
+
+# Env & secrets
+.env
+.env.*
+secrets/
+aws/
+
+# Project artefacts
+babyshield_test.db
+local_reports.db
+test_*.db
+generated_reports/
+openapi.json
+ecs_logs.txt
+rds-logs.json
+dsar-req_*.json
+dsar-req_*.zip
+
+# Docker
+docker/*.env

@@ -1,0 +1,37 @@
+# PRODUCTION Dockerfile - Final Version
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install minimal system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements-docker.txt .
+
+# Install Python packages
+RUN pip install --no-cache-dir -r requirements-docker.txt
+
+# Copy application
+COPY . .
+
+# Environment variables
+ENV PYTHONUNBUFFERED=1 \
+    API_HOST=0.0.0.0 \
+    API_PORT=8001 \
+    REDIS_URL=redis://localhost:6379 \
+    DATABASE_URL=sqlite:///./babyshield.db
+
+# Port
+EXPOSE 8001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8001/health || exit 1
+
+# Run with clean production startup
+CMD ["python", "startup_production.py"]

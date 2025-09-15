@@ -1,0 +1,293 @@
+{
+  "packageName": "ai.cureviax.babyshield",
+  "versionCode": 1,
+  "versionName": "1.0.0",
+  "title": "BabyShield Recall Scanner",
+  "shortDescription": "Scan or search recalled products. Instant safety info for families.",
+  "fullDescriptionFile": "docs/store/common/descriptions/long_description_en.txt",
+  "video": "",
+  "promoVideo": "",
+  "tvBanner": "",
+  "defaultLanguage": "en-US",
+  "contactEmail": "support@babyshield.cureviax.ai",
+  "contactWebsite": "https://babyshield.cureviax.ai",
+  "contactPhone": "+1-561-581-3322",
+  "privacyPolicyUrl": "https://babyshield.cureviax.ai/legal/privacy",
+  
+  "category": {
+    "applicationId": "TOOLS",
+    "genreId": "TOOLS"
+  },
+  
+  "contentRating": {
+    "rating": "Everyone",
+    "questionnaire": {
+      "violenceCartoon": "No",
+      "violenceRealistic": "No", 
+      "violenceProlonged": "No",
+      "sexualContent": "No",
+      "nudity": "No",
+      "gambling": "No",
+      "gamblingSimulated": "No",
+      "profanity": "No",
+      "crudeHumor": "No",
+      "drugUse": "No",
+      "alcoholUse": "No",
+      "tobaccoUse": "No",
+      "controlledSubstance": "No",
+      "scarySuspenseful": "No",
+      "userInteraction": "No",
+      "shareLocation": "No",
+      "sharePersonalInfo": "No",
+      "digitalPurchases": "No",
+      "unrestricted_web_access": "No"
+    }
+  },
+  
+  "targetAudience": {
+    "minAge": 0,
+    "maxAge": null,
+    "targetAgeGroups": ["AGE_18_AND_ABOVE", "AGE_13_15", "AGE_16_17"],
+    "appealToChildren": false,
+    "designedForFamilies": false,
+    "compliesWithFamilyPolicy": false
+  },
+  
+  "storeListingAssets": {
+    "icon": {
+      "path": "assets/store/icons/android/Icon512.png",
+      "dimensions": "512x512",
+      "format": "32-bit PNG",
+      "maxSize": "1024KB"
+    },
+    "featureGraphic": {
+      "path": "assets/store/graphics/play-feature-1024x500.png",
+      "dimensions": "1024x500",
+      "format": "JPG or 24-bit PNG",
+      "maxSize": "1024KB"
+    },
+    "phoneScreenshots": {
+      "required": true,
+      "minCount": 2,
+      "maxCount": 8,
+      "dimensions": "16:9 or 9:16 aspect ratio",
+      "minWidth": 320,
+      "minHeight": 320,
+      "maxDimension": 3840,
+      "format": "JPG or 24-bit PNG",
+      "files": [
+        "assets/store/screenshots/android/phone-01-home.png",
+        "assets/store/screenshots/android/phone-02-search.png",
+        "assets/store/screenshots/android/phone-03-scanner.png",
+        "assets/store/screenshots/android/phone-04-detail.png",
+        "assets/store/screenshots/android/phone-05-settings.png"
+      ]
+    },
+    "sevenInchTabletScreenshots": {
+      "required": false,
+      "minCount": 0,
+      "maxCount": 8,
+      "files": []
+    },
+    "tenInchTabletScreenshots": {
+      "required": false,
+      "minCount": 0,
+      "maxCount": 8,
+      "files": []
+    },
+    "wearScreenshots": {
+      "required": false,
+      "files": []
+    },
+    "tvScreenshots": {
+      "required": false,
+      "files": []
+    }
+  },
+  
+  "technicalSpecs": {
+    "minSdkVersion": 26,
+    "targetSdkVersion": 34,
+    "compileSdkVersion": 34,
+    "minAndroidVersion": "8.0",
+    "targetAndroidVersion": "14.0",
+    "supportedArchitectures": ["arm64-v8a", "armeabi-v7a", "x86", "x86_64"],
+    "supportedDensities": ["ldpi", "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"],
+    "supportedScreens": {
+      "smallScreens": true,
+      "normalScreens": true,
+      "largeScreens": true,
+      "xlargeScreens": true
+    }
+  },
+  
+  "permissions": [
+    {
+      "name": "android.permission.INTERNET",
+      "required": true,
+      "purpose": "Required for fetching recall data from government APIs"
+    },
+    {
+      "name": "android.permission.CAMERA",
+      "required": false,
+      "purpose": "Optional - Used for barcode scanning to check products"
+    },
+    {
+      "name": "android.permission.ACCESS_NETWORK_STATE",
+      "required": true,
+      "purpose": "Check network connectivity for offline mode"
+    }
+  ],
+  
+  "appBundles": {
+    "useAppBundle": true,
+    "format": "AAB",
+    "dynamicDelivery": true,
+    "instantApp": false
+  },
+  
+  "releaseManagement": {
+    "track": "production",
+    "rolloutPercentage": 100,
+    "stagedRollout": false,
+    "releaseNotes": {
+      "en-US": "Initial release of BabyShield Recall Scanner\n\n• Search recalls from FDA, CPSC, and EU Safety Gate\n• Scan barcodes for instant safety checks\n• Filter by category and severity\n• Privacy-first design with no tracking\n• Sign in with Apple or Google\n\nNote: This app provides informational safety data only and is not medical advice."
+    }
+  },
+  
+  "pricing": {
+    "defaultPrice": "0",
+    "paidApp": false,
+    "inAppProducts": false,
+    "subscriptions": false,
+    "containsAds": false,
+    "adNetworks": []
+  },
+  
+  "distribution": {
+    "countries": "ALL",
+    "excludedCountries": [],
+    "deviceExclusions": [],
+    "managedGooglePlay": false,
+    "wearOsDistribution": false,
+    "androidTvDistribution": false,
+    "androidAutoDistribution": false
+  },
+  
+  "dataSafety": {
+    "dataCollectionSurvey": {
+      "collects_data": true,
+      "shares_data": false,
+      "handles_data_securely": true,
+      "committed_to_play_families_policy": false,
+      "independent_security_review": false
+    },
+    "dataTypes": {
+      "personal_info": {
+        "name": false,
+        "email": false,
+        "user_ids": true,
+        "address": false,
+        "phone": false
+      },
+      "financial_info": {
+        "user_payment_info": false,
+        "purchase_history": false,
+        "credit_score": false,
+        "other_financial_info": false
+      },
+      "location": {
+        "approximate_location": false,
+        "precise_location": false
+      },
+      "sensitive_info": {
+        "sensitive_permissions": false
+      },
+      "contacts": {
+        "contacts": false
+      },
+      "app_activity": {
+        "app_interactions": false,
+        "in_app_search_history": false,
+        "installed_apps": false,
+        "other_user_generated_content": false
+      },
+      "web_browsing": {
+        "web_browsing_history": false
+      },
+      "health_and_fitness": {
+        "health_info": false,
+        "fitness_info": false
+      },
+      "messages": {
+        "emails": false,
+        "sms_or_mms": false,
+        "other_in_app_messages": false
+      },
+      "photos_and_videos": {
+        "photos": false,
+        "videos": false
+      },
+      "audio_files": {
+        "voice_or_sound_recordings": false,
+        "music_files": false,
+        "other_audio_files": false
+      },
+      "files_and_docs": {
+        "files_and_docs": false
+      },
+      "calendar": {
+        "calendar_events": false
+      },
+      "app_info_and_performance": {
+        "crash_logs": true,
+        "diagnostics": true,
+        "other_app_performance_data": false
+      },
+      "device_or_other_ids": {
+        "device_or_other_ids": false
+      }
+    },
+    "dataHandling": {
+      "user_ids": {
+        "collected": true,
+        "shared": false,
+        "processed_ephemerally": false,
+        "required_for_features": ["Authentication"],
+        "purposes": ["App functionality"],
+        "data_deletion": true
+      },
+      "crash_logs": {
+        "collected": true,
+        "shared": false,
+        "processed_ephemerally": false,
+        "optional": true,
+        "purposes": ["App functionality", "Analytics"],
+        "data_deletion": true
+      }
+    },
+    "securityPractices": {
+      "uses_encryption_in_transit": true,
+      "uses_encryption_at_rest": true,
+      "data_deletion_available": true,
+      "data_deletion_url": "https://babyshield.cureviax.ai/legal/data-deletion",
+      "retention_period": "Until user requests deletion",
+      "security_certifications": []
+    }
+  },
+  
+  "developerInfo": {
+    "developerName": "Cureviax Research LLC",
+    "developerEmail": "support@babyshield.cureviax.ai",
+    "developerWebsite": "https://babyshield.cureviax.ai",
+    "developerAddress": {
+      "addressLine1": "1111B S Governors Ave",
+      "addressLine2": "STE 34726",
+      "city": "Dover",
+      "state": "Delaware",
+      "postalCode": "19904",
+      "country": "United States"
+    },
+    "privacyOfficerEmail": "support@babyshield.cureviax.ai"
+  }
+}

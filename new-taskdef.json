@@ -1,0 +1,41 @@
+﻿{
+    "executionRoleArn":  "arn:aws:iam::180703226577:role/ecsTaskExecutionRole",
+    "networkMode":  "awsvpc",
+    "cpu":  "1024",
+    "requiresCompatibilities":  [
+                                    "FARGATE"
+                                ],
+    "containerDefinitions":  [
+                                 {
+                                     "name":  "babyshield-backend",
+                                     "image":  "180703226577.dkr.ecr.eu-north-1.amazonaws.com/babyshield-backend:api-v1-fixed",
+                                     "cpu":  0,
+                                     "portMappings":  [
+                                                          {
+                                                              "containerPort":  8001,
+                                                              "hostPort":  8001,
+                                                              "protocol":  "tcp"
+                                                          }
+                                                      ],
+                                     "essential":  true,
+                                     "environment":  [
+                                                         {
+                                                             "name":  ".env",
+                                                             "value":  ""
+                                                         }
+                                                     ],
+                                     "mountPoints":  [
+
+                                                     ],
+                                     "volumesFrom":  [
+
+                                                     ],
+                                     "systemControls":  [
+
+                                                        ]
+                                 }
+                             ],
+    "family":  "babyshield-backend-task",
+    "taskRoleArn":  "arn:aws:iam::180703226577:role/babyshield-task-role",
+    "memory":  "2048"
+}

@@ -1,0 +1,16 @@
+PLACEHOLDER IMAGE
+Size: 1080x1920
+Purpose: Android Phone - Search Screen
+Created: 2025-08-27T13:27:55.046607
+
+TO REPLACE:
+1. Create actual image at 1080x1920 pixels
+2. Save as PNG (or JPG for Android feature graphic)
+3. Replace this file at: assets\store\screenshots\android\phone-02-search.png
+
+DESIGN GUIDELINES:
+- Use brand colors: #667EEA (primary), #48BB78 (secondary)
+- Include app logo
+- Show actual app UI (not mockups)
+- Ensure text is readable
+- Follow platform guidelines

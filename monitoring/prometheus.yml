@@ -1,0 +1,70 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'babyshield-monitor'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "alerts.yml"
+
+scrape_configs:
+  # BabyShield API metrics
+  - job_name: 'babyshield-api'
+    static_configs:
+      - targets: 
+          - 'host.docker.internal:8001'  # Local development
+          # - 'babyshield.cureviax.ai:443'  # Production
+    metrics_path: '/metrics'
+    scheme: 'http'  # Use 'https' for production
+    scrape_interval: 10s
+    scrape_timeout: 10s
+
+  # Synthetic probes via Blackbox exporter
+  - job_name: 'blackbox-http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - 'http://host.docker.internal:8001/api/v1/monitoring/healthz'
+          - 'http://host.docker.internal:8001/api/v1/monitoring/readyz'
+          - 'http://host.docker.internal:8001/api/v1/agencies'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox_exporter:9115
+
+  # Node exporter for system metrics
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node_exporter:9100']
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Grafana metrics
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+
+  # Custom synthetic probes from API
+  - job_name: 'synthetic-probes'
+    metrics_path: '/api/v1/monitoring/probe'
+    static_configs:
+      - targets: ['host.docker.internal:8001']
+    scrape_interval: 60s
+    scrape_timeout: 30s

@@ -1,0 +1,84 @@
+name: CI — Store Pack
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  store-pack:
+    runs-on: ubuntu-latest
+    env:
+      BABYSHIELD_BASE_URL: https://babyshield.cureviax.ai
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validate OpenAPI (local file)
+        run: python scripts/validate_openapi_local.py
+        continue-on-error: true  # Don't fail if OpenAPI not present
+
+      - name: Docs & links lint
+        run: python scripts/lint_docs_and_links.py
+        continue-on-error: true  # Don't fail on external link issues
+
+      - name: API readiness smoke test
+        run: python scripts/validate_store_readiness.py
+        env:
+          BABYSHIELD_BASE_URL: ${{ env.BABYSHIELD_BASE_URL }}
+        continue-on-error: true  # Don't block on API issues
+
+      - name: Build store submission bundle
+        run: python scripts/build_submission_bundle.py
+
+      - name: Upload bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: store-pack-${{ github.sha }}
+          path: dist/*.zip
+          retention-days: 30
+
+      - name: Generate submission report
+        if: always()
+        run: |
+          echo "# Store Submission Pack Report" > submission_report.md
+          echo "Build Date: $(date)" >> submission_report.md
+          echo "Commit: ${{ github.sha }}" >> submission_report.md
+          echo "Branch: ${{ github.ref }}" >> submission_report.md
+          echo "" >> submission_report.md
+          
+          if [ -f dist/*.zip ]; then
+            echo "✅ Bundle created successfully" >> submission_report.md
+            echo "Bundle: $(ls dist/*.zip)" >> submission_report.md
+            unzip -l dist/*.zip | head -20 >> submission_report.md
+          else
+            echo "❌ Bundle creation failed" >> submission_report.md
+          fi
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: submission-report-${{ github.sha }}
+          path: submission_report.md
+          retention-days: 30

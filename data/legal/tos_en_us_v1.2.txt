@@ -1,0 +1,43 @@
+Terms of Service for BabyShield™ (United States)
+
+Last Updated: July 27, 2025
+
+1. Acceptance of Terms
+   By accessing or using BabyShield™ (the "Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you may not use the Service.
+
+2. Description of Service
+   BabyShield™ provides product safety alerts, recall notifications, and related information (“Content”) through a mobile and web application. We may update, modify, or discontinue the Service (or any part of it) without notice.
+
+3. User Accounts
+   3.1 Registration: Some features require creating an account. You must provide accurate information and keep credentials secure.
+   3.2 Account Security: You are responsible for all activity under your account. Notify us immediately of any unauthorized use.
+
+4. Use of Content
+   4.1 License: Subject to these Terms, BabyShield™ grants you a limited, non-exclusive, non-transferable license to access and use the Content for personal, non-commercial purposes.
+   4.2 Restrictions: You may not copy, reproduce, distribute, modify, or create derivative works from the Content without express permission.
+
+5. Privacy
+   Your use of the Service is governed by our Privacy Policy, which is incorporated by reference. By using the Service, you consent to our collection and use of personal data.
+
+6. Fees and Payment
+   6.1 Subscription Plans: Certain features may require a paid subscription. All fees are described on our pricing page and are non-refundable.
+   6.2 Billing: You authorize us to charge your payment method for the subscription fees and applicable taxes.
+
+7. Termination
+   We may suspend or terminate your access at any time for violations of these Terms. Upon termination, your right to use the Service immediately ends.
+
+8. Disclaimers and Limitation of Liability
+   8.1 No Warranty: The Service and Content are provided "as is" without warranties of any kind, either express or implied.
+   8.2 Limitation of Liability: To the fullest extent permitted by law, BabyShield™ and its affiliates are not liable for any indirect, incidental, special, or consequential damages arising out of your use of the Service.
+
+9. Indemnification
+   You agree to indemnify and hold harmless BabyShield™, its officers, directors, and employees from any claim or demand arising out of your violation of these Terms.
+
+10. Governing Law; Dispute Resolution
+    These Terms are governed by the laws of the State of Delaware, USA. Any dispute will be resolved through binding arbitration in Wilmington, Delaware.
+
+11. Changes to Terms
+    We may revise these Terms at any time. We will notify you of material changes via email or in-app notification. Continued use after changes constitutes acceptance.
+
+12. Contact Information
+    For questions or concerns regarding these Terms, please contact us at [support@babyshield.com](mailto:support@babyshield.com).

@@ -1,0 +1,247 @@
+{
+  "app_privacy": {
+    "version": "2.0",
+    "app_name": "BabyShield Recall Scanner",
+    "bundle_id": "ai.cureviax.babyshield",
+    "last_updated": "2025-08-27",
+    "privacy_policy_url": "https://babyshield.cureviax.ai/legal/privacy",
+    
+    "data_collection_summary": {
+      "collects_data": true,
+      "data_types_collected": 2,
+      "data_linked_to_user": true,
+      "data_used_for_tracking": false,
+      "data_shared_with_third_parties": false
+    },
+    
+    "data_types": {
+      "contact_info": {
+        "email_address": {
+          "collected": false,
+          "notes": "Email addresses are NOT stored. Authentication uses OAuth providers."
+        }
+      },
+      
+      "identifiers": {
+        "user_id": {
+          "collected": true,
+          "linked_to_user": true,
+          "used_for_tracking": false,
+          "purposes": [
+            "App Functionality"
+          ],
+          "data_protection": "Encrypted in transit and at rest",
+          "retention": "Until user requests deletion",
+          "notes": "Internal UUID and OAuth provider subject ID only. No email stored."
+        },
+        "device_id": {
+          "collected": false
+        },
+        "advertising_id": {
+          "collected": false
+        }
+      },
+      
+      "purchases": {
+        "purchase_history": {
+          "collected": false
+        }
+      },
+      
+      "financial_info": {
+        "payment_info": {
+          "collected": false,
+          "notes": "Subscriptions handled by App Store, no financial data collected"
+        }
+      },
+      
+      "location": {
+        "precise_location": {
+          "collected": false
+        },
+        "coarse_location": {
+          "collected": false
+        }
+      },
+      
+      "contacts": {
+        "contacts": {
+          "collected": false
+        }
+      },
+      
+      "user_content": {
+        "photos_or_videos": {
+          "collected": false,
+          "notes": "Images processed locally for barcode scanning, not uploaded"
+        },
+        "audio_data": {
+          "collected": false
+        },
+        "gameplay_content": {
+          "collected": false
+        },
+        "customer_support": {
+          "collected": true,
+          "optional": true,
+          "linked_to_user": false,
+          "used_for_tracking": false,
+          "purposes": [
+            "Customer Support"
+          ],
+          "retention": "1 year"
+        },
+        "other_user_content": {
+          "collected": false
+        }
+      },
+      
+      "browsing_history": {
+        "browsing_history": {
+          "collected": false
+        }
+      },
+      
+      "search_history": {
+        "search_history": {
+          "collected": false,
+          "notes": "Product searches not stored or associated with users"
+        }
+      },
+      
+      "sensitive_info": {
+        "sensitive_info": {
+          "collected": false
+        }
+      },
+      
+      "diagnostics": {
+        "crash_data": {
+          "collected": true,
+          "optional": true,
+          "linked_to_user": false,
+          "used_for_tracking": false,
+          "purposes": [
+            "App Functionality"
+          ],
+          "data_protection": "Anonymized, no user IDs attached",
+          "retention": "90 days",
+          "notes": "Firebase Crashlytics - OPT-IN only via Settings toggle. No user IDs attached."
+        },
+        "performance_data": {
+          "collected": true,
+          "optional": true,
+          "linked_to_user": false,
+          "used_for_tracking": false,
+          "purposes": [
+            "Analytics",
+            "Product Personalization"
+          ],
+          "data_protection": "Aggregated and anonymized",
+          "retention": "30 days"
+        },
+        "other_diagnostic_data": {
+          "collected": false
+        }
+      },
+      
+      "other_data": {
+        "other_data_types": {
+          "collected": false
+        }
+      }
+    },
+    
+    "data_uses": {
+      "third_party_advertising": {
+        "used": false
+      },
+      "developer_advertising": {
+        "used": false
+      },
+      "analytics": {
+        "used": true,
+        "data_types": ["crash_data", "performance_data"],
+        "notes": "Internal analytics only, no third-party services"
+      },
+      "product_personalization": {
+        "used": false
+      },
+      "app_functionality": {
+        "used": true,
+        "data_types": ["email_address", "crash_data", "performance_data"]
+      },
+      "other_purposes": {
+        "customer_support": {
+          "used": true,
+          "data_types": ["email_address", "customer_support"]
+        }
+      }
+    },
+    
+    "data_protection": {
+      "encryption": {
+        "in_transit": true,
+        "at_rest": true,
+        "methods": ["TLS 1.3", "AES-256"]
+      },
+      "data_minimization": true,
+      "purpose_limitation": true,
+      "user_control": {
+        "data_export": true,
+        "data_deletion": true,
+        "opt_out_available": true
+      }
+    },
+    
+    "third_party_partners": [],
+    
+    "children_policy": {
+      "directed_at_children": false,
+      "age_gate": false,
+      "parental_consent": false,
+      "coppa_compliant": true,
+      "notes": "App not directed at children, but safe for all ages"
+    },
+    
+    "privacy_choices": {
+      "opt_out_url": "https://babyshield.cureviax.ai/legal/data-deletion",
+      "data_deletion_url": "https://babyshield.cureviax.ai/api/v1/user/data/delete",
+      "data_export_url": "https://babyshield.cureviax.ai/api/v1/user/data/export"
+    },
+    
+    "privacy_questions_responses": {
+      "q1_do_you_collect_data": "Yes",
+      "q2_is_data_linked_to_users": "No",
+      "q3_is_data_used_for_tracking": "No",
+      "q4_data_types": ["Contact Info", "Diagnostics"],
+      "q5_data_uses": ["App Functionality", "Analytics", "Customer Support"]
+    },
+    
+    "app_store_privacy_details_display": {
+      "data_linked_to_you": [
+        "Identifiers"
+      ],
+      "data_not_linked_to_you": [
+        "Diagnostics"
+      ],
+      "data_used_to_track_you": "None"
+    }
+  },
+  
+  "compliance_certifications": {
+    "gdpr_compliant": true,
+    "ccpa_compliant": true,
+    "coppa_compliant": true,
+    "iso_27001": false,
+    "soc2": false,
+    "privacy_shield": false
+  },
+  
+  "contact_information": {
+    "privacy_officer": "support@babyshield.app",
+    "support_email": "support@babyshield.app",
+    "company_name": "BabyShield",
+    "company_address": "To be provided"
+  }
+}

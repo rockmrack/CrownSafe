@@ -1,0 +1,43 @@
+{
+  "plan_name": "Test Plan with Allergy Check",
+  "steps": [
+    {
+      "step_id": "step1_identify_product",
+      "task_description": "Identify product from barcode.",
+      "agent_capability_required": "identify_product",
+      "target_agent_type": "ProductIdentifierAgent",
+      "inputs": { "barcode": "{{barcode}}", "image_url": "{{image_url}}" },
+      "dependencies": []
+    },
+    {
+      "step_id": "step2_check_recalls",
+      "task_description": "Check for recalls.",
+      "agent_capability_required": "query_recalls_by_product",
+      "target_agent_type": "RecallDataAgent",
+      "inputs": { "product_name": "{{step1_identify_product.result.product_name}}" },
+      "dependencies": ["step1_identify_product"]
+    },
+    {
+      "step_id": "step3_allergy_check",
+      "task_description": "Check product ingredients for family allergies.",
+      "agent_capability_required": "check_allergy_sensitivity",
+      "target_agent_type": "AllergySensitivityAgent",
+      "inputs": {
+        "product_ingredients": "{{step1_identify_product.result.ingredients}}",
+        "user_id": "{{user_id}}"
+      },
+      "dependencies": ["step1_identify_product"]
+    },
+    {
+      "step_id": "step4_analyze_hazard",
+      "task_description": "Analyze and summarize all hazards.",
+      "agent_capability_required": "analyze_hazards",
+      "target_agent_type": "HazardAnalysisAgent",
+      "inputs": {
+        "recall_data": "{{step2_check_recalls.result}}",
+        "allergy_data": "{{step3_allergy_check.result}}"
+      },
+      "dependencies": ["step2_check_recalls", "step3_allergy_check"]
+    }
+  ]
+}

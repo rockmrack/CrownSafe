@@ -1,0 +1,86 @@
+{% from "macros/logo.html" import render_logo %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @page { size: A4 portrait; margin: 0.8in; }
+    body { font-family: Helvetica, Arial, sans-serif; font-size: 10pt; color: #242729; }
+    h1 { color: #1a237e; font-size: 18pt; border-bottom: 1px solid #2980b9; margin-top: 1.2em; }
+    h2 { color: #2980b9; font-size: 14pt; margin-top: 1.0em; }
+    th { background-color: #e8f0fe; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 1em; }
+    th, td { border: 1px solid #d0d6db; padding: 6px; text-align: left; }
+    .pill { display:inline-block; padding: 2px 8px; border-radius: 10px; font-size: 9pt; margin-left: 8px; }
+    .risk-LOW { background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; }
+    .risk-MEDIUM { background:#fff8e1; color:#f9a825; border:1px solid #ffecb3; }
+    .risk-HIGH { background:#ffebee; color:#c62828; border:1px solid #ffcdd2; }
+    .risk-CRITICAL { background:#ffdde0; color:#b71c1c; border:1px solid #ef9a9a; }
+  </style>
+  <title>BabyShield Nursery Quarterly Report</title>
+</head>
+<body>
+  <div style="text-align:center; margin-top:40px;">
+    {% if logo_path %}<img src="{{ logo_path }}" width="160" style="margin-bottom:12px;" />{% endif %}
+    <h1>Nursery Quarterly Safety Report</h1>
+    <div style="color:#657384;">Generated {{ report_date }} • Workflow {{ workflow_id }}</div>
+  </div>
+
+  <h2>Summary</h2>
+  <table>
+    <tbody>
+      <tr><th style="width:35%">Total Products Monitored</th><td>{{ summary.total_products }}</td></tr>
+      <tr><th>High Risk Products</th><td>{{ summary.high_risk_count }}</td></tr>
+      <tr><th>New Recalls This Quarter</th><td>{{ summary.new_recalls_count }}</td></tr>
+      <tr><th>Products Nearing Expiry</th><td>{{ summary.nearing_expiry_count }}</td></tr>
+      <tr><th>Data Sources Checked</th><td>{{ data_sources_checked|join(', ') if data_sources_checked else 'CPSC, FDA, EU Safety Gate, Health Canada, ACCC' }}</td></tr>
+    </tbody>
+  </table>
+
+  {% for item in products %}
+    <h2>{{ loop.index }}. {{ item.product.product_name or 'Unknown Product' }}
+      <span class="pill risk-{{ item.risk.level }}">{{ item.risk.level }}</span>
+    </h2>
+    <table>
+      <tbody>
+        <tr><th style="width:35%">Brand</th><td>{{ item.product.brand or 'N/A' }}</td></tr>
+        <tr><th>UPC/GTIN</th><td>{{ item.product.upc_gtin or 'N/A' }}</td></tr>
+        <tr><th>Model</th><td>{{ item.product.model_number or 'N/A' }}</td></tr>
+        <tr><th>Lot/Serial</th><td>{{ item.product.lot_or_serial or 'N/A' }}</td></tr>
+        <tr><th>Risk Score</th><td>{{ item.risk.score }}/100</td></tr>
+        <tr><th>Assessment</th><td>{{ item.risk.final_assessment }}</td></tr>
+        <tr><th>Executive Summary</th><td>{{ item.risk.summary }}</td></tr>
+      </tbody>
+    </table>
+
+    {% if item.recalls and item.recalls|length > 0 %}
+      <table>
+        <thead><tr><th>ID</th><th>Agency</th><th>Date</th><th>Hazard</th><th>Remedy</th></tr></thead>
+        <tbody>
+        {% for r in item.recalls %}
+          <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.agency }}</td>
+            <td>{{ r.date }}</td>
+            <td>{{ r.hazard }}</td>
+            <td>{{ r.remedy }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No official recalls found for this product.</p>
+    {% endif %}
+
+    <div style="height:10px"></div>
+  {% endfor %}
+
+  <h2>Legal Disclaimers</h2>
+  <ol>
+    {% for d in disclaimers %}
+      <li>{{ d }}</li>
+    {% endfor %}
+  </ol>
+</body>
+</html>
+

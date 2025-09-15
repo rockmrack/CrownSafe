@@ -1,0 +1,24 @@
+{
+  "unsafe_ingredients": {
+    "retinol": {
+      "risk_level": "High",
+      "reason": "High doses of Vitamin A derivatives like retinol have been linked to birth defects.",
+      "source": "American College of Obstetricians and Gynecologists (ACOG)"
+    },
+    "hydroquinone": {
+      "risk_level": "Moderate",
+      "reason": "Significant systemic absorption. Potential risks are not well-studied, so avoidance is recommended.",
+      "source": "MotherToBaby"
+    },
+    "formaldehyde": {
+      "risk_level": "High",
+      "reason": "Known carcinogen with potential risks to fetal development.",
+      "source": "CDC"
+    },
+    "soft cheese (unpasteurized)": {
+      "risk_level": "High",
+      "reason": "Risk of Listeria contamination, which can be dangerous during pregnancy.",
+      "source": "FDA"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+# CLEAN Production Dockerfile - No warnings
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies (including for pyzbar and image processing)
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libpq-dev \
+    curl \
+    libzbar0 \
+    libgl1 \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements-docker.txt .
+
+# Install Python packages
+RUN pip install --no-cache-dir -r requirements-docker.txt
+
+# Copy application
+COPY . .
+
+# Set non-sensitive environment variables only
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    API_HOST=0.0.0.0 \
+    API_PORT=8001 \
+    DATABASE_URL=sqlite:///./babyshield.db \
+    DISABLE_REDIS_WARNING=true \
+    TEST_MODE=false
+
+# Port
+EXPOSE 8001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8001/health || exit 1
+
+# Run with clean startup
+CMD ["python", "startup_production.py"]

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BabyShield Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #F7FAFC;
+            border-radius: 30px;
+            overflow: hidden;
+        }
+        
+        .status-bar {
+            background: white;
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .app-header {
+            background: white;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        
+        .content {
+            height: calc(100% - 100px);
+            overflow-y: auto;
+            background: #F7FAFC;
+        }
+        
+        .toggle-switch {
+            width: 48px;
+            height: 28px;
+            background: #CBD5E0;
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .toggle-switch.active {
+            background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%);
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="phone-screen">
+            <div class="status-bar">
+                <div>9:41</div>
+                <div>📶 🔋</div>
+            </div>
+            
+            <div class="app-header">
+                <span style="font-size: 20px; margin-right: 15px; cursor: pointer;">←</span>
+                <span style="font-size: 18px; font-weight: 600;">Settings</span>
+            </div>
+            
+            <div class="content">
+                <!-- Profile Section -->
+                <div style="background: white; padding: 20px; display: flex; align-items: center; margin-bottom: 15px;">
+                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667EEA 0%, #00D4AA 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; margin-right: 15px;">
+                        👤
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 18px; font-weight: 600;">Parent Account</div>
+                        <div style="font-size: 13px; color: #6B7280;">Not signed in</div>
+                    </div>
+                </div>
+                
+                <!-- MY VIRTUAL NURSERY -->
+                <div style="background: white; margin-bottom: 15px; padding: 15px 0;">
+                    <div style="padding: 0 20px 10px; font-size: 13px; font-weight: 600; color: #6B7280; text-transform: uppercase;">
+                        MY VIRTUAL NURSERY
+                    </div>
+                    <div style="padding: 12px 20px; cursor: pointer;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 15px; font-weight: 500;">
+                                    Saved Products
+                                    <span style="background: #E0F2FE; color: #0369A1; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-left: 8px;">12 items</span>
+                                </div>
+                                <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">Products you've scanned and saved</div>
+                            </div>
+                            <span style="color: #9CA3AF;">›</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- PERSONALIZED SAFETY SECTION -->
+                <div style="background: white; margin-bottom: 15px; padding: 15px 0; border: 2px solid #00D4AA;">
+                    <div style="padding: 0 20px 10px; font-size: 13px; font-weight: 600; color: #6B7280; text-transform: uppercase;">
+                        🛡️ PERSONALIZED SAFETY
+                    </div>
+                    
+                    <!-- Allergy & Ingredient Alerts -->
+                    <div style="padding: 12px 20px; cursor: pointer; background: #FAFAFA;" onclick="alert('Opening Allergy Settings')">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 15px; font-weight: 500; color: #1A202C;">
+                                    Allergy & Ingredient Alerts
+                                    <span style="background: #FEF3C7; color: #92400E; padding: 2px 8px; border-radius: 8px; font-size: 10px; margin-left: 8px;">3 ACTIVE</span>
+                                </div>
+                                <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">Configure alerts for specific allergens</div>
+                            </div>
+                            <span style="color: #9CA3AF;">›</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Pregnancy Safety Mode -->
+                    <div style="padding: 12px 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 15px; font-weight: 500; color: #1A202C;">Pregnancy Safety Mode</div>
+                                <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">Enhanced checks for pregnancy-safe products</div>
+                            </div>
+                            <div class="toggle-switch" onclick="this.classList.toggle('active'); alert('Pregnancy Mode toggled')"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Health Profile -->
+                    <div style="padding: 12px 20px; cursor: pointer;" onclick="alert('Opening Health Profile')">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 15px; font-weight: 500; color: #1A202C;">Health Profile</div>
+                                <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">Customize safety for your family</div>
+                            </div>
+                            <span style="color: #9CA3AF;">›</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- NOTIFICATIONS -->
+                <div style="background: white; margin-bottom: 15px; padding: 15px 0;">
+                    <div style="padding: 0 20px 10px; font-size: 13px; font-weight: 600; color: #6B7280; text-transform: uppercase;">
+                        NOTIFICATIONS & ALERTS
+                    </div>
+                    <div style="padding: 12px 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 15px; font-weight: 500;">Critical Alerts</div>
+                                <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">Immediate recall notifications</div>
+                            </div>
+                            <div class="toggle-switch active"></div>
+                        </div>
+                    </div>
+                    <div style="padding: 12px 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 15px; font-weight: 500;">Verification Alerts</div>
+                                <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">When visual scans need verification</div>
+                            </div>
+                            <div class="toggle-switch active"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- DATA & PRIVACY -->
+                <div style="background: white; margin-bottom: 15px; padding: 15px 0;">
+                    <div style="padding: 0 20px 10px; font-size: 13px; font-weight: 600; color: #6B7280; text-transform: uppercase;">
+                        DATA & PRIVACY
+                    </div>
+                    <div style="background: #F0F9FF; border: 1px solid #BAE6FD; padding: 12px; margin: 0 20px 15px; border-radius: 8px;">
+                        <div style="font-size: 13px; font-weight: 600; color: #0369A1;">🔒 Your Privacy Matters</div>
+                        <div style="font-size: 12px; color: #075985; margin-top: 5px;">Your data is stored securely and anonymously. We never sell or share your personal information.</div>
+                    </div>
+                    <div style="padding: 12px 20px; cursor: pointer;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 15px; font-weight: 500;">See How We Use Your Data</div>
+                                <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">Visual explanation of our data practices</div>
+                            </div>
+                            <span style="color: #9CA3AF;">›</span>
+                        </div>
+                    </div>
+                    <div style="padding: 12px 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 15px; font-weight: 500;">Contribute to AI Model Improvement</div>
+                                <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">Help improve product detection accuracy</div>
+                            </div>
+                            <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                    </div>
+                    <div style="padding: 12px 20px; cursor: pointer;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 15px; font-weight: 500;">Privacy Policy</div>
+                                <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">Read our complete privacy practices</div>
+                            </div>
+                            <span style="color: #9CA3AF;">›</span>
+                        </div>
+                    </div>
+                    <button style="background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; width: calc(100% - 40px); margin: 15px 20px; cursor: pointer;">
+                        🗑️ Request Deletion of My Data
+                    </button>
+                </div>
+                
+                <!-- ABOUT & SUPPORT -->
+                <div style="background: white; margin-bottom: 15px; padding: 15px 0;">
+                    <div style="padding: 0 20px 10px; font-size: 13px; font-weight: 600; color: #6B7280; text-transform: uppercase;">
+                        ABOUT & SUPPORT
+                    </div>
+                    <div style="padding: 12px 20px; cursor: pointer;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 15px; font-weight: 500;">About BabyShield</div>
+                                <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">Our mission to keep babies safe</div>
+                            </div>
+                            <span style="color: #9CA3AF;">›</span>
+                        </div>
+                    </div>
+                    <div style="padding: 12px 20px; cursor: pointer;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 15px; font-weight: 500;">Safety Agencies</div>
+                                <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">39+ official sources we monitor</div>
+                            </div>
+                            <span style="color: #9CA3AF;">›</span>
+                        </div>
+                    </div>
+                    <div style="padding: 12px 20px; cursor: pointer;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 15px; font-weight: 500;">Report a Problem</div>
+                                <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">Help us improve the app</div>
+                            </div>
+                            <span style="color: #9CA3AF;">›</span>
+                        </div>
+                    </div>
+                    <div style="padding: 12px 20px; cursor: pointer;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 15px; font-weight: 500;">Terms of Service</div>
+                                <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">Legal terms and conditions</div>
+                            </div>
+                            <span style="color: #9CA3AF;">›</span>
+                        </div>
+                    </div>
+                    <div style="padding: 12px 20px; cursor: pointer;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 15px; font-weight: 500;">AI Disclaimer</div>
+                                <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">Understanding AI limitations</div>
+                            </div>
+                            <span style="color: #9CA3AF;">›</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; padding: 20px; color: #9CA3AF; font-size: 12px;">
+                    Version 1.0.0
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

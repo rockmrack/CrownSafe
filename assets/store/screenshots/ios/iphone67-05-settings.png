@@ -1,0 +1,16 @@
+PLACEHOLDER IMAGE
+Size: 1290x2796
+Purpose: iOS iphone67 - Settings Screen
+Created: 2025-08-27T13:27:55.043229
+
+TO REPLACE:
+1. Create actual image at 1290x2796 pixels
+2. Save as PNG (or JPG for Android feature graphic)
+3. Replace this file at: assets\store\screenshots\ios\iphone67-05-settings.png
+
+DESIGN GUIDELINES:
+- Use brand colors: #667EEA (primary), #48BB78 (secondary)
+- Include app logo
+- Show actual app UI (not mockups)
+- Ensure text is readable
+- Follow platform guidelines
