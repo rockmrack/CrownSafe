@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+      PYTEST_ADDOPTS: "--capture=no -q"
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -26,7 +27,7 @@ jobs:
       - name: Run unit-like tests
         run: |
           if [ -d tests ]; then
-            pytest -q -k "not live and not deployment and not ingest and not ingestion and not celery and not e2e"
+            pytest -k "not live and not deployment and not ingest and not ingestion and not celery and not e2e"
           else
             echo "No tests/ directory; skipping tests."
           fi
