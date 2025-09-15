@@ -1,0 +1,40 @@
+﻿name: CI (unit subset)
+on:
+  push:
+    branches: [ "staging", "main" ]
+  pull_request:
+    branches: [ "staging", "main" ]
+concurrency:
+  group: ci-unit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  unit-subset:
+    runs-on: ubuntu-latest
+    env:
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+      PYTEST_ADDOPTS: "-q"
+      PYTHONPATH: ${{ github.workspace }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; else pip install pytest; fi
+      - name: Run unit subset (validators)
+        run: |
+          set -e
+          if [ -f tests/test_validators.py ]; then
+            # show env + tree for quick triage if it ever fails again
+            python -V
+            echo "PYTHONPATH=$PYTHONPATH"
+            ls -la
+            pytest -vv tests/test_validators.py --maxfail=1
+          else
+            echo "tests/test_validators.py not found; running ci_smoke instead"
+            pytest -c /dev/null ci_smoke/test_ci_smoke.py
+          fi
