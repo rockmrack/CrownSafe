@@ -823,8 +823,12 @@ try:
     from api.supplemental_data_endpoints import router as supplemental_router
     app.include_router(supplemental_router)
     logging.info("✅ Supplemental data endpoints registered")
+except ImportError as e:
+    logging.error(f"Import error for supplemental data endpoints: {e}")
 except Exception as e:
     logging.error(f"Failed to register supplemental data endpoints: {e}")
+    import traceback
+    logging.error(f"Full traceback: {traceback.format_exc()}")
 
 # Import OpenAPI spec
 try:
