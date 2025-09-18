@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 
 from core_infra.supplemental_data_service import supplemental_data_service
 from core_infra.database import get_db
-from core_infra.barcode_scanner import barcode_scanner
 from api.models.supplemental_models import (
     EnhancedSafetyReport, 
     FoodDataResponse, 
