@@ -17,7 +17,6 @@ router = APIRouter(prefix="/api/v1/recalls", tags=["recalls"])
 
 
 class RecallItem(BaseModel):
-    model_config = {"protected_namespaces": ()}  # Allow model_number field
     
     id: int
     recall_id: Optional[str] = None
@@ -37,8 +36,7 @@ class RecallItem(BaseModel):
     reference: Optional[str] = None  # recall_id
     url: Optional[str] = None        # source URL if available
 
-    class Config:
-        from_attributes = True  # pydantic v2
+    model_config = {"from_attributes": True, "protected_namespaces": ()}
 
 
 class RecallListResponse(BaseModel):
