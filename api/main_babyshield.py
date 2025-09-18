@@ -818,6 +818,14 @@ from api.compliance_endpoints import router as compliance_router
 app.include_router(compliance_router)
 logging.info("✅ Legal Compliance endpoints (COPPA, GDPR, Children's Code) registered")
 
+# Include Supplemental Data endpoints for enhanced safety reports
+try:
+    from api.supplemental_data_endpoints import router as supplemental_router
+    app.include_router(supplemental_router)
+    logging.info("✅ Supplemental data endpoints registered")
+except Exception as e:
+    logging.error(f"Failed to register supplemental data endpoints: {e}")
+
 # Import OpenAPI spec
 try:
     from api.openapi_spec import custom_openapi
