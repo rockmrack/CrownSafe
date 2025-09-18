@@ -206,3 +206,12 @@ async def health_check():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+# --- Supplemental endpoints registration (idempotent) ---
+try:
+    from api.supplemental_data_endpoints import router as supplemental_router
+    app.include_router(supplemental_router, prefix="/api/v1/supplemental", tags=["Supplemental"])
+except Exception as e:
+    import logging
+    logging.getLogger(__name__).warning(f"Supplemental router not mounted: {e}")
+# --- end supplemental registration ---
+
