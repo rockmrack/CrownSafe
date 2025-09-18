@@ -55,17 +55,15 @@ async def get_enhanced_safety_report(
         
         processing_time = int((time.time() - start_time) * 1000)
         
-        return ok(
-            data=report,
-            message="Enhanced safety report generated successfully",
-            processing_time_ms=processing_time
-        )
+        return ok(data={
+            "report": report,
+            "processing_time_ms": processing_time
+        })
         
     except Exception as e:
         logger.error(f"Error generating enhanced safety report: {e}", exc_info=True)
         return fail(
-            message="Failed to generate enhanced safety report",
-            error=str(e),
+            message=f"Failed to generate enhanced safety report: {str(e)}",
             status=500
         )
 
@@ -97,17 +95,15 @@ async def get_food_data(
         
         processing_time = int((time.time() - start_time) * 1000)
         
-        return ok(
-            data=report,
-            message="Food data retrieved successfully",
-            processing_time_ms=processing_time
-        )
+        return ok(data={
+            "report": report,
+            "processing_time_ms": processing_time
+        })
         
     except Exception as e:
         logger.error(f"Error getting food data: {e}", exc_info=True)
         return fail(
-            message="Failed to get food data",
-            error=str(e),
+            message=f"Failed to get food data: {str(e)}",
             status=500
         )
 
@@ -139,17 +135,15 @@ async def get_cosmetic_data(
         
         processing_time = int((time.time() - start_time) * 1000)
         
-        return ok(
-            data=report,
-            message="Cosmetic data retrieved successfully",
-            processing_time_ms=processing_time
-        )
+        return ok(data={
+            "report": report,
+            "processing_time_ms": processing_time
+        })
         
     except Exception as e:
         logger.error(f"Error getting cosmetic data: {e}", exc_info=True)
         return fail(
-            message="Failed to get cosmetic data",
-            error=str(e),
+            message=f"Failed to get cosmetic data: {str(e)}",
             status=500
         )
 
@@ -181,17 +175,15 @@ async def get_chemical_data(
         
         processing_time = int((time.time() - start_time) * 1000)
         
-        return ok(
-            data=report,
-            message="Chemical data retrieved successfully",
-            processing_time_ms=processing_time
-        )
+        return ok(data={
+            "report": report,
+            "processing_time_ms": processing_time
+        })
         
     except Exception as e:
         logger.error(f"Error getting chemical data: {e}", exc_info=True)
         return fail(
-            message="Failed to get chemical data",
-            error=str(e),
+            message=f"Failed to get chemical data: {str(e)}",
             status=500
         )
 
@@ -235,16 +227,12 @@ async def get_available_data_sources():
             }
         }
         
-        return ok(
-            data=sources,
-            message="Available data sources retrieved successfully"
-        )
+        return ok(data=sources)
         
     except Exception as e:
         logger.error(f"Error getting data sources: {e}", exc_info=True)
         return fail(
-            message="Failed to get data sources",
-            error=str(e),
+            message=f"Failed to get data sources: {str(e)}",
             status=500
         )
 
@@ -264,15 +252,11 @@ async def supplemental_data_health():
             "timestamp": time.time()
         }
         
-        return ok(
-            data=health_status,
-            message="Supplemental data services health check completed"
-        )
+        return ok(data=health_status)
         
     except Exception as e:
         logger.error(f"Error in health check: {e}", exc_info=True)
         return fail(
-            message="Health check failed",
-            error=str(e),
+            message=f"Health check failed: {str(e)}",
             status=500
         )
