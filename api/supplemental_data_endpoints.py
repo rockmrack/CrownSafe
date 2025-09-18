@@ -1,4 +1,4 @@
-"""
+﻿"""
 API endpoints for supplemental data and enhanced safety reports
 """
 
@@ -15,7 +15,7 @@ from api.models.supplemental_models import (
     SupplementalDataResponse,
     EnhancedSafetyReport
 )
-from api.pydantic_base import ok, fail
+from api.schemas.common import ok, fail
 
 logger = logging.getLogger(__name__)
 
