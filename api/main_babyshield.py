@@ -1828,6 +1828,7 @@ async def advanced_search(req: AdvancedSearchRequest):
         search_info.append(f"agencies={req.agencies}")
     
     logger.info(f"[{trace_id}] Advanced search: {', '.join(search_info)}")
+    logger.info(f"[{trace_id}] Pagination params: limit={req.limit}, offset={req.offset}, nextCursor={req.nextCursor}")
     
     try:
         with get_db_session() as db:
@@ -1850,7 +1851,8 @@ async def advanced_search(req: AdvancedSearchRequest):
                 date_from=req.date_from,
                 date_to=req.date_to,
                 limit=req.limit,
-                offset=req.offset or 0
+                offset=req.offset,
+                cursor=req.nextCursor
             )
             
             # Check if search was successful

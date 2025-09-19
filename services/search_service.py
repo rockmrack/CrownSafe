@@ -198,12 +198,32 @@ class SearchService:
         date_from: Optional[date] = None,
         date_to: Optional[date] = None,
         limit: int = 20,
-        offset: int = 0
+        offset: Optional[int] = None,
+        cursor: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Execute search with fuzzy matching and return results
         """
         try:
+            # Handle cursor-based pagination
+            actual_offset = offset
+            if cursor:
+                try:
+                    import base64
+                    import json
+                    cursor_data = json.loads(base64.b64decode(cursor).decode())
+                    actual_offset = cursor_data.get("offset", 0)
+                    logger.info(f"Cursor decoded: offset={actual_offset}, cursor_data={cursor_data}")
+                except Exception as e:
+                    logger.warning(f"Invalid cursor: {e}, falling back to offset")
+                    actual_offset = offset or 0
+            elif offset is not None:
+                actual_offset = offset
+            else:
+                actual_offset = 0
+            
+            logger.info(f"Search parameters: offset={offset}, cursor={cursor}, actual_offset={actual_offset}, limit={limit}")
+            
             # Build the query
             sql_query, params, use_scoring = self.build_search_query(
                 query=query,
@@ -216,7 +236,7 @@ class SearchService:
                 date_from=date_from,
                 date_to=date_to,
                 limit=limit,
-                offset=offset
+                offset=actual_offset
             )
             
             # Execute query
@@ -273,14 +293,31 @@ class SearchService:
             total_result = self.db.execute(text(count_sql), count_params)
             total = total_result.scalar() or 0
             
+            # Generate next cursor if there are more results
+            next_cursor = None
+            has_more = len(items) == limit and (actual_offset + limit) < total
+            
+            if has_more and items:
+                # Create cursor from the last item
+                last_item = items[-1]
+                cursor_data = {
+                    "offset": actual_offset + limit,
+                    "last_id": last_item.get("id"),
+                    "last_date": last_item.get("recallDate")
+                }
+                import base64
+                import json
+                next_cursor = base64.b64encode(json.dumps(cursor_data).encode()).decode()
+            
             return {
                 "ok": True,
                 "data": {
                     "items": items,
                     "total": min(total, len(items)) if id else total,
                     "limit": limit,
-                    "offset": offset,
-                    "nextCursor": None  # TODO: Implement cursor-based pagination
+                    "offset": actual_offset,
+                    "nextCursor": next_cursor,
+                    "hasMore": has_more
                 }
             }
             
