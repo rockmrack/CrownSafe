@@ -77,11 +77,19 @@ async def babyshield_exception_handler(request: Request, exc: BabyShieldExceptio
 
 async def http_exception_handler(request: Request, exc: HTTPException):
     """Handle FastAPI HTTP exceptions"""
-    logger.warning(f"HTTP exception: {exc.detail}", extra={
-        "path": request.url.path,
-        "method": request.method,
-        "status_code": exc.status_code
-    })
+    # Log 404/405 as INFO (normal not found), others as WARNING
+    if exc.status_code in (404, 405):
+        logger.info(f"HTTP exception: {exc.detail}", extra={
+            "path": request.url.path,
+            "method": request.method,
+            "status_code": exc.status_code
+        })
+    else:
+        logger.warning(f"HTTP exception: {exc.detail}", extra={
+            "path": request.url.path,
+            "method": request.method,
+            "status_code": exc.status_code
+        })
     
     return JSONResponse(
         status_code=exc.status_code,
