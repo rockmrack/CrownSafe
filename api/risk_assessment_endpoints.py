@@ -115,6 +115,25 @@ async def get_risk_assessment_info():
     }
 
 
+@risk_router.post("", response_model=dict)
+async def risk_assessment_root_post():
+    """
+    POST endpoint for root risk assessment path - redirects to proper endpoint
+    """
+    return {
+        "success": False,
+        "error": {
+            "code": "ENDPOINT_NOT_FOUND",
+            "message": "Please use the specific risk assessment endpoints. POST requests should go to /assess, /assess/barcode, or /assess/image",
+            "available_endpoints": {
+                "assess": "POST /assess - Assess product risk",
+                "assess_barcode": "POST /assess/barcode - Assess by barcode", 
+                "assess_image": "POST /assess/image - Assess by image"
+            }
+        }
+    }
+
+
 @risk_router.post("/assess", response_model=RiskAssessmentResponse)
 async def assess_product_risk(
     request: RiskAssessmentRequest,

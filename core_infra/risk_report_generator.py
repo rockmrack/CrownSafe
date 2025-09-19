@@ -162,7 +162,7 @@ class RiskReportGenerator:
             },
             "risk_summary": {
                 "score": round(risk_components.total_score, 1),
-                "level": risk_components.risk_level.upper(),
+                "level": (risk_components.risk_level or 'UNKNOWN').upper(),
                 "confidence": f"{risk_components.confidence:.0%}",
                 "trend": risk_profile.risk_trend if risk_profile else "stable"
             },
@@ -264,7 +264,7 @@ class RiskReportGenerator:
                 f"{data['risk_summary']['score']}/100",
                 data['risk_summary']['level'],
                 data['risk_summary']['confidence'],
-                data['risk_summary']['trend'].upper()
+                (data['risk_summary']['trend'] or 'UNKNOWN').upper()
             ]
         ]
         risk_table = Table(risk_table_data, colWidths=[2*inch, 2*inch, 2*inch, 2*inch])
