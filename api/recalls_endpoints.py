@@ -76,6 +76,7 @@ def decode_cursor(cursor: str) -> Optional[dict]:
 
 
 class RecallItem(BaseModel):
+    model_config = {"protected_namespaces": ()}  # Allow model_number field
     
     id: int
     recall_id: Optional[str] = None
