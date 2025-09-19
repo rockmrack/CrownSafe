@@ -1861,10 +1861,14 @@ async def advanced_search(request: Request):
     if "cursor" in body_data and "nextCursor" not in body_data:
         body_data["nextCursor"] = body_data.pop("cursor")
         logger.info(f"[{trace_id}] Converted 'cursor' to 'nextCursor': {body_data.get('nextCursor')}")
+    elif "nextCursor" in body_data:
+        logger.info(f"[{trace_id}] Found 'nextCursor' in request: {body_data.get('nextCursor')}")
     
     # Create AdvancedSearchRequest from parsed data
     try:
+        logger.info(f"[{trace_id}] Creating AdvancedSearchRequest with body_data: {body_data}")
         req = AdvancedSearchRequest(**body_data)
+        logger.info(f"[{trace_id}] AdvancedSearchRequest created successfully: nextCursor={req.nextCursor}")
     except Exception as e:
         logger.error(f"[{trace_id}] Invalid request data: {e}")
         return JSONResponse(
