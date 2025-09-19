@@ -38,7 +38,8 @@ class SearchService:
         date_to: Optional[date] = None,
         # Pagination
         limit: int = 20,
-        offset: int = 0
+        offset: int = 0,
+        cursor_data: Optional[Dict[str, Any]] = None
     ) -> Tuple[str, Dict[str, Any], bool]:
         """
         Build optimized SQL query using pg_trgm for fuzzy search
@@ -170,6 +171,30 @@ class SearchService:
             f"{table}.recall_id ASC"
         ])
         
+        # Handle cursor-based pagination
+        if cursor_data:
+            # Add cursor-based WHERE conditions for proper pagination
+            cursor_conditions = []
+            last_id = cursor_data.get("last_id")
+            last_date = cursor_data.get("last_date")
+            
+            if last_date and last_id:
+                # For cursor pagination: get records after the last seen record
+                # (recall_date < last_date) OR (recall_date = last_date AND recall_id > last_id)
+                cursor_conditions.append(f"""
+                    ({table}.recall_date < :cursor_date) OR 
+                    ({table}.recall_date = :cursor_date AND {table}.recall_id > :cursor_id)
+                """)
+                params['cursor_date'] = last_date
+                params['cursor_id'] = last_id
+                logger.info(f"Cursor pagination: last_date={last_date}, last_id={last_id}")
+            
+            if cursor_conditions:
+                if where_clause:
+                    where_clause = f"({where_clause}) AND ({' AND '.join(cursor_conditions)})"
+                else:
+                    where_clause = ' AND '.join(cursor_conditions)
+        
         sql = f"""
             SELECT 
                 {', '.join(select_columns)},
@@ -178,11 +203,14 @@ class SearchService:
             WHERE {where_clause}
             ORDER BY {', '.join(order_by)}
             LIMIT :limit
-            OFFSET :offset
         """
         
+        # Only add OFFSET for non-cursor pagination
+        if not cursor_data:
+            sql += " OFFSET :offset"
+            params['offset'] = offset
+        
         params['limit'] = min(limit, 50)  # Cap at 50
-        params['offset'] = offset
         
         return sql, params, use_scoring
     
@@ -206,13 +234,17 @@ class SearchService:
         """
         try:
             # Handle cursor-based pagination
+            cursor_data = None
             actual_offset = offset
+            use_cursor_pagination = False
+            
             if cursor:
                 try:
                     import base64
                     import json
                     cursor_data = json.loads(base64.b64decode(cursor).decode())
                     actual_offset = cursor_data.get("offset", 0)
+                    use_cursor_pagination = True
                     logger.info(f"Cursor decoded: offset={actual_offset}, cursor_data={cursor_data}")
                 except Exception as e:
                     logger.warning(f"Invalid cursor: {e}, falling back to offset")
@@ -222,7 +254,7 @@ class SearchService:
             else:
                 actual_offset = 0
             
-            logger.info(f"Search parameters: offset={offset}, cursor={cursor}, actual_offset={actual_offset}, limit={limit}")
+            logger.info(f"Search parameters: offset={offset}, cursor={cursor}, actual_offset={actual_offset}, limit={limit}, use_cursor={use_cursor_pagination}")
             
             # Build the query
             sql_query, params, use_scoring = self.build_search_query(
@@ -236,7 +268,8 @@ class SearchService:
                 date_from=date_from,
                 date_to=date_to,
                 limit=limit,
-                offset=actual_offset
+                offset=actual_offset,
+                cursor_data=cursor_data if use_cursor_pagination else None
             )
             
             # Execute query
