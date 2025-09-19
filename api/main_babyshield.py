@@ -734,13 +734,7 @@ try:
 except Exception as e:
     logging.error(f"Failed to register subscription endpoints: {e}")
 
-# Include health endpoints for app store readiness
-try:
-    from api.health_endpoints import router as health_router
-    app.include_router(health_router)
-    logging.info("✅ Health endpoints registered")
-except Exception as e:
-    logging.error(f"Failed to register health endpoints: {e}")
+# Health endpoints already registered above
 
 # Include recall detail endpoints
 try:

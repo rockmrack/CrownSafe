@@ -279,7 +279,8 @@ def search_recalls_dev(
     date_to: Optional[date] = Query(None, description="Filter recalls to this date"),
     sort: str = Query("recent", pattern="^(recent|oldest)$", description="Sort order"),
     limit: int = Query(20, ge=1, le=100, description="Number of results per page"),
-    offset: int = Query(0, ge=0, description="Number of results to skip")
+    offset: Optional[int] = Query(None, ge=0, description="Number of results to skip (offset pagination)"),
+    cursor: Optional[str] = Query(None, description="Cursor for pagination (cursor-based pagination)")
 ):
     """
     DEV OVERRIDE: Search recalls without database dependencies
@@ -367,9 +368,47 @@ def search_recalls_dev(
         else:
             filtered_recalls = sorted(filtered_recalls, key=lambda x: x["recall_date"])
         
-        # Apply pagination
+        # Apply pagination (cursor-based or offset-based)
         total = len(filtered_recalls)
-        paginated_recalls = filtered_recalls[offset:offset + limit]
+        
+        if cursor:
+            # Cursor-based pagination (mock implementation)
+            cursor_data = decode_cursor(cursor)
+            if cursor_data:
+                # Find the position of the cursor in the sorted list
+                cursor_id = cursor_data.get("id")
+                cursor_found = False
+                start_index = 0
+                
+                for i, recall in enumerate(filtered_recalls):
+                    if recall["id"] == cursor_id:
+                        start_index = i + 1
+                        cursor_found = True
+                        break
+                
+                if not cursor_found:
+                    start_index = 0
+                
+                paginated_recalls = filtered_recalls[start_index:start_index + limit]
+                has_more = len(filtered_recalls) > start_index + limit
+            else:
+                paginated_recalls = filtered_recalls[:limit]
+                has_more = len(filtered_recalls) > limit
+        else:
+            # Offset-based pagination
+            actual_offset = offset if offset is not None else 0
+            paginated_recalls = filtered_recalls[actual_offset:actual_offset + limit]
+            has_more = len(filtered_recalls) > actual_offset + limit
+        
+        # Generate next cursor if there are more results
+        next_cursor = None
+        if has_more and paginated_recalls:
+            last_recall = paginated_recalls[-1]
+            next_cursor = encode_cursor(
+                last_recall["recall_id"],
+                last_recall["recall_date"],
+                last_recall["id"]
+            )
         
         return {
             "success": True,
@@ -377,7 +416,9 @@ def search_recalls_dev(
                 "items": paginated_recalls,
                 "total": total,
                 "limit": limit,
-                "offset": offset
+                "offset": offset,
+                "nextCursor": next_cursor,
+                "hasMore": has_more
             }
         }
         

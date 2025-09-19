@@ -642,8 +642,8 @@ async def get_cache_status(
     return cache_info
 
 
-@router.delete("/cache/clear")
-@router.post("/cache/clear")
+@router.delete("/cache/clear", operation_id="clear_cache_delete")
+@router.post("/cache/clear", operation_id="clear_cache_post")
 async def clear_cache(
     barcode: Optional[str] = Query(None, description="Specific barcode to clear (optional)"),
     user_id: Optional[str] = Header(None, alias="X-User-ID", description="User ID for user-specific cache")

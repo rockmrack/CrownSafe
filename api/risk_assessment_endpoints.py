@@ -317,16 +317,13 @@ async def assess_by_barcode(
         # Use barcode scanner from Phase 1
         scan_result = barcode_scanner.scan_text(barcode)
         
-        if not scan_result.codes:
+        if not scan_result.success:
             raise HTTPException(status_code=400, detail="Invalid barcode")
         
-        # Extract product identifiers
-        code_data = scan_result.codes[0]
-        
-        # Create assessment request
+        # Extract product identifiers from ScanResult
         request = RiskAssessmentRequest(
-            upc=code_data.get("upc"),
-            gtin=code_data.get("gtin"),
+            upc=scan_result.raw_data,
+            gtin=scan_result.gtin,
             include_report=True
         )
         
@@ -365,7 +362,7 @@ async def assess_by_image(
         
         scan_result = barcode_scanner.scan_image(image)
         
-        if not scan_result.codes:
+        if not scan_result.success:
             return JSONResponse(
                 status_code=202,
                 content={
@@ -376,10 +373,9 @@ async def assess_by_image(
             )
         
         # Found barcode, assess immediately
-        code_data = scan_result.codes[0]
         request = RiskAssessmentRequest(
-            upc=code_data.get("upc"),
-            gtin=code_data.get("gtin"),
+            upc=scan_result.raw_data,
+            gtin=scan_result.gtin,
             include_report=True
         )
         

@@ -25,8 +25,9 @@ class BarcodeDetectionResult(BaseModel):
     confidence: float = Field(..., description="Detection confidence score (0-100)")
     quality_badge: str = Field(..., description="Quality assessment badge text")
     
-    class Config:
-        json_schema_extra = {
+    model_config = {
+        "protected_namespaces": (),
+        "json_schema_extra": {
             "example": {
                 "barcode_number": "014292998228",
                 "format": "ean13",
@@ -34,6 +35,7 @@ class BarcodeDetectionResult(BaseModel):
                 "quality_badge": "Best Quality: 014292998228 (ean13)"
             }
         }
+    }
 
 
 class ProductSummary(BaseModel):
@@ -65,8 +67,9 @@ class SafetyCheckStatus(BaseModel):
     check_timestamp: datetime = Field(..., description="When the check was performed")
     database_version: Optional[str] = Field(None, description="Database version used")
     
-    class Config:
-        json_schema_extra = {
+    model_config = {
+        "protected_namespaces": (),
+        "json_schema_extra": {
             "example": {
                 "status": "All checks complete",
                 "agencies_checked": "39+ (No recalls found)",
@@ -74,6 +77,7 @@ class SafetyCheckStatus(BaseModel):
                 "database_version": "v2025.01.08"
             }
         }
+    }
 
 
 class RecallSummary(BaseModel):
@@ -121,8 +125,9 @@ class ScanResultsPage(BaseModel):
     scan_timestamp: datetime = Field(default_factory=datetime.utcnow)
     scan_type: str = Field(..., description="Type of scan (barcode, image, text)")
     
-    class Config:
-        json_schema_extra = {
+    model_config = {
+        "protected_namespaces": (),
+        "json_schema_extra": {
             "example": {
                 "verdict": "No Recalls Found",
                 "verdict_color": "green",
@@ -155,6 +160,7 @@ class ScanResultsPage(BaseModel):
                 "scan_type": "barcode"
             }
         }
+    }
 
 
 def create_scan_results(
