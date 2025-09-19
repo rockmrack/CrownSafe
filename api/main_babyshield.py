@@ -932,7 +932,7 @@ async def http_exception_handler(request, exc):
     if exc.status_code in (404, 405):
         logger.info(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
     else:
-    logger.error(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
+        logger.error(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
     
     return JSONResponse(
         status_code=exc.status_code,
