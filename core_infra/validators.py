@@ -211,6 +211,8 @@ def sanitize_filename(filename: str) -> str:
 
 # Pydantic models with validation
 class ValidatedSafetyCheckRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}  # Allow model_number field
+    
     barcode: str
     model_number: Optional[str] = None
     
