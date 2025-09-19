@@ -41,14 +41,14 @@ if PROJECT_ROOT not in sys.path:
 
 # 1) Imports with error handling
 try:
-from core_infra.database import get_db_session, User, engine
-from core_infra.cache_manager import get_cache_stats
-from core_infra.async_optimizer import run_optimized_safety_check
-from core_infra.connection_pool_optimizer import optimized_recall_search, connection_optimizer
-from core_infra.smart_cache_warmer import warm_cache_now, start_background_cache_warming
-from core_infra.mobile_hot_path import ultra_fast_check, get_mobile_stats
-from core_infra.memory_optimizer import get_memory_stats, optimize_memory
-from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
+    from core_infra.database import get_db_session, User, engine
+    from core_infra.cache_manager import get_cache_stats
+    from core_infra.async_optimizer import run_optimized_safety_check
+    from core_infra.connection_pool_optimizer import optimized_recall_search, connection_optimizer
+    from core_infra.smart_cache_warmer import warm_cache_now, start_background_cache_warming
+    from core_infra.mobile_hot_path import ultra_fast_check, get_mobile_stats
+    from core_infra.memory_optimizer import get_memory_stats, optimize_memory
+    from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
     from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
 except ImportError as e:
     logging.error(f"Critical import error: {e}")
