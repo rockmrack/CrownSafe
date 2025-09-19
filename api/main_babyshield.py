@@ -1866,8 +1866,10 @@ async def advanced_search(request: Request):
     # Create AdvancedSearchRequest from parsed data
     try:
         logger.info(f"[{trace_id}] Creating AdvancedSearchRequest with body_data: {body_data}")
+        logger.info(f"[{trace_id}] nextCursor in body_data: {body_data.get('nextCursor')}")
         req = AdvancedSearchRequest(**body_data)
         logger.info(f"[{trace_id}] AdvancedSearchRequest created successfully: nextCursor={req.nextCursor}")
+        logger.info(f"[{trace_id}] All fields in req: {req.model_dump()}")
     except Exception as e:
         logger.error(f"[{trace_id}] Invalid request data: {e}")
         return JSONResponse(
