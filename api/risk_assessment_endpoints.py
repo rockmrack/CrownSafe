@@ -90,6 +90,31 @@ barcode_scanner = BarcodeScanner()
 data_unification = DataUnificationEngine()
 
 
+@risk_router.get("", response_model=dict)
+async def get_risk_assessment_info():
+    """
+    Get risk assessment service information and available endpoints
+    """
+    return {
+        "success": True,
+        "data": {
+            "service": "Risk Assessment API",
+            "version": "1.0.0",
+            "description": "Comprehensive risk assessment for products and ingredients",
+            "endpoints": {
+                "assess": "POST /assess - Assess product risk",
+                "assess_barcode": "POST /assess/barcode - Assess by barcode",
+                "assess_image": "POST /assess/image - Assess by image",
+                "profile": "GET /profile/{product_id} - Get risk profile",
+                "report": "GET /report/{report_id} - Get risk report",
+                "ingest": "POST /ingest - Trigger data ingestion",
+                "search": "GET /search - Search products",
+                "stats": "GET /stats - Get risk statistics"
+            }
+        }
+    }
+
+
 @risk_router.post("/assess", response_model=RiskAssessmentResponse)
 async def assess_product_risk(
     request: RiskAssessmentRequest,

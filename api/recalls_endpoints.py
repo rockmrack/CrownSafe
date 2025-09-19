@@ -5,6 +5,9 @@ Provides searchable, paginated access to recall data
 
 from datetime import date
 from typing import List, Optional
+import unicodedata
+import base64
+import json
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
@@ -14,6 +17,62 @@ from sqlalchemy.orm import Session
 from core_infra.database import get_db, RecallDB
 
 router = APIRouter(prefix="/api/v1/recalls", tags=["recalls"])
+
+
+def clean_encoding(text: Optional[str]) -> Optional[str]:
+    """Clean up encoding issues in text data"""
+    if not text:
+        return text
+    
+    # Normalize Unicode and fix common mojibake issues
+    try:
+        # Normalize to NFKC form
+        normalized = unicodedata.normalize('NFKC', text)
+        
+        # Fix common mojibake patterns
+        fixes = {
+            'â€œ': '"',  # Left double quotation mark
+            'â€': '"',   # Right double quotation mark
+            'â€™': "'",  # Right single quotation mark
+            'â€œ': '"',  # Left double quotation mark
+            'â€': '"',   # Right double quotation mark
+            'â€¢': '•',  # Bullet point
+            'â€"': '–',  # En dash
+            'â€"': '—',  # Em dash
+            'â€¦': '…',  # Horizontal ellipsis
+            'â€¹': '‹',  # Single left-pointing angle quotation mark
+            'â€º': '›',  # Single right-pointing angle quotation mark
+            'â€': '"',   # Right double quotation mark
+            'â€œ': '"',  # Left double quotation mark
+        }
+        
+        for mojibake, correct in fixes.items():
+            normalized = normalized.replace(mojibake, correct)
+        
+        return normalized
+    except Exception:
+        # If normalization fails, return original text
+        return text
+
+
+def encode_cursor(recall_id: str, recall_date: date, id: int) -> str:
+    """Encode cursor for pagination"""
+    cursor_data = {
+        "recall_id": recall_id,
+        "recall_date": recall_date.isoformat() if recall_date else None,
+        "id": id
+    }
+    cursor_json = json.dumps(cursor_data)
+    return base64.b64encode(cursor_json.encode()).decode()
+
+
+def decode_cursor(cursor: str) -> Optional[dict]:
+    """Decode cursor for pagination"""
+    try:
+        cursor_json = base64.b64decode(cursor.encode()).decode()
+        return json.loads(cursor_json)
+    except Exception:
+        return None
 
 
 class RecallItem(BaseModel):
@@ -43,7 +102,9 @@ class RecallListResponse(BaseModel):
     items: List[RecallItem]
     total: int
     limit: int
-    offset: int
+    offset: Optional[int] = None
+    nextCursor: Optional[str] = None
+    hasMore: bool = False
 
 
 @router.get("", response_model=dict)
@@ -57,7 +118,8 @@ def list_recalls(
     date_to: Optional[date] = Query(None, description="Filter recalls to this date"),
     sort: str = Query("recent", pattern="^(recent|oldest)$", description="Sort order: recent (newest first) or oldest"),
     limit: int = Query(20, ge=1, le=100, description="Number of results per page"),
-    offset: int = Query(0, ge=0, description="Number of results to skip"),
+    offset: Optional[int] = Query(None, ge=0, description="Number of results to skip (offset pagination)"),
+    cursor: Optional[str] = Query(None, description="Cursor for pagination (cursor-based pagination)"),
     db: Session = Depends(get_db),
 ):
     """
@@ -116,43 +178,90 @@ def list_recalls(
     else:
         qry = qry.order_by(asc(RecallDB.recall_date).nullsfirst(), asc(RecallDB.id))
 
-    # Apply pagination
-    rows = qry.offset(offset).limit(limit).all()
+    # Apply pagination (cursor-based or offset-based)
+    if cursor:
+        # Cursor-based pagination
+        cursor_data = decode_cursor(cursor)
+        if cursor_data:
+            if sort == "recent":
+                # For recent sort, get records after the cursor
+                qry = qry.filter(
+                    or_(
+                        RecallDB.recall_date < cursor_data.get("recall_date"),
+                        and_(
+                            RecallDB.recall_date == cursor_data.get("recall_date"),
+                            RecallDB.id < cursor_data.get("id")
+                        )
+                    )
+                )
+            else:
+                # For oldest sort, get records before the cursor
+                qry = qry.filter(
+                    or_(
+                        RecallDB.recall_date > cursor_data.get("recall_date"),
+                        and_(
+                            RecallDB.recall_date == cursor_data.get("recall_date"),
+                            RecallDB.id > cursor_data.get("id")
+                        )
+                    )
+                )
+        
+        # Get one extra record to check if there are more
+        rows = qry.limit(limit + 1).all()
+        has_more = len(rows) > limit
+        if has_more:
+            rows = rows[:limit]  # Remove the extra record
+    else:
+        # Offset-based pagination
+        actual_offset = offset if offset is not None else 0
+        rows = qry.offset(actual_offset).limit(limit).all()
+        has_more = len(rows) == limit and (actual_offset + limit) < total
 
     # Convert to response format
     items = []
     for row in rows:
         items.append(RecallItem(
             id=row.id,
-            recall_id=row.recall_id,
-            agency=row.source_agency,
-            country=row.country,
-            product_name=row.product_name,
-            brand=row.brand,
-            manufacturer=row.manufacturer,
-            model_number=row.model_number,
+            recall_id=clean_encoding(row.recall_id),
+            agency=clean_encoding(row.source_agency),
+            country=clean_encoding(row.country),
+            product_name=clean_encoding(row.product_name),
+            brand=clean_encoding(row.brand),
+            manufacturer=clean_encoding(row.manufacturer),
+            model_number=clean_encoding(row.model_number),
             category=None,  # product_category field not available in current schema
-            hazard=row.hazard,
-            hazard_category=row.hazard_category,
+            hazard=clean_encoding(row.hazard),
+            hazard_category=clean_encoding(row.hazard_category),
             recall_date=row.recall_date,
-            recall_reason=row.recall_reason,
-            remedy=row.remedy,
-            recall_class=row.recall_class,
+            recall_reason=clean_encoding(row.recall_reason),
+            remedy=clean_encoding(row.remedy),
+            recall_class=clean_encoding(row.recall_class),
             reference=row.recall_id,
             url=row.url
         ))
+
+    # Generate next cursor if there are more results
+    next_cursor = None
+    if has_more and rows:
+        last_row = rows[-1]
+        next_cursor = encode_cursor(
+            last_row.recall_id or "",
+            last_row.recall_date,
+            last_row.id
+        )
 
     payload = RecallListResponse(
         items=items,
         total=total,
         limit=limit,
-        offset=offset
+        offset=offset,
+        nextCursor=next_cursor,
+        hasMore=has_more
     )
 
     return {
         "success": True, 
         "data": payload.model_dump(),
-        "total": payload.total,
         "count": len(payload.items)
     }
 

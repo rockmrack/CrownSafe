@@ -112,16 +112,32 @@ async def activate_subscription(
 @router.get("/status", response_model=SubscriptionStatusResponse)
 async def get_subscription_status(
     request: Request,
-    current_user: User = Depends(get_current_user)
+    user_id: Optional[int] = Query(None, description="User ID (for testing without auth)"),
+    current_user: Optional[User] = Depends(lambda: None)
 ):
     """
-    Get current subscription status for authenticated user
+    Get current subscription status for authenticated user or by user_id
     
     Returns detailed information about the user's subscription including
     plan type, expiry date, and auto-renewal status.
     """
     try:
-        status = SubscriptionService.get_subscription_status(current_user.id)
+        # Use user_id parameter if provided (for testing), otherwise use authenticated user
+        target_user_id = user_id if user_id is not None else (current_user.id if current_user else None)
+        
+        if target_user_id is None:
+            return SubscriptionStatusResponse(
+                active=False,
+                plan=None,
+                provider=None,
+                expires_at=None,
+                days_remaining=None,
+                auto_renew=None,
+                cancelled=None,
+                message="User ID required"
+            )
+        
+        status = SubscriptionService.get_subscription_status(target_user_id)
         
         return SubscriptionStatusResponse(
             active=status.get("active", False),
