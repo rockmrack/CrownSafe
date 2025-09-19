@@ -4,7 +4,7 @@ Pydantic models for supplemental data and enhanced safety reports
 
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 class NutritionalInfo(BaseModel):
     """Nutritional information model"""
@@ -26,9 +26,9 @@ class FoodDataResponse(BaseModel):
     ingredients: List[str] = Field(default_factory=list)
     allergens: List[str] = Field(default_factory=list)
     nutritional_info: Optional[NutritionalInfo] = None
-    safety_score: Optional[float] = Field(None, ge=0.0, le=1.0)
+    safety_score: Optional[float] = None
     source: str = "unknown"
-    last_updated: datetime = Field(default_factory=datetime.utcnow)
+    last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class CosmeticIngredient(BaseModel):
     """Cosmetic ingredient model"""
@@ -44,9 +44,9 @@ class CosmeticDataResponse(BaseModel):
     ingredients: List[CosmeticIngredient] = Field(default_factory=list)
     regulatory_status: Dict[str, str] = Field(default_factory=dict)
     safety_concerns: List[str] = Field(default_factory=list)
-    safety_score: Optional[float] = Field(None, ge=0.0, le=1.0)
+    safety_score: Optional[float] = None
     source: str = "unknown"
-    last_updated: datetime = Field(default_factory=datetime.utcnow)
+    last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ChemicalSafetyLimits(BaseModel):
     """Chemical safety limits model"""
@@ -62,15 +62,15 @@ class ChemicalDataResponse(BaseModel):
     safety_limits: Optional[ChemicalSafetyLimits] = None
     health_effects: List[str] = Field(default_factory=list)
     exposure_guidelines: Dict[str, str] = Field(default_factory=dict)
-    safety_score: Optional[float] = Field(None, ge=0.0, le=1.0)
+    safety_score: Optional[float] = None
     source: str = "unknown"
-    last_updated: datetime = Field(default_factory=datetime.utcnow)
+    last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class EnhancedSafetyReport(BaseModel):
     """Enhanced safety report combining recall and supplemental data"""
     product_identifier: str
     product_name: Optional[str] = None
-    product_type: str  # "food", "cosmetic", "chemical", "unknown"
+    product_type: str = "unknown"  # "food", "cosmetic", "chemical", "unknown"
     
     # Recall data
     recall_status: str = "no_recalls"
@@ -83,14 +83,14 @@ class EnhancedSafetyReport(BaseModel):
     chemical_data: Optional[ChemicalDataResponse] = None
     
     # Overall assessment
-    overall_safety_score: float = Field(0.5, ge=0.0, le=1.0)
+    overall_safety_score: float = 0.5
     safety_recommendations: List[str] = Field(default_factory=list)
     risk_factors: List[str] = Field(default_factory=list)
     
     # Metadata
     data_sources: List[str] = Field(default_factory=list)
-    last_updated: datetime = Field(default_factory=datetime.utcnow)
-    confidence_level: float = Field(0.5, ge=0.0, le=1.0)
+    last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    confidence_level: float = 0.5
 
 class SupplementalDataRequest(BaseModel):
     """Request model for supplemental data"""

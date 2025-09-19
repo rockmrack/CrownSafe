@@ -1,0 +1,8 @@
+﻿
+  cw_all.txt:5:EVENTS	39209796977168269127097716406356509168590432842494509057	1758228109796	ecs/babyshield-backend/b844e379685844bb8472e3d2c762ddc4	INFO:core_infra.enhanced_safety_service:Generating enhanced safety report for: glycerin	1758228105299
+  cw_all.txt:6:EVENTS	39209796977168269127097716406356509168590432842494509058	1758228109796	ecs/babyshield-backend/b844e379685844bb8472e3d2c762ddc4	INFO:core_infra.supplemental_data_service:Getting cosmetic data for: glycerin	1758228105299
+  cw_all.txt:7:EVENTS	39209796977168269127097716406356509168590432842494509059	1758228109796	ecs/babyshield-backend/b844e379685844bb8472e3d2c762ddc4	INFO:core_infra.enhanced_safety_service:Enhanced safety report generated in 0ms	1758228105299
+> cw_all.txt:8:EVENTS	39209796977212870617494777652639580605135729565506469892	1758228109796	ecs/babyshield-backend/b844e379685844bb8472e3d2c762ddc4	ERROR:api.main_babyshield:[trace_1758228105__api_v1_supplemental_cosmetic-data_glycerin] Unhandled exception: 2 validation errors:	1758228105301
+
+
+

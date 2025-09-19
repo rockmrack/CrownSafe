@@ -1,0 +1,1 @@
+EVENTS	39209796977212870617494777652639580605135729565506469892	1758228109796	ecs/babyshield-backend/b844e379685844bb8472e3d2c762ddc4	ERROR:api.main_babyshield:[trace_1758228105__api_v1_supplemental_cosmetic-data_glycerin] Unhandled exception: 2 validation errors:	1758228105301

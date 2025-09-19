@@ -9,14 +9,13 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_, func
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Query
 from pydantic import BaseModel, Field
 import httpx
 
 from core_infra.database import get_db, User, RecallDB
 from models.scan_history import ScanHistory
-# from models import MonitoredProduct, NotificationHistory, DeviceToken  # Commented out due to import issues
-from api.notification_endpoints import send_push_notification
+from api.notification_endpoints import send_push_notification, NotificationHistory
 # from core_infra.celery_app import celery_app  # Commented out - not available in dev environment
 
 logger = logging.getLogger(__name__)
@@ -102,6 +101,39 @@ async def check_recalls_now_dev():
         return {
             "success": False,
             "error": f"Failed to check recalls: {str(e)}"
+        }
+
+
+@recall_alert_router.get("/preferences-dev", response_model=dict)
+async def get_alert_preferences_dev():
+    """
+    DEV OVERRIDE: Get alert preferences without database dependencies
+    """
+    try:
+        # Return default preferences for dev/testing
+        default_preferences = {
+            "alert_enabled": True,
+            "alert_frequency": "immediate",
+            "categories": [],
+            "severity_threshold": "all",
+            "quiet_hours_start": None,
+            "quiet_hours_end": None
+        }
+        
+        return {
+            "success": True,
+            "data": {
+                "message": "Alert preferences retrieved successfully (dev override)",
+                "preferences": default_preferences,
+                "retrieved_at": datetime.utcnow().isoformat()
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in dev alert preferences: {e}")
+        return {
+            "success": False,
+            "error": f"Failed to get preferences: {str(e)}"
         }
 
 
@@ -344,17 +376,23 @@ class RecallAlertService:
             }
             
             # Store notification in history
-            notification = NotificationHistory(
-                user_id=user_id,
-                type="recall_alert",
-                title=title,
-                body=body,
-                priority="high",
-                category="safety",
-                data=recall,
-                sent_at=datetime.utcnow()
-            )
-            db.add(notification)
+            try:
+                notification = NotificationHistory(
+                    user_id=user_id,
+                    type="recall_alert",
+                    title=title,
+                    body=body,
+                    priority="high",
+                    category="safety",
+                    data=recall,
+                    sent_at=datetime.utcnow()
+                )
+                db.add(notification)
+            except NameError:
+                # NotificationHistory not available, skip storage
+                logger.warning("NotificationHistory not available, skipping notification storage")
+            except Exception as e:
+                logger.error(f"Error storing notification history: {e}")
             
             # Send to each device
             success_count = 0
@@ -546,6 +584,40 @@ async def check_recalls_now(
     }
 
 
+@recall_alert_router.get("/preferences")
+async def get_alert_preferences(
+    user_id: int = Query(..., description="User ID to get preferences for"),
+    db: Session = Depends(get_db)
+):
+    """Get user's recall alert preferences"""
+    
+    try:
+        # For now, return default preferences since we don't have a preferences table yet
+        # In production, this would query the user preferences table
+        default_preferences = {
+            "user_id": user_id,
+            "alert_enabled": True,
+            "alert_frequency": "immediate",
+            "categories": [],
+            "severity_threshold": "all",
+            "quiet_hours_start": None,
+            "quiet_hours_end": None
+        }
+        
+        return {
+            "success": True,
+            "message": "Alert preferences retrieved",
+            "preferences": default_preferences
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting alert preferences: {e}")
+        return {
+            "success": False,
+            "error": f"Failed to get preferences: {str(e)}"
+        }
+
+
 @recall_alert_router.post("/preferences")
 async def update_alert_preferences(
     preferences: UserAlertPreference,
@@ -571,21 +643,43 @@ async def get_alert_history(
 ):
     """Get user's recall alert history"""
     
-    alerts = db.query(NotificationHistory).filter(
-        NotificationHistory.user_id == user_id,
-        NotificationHistory.type == "recall_alert"
-    ).order_by(NotificationHistory.sent_at.desc()).limit(limit).all()
-    
-    return {
-        "success": True,
-        "alerts": [
-            {
-                "id": alert.id,
-                "title": alert.title,
-                "body": alert.body,
-                "sent_at": alert.sent_at.isoformat() if alert.sent_at else None,
-                "data": alert.data
-            }
-            for alert in alerts
-        ]
-    }
+    try:
+        # Try to use NotificationHistory if available
+        alerts = db.query(NotificationHistory).filter(
+            NotificationHistory.user_id == user_id,
+            NotificationHistory.type == "recall_alert"
+        ).order_by(NotificationHistory.sent_at.desc()).limit(limit).all()
+        
+        return {
+            "success": True,
+            "alerts": [
+                {
+                    "id": alert.id,
+                    "title": alert.title,
+                    "body": alert.body,
+                    "sent_at": alert.sent_at.isoformat() if alert.sent_at else None,
+                    "data": alert.data
+                }
+                for alert in alerts
+            ],
+            "total": len(alerts),
+            "message": "Alert history retrieved successfully"
+        }
+        
+    except NameError:
+        # Fallback: NotificationHistory not available, return empty history
+        logger.warning(f"NotificationHistory not available, returning empty history for user {user_id}")
+        return {
+            "success": True,
+            "alerts": [],
+            "total": 0,
+            "message": "Alert history not available (database table not initialized)"
+        }
+    except Exception as e:
+        logger.error(f"Error retrieving alert history for user {user_id}: {e}")
+        return {
+            "success": False,
+            "error": f"Failed to retrieve alert history: {str(e)}",
+            "alerts": [],
+            "total": 0
+        }

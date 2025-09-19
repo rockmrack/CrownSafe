@@ -91,7 +91,12 @@ def list_recalls(
         qry = qry.filter(RecallDB.country.ilike(f"%{country}%"))
     
     if category:
-        qry = qry.filter(RecallDB.product_category.ilike(f"%{category}%"))
+        # Note: product_category field not available in current schema
+        # Filter by product_name or brand instead
+        qry = qry.filter(or_(
+            RecallDB.product_name.ilike(f"%{category}%"),
+            RecallDB.brand.ilike(f"%{category}%")
+        ))
     
     if hazard_category:
         qry = qry.filter(RecallDB.hazard_category.ilike(f"%{hazard_category}%"))
@@ -126,7 +131,7 @@ def list_recalls(
             brand=row.brand,
             manufacturer=row.manufacturer,
             model_number=row.model_number,
-            category=row.product_category,
+            category=None,  # product_category field not available in current schema
             hazard=row.hazard,
             hazard_category=row.hazard_category,
             recall_date=row.recall_date,

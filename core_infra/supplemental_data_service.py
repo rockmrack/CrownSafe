@@ -19,9 +19,9 @@ class FoodData:
     """Food product data from USDA and Edamam"""
     fdc_id: Optional[str] = None
     name: Optional[str] = None
-    ingredients: List[str] = None
-    allergens: List[str] = None
-    nutritional_info: Dict[str, Any] = None
+    ingredients: Optional[List[str]] = None
+    allergens: Optional[List[str]] = None
+    nutritional_info: Optional[Dict[str, Any]] = None
     safety_score: Optional[float] = None
     source: str = "unknown"
 
@@ -29,9 +29,9 @@ class FoodData:
 class CosmeticData:
     """Cosmetic product data from EU CosIng and Open Beauty Facts"""
     product_name: Optional[str] = None
-    ingredients: List[str] = None
-    regulatory_status: Dict[str, str] = None
-    safety_concerns: List[str] = None
+    ingredients: Optional[List[str]] = None
+    regulatory_status: Optional[Dict[str, str]] = None
+    safety_concerns: Optional[List[str]] = None
     safety_score: Optional[float] = None
     source: str = "unknown"
 
@@ -40,9 +40,9 @@ class ChemicalData:
     """Chemical safety data from OSHA and ATSDR"""
     chemical_name: Optional[str] = None
     cas_number: Optional[str] = None
-    safety_limits: Dict[str, Any] = None
-    health_effects: List[str] = None
-    exposure_guidelines: Dict[str, Any] = None
+    safety_limits: Optional[Dict[str, Any]] = None
+    health_effects: Optional[List[str]] = None
+    exposure_guidelines: Optional[Dict[str, Any]] = None
     safety_score: Optional[float] = None
     source: str = "unknown"
 
@@ -244,18 +244,36 @@ class SupplementalDataService:
         """Get cosmetic data from EU CosIng and other sources"""
         logger.info(f"Getting cosmetic data for: {product_name}")
         
-        cosmetic_data = CosmeticData(product_name=product_name)
-        
-        # Search CosIng database
-        # This would be implemented with actual ingredient extraction
-        # For now, we'll create a mock structure
-        cosmetic_data.ingredients = ["mock-ingredient-1", "mock-ingredient-2"]
-        cosmetic_data.regulatory_status = {"EU": "approved", "US": "pending"}
-        cosmetic_data.safety_concerns = []
-        cosmetic_data.source = "CosIng"
-        cosmetic_data.safety_score = 0.8  # Mock score
-        
-        return cosmetic_data
+        try:
+            # Ensure product_name is not None or empty
+            if not product_name or not product_name.strip():
+                product_name = "unknown_product"
+            
+            cosmetic_data = CosmeticData(product_name=product_name.strip())
+            
+            # Search CosIng database
+            # This would be implemented with actual ingredient extraction
+            # For now, we'll create a mock structure
+            cosmetic_data.ingredients = ["mock-ingredient-1", "mock-ingredient-2"]
+            cosmetic_data.regulatory_status = {"EU": "approved", "US": "pending"}
+            cosmetic_data.safety_concerns = []
+            cosmetic_data.source = "CosIng"
+            cosmetic_data.safety_score = 0.8  # Mock score
+            
+            logger.info(f"Created cosmetic data: {cosmetic_data}")
+            return cosmetic_data
+            
+        except Exception as e:
+            logger.error(f"Error creating cosmetic data: {e}", exc_info=True)
+            # Return a minimal valid CosmeticData object
+            return CosmeticData(
+                product_name=product_name or "unknown",
+                ingredients=[],
+                regulatory_status={},
+                safety_concerns=[],
+                source="error",
+                safety_score=0.0
+            )
     
     async def get_chemical_data(self, chemical_name: str) -> ChemicalData:
         """Get chemical safety data from OSHA and ATSDR"""

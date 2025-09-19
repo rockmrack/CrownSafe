@@ -103,8 +103,8 @@ async def get_recall_detail(recall_id: str, request: Request, response: Response
                     model_number as "modelNumber",
                     hazard,
                     NULL as "hazardCategory",
-                    recall_reason as "recallReason",
-                    NULL as remedy,
+                    hazard_description as "recallReason",
+                    remedy,
                     description,
                     recall_date as "recallDate",
                     source_agency as "sourceAgency",
@@ -159,14 +159,14 @@ async def get_recall_detail(recall_id: str, request: Request, response: Response
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error fetching recall {decoded_recall_id}: {e}")
+        logger.error(f"Error fetching recall {decoded_recall_id}: {e}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail={
                 "ok": False,
                 "error": {
                     "code": "INTERNAL_ERROR",
-                    "message": "Failed to fetch recall details"
+                    "message": f"Failed to fetch recall details: {str(e)}"
                 }
             }
         )

@@ -169,6 +169,21 @@ class BarcodeCache:
         keys_to_remove = [k for k in self.cache.keys() if k.startswith(f"{user_id}:")]
         for key in keys_to_remove:
             del self.cache[key]
+    
+    def clear_barcode(self, barcode: str) -> bool:
+        """Clear cache entry for a specific barcode"""
+        keys_to_remove = [k for k in self.cache.keys() if k.endswith(f":{barcode}")]
+        for key in keys_to_remove:
+            del self.cache[key]
+        return len(keys_to_remove) > 0
+    
+    def clear_all_cache(self):
+        """Clear all cache entries"""
+        self.cache.clear()
+    
+    def get_cache_size(self) -> int:
+        """Get current cache size"""
+        return len(self.cache)
 
 
 # Global cache instance
@@ -327,8 +342,13 @@ def search_similar_products(
     
     # Category search if available
     if category:
+        # Note: product_category field not available in current schema
+        # Search by product_name and brand instead
         conditions.append(
-            func.lower(RecallDB.product_category).like(f'%{category.lower()}%')
+            or_(
+                func.lower(RecallDB.product_name).like(f'%{category.lower()}%'),
+                func.lower(RecallDB.brand).like(f'%{category.lower()}%')
+            )
         )
     
     if not conditions:
@@ -397,6 +417,13 @@ async def scan_barcode(
     """
     
     try:
+        # Validate request has required barcode field
+        if not request.barcode or not request.barcode.strip():
+            logger.warning("Barcode scan request missing or empty barcode")
+            err = {"ok": False, "match_status": "error", "message": "Barcode is required"}
+            payload = _normalize_scan_payload("", err, "error", cached=False)
+            return BarcodeScanResponse.model_validate(payload)
+        
         # Use provided user_id or from request
         user_id = user_id or request.user_id
         device_id = device_id or request.device_id
@@ -406,8 +433,9 @@ async def scan_barcode(
     except Exception as e:
         logger.error(f"Error initializing barcode scan: {str(e)}")
         # Return error response instead of raising 500
+        barcode_value = getattr(request, 'barcode', '') if hasattr(request, 'barcode') else ''
         err = {"ok": False, "match_status": "error", "message": "Failed to process barcode"}
-        payload = _normalize_scan_payload(request.barcode, err, "error", cached=False)
+        payload = _normalize_scan_payload(barcode_value, err, "error", cached=False)
         return BarcodeScanResponse.model_validate(payload)
     
     try:
@@ -615,6 +643,7 @@ async def get_cache_status(
 
 
 @router.delete("/cache/clear")
+@router.post("/cache/clear")
 async def clear_cache(
     barcode: Optional[str] = Query(None, description="Specific barcode to clear (optional)"),
     user_id: Optional[str] = Header(None, alias="X-User-ID", description="User ID for user-specific cache")
@@ -623,24 +652,41 @@ async def clear_cache(
     
     if barcode:
         # Clear specific barcode
-        cleared = barcode_cache.clear_barcode(barcode)
+        if hasattr(barcode_cache, 'clear_barcode'):
+            cleared = barcode_cache.clear_barcode(barcode)
+        else:
+            # Fallback: manually clear barcode entries
+            keys_to_remove = [k for k in barcode_cache.cache.keys() if k.endswith(f":{barcode}")]
+            for key in keys_to_remove:
+                del barcode_cache.cache[key]
+            cleared = len(keys_to_remove) > 0
         return {
             "ok": True,
             "cleared": 1 if cleared else 0,
-            "total_cached_after": barcode_cache.get_cache_size()
+            "total_cached_after": getattr(barcode_cache, 'get_cache_size', lambda: len(barcode_cache.cache))()
         }
     elif user_id:
         # Clear user-specific cache
-        barcode_cache.clear_user_cache(user_id)
+        if hasattr(barcode_cache, 'clear_user_cache'):
+            barcode_cache.clear_user_cache(user_id)
+        else:
+            # Fallback: manually clear user entries
+            keys_to_remove = [k for k in barcode_cache.cache.keys() if k.startswith(f"{user_id}:")]
+            for key in keys_to_remove:
+                del barcode_cache.cache[key]
         return {
             "ok": True,
             "cleared": 1,
-            "total_cached_after": barcode_cache.get_cache_size()
+            "total_cached_after": getattr(barcode_cache, 'get_cache_size', lambda: len(barcode_cache.cache))()
         }
     else:
         # Clear all cache
-        total_before = barcode_cache.get_cache_size()
-        barcode_cache.clear_all_cache()
+        total_before = getattr(barcode_cache, 'get_cache_size', lambda: len(barcode_cache.cache))()
+        if hasattr(barcode_cache, 'clear_all_cache'):
+            barcode_cache.clear_all_cache()
+        else:
+            # Fallback: manually clear all cache
+            barcode_cache.cache.clear()
         return {
             "ok": True,
             "cleared": total_before,

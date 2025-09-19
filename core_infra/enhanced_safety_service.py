@@ -137,31 +137,53 @@ class EnhancedSafetyService:
         """Get cosmetic data from supplemental sources"""
         try:
             search_term = product_name or product_identifier
+            logger.info(f"Getting cosmetic data for search term: {search_term}")
+            
             cosmetic_data = await self.supplemental_service.get_cosmetic_data(search_term)
+            logger.info(f"Got cosmetic data: {cosmetic_data}")
             
             if not cosmetic_data.product_name:
+                logger.warning("No product name in cosmetic data, returning None")
                 return None
             
             # Convert ingredients to response model
             ingredients = []
             for ingredient_name in cosmetic_data.ingredients or []:
-                ingredients.append(CosmeticIngredient(
-                    name=ingredient_name,
-                    functions=["emollient"],  # Mock function
-                    restrictions=[],
-                    safety_assessment="pending"
-                ))
+                # Skip ingredients with empty or None names
+                if not ingredient_name or not ingredient_name.strip():
+                    continue
+                    
+                try:
+                    ingredient = CosmeticIngredient(
+                        name=ingredient_name.strip(),
+                        functions=["emollient"],  # Mock function
+                        restrictions=[],
+                        safety_assessment="pending"
+                    )
+                    ingredients.append(ingredient)
+                except Exception as e:
+                    logger.error(f"Error creating ingredient '{ingredient_name}': {e}")
+                    continue
             
-            return CosmeticDataResponse(
-                product_name=cosmetic_data.product_name,
-                ingredients=ingredients,
-                regulatory_status=cosmetic_data.regulatory_status or {},
-                safety_concerns=cosmetic_data.safety_concerns or [],
-                safety_score=cosmetic_data.safety_score,
-                source=cosmetic_data.source
-            )
+            logger.info(f"Created {len(ingredients)} ingredients")
+            
+            try:
+                response = CosmeticDataResponse(
+                    product_name=cosmetic_data.product_name,
+                    ingredients=ingredients,
+                    regulatory_status=cosmetic_data.regulatory_status or {},
+                    safety_concerns=cosmetic_data.safety_concerns or [],
+                    safety_score=cosmetic_data.safety_score,
+                    source=cosmetic_data.source
+                )
+                logger.info(f"Created CosmeticDataResponse successfully")
+                return response
+            except Exception as e:
+                logger.error(f"Error creating CosmeticDataResponse: {e}", exc_info=True)
+                return None
+                
         except Exception as e:
-            logger.error(f"Error getting cosmetic data: {e}")
+            logger.error(f"Error getting cosmetic data: {e}", exc_info=True)
             return None
     
     async def _get_chemical_data(self, product_identifier: str, product_name: Optional[str]) -> Optional[ChemicalDataResponse]:

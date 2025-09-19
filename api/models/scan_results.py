@@ -44,8 +44,9 @@ class ProductSummary(BaseModel):
     model_number: Optional[str] = Field(None, description="Model number if available")
     upc_gtin: Optional[str] = Field(None, description="UPC/GTIN if available")
     
-    class Config:
-        json_schema_extra = {
+    model_config = {
+        "protected_namespaces": (),
+        "json_schema_extra": {
             "example": {
                 "name": "Baby Monitor Pro",
                 "brand": "SafeWatch",
@@ -54,6 +55,7 @@ class ProductSummary(BaseModel):
                 "upc_gtin": "014292998228"
             }
         }
+    }
 
 
 class SafetyCheckStatus(BaseModel):

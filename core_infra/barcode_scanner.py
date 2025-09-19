@@ -311,7 +311,24 @@ class BarcodeScanner:
         try:
             # Convert to OpenCV format
             img_array = np.array(image)
-            gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
+            
+            # Handle different image formats safely
+            if len(img_array.shape) == 3:
+                # RGB or RGBA image
+                if img_array.shape[2] == 4:  # RGBA
+                    gray = cv2.cvtColor(img_array, cv2.COLOR_RGBA2GRAY)
+                elif img_array.shape[2] == 3:  # RGB
+                    gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
+                else:
+                    # Unsupported 3-channel format, convert to grayscale
+                    gray = cv2.cvtColor(img_array, cv2.COLOR_BGR2GRAY)
+            elif len(img_array.shape) == 2:
+                # Already grayscale
+                gray = img_array
+            else:
+                # Unsupported format, skip preprocessing
+                logger.warning(f"Unsupported image format with shape: {img_array.shape}")
+                return results
             
             # Try multiple preprocessing techniques
             preprocessing_methods = [

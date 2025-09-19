@@ -254,6 +254,19 @@ except:
 # Security middleware to block malicious requests
 @app.middleware("http")
 async def security_middleware(request: Request, call_next):
+    # Block WebDAV and other non-standard HTTP methods
+    if request.method in ['PROPFIND', 'PROPPATCH', 'MKCOL', 'COPY', 'MOVE', 'LOCK', 'UNLOCK', 'SEARCH']:
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Blocked WebDAV method: {request.method} {request.url.path} from {request.client.host}")
+        return JSONResponse(
+            status_code=405,
+            content={"error": "Method Not Allowed"},
+            headers={
+                "Allow": "GET, POST, PUT, DELETE, OPTIONS, HEAD",
+                "X-Content-Type-Options": "nosniff"
+            }
+        )
+    
     # Block common attack patterns
     path = request.url.path.lower()
     
@@ -841,6 +854,7 @@ except Exception as e:
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 import traceback
+import json
 from api.schemas.common import ok
 
 @app.exception_handler(RequestValidationError)
@@ -856,6 +870,8 @@ async def validation_exception_handler(request, exc):
             field = ".".join(str(x) for x in first_error["loc"])
             if first_error.get("type") == "missing":
                 error_msg = f"Missing required parameter: {field}"
+            elif "JSON decode error" in str(first_error.get('msg', '')):
+                error_msg = f"Invalid JSON format in request body"
             else:
                 error_msg = f"Invalid parameter {field}: {first_error.get('msg', 'validation error')}"
     
@@ -869,6 +885,26 @@ async def validation_exception_handler(request, exc):
             "error": {
                 "code": "BAD_REQUEST",
                 "message": error_msg
+            },
+            "traceId": trace_id
+        }
+    )
+
+@app.exception_handler(json.JSONDecodeError)
+async def json_decode_exception_handler(request, exc):
+    """Handle JSON decode errors with our standard error envelope"""
+    trace_id = f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
+    
+    logger = logging.getLogger(__name__)
+    logger.warning(f"[{trace_id}] JSON decode error: {str(exc)}")
+    
+    return JSONResponse(
+        status_code=400,
+        content={
+            "success": False,
+            "error": {
+                "code": "BAD_REQUEST",
+                "message": "Invalid JSON format in request body"
             },
             "traceId": trace_id
         }
@@ -1457,7 +1493,7 @@ async def suggest_product_from_image(request: Dict[str, Any]):
                 "data": {"suggestions": []},
                 "message": "Unable to analyze image at this time."
             }
-        )
+            )
 
 # 5) User creation endpoint
 @app.post("/api/v1/users", response_model=UserOut)
@@ -1511,12 +1547,12 @@ async def autocomplete_products(
         if cached_suggestions:
             return JSONResponse(
                 content={
-                    "query": q,
-                    "suggestions": cached_suggestions,
-                    "total_database_recalls": 3218,
-                    "agencies": 39,
-                    "cached": True,
-                    "response_time": "ultra-fast"
+                "query": q,
+                "suggestions": cached_suggestions,
+                "total_database_recalls": 3218,
+                "agencies": 39,
+                "cached": True,
+                "response_time": "ultra-fast"
                 },
                 headers={"Content-Type": "application/json; charset=utf-8"}
             )
@@ -1599,12 +1635,12 @@ async def autocomplete_products(
             
             return JSONResponse(
                 content={
-                    "query": q,
-                    "suggestions": unique_suggestions,
-                    "total_database_recalls": 3218,
-                    "agencies": 39,
-                    "cached": False,
-                    "response_time": "optimized"
+                "query": q,
+                "suggestions": unique_suggestions,
+                "total_database_recalls": 3218,
+                "agencies": 39,
+                "cached": False,
+                "response_time": "optimized"
                 },
                 headers={"Content-Type": "application/json; charset=utf-8"}
             )
@@ -1614,8 +1650,8 @@ async def autocomplete_products(
         logger.error(f"Auto-complete failed: {e}")
         return JSONResponse(
             content={
-                "query": q,
-                "suggestions": [],
+            "query": q,
+            "suggestions": [],
                 "error": "Auto-complete temporarily unavailable"
             },
             headers={"Content-Type": "application/json; charset=utf-8"}
@@ -1701,11 +1737,11 @@ async def autocomplete_brands(
             
             return JSONResponse(
                 content={
-                    "query": q,
+                "query": q,
                     "brands": unique_brands,
                     "total_brands_available": len(unique_brands),
-                    "agencies": 39,
-                    "cached": False
+                "agencies": 39,
+                "cached": False
                 },
                 headers={"Content-Type": "application/json; charset=utf-8"}
             )
