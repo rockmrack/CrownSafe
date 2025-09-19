@@ -743,7 +743,7 @@ try:
     from api.oauth_endpoints import router as oauth_router
     
     if OAUTH_ENABLED:
-    app.include_router(oauth_router)
+        app.include_router(oauth_router)
         providers = OAUTH_PROVIDERS if OAUTH_PROVIDERS else "auto-detect"
         logging.info(f"✅ OAuth endpoints registered (providers: {providers})")
     else:
