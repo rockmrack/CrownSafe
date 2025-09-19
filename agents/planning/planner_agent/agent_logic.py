@@ -153,6 +153,24 @@ class BabyShieldPlannerLogic:
         # Create a deep copy of the template steps.
         plan_steps_template = json.loads(json.dumps(template.get("steps", [])))
 
+        # Filter out visual search step if no image URL is provided
+        if not params["image_url"]:
+            plan_steps_template = [step for step in plan_steps_template if step.get("step_id") != "step0_visual_search"]
+            self.logger.info("Filtered out visual search step (no image URL provided)")
+            
+            # Update dependencies and inputs that reference the removed visual search step
+            for step in plan_steps_template:
+                # Remove step0_visual_search from dependencies
+                if "dependencies" in step and "step0_visual_search" in step["dependencies"]:
+                    step["dependencies"] = [dep for dep in step["dependencies"] if dep != "step0_visual_search"]
+                
+                # Update inputs that reference step0_visual_search
+                if "inputs" in step:
+                    for key, value in step["inputs"].items():
+                        if isinstance(value, str) and "step0_visual_search" in value:
+                            # Replace step0_visual_search references with step1_identify_product
+                            step["inputs"][key] = value.replace("step0_visual_search", "step1_identify_product")
+
         # Substitute placeholders in the plan steps.
         substituted_steps = substitute_placeholders(plan_steps_template, params)
         

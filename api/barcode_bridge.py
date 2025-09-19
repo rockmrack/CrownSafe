@@ -701,9 +701,7 @@ async def get_test_barcodes():
     """
     Get 5 test barcodes with expected behaviors for acceptance testing
     """
-    from fastapi.responses import JSONResponse
-    return JSONResponse(
-        content={
+    return {
         "ok": True,
         "test_barcodes": [
             {
@@ -742,6 +740,4 @@ async def get_test_barcodes():
             "fallback": "When no exact match, automatically searches similar products",
             "validation": "Invalid barcodes are normalized and searched anyway"
         }
-        },
-        headers={"Content-Type": "application/json; charset=utf-8"}
-    )
+    }

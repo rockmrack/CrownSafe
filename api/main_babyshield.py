@@ -76,6 +76,8 @@ class SafetyCheckRequest(AppModel):
     check_allergies: Optional[bool] = Field(False, description="Include family allergy check")
 
 class SafetyCheckResponse(BaseModel):
+    model_config = {"protected_namespaces": ()}
+    
     status: str = Field(..., example="COMPLETED")
     data: Optional[dict] = Field(None, example={})
     error: Optional[str] = Field(None, example=None)
@@ -937,7 +939,12 @@ async def http_exception_handler(request, exc):
         error_code = "INTERNAL_ERROR"
     
     logger = logging.getLogger(__name__)
-    logger.error(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
+    
+    # Log 404/405 as WARNING (bot scans), others as ERROR
+    if exc.status_code in (404, 405):
+        logger.warning(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
+    else:
+        logger.error(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
     
     return JSONResponse(
         status_code=exc.status_code,
@@ -1097,7 +1104,7 @@ def health_check():
 @app.get("/healthz", tags=["system"], operation_id="healthz_liveness")
 async def healthz():
     """Kubernetes/ALB liveness probe - just checks if service is responding"""
-    return ok({"status": "ok"})
+    return {"status": "ok", "message": "Service is healthy"}
 
 @app.get("/readyz", tags=["system"], operation_id="readyz_readiness")
 def readyz():
@@ -1122,14 +1129,15 @@ def readyz():
                 logger = logging.getLogger(__name__)
                 logger.warning(f"Could not check recalls_enhanced table: {table_err}")
             
-            return ok({
+            return {
                 "status": "ready", 
+                "message": "Service is ready to handle requests",
                 "database": "connected",
                 "recalls_enhanced_table": {
                     "exists": table_exists,
                     "count": table_count if table_exists else None
                 }
-            })
+            }
     except Exception as e:
         logger = logging.getLogger(__name__)
         logger.error(f"Readiness check failed: {e}")
@@ -1196,7 +1204,7 @@ async def warm_cache():
         }
 
 # 4) Paywalled endpoint with fallback for subscribers
-@app.post("/api/v1/safety-check", response_model=SafetyCheckResponse)
+@app.post("/api/v1/safety-check")
 @limiter.limit("30 per minute")  # Rate limiting for bursty endpoint
 async def safety_check(req: SafetyCheckRequest, request: Request):
     # ⚡ PERFORMANCE MONITORING - Track response times for 39-agency system
@@ -1206,18 +1214,24 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
     
     # 🚀 SMART VALIDATION - Optimize for common use cases
     if not req.barcode and not req.model_number and not req.image_url and not req.product_name:
-        return SafetyCheckResponse(
-            status="FAILED",
-            data=None,
-            error="Please provide at least a barcode, model number, product name, or image URL for safety checking"
+        return JSONResponse(
+            status_code=400,
+            content={
+                "status": "FAILED",
+                "data": None,
+                "error": "Please provide at least a barcode, model number, product name, or image URL for safety checking"
+            }
         )
     
     # Additional validation for user_id
     if not req.user_id or req.user_id <= 0:
-        return SafetyCheckResponse(
-            status="FAILED", 
-            data=None,
-            error="Valid user_id is required"
+        return JSONResponse(
+            status_code=400,
+            content={
+                "status": "FAILED", 
+                "data": None,
+                "error": "Valid user_id is required"
+            }
         )
 
     # 4a) DEV override bypass - check dev entitlement first
@@ -1251,14 +1265,14 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         # Fallback to standard workflow if optimized fails
         if result.get("status") == "FAILED" and "optimized workflow error" in result.get("error", ""):
             logger.warning("⚠️ Optimized workflow failed, falling back to standard workflow...")
-        result = await commander_agent.start_safety_check_workflow({
+            result = await commander_agent.start_safety_check_workflow({
                 "user_id":      req.user_id,
                 "barcode":      req.barcode,
                 "model_number": req.model_number,
                 "product_name": req.product_name,
                 "image_url":    req.image_url
             })
-        logger.info(f"Fallback workflow result: {result}")
+            logger.info(f"Fallback workflow result: {result}")
         
         # If workflow succeeds with real data, return it with performance info
         if result.get("status") == "COMPLETED" and result.get("data"):
@@ -1370,35 +1384,41 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
             logger.warning(f"Workflow returned no data, using mock response for {ENVIRONMENT} environment")
             # ⚡ ADD PERFORMANCE METRICS to mock responses
             response_time = int((datetime.now() - start_time).total_seconds() * 1000)
-            return SafetyCheckResponse(
-                status="COMPLETED",
-                data={
-                    "summary": f"Mock recall data for barcode {req.barcode}: This product may have safety concerns. Please verify with manufacturer.",
-                    "risk_level": "Medium",
-                    "barcode": req.barcode,
-                    "model_number": req.model_number,
-                    "note": f"This is mock data for {ENVIRONMENT} environment - no recalls found in database",
-                    "response_time_ms": response_time,
-                    "agencies_checked": 39,
-                    "performance": "optimized" if response_time < 1000 else "standard"
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "status": "COMPLETED",
+                    "data": {
+                        "summary": f"Mock recall data for barcode {req.barcode}: This product may have safety concerns. Please verify with manufacturer.",
+                        "risk_level": "Medium",
+                        "barcode": req.barcode,
+                        "model_number": req.model_number,
+                        "note": f"This is mock data for {ENVIRONMENT} environment - no recalls found in database",
+                        "response_time_ms": response_time,
+                        "agencies_checked": 39,
+                        "performance": "optimized" if response_time < 1000 else "standard"
+                    }
                 }
             )
         else:
             # Production: Return honest "no recalls found" response with performance metrics
             response_time = int((datetime.now() - start_time).total_seconds() * 1000)
-            return SafetyCheckResponse(
-                status="COMPLETED",
-                data={
-                    "summary": "No recalls found for this product.",
-                    "risk_level": "None",
-                    "barcode": req.barcode,
-                    "model_number": req.model_number,
-                    "recalls_found": False,
-                    "checked_sources": ["CPSC", "FDA", "NHTSA", "USDA FSIS", "EU RAPEX", "UK OPSS", "SG CPSO", "France RappelConso", "Germany Food Alerts", "UK FSA", "Netherlands NVWA", "Health Canada", "CFIA", "Transport Canada", "ACCC Australia", "FSANZ", "TGA Australia", "NZ Trading Standards", "MPI New Zealand", "Medsafe New Zealand", "AESAN Spain", "Italy Ministry of Health", "Swiss FCAB", "Swiss FSVO", "Swissmedic", "Swedish Consumer Agency", "Swedish Food Agency", "Norwegian DSB", "Mattilsynet Norway", "Danish Safety Authority", "Danish Food Administration", "Finnish Tukes", "Finnish Food Authority", "PROFECO Mexico", "COFEPRIS Mexico", "ANVISA Brazil", "SENACON Brazil", "INMETRO Brazil", "ANMAT Argentina"],
-                    "message": "Product has been checked against major recall databases and no safety issues were found.",
-                    "response_time_ms": response_time,
-                    "agencies_checked": 39,
-                    "performance": "optimized" if response_time < 1000 else "standard"
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "status": "COMPLETED",
+                    "data": {
+                        "summary": "No recalls found for this product.",
+                        "risk_level": "None",
+                        "barcode": req.barcode,
+                        "model_number": req.model_number,
+                        "recalls_found": False,
+                        "checked_sources": ["CPSC", "FDA", "NHTSA", "USDA FSIS", "EU RAPEX", "UK OPSS", "SG CPSO", "France RappelConso", "Germany Food Alerts", "UK FSA", "Netherlands NVWA", "Health Canada", "CFIA", "Transport Canada", "ACCC Australia", "FSANZ", "TGA Australia", "NZ Trading Standards", "MPI New Zealand", "Medsafe New Zealand", "AESAN Spain", "Italy Ministry of Health", "Swiss FCAB", "Swiss FSVO", "Swissmedic", "Swedish Consumer Agency", "Swedish Food Agency", "Norwegian DSB", "Mattilsynet Norway", "Danish Safety Authority", "Danish Food Administration", "Finnish Tukes", "Finnish Food Authority", "PROFECO Mexico", "COFEPRIS Mexico", "ANVISA Brazil", "SENACON Brazil", "INMETRO Brazil", "ANMAT Argentina"],
+                        "message": "Product has been checked against major recall databases and no safety issues were found.",
+                        "response_time_ms": response_time,
+                        "agencies_checked": 39,
+                        "performance": "optimized" if response_time < 1000 else "standard"
+                    }
                 }
             )
         
@@ -1407,14 +1427,17 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         
         if ENVIRONMENT in ["development", "staging"]:
             # Return mock data for testing environments
-            return SafetyCheckResponse(
-                status="COMPLETED",
-                data={
-                    "summary": f"Mock recall data for barcode {req.barcode}: This product may have safety concerns. Please verify with manufacturer.",
-                    "risk_level": "Medium", 
-                    "barcode": req.barcode,
-                    "model_number": req.model_number,
-                    "note": f"This is mock data for {ENVIRONMENT} environment - agent service error occurred"
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "status": "COMPLETED",
+                    "data": {
+                        "summary": f"Mock recall data for barcode {req.barcode}: This product may have safety concerns. Please verify with manufacturer.",
+                        "risk_level": "Medium", 
+                        "barcode": req.barcode,
+                        "model_number": req.model_number,
+                        "note": f"This is mock data for {ENVIRONMENT} environment - agent service error occurred"
+                    }
                 }
             )
         else:

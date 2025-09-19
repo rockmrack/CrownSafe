@@ -149,7 +149,12 @@ def list_recalls(
         offset=offset
     )
 
-    return {"success": True, "data": payload.model_dump()}
+    return {
+        "success": True, 
+        "data": payload.model_dump(),
+        "total": payload.total,
+        "count": payload.count
+    }
 
 
 # DEV OVERRIDE ENDPOINTS - For testing without database dependencies
