@@ -928,7 +928,7 @@ async def http_exception_handler(request, exc):
     
     logger = logging.getLogger(__name__)
     
-    # Log 404/405 as INFO (normal not found), others as ERROR
+    # Log 404/405 as INFO (normal not found), others as ERROR - DEPLOYMENT FIX
     if exc.status_code in (404, 405):
         logger.info(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
     else:
