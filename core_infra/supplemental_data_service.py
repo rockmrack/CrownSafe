@@ -291,7 +291,7 @@ class SupplementalDataService:
         
         # Mock implementation - would integrate with actual OSHA/ATSDR APIs
         chemical_data.cas_number = "mock-cas-number"
-        chemical_data.safety_limits = {"OSHA_PEL": "10 mg/m³", "ACGIH_TLV": "5 mg/m³"}
+        chemical_data.safety_limits = {"OSHA_PEL": "10 mg/m3", "ACGIH_TLV": "5 mg/m3"}
         chemical_data.health_effects = ["respiratory irritation", "skin sensitization"]
         chemical_data.exposure_guidelines = {"inhalation": "avoid", "skin": "use protection"}
         chemical_data.source = "OSHA/ATSDR"

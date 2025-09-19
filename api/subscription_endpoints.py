@@ -19,7 +19,7 @@ from services.dev_override import dev_entitled
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v1/subscriptions", tags=["subscriptions"])
+router = APIRouter(prefix="/api/v1/subscription", tags=["subscriptions"])
 
 
 # Pydantic models for requests/responses

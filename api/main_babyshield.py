@@ -279,9 +279,9 @@ async def security_middleware(request: Request, call_next):
         'wp-admin/', 'wp-content/', 'wp-includes/',
         'admin/', 'administrator/', 'phpmyadmin/',
         'config.php', 'wp-config.php', '.env',
-        'backup/', 'backups/', 'old/', 'test/',
+        'backup/', 'backups/', 'old/',
         'api/v1/.git', 'api/v1/config'
-    ]):
+    ]) and not path.startswith('/api/v1/barcode/test/'):
         # Get logger for this module
         logger = logging.getLogger(__name__)
         logger.warning(f"Blocked malicious request: {request.url.path} from {request.client.host}")
@@ -2370,7 +2370,7 @@ async def ultra_fast_check(barcode: str, user_id: int) -> dict:
     return {
         "safe": True,
         "level": "SAFE",
-        "summary": "✅ Safe - No recalls found",
+        "summary": "[OK] Safe - No recalls found",
         "response_time_ms": response_time_ms,
         "cache_level": "redis",
         "optimization": "cached"

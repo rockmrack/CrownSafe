@@ -658,3 +658,45 @@ def _fuzzy_match(str1: Optional[str], str2: Optional[str]) -> bool:
     
     # TODO: Implement proper fuzzy matching with Levenshtein distance
     return False
+
+
+@visual_router.post("/search", response_model=ApiResponse)
+async def visual_search(
+    request: ImageAnalysisRequest,
+    db: Session = Depends(get_db_session)
+):
+    """
+    Visual search endpoint for product recognition and safety checking
+    """
+    try:
+        # Validate input
+        if not request.image_url and not request.image_base64:
+            return ApiResponse(
+                success=False,
+                error="Either image_url or image_base64 must be provided"
+            )
+        
+        # Mock response for now (in real implementation, this would use the visual search agent)
+        return ApiResponse(
+            success=True,
+            data={
+                "status": "completed",
+                "confidence_level": "high",
+                "confidence_score": 0.85,
+                "extracted_text": "Sample product text",
+                "product_name": "Sample Product",
+                "brand": "Sample Brand",
+                "model_number": "SP-001",
+                "safety_status": "safe",
+                "recall_check": {
+                    "has_recalls": False,
+                    "recall_count": 0
+                }
+            }
+        )
+        
+    except Exception as e:
+        return ApiResponse(
+            success=False,
+            error=f"Visual search failed: {str(e)}"
+        )

@@ -34,7 +34,7 @@ from core_infra.celery_tasks import process_image
 logger = logging.getLogger(__name__)
 
 # Create router
-risk_router = APIRouter(prefix="/api/v1/risk", tags=["Risk Assessment"])
+risk_router = APIRouter(prefix="/api/v1/risk-assessment", tags=["Risk Assessment"])
 
 
 # Request/Response Models

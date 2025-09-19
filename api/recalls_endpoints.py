@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
-from sqlalchemy import or_, desc, asc
+from sqlalchemy import or_, desc, asc, func, select
 from sqlalchemy.orm import Session
 
 from core_infra.database import get_db, RecallDB
@@ -153,7 +153,7 @@ def list_recalls(
         "success": True, 
         "data": payload.model_dump(),
         "total": payload.total,
-        "count": payload.count
+        "count": len(payload.items)
     }
 
 
@@ -336,8 +336,8 @@ def get_recall_stats(db: Session = Depends(get_db)):
         total_recalls = db.query(RecallDB).count()
         
         # Recent recalls (last 30 days)
-        from datetime import datetime, timedelta
-        thirty_days_ago = datetime.utcnow().date() - timedelta(days=30)
+        from datetime import datetime, timedelta, timezone
+        thirty_days_ago = datetime.now(timezone.utc).date() - timedelta(days=30)
         recent_recalls = db.query(RecallDB).filter(
             RecallDB.recall_date >= thirty_days_ago
         ).count()
@@ -345,19 +345,19 @@ def get_recall_stats(db: Session = Depends(get_db)):
         # Top agencies
         agency_counts = db.query(
             RecallDB.source_agency,
-            db.func.count(RecallDB.id).label('count')
+            func.count(RecallDB.id).label('count')
         ).group_by(RecallDB.source_agency).order_by(
-            db.func.count(RecallDB.id).desc()
+            func.count(RecallDB.id).desc()
         ).limit(10).all()
         
         # Top hazard categories
         hazard_counts = db.query(
             RecallDB.hazard_category,
-            db.func.count(RecallDB.id).label('count')
+            func.count(RecallDB.id).label('count')
         ).filter(
             RecallDB.hazard_category.isnot(None)
         ).group_by(RecallDB.hazard_category).order_by(
-            db.func.count(RecallDB.id).desc()
+            func.count(RecallDB.id).desc()
         ).limit(10).all()
         
         return {

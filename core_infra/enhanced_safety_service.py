@@ -258,44 +258,44 @@ class EnhancedSafetyService:
         
         # Recall-based recommendations
         if report.recall_count > 0:
-            recommendations.append("⚠️ This product has been recalled. Avoid use and check for updates.")
+            recommendations.append("[WARNING] This product has been recalled. Avoid use and check for updates.")
         
         # Food-based recommendations
         if report.food_data:
             if report.food_data.allergens:
-                recommendations.append(f"🍽️ Contains allergens: {', '.join(report.food_data.allergens)}")
+                recommendations.append(f"[FOOD] Contains allergens: {', '.join(report.food_data.allergens)}")
             
             if report.food_data.nutritional_info:
                 if report.food_data.nutritional_info.sodium and report.food_data.nutritional_info.sodium > 500:
-                    recommendations.append("🧂 High sodium content - consume in moderation")
+                    recommendations.append("[SODIUM] High sodium content - consume in moderation")
                 
                 if report.food_data.nutritional_info.sugar and report.food_data.nutritional_info.sugar > 20:
-                    recommendations.append("🍯 High sugar content - limit consumption")
+                    recommendations.append("[SUGAR] High sugar content - limit consumption")
         
         # Cosmetic-based recommendations
         if report.cosmetic_data:
             if report.cosmetic_data.safety_concerns:
-                recommendations.append(f"💄 Safety concerns: {', '.join(report.cosmetic_data.safety_concerns)}")
+                recommendations.append(f"[COSMETIC] Safety concerns: {', '.join(report.cosmetic_data.safety_concerns)}")
             
             if any(ingredient.restrictions for ingredient in report.cosmetic_data.ingredients):
-                recommendations.append("⚠️ Some ingredients have usage restrictions")
+                recommendations.append("[WARNING] Some ingredients have usage restrictions")
         
         # Chemical-based recommendations
         if report.chemical_data:
             if report.chemical_data.health_effects:
-                recommendations.append(f"⚗️ Health effects: {', '.join(report.chemical_data.health_effects)}")
+                recommendations.append(f"[CHEMICAL] Health effects: {', '.join(report.chemical_data.health_effects)}")
             
             if report.chemical_data.exposure_guidelines:
                 for exposure_type, guideline in report.chemical_data.exposure_guidelines.items():
-                    recommendations.append(f"🛡️ {exposure_type.title()} exposure: {guideline}")
+                    recommendations.append(f"[PROTECTION] {exposure_type.title()} exposure: {guideline}")
         
         # Overall safety recommendations
         if report.overall_safety_score < 0.3:
-            recommendations.append("🚨 High risk - exercise extreme caution")
+            recommendations.append("[HIGH RISK] High risk - exercise extreme caution")
         elif report.overall_safety_score < 0.6:
-            recommendations.append("⚠️ Moderate risk - use with caution")
+            recommendations.append("[MODERATE RISK] Moderate risk - use with caution")
         else:
-            recommendations.append("✅ Generally safe for intended use")
+            recommendations.append("[SAFE] Generally safe for intended use")
         
         return recommendations
     
