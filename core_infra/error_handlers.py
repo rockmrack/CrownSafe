@@ -77,7 +77,7 @@ async def babyshield_exception_handler(request: Request, exc: BabyShieldExceptio
 
 async def http_exception_handler(request: Request, exc: HTTPException):
     """Handle FastAPI HTTP exceptions"""
-    # Log 404/405 as INFO (normal not found), others as WARNING
+    # Log 404/405 as INFO (normal not found), others as WARNING - DEPLOYMENT FIX
     if exc.status_code in (404, 405):
         logger.info(f"HTTP exception: {exc.detail}", extra={
             "path": request.url.path,
