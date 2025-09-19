@@ -39,7 +39,7 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-# 1) Imports with error handling
+# 1) Imports with error handling - DEPLOYMENT FIX
 try:
     from core_infra.database import get_db_session, User, engine
     from core_infra.cache_manager import get_cache_stats
