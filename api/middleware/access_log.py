@@ -75,10 +75,17 @@ class AccessLogMiddleware(BaseHTTPMiddleware):
                     extra=log_data
                 )
             elif response and response.status_code >= 400:
-                access_logger.warning(
-                    "request_warning", 
-                    extra=log_data
-                )
+                # Log 404/405 as INFO (normal not found), others as WARNING
+                if response.status_code in (404, 405):
+                    access_logger.info(
+                        "request_not_found", 
+                        extra=log_data
+                    )
+                else:
+                    access_logger.warning(
+                        "request_warning", 
+                        extra=log_data
+                    )
             else:
                 access_logger.info(
                     "request",

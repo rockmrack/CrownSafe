@@ -124,7 +124,7 @@ class AdvancedSearchRequest(BaseModel):
     # Pagination
     limit: int = Field(20, ge=1, le=50, description="Maximum results (1-50)")
     offset: Optional[int] = Field(None, ge=0, description="Number of results to skip (offset pagination)")
-    nextCursor: Optional[str] = Field(None, description="Cursor for pagination (not yet implemented)")
+    nextCursor: Optional[str] = Field(None, alias="cursor", description="Cursor for pagination")
     
     @model_validator(mode='after')
     def validate_search_term(self):
@@ -192,24 +192,7 @@ try:
 except Exception as e:
     logging.warning(f"Could not register error handlers: {e}")
 
-# Add HTTP exception handler for 404/405 bot scans
-from starlette.exceptions import HTTPException as StarletteHTTPException
-
-@app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-    """Handle HTTP exceptions with appropriate logging levels for bot scans"""
-    logger = logging.getLogger(__name__)
-    
-    # Log 404/405 as WARNING (bot scans), others as ERROR
-    if exc.status_code in (404, 405):
-        logger.warning("HTTP %s %s %s", exc.status_code, request.method, request.url.path)
-    else:
-        logger.error("HTTP %s %s %s", exc.status_code, request.method, request.url.path)
-    
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"detail": exc.detail}
-    )
+# HTTP exception handler is defined later in the file with proper error envelope
 
 # Add rate limiting
 try:
@@ -945,9 +928,9 @@ async def http_exception_handler(request, exc):
     
     logger = logging.getLogger(__name__)
     
-    # Log 404/405 as WARNING (bot scans), others as ERROR
+    # Log 404/405 as INFO (normal not found), others as ERROR
     if exc.status_code in (404, 405):
-        logger.warning(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
+        logger.info(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
     else:
         logger.error(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
     
@@ -1785,7 +1768,7 @@ async def autocomplete_brands(
 # --- ADVANCED SEARCH & ANALYTICS ENDPOINTS ---
 
 @app.post("/api/v1/search/advanced", tags=["search"])
-async def advanced_search(req: AdvancedSearchRequest):
+async def advanced_search(request: Request):
     """
     Advanced recall search with fuzzy matching, keyword AND logic, and deterministic sorting
     Features:
@@ -1799,6 +1782,102 @@ async def advanced_search(req: AdvancedSearchRequest):
     
     # Import search service
     from services.search_service import SearchService
+    
+    # Parse request body manually
+    try:
+        body = await request.body()
+        if body:
+            import json
+            # Try multiple encodings to handle potential encoding issues
+            try:
+                body_str = body.decode('utf-8')
+            except UnicodeDecodeError:
+                try:
+                    body_str = body.decode('latin-1')
+                except UnicodeDecodeError:
+                    body_str = body.decode('utf-8', errors='replace')
+            
+            logger.info(f"[{trace_id}] Raw request body: {body_str}")
+            
+            # Log first few characters to help debug malformed JSON
+            if len(body_str) > 0:
+                logger.info(f"[{trace_id}] First 50 chars of body: {repr(body_str[:50])}")
+                # Log body length and character analysis
+                logger.info(f"[{trace_id}] Body length: {len(body_str)}, starts with: {repr(body_str[:10])}")
+            
+            body_data = json.loads(body_str)
+        else:
+            logger.warning(f"[{trace_id}] Empty request body")
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "ok": False,
+                    "error": {
+                        "code": "BAD_REQUEST",
+                        "message": "Request body is required"
+                    },
+                    "traceId": trace_id
+                }
+            )
+    except json.JSONDecodeError as e:
+        logger.error(f"[{trace_id}] JSON decode error: {e}")
+        logger.error(f"[{trace_id}] Malformed JSON body: {repr(body_str) if 'body_str' in locals() else 'N/A'}")
+        
+        # Try to provide more helpful error messages
+        error_msg = f"Invalid JSON in request body: {str(e)}"
+        if "Expecting property name enclosed in double quotes" in str(e):
+            error_msg += ". Check that all property names are properly quoted (e.g., {\"query\": \"value\"} not {query: \"value\"})"
+        elif "Expecting value" in str(e):
+            error_msg += ". Check that all values are properly formatted"
+        elif "Unterminated string" in str(e):
+            error_msg += ". Check for unclosed quotes in strings"
+        
+        return JSONResponse(
+            status_code=400,
+            content={
+                "ok": False,
+                "error": {
+                    "code": "BAD_REQUEST",
+                    "message": error_msg
+                },
+                "traceId": trace_id
+            }
+        )
+    except Exception as e:
+        logger.error(f"[{trace_id}] Could not parse request body: {e}")
+        return JSONResponse(
+            status_code=400,
+            content={
+                "ok": False,
+                "error": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid JSON in request body"
+                },
+                "traceId": trace_id
+            }
+        )
+    
+    # Handle cursor field alias manually (before Pydantic processing)
+    if "cursor" in body_data and "nextCursor" not in body_data:
+        body_data["nextCursor"] = body_data.pop("cursor")
+        logger.info(f"[{trace_id}] Converted 'cursor' to 'nextCursor': {body_data.get('nextCursor')}")
+    
+    # Create AdvancedSearchRequest from parsed data
+    try:
+        req = AdvancedSearchRequest(**body_data)
+    except Exception as e:
+        logger.error(f"[{trace_id}] Invalid request data: {e}")
+        return JSONResponse(
+            status_code=400,
+            content={
+                "ok": False,
+                "error": {
+                    "code": "BAD_REQUEST",
+                    "message": f"Invalid request parameters: {str(e)}"
+                },
+                "traceId": trace_id
+            }
+        )
     
     # Validate date range
     if req.date_from and req.date_to and req.date_from > req.date_to:
@@ -1829,6 +1908,7 @@ async def advanced_search(req: AdvancedSearchRequest):
     
     logger.info(f"[{trace_id}] Advanced search: {', '.join(search_info)}")
     logger.info(f"[{trace_id}] Pagination params: limit={req.limit}, offset={req.offset}, nextCursor={req.nextCursor}")
+    logger.info(f"[{trace_id}] Raw cursor value from request: {body_data.get('nextCursor', 'NOT_FOUND')}")
     
     try:
         with get_db_session() as db:
@@ -1838,6 +1918,13 @@ async def advanced_search(req: AdvancedSearchRequest):
             # Check if pg_trgm is enabled
             if not search_service.check_pg_trgm_enabled():
                 logger.warning(f"[{trace_id}] pg_trgm extension not enabled, falling back to basic search")
+            
+            # Prioritize cursor pagination over offset pagination
+            # If nextCursor is provided, ignore offset to use cursor-based pagination
+            search_offset = None if req.nextCursor else req.offset
+            
+            logger.info(f"[{trace_id}] Pagination strategy: {'cursor-based' if req.nextCursor else 'offset-based'}")
+            logger.info(f"[{trace_id}] Final search params: offset={search_offset}, cursor={req.nextCursor}")
             
             # Execute search
             search_result = search_service.search(
@@ -1851,7 +1938,7 @@ async def advanced_search(req: AdvancedSearchRequest):
                 date_from=req.date_from,
                 date_to=req.date_to,
                 limit=req.limit,
-                offset=req.offset,
+                offset=search_offset,
                 cursor=req.nextCursor
             )
             

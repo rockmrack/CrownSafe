@@ -645,7 +645,16 @@ class RiskReportGenerator:
         timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
         key = f"risk-reports/{product_id}/{timestamp}.{format}"
         
+        # Check if S3 is configured and bucket exists
+        s3_enabled = os.getenv("S3_ENABLED", "false").lower() == "true"
+        if not s3_enabled:
+            logger.info(f"S3 upload disabled, returning local path for report: {product_id}")
+            return f"/api/v1/risk/report/local/{product_id}/{timestamp}.{format}"
+        
         try:
+            # Test if bucket exists first
+            self.s3_client.head_bucket(Bucket=self.bucket_name)
+            
             if format == "pdf":
                 self.s3_client.put_object(
                     Bucket=self.bucket_name,
@@ -679,6 +688,6 @@ class RiskReportGenerator:
             return url
             
         except Exception as e:
-            logger.error(f"Failed to upload report: {e}")
+            logger.warning(f"S3 upload failed (bucket may not exist): {e}")
             # Return local path as fallback
             return f"/api/v1/risk/report/local/{product_id}/{timestamp}.{format}"
