@@ -85,10 +85,14 @@ class SafetyCheckResponse(BaseModel):
     alternatives: Optional[List[dict]] = Field(None, description="Safe alternative products if recall found")
 
 class UserCreateRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}
+    
     email: EmailStr
     is_subscribed: bool = True
 
 class UserOut(BaseModel):
+    model_config = {"protected_namespaces": ()}
+    
     id: int
     email: str
     is_subscribed: bool
@@ -97,6 +101,8 @@ from pydantic import model_validator
 from typing import Literal
 
 class AdvancedSearchRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}
+    
     # Text search fields
     query: Optional[str] = Field(None, description="Search term for product name, brand, or hazard")
     product: Optional[str] = Field(None, description="Alternative to 'query' - search term")
@@ -117,6 +123,7 @@ class AdvancedSearchRequest(BaseModel):
     
     # Pagination
     limit: int = Field(20, ge=1, le=50, description="Maximum results (1-50)")
+    offset: Optional[int] = Field(None, ge=0, description="Number of results to skip (offset pagination)")
     nextCursor: Optional[str] = Field(None, description="Cursor for pagination (not yet implemented)")
     
     @model_validator(mode='after')
@@ -149,10 +156,14 @@ class AdvancedSearchRequest(BaseModel):
         return self
 
 class BulkSearchRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}
+    
     barcodes: List[str] = Field(..., min_items=1, max_items=50, description="List of barcodes to check")
     user_id: int = Field(..., description="User ID for the bulk check")
 
 class RecallAnalyticsResponse(BaseModel):
+    model_config = {"protected_namespaces": ()}
+    
     total_recalls: int
     agencies_active: int
     recent_recalls: int
@@ -1839,7 +1850,7 @@ async def advanced_search(req: AdvancedSearchRequest):
                 date_from=req.date_from,
                 date_to=req.date_to,
                 limit=req.limit,
-                offset=0
+                offset=req.offset or 0
             )
             
             # Check if search was successful
@@ -2153,11 +2164,15 @@ async def system_health():
 # --- NOTIFICATION SYSTEM ---
 
 class NotificationRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}
+    
     user_id: int = Field(..., description="User ID to set up notifications")
     product_identifiers: List[str] = Field(..., description="List of barcodes/model numbers to monitor")
     notification_types: List[str] = Field(["email"], description="Types: email, sms, push")
     
 class NotificationResponse(BaseModel):
+    model_config = {"protected_namespaces": ()}
+    
     status: str
     message: str
     monitored_products: int
@@ -2229,6 +2244,8 @@ async def get_notification_status(notification_id: str):
 # --- MOBILE-OPTIMIZED ENDPOINTS ---
 
 class MobileScanRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}
+    
     user_id: int = Field(..., description="User ID")
     barcode: str = Field(..., description="Scanned barcode")
     location: Optional[str] = Field(None, description="User location for regional prioritization")
@@ -2239,6 +2256,8 @@ class MobileScanRequest(BaseModel):
     check_allergies: Optional[bool] = Field(False, description="Include allergy check")
 
 class MobileScanResponse(BaseModel):
+    model_config = {"protected_namespaces": ()}
+    
     status: str
     safety_level: str  # "SAFE", "CAUTION", "DANGER"
     summary: str
