@@ -41,14 +41,14 @@ if PROJECT_ROOT not in sys.path:
 
 # 1) Imports with error handling
 try:
-    from core_infra.database import get_db_session, User, engine
-    from core_infra.cache_manager import get_cache_stats
-    from core_infra.async_optimizer import run_optimized_safety_check
-    from core_infra.connection_pool_optimizer import optimized_recall_search, connection_optimizer
-    from core_infra.smart_cache_warmer import warm_cache_now, start_background_cache_warming
-    from core_infra.mobile_hot_path import ultra_fast_check, get_mobile_stats
-    from core_infra.memory_optimizer import get_memory_stats, optimize_memory
-    from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
+from core_infra.database import get_db_session, User, engine
+from core_infra.cache_manager import get_cache_stats
+from core_infra.async_optimizer import run_optimized_safety_check
+from core_infra.connection_pool_optimizer import optimized_recall_search, connection_optimizer
+from core_infra.smart_cache_warmer import warm_cache_now, start_background_cache_warming
+from core_infra.mobile_hot_path import ultra_fast_check, get_mobile_stats
+from core_infra.memory_optimizer import get_memory_stats, optimize_memory
+from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
     from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
 except ImportError as e:
     logging.error(f"Critical import error: {e}")
@@ -124,7 +124,7 @@ class AdvancedSearchRequest(BaseModel):
     # Pagination
     limit: int = Field(20, ge=1, le=50, description="Maximum results (1-50)")
     offset: Optional[int] = Field(None, ge=0, description="Number of results to skip (offset pagination)")
-    nextCursor: Optional[str] = Field(None, alias="cursor", description="Cursor for pagination")
+    nextCursor: Optional[str] = Field(None, description="Cursor for pagination")
     
     @model_validator(mode='after')
     def validate_search_term(self):
@@ -743,7 +743,7 @@ try:
     from api.oauth_endpoints import router as oauth_router
     
     if OAUTH_ENABLED:
-        app.include_router(oauth_router)
+    app.include_router(oauth_router)
         providers = OAUTH_PROVIDERS if OAUTH_PROVIDERS else "auto-detect"
         logging.info(f"✅ OAuth endpoints registered (providers: {providers})")
     else:
@@ -932,7 +932,7 @@ async def http_exception_handler(request, exc):
     if exc.status_code in (404, 405):
         logger.info(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
     else:
-        logger.error(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
+    logger.error(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
     
     return JSONResponse(
         status_code=exc.status_code,
@@ -987,8 +987,8 @@ def on_startup():
     
     # Only initialize agents in production or when explicitly enabled
     if IS_PRODUCTION or os.getenv("ENABLE_AGENTS", "false").lower() == "true":
-        commander_agent = BabyShieldCommanderLogic(agent_id="api_commander_001", logger_instance=logger)
-        logger.info("✅ Commander Agent initialized.")
+    commander_agent = BabyShieldCommanderLogic(agent_id="api_commander_001", logger_instance=logger)
+    logger.info("✅ Commander Agent initialized.")
         logger.info("Initializing the Visual Search Agent...")
         visual_search_agent = VisualSearchAgentLogic(agent_id="api_visual_search_001", logger_instance=logger)
         logger.info("✅ Visual Search Agent initialized.")
@@ -1231,12 +1231,12 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         # Skip subscription validation and proceed to safety check
     else:
         # 4b) Validate user & subscription from your DB
-        with get_db_session() as db:
-            user = db.query(User).filter(User.id == req.user_id).first()
-            if not user:
-                raise HTTPException(status_code=404, detail="User not found.")
-            if not getattr(user, "is_subscribed", False):
-                raise HTTPException(status_code=403, detail="Subscription required.")
+    with get_db_session() as db:
+        user = db.query(User).filter(User.id == req.user_id).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found.")
+        if not getattr(user, "is_subscribed", False):
+            raise HTTPException(status_code=403, detail="Subscription required.")
 
     # 4b) Run the full live workflow and return its raw result (with environment-aware error handling)
     try:
@@ -1253,14 +1253,14 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         # Fallback to standard workflow if optimized fails
         if result.get("status") == "FAILED" and "optimized workflow error" in result.get("error", ""):
             logger.warning("⚠️ Optimized workflow failed, falling back to standard workflow...")
-            result = await commander_agent.start_safety_check_workflow({
+        result = await commander_agent.start_safety_check_workflow({
                 "user_id":      req.user_id,
                 "barcode":      req.barcode,
                 "model_number": req.model_number,
                 "product_name": req.product_name,
                 "image_url":    req.image_url
             })
-            logger.info(f"Fallback workflow result: {result}")
+        logger.info(f"Fallback workflow result: {result}")
         
         # If workflow succeeds with real data, return it with performance info
         if result.get("status") == "COMPLETED" and result.get("data"):
@@ -1377,14 +1377,14 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                 content={
                     "status": "COMPLETED",
                     "data": {
-                        "summary": f"Mock recall data for barcode {req.barcode}: This product may have safety concerns. Please verify with manufacturer.",
-                        "risk_level": "Medium",
-                        "barcode": req.barcode,
-                        "model_number": req.model_number,
-                        "note": f"This is mock data for {ENVIRONMENT} environment - no recalls found in database",
-                        "response_time_ms": response_time,
-                        "agencies_checked": 39,
-                        "performance": "optimized" if response_time < 1000 else "standard"
+                    "summary": f"Mock recall data for barcode {req.barcode}: This product may have safety concerns. Please verify with manufacturer.",
+                    "risk_level": "Medium",
+                    "barcode": req.barcode,
+                    "model_number": req.model_number,
+                    "note": f"This is mock data for {ENVIRONMENT} environment - no recalls found in database",
+                    "response_time_ms": response_time,
+                    "agencies_checked": 39,
+                    "performance": "optimized" if response_time < 1000 else "standard"
                     }
                 }
             )
@@ -1396,16 +1396,16 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                 content={
                     "status": "COMPLETED",
                     "data": {
-                        "summary": "No recalls found for this product.",
-                        "risk_level": "None",
-                        "barcode": req.barcode,
-                        "model_number": req.model_number,
-                        "recalls_found": False,
-                        "checked_sources": ["CPSC", "FDA", "NHTSA", "USDA FSIS", "EU RAPEX", "UK OPSS", "SG CPSO", "France RappelConso", "Germany Food Alerts", "UK FSA", "Netherlands NVWA", "Health Canada", "CFIA", "Transport Canada", "ACCC Australia", "FSANZ", "TGA Australia", "NZ Trading Standards", "MPI New Zealand", "Medsafe New Zealand", "AESAN Spain", "Italy Ministry of Health", "Swiss FCAB", "Swiss FSVO", "Swissmedic", "Swedish Consumer Agency", "Swedish Food Agency", "Norwegian DSB", "Mattilsynet Norway", "Danish Safety Authority", "Danish Food Administration", "Finnish Tukes", "Finnish Food Authority", "PROFECO Mexico", "COFEPRIS Mexico", "ANVISA Brazil", "SENACON Brazil", "INMETRO Brazil", "ANMAT Argentina"],
-                        "message": "Product has been checked against major recall databases and no safety issues were found.",
-                        "response_time_ms": response_time,
-                        "agencies_checked": 39,
-                        "performance": "optimized" if response_time < 1000 else "standard"
+                    "summary": "No recalls found for this product.",
+                    "risk_level": "None",
+                    "barcode": req.barcode,
+                    "model_number": req.model_number,
+                    "recalls_found": False,
+                    "checked_sources": ["CPSC", "FDA", "NHTSA", "USDA FSIS", "EU RAPEX", "UK OPSS", "SG CPSO", "France RappelConso", "Germany Food Alerts", "UK FSA", "Netherlands NVWA", "Health Canada", "CFIA", "Transport Canada", "ACCC Australia", "FSANZ", "TGA Australia", "NZ Trading Standards", "MPI New Zealand", "Medsafe New Zealand", "AESAN Spain", "Italy Ministry of Health", "Swiss FCAB", "Swiss FSVO", "Swissmedic", "Swedish Consumer Agency", "Swedish Food Agency", "Norwegian DSB", "Mattilsynet Norway", "Danish Safety Authority", "Danish Food Administration", "Finnish Tukes", "Finnish Food Authority", "PROFECO Mexico", "COFEPRIS Mexico", "ANVISA Brazil", "SENACON Brazil", "INMETRO Brazil", "ANMAT Argentina"],
+                    "message": "Product has been checked against major recall databases and no safety issues were found.",
+                    "response_time_ms": response_time,
+                    "agencies_checked": 39,
+                    "performance": "optimized" if response_time < 1000 else "standard"
                     }
                 }
             )
@@ -1420,11 +1420,11 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                 content={
                     "status": "COMPLETED",
                     "data": {
-                        "summary": f"Mock recall data for barcode {req.barcode}: This product may have safety concerns. Please verify with manufacturer.",
-                        "risk_level": "Medium", 
-                        "barcode": req.barcode,
-                        "model_number": req.model_number,
-                        "note": f"This is mock data for {ENVIRONMENT} environment - agent service error occurred"
+                    "summary": f"Mock recall data for barcode {req.barcode}: This product may have safety concerns. Please verify with manufacturer.",
+                    "risk_level": "Medium", 
+                    "barcode": req.barcode,
+                    "model_number": req.model_number,
+                    "note": f"This is mock data for {ENVIRONMENT} environment - agent service error occurred"
                     }
                 }
             )
@@ -1857,12 +1857,11 @@ async def advanced_search(request: Request):
             }
         )
     
-    # Handle cursor field alias manually (before Pydantic processing)
-    if "cursor" in body_data and "nextCursor" not in body_data:
-        body_data["nextCursor"] = body_data.pop("cursor")
-        logger.info(f"[{trace_id}] Converted 'cursor' to 'nextCursor': {body_data.get('nextCursor')}")
-    elif "nextCursor" in body_data:
+    # Log cursor field for debugging
+    if "nextCursor" in body_data:
         logger.info(f"[{trace_id}] Found 'nextCursor' in request: {body_data.get('nextCursor')}")
+    elif "cursor" in body_data:
+        logger.info(f"[{trace_id}] Found 'cursor' in request: {body_data.get('cursor')}")
     
     # Create AdvancedSearchRequest from parsed data
     try:
