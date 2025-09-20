@@ -26,3 +26,23 @@ jobs:
       - name: Run isolated smoke test file
         run: |
           pytest -c /dev/null ci_smoke/test_ci_smoke.py
+
+  smoke-account-deletion:
+    name: Smoke — Account Deletion
+    runs-on: windows-latest
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    env:
+      BASE: https://babyshield.cureviax.ai
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify token secret present
+        shell: pwsh
+        run: |
+          if (-not "${{ secrets.BSMOKE_TOKEN_FRESH }}") { Write-Error "Missing secret BSMOKE_TOKEN_FRESH"; exit 1 }
+
+      - name: Run smoke_account_deletion.ps1
+        shell: pwsh
+        run: |
+          ./scripts/smoke_account_deletion.ps1 -BASE "$env:BASE" -TOKEN_FRESH "${{ secrets.BSMOKE_TOKEN_FRESH }}"
