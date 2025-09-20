@@ -41,14 +41,14 @@ if PROJECT_ROOT not in sys.path:
 
 # 1) Imports with error handling - DEPLOYMENT FIX
 try:
-    from core_infra.database import get_db_session, User, engine
-    from core_infra.cache_manager import get_cache_stats
-    from core_infra.async_optimizer import run_optimized_safety_check
-    from core_infra.connection_pool_optimizer import optimized_recall_search, connection_optimizer
-    from core_infra.smart_cache_warmer import warm_cache_now, start_background_cache_warming
-    from core_infra.mobile_hot_path import ultra_fast_check, get_mobile_stats
-    from core_infra.memory_optimizer import get_memory_stats, optimize_memory
-    from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
+from core_infra.database import get_db_session, User, engine
+from core_infra.cache_manager import get_cache_stats
+from core_infra.async_optimizer import run_optimized_safety_check
+from core_infra.connection_pool_optimizer import optimized_recall_search, connection_optimizer
+from core_infra.smart_cache_warmer import warm_cache_now, start_background_cache_warming
+from core_infra.mobile_hot_path import ultra_fast_check, get_mobile_stats
+from core_infra.memory_optimizer import get_memory_stats, optimize_memory
+from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
     from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
 except ImportError as e:
     logging.error(f"Critical import error: {e}")
@@ -743,7 +743,7 @@ try:
     from api.oauth_endpoints import router as oauth_router
     
     if OAUTH_ENABLED:
-        app.include_router(oauth_router)
+    app.include_router(oauth_router)
         providers = OAUTH_PROVIDERS if OAUTH_PROVIDERS else "auto-detect"
         logging.info(f"✅ OAuth endpoints registered (providers: {providers})")
     else:
@@ -932,7 +932,7 @@ async def http_exception_handler(request, exc):
     if exc.status_code in (404, 405):
         logger.info(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
     else:
-        logger.error(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
+    logger.error(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
     
     # Force deployment refresh
     
@@ -989,8 +989,8 @@ def on_startup():
     
     # Only initialize agents in production or when explicitly enabled
     if IS_PRODUCTION or os.getenv("ENABLE_AGENTS", "false").lower() == "true":
-        commander_agent = BabyShieldCommanderLogic(agent_id="api_commander_001", logger_instance=logger)
-        logger.info("✅ Commander Agent initialized.")
+    commander_agent = BabyShieldCommanderLogic(agent_id="api_commander_001", logger_instance=logger)
+    logger.info("✅ Commander Agent initialized.")
         logger.info("Initializing the Visual Search Agent...")
         visual_search_agent = VisualSearchAgentLogic(agent_id="api_visual_search_001", logger_instance=logger)
         logger.info("✅ Visual Search Agent initialized.")
@@ -1092,11 +1092,13 @@ def health_check():
     return ok({"status": "ok"})
 
 @app.get("/healthz", tags=["system"], operation_id="healthz_liveness")
+@app.head("/healthz", tags=["system"], operation_id="healthz_liveness_head")
 async def healthz():
     """Kubernetes/ALB liveness probe - just checks if service is responding"""
     return {"status": "ok", "message": "Service is healthy"}
 
 @app.get("/readyz", tags=["system"], operation_id="readyz_readiness")
+@app.head("/readyz", tags=["system"], operation_id="readyz_readiness_head")
 def readyz():
     """Kubernetes/ALB readiness probe - checks if service can handle requests"""
     try:
@@ -1233,12 +1235,12 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         # Skip subscription validation and proceed to safety check
     else:
         # 4b) Validate user & subscription from your DB
-        with get_db_session() as db:
-            user = db.query(User).filter(User.id == req.user_id).first()
-            if not user:
-                raise HTTPException(status_code=404, detail="User not found.")
-            if not getattr(user, "is_subscribed", False):
-                raise HTTPException(status_code=403, detail="Subscription required.")
+    with get_db_session() as db:
+        user = db.query(User).filter(User.id == req.user_id).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found.")
+        if not getattr(user, "is_subscribed", False):
+            raise HTTPException(status_code=403, detail="Subscription required.")
 
     # 4b) Run the full live workflow and return its raw result (with environment-aware error handling)
     try:
