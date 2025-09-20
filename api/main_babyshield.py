@@ -41,14 +41,14 @@ if PROJECT_ROOT not in sys.path:
 
 # 1) Imports with error handling - DEPLOYMENT FIX
 try:
-from core_infra.database import get_db_session, User, engine
-from core_infra.cache_manager import get_cache_stats
-from core_infra.async_optimizer import run_optimized_safety_check
-from core_infra.connection_pool_optimizer import optimized_recall_search, connection_optimizer
-from core_infra.smart_cache_warmer import warm_cache_now, start_background_cache_warming
-from core_infra.mobile_hot_path import ultra_fast_check, get_mobile_stats
-from core_infra.memory_optimizer import get_memory_stats, optimize_memory
-from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
+    from core_infra.database import get_db_session, User, engine
+    from core_infra.cache_manager import get_cache_stats
+    from core_infra.async_optimizer import run_optimized_safety_check
+    from core_infra.connection_pool_optimizer import optimized_recall_search, connection_optimizer
+    from core_infra.smart_cache_warmer import warm_cache_now, start_background_cache_warming
+    from core_infra.mobile_hot_path import ultra_fast_check, get_mobile_stats
+    from core_infra.memory_optimizer import get_memory_stats, optimize_memory
+    from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
     from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
 except ImportError as e:
     logging.error(f"Critical import error: {e}")
@@ -743,7 +743,7 @@ try:
     from api.oauth_endpoints import router as oauth_router
     
     if OAUTH_ENABLED:
-    app.include_router(oauth_router)
+        app.include_router(oauth_router)
         providers = OAUTH_PROVIDERS if OAUTH_PROVIDERS else "auto-detect"
         logging.info(f"✅ OAuth endpoints registered (providers: {providers})")
     else:
@@ -989,8 +989,8 @@ def on_startup():
     
     # Only initialize agents in production or when explicitly enabled
     if IS_PRODUCTION or os.getenv("ENABLE_AGENTS", "false").lower() == "true":
-    commander_agent = BabyShieldCommanderLogic(agent_id="api_commander_001", logger_instance=logger)
-    logger.info("✅ Commander Agent initialized.")
+        commander_agent = BabyShieldCommanderLogic(agent_id="api_commander_001", logger_instance=logger)
+        logger.info("✅ Commander Agent initialized.")
         logger.info("Initializing the Visual Search Agent...")
         visual_search_agent = VisualSearchAgentLogic(agent_id="api_visual_search_001", logger_instance=logger)
         logger.info("✅ Visual Search Agent initialized.")
