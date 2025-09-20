@@ -39,6 +39,8 @@ class BarcodeDetectionResult(BaseModel):
 
 
 class ProductSummary(BaseModel):
+    model_config = {"protected_namespaces": ()}  # Allow model_number field
+    
     """Product identification summary"""
     name: str = Field(..., description="Product name")
     brand: str = Field(..., description="Product brand")

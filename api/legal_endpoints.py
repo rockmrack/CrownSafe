@@ -622,3 +622,33 @@ async def get_cookie_preferences(
         },
         "mobile_app_note": "The BabyShield mobile app does not use cookies"
     }
+
+
+@router.get("/data-deletion")
+async def get_data_deletion_policy():
+    """Get data deletion policy and instructions"""
+    return JSONResponse(content={
+        "title": "Data Deletion Policy",
+        "last_updated": "2025-09-20",
+        "policy": {
+            "right_to_deletion": "You have the right to request deletion of your personal data",
+            "what_we_delete": [
+                "User account information",
+                "Scan history and search queries", 
+                "Personal preferences and settings",
+                "Any stored product data associated with your account"
+            ],
+            "what_we_retain": [
+                "Anonymous usage statistics (no personal identifiers)",
+                "Aggregated safety data for public benefit",
+                "Legal compliance records (if required)"
+            ],
+            "how_to_request": {
+                "email": "privacy@babyshield.com",
+                "subject": "Data Deletion Request",
+                "include": "Your user ID and verification information"
+            },
+            "timeline": "Data deletion requests are processed within 30 days",
+            "verification": "We will verify your identity before processing the request"
+        }
+    })
