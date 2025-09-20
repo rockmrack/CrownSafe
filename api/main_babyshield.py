@@ -1233,12 +1233,12 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         # Skip subscription validation and proceed to safety check
     else:
         # 4b) Validate user & subscription from your DB
-    with get_db_session() as db:
-        user = db.query(User).filter(User.id == req.user_id).first()
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found.")
-        if not getattr(user, "is_subscribed", False):
-            raise HTTPException(status_code=403, detail="Subscription required.")
+        with get_db_session() as db:
+            user = db.query(User).filter(User.id == req.user_id).first()
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found.")
+            if not getattr(user, "is_subscribed", False):
+                raise HTTPException(status_code=403, detail="Subscription required.")
 
     # 4b) Run the full live workflow and return its raw result (with environment-aware error handling)
     try:
