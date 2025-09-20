@@ -22,6 +22,8 @@ router = APIRouter(prefix="/api/v1/monitoring", tags=["Monitoring"])
 
 class AddProductRequest(AppModel):
     """Request to add product to monitoring"""
+    model_config = {"protected_namespaces": ()}  # Allow model_number field
+    
     product_name: str
     brand_name: Optional[str] = None
     model_number: Optional[str] = None
@@ -31,6 +33,8 @@ class AddProductRequest(AppModel):
 
 class MonitoredProductResponse(AppModel):
     """Monitored product details"""
+    model_config = {"protected_namespaces": ()}  # Allow model_number field
+    
     id: int
     product_name: str
     brand_name: Optional[str]

@@ -104,6 +104,13 @@ LEGAL_DOCUMENTS = {
         "version": "1.0.0",
         "effective_date": "2024-01-01",
         "last_updated": "2024-01-01"
+    },
+    "data-deletion": {
+        "file": "DATA_DELETION_POLICY.md",
+        "title": "Data Deletion Policy",
+        "version": "1.0.0",
+        "effective_date": "2024-01-01",
+        "last_updated": "2024-01-01"
     }
 }
 

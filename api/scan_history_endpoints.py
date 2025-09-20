@@ -22,6 +22,8 @@ router = APIRouter(prefix="/api/v1/user", tags=["User"])
 
 class ScanHistoryItem(AppModel):
     """Single scan history item"""
+    model_config = {"protected_namespaces": ()}  # Allow model_number field
+    
     job_id: str
     scan_date: datetime
     status: str
