@@ -1,8 +1,9 @@
-from pydantic import BaseModel
-from pydantic import ConfigDict
+"""
+Legacy pydantic base - now imports from core.schemas.base
+Maintained for backward compatibility
+"""
 
+from core.schemas.base import AppModel, BaseSchema, APIResponse, ErrorResponse
 
-class AppModel(BaseModel):
-    model_config = ConfigDict(protected_namespaces=())
-
-
+# Re-export for backward compatibility
+__all__ = ["AppModel", "BaseSchema", "APIResponse", "ErrorResponse"]

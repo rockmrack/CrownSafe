@@ -206,7 +206,7 @@
     
     "privacy_choices": {
       "opt_out_url": "https://babyshield.cureviax.ai/legal/data-deletion",
-      "data_deletion_url": "https://babyshield.cureviax.ai/api/v1/user/data/delete",
+      "data_deletion_url": "https://babyshield.cureviax.ai/api/v1/account",
       "data_export_url": "https://babyshield.cureviax.ai/api/v1/user/data/export"
     },
     

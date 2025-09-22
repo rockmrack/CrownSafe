@@ -26,6 +26,12 @@ router = APIRouter(
     tags=["User Data Management"]
 )
 
+# Privacy summary router
+privacy_router = APIRouter(
+    prefix="/api/v1/user/privacy",
+    tags=["User Privacy"]
+)
+
 
 # ========================= MODELS =========================
 
@@ -402,3 +408,64 @@ async def download_export(
     except Exception as e:
         logger.error(f"Export download failed: {e}")
         raise HTTPException(status_code=500, detail="Failed to download export")
+
+
+# ========================= PRIVACY SUMMARY ENDPOINT =========================
+
+@privacy_router.get("/summary")
+async def get_privacy_summary(
+    user_id: Optional[str] = Header(None, alias="X-User-ID")
+):
+    """
+    Get privacy policy summary and user's privacy settings
+    """
+    try:
+        summary = {
+            "ok": True,
+            "summary": {
+                "data_collected": [
+                    "OAuth provider ID (encrypted)",
+                    "Product scan history (anonymized)",
+                    "Safety preferences (local storage)",
+                    "App usage analytics (aggregated)"
+                ],
+                "data_retention": {
+                    "scan_history": "30 days (anonymized after 7 days)",
+                    "user_preferences": "Until account deletion",
+                    "analytics": "Aggregated, no personal identifiers"
+                },
+                "user_rights": [
+                    "Right to access your data",
+                    "Right to data portability", 
+                    "Right to deletion",
+                    "Right to rectification",
+                    "Right to restrict processing"
+                ],
+                "contact_info": {
+                    "privacy_officer": "privacy@babyshield.com",
+                    "data_protection": "dpo@babyshield.com"
+                }
+            },
+            "user_settings": {
+                "user_id": user_id[:8] + "..." if user_id else "anonymous",
+                "data_sharing": False,
+                "analytics": True,
+                "crashlytics": False
+            },
+            "last_updated": "2024-01-01T00:00:00Z"
+        }
+        
+        return JSONResponse(content=summary)
+        
+    except Exception as e:
+        logger.error(f"Privacy summary error: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "ok": False,
+                "error": {
+                    "code": "PRIVACY_SUMMARY_FAILED",
+                    "message": "Failed to retrieve privacy summary"
+                }
+            }
+        )

@@ -38,18 +38,20 @@
 - **Terms of Service:** https://babyshield.cureviax.ai/legal/terms
 - **Data Deletion:** https://babyshield.cureviax.ai/legal/data-deletion
 
-### Data Management Endpoints
+### Data Management Endpoints (Production Tested)
 - **Request Data Export:** https://babyshield.cureviax.ai/api/v1/user/data/export
-- **Request Data Deletion:** https://babyshield.cureviax.ai/api/v1/user/data/delete
+- **Request Data Deletion:** `DELETE https://babyshield.cureviax.ai/api/v1/account` → **204** (then token revoked)
+- **Legacy Deletion (DO NOT USE):** `POST /api/v1/user/data/delete` → **400/410** (deprecated)
 - **Privacy Summary:** https://babyshield.cureviax.ai/api/v1/user/privacy/summary
 
 ---
 
 ## Technical Support
 
-### API Documentation
-- **Swagger UI:** https://babyshield.cureviax.ai/api/v1/docs
-- **OpenAPI Spec:** https://babyshield.cureviax.ai/api/v1/openapi.json
+### API Documentation (Confirmed Live - 256 Endpoints)
+- **Swagger UI:** https://babyshield.cureviax.ai/docs ✅
+- **ReDoc:** https://babyshield.cureviax.ai/redoc ✅
+- **OpenAPI Spec:** https://babyshield.cureviax.ai/openapi.json ✅
 - **Developer Docs:** https://babyshield.cureviax.ai/docs/api/README.md
 
 ### Status & Monitoring

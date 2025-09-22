@@ -1,5 +1,6 @@
 ﻿name: CI (smoke)
 on:
+  workflow_call:
   push:
     branches: [ "staging", "main" ]
   pull_request:
@@ -30,19 +31,90 @@ jobs:
   smoke-account-deletion:
     name: Smoke — Account Deletion
     runs-on: windows-latest
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     env:
       BASE: https://babyshield.cureviax.ai
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Verify token secret present
+      - name: Verify secrets present
         shell: pwsh
         run: |
-          if (-not "${{ secrets.BSMOKE_TOKEN_FRESH }}") { Write-Error "Missing secret BSMOKE_TOKEN_FRESH"; exit 1 }
+          if (-not "${{ secrets.BSMOKE_TEST_EMAIL }}") { Write-Error "Missing BSMOKE_TEST_EMAIL"; exit 1 }
+          if (-not "${{ secrets.BSMOKE_TEST_PASSWORD }}") { Write-Error "Missing BSMOKE_TEST_PASSWORD"; exit 1 }
+
+      - name: Get fresh access token
+        shell: pwsh
+        run: |
+          $body = @{ email = "${{ secrets.BSMOKE_TEST_EMAIL }}"; password = "${{ secrets.BSMOKE_TEST_PASSWORD }}" } | ConvertTo-Json -Compress
+          $resp = Invoke-RestMethod -Uri "$env:BASE/api/v1/auth/login" -Method Post -ContentType 'application/json' -Body $body -ErrorAction Stop
+          # Adjust the property name if your API returns a different shape
+          $token = $resp.access_token
+          if (-not $token) { Write-Error "No access_token in response"; exit 2 }
+          "TOKEN_FRESH=$token" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Run smoke_account_deletion.ps1
         shell: pwsh
         run: |
-          ./scripts/smoke_account_deletion.ps1 -BASE "$env:BASE" -TOKEN_FRESH "${{ secrets.BSMOKE_TOKEN_FRESH }}"
+          ./scripts/smoke_account_deletion.ps1 -BASE "$env:BASE" -TOKEN_FRESH "$env:TOKEN_FRESH"
+
+      - name: Notify Slack on failure
+        if: ${{ failure() }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_USERNAME: "CI Smoke"
+          SLACK_ICON_EMOJI: ":rotating_light:"
+          SLACK_COLOR: "#ff0000"
+          SLACK_TITLE: "Smoke failed: Account Deletion"
+          SLACK_MESSAGE: |
+            Repo: ${{ github.repository }}
+            Run: ${{ github.run_id }}
+            Branch: ${{ github.ref_name }}
+            Base: ${{ env.BASE }}
+
+  smoke-barcode:
+    name: Smoke — Barcode Search
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Query barcode via /api/v1/search/advanced
+        shell: bash
+        env:
+          BASE: https://babyshield.cureviax.ai
+          CODE: 012914632109
+        run: |
+          set -e
+          body=$(jq -nc --arg q "$CODE" '{query:$q,limit:3}')
+          resp=$(curl -sk -H 'Content-Type: application/json' -d "$body" "$BASE/api/v1/search/advanced")
+          echo "$resp" | jq .
+          ok=$(echo "$resp" | jq -r '.ok')
+          [ "$ok" = "true" ] || { echo "barcode smoke failed"; exit 1; }
+
+  unit-account-deletion:
+    name: Unit — Account Deletion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-py311-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: ${{ runner.os }}-py311-
+
+      - name: Install deps
+        run: |
+          pip install -U pip
+          if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest httpx
+
+      - name: Run focused tests
+        run: |
+          pytest -q tests/test_account_deletion.py

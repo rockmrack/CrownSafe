@@ -206,6 +206,13 @@ We collect minimal data necessary to provide our service.
 - Delete your data
 - Export your data
 
+## Account deletion & data retention
+You can delete your account in the app: **Settings → Account → Delete my account**. This permanently removes your account and personal data from our systems. Limited records required for legal, security or fraud-prevention purposes (e.g., payment or abuse logs) may be retained as permitted by law and are purged on a fixed schedule.
+
+If you cannot access the app, you can request deletion via email at [support@babyshield.cureviax.com](mailto:support@babyshield.cureviax.com). We may need to verify your identity before processing your request.
+
+You may export your data in the app before deletion: `Settings → Account → Export my data`.
+
 For the full privacy policy, please contact privacy@babyshield.app
 """
     

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BabyShield API - Baby Product Safety</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="/favicon.ico" type="image/x-icon">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .container { 
+            text-align: center; 
+            max-width: 600px; 
+            padding: 2rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .logo { 
+            width: 80px; 
+            height: 80px; 
+            margin: 0 auto 1rem;
+            background: url('/favicon.svg') center/contain no-repeat;
+        }
+        h1 { 
+            font-size: 2.5rem; 
+            margin-bottom: 1rem; 
+            font-weight: 700;
+        }
+        .subtitle { 
+            font-size: 1.2rem; 
+            margin-bottom: 2rem; 
+            opacity: 0.9;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .feature {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .feature h3 { margin-bottom: 0.5rem; }
+        .links { 
+            margin-top: 2rem; 
+        }
+        .btn { 
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .btn:hover { 
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        .status { 
+            margin-top: 2rem; 
+            padding: 1rem;
+            background: rgba(0,208,132,0.2);
+            border-radius: 10px;
+            border: 1px solid rgba(0,208,132,0.3);
+        }
+        .version { 
+            margin-top: 1rem; 
+            opacity: 0.7; 
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo"></div>
+        <h1>🛡️ BabyShield API</h1>
+        <p class="subtitle">Advanced Baby Product Safety & Recall Detection</p>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>📊 Recall Detection</h3>
+                <p>Real-time safety alerts for baby products</p>
+            </div>
+            <div class="feature">
+                <h3>🔍 Visual Recognition</h3>
+                <p>AI-powered product identification from images</p>
+            </div>
+            <div class="feature">
+                <h3>📱 Barcode Scanning</h3>
+                <p>QR codes, DataMatrix, and standard barcodes</p>
+            </div>
+        </div>
+        
+        <div class="status">
+            <strong>🟢 System Status: Operational</strong>
+            <div class="version">API Version 2.4.0</div>
+        </div>
+        
+        <div class="links">
+            <a href="/api/v1/docs" class="btn">📖 API Documentation</a>
+            <a href="/healthz" class="btn">🔧 Health Check</a>
+            <a href="/legal/privacy" class="btn">🔒 Privacy Policy</a>
+        </div>
+    </div>
+</body>
+</html>

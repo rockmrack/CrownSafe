@@ -10,15 +10,48 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     g++ \
     libpq-dev \
     curl \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    build-essential \
+    cmake \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Install DataMatrix and OCR dependencies with comprehensive diagnostics
+RUN apt-get update && \
+    echo "🔍 Checking available DataMatrix packages..." && \
+    apt-cache search libdmtx && \
+    echo "📦 Installing DataMatrix dependencies..." && \
+    (apt-get install -y --no-install-recommends libdmtx0a libdmtx-dev && \
+     echo "✅ DataMatrix system libraries (libdmtx0a) installed successfully") || \
+    (apt-get install -y --no-install-recommends libdmtx0b libdmtx-dev && \
+     echo "✅ DataMatrix system libraries (libdmtx0b) installed successfully") || \
+    (apt-get install -y --no-install-recommends libdmtx-dev && \
+     echo "✅ DataMatrix development libraries installed (without specific version)") || \
+    (echo "❌ WARNING: All DataMatrix installation attempts failed" && \
+     echo "Available packages containing 'dmtx':" && apt-cache search dmtx) && \
+    echo "📝 Installing additional OCR dependencies..." && \
+    apt-get install -y --no-install-recommends \
+        libtesseract-dev \
+        libleptonica-dev \
+        pkg-config && \
+    echo "✅ OCR development libraries installed" && \
+    echo "🔍 Final DataMatrix library check..." && \
+    ldconfig -p | grep dmtx || echo "No DataMatrix libraries found in ldconfig" && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt || \
-    pip install --no-cache-dir \
+# Install Python dependencies with comprehensive error handling
+RUN echo "📦 Installing Python packages..." && \
+    pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r requirements.txt || \
+    (echo "❌ Full requirements install failed, trying essential packages..." && \
+     pip install --no-cache-dir \
         fastapi \
         uvicorn \
         sqlalchemy \
@@ -32,7 +65,29 @@ RUN pip install --no-cache-dir -r requirements.txt || \
         celery \
         requests \
         psutil \
-        python-dotenv
+        python-dotenv \
+        opencv-python \
+        pillow \
+        pyzbar \
+        qrcode \
+        pytesseract \
+        easyocr && \
+     echo "✅ Essential packages installed") && \
+    echo "🔧 Installing optional DataMatrix and OCR support..." && \
+    echo "🔍 Checking system libraries for pylibdmtx..." && \
+    ldconfig -p | grep dmtx && \
+    echo "📦 Attempting pylibdmtx installation..." && \
+    (pip install --no-cache-dir pylibdmtx==0.1.10 && \
+     echo "✅ DataMatrix support (pylibdmtx) installed successfully" && \
+     python -c "import pylibdmtx; print('✅ pylibdmtx import successful')") || \
+    (echo "⚠️  pylibdmtx 0.1.10 failed, trying without version..." && \
+     pip install --no-cache-dir pylibdmtx && \
+     echo "✅ DataMatrix support (pylibdmtx latest) installed successfully" && \
+     python -c "import pylibdmtx; print('✅ pylibdmtx import successful')") || \
+    echo "❌ DataMatrix support not available - will run without it" && \
+    echo "📝 Verifying OCR packages..." && \
+    python -c "import pytesseract, easyocr; print('✅ OCR packages verified')" || \
+    echo "⚠️  OCR packages not available"
 
 # Copy application code
 COPY . .

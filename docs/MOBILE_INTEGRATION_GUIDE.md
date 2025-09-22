@@ -245,24 +245,46 @@ class PrivacyManager {
         const accessToken = await AsyncStorage.getItem('access_token');
         
         try {
-            const response = await fetch('https://babyshield.cureviax.ai/api/v1/user/data/delete', {
-                method: 'POST',
+            // Step 1: Get current push token
+            const pushToken = await AsyncStorage.getItem('push_token');
+            
+            // Step 2: Unregister device push token (ignore errors)
+            if (pushToken) {
+                try {
+                    await fetch('https://babyshield.cureviax.ai/api/v1/devices/unregister', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${accessToken}`
+                        },
+                        body: JSON.stringify({ token: pushToken })
+                    });
+                } catch (error) {
+                    console.log('Push token unregistration failed (ignoring):', error);
+                }
+            }
+            
+            // Step 3: Wipe local analytics IDs and device data
+            await AsyncStorage.multiRemove([
+                'push_token',
+                'device_id', 
+                'analytics_id',
+                'crashlytics_id',
+                'user_id',
+                'access_token',
+                'refresh_token'
+            ]);
+            
+            // Step 4: Call DELETE /api/v1/account (new secure endpoint)
+            const response = await fetch('https://babyshield.cureviax.ai/api/v1/account', {
+                method: 'DELETE',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`,
-                    'X-User-ID': userId
-                },
-                body: JSON.stringify({
-                    user_id: userId,
-                    confirm: true,
-                    reason: 'User requested account deletion'
-                })
+                    'Authorization': `Bearer ${accessToken}`
+                }
             });
             
-            const data = await response.json();
-            
-            if (data.ok) {
-                // Clear all local data
+            if (response.status === 204) {
+                // Clear all remaining local data
                 await AsyncStorage.clear();
                 
                 // Navigate to login
@@ -271,6 +293,51 @@ class PrivacyManager {
                     'Your account has been permanently deleted.',
                     [{ text: 'OK', onPress: () => this.navigateToLogin() }]
                 );
+            } else if (response.status === 401) {
+                const errorData = await response.json();
+                if (errorData.detail && /Re-authentication required/i.test(errorData.detail)) {
+                    // Show re-login prompt
+                    const ok = await new Promise((resolve) => {
+                        Alert.alert(
+                            'Re-authentication Required',
+                            'Please re-enter your password to continue with account deletion.',
+                            [
+                                { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
+                                { text: 'Re-login', onPress: () => resolve(true) }
+                            ]
+                        );
+                    });
+                    
+                    if (ok) {
+                        // Navigate to login and wait for success
+                        const loginSuccess = await this.navigateToReLoginAndWait();
+                        if (loginSuccess) {
+                            // Retry deletion once with fresh token
+                            const newToken = await this.getFreshAccessToken();
+                            const retryResponse = await fetch('https://babyshield.cureviax.ai/api/v1/account', {
+                                method: 'DELETE',
+                                headers: {
+                                    'Authorization': `Bearer ${newToken}`
+                                }
+                            });
+                            
+                            if (retryResponse.status === 204) {
+                                await AsyncStorage.clear();
+                                Alert.alert(
+                                    'Account Deleted',
+                                    'Your account has been permanently deleted.',
+                                    [{ text: 'OK', onPress: () => this.navigateToLogin() }]
+                                );
+                            } else {
+                                throw new Error(`Account deletion failed after re-auth: ${retryResponse.status}`);
+                            }
+                        }
+                    }
+                } else {
+                    throw new Error(`Authentication failed: ${errorData.detail}`);
+                }
+            } else {
+                throw new Error(`Account deletion failed: ${response.status}`);
             }
         } catch (error) {
             Alert.alert('Error', 'Failed to delete account');

@@ -30,8 +30,22 @@ ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_DAYS", "7"))
 
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Password hashing with BCrypt compatibility fix
+try:
+    # Suppress bcrypt warnings by forcing specific configuration
+    import warnings
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message=".*bcrypt.*", category=UserWarning)
+        pwd_context = CryptContext(
+            schemes=["bcrypt"],
+            deprecated="auto",
+            bcrypt__rounds=12,
+            bcrypt__ident="2b"  # Force specific bcrypt variant to avoid version detection
+        )
+except Exception as e:
+    logger.warning(f"BCrypt initialization warning (non-critical): {e}")
+    # Final fallback - minimal configuration
+    pwd_context = CryptContext(schemes=["bcrypt"])
 
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token", auto_error=False)
@@ -52,13 +66,21 @@ def get_password_hash(password: str) -> str:
 
 def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
     """Create a JWT access token"""
+    import time
+    import uuid
+    
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     
-    to_encode.update({"exp": expire, "type": "access"})
+    to_encode.update({
+        "exp": expire, 
+        "type": "access",
+        "auth_time": int(time.time()),
+        "jti": uuid.uuid4().hex
+    })
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
@@ -101,6 +123,26 @@ async def get_current_user(
         # Check token type
         if payload.get("type") != "access":
             raise credentials_exception
+        
+        # Check if token is blocklisted
+        jti = payload.get("jti")
+        if jti:
+            try:
+                import redis
+                r = redis.from_url(os.getenv("REDIS_URL", "redis://localhost:6379/0"), decode_responses=True)
+                if r.get(f"jwt:block:{jti}"):
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Token revoked",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
+            except HTTPException:
+                # Re-raise HTTPException (don't catch our own auth errors!)
+                raise
+            except Exception as e:
+                # Log Redis connection issues but continue without blocklist check
+                logger.warning(f"Redis blocklist check failed: {e}")
+                pass
         
         user_id: int = payload.get("sub")
         if user_id is None:

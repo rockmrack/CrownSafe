@@ -48,8 +48,18 @@ app.conf.update(
     task_reject_on_worker_lost=True,
 )
 
+# Beat schedule for periodic tasks
+from celery.schedules import crontab
+
+app.conf.beat_schedule = {
+    "purge-legal-retention-daily": {
+        "task": "retention.purge_legal_retention",
+        "schedule": crontab(minute=15, hour=2),  # 02:15 UTC daily
+    }
+}
+
 # Initialize AWS clients
-s3_client = boto3.client('s3', region_name=AWS_REGION)
+s3_client = boto3.client('s3', region_name=os.getenv("S3_BUCKET_REGION", "us-east-1"))
 rekognition_client = boto3.client('rekognition', region_name=AWS_REGION)
 
 

@@ -327,7 +327,7 @@ async def submit_incident_report(
     severity_level: str = Form(...),
     description: str = Form(...),
     brand_name: Optional[str] = Form(None),
-    model_number: Optional[str] = Form(None),
+    product_model_number: Optional[str] = Form(None, alias="model_number"),
     barcode: Optional[str] = Form(None),
     child_age_months: Optional[int] = Form(None),
     reporter_email: Optional[str] = Form(None),
@@ -368,7 +368,7 @@ async def submit_incident_report(
         incident = IncidentReport(
             product_name=product_name,
             brand_name=brand_name,
-            model_number=model_number,
+            model_number=product_model_number,
             barcode=barcode,
             incident_type=IncidentType(incident_type),
             incident_date=datetime.fromisoformat(incident_date),

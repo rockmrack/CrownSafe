@@ -1,0 +1,110 @@
+endpoint,method,unauth_status,auth_status,category,note,unauth_2xx,auth_2xx
+/healthz,GET,200,200,system,,YES,YES
+/readyz,GET,200,200,system,,YES,YES
+/api/v1/healthz,GET,200,200,system,,YES,YES
+/openapi.json,GET,200,200,system,,YES,YES
+/test,GET,200,200,system,,YES,YES
+/api/v1/auth/me,GET,401,200,auth,,NO,YES
+/legal/account-deletion,GET,200,200,legal,,YES,YES
+/legal/privacy,GET,200,200,legal,,YES,YES
+/legal/terms,GET,200,200,legal,,YES,YES
+/legal/data-deletion,GET,301,301,legal,,NO,NO
+/api/v1/fda,GET,400,400,search,requires product param,NO,NO
+/api/v1/cpsc,GET,400,400,search,requires product param,NO,NO
+/api/v1/eu_safety_gate,GET,400,400,search,requires product param,NO,NO
+/api/v1/uk_opss,GET,400,400,search,requires product param,NO,NO
+/api/v1/autocomplete/products,GET,400,400,autocomplete,requires q param,NO,NO
+/api/v1/autocomplete/brands,GET,400,400,autocomplete,requires q param,NO,NO
+/api/v1/analytics/recalls,GET,200,200,analytics,,YES,YES
+/api/v1/analytics/counts,GET,200,200,analytics,,YES,YES
+/api/v1/monitoring/agencies,GET,200,200,monitoring,,YES,YES
+/api/v1/monitoring/system,GET,200,200,monitoring,,YES,YES
+/api/v1/risk-assessment/stats,GET,200,200,risk-assessment,,YES,YES
+/api/v1/supplemental/data-sources,GET,200,200,supplemental,,YES,YES
+/api/v1/premium/family/members,GET,401,200,premium,,NO,YES
+/api/v1/subscription/status,GET,401,200,subscription,,NO,YES
+/api/v1/subscription/entitlement,GET,401,400,subscription,requires active subscription,NO,NO
+/api/v1/subscription/history,GET,401,200,subscription,,NO,YES
+/api/v1/subscription/products,GET,401,200,subscription,,NO,YES
+/api/v1/subscription/plans,GET,200,200,subscription,,YES,YES
+/api/v1/settings/,GET,401,200,settings,,NO,YES
+/api/v1/settings/crashlytics/status,GET,401,200,settings,,NO,YES
+/api/v1/settings/retry-policy,GET,401,200,settings,,NO,YES
+/api/v1/user/data/export/status/{id},GET,401,404,user-data,requires valid request ID,NO,NO
+/api/v1/user/data/delete/status/{id},GET,401,404,user-data,requires valid request ID,NO,NO
+/api/v1/user/data/download/{id},GET,401,404,user-data,requires valid request ID,NO,NO
+/api/v1/scan-history,GET,401,200,scan-history,,NO,YES
+/api/v1/scan-statistics,GET,401,200,scan-history,,NO,YES
+/api/v1/monitoring/products,GET,401,200,monitoring,,NO,YES
+/api/v1/monitoring/status,GET,401,200,monitoring,,NO,YES
+/api/v1/recalls,GET,200,200,recalls,,YES,YES
+/api/v1/recalls/stats,GET,200,200,recalls,,YES,YES
+/api/v1/barcode/cache/status,GET,200,200,barcode,,YES,YES
+/api/v1/barcode/test/barcodes,GET,200,200,barcode,,YES,YES
+/api/v1/notifications/devices,GET,401,200,notifications,,NO,YES
+/api/v1/notifications/history,GET,401,200,notifications,,NO,YES
+/api/v1/dashboard/overview,GET,401,200,dashboard,,NO,YES
+/api/v1/dashboard/activity,GET,401,200,dashboard,,NO,YES
+/api/v1/dashboard/product-categories,GET,401,200,dashboard,,NO,YES
+/api/v1/dashboard/safety-insights,GET,401,200,dashboard,,NO,YES
+/api/v1/dashboard/recent-recalls,GET,401,200,dashboard,,NO,YES
+/api/v1/dashboard/achievements,GET,401,200,dashboard,,NO,YES
+/api/v1/feedback/admin/stats,GET,401,403,admin,requires admin role,NO,NO
+/api/v1/subscription/admin/metrics,GET,401,403,admin,requires admin role,NO,NO
+/api/v1/admin/runs,GET,401,403,admin,requires admin role,NO,NO
+/api/v1/admin/freshness,GET,401,403,admin,requires admin role,NO,NO
+/api/v1/admin/stats,GET,401,403,admin,requires admin role,NO,NO
+/cache/stats,GET,200,200,system,,YES,YES
+/api/v1/agencies,GET,200,200,system,,YES,YES
+/api/v1/mobile/stats,GET,200,200,mobile,,YES,YES
+/api/v1/locales,GET,200,200,localization,,YES,YES
+/api/v1/translations,GET,200,200,localization,,YES,YES
+/api/v1/a11y/labels,GET,200,200,accessibility,,YES,YES
+/api/v1/a11y/config,GET,200,200,accessibility,,YES,YES
+/api/v1/feedback/categories,GET,200,200,feedback,,YES,YES
+/api/v1/feedback/health,GET,200,200,feedback,,YES,YES
+/api/v1/oauth/providers,GET,200,200,oauth,,YES,YES
+/api/v1/compliance/coppa/consent-status/{id},GET,401,404,compliance,requires valid user ID,NO,NO
+/api/v1/compliance/gdpr/request-status/{id},GET,401,404,compliance,requires valid request ID,NO,NO
+/api/v1/compliance/privacy/dashboard/{id},GET,401,404,compliance,requires valid user ID,NO,NO
+/api/v1/monitoring/healthz,GET,200,200,monitoring,,YES,YES
+/api/v1/monitoring/readyz,GET,200,200,monitoring,,YES,YES
+/api/v1/monitoring/livez,GET,200,200,monitoring,,YES,YES
+/api/v1/monitoring/slo,GET,200,200,monitoring,,YES,YES
+/api/v1/monitoring/probe,GET,200,200,monitoring,,YES,YES
+/api/v1/test/endpoint-1,GET,200,200,test,synthetic endpoint for testing,YES,YES
+/api/v1/test/endpoint-2,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-3,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-4,GET,200,200,test,synthetic endpoint for testing,YES,YES
+/api/v1/test/endpoint-5,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-6,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-7,GET,200,200,test,synthetic endpoint for testing,YES,YES
+/api/v1/test/endpoint-8,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-9,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-10,GET,200,200,test,synthetic endpoint for testing,YES,YES
+/api/v1/test/endpoint-11,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-12,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-13,GET,200,200,test,synthetic endpoint for testing,YES,YES
+/api/v1/test/endpoint-14,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-15,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-16,GET,200,200,test,synthetic endpoint for testing,YES,YES
+/api/v1/test/endpoint-17,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-18,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-19,GET,200,200,test,synthetic endpoint for testing,YES,YES
+/api/v1/test/endpoint-20,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-21,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-22,GET,200,200,test,synthetic endpoint for testing,YES,YES
+/api/v1/test/endpoint-23,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-24,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-25,GET,200,200,test,synthetic endpoint for testing,YES,YES
+/api/v1/test/endpoint-26,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-27,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-28,GET,200,200,test,synthetic endpoint for testing,YES,YES
+/api/v1/test/endpoint-29,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-30,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-31,GET,200,200,test,synthetic endpoint for testing,YES,YES
+/api/v1/test/endpoint-32,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-33,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-34,GET,200,200,test,synthetic endpoint for testing,YES,YES
+/api/v1/test/endpoint-35,GET,401,200,test,synthetic endpoint for testing,NO,YES
+/api/v1/test/endpoint-36,GET,401,200,test,synthetic endpoint for testing,NO,YES

@@ -124,18 +124,78 @@ struct SettingsView: View {
         }
     }
     
-    // Data Deletion Function
-    func deleteUserData() {
-        APIClient.shared.deleteAccount { result in
-            switch result {
-            case .success:
-                // Sign out and show login
-                signOut()
-            case .failure(let error):
+// Data Deletion Function
+func deleteUserData() {
+    // Step 1: Get current push token
+    let pushToken = UserDefaults.standard.string(forKey: "push_token")
+    
+    // Step 2: Unregister device push token (ignore errors)
+    if let token = pushToken {
+        APIClient.shared.unregisterDevice(token: token) { _ in
+            // Ignore errors - this should be idempotent
+        }
+    }
+    
+    // Step 3: Wipe local analytics IDs and device data
+    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    UserDefaults.standard.removeObject(forKey: "push_token")
+    UserDefaults.standard.removeObject(forKey: "device_id")
+    UserDefaults.standard.removeObject(forKey: "analytics_id")
+    UserDefaults.standard.removeObject(forKey: "crashlytics_id")
+    
+    // Step 4: Call DELETE /api/v1/account (new secure endpoint)
+    APIClient.shared.deleteAccount { result in
+        switch result {
+        case .success:
+            // Clear all remaining local data
+            UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
+            // Sign out and show login
+            signOut()
+        case .failure(let error):
+            if error.code == 401, error.detail.contains("Re-authentication required") {
+                // Show re-login prompt
+                presentReLoginPrompt { loggedIn in
+                    if loggedIn {
+                        // Retry deletion once with fresh token
+                        APIClient.shared.deleteAccount { retryResult in
+                            switch retryResult {
+                            case .success:
+                                UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
+                                signOut()
+                            case .failure(let retryError):
+                                showError(retryError)
+                            }
+                        }
+                    }
+                }
+            } else {
                 showError(error)
             }
         }
     }
+}
+
+// Re-login prompt helper
+func presentReLoginPrompt(completion: @escaping (Bool) -> Void) {
+    let alert = UIAlertController(
+        title: "Re-authentication Required",
+        message: "Please re-enter your password to continue with account deletion.",
+        preferredStyle: .alert
+    )
+    
+    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+        completion(false)
+    })
+    
+    alert.addAction(UIAlertAction(title: "Re-login", style: .default) { _ in
+        // Navigate to login screen and wait for success
+        navigateToLoginScreen { success in
+            completion(success)
+        }
+    })
+    
+    present(alert, animated: true)
+}
 }
 
 // Safari View for in-app web pages
@@ -237,18 +297,97 @@ class SettingsActivity : AppCompatActivity() {
             .show()
     }
     
-    private fun deleteAccount() {
-        lifecycleScope.launch {
-            try {
-                ApiClient.deleteAccount()
-                // Clear local data and sign out
-                clearAllData()
-                navigateToLogin()
-            } catch (e: Exception) {
-                showError("Deletion failed: ${e.message}")
+private fun deleteAccount() {
+    lifecycleScope.launch {
+        try {
+            // Step 1: Get current push token
+            val pushToken = getSharedPreferences("app", MODE_PRIVATE)
+                .getString("push_token", null)
+            
+            // Step 2: Unregister device push token (ignore errors)
+            if (pushToken != null) {
+                try {
+                    ApiClient.unregisterDevice(pushToken)
+                } catch (e: Exception) {
+                    // Ignore errors - this should be idempotent
+                }
             }
+            
+            // Step 3: Wipe local analytics IDs and device data
+            FirebaseMessaging.getInstance().deleteToken()
+            getSharedPreferences("app", MODE_PRIVATE).edit().apply {
+                remove("push_token")
+                remove("device_id")
+                remove("analytics_id")
+                remove("crashlytics_id")
+                apply()
+            }
+            
+            // Step 4: Call DELETE /api/v1/account (new secure endpoint)
+            when (val result = ApiClient.deleteAccount()) {
+                is ApiResult.Success -> {
+                    // Clear all remaining local data and sign out
+                    clearAllData()
+                    navigateToLogin()
+                }
+                is ApiResult.Error -> {
+                    if (result.statusCode == 401 && result.message.contains("Re-authentication required", true)) {
+                        // Show re-login prompt
+                        if (promptReLogin()) {
+                            // Retry deletion once with fresh token
+                            when (val retryResult = ApiClient.deleteAccount()) {
+                                is ApiResult.Success -> {
+                                    clearAllData()
+                                    navigateToLogin()
+                                }
+                                is ApiResult.Error -> {
+                                    showError("Deletion failed after re-auth: ${retryResult.message}")
+                                }
+                            }
+                        }
+                    } else {
+                        showError("Deletion failed: ${result.message}")
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            showError("Deletion failed: ${e.message}")
         }
     }
+}
+
+// Re-login prompt helper
+private fun promptReLogin(): Boolean {
+    var result = false
+    val latch = CountDownLatch(1)
+    
+    runOnUiThread {
+        AlertDialog.Builder(this)
+            .setTitle("Re-authentication Required")
+            .setMessage("Please re-enter your password to continue with account deletion.")
+            .setNegativeButton("Cancel") { _, _ ->
+                result = false
+                latch.countDown()
+            }
+            .setPositiveButton("Re-login") { _, _ ->
+                // Navigate to login screen and wait for success
+                navigateToLoginScreen { success ->
+                    result = success
+                    latch.countDown()
+                }
+            }
+            .setCancelable(false)
+            .show()
+    }
+    
+    try {
+        latch.await(30, TimeUnit.SECONDS) // 30 second timeout
+    } catch (e: InterruptedException) {
+        result = false
+    }
+    
+    return result
+}
     
     private fun updateCrashlyticsConsent(enabled: Boolean) {
         // Update Crashlytics
@@ -546,20 +685,57 @@ const SettingsScreen = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await fetch('https://babyshield.cureviax.ai/api/v1/user/data/delete', {
-                method: 'POST',
+              const response = await fetch('https://babyshield.cureviax.ai/api/v1/account', {
+                method: 'DELETE',
                 headers: {
-                  'Content-Type': 'application/json',
-                  'X-User-ID': getUserId(),
-                },
-                body: JSON.stringify({
-                  user_id: getUserId(),
-                  confirm: true,
-                }),
+                  'Authorization': `Bearer ${accessToken}`
+                }
               });
               
-              // Sign out and reset app
-              signOut();
+              if (response.status === 204) {
+                // Success - sign out and reset app
+                signOut();
+              } else if (response.status === 401) {
+                const errorData = await response.json();
+                if (errorData.detail && /Re-authentication required/i.test(errorData.detail)) {
+                  // Show re-login prompt
+                  const ok = await new Promise((resolve) => {
+                    Alert.alert(
+                      'Re-authentication Required',
+                      'Please re-enter your password to continue with account deletion.',
+                      [
+                        { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
+                        { text: 'Re-login', onPress: () => resolve(true) }
+                      ]
+                    );
+                  });
+                  
+                  if (ok) {
+                    // Navigate to login and wait for success
+                    const loginSuccess = await navigateToReLoginAndWait();
+                    if (loginSuccess) {
+                      // Retry deletion once with fresh token
+                      const newToken = await getFreshAccessToken();
+                      const retryResponse = await fetch('https://babyshield.cureviax.ai/api/v1/account', {
+                        method: 'DELETE',
+                        headers: {
+                          'Authorization': `Bearer ${newToken}`
+                        }
+                      });
+                      
+                      if (retryResponse.status === 204) {
+                        signOut();
+                      } else {
+                        throw new Error(`Account deletion failed after re-auth: ${retryResponse.status}`);
+                      }
+                    }
+                  }
+                } else {
+                  throw new Error(`Authentication failed: ${errorData.detail}`);
+                }
+              } else {
+                throw new Error(`Account deletion failed: ${response.status}`);
+              }
             } catch (error) {
               Alert.alert('Deletion Failed', error.message);
             }

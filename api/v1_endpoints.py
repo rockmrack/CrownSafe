@@ -229,6 +229,23 @@ API_CODE_TO_INTERNAL = {v: k for k, v in AGENCY_CODE_MAP.items()}
 
 router = APIRouter()
 
+# ==================== INDEX ROUTE ====================
+
+@router.get("/", include_in_schema=False)
+def api_v1_index():
+    """API v1 index endpoint to prevent 404 logs"""
+    return {
+        "ok": True,
+        "version": "1.2.0",
+        "message": "BabyShield API v1",
+        "endpoints": {
+            "search": "/api/v1/search",
+            "recalls": "/api/v1/recalls",
+            "safety_check": "/api/v1/safety-check",
+            "health": "/healthz"
+        }
+    }
+
 # ==================== HELPER FUNCTIONS ====================
 
 def generate_trace_id() -> str:

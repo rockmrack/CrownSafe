@@ -34,7 +34,7 @@ except ImportError:
     AWS_AVAILABLE = False
     logging.warning("AWS SDK not available")
 
-# Local OCR - Feature flags for optional backends
+# Local OCR - Feature flags for optional backends (disabled by default due to complex dependencies)
 ENABLE_TESSERACT = os.getenv("ENABLE_TESSERACT", "false").lower() == "true"
 ENABLE_EASYOCR = os.getenv("ENABLE_EASYOCR", "false").lower() == "true"
 
@@ -114,6 +114,7 @@ class ExtractionResult:
     warnings: List[str] = None
     age_recommendation: Optional[str] = None
     certifications: List[str] = None
+    defects: List[Dict[str, Any]] = None  # Visual defects detected
     
     # Metadata
     confidence_score: float = 0.0
@@ -270,6 +271,10 @@ class ImageAnalysisService:
         
         # 6. Detect issues/flags
         self._detect_issues(result, pil_image)
+        
+        # 7. Visual defect detection
+        if extract_all or 'defects' in extract_all:
+            result.defects = self.detect_visual_defects(pil_image)
         
         # Cache result if enabled
         if self.enable_caching:
@@ -585,6 +590,140 @@ class ImageAnalysisService:
         """Cache analysis result"""
         # TODO: Implement cache storage to database
         pass
+
+
+    def detect_visual_defects(self, pil_image: Image) -> List[Dict[str, Any]]:
+        """
+        Detect visual defects using OpenCV computer vision
+        
+        Args:
+            pil_image: PIL Image object
+            
+        Returns:
+            List of detected defects with type, confidence, and location
+        """
+        defects = []
+        
+        # Check if OpenCV is available
+        try:
+            import cv2
+            import numpy as np
+        except ImportError:
+            logger.warning("OpenCV or NumPy not available - skipping defect detection")
+            return defects
+        
+        try:
+            # Convert PIL to OpenCV format
+            img_array = np.array(pil_image)
+            
+            # Handle different image formats
+            if len(img_array.shape) == 3:
+                if img_array.shape[2] == 4:  # RGBA
+                    gray = cv2.cvtColor(img_array, cv2.COLOR_RGBA2GRAY)
+                    img_bgr = cv2.cvtColor(img_array, cv2.COLOR_RGBA2BGR)
+                elif img_array.shape[2] == 3:  # RGB
+                    gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
+                    img_bgr = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
+                else:
+                    logger.warning(f"Unsupported image format: {img_array.shape}")
+                    return defects
+            elif len(img_array.shape) == 2:
+                gray = img_array
+                img_bgr = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
+            else:
+                logger.warning(f"Unsupported image format: {img_array.shape}")
+                return defects
+            
+            # 1. Detect cracks using edge detection
+            edges = cv2.Canny(gray, 50, 150, apertureSize=3)
+            
+            # Find contours for crack detection
+            contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            
+            for contour in contours:
+                area = cv2.contourArea(contour)
+                if area > 200:  # Significant defect area
+                    # Get bounding rectangle
+                    x, y, w, h = cv2.boundingRect(contour)
+                    
+                    # Calculate aspect ratio to identify linear cracks
+                    aspect_ratio = max(w, h) / min(w, h) if min(w, h) > 0 else 0
+                    
+                    if aspect_ratio > 5:  # Long, thin defect = likely crack
+                        defects.append({
+                            "type": "crack",
+                            "description": f"Linear crack detected ({w}x{h} pixels)",
+                            "location": {"x": int(x), "y": int(y), "width": int(w), "height": int(h)},
+                            "severity": "high" if area > 1000 else "medium",
+                            "confidence": min(0.95, 0.3 + (area / 5000)),  # Confidence based on area
+                            "area_pixels": int(area)
+                        })
+            
+            # 2. Detect missing parts using template matching or color analysis
+            # Check for unusual dark/bright spots that might indicate missing parts
+            blur = cv2.GaussianBlur(gray, (21, 21), 0)
+            diff = cv2.absdiff(gray, blur)
+            thresh = cv2.threshold(diff, 25, 255, cv2.THRESH_BINARY)[1]
+            
+            # Find significant anomalies
+            contours_missing, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            
+            for contour in contours_missing:
+                area = cv2.contourArea(contour)
+                if area > 500:  # Significant missing area
+                    x, y, w, h = cv2.boundingRect(contour)
+                    
+                    # Check if it's roughly circular (missing screw/button)
+                    circularity = 4 * np.pi * area / (cv2.arcLength(contour, True) ** 2)
+                    
+                    if circularity > 0.5:  # Roughly circular
+                        defects.append({
+                            "type": "missing_component",
+                            "description": f"Missing circular component detected ({w}x{h} pixels)",
+                            "location": {"x": int(x), "y": int(y), "width": int(w), "height": int(h)},
+                            "severity": "high",
+                            "confidence": min(0.90, 0.4 + circularity * 0.5),
+                            "area_pixels": int(area)
+                        })
+            
+            # 3. Detect color anomalies that might indicate damage
+            # Convert to HSV for better color analysis
+            hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
+            
+            # Look for unusual color variations (rust, discoloration)
+            # This is a simplified approach - in production you'd use more sophisticated methods
+            h, s, v = cv2.split(hsv)
+            
+            # Find areas with unusual saturation (could indicate discoloration)
+            s_mean = np.mean(s)
+            s_std = np.std(s)
+            
+            # Areas with very high or very low saturation compared to average
+            unusual_sat = cv2.threshold(s, s_mean + 2 * s_std, 255, cv2.THRESH_BINARY)[1]
+            
+            contours_color, _ = cv2.findContours(unusual_sat, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            
+            for contour in contours_color:
+                area = cv2.contourArea(contour)
+                if area > 300:  # Significant discolored area
+                    x, y, w, h = cv2.boundingRect(contour)
+                    
+                    defects.append({
+                        "type": "discoloration",
+                        "description": f"Color anomaly detected - possible damage or wear ({w}x{h} pixels)",
+                        "location": {"x": int(x), "y": int(y), "width": int(w), "height": int(h)},
+                        "severity": "medium",
+                        "confidence": min(0.75, 0.3 + (area / 2000)),
+                        "area_pixels": int(area)
+                    })
+            
+            logger.info(f"Detected {len(defects)} visual defects")
+            
+        except Exception as e:
+            logger.error(f"Error in defect detection: {e}")
+            # Return empty list on error rather than failing
+            
+        return defects
 
 
 # PII Redaction utility

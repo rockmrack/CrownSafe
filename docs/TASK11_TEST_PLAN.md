@@ -138,7 +138,7 @@ Comprehensive test plan for OAuth authentication, DSAR compliance, and Crashlyti
 ## 3. Data Deletion Testing
 
 ### Test Case: DD-001 - Delete All User Data
-**Endpoints:** `POST /api/v1/user/data/delete`
+**Endpoints:** `DELETE /api/v1/account`
 **Steps:**
 1. Create user with data
 2. Navigate to Settings > Privacy

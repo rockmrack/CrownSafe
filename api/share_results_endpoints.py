@@ -30,7 +30,7 @@ share_router = APIRouter(prefix="/api/v1/share", tags=["share-results"])
 
 # S3 Configuration
 S3_BUCKET = os.getenv("S3_BUCKET", "babyshield-images")
-s3_client = boto3.client("s3")
+s3_client = boto3.client("s3", region_name=os.getenv("S3_BUCKET_REGION", "us-east-1"))
 
 
 def _is_uuid(s: str) -> bool:

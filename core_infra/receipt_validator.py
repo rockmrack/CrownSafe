@@ -20,7 +20,7 @@ from core_infra.database import get_db_session, User
 
 logger = logging.getLogger(__name__)
 
-# Feature flag for receipt validation
+# Feature flag for receipt validation (disabled by default - requires Google service account key)
 ENABLE_RECEIPT_VALIDATION = os.getenv("ENABLE_RECEIPT_VALIDATION", "false").lower() == "true"
 
 # Google imports - optional

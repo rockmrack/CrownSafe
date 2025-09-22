@@ -79,7 +79,7 @@ GET   /api/v1/settings/retry-policy      - Get retry configuration
 ### User Data Endpoints
 ```
 POST /api/v1/user/data/export           - Request data export
-POST /api/v1/user/data/delete           - Request data deletion
+DELETE /api/v1/account                  - Delete user account
 GET  /api/v1/user/data/export/status/{id} - Check export status
 GET  /api/v1/user/data/delete/status/{id} - Check deletion status
 ```
@@ -157,11 +157,11 @@ const handleDeleteAccount = async () => {
         text: 'Delete',
         style: 'destructive',
         onPress: async () => {
-          const response = await api.post('/api/v1/user/data/delete', {
-            user_id: userId,
-            confirm: true,
-            reason: 'User requested'
-          });
+          const response = await api.delete('/api/v1/account');
+          
+          if (response.status !== 204) {
+            throw new Error(`Account deletion failed: ${response.status}`);
+          }
           
           if (response.ok) {
             // Log out and clear all data

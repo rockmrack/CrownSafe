@@ -24,7 +24,24 @@ tags:
     description: Recall search endpoints
   - name: recalls
     description: Individual recall operations
+  - name: auth
+    description: Authentication endpoints
+  - name: account
+    description: Account management endpoints
+  - name: account-legacy
+    description: Legacy account endpoints (deprecated)
+  - name: risk-assessment
+    description: Risk assessment endpoints
+  - name: supplemental
+    description: Supplemental data endpoints
+  - name: legal
+    description: Legal and privacy pages
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Severity:
       type: string
@@ -302,6 +319,194 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/HealthResponse"
+  /api/v1/auth/register:
+    post:
+      tags: [auth]
+      summary: User registration
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, confirm_password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+                password:
+                  type: string
+                  minLength: 8
+                  example: "securepassword123"
+                confirm_password:
+                  type: string
+                  example: "securepassword123"
+      responses:
+        "200":
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user_id:
+                        type: string
+                        example: "123"
+                      access_token:
+                        type: string
+                      refresh_token:
+                        type: string
+  /api/v1/auth/token:
+    post:
+      tags: [auth]
+      summary: User login (form-urlencoded)
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                  description: "User email address"
+                  example: "user@example.com"
+                password:
+                  type: string
+                  example: "securepassword123"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: "bearer"
+                  refresh_token:
+                    type: string
+  /api/v1/auth/me:
+    get:
+      tags: [auth]
+      summary: Get current user info
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+        "401":
+          description: Unauthorized or token revoked
+    put:
+      tags: [auth]
+      summary: Update current user
+      operationId: updateCurrentUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        "200":
+          description: User updated
+  /api/v1/account:
+    delete:
+      tags: [account]
+      summary: Delete current account (requires recent auth)
+      operationId: deleteAccount
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Account deleted successfully. Subsequent calls with same token return 401 (Token revoked).
+        "401":
+          description: Unauthorized or re-authentication required
+        "429":
+          description: Too many requests
+  /api/v1/user/data/delete:
+    post:
+      tags: [account-legacy]
+      summary: Legacy deletion endpoint (deprecated)
+      operationId: legacyDelete
+      deprecated: true
+      description: "Returns non-2xx (observed 400 when body missing). Use DELETE /api/v1/account instead."
+      responses:
+        "400":
+          description: Bad request (observed when body missing)
+        "410":
+          description: Gone - endpoint removed
+  /api/v1/risk-assessment/stats:
+    get:
+      tags: [risk-assessment]
+      summary: Get risk assessment statistics
+      operationId: getRiskStats
+      responses:
+        "200":
+          description: Risk assessment statistics
+  /api/v1/supplemental/data-sources:
+    get:
+      tags: [supplemental]
+      summary: Get supplemental data sources
+      operationId: getDataSources
+      responses:
+        "200":
+          description: List of data sources
+  /legal/account-deletion:
+    get:
+      tags: [legal]
+      summary: Account deletion information page
+      operationId: getAccountDeletionPage
+      responses:
+        "200":
+          description: HTML page with account deletion information
+          content:
+            text/html:
+              schema:
+                type: string
+  /legal/data-deletion:
+    get:
+      tags: [legal]
+      summary: Redirects to account deletion page
+      operationId: getDataDeletionRedirect
+      description: "Returns 301 redirect to /legal/account-deletion (some stacks return 405 for HEAD; use GET when checking redirect)"
+      responses:
+        "301":
+          description: Redirect to /legal/account-deletion
   /api/v1/search/advanced:
     post:
       tags: [search]

@@ -39,15 +39,7 @@ class BarcodeDetectionResult(BaseModel):
 
 
 class ProductSummary(BaseModel):
-    model_config = {"protected_namespaces": ()}  # Allow model_number field
-    
     """Product identification summary"""
-    name: str = Field(..., description="Product name")
-    brand: str = Field(..., description="Product brand")
-    barcode: Optional[str] = Field(None, description="Product barcode if applicable")
-    model_number: Optional[str] = Field(None, description="Model number if available")
-    upc_gtin: Optional[str] = Field(None, description="UPC/GTIN if available")
-    
     model_config = {
         "protected_namespaces": (),
         "json_schema_extra": {

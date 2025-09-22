@@ -6,9 +6,10 @@ import os, sys, logging, asyncio, uuid
 from typing import Optional, List, Dict, Any
 
 from fastapi import FastAPI, HTTPException, Depends, Query, Request, Header, Path
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, Field, EmailStr
 from sqlalchemy import text, and_, or_
 from datetime import date, datetime, timedelta
@@ -39,16 +40,16 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-# 1) Imports with error handling - DEPLOYMENT FIX
+# 1) Imports with error handling - DEPLOYMENT FIX (UPDATED)
 try:
-from core_infra.database import get_db_session, User, engine
-from core_infra.cache_manager import get_cache_stats
-from core_infra.async_optimizer import run_optimized_safety_check
-from core_infra.connection_pool_optimizer import optimized_recall_search, connection_optimizer
-from core_infra.smart_cache_warmer import warm_cache_now, start_background_cache_warming
-from core_infra.mobile_hot_path import ultra_fast_check, get_mobile_stats
-from core_infra.memory_optimizer import get_memory_stats, optimize_memory
-from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
+    from core_infra.database import get_db_session, User, engine
+    from core_infra.cache_manager import get_cache_stats
+    from core_infra.async_optimizer import run_optimized_safety_check
+    from core_infra.connection_pool_optimizer import optimized_recall_search, connection_optimizer
+    from core_infra.smart_cache_warmer import warm_cache_now, start_background_cache_warming
+    from core_infra.mobile_hot_path import ultra_fast_check, get_mobile_stats
+    from core_infra.memory_optimizer import get_memory_stats, optimize_memory
+    from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
     from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
 except ImportError as e:
     logging.error(f"Critical import error: {e}")
@@ -183,6 +184,90 @@ app = FastAPI(
     version="2.4.0",
     generate_unique_id_function=generate_unique_operation_id
 )
+
+# Mount static files for favicon, robots.txt, etc.
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
+
+# Create static directory if it doesn't exist
+static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
+if not os.path.exists(static_dir):
+    os.makedirs(static_dir)
+
+# Mount static files
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+# Add favicon routes (browsers request these automatically)
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    """Serve favicon.ico"""
+    favicon_path = os.path.join(static_dir, "favicon.svg")
+    if os.path.exists(favicon_path):
+        return FileResponse(favicon_path, media_type="image/svg+xml")
+    return FileResponse(os.path.join(static_dir, "favicon.ico"), media_type="image/x-icon")
+
+@app.get("/favicon.svg", include_in_schema=False)  
+async def favicon_svg():
+    """Serve modern SVG favicon"""
+    return FileResponse(os.path.join(static_dir, "favicon.svg"), media_type="image/svg+xml")
+
+# Add SEO files
+@app.get("/robots.txt", include_in_schema=False)
+async def robots():
+    """Serve robots.txt for SEO crawlers"""
+    return FileResponse(os.path.join(static_dir, "robots.txt"), media_type="text/plain")
+
+@app.get("/sitemap.xml", include_in_schema=False)
+async def sitemap():
+    """Serve sitemap.xml for SEO crawlers"""
+    return FileResponse(os.path.join(static_dir, "sitemap.xml"), media_type="application/xml")
+
+# Legacy redirect (Play/Apple reviewers sometimes hit old docs)
+@app.get("/legal/data-deletion", include_in_schema=False)
+def _legacy_data_deletion_redirect():
+    """Redirect old data-deletion links to new account-deletion page"""
+    return RedirectResponse(url="/legal/account-deletion", status_code=301)
+
+# Explicit legal page routes
+@app.get("/legal/account-deletion", include_in_schema=False)
+async def serve_account_deletion():
+    """Serve account deletion page"""
+    try:
+        import os
+        file_path = os.path.join(os.path.dirname(__file__), "..", "static", "legal", "account-deletion.html")
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        return HTMLResponse(content=content)
+    except Exception as e:
+        logging.error(f"Could not serve account deletion page: {e}")
+        raise HTTPException(status_code=500, detail="Could not serve page")
+
+@app.get("/legal/privacy", include_in_schema=False)
+async def serve_privacy():
+    """Serve privacy policy page"""
+    try:
+        import os
+        file_path = os.path.join(os.path.dirname(__file__), "..", "static", "legal", "privacy.html")
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        return HTMLResponse(content=content)
+    except Exception as e:
+        logging.error(f"Could not serve privacy page: {e}")
+        raise HTTPException(status_code=500, detail="Could not serve page")
+
+@app.get("/legal/terms", include_in_schema=False)
+async def serve_terms():
+    """Serve terms of service page"""
+    try:
+        import os
+        file_path = os.path.join(os.path.dirname(__file__), "..", "static", "legal", "terms.html")
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        return HTMLResponse(content=content)
+    except Exception as e:
+        logging.error(f"Could not serve terms page: {e}")
+        raise HTTPException(status_code=500, detail="Could not serve page")
 
 # Register error handlers
 try:
@@ -743,7 +828,7 @@ try:
     from api.oauth_endpoints import router as oauth_router
     
     if OAUTH_ENABLED:
-    app.include_router(oauth_router)
+        app.include_router(oauth_router)
         providers = OAUTH_PROVIDERS if OAUTH_PROVIDERS else "auto-detect"
         logging.info(f"✅ OAuth endpoints registered (providers: {providers})")
     else:
@@ -762,11 +847,36 @@ except Exception as e:
 
 # Include User Data Management endpoints for Task 11
 try:
-    from api.user_data_endpoints import router as user_data_router
+    from api.user_data_endpoints import router as user_data_router, privacy_router
     app.include_router(user_data_router)
-    logging.info("✅ User data management endpoints registered")
+    app.include_router(privacy_router)
+    logging.info("✅ User data management and privacy endpoints registered")
 except Exception as e:
     logging.error(f"Failed to register user data endpoints: {e}")
+
+# Include Account Management endpoints (Apple compliance)
+try:
+    from api.routers.account import router as account_router
+    app.include_router(account_router)
+    logging.info("✅ Account management endpoints registered")
+except Exception as e:
+    logging.error(f"Failed to register account endpoints: {e}")
+
+# Include Device Management endpoints (push token cleanup)
+try:
+    from api.routers.devices import router as devices_router
+    app.include_router(devices_router)
+    logging.info("✅ Device management endpoints registered")
+except Exception as e:
+    logging.error(f"Failed to register device endpoints: {e}")
+
+# Include Legacy Account endpoints (410 Gone for old paths)
+try:
+    from api.routers import account_legacy as account_legacy_router
+    app.include_router(account_legacy_router.router)
+    logging.info("✅ Legacy account endpoints registered")
+except Exception as e:
+    logging.error(f"Failed to register legacy account endpoints: {e}")
 
 # Include Localization & Accessibility endpoints for Task 13
 try:
@@ -833,10 +943,21 @@ except Exception as e:
     import traceback
     logging.error(f"Full traceback: {traceback.format_exc()}")
 
-# Import OpenAPI spec
+# Include Clean Lookup endpoints for simple barcode queries (early registration for OpenAPI)
+try:
+    from api.routers.lookup import router as lookup_router
+    app.include_router(lookup_router)
+    logging.info("✅ Clean lookup endpoints registered")
+except ImportError as e:
+    logging.error(f"Import error for lookup endpoints: {e}")
+except Exception as e:
+    logging.error(f"Failed to register lookup endpoints: {e}")
+
+# Import and apply OpenAPI spec
 try:
     from api.openapi_spec import custom_openapi
-    logging.info("✅ OpenAPI spec loaded")
+    app.openapi = lambda: custom_openapi(app)
+    logging.info("✅ OpenAPI spec loaded and applied")
 except Exception as e:
     logging.error(f"Failed to load OpenAPI spec: {e}")
 
@@ -932,7 +1053,7 @@ async def http_exception_handler(request, exc):
     if exc.status_code in (404, 405):
         logger.info(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
     else:
-    logger.error(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
+        logger.error(f"[{trace_id}] HTTP {exc.status_code}: {exc.detail}")
     
     # Force deployment refresh
     
@@ -989,8 +1110,8 @@ def on_startup():
     
     # Only initialize agents in production or when explicitly enabled
     if IS_PRODUCTION or os.getenv("ENABLE_AGENTS", "false").lower() == "true":
-    commander_agent = BabyShieldCommanderLogic(agent_id="api_commander_001", logger_instance=logger)
-    logger.info("✅ Commander Agent initialized.")
+        commander_agent = BabyShieldCommanderLogic(agent_id="api_commander_001", logger_instance=logger)
+        logger.info("✅ Commander Agent initialized.")
         logger.info("Initializing the Visual Search Agent...")
         visual_search_agent = VisualSearchAgentLogic(agent_id="api_visual_search_001", logger_instance=logger)
         logger.info("✅ Visual Search Agent initialized.")
@@ -1080,11 +1201,15 @@ async def shutdown_event():
     except Exception as e:
         logger.error(f"Error during shutdown: {e}")
 
-# Health check endpoints
-@app.get("/", tags=["system"])
+# Homepage and health check endpoints
+@app.get("/", tags=["system"], include_in_schema=False)
 async def root():
-    """Root endpoint"""
-    return {"status": "ok", "service": "BabyShield API"}
+    """Serve BabyShield homepage"""
+    homepage_path = os.path.join(static_dir, "index.html")
+    if os.path.exists(homepage_path):
+        return FileResponse(homepage_path, media_type="text/html")
+    # Fallback to JSON if HTML not found
+    return {"status": "ok", "service": "BabyShield API", "version": "2.4.0"}
 
 @app.get("/health", tags=["system"], operation_id="health_check")
 def health_check():
@@ -1235,12 +1360,12 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         # Skip subscription validation and proceed to safety check
     else:
         # 4b) Validate user & subscription from your DB
-    with get_db_session() as db:
-        user = db.query(User).filter(User.id == req.user_id).first()
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found.")
-        if not getattr(user, "is_subscribed", False):
-            raise HTTPException(status_code=403, detail="Subscription required.")
+        with get_db_session() as db:
+            user = db.query(User).filter(User.id == req.user_id).first()
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found.")
+            if not getattr(user, "is_subscribed", False):
+                raise HTTPException(status_code=403, detail="Subscription required.")
 
     # 4b) Run the full live workflow and return its raw result (with environment-aware error handling)
     try:

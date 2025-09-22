@@ -8,6 +8,7 @@ import json
 import uuid
 import base64
 import asyncio
+import os
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
 from fastapi import APIRouter, HTTPException, Depends, Query, Body, File, UploadFile, BackgroundTasks
@@ -534,86 +535,139 @@ async def recognize_product_from_image(
         image_hash = hashlib.md5(image_data).hexdigest()
         image_id = f"img_{image_hash[:12]}_{int(datetime.now().timestamp())}"
         
-        # Mock visual recognition results (in production, would use ML model)
+        # Use real visual recognition pipeline
         products_identified = []
         confidence = 0.0
         defects_detected = []
         similar_products = []
         
-        # Simulate product recognition based on image name
-        if image.filename:
-            filename_lower = image.filename.lower()
+        try:
+            # Create image processing job
+            from core_infra.visual_agent_models import ImageJob, JobStatus
+            import uuid
             
-            if "fisher" in filename_lower or "price" in filename_lower:
-                products_identified.append({
-                    "product_name": "Fisher-Price Rock-n-Play Sleeper",
-                    "confidence": 0.89,
-                    "barcode": "887961523249",
-                    "category": "Baby Sleepers",
-                    "brand": "Fisher-Price",
-                    "recall_status": "RECALLED",
-                    "recall_reason": "Risk of infant death"
-                })
-                confidence = 0.89
+            job_id = str(uuid.uuid4())
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            s3_key = f"uploads/{user_id}/{timestamp}_{job_id}.jpg"
+            
+            # Create job record
+            job = ImageJob(
+                id=job_id,
+                user_id=user_id,
+                s3_bucket=os.getenv("S3_UPLOAD_BUCKET", "babyshield-images"),
+                s3_key=s3_key,
+                status=JobStatus.QUEUED
+            )
+            db.add(job)
+            db.commit()
+            
+            # Upload image to S3 for processing
+            import boto3
+            s3_client = boto3.client('s3', region_name=os.getenv("S3_BUCKET_REGION", "us-east-1"))
+            s3_client.put_object(
+                Bucket=job.s3_bucket,
+                Key=s3_key,
+                Body=image_data,
+                ContentType=image.content_type
+            )
+            
+            # Use visual search agent directly for immediate results
+            from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
+            
+            # Generate presigned URL for the uploaded image
+            presigned_url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': job.s3_bucket, 'Key': s3_key},
+                ExpiresIn=3600
+            )
+            
+            visual_agent = VisualSearchAgentLogic("visual_recognition_001")
+            result = await visual_agent.identify_product_from_image(presigned_url)
+            
+            if result["status"] == "COMPLETED":
+                product_data = result["result"]
+                confidence = product_data.get("confidence", 0.0)
                 
-            elif "car" in filename_lower and "seat" in filename_lower:
-                products_identified.append({
-                    "product_name": "Graco 4Ever DLX Car Seat",
-                    "confidence": 0.76,
-                    "barcode": "047406143993",
-                    "category": "Car Seats",
-                    "brand": "Graco",
-                    "recall_status": "SAFE",
-                    "recall_reason": None
-                })
-                confidence = 0.76
+                # Check for recalls
+                recall_status = "SAFE"
+                recall_reason = None
                 
-            elif "bottle" in filename_lower:
+                if product_data.get("product_name"):
+                    from sqlalchemy import text
+                    recall_query = text("""
+                        SELECT product_name, hazard, description 
+                        FROM recalls_enhanced 
+                        WHERE LOWER(product_name) LIKE LOWER(:product_name)
+                        LIMIT 1
+                    """)
+                    recall_result = db.execute(recall_query, {
+                        "product_name": f"%{product_data['product_name']}%"
+                    }).fetchone()
+                    
+                    if recall_result:
+                        recall_status = "RECALLED"
+                        recall_reason = recall_result[1] or recall_result[2]
+                
                 products_identified.append({
-                    "product_name": "Dr. Brown's Natural Flow Bottle",
-                    "confidence": 0.82,
-                    "barcode": "072239301807",
-                    "category": "Baby Bottles",
-                    "brand": "Dr. Brown's",
-                    "recall_status": "SAFE",
-                    "recall_reason": None
+                    "product_name": product_data.get("product_name", "Unknown Product"),
+                    "confidence": confidence,
+                    "barcode": None,  # Would come from barcode extraction if available
+                    "category": "Baby Product",  # Could be enhanced with category classification
+                    "brand": product_data.get("brand", "Unknown"),
+                    "recall_status": recall_status,
+                    "recall_reason": recall_reason
                 })
-                confidence = 0.82
             else:
-                # Generic product
+                # Fallback for failed recognition
                 products_identified.append({
-                    "product_name": "Unidentified Baby Product",
-                    "confidence": 0.45,
+                    "product_name": "Unidentified Product",
+                    "confidence": 0.0,
                     "barcode": None,
                     "category": "Unknown",
                     "brand": "Unknown",
                     "recall_status": "UNKNOWN",
-                    "recall_reason": None
+                    "recall_reason": "Could not identify product from image"
                 })
-                confidence = 0.45
+                confidence = 0.0
+                
+        except Exception as e:
+            logger.error(f"Real visual recognition failed: {e}", exc_info=True)
+            # Don't mask errors as 200 - raise proper HTTP exception
+            raise HTTPException(status_code=500, detail=f"Processing error: {type(e).__name__}")
         
         # Check for visual defects if requested
         if check_for_defects and confidence > confidence_threshold:
-            # Mock defect detection
-            if confidence > 0.8:
-                # Randomly detect some defects for demo
-                import random
-                if random.random() > 0.7:  # 30% chance of defect
+            # Use real defect detection
+            try:
+                from core_infra.image_processor import ImageAnalysisService
+                from PIL import Image
+                import io
+                
+                # Convert image data back to PIL Image for defect detection
+                pil_image = Image.open(io.BytesIO(image_data))
+                
+                # Initialize image analysis service
+                image_analyzer = ImageAnalysisService()
+                
+                # Run real defect detection
+                detected_defects = image_analyzer.detect_visual_defects(pil_image)
+                
+                # Convert to expected format
+                for defect in detected_defects:
                     defects_detected.append({
-                        "type": "damage",
-                        "description": "Visible crack detected on plastic component",
-                        "location": "upper_right",
-                        "severity": "medium",
-                        "confidence": 0.72
+                        "type": defect["type"],
+                        "description": defect["description"],
+                        "location": defect["location"],
+                        "severity": defect["severity"],
+                        "confidence": defect["confidence"]
                     })
-                elif random.random() > 0.8:  # 20% chance
-                    defects_detected.append({
-                        "type": "missing_part",
-                        "description": "Safety strap appears to be missing",
-                        "location": "center",
-                        "severity": "high",
-                        "confidence": 0.65
-                    })
+                    
+                logger.info(f"Real defect detection found {len(detected_defects)} defects")
+                
+            except Exception as e:
+                logger.error(f"Defect detection failed: {e}")
+                # Fallback: no defects detected if analysis fails
+                pass
         
         # Find similar products if requested and confidence is low
         if include_similar and confidence < confidence_threshold:

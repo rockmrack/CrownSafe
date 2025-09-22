@@ -38,12 +38,13 @@ logger = logging.getLogger(__name__)
 visual_router = APIRouter(prefix="/api/v1/visual", tags=["visual-scanning"])
 
 # AWS Configuration
-AWS_REGION = os.getenv("AWS_REGION", "eu-north-1")  # Fixed: Default to eu-north-1
+AWS_REGION = os.getenv("AWS_REGION", "eu-north-1")  # ECS region
+S3_BUCKET_REGION = os.getenv("S3_BUCKET_REGION", "us-east-1")  # S3 bucket region
 S3_BUCKET = os.getenv("S3_UPLOAD_BUCKET") or os.getenv("S3_BUCKET", "babyshield-images")
 CLOUDFRONT_DOMAIN = os.getenv("CLOUDFRONT_DOMAIN")
 
-# Initialize S3 client
-s3_client = boto3.client('s3', region_name=AWS_REGION)
+# Initialize S3 client with correct bucket region
+s3_client = boto3.client('s3', region_name=S3_BUCKET_REGION)
 
 
 # Request/Response Models
@@ -676,26 +677,73 @@ async def visual_search(
                 error="Either image_url or image_base64 must be provided"
             )
         
-        # Mock response for now (in real implementation, this would use the visual search agent)
+        # Use real visual search agent
+        from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
+        
+        visual_agent = VisualSearchAgentLogic("visual_search_001")
+        
+        # Process image with real agent
+        if request.image_url:
+            result = await visual_agent.identify_product_from_image(request.image_url)
+        else:
+            # For base64 images, we need to upload to S3 first or use direct processing
+            # For now, return error asking for image_url
+            return ApiResponse(
+                success=False,
+                error="Base64 image processing not yet implemented. Please use image_url."
+            )
+        
+        if result["status"] == "FAILED":
+            return ApiResponse(
+                success=False,
+                error=result.get("error", "Visual analysis failed")
+            )
+        
+        # Extract results
+        product_data = result["result"]
+        
+        # Basic recall check using the identified product
+        recall_found = False
+        recall_count = 0
+        
+        if product_data.get("product_name"):
+            # Simple recall check - in production this would be more sophisticated
+            from sqlalchemy import text
+            recall_query = text("""
+                SELECT COUNT(*) as count 
+                FROM recalls_enhanced 
+                WHERE LOWER(product_name) LIKE LOWER(:product_name)
+                LIMIT 1
+            """)
+            result_count = db.execute(recall_query, {
+                "product_name": f"%{product_data['product_name']}%"
+            }).fetchone()
+            
+            if result_count and result_count[0] > 0:
+                recall_found = True
+                recall_count = result_count[0]
+        
+        # Build response with real data
         return ApiResponse(
             success=True,
             data={
                 "status": "completed",
-                "confidence_level": "high",
-                "confidence_score": 0.85,
-                "extracted_text": "Sample product text",
-                "product_name": "Sample Product",
-                "brand": "Sample Brand",
-                "model_number": "SP-001",
-                "safety_status": "safe",
+                "confidence_level": "high" if product_data.get("confidence", 0) > 0.8 else "medium" if product_data.get("confidence", 0) > 0.5 else "low",
+                "confidence_score": product_data.get("confidence", 0.0),
+                "extracted_text": "Product identified via GPT-4 Vision",
+                "product_name": product_data.get("product_name", "Unknown"),
+                "brand": product_data.get("brand", "Unknown"),
+                "model_number": product_data.get("model_number", "Unknown"),
+                "safety_status": "no_recalls_found" if not recall_found else "recalls_found",
                 "recall_check": {
-                    "has_recalls": False,
-                    "recall_count": 0
+                    "has_recalls": recall_found,
+                    "recall_count": recall_count
                 }
             }
         )
         
     except Exception as e:
+        logger.error(f"Visual search error: {e}", exc_info=True)
         return ApiResponse(
             success=False,
             error=f"Visual search failed: {str(e)}"

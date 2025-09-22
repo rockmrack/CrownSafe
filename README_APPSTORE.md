@@ -37,15 +37,30 @@ BABYSHIELD_BASE_URL=https://staging.babyshield.ai python scripts/appstore_readin
 
 ## API Documentation
 
-### Interactive Documentation
-- **Swagger UI**: https://babyshield.cureviax.ai/docs
-- **ReDoc**: https://babyshield.cureviax.ai/redoc  
-- **OpenAPI JSON**: https://babyshield.cureviax.ai/openapi.json
+### Interactive Documentation (Confirmed Live)
+- **Swagger UI**: https://babyshield.cureviax.ai/docs ✅
+- **ReDoc**: https://babyshield.cureviax.ai/redoc ✅
+- **OpenAPI JSON**: https://babyshield.cureviax.ai/openapi.json ✅
 
 ### Versioned Endpoints (Redirects)
 - `/api/v1/docs` → `/docs`
 - `/api/v1/redoc` → `/redoc`
 - `/api/v1/openapi.json` → `/openapi.json`
+
+### Authentication Endpoints (Production Tested)
+- **Register**: `POST /api/v1/auth/register` (JSON: `{email, password, confirm_password}`)
+- **Login**: `POST /api/v1/auth/token` (**form-urlencoded**: `username=<email>&password=<password>`)
+- **Current User**: `GET /api/v1/auth/me` (200 if valid), `PUT /api/v1/auth/me` (update)
+- **Account Deletion**: `DELETE /api/v1/account` → **204**; subsequent calls with same token → **401 (Token revoked)**
+
+### Legal & Privacy Pages (Confirmed Live)
+- **Account Deletion**: https://babyshield.cureviax.ai/legal/account-deletion → **200 HTML**
+- **Data Deletion Redirect**: https://babyshield.cureviax.ai/legal/data-deletion → **301** to `/legal/account-deletion`
+- **Privacy Policy**: https://babyshield.cureviax.ai/legal/privacy → **200 HTML**
+
+### Real Data Endpoints (Confirmed Live)
+- **Risk Assessment Stats**: `GET /api/v1/risk-assessment/stats` → **200**
+- **Supplemental Data Sources**: `GET /api/v1/supplemental/data-sources` → **200**
 
 ## Primary Search Endpoint
 

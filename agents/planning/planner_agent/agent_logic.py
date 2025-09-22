@@ -14,7 +14,7 @@ import uuid
 
 # Pydantic models for plan validation and structure.
 try:
-    from pydantic import BaseModel, Field, validator
+    from pydantic import BaseModel, Field, field_validator
 
     class PlanStep(BaseModel):
         """Model for a single step in the BabyShield safety check plan."""
@@ -26,7 +26,8 @@ try:
         dependencies: List[str] = Field(default_factory=list)
         priority: str = "medium"
 
-        @validator('agent_capability_required')
+        @field_validator('agent_capability_required')
+        @classmethod
         def validate_capability(cls, v):
             """Ensures that the plan only uses capabilities defined for BabyShield."""
             # UPDATED to match your template's capabilities

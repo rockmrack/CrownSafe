@@ -58,7 +58,7 @@
 6. **Test Privacy Features**
    - Go to Settings
    - Toggle crash reporting ON/OFF (opt-in)
-   - Tap "Delete My Account" → Calls `/api/v1/user/data/delete`
+   - Tap "Delete My Account" → Calls `DELETE /api/v1/account`
    - Tap "Export My Data" → Calls `/api/v1/user/data/export`
 
 ---

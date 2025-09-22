@@ -30,7 +30,7 @@ except (ImportError, FileNotFoundError, OSError) as e:
     PYZBAR_AVAILABLE = False
     logging.warning(f"PyZbar not available: {e}. Using fallback methods.")
 
-# DataMatrix support - optional dependency
+# DataMatrix support - optional dependency (disabled by default due to complex system dependencies)
 ENABLE_DATAMATRIX = os.getenv("ENABLE_DATAMATRIX", "false").lower() == "true"
 
 DATAMATRIX_AVAILABLE = False
@@ -38,11 +38,14 @@ if ENABLE_DATAMATRIX:
     try:
         import pylibdmtx.pylibdmtx as dmtx
         DATAMATRIX_AVAILABLE = True
-        logging.info("DataMatrix scanning enabled and available")
+        logging.getLogger().info("✅ DataMatrix scanning enabled and available")
+        print("✅ DataMatrix scanning enabled and available")  # Force console output
     except ImportError:
-        logging.warning("DataMatrix requested but pylibdmtx not installed")
+        logging.getLogger().warning("⚠️  DataMatrix requested but pylibdmtx not installed")
+        print("⚠️  DataMatrix requested but pylibdmtx not installed")  # Force console output
 else:
-    logging.info("DataMatrix scanning disabled by config")
+    logging.getLogger().info("ℹ️  DataMatrix scanning disabled by config")
+    print("ℹ️  DataMatrix scanning disabled by config")  # Force console output
 
 try:
     import cv2
@@ -682,5 +685,7 @@ class BarcodeScanner:
         return img_buffer.getvalue()
 
 
-# Singleton instance
+# Singleton instance - force logging of initialization
+logger.info("🔧 Initializing BabyShield barcode scanner...")
 scanner = BarcodeScanner()
+logger.info("✅ BabyShield barcode scanner initialized successfully")

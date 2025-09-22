@@ -15,6 +15,35 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def log_feature_status():
+    """Log the status of all major features"""
+    logger.info("🔍 BabyShield Feature Status:")
+    
+    # OCR Features
+    tesseract_enabled = os.getenv("ENABLE_TESSERACT", "false").lower() == "true"
+    easyocr_enabled = os.getenv("ENABLE_EASYOCR", "false").lower() == "true"
+    logger.info(f"  📝 Tesseract OCR: {'✅ Enabled' if tesseract_enabled else '❌ Disabled'}")
+    logger.info(f"  📝 EasyOCR: {'✅ Enabled' if easyocr_enabled else '❌ Disabled'}")
+    
+    # Barcode Features  
+    datamatrix_enabled = os.getenv("ENABLE_DATAMATRIX", "false").lower() == "true"
+    logger.info(f"  📊 DataMatrix Barcodes: {'✅ Enabled' if datamatrix_enabled else '❌ Disabled (requires pylibdmtx + system libs)'}")
+    
+    # Receipt Validation
+    receipt_validation_enabled = os.getenv("ENABLE_RECEIPT_VALIDATION", "false").lower() == "true"
+    logger.info(f"  🧾 Receipt Validation: {'✅ Enabled' if receipt_validation_enabled else '❌ Disabled'}")
+    
+    # API Keys
+    openai_available = bool(os.getenv("OPENAI_API_KEY"))
+    logger.info(f"  🤖 OpenAI Vision: {'✅ Available' if openai_available else '⚠️  Not configured'}")
+    
+    # Database
+    db_url = os.getenv("DATABASE_URL", "")
+    db_type = "PostgreSQL" if "postgresql" in db_url else "SQLite" if "sqlite" in db_url else "Unknown"
+    logger.info(f"  🗄️  Database: {db_type}")
+    
+    logger.info("🚀 BabyShield startup configuration complete!")
+
 def check_environment():
     """Check and set required environment variables"""
     
@@ -43,10 +72,13 @@ def check_environment():
             logger.warning("DATABASE_URL not set - using PostgreSQL default")
             os.environ['DATABASE_URL'] = 'postgresql://postgres:postgres@localhost/babyshield'
     
-    # Set mock keys for optional services if not provided
+    # Check for optional service keys
     if 'OPENAI_API_KEY' not in os.environ:
-        os.environ['OPENAI_API_KEY'] = 'sk-mock-key-for-testing'
-        logger.warning("OPENAI_API_KEY not set - using mock key")
+        logger.warning("OPENAI_API_KEY not set - visual identification will be unavailable")
+        # Don't set a mock key - let the service handle missing keys gracefully
+    
+    # Log enabled features status
+    log_feature_status()
     
     if 'JWT_SECRET_KEY' not in os.environ:
         os.environ['JWT_SECRET_KEY'] = 'development-secret-key-change-in-production'
