@@ -990,6 +990,16 @@ try:
     # Test each dependency individually
     logging.info("Loading chat dependencies...")
     
+    # CRITICAL: Import chat models first to create database tables
+    from api.models.chat_memory import UserProfile, Conversation, ConversationMessage
+    from api.models.analytics import ExplainFeedback
+    logging.info("✅ Chat database models loaded")
+    
+    # Ensure database tables exist
+    from core_infra.database import engine, Base
+    Base.metadata.create_all(bind=engine)
+    logging.info("✅ Chat database tables created/verified")
+    
     # Test core dependencies first
     from core.chat_budget import TOTAL_BUDGET_SEC
     from core.resilience import breaker
