@@ -985,14 +985,48 @@ except Exception as e:
     logging.error(f"Failed to register lookup endpoints: {e}")
 
 # Include Chat endpoints for AI-powered result explanation
+# CRITICAL: This must work for chat features to be available
 try:
+    # Test each dependency individually
+    logging.info("Loading chat dependencies...")
+    
+    # Test core dependencies first
+    from core.chat_budget import TOTAL_BUDGET_SEC
+    from core.resilience import breaker
+    from core.feature_flags import chat_enabled_for
+    from core.metrics import inc_req
+    logging.info("✅ Core chat dependencies loaded")
+    
+    # Test agent logic
+    from agents.chat.chat_agent.agent_logic import ChatAgentLogic, ExplanationResponse
+    logging.info("✅ Chat agent logic loaded")
+    
+    # Test chat tools
+    from api.services.chat_tools import run_tool_for_intent
+    logging.info("✅ Chat tools loaded")
+    
+    # Test chat memory (this might be the issue)
+    from api.crud.chat_memory import get_profile, get_or_create_conversation
+    logging.info("✅ Chat memory loaded")
+    
+    # Finally import the router
     from api.routers.chat import router as chat_router
+    logging.info("✅ Chat router imported successfully")
+    
+    # Register the router
     app.include_router(chat_router, prefix="/api/v1/chat", tags=["chat"])
-    logging.info("✅ Chat endpoints registered")
+    logging.info("✅ Chat endpoints registered - /api/v1/chat/* now available")
+    
+    # Verify routes were added
+    chat_routes = [route.path for route in chat_router.routes if hasattr(route, 'path')]
+    logging.info(f"✅ Chat routes active: {chat_routes}")
+    
 except ImportError as e:
-    logging.error(f"Import error for chat endpoints: {e}")
+    logging.error(f"❌ CRITICAL: Chat import error: {e}")
+    logging.error("Chat features will not be available!")
 except Exception as e:
-    logging.error(f"Failed to register chat endpoints: {e}")
+    logging.error(f"❌ CRITICAL: Chat registration failed: {e}")
+    logging.error("Chat features will not be available!")
 
 # Include Analytics endpoints for feedback and metrics
 try:

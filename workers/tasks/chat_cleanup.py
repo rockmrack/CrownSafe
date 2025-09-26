@@ -5,7 +5,7 @@ from typing import Optional
 
 from core_infra.database import SessionLocal  # adjust to your DB session factory
 try:
-    from infra.celery_app import celery  # your existing Celery app
+    from core_infra.celery_tasks import celery_app as celery  # existing Celery app
 except Exception:  # fallback shim if Celery not wired in tests
     celery = None  # type: ignore
 
