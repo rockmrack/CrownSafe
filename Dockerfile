@@ -45,37 +45,39 @@ RUN apt-get update && \
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install Python dependencies with comprehensive error handling
+# Install Python dependencies - MUST succeed for all critical packages
 RUN echo "📦 Installing Python packages..." && \
     pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir -r requirements.txt || \
-    (echo "❌ Full requirements install failed, trying essential packages..." && \
-     pip install --no-cache-dir \
-        fastapi \
-        uvicorn \
-        sqlalchemy \
-        psycopg2-binary \
-        pydantic \
-        python-jose \
-       passlib \
-       python-multipart \
-       httpx \
-       redis \
-       celery \
-       requests \
-       psutil \
-       python-dotenv \
-       opencv-python \
-       pillow \
-       pyzbar \
-       qrcode \
-       pytesseract \
-       easyocr \
-       openai==1.5.0 \
-       email-validator==2.1.0 \
-       prometheus-client==0.19.0 \
-       alembic==1.12.1 && \
-     echo "✅ Essential packages installed") && \
+    echo "Installing critical packages first..." && \
+    pip install --no-cache-dir \
+        fastapi==0.104.1 \
+        uvicorn==0.24.0 \
+        sqlalchemy==2.0.23 \
+        psycopg2-binary==2.9.9 \
+        pydantic==2.5.2 \
+        python-jose==3.3.0 \
+        passlib==1.7.4 \
+        python-multipart==0.0.6 \
+        httpx==0.25.2 \
+        redis==5.0.1 \
+        celery==5.3.4 \
+        requests==2.31.0 \
+        psutil==5.9.6 \
+        python-dotenv==1.0.0 \
+        openai==1.5.0 \
+        email-validator==2.1.0 \
+        prometheus-client==0.19.0 \
+        alembic==1.12.1 \
+        slowapi==0.1.9 \
+        boto3==1.34.2 \
+        PyJWT==2.8.0 \
+        markdown==3.5.1 \
+        aiosmtplib==3.0.1 \
+        jinja2==3.1.2 \
+        firebase-admin==6.3.0 && \
+    echo "✅ Critical packages installed" && \
+    echo "Installing remaining packages (may fail)..." && \
+    (pip install --no-cache-dir -r requirements.txt || echo "⚠️ Some optional packages failed") && \
     echo "🔧 Installing optional DataMatrix and OCR support..." && \
     echo "🔍 Checking system libraries for pylibdmtx..." && \
     ldconfig -p | grep dmtx && \
