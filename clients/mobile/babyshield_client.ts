@@ -103,6 +103,61 @@ export interface AgenciesResponse {
   };
 }
 
+export interface EvidenceItem {
+  type: "recall" | "regulation" | "guideline" | "datasheet" | "label";
+  source: string;
+  id?: string;
+  url?: string;
+}
+
+export interface AlternativeItem {
+  id: string;
+  name: string;
+  brand?: string;
+  category?: string;
+  reason: string;
+  tags: string[];
+  pregnancy_safe?: boolean;
+  allergy_safe_for: string[];
+  age_min_months?: number;
+  link_url?: string;
+  evidence: EvidenceItem[];
+}
+
+export interface EmergencyNotice {
+  level: "red" | "amber";
+  reason: string;
+  cta: string;
+}
+
+export interface ExplanationResponse {
+  summary: string;
+  reasons: string[];
+  checks: string[];
+  flags: string[];
+  disclaimer: string;
+  jurisdiction?: { code?: string; label?: string };
+  evidence?: EvidenceItem[];
+  alternatives?: {
+    items: AlternativeItem[];
+  };
+  suggested_questions?: string[];
+  emergency?: EmergencyNotice;
+}
+
+export interface ExplainRequest {
+  scan_id: string;
+}
+
+export type Intent = 
+  | "pregnancy_risk"
+  | "allergy_question"
+  | "ingredient_info"
+  | "age_appropriateness"
+  | "alternative_products"
+  | "recall_details"
+  | "unclear_intent";
+
 /**
  * BabyShield API Client
  * 
@@ -125,6 +180,10 @@ export interface AgenciesResponse {
  * 
  * // Get specific recall
  * const recall = await api.getRecallById("2024-FDA-12345");
+ * 
+ * // Explain a scan result
+ * const explanation = await api.explainResult("scan_12345");
+ * console.log(explanation.summary);
  * ```
  */
 export class BabyShieldClient {
@@ -269,6 +328,42 @@ export class BabyShieldClient {
   }
   
   /**
+   * Explain a scan result in parent-friendly language
+   */
+  async explainResult(scanId: string): Promise<ExplanationResponse> {
+    const response = await fetch(
+      `${this.base}/api/v1/chat/explain-result`,
+      {
+        method: "POST",
+        headers: this.headers,
+        body: JSON.stringify({ scan_id: scanId }),
+      }
+    );
+    
+    const data = await response.json();
+    
+    if (response.status === 404) {
+      throw new BabyShieldError(
+        `Scan not found: ${scanId}`,
+        "SCAN_NOT_FOUND",
+        404,
+        data.traceId
+      );
+    }
+    
+    if (!response.ok) {
+      throw new BabyShieldError(
+        data.error?.message || `Failed to explain result: ${response.status}`,
+        data.error?.code || "EXPLAIN_ERROR",
+        response.status,
+        data.traceId
+      );
+    }
+    
+    return data as ExplanationResponse;
+  }
+  
+  /**
    * Build a search request with proper validation
    */
   buildSearchRequest(params: Partial<AdvancedSearchRequest>): AdvancedSearchRequest {
@@ -316,6 +411,32 @@ export class BabyShieldClient {
     }
     
     return request;
+  }
+
+  /**
+   * Record when a user clicks on an alternative product suggestion
+   */
+  async recordAlternativeClick(scanId: string, altId: string): Promise<void> {
+    try {
+      const response = await fetch(
+        `${this.base}/api/v1/analytics/alt-click`,
+        {
+          method: "POST",
+          headers: this.headers,
+          body: JSON.stringify({
+            scan_id: scanId,
+            alt_id: altId,
+          }),
+        }
+      );
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+    } catch (error) {
+      // Non-blocking: log but don't throw
+      console.warn("Failed to record alternative click:", error);
+    }
   }
 }
 

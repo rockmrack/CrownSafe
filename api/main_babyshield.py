@@ -9,6 +9,7 @@ from fastapi import FastAPI, HTTPException, Depends, Query, Request, Header, Pat
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, Field, EmailStr
 from sqlalchemy import text, and_, or_
@@ -185,6 +186,14 @@ app = FastAPI(
     generate_unique_id_function=generate_unique_operation_id
 )
 
+# Optional Prometheus metrics endpoint
+try:
+    from prometheus_client import make_asgi_app  # type: ignore
+    app.mount("/metrics", make_asgi_app())
+    logging.info("✅ Prometheus metrics endpoint mounted at /metrics")
+except Exception as e:
+    logging.info(f"ℹ️ Prometheus metrics not available: {e}")
+
 # Mount static files for favicon, robots.txt, etc.
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -292,6 +301,28 @@ except Exception as e:
 
 # 🗜️ PERFORMANCE: Add response compression for faster mobile/API responses
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# Enhanced Security Middleware (bulletproof protection)
+try:
+    from security.security_headers import bulletproof_security_middleware
+    app.middleware("http")(bulletproof_security_middleware)
+    logging.info("✅ Bulletproof security middleware enabled")
+except ImportError as e:
+    logging.warning(f"Enhanced security middleware not available: {e}")
+except Exception as e:
+    logging.error(f"Failed to enable enhanced security: {e}")
+
+# Trusted Host Middleware (prevent Host header attacks)
+app.add_middleware(
+    TrustedHostMiddleware, 
+    allowed_hosts=[
+        "babyshield.cureviax.ai", 
+        "*.babyshield.cureviax.ai",
+        "localhost", 
+        "127.0.0.1",
+        "*.amazonaws.com"  # For ALB health checks
+    ]
+)
 
 # Add security headers middleware for app store compliance
 try:
@@ -952,6 +983,46 @@ except ImportError as e:
     logging.error(f"Import error for lookup endpoints: {e}")
 except Exception as e:
     logging.error(f"Failed to register lookup endpoints: {e}")
+
+# Include Chat endpoints for AI-powered result explanation
+try:
+    from api.routers.chat import router as chat_router
+    app.include_router(chat_router, prefix="/api/v1/chat", tags=["chat"])
+    logging.info("✅ Chat endpoints registered")
+except ImportError as e:
+    logging.error(f"Import error for chat endpoints: {e}")
+except Exception as e:
+    logging.error(f"Failed to register chat endpoints: {e}")
+
+# Include Analytics endpoints for feedback and metrics
+try:
+    from api.routers.analytics import router as analytics_router
+    app.include_router(analytics_router, prefix="/api/v1/analytics", tags=["analytics"])
+    logging.info("✅ Analytics endpoints registered")
+except ImportError as e:
+    logging.error(f"Import error for analytics endpoints: {e}")
+except Exception as e:
+    logging.error(f"Failed to register analytics endpoints: {e}")
+
+# Include Honeypot endpoints for security intelligence
+try:
+    from api.routers.honeypots import router as honeypots_router
+    app.include_router(honeypots_router, tags=["security"])
+    logging.info("✅ Security honeypot endpoints deployed")
+except ImportError as e:
+    logging.warning(f"Honeypot endpoints not available: {e}")
+except Exception as e:
+    logging.error(f"Failed to register honeypot endpoints: {e}")
+
+# Include Security Monitoring Dashboard
+try:
+    from security.monitoring_dashboard import router as security_dashboard_router
+    app.include_router(security_dashboard_router, tags=["security-monitoring"])
+    logging.info("✅ Security monitoring dashboard deployed")
+except ImportError as e:
+    logging.warning(f"Security dashboard not available: {e}")
+except Exception as e:
+    logging.error(f"Failed to register security dashboard: {e}")
 
 # Import and apply OpenAPI spec
 try:

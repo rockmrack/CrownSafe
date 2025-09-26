@@ -1,0 +1,110 @@
+groups:
+- name: bs-chat-recording
+  interval: 30s
+  rules:
+  # RPS
+  - record: bs:chat:rps
+    expr: sum(rate(bs_chat_requests_total[5m]))
+
+  # Success & error rate (conversation only)
+  - record: bs:chat:conv:rps
+    expr: sum(rate(bs_chat_requests_total{endpoint="conversation"}[5m]))
+  - record: bs:chat:conv:error_rate
+    expr: (
+      sum(rate(bs_chat_requests_total{endpoint="conversation", ok="0"}[5m]))
+      /
+      clamp_min(sum(rate(bs_chat_requests_total{endpoint="conversation"}[5m])), 1)
+    )
+
+  # 95th total latency (ms)
+  - record: bs:chat:p95_total_ms
+    expr: histogram_quantile(0.95, sum by (le) (rate(bs_chat_total_latency_ms_bucket[5m])))
+
+  # 95th tool latency by intent (ms)
+  - record: bs:chat:p95_tool_ms
+    labels: {intent: "all"}
+    expr: histogram_quantile(0.95, sum by (le) (rate(bs_chat_tool_latency_ms_bucket[5m])))
+
+  # 95th synth latency (ms)
+  - record: bs:chat:p95_synth_ms
+    expr: histogram_quantile(0.95, sum by (le) (rate(bs_chat_synth_latency_ms_bucket[5m])))
+
+  # Circuit-open rate
+  - record: bs:chat:circuit_rate
+    expr: (
+      sum(rate(bs_chat_requests_total{circuit="1"}[5m])) /
+      clamp_min(sum(rate(bs_chat_requests_total[5m])), 1)
+    )
+
+  # Fallback rate
+  - record: bs:chat:fallback_rate
+    expr: sum(rate(bs_chat_fallback_total[5m])) / clamp_min(sum(rate(bs_chat_requests_total[5m])), 1)
+
+  # Gating (403) rate
+  - record: bs:chat:blocked_rate
+    expr: sum(rate(bs_chat_blocked_total[5m])) / clamp_min(sum(rate(bs_chat_requests_total[5m])), 1)
+
+- name: bs-chat-alerts
+  interval: 30s
+  rules:
+  # Error rate: warn >1% for 15m, page >2% for 5m
+  - alert: ChatHighErrorRateWarn
+    expr: bs:chat:conv:error_rate > 0.01
+    for: 15m
+    labels: {severity: warning}
+    annotations:
+      summary: "Chat error rate >1% for 15m"
+      runbook: "Decrease rollout; check LLM/DB health, deploy rollback if ongoing."
+
+  - alert: ChatHighErrorRatePage
+    expr: bs:chat:conv:error_rate > 0.02
+    for: 5m
+    labels: {severity: critical}
+    annotations:
+      summary: "Chat error rate >2% for 5m"
+      runbook: "Hit kill-switch or set rollout=0; investigate traces."
+
+  # Latency SLO breach: p95 > 2.8s for 10m
+  - alert: ChatHighLatencyP95
+    expr: bs:chat:p95_total_ms > 2800
+    for: 10m
+    labels: {severity: critical}
+    annotations:
+      summary: "Chat p95 latency > 2.8s"
+      runbook: "Scale, check circuit open, reduce rollout."
+
+  # Circuit breaker flapping: >1% of requests in 10m
+  - alert: ChatCircuitOpenRate
+    expr: bs:chat:circuit_rate > 0.01
+    for: 10m
+    labels: {severity: warning}
+    annotations:
+      summary: "Circuit breaker frequently opening (>1%)"
+      runbook: "Investigate tool timeouts; raise budgets only if safe."
+
+  # Fallback usage spike: >5% for 10m
+  - alert: ChatFallbackSpike
+    expr: bs:chat:fallback_rate > 0.05
+    for: 10m
+    labels: {severity: warning}
+    annotations:
+      summary: "Fallbacks >5% of requests"
+      runbook: "Check LLM provider health; inspect prompt/version drift."
+
+  # Blocked > rollout: if most requests blocked for 10m (misconfig)
+  - alert: ChatGatingMisconfig
+    expr: bs:chat:blocked_rate > 0.8 and bs:chat:rps > 0.1
+    for: 10m
+    labels: {severity: warning}
+    annotations:
+      summary: "Chat mostly blocked — check feature flags/rollout"
+      runbook: "Verify BS_FEATURE_CHAT_*; confirm device/user ids are passed."
+      
+  # Zero traffic after enablement
+  - alert: ChatNoTraffic
+    expr: bs:chat:rps < 0.01
+    for: 30m
+    labels: {severity: info}
+    annotations:
+      summary: "Chat seeing near-zero traffic"
+      runbook: "Feature flags off? Mobile build not using endpoint? Check /flags."
