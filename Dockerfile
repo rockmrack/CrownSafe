@@ -57,20 +57,24 @@ RUN echo "📦 Installing Python packages..." && \
         psycopg2-binary \
         pydantic \
         python-jose \
-        passlib \
-        python-multipart \
-        httpx \
-        redis \
-        celery \
-        requests \
-        psutil \
-        python-dotenv \
-        opencv-python \
-        pillow \
-        pyzbar \
-        qrcode \
-        pytesseract \
-        easyocr && \
+       passlib \
+       python-multipart \
+       httpx \
+       redis \
+       celery \
+       requests \
+       psutil \
+       python-dotenv \
+       opencv-python \
+       pillow \
+       pyzbar \
+       qrcode \
+       pytesseract \
+       easyocr \
+       openai==1.5.0 \
+       email-validator==2.1.0 \
+       prometheus-client==0.19.0 \
+       alembic==1.12.1 && \
      echo "✅ Essential packages installed") && \
     echo "🔧 Installing optional DataMatrix and OCR support..." && \
     echo "🔍 Checking system libraries for pylibdmtx..." && \
