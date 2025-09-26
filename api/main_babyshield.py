@@ -986,6 +986,7 @@ except Exception as e:
 
 # Include Chat endpoints for AI-powered result explanation
 # CRITICAL: This must work for chat features to be available
+chat_router_loaded = False
 try:
     # Test each dependency individually
     logging.info("Loading chat dependencies...")
@@ -995,10 +996,15 @@ try:
     from api.models.analytics import ExplainFeedback
     logging.info("✅ Chat database models loaded")
     
-    # Ensure database tables exist
-    from core_infra.database import engine, Base
-    Base.metadata.create_all(bind=engine)
-    logging.info("✅ Chat database tables created/verified")
+    # Ensure database tables exist - wrap in try/except for production resilience
+    try:
+        from core_infra.database import engine, Base
+        Base.metadata.create_all(bind=engine)
+        logging.info("✅ Chat database tables created/verified")
+    except Exception as db_error:
+        # Log but don't fail - tables might already exist or be created elsewhere
+        logging.warning(f"⚠️ Could not verify chat tables (may already exist): {db_error}")
+        # Continue anyway - the tables might exist from a previous deployment
     
     # Test core dependencies first
     from core.chat_budget import TOTAL_BUDGET_SEC
@@ -1022,6 +1028,7 @@ try:
     # Finally import the router
     from api.routers.chat import router as chat_router
     logging.info("✅ Chat router imported successfully")
+    chat_router_loaded = True
     
     # Register the router
     app.include_router(chat_router, prefix="/api/v1/chat", tags=["chat"])
@@ -1032,11 +1039,26 @@ try:
     logging.info(f"✅ Chat routes active: {chat_routes}")
     
 except ImportError as e:
+    import traceback
     logging.error(f"❌ CRITICAL: Chat import error: {e}")
+    logging.error(f"Import error details: {traceback.format_exc()}")
     logging.error("Chat features will not be available!")
 except Exception as e:
+    import traceback
     logging.error(f"❌ CRITICAL: Chat registration failed: {e}")
+    logging.error(f"Exception details: {traceback.format_exc()}")
     logging.error("Chat features will not be available!")
+
+# Fallback: Try simplified chat router registration if the main one failed
+if not chat_router_loaded:
+    try:
+        logging.warning("🔧 Attempting fallback chat router registration...")
+        # Try a minimal import path
+        from api.routers import chat
+        app.include_router(chat.router, prefix="/api/v1/chat", tags=["chat"])
+        logging.info("✅ Chat endpoints registered via fallback method")
+    except Exception as fallback_error:
+        logging.error(f"❌ Fallback chat registration also failed: {fallback_error}")
 
 # Include Analytics endpoints for feedback and metrics
 try:
