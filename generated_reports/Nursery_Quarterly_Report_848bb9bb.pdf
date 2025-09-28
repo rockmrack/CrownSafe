@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @page { size: A4 portrait; margin: 0.8in; }
+    body { font-family: Helvetica, Arial, sans-serif; font-size: 10pt; color: #242729; }
+    h1 { color: #1a237e; font-size: 18pt; border-bottom: 1px solid #2980b9; margin-top: 1.2em; }
+    h2 { color: #2980b9; font-size: 14pt; margin-top: 1.0em; }
+    th { background-color: #e8f0fe; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 1em; }
+    th, td { border: 1px solid #d0d6db; padding: 6px; text-align: left; }
+    .pill { display:inline-block; padding: 2px 8px; border-radius: 10px; font-size: 9pt; margin-left: 8px; }
+    .risk-LOW { background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; }
+    .risk-MEDIUM { background:#fff8e1; color:#f9a825; border:1px solid #ffecb3; }
+    .risk-HIGH { background:#ffebee; color:#c62828; border:1px solid #ffcdd2; }
+    .risk-CRITICAL { background:#ffdde0; color:#b71c1c; border:1px solid #ef9a9a; }
+  </style>
+  <title>BabyShield Nursery Quarterly Report</title>
+</head>
+<body>
+  <div style="text-align:center; margin-top:40px;">
+    <img src="file:///C:/Users/rossd/Downloads/RossNetAgents/branding/cureviax_logo.png" width="160" style="margin-bottom:12px;" />
+    <h1>Nursery Quarterly Safety Report</h1>
+    <div style="color:#657384;">Generated 2025-09-04 12:30 UTC • Workflow WF_749a5d99</div>
+  </div>
+
+  <h2>Summary</h2>
+  <table>
+    <tbody>
+      <tr><th style="width:35%">Total Products Monitored</th><td>3</td></tr>
+      <tr><th>High Risk Products</th><td>0</td></tr>
+      <tr><th>New Recalls This Quarter</th><td>0</td></tr>
+      <tr><th>Products Nearing Expiry</th><td>0</td></tr>
+    </tbody>
+  </table>
+
+  
+    <h2>1. Yoto Mini Player
+      <span class="pill risk-LOW">LOW</span>
+    </h2>
+    <table>
+      <tbody>
+        <tr><th style="width:35%">Brand</th><td>N/A</td></tr>
+        <tr><th>UPC/GTIN</th><td>N/A</td></tr>
+        <tr><th>Model</th><td>N/A</td></tr>
+        <tr><th>Lot/Serial</th><td>N/A</td></tr>
+        <tr><th>Risk Score</th><td>0/100</td></tr>
+        <tr><th>Assessment</th><td>LOW RISK - No issues detected at this time</td></tr>
+        <tr><th>Executive Summary</th><td>No official recalls detected in the period.</td></tr>
+      </tbody>
+    </table>
+
+    
+      <p>No official recalls found for this product.</p>
+    
+
+    <div style="height:10px"></div>
+  
+    <h2>2. Graco Car Seat
+      <span class="pill risk-LOW">LOW</span>
+    </h2>
+    <table>
+      <tbody>
+        <tr><th style="width:35%">Brand</th><td>N/A</td></tr>
+        <tr><th>UPC/GTIN</th><td>N/A</td></tr>
+        <tr><th>Model</th><td>N/A</td></tr>
+        <tr><th>Lot/Serial</th><td>N/A</td></tr>
+        <tr><th>Risk Score</th><td>0/100</td></tr>
+        <tr><th>Assessment</th><td>LOW RISK - No issues detected at this time</td></tr>
+        <tr><th>Executive Summary</th><td>No official recalls detected in the period.</td></tr>
+      </tbody>
+    </table>
+
+    
+      <p>No official recalls found for this product.</p>
+    
+
+    <div style="height:10px"></div>
+  
+    <h2>3. Generic Silicone Teethers
+      <span class="pill risk-LOW">LOW</span>
+    </h2>
+    <table>
+      <tbody>
+        <tr><th style="width:35%">Brand</th><td>N/A</td></tr>
+        <tr><th>UPC/GTIN</th><td>N/A</td></tr>
+        <tr><th>Model</th><td>N/A</td></tr>
+        <tr><th>Lot/Serial</th><td>N/A</td></tr>
+        <tr><th>Risk Score</th><td>0/100</td></tr>
+        <tr><th>Assessment</th><td>LOW RISK - No issues detected at this time</td></tr>
+        <tr><th>Executive Summary</th><td>No official recalls detected in the period.</td></tr>
+      </tbody>
+    </table>
+
+    
+      <p>No official recalls found for this product.</p>
+    
+
+    <div style="height:10px"></div>
+  
+
+  <h2>Legal Disclaimers</h2>
+  <ol>
+    
+      <li>This report is for informational purposes only and does not guarantee safety.</li>
+    
+      <li>Always verify with official agency notices and manufacturer guidance.</li>
+    
+      <li>Discontinue use if a recall is active or a serious hazard is suspected.</li>
+    
+      <li>Keep products within age-appropriate guidelines and follow instructions.</li>
+    
+      <li>Personalized checks (allergy/pregnancy) are best-effort and not exhaustive.</li>
+    
+      <li>This is not medical or legal advice.</li>
+    
+      <li>Use at your own discretion; BabyShield is not liable for misuse.</li>
+    
+  </ol>
+</body>
+</html>

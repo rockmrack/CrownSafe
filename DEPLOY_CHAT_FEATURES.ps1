@@ -6,6 +6,7 @@ Write-Host "Deploying BabyShield Chat Features and Enhanced Security" -Foregroun
 $REGION = "eu-north-1"
 $CLUSTER_NAME = "babyshield-cluster"
 $SERVICE_NAME = "babyshield-backend-task-service-0l41s2a9"
+$ECR_URI = "180703226577.dkr.ecr.eu-north-1.amazonaws.com/babyshield-backend"
 
 # Step 1: Build Docker image
 Write-Host "`n1. Building Docker image..." -ForegroundColor Cyan

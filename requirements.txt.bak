@@ -1,0 +1,110 @@
+# Core Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.2
+python-multipart==0.0.6
+
+# Database
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9
+alembic==1.12.1
+
+# Authentication & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+cryptography==41.0.7
+python-dotenv==1.0.0
+
+# HTTP & API Clients
+httpx==0.25.2
+aiohttp==3.9.1
+requests==2.31.0
+
+# Caching
+redis==5.0.1
+aiocache==0.12.2
+
+# Cloud Services
+boto3==1.34.2  # AWS SDK
+google-cloud-vision==3.5.0  # Google Cloud Vision
+firebase-admin==6.3.0  # Firebase for push notifications
+
+# Image Processing
+opencv-python-headless==4.8.1.78
+Pillow==10.1.0
+pyzbar==0.1.9  # Barcode scanning
+pylibdmtx==0.1.10  # DataMatrix barcode scanning
+
+# OCR Dependencies
+pytesseract==0.3.10  # Tesseract OCR wrapper
+easyocr==1.7.0  # EasyOCR for text recognition
+qrcode==7.4.2  # QR code generation
+
+# Document Processing
+beautifulsoup4==4.12.2  # Web scraping
+lxml==4.9.3  # XML/HTML processing
+markdown==3.5.1  # Markdown processing
+xhtml2pdf==0.2.11  # PDF generation
+jinja2==3.1.2  # Template engine
+
+# Data Visualization
+matplotlib==3.8.2
+seaborn==0.13.0
+
+# ML/AI Libraries (Optional)
+openai==1.5.0  # OpenAI API
+scikit-learn==1.3.2
+numpy==1.26.2
+pandas==2.1.4
+
+# Task Queue & Background Jobs
+celery==5.3.4
+kombu==5.3.4
+
+# Monitoring & Logging
+prometheus-client==0.19.0
+python-json-logger==2.0.7
+
+# Email
+aiosmtplib==3.0.1
+email-validator==2.1.0
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-httpx==0.25.0
+
+# Development Tools
+black==23.12.0
+flake8==6.1.0
+mypy==1.7.1
+pre-commit==3.6.0
+
+# CORS & Middleware
+starlette==0.27.0
+
+# Rate Limiting
+slowapi==0.1.9
+
+# Date & Time
+python-dateutil==2.8.2
+pytz==2023.3
+
+# Serialization
+orjson==3.9.10
+
+# OCR (Optional)
+pytesseract==0.3.10
+easyocr==1.7.1
+
+# Additional Utilities
+pyyaml==6.0.1
+click==8.1.7
+rich==13.7.0  # Better console output
+tenacity==8.2.3  # Retry logic
+psutil==5.9.6  # System and process utilities 
+
+# Auth libs (silence bcrypt warning)
+bcrypt>=4.1.3,<5
+bleach==6.1.0

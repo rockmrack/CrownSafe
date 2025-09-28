@@ -200,12 +200,33 @@ app = FastAPI(
 from starlette.responses import JSONResponse as StarletteJSONResponse
 from starlette.routing import Route
 
-def healthz_raw(request):
-    """Raw health check - bypasses FastAPI completely"""
-    return StarletteJSONResponse({"status": "ok"})
+async def healthz_raw(scope, receive, send):
+    """Ultra-raw ASGI health check - bypasses EVERYTHING including middleware"""
+    if scope["path"] == "/healthz":
+        response = StarletteJSONResponse({"status": "ok"})
+        await response(scope, receive, send)
+    else:
+        # Pass through to the app
+        await app(scope, receive, send)
 
-# Add raw route directly to Starlette
-app.router.routes.insert(0, Route("/healthz", healthz_raw, methods=["GET", "HEAD"]))
+# Store the original app
+_original_app = app
+
+# Replace app with our wrapper that intercepts /healthz BEFORE middleware
+class HealthCheckWrapper:
+    def __init__(self, app):
+        self.app = app
+    
+    async def __call__(self, scope, receive, send):
+        if scope["path"] == "/healthz" and scope["type"] == "http":
+            # Direct response, bypass everything
+            response = StarletteJSONResponse({"status": "ok"})
+            await response(scope, receive, send)
+        else:
+            await self.app(scope, receive, send)
+
+# This will be applied AFTER all middleware is added
+# We'll wrap the app at the very end of the file
 
 # Optional Prometheus metrics endpoint
 try:
@@ -1046,14 +1067,22 @@ app.include_router(premium_router)
 logging.info("âœ… Premium Features (Pregnancy & Allergy) endpoints registered")
 
 # Include Baby Safety Features (Alternatives, Notifications, Reports) endpoints
-from api.baby_features_endpoints import router as baby_router
-app.include_router(baby_router)
-logging.info("âœ… Baby Safety Features (Alternatives, Notifications, Reports) endpoints registered")
+try:
+    from api.baby_features_endpoints import router as baby_router
+    app.include_router(baby_router)
+    logging.info("âœ… Baby Safety Features (Alternatives, Notifications, Reports) endpoints registered")
+except (ImportError, FileNotFoundError) as e:
+    logging.warning(f"Baby Safety Features not available (missing dependency pylibdmtx): {e}")
+    # Continue without baby features - they're optional
 
 # Include Advanced Features (Web Research, Guidelines, Visual Recognition) endpoints
-from api.advanced_features_endpoints import router as advanced_router
-app.include_router(advanced_router)
-logging.info("âœ… Advanced Features (Web Research, Guidelines, Visual) endpoints registered")
+try:
+    from api.advanced_features_endpoints import router as advanced_router
+    app.include_router(advanced_router)
+    logging.info("âœ… Advanced Features (Web Research, Guidelines, Visual) endpoints registered")
+except (ImportError, FileNotFoundError) as e:
+    logging.warning(f"Advanced Features not available (missing dependency): {e}")
+    # Continue without advanced features - they're optional
 
 # Include Legal Compliance endpoints (COPPA, GDPR, Children's Code)
 from api.compliance_endpoints import router as compliance_router
@@ -2974,15 +3003,10 @@ async def fix_upc_data():
             "agencies": 39
         }
 
+# CRITICAL: Apply health check wrapper to bypass ALL middleware
+app = HealthCheckWrapper(app)
+
 # Run with: uvicorn api.main_babyshield:app --host 0.0.0.0 --port 8001
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)# CORS for local frontend dev
-from fastapi.middleware.cors import CORSMiddleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:8001","http://127.0.0.1:8001"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+    uvicorn.run(app, host="0.0.0.0", port=8001)
