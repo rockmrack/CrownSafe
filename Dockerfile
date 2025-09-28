@@ -74,7 +74,14 @@ RUN echo "📦 Installing Python packages..." && \
         markdown==3.5.1 \
         aiosmtplib==3.0.1 \
         jinja2==3.1.2 \
-        firebase-admin==6.3.0 && \
+        firebase-admin==6.3.0 \
+        Pillow==10.1.0 \
+        pyzbar==0.1.9 \
+        opencv-python==4.8.1.78 \
+        reportlab==4.0.7 \
+        qrcode==7.4.2 \
+        pytesseract==0.3.10 \
+        easyocr==1.7.0 && \
     echo "✅ Critical packages installed" && \
     echo "Installing remaining packages (may fail)..." && \
     (pip install --no-cache-dir -r requirements.txt || echo "⚠️ Some optional packages failed") && \
@@ -125,7 +132,7 @@ EXPOSE 8001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8001/health || exit 1
+    CMD curl -f http://localhost:8001/healthz || exit 1
 
 # Run the application
 CMD ["python", "startup.py"]

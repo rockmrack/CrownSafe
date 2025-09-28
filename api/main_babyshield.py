@@ -197,11 +197,10 @@ app = FastAPI(
 )
 
 # CRITICAL: Health check FIRST - before any middleware
-@app.get("/healthz", include_in_schema=False)
-@app.head("/healthz", include_in_schema=False)
-def healthz_immediate():
-    """ALB health check - MUST be first, no middleware, no dependencies"""
-    return PlainTextResponse("OK", status_code=200)
+@app.api_route("/healthz", methods=["GET", "HEAD", "POST", "OPTIONS"], include_in_schema=False)
+def healthz_permissive():
+    """Ultra-permissive health check - accepts any method, any headers"""
+    return {"status": "ok"}
 
 # Optional Prometheus metrics endpoint
 try:
