@@ -1,9 +1,11 @@
+import re
 """
 Security Headers Middleware for BabyShield
 Implements comprehensive security headers for bulletproof protection
 """
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
+from typing import Dict, Any
 import time
 import logging
 
@@ -22,9 +24,7 @@ class SecurityHeadersMiddleware:
         """Apply security headers to all responses"""
         
         # Process request
-        response = await call_next(request)
-        
-        # Apply comprehensive security headers
+        \1    async def _return_response(_):\n        return response\n# Apply comprehensive security headers
         security_headers = {
             # Content Security Policy - Prevent XSS, injection attacks
             "Content-Security-Policy": (
@@ -274,6 +274,7 @@ async def bulletproof_security_middleware(request: Request, call_next):
     
     # Then apply security headers if not already blocked
     if response.status_code < 400:
-        response = await security_headers_middleware(request, lambda r: response)
+        response = await security_headers_middleware(request, _return_response)
     
     return response
+

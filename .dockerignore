@@ -1,0 +1,16 @@
+dev.db
+requirements-local.txt
+__pycache__/
+*.pyc
+.git
+.gitignore
+README.md
+Dockerfile*
+.dockerignore
+.env
+.venv
+venv/
+.pytest_cache/
+tests/
+*.log
+init_sqlite.py

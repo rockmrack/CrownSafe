@@ -96,8 +96,8 @@ def create_convincing_response(honeypot_type: str) -> JSONResponse:
 
 # Honeypot Endpoints (designed to attract attackers)
 
-@router.get("/admin/login.php")
-@router.post("/admin/login.php")
+@router.get("/admin/login.php", operation_id="admin_login_honeypot_get")
+@router.post("/admin/login.php", operation_id="admin_login_honeypot_post")
 async def admin_login_honeypot(request: Request):
     """Fake admin login panel to trap attackers"""
     record_honeypot_hit(request, "admin_login")
