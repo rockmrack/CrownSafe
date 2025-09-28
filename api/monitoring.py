@@ -237,18 +237,19 @@ async def track_metrics(request: Request, call_next):
 
 # ========================= HEALTH CHECKS =========================
 
-@router.get("/healthz")
-async def health_check():
-    """
-    Basic health check - returns 200 if service is up
-    Used by load balancers and Kubernetes liveness probes
-    """
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "service": "babyshield-api",
-        "version": "1.0.0"
-    }
+# Disabled to avoid conflict with main /healthz endpoint
+# @router.get("/healthz")
+# async def health_check():
+#     """
+#     Basic health check - returns 200 if service is up
+#     Used by load balancers and Kubernetes liveness probes
+#     """
+#     return {
+#         "status": "healthy",
+#         "timestamp": datetime.now().isoformat(),
+#         "service": "babyshield-api",
+#         "version": "1.0.0"
+#     }
 
 
 @router.get("/readyz")
