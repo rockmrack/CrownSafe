@@ -196,11 +196,16 @@ app = FastAPI(
     generate_unique_id_function=generate_unique_operation_id
 )
 
-# CRITICAL: Health check FIRST - before any middleware
-@app.get("/healthz")
-def healthz_simple():
-    """Simplest possible health check"""
-    return {"status": "ok"}
+# CRITICAL: Health check FIRST - Raw route to bypass ALL FastAPI processing
+from starlette.responses import JSONResponse as StarletteJSONResponse
+from starlette.routing import Route
+
+def healthz_raw(request):
+    """Raw health check - bypasses FastAPI completely"""
+    return StarletteJSONResponse({"status": "ok"})
+
+# Add raw route directly to Starlette
+app.router.routes.insert(0, Route("/healthz", healthz_raw, methods=["GET", "HEAD"]))
 
 # Optional Prometheus metrics endpoint
 try:
