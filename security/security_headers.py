@@ -24,7 +24,9 @@ class SecurityHeadersMiddleware:
         """Apply security headers to all responses"""
         
         # Process request
-        \1    async def _return_response(_):\n        return response\n# Apply comprehensive security headers
+        response = await call_next(request)
+        
+        # Apply comprehensive security headers
         security_headers = {
             # Content Security Policy - Prevent XSS, injection attacks
             "Content-Security-Policy": (

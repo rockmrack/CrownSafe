@@ -124,6 +124,7 @@ RUN if [ ! -f startup.py ]; then \
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONIOENCODING=utf-8 \
     API_HOST=0.0.0.0 \
     API_PORT=8001
 

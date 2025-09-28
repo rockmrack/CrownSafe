@@ -7,7 +7,7 @@ from typing import Optional, List, Dict, Any
 logging.getLogger(__name__).info(
     "[BOOT] ENVIRONMENT=%s DATABASE_URL=%s",
     os.getenv("ENVIRONMENT", "unset"),
-    (os.getenv("DATABASE_URL", "unset")[:60] + "...") if os.getenv("DATABASE_URL") else "unset",
+    "***REDACTED***" if os.getenv("DATABASE_URL") else "unset",
 )
 # Local-only shim (no-op in prod)
 try:
