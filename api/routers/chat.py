@@ -125,6 +125,9 @@ def get_llm_client():
             if conversation_id:
                 context.update(self._analyze_conversation_history(conversation_id, user_lower))
             
+            # Generate intelligent response
+            return self._generate_response(user_lower, context)
+            
         def _analyze_context(self, query: str) -> Dict[str, Any]:
             """Advanced context analysis for super smart responses"""
             context = {
@@ -299,6 +302,9 @@ def get_llm_client():
                         response["summary"] = response["summary"].replace(en, fr)
             
             return response
+            
+        def _generate_response(self, user_lower: str, context: Dict[str, Any]) -> Dict[str, Any]:
+            """Generate intelligent response based on query analysis"""
             
             # Emergency detection FIRST (absolute priority)
             if any(word in user_lower for word in ["choking", "choke", "stopped breathing", "not breathing", "swallowed", "poisoned", "unconscious", "seizure", "anaphylaxis", "turning blue"]):
@@ -1275,7 +1281,7 @@ def chat_flags(request: Request):
     trace_id = getattr(getattr(request, "state", None), "trace_id", f"flags_{int(monotonic()*1000)}")
     
     try:
-        from core.feature_flags import FEATURE_CHAT_ENABLED, FEATURE_CHAT_ROLLOUT_PCT
+    from core.feature_flags import FEATURE_CHAT_ENABLED, FEATURE_CHAT_ROLLOUT_PCT
         
         payload = {
             "success": True,
