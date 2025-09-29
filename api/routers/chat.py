@@ -578,6 +578,78 @@ def erase_history(db: Session = Depends(get_db)):
     return out
 
 
+@router.post("/demo", response_model=ConversationResponse)
+def demo_conversation(
+    payload: ConversationRequest,
+    request: Request,
+    chat: ChatAgentLogic = Depends(get_chat_agent),
+):
+    """Demo chat endpoint with mock scan data - for testing without real database records"""
+    trace_id = str(uuid4())
+    
+    # Create mock scan data for testing
+    mock_scan_data = {
+        "product_name": "Demo Baby Formula",
+        "brand": "SafeBaby",
+        "barcode": "012345678901",
+        "model_number": "SB-DEMO-001",
+        "upc_gtin": "012345678901",
+        "category": "baby_formula",
+        "scan_type": "barcode",
+        "scan_id": payload.scan_id,
+        "scan_timestamp": "2024-01-01T12:00:00Z",
+        "confidence_score": 0.95,
+        "barcode_format": "UPC-A",
+        "verdict": "Safe - No Recalls Found",
+        "risk_level": "low",
+        "recalls_found": 0,
+        "recalls": [],
+        "agencies_checked": "39 agencies (FDA, CPSC, USDA, etc.)",
+        "flags": [],
+        "key_flags": [],
+        "ingredients": ["Milk protein", "Lactose", "Vitamins"],
+        "allergens": ["Contains milk"],
+        "pregnancy_warnings": [],
+        "age_warnings": ["Suitable for infants 0-12 months"],
+        "jurisdiction": {"code": "US", "label": "US FDA/CPSC"}
+    }
+    
+    # Classify intent
+    try:
+        intent = chat.classify_intent(payload.user_query)
+    except Exception:
+        intent = "safety_question"
+    
+    # Generate response
+    try:
+        response = chat.synthesize_result(mock_scan_data)
+        
+        # Create response
+        return ConversationResponse(
+            conversation_id=str(uuid4()),
+            intent=intent,
+            message=response,
+            trace_id=trace_id,
+            tool_calls=[]
+        )
+    except Exception as e:
+        # Fallback response
+        fallback_response = ExplanationResponse(
+            answer=f"I can help you with questions about {mock_scan_data['product_name']}. This appears to be a {mock_scan_data['category']} product with a safety rating of '{mock_scan_data['risk_level']}'. The product has {mock_scan_data['recalls_found']} recalls found across {mock_scan_data['agencies_checked']}. Is there something specific you'd like to know?",
+            confidence=0.8,
+            suggestions=["Ask about ingredients", "Check age appropriateness", "Verify safety for pregnancy"],
+            key_points=["No recalls found", "Low risk level", "Contains milk allergen"],
+            verdict_summary=mock_scan_data['verdict']
+        )
+        
+        return ConversationResponse(
+            conversation_id=str(uuid4()),
+            intent=intent,
+            message=fallback_response,
+            trace_id=trace_id,
+            tool_calls=[]
+        )
+
 @router.get("/flags")
 def chat_flags(request: Request):
     """Get chat feature flags - robust version"""
