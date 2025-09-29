@@ -1,6 +1,15 @@
 ﻿#!/usr/bin/env python3
 # api/main_babyshield.py
-# Version 2.4.0 â€“ Production-ready with versioned API endpoints
+# Version 2.4.0 â€" Production-ready with versioned API endpoints
+
+# CRITICAL: Force IPv4 for all network connections (fixes OpenAI timeout issues)
+import socket
+_orig_getaddrinfo = socket.getaddrinfo
+def _ipv4_only(host, port, *args, **kwargs):
+    res = _orig_getaddrinfo(host, port, *args, **kwargs)
+    v4 = [r for r in res if r[0] == socket.AF_INET]
+    return v4 or res
+socket.getaddrinfo = _ipv4_only
 
 import os, sys, logging, asyncio, uuid
 from typing import Optional, List, Dict, Any
