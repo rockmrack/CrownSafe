@@ -88,13 +88,17 @@ def get_llm_client():
             context = self._analyze_context(user_lower)
             
         def _analyze_context(self, query: str) -> Dict[str, Any]:
-            """Analyze query context for smarter responses"""
+            """Advanced context analysis for super smart responses"""
             context = {
                 "urgency": "normal",
                 "baby_age_mentioned": None,
                 "specific_concerns": [],
                 "parent_experience": "unknown",
-                "time_sensitivity": False
+                "time_sensitivity": False,
+                "emotion": "neutral",
+                "feeding_method": "unknown",
+                "location": "home",
+                "question_type": "general"
             }
             
             # Detect urgency indicators
@@ -117,6 +121,38 @@ def get_llm_client():
             # Time sensitivity
             if any(word in query for word in ["tonight", "now", "today", "right now", "asap"]):
                 context["time_sensitivity"] = True
+            
+            # Emotion detection
+            if any(word in query for word in ["worried", "scared", "anxious", "nervous", "confused"]):
+                context["emotion"] = "anxious"
+            elif any(word in query for word in ["frustrated", "angry", "upset"]):
+                context["emotion"] = "frustrated"
+            elif any(word in query for word in ["happy", "excited", "pleased"]):
+                context["emotion"] = "positive"
+            
+            # Feeding method detection
+            if any(word in query for word in ["breastfeed", "nursing", "breast milk", "pumping"]):
+                context["feeding_method"] = "breastfeeding"
+            elif any(word in query for word in ["bottle", "formula only", "exclusively formula"]):
+                context["feeding_method"] = "formula_only"
+            elif any(word in query for word in ["mixed", "combination", "both", "supplement"]):
+                context["feeding_method"] = "mixed"
+            
+            # Location context
+            if any(word in query for word in ["store", "shopping", "buying", "grocery"]):
+                context["location"] = "shopping"
+            elif any(word in query for word in ["work", "office", "daycare", "babysitter"]):
+                context["location"] = "work_daycare"
+            elif any(word in query for word in ["hospital", "clinic", "doctor"]):
+                context["location"] = "medical"
+            
+            # Question type classification
+            if any(word in query for word in ["how", "when", "where", "what time"]):
+                context["question_type"] = "instructional"
+            elif any(word in query for word in ["why", "what", "which", "explain"]):
+                context["question_type"] = "informational"
+            elif any(word in query for word in ["should", "can", "may", "is it ok"]):
+                context["question_type"] = "decision_support"
                 
             return context
             
@@ -240,7 +276,7 @@ def get_llm_client():
                 checks = ["Check expiration date", "Verify age appropriateness"]
                 suggestions = ["What allergens?", "Safe for newborns?"]
                 
-                # SMART ADAPTATIONS based on context
+                # SUPER SMART ADAPTATIONS based on context
                 if context["urgency"] == "high":
                     summary = "🔍 URGENT SAFETY CHECK: " + summary + " No immediate safety concerns identified."
                     reasons.insert(0, "Urgent safety verification completed")
@@ -258,6 +294,30 @@ def get_llm_client():
                 if context["time_sensitivity"]:
                     summary = "⚡ QUICK SAFETY CHECK: " + summary
                     checks.insert(0, "This formula is safe for immediate use if needed")
+                
+                # EMOTIONAL INTELLIGENCE
+                if context["emotion"] == "anxious":
+                    summary = "💙 I understand your concern. " + summary + " You're doing great as a parent by checking safety."
+                    checks.append("Remember: asking questions shows you're a caring parent")
+                elif context["emotion"] == "frustrated":
+                    summary = "🤗 I hear your frustration. " + summary + " Let me help make this clearer for you."
+                    suggestions.insert(0, "Simple step-by-step guidance")
+                
+                # FEEDING METHOD AWARENESS
+                if context["feeding_method"] == "breastfeeding":
+                    summary += " This can supplement breastfeeding when needed."
+                    suggestions.append("Combining formula with breastfeeding tips")
+                elif context["feeding_method"] == "mixed":
+                    summary += " This works well in combination feeding approaches."
+                    suggestions.append("Mixed feeding best practices")
+                
+                # LOCATION-SPECIFIC ADVICE
+                if context["location"] == "shopping":
+                    checks.insert(0, "This product is safe to purchase")
+                    suggestions.append("What to look for when buying formula")
+                elif context["location"] == "work_daycare":
+                    checks.append("Provide clear instructions to caregivers")
+                    suggestions.append("Daycare feeding guidelines")
                 
                 return {
                     "summary": summary,
