@@ -642,11 +642,11 @@ def demo_conversation(
         
         # Fallback response
         fallback_response = ExplanationResponse(
-            answer=f"I can help you with questions about {mock_scan_data['product_name']}. This appears to be a {mock_scan_data['category']} product with a safety rating of '{mock_scan_data['risk_level']}'. The product has {mock_scan_data['recalls_found']} recalls found across {mock_scan_data['agencies_checked']}. Is there something specific you'd like to know?",
-            confidence=0.8,
-            suggestions=["Ask about ingredients", "Check age appropriateness", "Verify safety for pregnancy"],
-            key_points=["No recalls found", "Low risk level", "Contains milk allergen"],
-            verdict_summary=mock_scan_data['verdict']
+            summary=f"I can help you with questions about {mock_scan_data['product_name']}. This appears to be a {mock_scan_data['category']} product with a safety rating of '{mock_scan_data['risk_level']}'. The product has {mock_scan_data['recalls_found']} recalls found across {mock_scan_data['agencies_checked']}.",
+            reasons=["No recalls found in database", "Low risk level assigned", "Contains milk allergen"],
+            checks=["Ask about ingredients", "Check age appropriateness", "Verify safety for pregnancy"],
+            flags=["no_recalls", "low_risk", "contains_milk"],
+            disclaimer="This is a fallback response while the AI service reconnects. For detailed analysis, please try again in a moment."
         )
         
         return ConversationResponse(
