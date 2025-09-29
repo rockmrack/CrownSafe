@@ -633,6 +633,13 @@ def demo_conversation(
             tool_calls=[]
         )
     except Exception as e:
+        # Log the actual error for debugging
+        logger = logging.getLogger(__name__)
+        logger.error(f"[{trace_id}] Chat synthesize_result failed: {e}")
+        logger.error(f"[{trace_id}] Exception type: {type(e).__name__}")
+        import traceback
+        logger.error(f"[{trace_id}] Traceback: {traceback.format_exc()}")
+        
         # Fallback response
         fallback_response = ExplanationResponse(
             answer=f"I can help you with questions about {mock_scan_data['product_name']}. This appears to be a {mock_scan_data['category']} product with a safety rating of '{mock_scan_data['risk_level']}'. The product has {mock_scan_data['recalls_found']} recalls found across {mock_scan_data['agencies_checked']}. Is there something specific you'd like to know?",
