@@ -138,6 +138,64 @@ def get_llm_client():
                     ],
                     "emergency": None
                 }
+            # Preparation/mixing questions
+            elif any(word in user_lower for word in ["prepare", "mix", "ratio", "water", "powder", "scoop", "how much", "instructions"]):
+                return {
+                    "summary": "Baby formula preparation requires precise water-to-powder ratios for safety and nutrition. Always follow package instructions exactly.",
+                    "reasons": [
+                        "Incorrect ratios can cause dehydration or nutrient imbalance",
+                        "Sterile preparation prevents contamination",
+                        "Proper mixing ensures even nutrition distribution"
+                    ],
+                    "checks": [
+                        "Use exact measurements from package instructions",
+                        "Use sterile or boiled water (cooled to room temperature)",
+                        "Mix thoroughly but gently to avoid air bubbles",
+                        "Prepare fresh for each feeding when possible"
+                    ],
+                    "flags": ["preparation_guidance", "mixing_instructions", "safety_critical"],
+                    "disclaimer": "Always follow manufacturer's preparation instructions. Consult pediatrician for feeding guidance.",
+                    "jurisdiction": {"code": "US", "label": "US FDA"},
+                    "evidence": [
+                        {"type": "guideline", "source": "AAP", "id": "infant_feeding_guidelines"},
+                        {"type": "regulation", "source": "FDA", "id": "formula_preparation_standards"}
+                    ],
+                    "suggested_questions": [
+                        "How much water per scoop?",
+                        "Can I prepare in advance?",
+                        "What temperature should it be?"
+                    ],
+                    "emergency": None
+                }
+            # Age/development questions  
+            elif any(word in user_lower for word in ["age", "months", "newborn", "infant", "old", "appropriate", "when", "start"]):
+                return {
+                    "summary": "This baby formula is typically appropriate for infants 0-12 months, but specific age recommendations depend on your baby's development and pediatrician guidance.",
+                    "reasons": [
+                        "Standard infant formula designed for 0-12 month age range",
+                        "Nutritional needs vary by developmental stage",
+                        "Pediatrician guidance essential for timing"
+                    ],
+                    "checks": [
+                        "Verify age range on package labeling",
+                        "Consult pediatrician before introducing new formula",
+                        "Monitor baby's response and tolerance",
+                        "Consider developmental readiness signs"
+                    ],
+                    "flags": ["age_guidance", "developmental_considerations", "pediatrician_consultation"],
+                    "disclaimer": "Age appropriateness should be confirmed with your pediatrician based on your baby's individual development.",
+                    "jurisdiction": {"code": "US", "label": "US FDA/AAP"},
+                    "evidence": [
+                        {"type": "guideline", "source": "AAP", "id": "age_appropriate_feeding"},
+                        {"type": "regulation", "source": "FDA", "id": "infant_formula_age_labeling"}
+                    ],
+                    "suggested_questions": [
+                        "When can I start this formula?",
+                        "Is this right for a newborn?",
+                        "How do I transition formulas?"
+                    ],
+                    "emergency": None
+                }
             # Safety question
             elif any(word in user_lower for word in ["safe", "safety", "baby", "infant"]):
                 return {
