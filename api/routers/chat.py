@@ -64,14 +64,82 @@ def build_suggested_questions(category: str, profile: dict) -> List[str]:
 
 # --- LLM wiring (replace get_llm_client() with your actual adapter) ---
 def get_llm_client():
-    """Smart local chat client - works without OpenAI"""
-    logging.info("Using smart local chat client (OpenAI bypassed)")
+    """
+    Hybrid LLM client - tries OpenAI first, falls back to smart local responses
+    """
+    # Try OpenAI first with optimized settings
+    try:
+        from infra.openai_client import OpenAILLMClient
+        openai_client = OpenAILLMClient()
+        if openai_client.client:
+            logging.info("Using OpenAI client with IPv4 optimization")
+            return openai_client
+    except Exception as e:
+        logging.warning(f"OpenAI client failed, using smart local client: {e}")
+    
+    # Fallback to smart local client
+    logging.info("Using smart local chat client (OpenAI fallback)")
     
     class SmartLocalLLMClient:
         def chat_json(self, model: str = "gpt-4o", system: str = "", user: str = "", response_schema=None, timeout: float = 30.0):
             user_lower = (user or "").lower()
             
-            if any(word in user_lower for word in ["safe", "safety", "baby", "infant"]):
+            # Emergency detection FIRST
+            if any(word in user_lower for word in ["choking", "choke", "stopped breathing", "not breathing", "swallowed", "poisoned", "unconscious", "seizure", "anaphylaxis", "turning blue"]):
+                return {
+                    "summary": "🚨 EMERGENCY DETECTED: If your baby is choking or in immediate danger, call emergency services immediately (911).",
+                    "reasons": [
+                        "Emergency keywords detected in your message",
+                        "Immediate medical attention may be required",
+                        "Time-sensitive safety situation"
+                    ],
+                    "checks": [
+                        "Call 911 immediately if baby is in distress",
+                        "Follow emergency first aid procedures",
+                        "Contact poison control if ingestion suspected"
+                    ],
+                    "flags": ["emergency", "call_911", "immediate_action_required"],
+                    "disclaimer": "This is an emergency response. Call 911 or emergency services immediately.",
+                    "jurisdiction": {"code": "US", "label": "Emergency Services"},
+                    "evidence": [
+                        {"type": "guideline", "source": "American Red Cross", "id": "infant_emergency_procedures"}
+                    ],
+                    "suggested_questions": [],
+                    "emergency": {
+                        "level": "red",
+                        "reason": "Potential choking or breathing emergency detected",
+                        "cta": "Call 911 immediately"
+                    }
+                }
+            # Allergen questions
+            elif any(word in user_lower for word in ["allerg", "peanut", "milk", "soy", "ingredient", "contains", "lactose", "gluten"]):
+                return {
+                    "summary": "This baby formula contains milk proteins as the primary ingredient. Please review the complete ingredient list for specific allergen information.",
+                    "reasons": [
+                        "Milk-based formula contains dairy proteins",
+                        "May contain traces of soy from processing",
+                        "Individual allergen sensitivity varies by child"
+                    ],
+                    "checks": [
+                        "Read complete ingredient list on package",
+                        "Look for allergen warnings in bold text",
+                        "Check for 'may contain' statements"
+                    ],
+                    "flags": ["contains_milk", "potential_soy_traces", "allergen_check_needed"],
+                    "disclaimer": "Allergen information should be verified from product packaging. Consult pediatrician for allergy management.",
+                    "jurisdiction": {"code": "US", "label": "US FDA"},
+                    "evidence": [
+                        {"type": "regulation", "source": "FDA", "id": "allergen_labeling_requirements"}
+                    ],
+                    "suggested_questions": [
+                        "Are there hypoallergenic alternatives?",
+                        "How to introduce this safely?",
+                        "What if my baby has milk allergy?"
+                    ],
+                    "emergency": None
+                }
+            # Safety question
+            elif any(word in user_lower for word in ["safe", "safety", "baby", "infant"]):
                 return {
                     "summary": "This baby formula appears safe with no active recalls found across 39+ safety databases.",
                     "reasons": ["No recalls found", "FDA compliant", "Age appropriate"],

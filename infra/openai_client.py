@@ -33,23 +33,28 @@ class OpenAILLMClient:
         
         if OPENAI_AVAILABLE and self.api_key:
             try:
-                # Configure HTTP client with IPv4-only for ECS compatibility
-                OPENAI_TIMEOUT = float(os.getenv("OPENAI_TIMEOUT", "20"))
+                # Configure HTTP client with aggressive IPv4-only settings
+                OPENAI_TIMEOUT = float(os.getenv("OPENAI_TIMEOUT", "10"))  # Shorter timeout for faster fallback
                 
                 # Force IPv4 by binding the local address to 0.0.0.0
-                transport = httpx.HTTPTransport(local_address="0.0.0.0")
+                transport = httpx.HTTPTransport(
+                    local_address="0.0.0.0",
+                    retries=0  # No retries - fail fast
+                )
                 
                 http_client = httpx.Client(
                     transport=transport,  # Force IPv4
-                    timeout=httpx.Timeout(OPENAI_TIMEOUT, connect=OPENAI_TIMEOUT, read=OPENAI_TIMEOUT),
+                    timeout=httpx.Timeout(OPENAI_TIMEOUT, connect=5.0, read=OPENAI_TIMEOUT),
                     http2=False,  # Disable HTTP/2 - h2 package not installed
+                    limits=httpx.Limits(max_connections=1, max_keepalive_connections=0)  # Minimal connections
                 )
                 
                 self.client = openai.OpenAI(
                     api_key=self.api_key,
-                    http_client=http_client
+                    http_client=http_client,
+                    max_retries=0  # No retries - fail fast for faster fallback
                 )
-                logging.info(f"OpenAI client initialized successfully with {OPENAI_TIMEOUT}s timeout")
+                logging.info(f"OpenAI client initialized successfully with {OPENAI_TIMEOUT}s timeout, IPv4-only, fast-fail mode")
             except Exception as e:
                 logging.error(f"Failed to initialize OpenAI client: {e}")
                 self.client = None
