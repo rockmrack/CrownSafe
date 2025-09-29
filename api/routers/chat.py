@@ -675,7 +675,7 @@ def chat_flags(request: Request):
     trace_id = getattr(getattr(request, "state", None), "trace_id", f"flags_{int(monotonic()*1000)}")
     
     try:
-    from core.feature_flags import FEATURE_CHAT_ENABLED, FEATURE_CHAT_ROLLOUT_PCT
+        from core.feature_flags import FEATURE_CHAT_ENABLED, FEATURE_CHAT_ROLLOUT_PCT
         
         payload = {
             "success": True,
