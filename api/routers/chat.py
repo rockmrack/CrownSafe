@@ -259,7 +259,12 @@ def conversation(
     user_id_str = str(user_id) if user_id else None
     device_id = None  # Could be extracted from headers if available
     
-    if not chat_enabled_for(user_id_str, device_id):
+    # If rollout is 100%, allow anonymous users (for testing/demo)
+    from core.feature_flags import FEATURE_CHAT_ENABLED, FEATURE_CHAT_ROLLOUT_PCT
+    if FEATURE_CHAT_ENABLED and FEATURE_CHAT_ROLLOUT_PCT >= 1.0:
+        # Full rollout - allow all requests
+        pass
+    elif not chat_enabled_for(user_id_str, device_id):
         inc_blocked("conversation")
         raise HTTPException(status_code=403, detail="chat_disabled")
 
