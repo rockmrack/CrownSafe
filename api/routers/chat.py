@@ -574,9 +574,32 @@ def erase_history(db: Session = Depends(get_db)):
 
 
 @router.get("/flags")
-def chat_flags():
-    from core.feature_flags import FEATURE_CHAT_ENABLED, FEATURE_CHAT_ROLLOUT_PCT
-    return {
-        "chat_enabled_global": FEATURE_CHAT_ENABLED,
-        "chat_rollout_pct": FEATURE_CHAT_ROLLOUT_PCT,
-    }
+def chat_flags(request: Request):
+    """Get chat feature flags - robust version"""
+    trace_id = getattr(getattr(request, "state", None), "trace_id", f"flags_{int(monotonic()*1000)}")
+    
+    try:
+        from core.feature_flags import FEATURE_CHAT_ENABLED, FEATURE_CHAT_ROLLOUT_PCT
+        
+        payload = {
+            "success": True,
+            "data": {
+                "chat_enabled_global": FEATURE_CHAT_ENABLED,
+                "chat_rollout_pct": FEATURE_CHAT_ROLLOUT_PCT,
+            },
+            "traceId": trace_id
+        }
+        return JSONResponse(content=payload)
+    except Exception as e:
+        logger = logging.getLogger(__name__)
+        logger.exception(f"[{trace_id}] Chat flags failed: {e}")
+        
+        payload = {
+            "success": False,
+            "error": {
+                "code": "INTERNAL_ERROR",
+                "message": f"Feature flags unavailable: {str(e)}"
+            },
+            "traceId": trace_id
+        }
+        return JSONResponse(content=payload, status_code=500)

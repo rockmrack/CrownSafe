@@ -1,0 +1,25 @@
+{
+  "name": "Enable Chat Feature Flags",
+  "description": "Add environment variables to enable chat features",
+  "environment_variables": [
+    {
+      "name": "BS_FEATURE_CHAT_ENABLED",
+      "value": "true"
+    },
+    {
+      "name": "BS_FEATURE_CHAT_ROLLOUT_PCT", 
+      "value": "1.0"
+    }
+  ],
+  "instructions": [
+    "1. Go to ECS Console -> Task Definitions",
+    "2. Select babyshield-backend task definition",
+    "3. Create new revision",
+    "4. In Container Definition -> Environment Variables, add:",
+    "   - BS_FEATURE_CHAT_ENABLED = true",
+    "   - BS_FEATURE_CHAT_ROLLOUT_PCT = 1.0",
+    "5. Create new revision",
+    "6. Update service to use new revision",
+    "7. Force new deployment"
+  ]
+}

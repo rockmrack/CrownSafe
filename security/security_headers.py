@@ -276,6 +276,8 @@ async def bulletproof_security_middleware(request: Request, call_next):
     
     # Then apply security headers if not already blocked
     if response.status_code < 400:
+        async def _return_response(_):
+            return response
         response = await security_headers_middleware(request, _return_response)
     
     return response
