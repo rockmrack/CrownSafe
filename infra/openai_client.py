@@ -33,22 +33,16 @@ class OpenAILLMClient:
         
         if OPENAI_AVAILABLE and self.api_key:
             try:
-                # Configure HTTP client with ULTRA-aggressive settings for ECS
-                OPENAI_TIMEOUT = float(os.getenv("OPENAI_TIMEOUT", "60"))  # Even longer timeout
+                # Configure HTTP client with IPv4-only for ECS compatibility
+                OPENAI_TIMEOUT = float(os.getenv("OPENAI_TIMEOUT", "20"))
+                
+                # Force IPv4 by binding the local address to 0.0.0.0
+                transport = httpx.HTTPTransport(local_address="0.0.0.0")
                 
                 http_client = httpx.Client(
-                    http2=False,  # Avoid HTTP/2 421/quirks in container environments
-                    timeout=httpx.Timeout(
-                        timeout=OPENAI_TIMEOUT,  # Read timeout
-                        connect=30.0,            # Long connect timeout
-                        pool=10.0                # Pool timeout
-                    ),
-                    limits=httpx.Limits(
-                        max_keepalive_connections=5,
-                        max_connections=10,
-                        keepalive_expiry=30.0
-                    ),
-                    retries=1  # Reduce retries to avoid long waits
+                    transport=transport,  # Force IPv4
+                    timeout=httpx.Timeout(OPENAI_TIMEOUT, connect=OPENAI_TIMEOUT, read=OPENAI_TIMEOUT),
+                    http2=True,  # Can use HTTP/2 now that we're on IPv4
                 )
                 
                 self.client = openai.OpenAI(
