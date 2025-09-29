@@ -226,6 +226,10 @@ class HealthCheckWrapper:
     def __init__(self, app):
         self.app = app
     
+    def __getattr__(self, name):
+        """Proxy all attributes to the wrapped app"""
+        return getattr(self.app, name)
+    
     async def __call__(self, scope, receive, send):
         if scope["path"] == "/healthz" and scope["type"] == "http":
             # Direct response, bypass everything
