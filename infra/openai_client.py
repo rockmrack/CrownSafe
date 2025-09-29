@@ -9,10 +9,11 @@ import logging
 
 try:
     import openai
+    import httpx
     OPENAI_AVAILABLE = True
 except ImportError:
     OPENAI_AVAILABLE = False
-    logging.warning("OpenAI library not available. Install with: pip install openai")
+    logging.warning("OpenAI library not available. Install with: pip install openai httpx")
 
 
 class OpenAILLMClient:
@@ -22,7 +23,7 @@ class OpenAILLMClient:
     
     def __init__(self, api_key: Optional[str] = None):
         """
-        Initialize the OpenAI client.
+        Initialize the OpenAI client with optimized HTTP settings.
         
         Args:
             api_key: OpenAI API key. If None, will try to get from environment.
@@ -32,8 +33,19 @@ class OpenAILLMClient:
         
         if OPENAI_AVAILABLE and self.api_key:
             try:
-                self.client = openai.OpenAI(api_key=self.api_key)
-                logging.info("OpenAI client initialized successfully")
+                # Configure HTTP client with optimized settings
+                OPENAI_TIMEOUT = float(os.getenv("OPENAI_TIMEOUT", "30"))
+                
+                http_client = httpx.Client(
+                    http2=False,  # Avoid HTTP/2 421/quirks in container environments
+                    timeout=httpx.Timeout(OPENAI_TIMEOUT, connect=10.0)  # Generous read timeout
+                )
+                
+                self.client = openai.OpenAI(
+                    api_key=self.api_key,
+                    http_client=http_client
+                )
+                logging.info(f"OpenAI client initialized successfully with {OPENAI_TIMEOUT}s timeout")
             except Exception as e:
                 logging.error(f"Failed to initialize OpenAI client: {e}")
                 self.client = None
