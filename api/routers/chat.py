@@ -81,11 +81,49 @@ def get_llm_client():
     logging.info("Using smart local chat client (OpenAI fallback)")
     
     class SuperSmartLLMClient:
+        def __init__(self):
+            self.conversation_memory = {}  # Store conversation context
+            self.common_patterns = self._load_common_patterns()
+            
+        def _load_common_patterns(self) -> Dict[str, List[str]]:
+            """Load common parent question patterns for predictive suggestions"""
+            return {
+                "safety_followups": [
+                    "What if my baby has an allergic reaction?",
+                    "How do I know if this is working well?", 
+                    "When should I switch to a different formula?",
+                    "What signs should I watch for?"
+                ],
+                "preparation_followups": [
+                    "How do I store prepared bottles?",
+                    "Can I prepare bottles in advance?",
+                    "What if the water is too hot or cold?",
+                    "How long does prepared formula last?"
+                ],
+                "age_followups": [
+                    "When can I start mixing with solid foods?",
+                    "How do I transition to toddler formula?",
+                    "What changes as my baby grows?",
+                    "When do I stop night feedings?"
+                ],
+                "travel_followups": [
+                    "What about international travel?",
+                    "How to handle time zone feeding changes?",
+                    "What if I run out while traveling?",
+                    "Airport security tips for formula?"
+                ]
+            }
+        
         def chat_json(self, model: str = "gpt-4o", system: str = "", user: str = "", response_schema=None, timeout: float = 30.0):
             user_lower = (user or "").lower()
             
             # Extract context clues for smarter responses
             context = self._analyze_context(user_lower)
+            
+            # Add conversation memory analysis
+            conversation_id = getattr(self, '_current_conversation_id', None)
+            if conversation_id:
+                context.update(self._analyze_conversation_history(conversation_id, user_lower))
             
         def _analyze_context(self, query: str) -> Dict[str, Any]:
             """Advanced context analysis for super smart responses"""
@@ -154,7 +192,113 @@ def get_llm_client():
             elif any(word in query for word in ["should", "can", "may", "is it ok"]):
                 context["question_type"] = "decision_support"
                 
-            return context
+                return context
+        
+        def _analyze_conversation_history(self, conversation_id: str, current_query: str) -> Dict[str, Any]:
+            """Analyze conversation history for smarter follow-up responses"""
+            history = self.conversation_memory.get(conversation_id, {})
+            
+            memory_context = {
+                "is_followup": len(history.get("previous_queries", [])) > 0,
+                "previous_topics": history.get("topics", []),
+                "parent_concerns": history.get("concerns", []),
+                "established_facts": history.get("facts", {}),
+                "conversation_tone": history.get("tone", "neutral")
+            }
+            
+            # Update memory with current query
+            if conversation_id not in self.conversation_memory:
+                self.conversation_memory[conversation_id] = {
+                    "previous_queries": [],
+                    "topics": [],
+                    "concerns": [],
+                    "facts": {},
+                    "tone": "neutral"
+                }
+            
+            self.conversation_memory[conversation_id]["previous_queries"].append(current_query)
+            
+            # Detect if this is a follow-up question
+            followup_indicators = ["also", "what about", "and", "but", "however", "follow up"]
+            if any(indicator in current_query for indicator in followup_indicators):
+                memory_context["is_followup"] = True
+                
+            return memory_context
+        
+        def _get_predictive_suggestions(self, context: Dict[str, Any], response_category: str) -> List[str]:
+            """Generate predictive suggestions based on context and patterns"""
+            base_suggestions = self.common_patterns.get(f"{response_category}_followups", [])
+            
+            # Customize based on context
+            suggestions = base_suggestions.copy()
+            
+            if context.get("parent_experience") == "new":
+                suggestions.extend([
+                    "New parent support resources",
+                    "Common first-time parent concerns",
+                    "When to contact pediatrician"
+                ])
+            
+            if context.get("emotion") == "anxious":
+                suggestions.extend([
+                    "Signs everything is going well",
+                    "Normal vs concerning symptoms",
+                    "Reassurance for worried parents"
+                ])
+            
+            if context.get("baby_age_mentioned"):
+                age = context["baby_age_mentioned"]
+                suggestions.append(f"Developmental milestones for {age}")
+                suggestions.append(f"Common {age} feeding challenges")
+            
+            # Limit to 4 most relevant
+            return suggestions[:4]
+        
+        def _detect_language(self, query: str) -> str:
+            """Detect query language for multi-language support"""
+            # Spanish indicators
+            spanish_words = ["bebé", "seguro", "leche", "fórmula", "alergia", "peligro", "ayuda", "emergencia"]
+            if any(word in query.lower() for word in spanish_words):
+                return "es"
+            
+            # French indicators  
+            french_words = ["bébé", "sûr", "lait", "formule", "allergie", "danger", "aide", "urgence"]
+            if any(word in query.lower() for word in french_words):
+                return "fr"
+                
+            return "en"  # Default English
+        
+        def _translate_response(self, response: Dict[str, Any], target_lang: str) -> Dict[str, Any]:
+            """Translate response to target language"""
+            if target_lang == "es":
+                # Spanish translations
+                translations = {
+                    "This baby formula appears safe": "Esta fórmula para bebés parece segura",
+                    "No recalls found": "No se encontraron retiros del mercado",
+                    "FDA compliant": "Cumple con FDA",
+                    "Consult your pediatrician": "Consulte a su pediatra",
+                    "Check expiration date": "Verifique la fecha de vencimiento"
+                }
+                # Apply translations
+                for en, es in translations.items():
+                    if en in response.get("summary", ""):
+                        response["summary"] = response["summary"].replace(en, es)
+                        
+            elif target_lang == "fr":
+                # French translations
+                translations = {
+                    "This baby formula appears safe": "Cette formule pour bébé semble sûre",
+                    "No recalls found": "Aucun rappel trouvé", 
+                    "FDA compliant": "Conforme FDA",
+                    "Consult your pediatrician": "Consultez votre pédiatre",
+                    "Check expiration date": "Vérifiez la date d'expiration"
+                }
+                # Apply translations
+                for en, fr in translations.items():
+                    if en in response.get("summary", ""):
+                        response["summary"] = response["summary"].replace(en, fr)
+            
+            return response
             
             # Emergency detection FIRST (absolute priority)
             if any(word in user_lower for word in ["choking", "choke", "stopped breathing", "not breathing", "swallowed", "poisoned", "unconscious", "seizure", "anaphylaxis", "turning blue"]):
@@ -319,17 +463,38 @@ def get_llm_client():
                     checks.append("Provide clear instructions to caregivers")
                     suggestions.append("Daycare feeding guidelines")
                 
-                return {
+                # CONVERSATION MEMORY INTELLIGENCE
+                if context.get("is_followup"):
+                    summary = "Following up on your previous question: " + summary
+                    if context.get("previous_topics"):
+                        topics = ", ".join(context["previous_topics"][:2])
+                        summary += f" Building on our discussion about {topics}."
+                
+                # PREDICTIVE SUGGESTIONS (super smart)
+                predictive_suggestions = self._get_predictive_suggestions(context, "safety")
+                suggestions.extend(predictive_suggestions)
+                suggestions = list(dict.fromkeys(suggestions))[:4]  # Remove duplicates, limit to 4
+                
+                # MULTI-LANGUAGE SUPPORT
+                detected_lang = self._detect_language(user_lower)
+                
+                response = {
                     "summary": summary,
                     "reasons": reasons,
                     "checks": checks,
-                    "flags": ["baby_formula", "no_recalls", "context_aware"],
+                    "flags": ["baby_formula", "no_recalls", "context_aware", f"lang_{detected_lang}"],
                     "disclaimer": "Consult your pediatrician for personalized advice.",
                     "jurisdiction": {"code": "US", "label": "US FDA/CPSC"},
                     "evidence": [{"type": "regulation", "source": "FDA", "id": "formula_standards"}],
                     "suggested_questions": suggestions,
                     "emergency": None
                 }
+                
+                # Apply translation if needed
+                if detected_lang != "en":
+                    response = self._translate_response(response, detected_lang)
+                    
+                return response
             # SUPER SMART: Advanced query understanding
             elif any(word in user_lower for word in ["compare", "better", "alternative", "different", "switch", "change", "recommend"]):
                 return self._generate_comparison_response(context)
@@ -528,7 +693,10 @@ def get_llm_client():
                 "emergency": None
             }
     
-    return SuperSmartLLMClient()
+    # Create singleton instance for conversation memory persistence
+    if not hasattr(get_llm_client, '_instance'):
+        get_llm_client._instance = SuperSmartLLMClient()
+    return get_llm_client._instance
 
 
 def get_chat_agent() -> ChatAgentLogic:
