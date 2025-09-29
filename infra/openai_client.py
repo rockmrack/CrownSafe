@@ -42,7 +42,7 @@ class OpenAILLMClient:
                 http_client = httpx.Client(
                     transport=transport,  # Force IPv4
                     timeout=httpx.Timeout(OPENAI_TIMEOUT, connect=OPENAI_TIMEOUT, read=OPENAI_TIMEOUT),
-                    http2=True,  # Can use HTTP/2 now that we're on IPv4
+                    http2=False,  # Disable HTTP/2 - h2 package not installed
                 )
                 
                 self.client = openai.OpenAI(
@@ -148,8 +148,8 @@ class OpenAILLMClient:
             "disclaimer": "This is a basic safety assessment. For detailed analysis, please try again in a moment as our AI service reconnects.",
             "jurisdiction": {"code": "US", "label": "US FDA/CPSC"},
             "evidence": [
-                "FDA regulations require baby formula safety testing",
-                "CPSC monitors infant product recalls"
+                {"type": "regulation", "source": "FDA", "id": "baby_formula_regs"},
+                {"type": "regulation", "source": "CPSC", "id": "infant_product_monitoring"}
             ],
             "suggested_questions": [
                 "Is this safe for newborns?", 
