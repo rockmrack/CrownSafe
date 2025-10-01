@@ -1,7 +1,7 @@
 # BabyShield Backend API Endpoints Documentation
 ## Complete List for Frontend Development
 
-Last Updated: January 9, 2025
+Last Updated: September 9, 2025
 
 ---
 
@@ -496,5 +496,5 @@ For API issues or questions:
 
 ---
 
-Last verified: January 9, 2025
+Last verified: September 9, 2025
 Total endpoints: 213+

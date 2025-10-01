@@ -96,7 +96,7 @@ jobs:
       # Build Docker image for scanning
       - name: Build Docker Image
         run: |
-          docker build -f Dockerfile.backend -t babyshield-backend:scan .
+          docker build -f Dockerfile.final -t babyshield-backend:scan .
       
       # Trivy Scanner - Comprehensive vulnerability scanner
       - name: Run Trivy vulnerability scanner
