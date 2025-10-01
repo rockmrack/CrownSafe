@@ -5,14 +5,14 @@ $REGION = "eu-north-1"
 $AWS_ACCOUNT = "180703226577"
 $ECR_REPO = "babyshield-backend"
 $IMAGE_TAG = "api-v1"
-$DOCKERFILE = "Dockerfile.backend"
+$DOCKERFILE = "Dockerfile.final"
 
 Write-Host "🚀 Starting BabyShield Backend Deployment" -ForegroundColor Green
 Write-Host "================================================"
 
 # Step 1: Build Docker image
 Write-Host "`nStep 1: Building Docker image..." -ForegroundColor Yellow
-docker build --no-cache -f $DOCKERFILE -t ${ECR_REPO}:${IMAGE_TAG} .
+docker build --no-cache -f Dockerfile.final -t ${ECR_REPO}:${IMAGE_TAG} .
 if ($LASTEXITCODE -eq 0) {
     Write-Host "✅ Docker build successful" -ForegroundColor Green
 } else {
