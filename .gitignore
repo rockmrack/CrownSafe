@@ -111,3 +111,9 @@ __pycache__/
 # do not publish local pins
 requirements-local.txt.venv*/
 venv/
+
+# Ignore experimental Dockerfiles
+Dockerfile.test*
+Dockerfile.backup*
+Dockerfile.temp*
+
