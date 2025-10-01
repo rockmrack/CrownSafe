@@ -1,4 +1,4 @@
-﻿# scripts/smoke_account_deletion.ps1
+# scripts/smoke_account_deletion.ps1
 # Smoke test: account deletion flow using token from CI
 
 [CmdletBinding()]
@@ -37,13 +37,10 @@ try {
   Invoke-RestMethod -Uri "$BASE/api/v1/auth/me" -Method Get -Headers $headers -ErrorAction Stop | Out-Null
   $stillValid = $true
 } catch {
-  # Expected: unauthorized/forbidden after deletion
   $stillValid = $false
   Write-Host "auth/me rejected after deletion (expected)."
 }
 
-if ($stillValid) {
-  throw "Token still valid after deletion (expected failure)."
-}
+if ($stillValid) { throw "Token still valid after deletion (expected failure)." }
 
 Write-Host "Smoke(Account Deletion) PASSED."
