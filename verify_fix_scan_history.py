@@ -1,4 +1,4 @@
-﻿import sqlite3, os, sys
+import sqlite3, os, sys
 
 DB = os.path.abspath("dev.db")
 REQUIRED = [

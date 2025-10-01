@@ -1,4 +1,4 @@
-﻿"""
+"""
 API endpoints for supplemental data and enhanced safety reports
 """
 

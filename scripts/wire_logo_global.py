@@ -1,4 +1,4 @@
-﻿import os, base64, re, sys
+import os, base64, re, sys
 from pathlib import Path
 
 # Find the file that defines ReportBuilderAgentLogic

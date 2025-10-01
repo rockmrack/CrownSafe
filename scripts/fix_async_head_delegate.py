@@ -1,4 +1,4 @@
-﻿from pathlib import Path, re
+from pathlib import Path, re
 p = Path("api/baby_features_endpoints.py")
 s = p.read_text(encoding="utf-8")
 

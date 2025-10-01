@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 p = Path(r".\migrations\versions\2024_08_22_0100_001_create_recalls_enhanced_table.py")
 s = p.read_text(encoding="utf-8")
 anchor = "    # Check if table already exists (for idempotency)"

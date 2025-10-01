@@ -1,4 +1,4 @@
-﻿import sqlite3, datetime
+import sqlite3, datetime
 db = "babyshield_test.db"
 
 conn = sqlite3.connect(db)

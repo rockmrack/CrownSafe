@@ -1,4 +1,4 @@
-﻿import os, sqlite3
+import os, sqlite3
 DB = os.path.abspath("dev.db")
 con = sqlite3.connect(DB)
 cur = con.cursor()

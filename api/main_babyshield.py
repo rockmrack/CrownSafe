@@ -1,6 +1,6 @@
-﻿#!/usr/bin/env python3
-# api/main_babyshield.py
-# Version 2.4.0 â€" Production-ready with versioned API endpoints
+#!/usr/bin/env python3
+# api/main_babyshield.py  
+# Version 2.4.0 - Production-ready with versioned API endpoints
 
 # CRITICAL: Force IPv4 for all network connections (fixes OpenAI timeout issues)
 import socket
@@ -1386,6 +1386,19 @@ async def root():
 def health_check():
     """Basic health check (backwards compatibility)"""
     return ok({"status": "ok"})
+
+# Root and favicon handlers to prevent 400 errors
+from fastapi.responses import RedirectResponse, Response
+
+@app.get("/", include_in_schema=False)
+async def root():
+    """Root endpoint redirects to docs"""
+    return RedirectResponse("/docs")
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    """Favicon handler to prevent 404s"""
+    return Response(status_code=204)
 
 # Health endpoint moved to top of file (line 190) - before middleware
 
@@ -3022,4 +3035,9 @@ app = HealthCheckWrapper(app)
 # Run with: uvicorn api.main_babyshield:app --host 0.0.0.0 --port 8001
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run(
+        app, 
+        host="0.0.0.0", 
+        port=8001,
+        lifespan="off"  # Silence ASGI lifespan warning
+    )

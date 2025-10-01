@@ -1,4 +1,4 @@
-﻿import re, pathlib
+import re, pathlib
 p = pathlib.Path(r".\migrations\versions\2024_08_22_0100_001_create_recalls_enhanced_table.py")
 t = p.read_text(encoding="utf-8")
 def inject_guard(src, func):

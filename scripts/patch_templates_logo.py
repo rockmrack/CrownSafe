@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 import re
 tpl_dir = Path(r".\agents\reporting\report_builder_agent\templates")
 for p in tpl_dir.glob("*.html"):

@@ -1,4 +1,4 @@
-﻿import re, pathlib
+import re, pathlib
 p = pathlib.Path(r".\alembic\versions\20250826_search_trgm_indexes.py")
 t = p.read_text(encoding="utf-8")
 def inject_guard(src, func):

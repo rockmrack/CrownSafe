@@ -74,7 +74,7 @@ class SuperSmartLLMClient:
         return {
             "safety_guidelines": {
                 "formula": {
-                    "temperature": "98.6°F (37°C) - body temperature",
+                    "temperature": "98.6°F (37°C) - body temperature", 
                     "storage": "Use within 2 hours at room temp, 24 hours refrigerated",
                     "mixing": "1 scoop per 2 oz water unless specified otherwise"
                 },

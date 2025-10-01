@@ -1,4 +1,4 @@
-﻿import sqlite3, argparse, os, sys
+import sqlite3, argparse, os, sys
 
 REQUIRED_COLS = {
     # name                  sql type   default
