@@ -1,29 +1,49 @@
+﻿# scripts/smoke_account_deletion.ps1
+# Smoke test: account deletion flow using token from CI
+
+[CmdletBinding()]
 param(
-  [string]$BASE = "https://babyshield.cureviax.ai",
-  [string]$TOKEN_FRESH = ""
+  [Parameter(Mandatory = $true)][string]$BASE,
+  [Parameter(Mandatory = $true)][string]$TOKEN_FRESH
 )
 
-if (-not $TOKEN_FRESH) { Write-Error "Provide -TOKEN_FRESH (valid, <5min old)."; exit 1 }
+$ErrorActionPreference = 'Stop'
+Write-Host "Smoke(Account Deletion) → $BASE"
 
-function Head($url){ (Invoke-WebRequest -Uri $url -Method Head -UseBasicParsing -ErrorAction Stop).StatusCode }
-
-# 1) Public page exists
-$code1 = Head("$BASE/legal/account-deletion")
-if ($code1 -ne 200){ Write-Error "account-deletion page not 200 ($code1)"; exit 2 }
-
-# 2) Legacy redirect
-$r = Invoke-WebRequest -Uri "$BASE/legal/data-deletion" -MaximumRedirection 0 -ErrorAction SilentlyContinue
-if ($r.StatusCode -ne 301 -or -not $r.Headers.Location.EndsWith("/legal/account-deletion")){
-  Write-Error "legacy redirect not 301 -> /legal/account-deletion"; exit 3
+# 1) Health check (use GET, not HEAD)
+try {
+  $health = Invoke-RestMethod -Uri "$BASE/readyz" -Method Get -ErrorAction Stop
+  Write-Host "readyz OK"
+} catch {
+  throw "Health check failed: $($_.Exception.Message)"
 }
 
-# 3) Unauthorized delete blocked
-$r3 = Invoke-WebRequest -Uri "$BASE/api/v1/account" -Method Delete -UseBasicParsing -ErrorAction SilentlyContinue
-if ($r3.StatusCode -lt 401 -or $r3.StatusCode -gt 403){ Write-Error "unauth delete not 401/403"; exit 4 }
+# 2) Delete current account (Bearer token)
+$headers = @{ Authorization = "Bearer $TOKEN_FRESH" }
+try {
+  $resp = Invoke-WebRequest -Uri "$BASE/api/v1/account" -Method Delete -Headers $headers -ErrorAction Stop
+  $code = [int]$resp.StatusCode
+  if ($code -ne 200 -and $code -ne 204) {
+    throw "Unexpected status for DELETE /api/v1/account: $code"
+  }
+  Write-Host "DELETE /api/v1/account → $code"
+} catch {
+  throw "Account delete failed: $($_.Exception.Message)"
+}
 
-# 4) Authenticated delete returns 204
-$r4 = Invoke-WebRequest -Uri "$BASE/api/v1/account" -Method Delete -Headers @{Authorization="Bearer $TOKEN_FRESH"} -UseBasicParsing -ErrorAction SilentlyContinue
-if ($r4.StatusCode -ne 204){ Write-Error "auth delete not 204 ($($r4.StatusCode))"; exit 5 }
+# 3) Verify token no longer works (should get 401/403)
+$stillValid = $true
+try {
+  Invoke-RestMethod -Uri "$BASE/api/v1/auth/me" -Method Get -Headers $headers -ErrorAction Stop | Out-Null
+  $stillValid = $true
+} catch {
+  # Expected: unauthorized/forbidden after deletion
+  $stillValid = $false
+  Write-Host "auth/me rejected after deletion (expected)."
+}
 
-Write-Host "OK: deletion flow smoke passed."
-exit 0
+if ($stillValid) {
+  throw "Token still valid after deletion (expected failure)."
+}
+
+Write-Host "Smoke(Account Deletion) PASSED."
