@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # Deploy Task 11 to AWS
 
 echo "========================================"
@@ -7,11 +7,11 @@ echo "========================================"
 
 # Build Docker image
 echo "Step 1: Building Docker image..."
-docker build --no-cache -f Dockerfile.backend.fixed -t babyshield-backend:task11 .
+docker build --no-cache -f Dockerfile.final -t babyshield-backend:task11 .
 
 if [ $? -ne 0 ]; then
     echo "Build failed! Trying alternative Dockerfile..."
-    docker build --no-cache -f Dockerfile.backend -t babyshield-backend:task11 .
+    docker build --no-cache -f Dockerfile.final -t babyshield-backend:task11 .
 fi
 
 # Login to ECR

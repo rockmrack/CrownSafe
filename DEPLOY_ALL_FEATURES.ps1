@@ -1,4 +1,4 @@
-# PowerShell Deployment Script for ALL Features
+﻿# PowerShell Deployment Script for ALL Features
 # This script will deploy all Tasks 11-22 features to AWS
 
 Write-Host "=======================================" -ForegroundColor Green
@@ -26,15 +26,15 @@ $requiredFiles = @(
     "api/monitoring.py",
     "api/legal_endpoints.py",
     "api/feedback_endpoints.py",
-    "Dockerfile.backend"
+    "Dockerfile.final"
 )
 
 $allFilesExist = $true
 foreach ($file in $requiredFiles) {
     if (Test-Path $file) {
-        Write-Host "  ✓ $file" -ForegroundColor Green
+        Write-Host "  âœ“ $file" -ForegroundColor Green
     } else {
-        Write-Host "  ✗ $file NOT FOUND" -ForegroundColor Red
+        Write-Host "  âœ— $file NOT FOUND" -ForegroundColor Red
         $allFilesExist = $false
     }
 }
@@ -47,12 +47,12 @@ if (-not $allFilesExist) {
 Write-Host "`n2. Building Docker image with ALL features..." -ForegroundColor Yellow
 Write-Host "   Tag: $IMAGE_TAG" -ForegroundColor Cyan
 
-docker build --no-cache -f Dockerfile.backend -t ${ECR_REPO}:${IMAGE_TAG} .
+docker build --no-cache -f Dockerfile.final -t ${ECR_REPO}:${IMAGE_TAG} .
 if ($LASTEXITCODE -ne 0) {
     Write-Host "ERROR: Docker build failed!" -ForegroundColor Red
     exit 1
 }
-Write-Host "  ✓ Docker image built successfully" -ForegroundColor Green
+Write-Host "  âœ“ Docker image built successfully" -ForegroundColor Green
 
 Write-Host "`n3. Authenticating with AWS ECR..." -ForegroundColor Yellow
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
@@ -60,12 +60,12 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "ERROR: ECR login failed!" -ForegroundColor Red
     exit 1
 }
-Write-Host "  ✓ ECR authentication successful" -ForegroundColor Green
+Write-Host "  âœ“ ECR authentication successful" -ForegroundColor Green
 
 Write-Host "`n4. Tagging image for ECR..." -ForegroundColor Yellow
 docker tag ${ECR_REPO}:${IMAGE_TAG} "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
 docker tag ${ECR_REPO}:${IMAGE_TAG} "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/${ECR_REPO}:latest"
-Write-Host "  ✓ Images tagged" -ForegroundColor Green
+Write-Host "  âœ“ Images tagged" -ForegroundColor Green
 
 Write-Host "`n5. Pushing to ECR..." -ForegroundColor Yellow
 docker push "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
@@ -74,7 +74,7 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 docker push "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/${ECR_REPO}:latest"
-Write-Host "  ✓ Images pushed to ECR" -ForegroundColor Green
+Write-Host "  âœ“ Images pushed to ECR" -ForegroundColor Green
 
 Write-Host "`n6. Forcing new ECS deployment..." -ForegroundColor Yellow
 aws ecs update-service `
@@ -88,7 +88,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "ERROR: ECS deployment failed!" -ForegroundColor Red
     exit 1
 }
-Write-Host "  ✓ ECS deployment initiated" -ForegroundColor Green
+Write-Host "  âœ“ ECS deployment initiated" -ForegroundColor Green
 
 Write-Host "`n7. Waiting for deployment to stabilize..." -ForegroundColor Yellow
 Write-Host "   This may take 3-5 minutes..." -ForegroundColor Cyan
@@ -145,16 +145,16 @@ foreach ($endpoint in $endpoints) {
         }
         
         if ($response.StatusCode -ne 404) {
-            Write-Host "  ✓ $($endpoint.Name) - WORKING" -ForegroundColor Green
+            Write-Host "  âœ“ $($endpoint.Name) - WORKING" -ForegroundColor Green
             $workingEndpoints++
         } else {
-            Write-Host "  ✗ $($endpoint.Name) - NOT FOUND" -ForegroundColor Red
+            Write-Host "  âœ— $($endpoint.Name) - NOT FOUND" -ForegroundColor Red
         }
     } catch {
         if ($_.Exception.Response.StatusCode.value__ -eq 404) {
-            Write-Host "  ✗ $($endpoint.Name) - NOT DEPLOYED" -ForegroundColor Red
+            Write-Host "  âœ— $($endpoint.Name) - NOT DEPLOYED" -ForegroundColor Red
         } else {
-            Write-Host "  ⚠ $($endpoint.Name) - Status: $($_.Exception.Response.StatusCode.value__)" -ForegroundColor Yellow
+            Write-Host "  âš  $($endpoint.Name) - Status: $($_.Exception.Response.StatusCode.value__)" -ForegroundColor Yellow
             $workingEndpoints++
         }
     }

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Task 16: Security Testing Script
 Tests security implementations including WAF, secrets, and database security
@@ -57,12 +57,12 @@ def test_security_headers():
                     else:
                         is_valid = expected_values in actual_value
                     
-                    status = "✅" if is_valid else "⚠️"
+                    status = "âœ…" if is_valid else "âš ï¸"
                     print(f"  {status} {header}: {actual_value[:50]}...")
                 else:
-                    print(f"  ✅ {header}: Present")
+                    print(f"  âœ… {header}: Present")
             else:
-                print(f"  ❌ {header}: Missing")
+                print(f"  âŒ {header}: Missing")
                 all_present = False
         
         # Check for dangerous headers
@@ -71,14 +71,14 @@ def test_security_headers():
         
         for header in dangerous_headers:
             if header in response.headers:
-                print(f"  ⚠️ {header}: Present (should be removed)")
+                print(f"  âš ï¸ {header}: Present (should be removed)")
             else:
-                print(f"  ✅ {header}: Not present")
+                print(f"  âœ… {header}: Not present")
         
         return all_present
         
     except Exception as e:
-        print(f"❌ Security headers test failed: {e}")
+        print(f"âŒ Security headers test failed: {e}")
         return False
 
 
@@ -103,13 +103,13 @@ def test_admin_endpoint_protection():
             response = requests.get(url, timeout=5)
             
             if response.status_code == 403:
-                print(f"  ✅ {endpoint}: Protected (403 Forbidden)")
+                print(f"  âœ… {endpoint}: Protected (403 Forbidden)")
             elif response.status_code == 401:
-                print(f"  ✅ {endpoint}: Protected (401 Unauthorized)")
+                print(f"  âœ… {endpoint}: Protected (401 Unauthorized)")
             elif response.status_code == 404:
-                print(f"  ℹ️ {endpoint}: Not found (may not be implemented)")
+                print(f"  â„¹ï¸ {endpoint}: Not found (may not be implemented)")
             else:
-                print(f"  ❌ {endpoint}: Accessible without auth (Status: {response.status_code})")
+                print(f"  âŒ {endpoint}: Accessible without auth (Status: {response.status_code})")
             
             # Test with API key
             headers = {"X-API-Key": ADMIN_API_KEY}
@@ -119,7 +119,7 @@ def test_admin_endpoint_protection():
             # From blocked IP should still fail
             
         except requests.exceptions.RequestException as e:
-            print(f"  ⚠️ {endpoint}: Connection error")
+            print(f"  âš ï¸ {endpoint}: Connection error")
     
     return True
 
@@ -153,21 +153,21 @@ def test_sql_injection_protection():
             )
             
             if response.status_code >= 500:
-                print(f"  ❌ Payload caused error (500): {payload[:30]}...")
+                print(f"  âŒ Payload caused error (500): {payload[:30]}...")
                 protected = False
             elif response.status_code == 400:
-                print(f"  ✅ Payload blocked (400): {payload[:30]}...")
+                print(f"  âœ… Payload blocked (400): {payload[:30]}...")
             else:
                 # Check if payload was sanitized
                 if response.status_code == 200:
                     results = response.json()
                     if results.get("total", 0) == 0:
-                        print(f"  ✅ Payload sanitized (no results): {payload[:30]}...")
+                        print(f"  âœ… Payload sanitized (no results): {payload[:30]}...")
                     else:
-                        print(f"  ⚠️ Payload returned results: {payload[:30]}...")
+                        print(f"  âš ï¸ Payload returned results: {payload[:30]}...")
                         
         except Exception as e:
-            print(f"  ⚠️ Error testing payload: {payload[:30]}...")
+            print(f"  âš ï¸ Error testing payload: {payload[:30]}...")
     
     return protected
 
@@ -199,18 +199,18 @@ def test_xss_protection():
             )
             
             if response.status_code == 400:
-                print(f"  ✅ XSS payload blocked: {payload[:30]}...")
+                print(f"  âœ… XSS payload blocked: {payload[:30]}...")
             elif response.status_code == 200:
                 # Check if payload was escaped in response
                 response_text = response.text
                 if payload in response_text:
-                    print(f"  ❌ XSS payload not escaped: {payload[:30]}...")
+                    print(f"  âŒ XSS payload not escaped: {payload[:30]}...")
                     protected = False
                 else:
-                    print(f"  ✅ XSS payload escaped: {payload[:30]}...")
+                    print(f"  âœ… XSS payload escaped: {payload[:30]}...")
                     
         except Exception as e:
-            print(f"  ⚠️ Error testing XSS: {payload[:30]}...")
+            print(f"  âš ï¸ Error testing XSS: {payload[:30]}...")
     
     # Check CSP header
     try:
@@ -218,10 +218,10 @@ def test_xss_protection():
         csp = response.headers.get("Content-Security-Policy")
         
         if csp:
-            print(f"\n✅ CSP Header present:")
+            print(f"\nâœ… CSP Header present:")
             print(f"  {csp[:100]}...")
         else:
-            print("\n⚠️ CSP Header missing")
+            print("\nâš ï¸ CSP Header missing")
             protected = False
             
     except Exception:
@@ -250,7 +250,7 @@ def test_rate_limiting():
             if response.status_code == 429:
                 blocked_count += 1
                 if blocked_count == 1:
-                    print(f"  ✅ Rate limiting activated at request #{i+1}")
+                    print(f"  âœ… Rate limiting activated at request #{i+1}")
             elif response.status_code == 200:
                 success_count += 1
                 
@@ -264,10 +264,10 @@ def test_rate_limiting():
     print(f"  Results: {success_count} successful, {blocked_count} rate-limited")
     
     if blocked_count > 0:
-        print("  ✅ Rate limiting is working")
+        print("  âœ… Rate limiting is working")
         return True
     else:
-        print("  ⚠️ Rate limiting may not be configured")
+        print("  âš ï¸ Rate limiting may not be configured")
         return False
 
 
@@ -294,12 +294,12 @@ def test_authentication_security():
             )
             
             if response.status_code == 401:
-                print(f"  ✅ Invalid token rejected: {token[:20]}...")
+                print(f"  âœ… Invalid token rejected: {token[:20]}...")
             else:
-                print(f"  ❌ Invalid token accepted: {token[:20]}...")
+                print(f"  âŒ Invalid token accepted: {token[:20]}...")
                 
         except Exception:
-            print(f"  ⚠️ Error testing token: {token[:20]}...")
+            print(f"  âš ï¸ Error testing token: {token[:20]}...")
     
     # Test password policy
     weak_passwords = ["123456", "password", "12345678", "qwerty", "abc123"]
@@ -307,7 +307,7 @@ def test_authentication_security():
     print("\n  Testing password strength requirements:")
     for pwd in weak_passwords:
         # This would need an actual registration endpoint
-        print(f"    ⚠️ Password policy test requires registration endpoint")
+        print(f"    âš ï¸ Password policy test requires registration endpoint")
         break
     
     return True
@@ -334,15 +334,15 @@ def test_secure_database_connection():
     
     if "sslmode=require" in db_url or "sslmode=verify" in db_url:
         checks["SSL/TLS encryption"] = True
-        print("  ✅ SSL/TLS encryption: Enabled")
+        print("  âœ… SSL/TLS encryption: Enabled")
     else:
-        print("  ⚠️ SSL/TLS encryption: Not verified in connection string")
+        print("  âš ï¸ SSL/TLS encryption: Not verified in connection string")
     
     if readonly_url:
         checks["Read-only user for queries"] = True
-        print("  ✅ Read-only user: Configured")
+        print("  âœ… Read-only user: Configured")
     else:
-        print("  ⚠️ Read-only user: Not configured")
+        print("  âš ï¸ Read-only user: Not configured")
     
     # Test actual database security (would need DB access)
     print("\n  Note: Full database security requires direct DB access to verify")
@@ -371,11 +371,11 @@ def test_secret_management():
         if value:
             # Check if it looks like a placeholder
             if "CHANGE" in value or "YOUR" in value or "XXX" in value:
-                print(f"  ⚠️ {var}: Contains placeholder value")
+                print(f"  âš ï¸ {var}: Contains placeholder value")
             else:
-                print(f"  ✅ {var}: Configured (hidden)")
+                print(f"  âœ… {var}: Configured (hidden)")
         else:
-            print(f"  ⚠️ {var}: Not set")
+            print(f"  âš ï¸ {var}: Not set")
     
     # Check for AWS Parameter Store usage
     try:
@@ -391,14 +391,14 @@ def test_secret_management():
             param_count = len(params.get("Parameters", []))
             
             if param_count > 0:
-                print(f"\n  ✅ AWS Parameter Store: {param_count} parameters configured")
+                print(f"\n  âœ… AWS Parameter Store: {param_count} parameters configured")
             else:
-                print("\n  ⚠️ AWS Parameter Store: No parameters found")
+                print("\n  âš ï¸ AWS Parameter Store: No parameters found")
         else:
-            print("\n  ℹ️ AWS Parameter Store: Unable to check (AWS CLI not configured)")
+            print("\n  â„¹ï¸ AWS Parameter Store: Unable to check (AWS CLI not configured)")
             
     except Exception as e:
-        print(f"\n  ℹ️ AWS Parameter Store: Unable to check ({e})")
+        print(f"\n  â„¹ï¸ AWS Parameter Store: Unable to check ({e})")
     
     return True
 
@@ -422,14 +422,14 @@ def test_docker_security():
         if result.returncode == 0:
             user = result.stdout.strip()
             if user == "root":
-                print("  ⚠️ Container running as root user")
+                print("  âš ï¸ Container running as root user")
             else:
-                print(f"  ✅ Container running as non-root user: {user}")
+                print(f"  âœ… Container running as non-root user: {user}")
         else:
-            print("  ℹ️ Unable to check container user")
+            print("  â„¹ï¸ Unable to check container user")
             
     except Exception:
-        print("  ℹ️ Docker not available for testing")
+        print("  â„¹ï¸ Docker not available for testing")
     
     # Check Dockerfile best practices
     dockerfile_checks = {
@@ -439,23 +439,23 @@ def test_docker_security():
         "Minimal base image": False,
     }
     
-    if os.path.exists("Dockerfile.backend"):
-        with open("Dockerfile.backend", "r") as f:
+    if os.path.exists("Dockerfile.final"):
+        with open("Dockerfile.final", "r") as f:
             content = f.read()
             
             if "FROM" in content and content.count("FROM") > 1:
                 dockerfile_checks["Multi-stage build"] = True
-                print("  ✅ Multi-stage build: Used")
+                print("  âœ… Multi-stage build: Used")
             
             if "ENV" in content and any(s in content for s in ["PASSWORD", "SECRET", "KEY"]):
-                print("  ⚠️ Potential secrets in Dockerfile")
+                print("  âš ï¸ Potential secrets in Dockerfile")
             else:
                 dockerfile_checks["No secrets in image"] = True
-                print("  ✅ No secrets in Dockerfile")
+                print("  âœ… No secrets in Dockerfile")
             
             if "slim" in content or "alpine" in content:
                 dockerfile_checks["Minimal base image"] = True
-                print("  ✅ Minimal base image: Used")
+                print("  âœ… Minimal base image: Used")
     
     return True
 
@@ -488,7 +488,7 @@ def run_security_audit():
         try:
             results[test_name] = test_func()
         except Exception as e:
-            print(f"\n❌ {test_name} test failed with error: {e}")
+            print(f"\nâŒ {test_name} test failed with error: {e}")
             results[test_name] = False
     
     # Print summary
@@ -501,29 +501,29 @@ def run_security_audit():
     print("-" * 40)
     
     for test_name, result in results.items():
-        status = "✅ PASS" if result else "❌ FAIL"
+        status = "âœ… PASS" if result else "âŒ FAIL"
         print(f"{status}: {test_name}")
     
     # Overall assessment
     print("\n" + "="*70)
     
     if passed == total:
-        print("🎉 EXCELLENT: All security tests passed!")
+        print("ðŸŽ‰ EXCELLENT: All security tests passed!")
         print("The application meets security best practices.")
     elif passed >= total * 0.8:
-        print("✅ GOOD: Most security tests passed.")
+        print("âœ… GOOD: Most security tests passed.")
         print("Address the failed tests to improve security posture.")
     elif passed >= total * 0.6:
-        print("⚠️ FAIR: Several security issues detected.")
+        print("âš ï¸ FAIR: Several security issues detected.")
         print("Immediate attention required for failed tests.")
     else:
-        print("❌ CRITICAL: Major security issues detected!")
+        print("âŒ CRITICAL: Major security issues detected!")
         print("Do not deploy to production until issues are resolved.")
     
     print("="*70)
     
     # Recommendations
-    print("\n📋 RECOMMENDATIONS:")
+    print("\nðŸ“‹ RECOMMENDATIONS:")
     recommendations = [
         "1. Enable WAF rules on the load balancer",
         "2. Rotate all secrets every 90 days",

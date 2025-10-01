@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Comprehensive deployment verification and fix script
 """
@@ -154,7 +154,7 @@ def main():
             print("   docker run --env-file .env.prod -p 8001:8001 babyshield-backend:api-v1")
             print()
             print("4. Force new deployment with fixed Dockerfile:")
-            print("   docker build -f Dockerfile.backend.fixed -t babyshield-backend:api-v1 .")
+            print("   docker build -f Dockerfile.final -t babyshield-backend:api-v1 .")
             print("   aws ecr get-login-password | docker login --username AWS --password-stdin <ecr-url>")
             print("   docker tag babyshield-backend:api-v1 <ecr-url>/babyshield-backend:api-v1")
             print("   docker push <ecr-url>/babyshield-backend:api-v1")

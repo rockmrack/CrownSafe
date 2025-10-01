@@ -1,16 +1,16 @@
-# PowerShell Script - Deploy 100% Fix
+﻿# PowerShell Script - Deploy 100% Fix
 Write-Host "`n================================" -ForegroundColor Green
 Write-Host " DEPLOYING 100% FIXES" -ForegroundColor Green
 Write-Host "================================" -ForegroundColor Green
 
-Write-Host "`n✅ FIXES APPLIED:" -ForegroundColor Yellow
+Write-Host "`nâœ… FIXES APPLIED:" -ForegroundColor Yellow
 Write-Host "1. Barcode scan: Fixed database field references" -ForegroundColor Cyan
 Write-Host "2. OAuth Login: Works correctly (401 with test token is expected)" -ForegroundColor Cyan
 Write-Host "3. Search/Agencies: Works but slow (performance optimization needed later)" -ForegroundColor Cyan
 
 # Build and deploy
 Write-Host "`n[1/5] Building Docker image..." -ForegroundColor Yellow
-docker build -f Dockerfile.backend -t babyshield-backend:100-percent .
+docker build -f Dockerfile.final -t babyshield-backend:100-percent .
 if ($LASTEXITCODE -ne 0) { 
     Write-Host "Build failed!" -ForegroundColor Red
     exit 1
@@ -28,5 +28,5 @@ docker push 180703226577.dkr.ecr.eu-north-1.amazonaws.com/babyshield-backend:lat
 Write-Host "`n[5/5] Deploying to ECS..." -ForegroundColor Yellow
 aws ecs update-service --cluster babyshield-cluster --service babyshield-backend-task-service-0l41s2a9 --force-new-deployment --region eu-north-1 --output text
 
-Write-Host "`n✅ DEPLOYMENT COMPLETE!" -ForegroundColor Green
+Write-Host "`nâœ… DEPLOYMENT COMPLETE!" -ForegroundColor Green
 Write-Host "Wait 3-5 minutes for deployment to complete" -ForegroundColor Yellow

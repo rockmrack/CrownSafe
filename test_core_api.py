@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Core API test - verify critical functionality
 """
@@ -35,15 +35,15 @@ def test_critical_endpoints():
         
         if response.status_code == 200:
             data = response.json()
-            print(f"✅ WORKING! Status: {response.status_code}")
+            print(f"âœ… WORKING! Status: {response.status_code}")
             print(f"   Results found: {data.get('total_results', 0)}")
             if data.get('recalls'):
                 print(f"   First result: {data['recalls'][0].get('title', 'N/A')[:60]}...")
         else:
-            print(f"❌ FAILED! Status: {response.status_code}")
+            print(f"âŒ FAILED! Status: {response.status_code}")
             print(f"   Error: {response.text[:200]}")
     except Exception as e:
-        print(f"❌ ERROR: {str(e)[:100]}")
+        print(f"âŒ ERROR: {str(e)[:100]}")
     
     # 2. Test database search capability
     print("\n2. Testing Database Search Capability:")
@@ -66,12 +66,12 @@ def test_critical_endpoints():
             if response.status_code == 200:
                 data = response.json()
                 results = data.get('total_results', 0)
-                print(f"✅ Search '{search_params['product']}': {results} results")
+                print(f"âœ… Search '{search_params['product']}': {results} results")
                 working += 1
             else:
-                print(f"❌ Search '{search_params['product']}': Failed ({response.status_code})")
+                print(f"âŒ Search '{search_params['product']}': Failed ({response.status_code})")
         except:
-            print(f"❌ Search '{search_params['product']}': Error")
+            print(f"âŒ Search '{search_params['product']}': Error")
     
     print(f"\nSearch Success Rate: {working}/{len(test_searches)}")
     
@@ -83,7 +83,7 @@ def test_critical_endpoints():
         if response.status_code == 200:
             openapi = response.json()
             paths = list(openapi.get('paths', {}).keys())
-            print(f"✅ Found {len(paths)} registered routes:")
+            print(f"âœ… Found {len(paths)} registered routes:")
             
             # Check for new task routes
             task_routes = {
@@ -98,11 +98,11 @@ def test_critical_endpoints():
             
             for route, task in task_routes.items():
                 if route in paths:
-                    print(f"  ✅ {task}: {route}")
+                    print(f"  âœ… {task}: {route}")
                 else:
-                    print(f"  ❌ {task}: {route} NOT FOUND")
+                    print(f"  âŒ {task}: {route} NOT FOUND")
     except:
-        print("❌ Could not fetch OpenAPI spec")
+        print("âŒ Could not fetch OpenAPI spec")
     
     # 4. Test if new routers are included
     print("\n4. Checking Task Implementation Status:")
@@ -148,12 +148,12 @@ def test_critical_endpoints():
                 r = requests.delete(f"{API_URL}{path}", timeout=2)
             
             if r.status_code != 404:
-                print(f"  ✅ {description}")
+                print(f"  âœ… {description}")
                 implemented += 1
             else:
-                print(f"  ❌ {description} - Not deployed")
+                print(f"  âŒ {description} - Not deployed")
         except:
-            print(f"  ❌ {description} - Error")
+            print(f"  âŒ {description} - Error")
     
     print(f"\nTasks Implemented: {implemented}/{len(endpoints_to_check)}")
     
@@ -164,7 +164,7 @@ def test_critical_endpoints():
     
     if implemented == 0:
         print("""
-❌ ISSUE: New features from Tasks 11-22 are NOT deployed
+âŒ ISSUE: New features from Tasks 11-22 are NOT deployed
 
 TO FIX:
 1. Ensure api/main_babyshield.py includes all routers:
@@ -178,7 +178,7 @@ TO FIX:
    - feedback_endpoints (Task 20)
 
 2. Rebuild Docker image:
-   docker build -f Dockerfile.backend -t babyshield-backend:latest .
+   docker build -f Dockerfile.final -t babyshield-backend:latest .
 
 3. Push and deploy:
    docker push [YOUR_REGISTRY]/babyshield-backend:latest
@@ -188,10 +188,10 @@ TO FIX:
    alembic upgrade head
         """)
     elif implemented < 10:
-        print(f"⚠️ PARTIAL: Only {implemented} new endpoints deployed")
+        print(f"âš ï¸ PARTIAL: Only {implemented} new endpoints deployed")
         print("Some routers may be missing from api/main_babyshield.py")
     else:
-        print(f"✅ SUCCESS: {implemented} new endpoints are working!")
+        print(f"âœ… SUCCESS: {implemented} new endpoints are working!")
 
 
 if __name__ == "__main__":

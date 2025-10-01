@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Emergency deployment fix - creates missing endpoint files that main_babyshield.py expects
 """
@@ -6,7 +6,7 @@ Emergency deployment fix - creates missing endpoint files that main_babyshield.p
 import os
 import sys
 
-print("🔧 BabyShield Deployment Fixer")
+print("ðŸ”§ BabyShield Deployment Fixer")
 print("=" * 60)
 
 files_to_create = {
@@ -275,28 +275,28 @@ for filepath, content in files_to_create.items():
         if not os.path.exists(filepath):
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.write(content)
-            print(f"✅ Created: {filepath}")
+            print(f"âœ… Created: {filepath}")
             created += 1
         else:
-            print(f"⏭️  Exists: {filepath}")
+            print(f"â­ï¸  Exists: {filepath}")
             skipped += 1
     except Exception as e:
-        print(f"❌ Error creating {filepath}: {e}")
+        print(f"âŒ Error creating {filepath}: {e}")
         errors += 1
 
 print("\n" + "=" * 60)
-print(f"📊 Summary:")
-print(f"  ✅ Created: {created} files")
-print(f"  ⏭️  Skipped: {skipped} files")
-print(f"  ❌ Errors: {errors}")
+print(f"ðŸ“Š Summary:")
+print(f"  âœ… Created: {created} files")
+print(f"  â­ï¸  Skipped: {skipped} files")
+print(f"  âŒ Errors: {errors}")
 
 if errors == 0:
-    print("\n🎉 Success! All missing files have been created.")
-    print("\n📦 Next steps:")
+    print("\nðŸŽ‰ Success! All missing files have been created.")
+    print("\nðŸ“¦ Next steps:")
     print("1. Test locally:")
     print("   python api/main_babyshield.py")
     print("\n2. Build Docker image:")
-    print("   docker build --no-cache -f Dockerfile.backend -t babyshield-backend:api-v1 .")
+    print("   docker build --no-cache -f Dockerfile.final -t babyshield-backend:api-v1 .")
     print("\n3. Test the container:")
     print("   docker run -p 8001:8001 babyshield-backend:api-v1")
     print("\n4. Push to ECR and deploy:")
@@ -305,5 +305,5 @@ if errors == 0:
     print("   docker push 180703226577.dkr.ecr.eu-north-1.amazonaws.com/babyshield-backend:api-v1")
     print("   aws ecs update-service --cluster your-cluster --service your-service --force-new-deployment")
 else:
-    print("\n⚠️  Some errors occurred. Please check the output above.")
+    print("\nâš ï¸  Some errors occurred. Please check the output above.")
     sys.exit(1)

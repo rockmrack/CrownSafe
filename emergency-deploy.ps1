@@ -1,14 +1,14 @@
-# Emergency Deploy Script - Forces fresh build and deployment
+﻿# Emergency Deploy Script - Forces fresh build and deployment
 Write-Host "EMERGENCY DEPLOYMENT SCRIPT" -ForegroundColor Red
 Write-Host "===========================" -ForegroundColor Red
 
 # Build with NO CACHE to get latest code
 Write-Host "`nStep 1: Building fresh image (NO CACHE)..." -ForegroundColor Yellow
-docker build --no-cache -f Dockerfile.backend.fixed -t babyshield-backend:latest . 
+docker build --no-cache -f Dockerfile.final -t babyshield-backend:latest . 
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Build failed! Trying with regular Dockerfile..." -ForegroundColor Red
-    docker build --no-cache -f Dockerfile.backend -t babyshield-backend:latest .
+    docker build --no-cache -f Dockerfile.final -t babyshield-backend:latest .
 }
 
 # Login to ECR
@@ -27,7 +27,7 @@ docker push 180703226577.dkr.ecr.eu-north-1.amazonaws.com/babyshield-backend:lat
 Write-Host "`nStep 5: Forcing ECS deployment..." -ForegroundColor Yellow
 aws ecs update-service --cluster babyshield-cluster --service babyshield-backend --force-new-deployment --region eu-north-1
 
-Write-Host "`n✅ DEPLOYMENT COMPLETE!" -ForegroundColor Green
+Write-Host "`nâœ… DEPLOYMENT COMPLETE!" -ForegroundColor Green
 Write-Host "Wait 2-3 minutes for ECS to update, then test:" -ForegroundColor Cyan
 Write-Host "curl https://babyshield.cureviax.ai/api/v1/healthz" -ForegroundColor White
 Write-Host "curl -X POST https://babyshield.cureviax.ai/api/v1/search/advanced -H 'Content-Type: application/json' -d '{`"product`":`"test`"}'" -ForegroundColor White

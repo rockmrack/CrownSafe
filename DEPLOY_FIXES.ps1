@@ -1,4 +1,4 @@
-# PowerShell Script to Deploy All Fixes
+﻿# PowerShell Script to Deploy All Fixes
 Write-Host "`n================================" -ForegroundColor Green
 Write-Host " DEPLOYING ALL FIXES" -ForegroundColor Green
 Write-Host "================================" -ForegroundColor Green
@@ -11,12 +11,12 @@ Write-Host ""
 
 # 1. Build new image
 Write-Host "[1/5] Building Docker image with fixes..." -ForegroundColor Yellow
-docker build -f Dockerfile.backend -t babyshield-backend:final-fix .
+docker build -f Dockerfile.final -t babyshield-backend:final-fix .
 if ($LASTEXITCODE -ne 0) { 
     Write-Host "Build failed!" -ForegroundColor Red
     exit 1
 }
-Write-Host "✅ Build complete" -ForegroundColor Green
+Write-Host "âœ… Build complete" -ForegroundColor Green
 
 # 2. Login to ECR
 Write-Host "`n[2/5] Logging into AWS ECR..." -ForegroundColor Yellow
@@ -25,12 +25,12 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "Login failed!" -ForegroundColor Red
     exit 1
 }
-Write-Host "✅ Logged in" -ForegroundColor Green
+Write-Host "âœ… Logged in" -ForegroundColor Green
 
 # 3. Tag image
 Write-Host "`n[3/5] Tagging image..." -ForegroundColor Yellow
 docker tag babyshield-backend:final-fix 180703226577.dkr.ecr.eu-north-1.amazonaws.com/babyshield-backend:latest
-Write-Host "✅ Tagged" -ForegroundColor Green
+Write-Host "âœ… Tagged" -ForegroundColor Green
 
 # 4. Push to ECR
 Write-Host "`n[4/5] Pushing to ECR..." -ForegroundColor Yellow
@@ -39,7 +39,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "Push failed!" -ForegroundColor Red
     exit 1
 }
-Write-Host "✅ Pushed" -ForegroundColor Green
+Write-Host "âœ… Pushed" -ForegroundColor Green
 
 # 5. Deploy to ECS
 Write-Host "`n[5/5] Deploying to ECS..." -ForegroundColor Yellow
@@ -48,7 +48,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "Deployment failed!" -ForegroundColor Red
     exit 1
 }
-Write-Host "✅ Deployment started" -ForegroundColor Green
+Write-Host "âœ… Deployment started" -ForegroundColor Green
 
 Write-Host "`n================================" -ForegroundColor Green
 Write-Host " DEPLOYMENT COMPLETE!" -ForegroundColor Green
