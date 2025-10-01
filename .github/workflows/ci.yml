@@ -42,14 +42,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ✅ use the secrets you created
       - name: Verify secrets present
         shell: pwsh
         run: |
           if (-not "${{ secrets.SMOKE_TEST_EMAIL }}") { Write-Error "Missing SMOKE_TEST_EMAIL"; exit 1 }
           if (-not "${{ secrets.SMOKE_TEST_PASSWORD }}") { Write-Error "Missing SMOKE_TEST_PASSWORD"; exit 1 }
 
-      # ✅ correct login endpoint + robust token extraction
       - name: Get fresh access token
         shell: pwsh
         run: |
@@ -66,13 +64,14 @@ jobs:
         run: |
           ./scripts/smoke_account_deletion.ps1 -BASE "$env:BASE" -TOKEN_FRESH "$env:TOKEN_FRESH"
 
-      # ✅ Windows-safe Slack notify (optional)
+      # Slack notification (optional; safe in reusable workflows)
       - name: Notify Slack on failure
-        if: ${{ failure() && secrets.SLACK_WEBHOOK_URL != '' }}
+        if: ${{ failure() }}
         shell: pwsh
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
+          if (-not "$env:SLACK_WEBHOOK_URL") { exit 0 }
           $payload = @{ text = ":rotating_light: Smoke failed (Account Deletion) — Repo `${{ github.repository }}`, Run `${{ github.run_id }}`, Branch `${{ github.ref_name }}`, Base `$env:BASE" } | ConvertTo-Json -Compress
           Invoke-RestMethod -Uri $env:SLACK_WEBHOOK_URL -Method Post -ContentType 'application/json' -Body $payload
 
