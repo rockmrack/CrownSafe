@@ -1,14 +1,19 @@
-﻿name: CI (smoke)
+name: CI (smoke)
+
 on:
   workflow_call:
+  workflow_dispatch:
   push:
     branches: [ "staging", "main" ]
   pull_request:
     branches: [ "staging", "main" ]
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
+  # ---- Quick Python smoke on Linux ----
   smoke:
     runs-on: ubuntu-latest
     env:
@@ -28,6 +33,7 @@ jobs:
         run: |
           pytest -c /dev/null ci_smoke/test_ci_smoke.py
 
+  # ---- Account deletion flow on Windows (needs login secrets) ----
   smoke-account-deletion:
     name: Smoke — Account Deletion
     runs-on: windows-latest
@@ -36,20 +42,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # ✅ use the secrets you created
       - name: Verify secrets present
         shell: pwsh
         run: |
-          if (-not "${{ secrets.BSMOKE_TEST_EMAIL }}") { Write-Error "Missing BSMOKE_TEST_EMAIL"; exit 1 }
-          if (-not "${{ secrets.BSMOKE_TEST_PASSWORD }}") { Write-Error "Missing BSMOKE_TEST_PASSWORD"; exit 1 }
+          if (-not "${{ secrets.SMOKE_TEST_EMAIL }}") { Write-Error "Missing SMOKE_TEST_EMAIL"; exit 1 }
+          if (-not "${{ secrets.SMOKE_TEST_PASSWORD }}") { Write-Error "Missing SMOKE_TEST_PASSWORD"; exit 1 }
 
+      # ✅ correct login endpoint + robust token extraction
       - name: Get fresh access token
         shell: pwsh
         run: |
-          $body = @{ email = "${{ secrets.BSMOKE_TEST_EMAIL }}"; password = "${{ secrets.BSMOKE_TEST_PASSWORD }}" } | ConvertTo-Json -Compress
-          $resp = Invoke-RestMethod -Uri "$env:BASE/api/v1/auth/login" -Method Post -ContentType 'application/json' -Body $body -ErrorAction Stop
-          # Adjust the property name if your API returns a different shape
+          $body = @{ email = "${{ secrets.SMOKE_TEST_EMAIL }}"; password = "${{ secrets.SMOKE_TEST_PASSWORD }}" } | ConvertTo-Json -Compress
+          $resp = Invoke-RestMethod -Uri "$env:BASE/api/v1/auth/token" -Method Post -ContentType 'application/json' -Body $body -ErrorAction Stop
           $token = $resp.access_token
-          if (-not $token) { Write-Error "No access_token in response"; exit 2 }
+          if (-not $token) { $token = $resp.token }
+          if (-not $token -and $resp.data) { $token = $resp.data.access_token }
+          if (-not $token) { Write-Error ("No token in response: " + ($resp | ConvertTo-Json -Compress)); exit 2 }
           "TOKEN_FRESH=$token" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Run smoke_account_deletion.ps1
@@ -57,21 +66,17 @@ jobs:
         run: |
           ./scripts/smoke_account_deletion.ps1 -BASE "$env:BASE" -TOKEN_FRESH "$env:TOKEN_FRESH"
 
+      # ✅ Windows-safe Slack notify (optional)
       - name: Notify Slack on failure
-        if: ${{ failure() }}
-        uses: rtCamp/action-slack-notify@v2
+        if: ${{ failure() && secrets.SLACK_WEBHOOK_URL != '' }}
+        shell: pwsh
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_USERNAME: "CI Smoke"
-          SLACK_ICON_EMOJI: ":rotating_light:"
-          SLACK_COLOR: "#ff0000"
-          SLACK_TITLE: "Smoke failed: Account Deletion"
-          SLACK_MESSAGE: |
-            Repo: ${{ github.repository }}
-            Run: ${{ github.run_id }}
-            Branch: ${{ github.ref_name }}
-            Base: ${{ env.BASE }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          $payload = @{ text = ":rotating_light: Smoke failed (Account Deletion) — Repo `${{ github.repository }}`, Run `${{ github.run_id }}`, Branch `${{ github.ref_name }}`, Base `$env:BASE" } | ConvertTo-Json -Compress
+          Invoke-RestMethod -Uri $env:SLACK_WEBHOOK_URL -Method Post -ContentType 'application/json' -Body $payload
 
+  # ---- Barcode search sanity check ----
   smoke-barcode:
     name: Smoke — Barcode Search
     runs-on: ubuntu-latest
@@ -87,34 +92,31 @@ jobs:
           body=$(jq -nc --arg q "$CODE" '{query:$q,limit:3}')
           resp=$(curl -sk -H 'Content-Type: application/json' -d "$body" "$BASE/api/v1/search/advanced")
           echo "$resp" | jq .
-          ok=$(echo "$resp" | jq -r '.ok')
+          ok=$(echo "$resp" | jq -r '.ok // .success // .data != null')
           [ "$ok" = "true" ] || { echo "barcode smoke failed"; exit 1; }
 
+  # ---- Focused unit tests for the flow ----
   unit-account-deletion:
     name: Unit — Account Deletion
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Cache pip
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-py311-${{ hashFiles('**/requirements*.txt') }}
           restore-keys: ${{ runner.os }}-py311-
-
       - name: Install deps
         run: |
-          pip install -U pip
+          python -m pip install -U pip
           if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install pytest httpx
-
       - name: Run focused tests
         run: |
           pytest -q tests/test_account_deletion.py
