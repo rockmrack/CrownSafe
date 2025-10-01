@@ -109,4 +109,5 @@ __pycache__/
 *.pyc
 
 # do not publish local pins
-requirements-local.txt
+requirements-local.txt.venv*/
+venv/
