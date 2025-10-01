@@ -1,17 +1,17 @@
-# ✅ Docker Deployment Verification for BabyShield
+﻿# âœ… Docker Deployment Verification for BabyShield
 
-## Your Commands Are CORRECT! ✅
+## Your Commands Are CORRECT! âœ…
 
 ```bash
-docker build --no-cache -f Dockerfile.backend -t babyshield-backend:api-v1 .
+docker build --no-cache -f Dockerfile.final -t babyshield-backend:api-v1 .
 aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 180703226577.dkr.ecr.eu-north-1.amazonaws.com
 docker tag babyshield-backend:api-v1 180703226577.dkr.ecr.eu-north-1.amazonaws.com/babyshield-backend:api-v1
 docker push 180703226577.dkr.ecr.eu-north-1.amazonaws.com/babyshield-backend:api-v1
 ```
 
-## ⚠️ BUT FIRST - Update Your Dockerfile!
+## âš ï¸ BUT FIRST - Update Your Dockerfile!
 
-Your current `Dockerfile.backend` needs system dependencies for psycopg2. Update it:
+Your current `Dockerfile.final` needs system dependencies for psycopg2. Update it:
 
 ```dockerfile
 # Use Python 3.11 slim as the base image
@@ -59,7 +59,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 CMD ["uvicorn", "api.main_babyshield:app", "--host", "0.0.0.0", "--port", "8001"]
 ```
 
-## 📋 Pre-Deployment Checklist
+## ðŸ“‹ Pre-Deployment Checklist
 
 ### 1. Files to Verify Are Included
 ```bash
@@ -74,7 +74,7 @@ ls -la core_infra/upsert_handler.py
 ### 2. Test Build Locally First
 ```bash
 # Build locally to catch errors
-docker build --no-cache -f Dockerfile.backend -t babyshield-backend:test .
+docker build --no-cache -f Dockerfile.final -t babyshield-backend:test .
 
 # Run locally to test
 docker run -p 8001:8001 \
@@ -99,7 +99,7 @@ Make sure your ECS task definition has:
 }
 ```
 
-## 🚀 Complete Deployment Process
+## ðŸš€ Complete Deployment Process
 
 ### Step 1: Update Dockerfile (if needed)
 ```bash
@@ -109,7 +109,7 @@ Make sure your ECS task definition has:
 ### Step 2: Build & Push (Your Commands)
 ```bash
 # 1. Build with no cache
-docker build --no-cache -f Dockerfile.backend -t babyshield-backend:api-v1 .
+docker build --no-cache -f Dockerfile.final -t babyshield-backend:api-v1 .
 
 # 2. Login to ECR
 aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 180703226577.dkr.ecr.eu-north-1.amazonaws.com
@@ -162,7 +162,7 @@ curl -X POST https://babyshield.cureviax.ai/api/v1/search/advanced \
   -d '{"product": "pacifier", "limit": 5}'
 ```
 
-## 🔍 Troubleshooting
+## ðŸ” Troubleshooting
 
 ### If endpoints still return 404:
 1. **Check CloudWatch logs**:
@@ -186,7 +186,7 @@ aws elbv2 describe-target-health \
   --region eu-north-1
 ```
 
-## ✅ Expected Results After Deployment
+## âœ… Expected Results After Deployment
 
 1. **Health Check**: 
    ```json
@@ -207,13 +207,13 @@ aws elbv2 describe-target-health \
    }
    ```
 
-## 🎯 Summary
+## ðŸŽ¯ Summary
 
 Your Docker commands are **PERFECT**! Just:
-1. ✅ Update Dockerfile to include system dependencies
-2. ✅ Build and push (your commands)
-3. ✅ Update ECS service
-4. ✅ Run database migrations
-5. ✅ Test the endpoints
+1. âœ… Update Dockerfile to include system dependencies
+2. âœ… Build and push (your commands)
+3. âœ… Update ECS service
+4. âœ… Run database migrations
+5. âœ… Test the endpoints
 
-The deployment will be successful! 🚀
+The deployment will be successful! ðŸš€
