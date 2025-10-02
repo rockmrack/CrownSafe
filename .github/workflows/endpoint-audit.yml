@@ -1,0 +1,99 @@
+﻿name: Endpoint Audit (nightly)
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # 03:00 UTC nightly
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run endpoint audit
+        shell: pwsh
+        env:
+          BASE: https://babyshield.cureviax.ai
+          EMAIL: ${{ secrets.SMOKE_TEST_EMAIL }}
+          PASS:  ${{ secrets.SMOKE_TEST_PASSWORD }}
+        run: |
+          # 1) Pull OpenAPI and list endpoints
+          $openapi = Invoke-RestMethod -Uri "$env:BASE/openapi.json" -Method Get
+          $rows = foreach ($p in $openapi.paths.PSObject.Properties) {
+            $path = $p.Name
+            $methods = $p.Value.PSObject.Properties.Name
+            foreach ($m in $methods) { "{0}`t{1}" -f $m.ToUpper(), $path }
+          }
+          $rows | Sort-Object | Set-Content endpoints.tsv
+
+          # 2) Public GET probe (no path params)
+          $targets = Get-Content endpoints.tsv |
+            ForEach-Object { ($_ -split "`t") } |
+            Where-Object { $_[0] -eq 'GET' -and $_[1] -notmatch '{' } |
+            ForEach-Object { @{ Method='GET'; Path=$_[1] } }
+
+          $pub = foreach ($t in $targets) {
+            $url = "$env:BASE$($t.Path)"
+            $sw = [System.Diagnostics.Stopwatch]::StartNew()
+            try {
+              $resp = Invoke-WebRequest -Uri $url -Method Get -Headers @{ Accept='application/json' } -ErrorAction Stop
+              $code = [int]$resp.StatusCode; $err=''
+            } catch {
+              $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { -1 }
+              $err = $_.Exception.Message
+            }
+            $sw.Stop()
+            [pscustomobject]@{ Method='GET'; Path=$t.Path; Url=$url; Status=$code; Ms=[int]$sw.ElapsedMilliseconds; Error=$err }
+          }
+          $pub | Export-Csv endpoints_report.csv -NoTypeInformation
+
+          # 3) Auth and retry GETs that returned 401/403
+          $form   = @{ username=$env:EMAIL; password=$env:PASS; grant_type='password' }
+          $login  = Invoke-RestMethod -Uri "$env:BASE/api/v1/auth/token" -Method Post -ContentType 'application/x-www-form-urlencoded' -Body $form
+          $token  = $login.access_token
+          $hdrs   = @{ Authorization = "Bearer $token"; Accept='application/json' }
+          $locked = (Import-Csv endpoints_report.csv) | Where-Object { [int]$_.Status -in 401,403 } | Select-Object -Expand Path -Unique
+
+          $auth = foreach ($path in $locked) {
+            $url = "$env:BASE$path"
+            $sw = [System.Diagnostics.Stopwatch]::StartNew()
+            try {
+              $resp = Invoke-WebRequest -Uri $url -Method Get -Headers $hdrs -ErrorAction Stop
+              $code = [int]$resp.StatusCode; $err=''
+            } catch {
+              $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { -1 }
+              $err = $_.Exception.Message
+            }
+            $sw.Stop()
+            [pscustomobject]@{ Method='GET'; Path=$path; Url=$url; StatusWithAuth=$code; Ms=[int]$sw.ElapsedMilliseconds; Error=$err }
+          }
+          $auth | Export-Csv endpoints_auth_report.csv -NoTypeInformation
+
+          # 4) Build summary
+          $pub = Import-Csv endpoints_report.csv
+          $authIdx = @{}
+          if (Test-Path endpoints_auth_report.csv) {
+            foreach ($a in (Import-Csv endpoints_auth_report.csv)) { $authIdx[$a.Path] = $a }
+          }
+          $summary = foreach ($r in $pub) {
+            $s=[int]$r.Status; $ar=$authIdx[$r.Path]; $sa= if ($ar) { [int]$ar.StatusWithAuth } else { $null }
+            $pubOK=($s -ge 200 -and $s -lt 300); $authOK=($sa -ge 200 -and $sa -lt 300)
+            $verdict = if ($pubOK) { 'Public OK' } elseif ($authOK) { 'Auth OK' } else { 'Needs attention' }
+            [pscustomobject]@{
+              Method=$r.Method; Path=$r.Path; PublicStatus=$s; AuthStatus=(if ($ar) { $sa } else { '' })
+              Verdict=$verdict; PublicMs=$r.Ms; AuthMs=(if ($ar) { $ar.Ms } else { '' })
+              Note=(if ($verdict -eq 'Needs attention') { $r.Error } else { '' })
+            }
+          }
+          $summary | Export-Csv endpoints_summary.csv -NoTypeInformation
+
+      - name: Upload audit artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: endpoint-audit
+          path: |
+            endpoints.tsv
+            endpoints_report.csv
+            endpoints_auth_report.csv
+            endpoints_summary.csv
