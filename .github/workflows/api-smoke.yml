@@ -1,0 +1,30 @@
+name: API Smoke — Endpoints CSV
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "staging" ]
+  pull_request:
+    branches: [ "main", "staging" ]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run endpoint smoke
+        shell: pwsh
+        env:
+          SMOKE_TEST_EMAIL: ${{ secrets.SMOKE_TEST_EMAIL }}
+          SMOKE_TEST_PASSWORD: ${{ secrets.SMOKE_TEST_PASSWORD }}
+        run: |
+          ./scripts/smoke_endpoints.ps1 -BASE "https://babyshield.cureviax.ai" -Csv "smoke/endpoints.smoke.csv"
+
+      - name: Upload smoke results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: endpoint-smoke-results
+          path: smoke/endpoints_smoke_results.csv
+
