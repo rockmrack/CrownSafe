@@ -37,11 +37,11 @@ jobs:
             -d "username=${EMAIL}&password=${PASS}&grant_type=password" \
             "$BASE/api/v1/auth/token")
           token=$(python - <<'PY' <<<"$resp"
-import sys, json
-d=json.loads(sys.stdin.read())
-print(d.get("access_token") or d.get("token") or (d.get("data") or {}).get("access_token",""))
-PY
-)
+          import sys, json
+          d=json.loads(sys.stdin.read())
+          print(d.get("access_token") or d.get("token") or (d.get("data") or {}).get("access_token",""))
+          PY
+          )
           if [ -z "$token" ]; then echo "No token in response: $resp"; exit 2; fi
           echo "TOKEN=$token" >> "$GITHUB_OUTPUT"
 

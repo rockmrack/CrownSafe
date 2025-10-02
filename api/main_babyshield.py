@@ -205,6 +205,55 @@ app = FastAPI(
     generate_unique_id_function=generate_unique_operation_id
 )
 
+# Custom OpenAPI schema to fix validation errors
+def custom_openapi():
+    """
+    Override default OpenAPI schema to ensure all referenced components exist.
+    Fixes ErrorResponse schema reference that was causing validation failures.
+    """
+    if app.openapi_schema:
+        return app.openapi_schema
+    
+    from fastapi.openapi.utils import get_openapi
+    
+    schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description or "BabyShield API - Production-ready safety check system",
+        routes=app.routes,
+    )
+    
+    # Ensure components.schemas exists
+    schema.setdefault("components", {}).setdefault("schemas", {})
+    
+    # Add ErrorResponse schema (referenced in responses but was missing)
+    schema["components"]["schemas"]["ErrorResponse"] = {
+        "title": "ErrorResponse",
+        "type": "object",
+        "properties": {
+            "message": {"type": "string", "description": "Error message"},
+            "status": {"type": "integer", "nullable": True, "description": "HTTP status code"},
+            "detail": {
+                "anyOf": [
+                    {"type": "string"},
+                    {"type": "object"},
+                    {"type": "array"}
+                ],
+                "nullable": True,
+                "description": "Detailed error information"
+            },
+            "error": {"type": "boolean", "description": "Error flag"},
+            "path": {"type": "string", "nullable": True, "description": "Request path"}
+        },
+        "required": ["message"]
+    }
+    
+    app.openapi_schema = schema
+    return app.openapi_schema
+
+# Apply custom OpenAPI schema
+app.openapi = custom_openapi
+
 # CRITICAL: Health check FIRST - Raw route to bypass ALL FastAPI processing
 from starlette.responses import JSONResponse as StarletteJSONResponse
 from starlette.routing import Route
