@@ -1,0 +1,86 @@
+# Cursor AI Rules for BabyShield Backend
+
+## Core Principles
+
+1. NEVER push directly to `main` branch
+2. ALWAYS work in feature branches (feat/, fix/, chore/, docs/, test/)
+3. ALWAYS wait for green CI checks before suggesting merge
+4. Use conventional commits: feat:, fix:, chore:, docs:, refactor:, test:
+
+## Required CI Checks (must be GREEN)
+
+- Smoke — Account Deletion
+- Smoke — Barcode Search
+- Unit — Account Deletion
+
+## Workflow
+
+1. Start: `git checkout -b feat/<topic>` from latest main
+2. Make focused, minimal changes
+3. Commit: `git commit -m "feat: <description>"`
+4. Push: `git push -u origin feat/<topic>`
+5. Create PR to main (base: main ← compare: feat/<topic>)
+6. Wait for CI + review
+7. Merge: Squash and Merge only
+
+## NEVER Commit
+
+- .venv/, venv/, .venv310/
+- .env, .env.local
+- node_modules/
+- __pycache__/, *.pyc
+- .cursor/, .idea/
+- td.json, td2.json
+- Secrets, API keys, tokens
+- Build artifacts, logs
+
+## File Changes
+
+- Explain changes before making them
+- Show diffs for review
+- One logical change per commit
+- Test locally before pushing
+
+## Deployment
+
+- Production Dockerfile: `Dockerfile.final`
+- Deployment script: `.\deploy_prod_digest_pinned.ps1`
+- Verification: `.\verify_deployment.ps1`
+- Always use digest-pinned images (no :latest)
+
+## Branch Updates
+
+```bash
+git fetch origin
+git rebase origin/main
+git push --force-with-lease
+```
+
+## Secrets
+
+- Use GitHub Actions secrets for CI
+- NEVER print secrets in logs
+- NEVER commit credentials
+
+## Docker Standards
+
+- Local dev: `Dockerfile` (via docker-compose)
+- Production: `Dockerfile.final` (AWS ECS)
+- Tag format: `production-fixed-YYYYMMDD`
+
+## Key Files (Don't Break These)
+
+- `core_infra/` - Core infrastructure code
+- `api/` - API endpoints
+- `tests/conftest.py` - Pytest fixtures
+- `requirements.txt` - Python dependencies
+- `docker-compose.yml` - Local development
+- `DEPLOYMENT_PROCEDURES.md` - Deployment guide
+
+## When in Doubt
+
+- Ask before making changes
+- Prefer smaller PRs over large ones
+- Keep main branch stable
+- Document significant changes
+
