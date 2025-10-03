@@ -19,8 +19,8 @@ import uuid
 import boto3
 
 from core_infra.database import get_db
-from models.share_token import ShareToken
-from models.scan_history import ScanHistory, SafetyReport
+from db.models.share_token import ShareToken
+from db.models.scan_history import ScanHistory, SafetyReport
 from api.schemas.common import ApiResponse
 
 logger = logging.getLogger(__name__)

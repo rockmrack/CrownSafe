@@ -16,7 +16,7 @@ project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
 from core_infra.database import get_db_session
-from models.product_ingredients import ProductIngredient, IngredientSafety, ProductNutrition
+from db.models.product_ingredients import ProductIngredient, IngredientSafety, ProductNutrition
 
 
 # Comprehensive ingredient safety data based on medical sources
@@ -327,7 +327,7 @@ def create_database_tables():
     from core_infra.database import engine, Base
     
     # Import models to register them
-    from models.product_ingredients import ProductIngredient, IngredientSafety, ProductNutrition
+    from db.models.product_ingredients import ProductIngredient, IngredientSafety, ProductNutrition
     
     # Create tables
     Base.metadata.create_all(bind=engine)

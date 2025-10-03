@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 from api.security.admin_auth import require_admin
 from api.errors import APIError
 from core_infra.database import get_db
-from models.privacy_request import PrivacyRequest
+from db.models.privacy_request import PrivacyRequest
 from api.utils.privacy import mask_email, PrivacyDataExporter
 
 logger = logging.getLogger(__name__)

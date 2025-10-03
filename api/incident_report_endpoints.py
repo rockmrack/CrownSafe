@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, and_, or_
 
 from core_infra.database import get_db, User
-from models.incident_report import IncidentReport, IncidentCluster, IncidentType, SeverityLevel, IncidentStatus, AgencyNotification
+from db.models.incident_report import IncidentReport, IncidentCluster, IncidentType, SeverityLevel, IncidentStatus, AgencyNotification
 from core_infra.s3_uploads import upload_file
 from api.schemas.common import ApiResponse
 from api.notification_endpoints import send_push_notification

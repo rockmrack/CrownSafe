@@ -166,7 +166,7 @@ def validate_privacy_setup():
     
     # Check models
     try:
-        from models.privacy_request import PrivacyRequest
+        from db.models.privacy_request import PrivacyRequest
     except ImportError:
         errors.append("PrivacyRequest model not importable")
     

@@ -13,7 +13,7 @@ import uuid
 import logging
 
 from core_infra.database import get_db, User, RecallDB
-from models.scan_history import ScanHistory, SafetyReport
+from db.models.scan_history import ScanHistory, SafetyReport
 from agents.reporting.report_builder_agent.agent_logic import ReportBuilderAgentLogic
 from api.schemas.common import ApiResponse
 

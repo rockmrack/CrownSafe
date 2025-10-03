@@ -15,7 +15,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from core_infra.database import get_db_session
-from models.product_ingredients import ProductIngredient, IngredientSafety
+from db.models.product_ingredients import ProductIngredient, IngredientSafety
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import IntegrityError
 
@@ -315,7 +315,7 @@ def main():
     
     try:
         # Create tables if they don't exist
-        from models.product_ingredients import ProductIngredient, IngredientSafety
+        from db.models.product_ingredients import ProductIngredient, IngredientSafety
         from core_infra.database import engine, Base
         Base.metadata.create_all(bind=engine)
         

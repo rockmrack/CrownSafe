@@ -14,7 +14,7 @@ from jose import jwt
 from core_infra.database import get_db
 from core_infra.auth import get_current_active_user, decode_token, SECRET_KEY
 from api.pydantic_base import AppModel
-from models.account_deletion_audit import AccountDeletionAudit
+from db.models.account_deletion_audit import AccountDeletionAudit
 
 # OAuth2 scheme for token extraction
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")

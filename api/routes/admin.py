@@ -19,7 +19,7 @@ from api.rate_limiting import RateLimiters
 from api.errors import APIError
 from core_infra.database import get_db
 from core_infra.enhanced_database_schema import EnhancedRecallDB
-from models.ingestion_run import IngestionRun
+from db.models.ingestion_run import IngestionRun
 
 logger = logging.getLogger(__name__)
 

@@ -15,7 +15,7 @@ from sqlalchemy import insert, select, and_
 from sqlalchemy.orm import Session
 
 from core_infra.database import get_db
-from models.privacy_request import PrivacyRequest
+from db.models.privacy_request import PrivacyRequest
 from api.utils.privacy import (
     normalize_email,
     validate_email,

@@ -20,7 +20,7 @@ from core_infra.manufacturer_verifier import (
     get_default_verifier,
     VerificationInput,
 )
-from models.serial_verification import SerialVerification
+from db.models.serial_verification import SerialVerification
 from api.models.scan_results import ScanResultsPage, create_scan_results
 
 # Define ApiResponse locally
@@ -772,7 +772,7 @@ async def get_scan_results_page(
         
         # Track the scan in history (async)
         try:
-            from models.scan_history import ScanHistory
+            from db.models.scan_history import ScanHistory
             scan_history = ScanHistory(
                 user_id=request.user_id if hasattr(request, 'user_id') else None,
                 scan_id=results.scan_id,

@@ -115,7 +115,7 @@ class AllergySensitivityAgentLogic:
     def _check_with_database(self, user_id: int, product_upc: str) -> Dict[str, Any]:
         """Real database checking for production"""
         from core_infra.database import get_db_session, User
-        from models.product_ingredients import ProductIngredient, IngredientSafety
+        from db.models.product_ingredients import ProductIngredient, IngredientSafety
         
         try:
             with get_db_session() as db:

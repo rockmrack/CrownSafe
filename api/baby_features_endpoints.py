@@ -23,7 +23,7 @@ import inspect
 
 from core_infra.database import get_db, User, RecallDB
 from core_infra.auth import get_current_active_user
-from models import ReportRecord
+from db.models.report_record import ReportRecord
 from core_infra.s3_uploads import upload_file, presign_get
 from agents.value_add.alternatives_agent.agent_logic import AlternativesAgentLogic
 from agents.engagement.push_notification_agent.agent_logic import PushNotificationAgentLogic

@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
-from models.scan_history import ScanHistory, SafetyReport
+from db.models.scan_history import ScanHistory, SafetyReport
 
 def create_test_scan_history(db_session, user_id=1):
     """Create sample scan history for testing"""

@@ -13,8 +13,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
-from models.scan_history import ScanHistory
-from models.share_token import ShareToken
+from db.models.scan_history import ScanHistory
+from db.models.share_token import ShareToken
 
 def test_share_results():
     """Test the share results functionality"""

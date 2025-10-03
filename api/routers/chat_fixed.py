@@ -727,7 +727,7 @@ async def chat_explain_result(
             })
         
         # Get scan from database
-        from models.scan_history import ScanHistory
+        from db.models.scan_history import ScanHistory
         scan = db.query(ScanHistory).filter(ScanHistory.id == scan_id).first()
         
         if not scan:

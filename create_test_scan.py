@@ -13,7 +13,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from sqlalchemy.orm import Session
 from core_infra.database import get_db_session
-from models.scan_history import ScanHistory
+from db.models.scan_history import ScanHistory
 
 def create_test_scan():
     """Create a test scan record for chat testing"""

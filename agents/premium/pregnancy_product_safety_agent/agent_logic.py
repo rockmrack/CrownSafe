@@ -94,7 +94,7 @@ class PregnancyProductSafetyAgentLogic:
     def _check_with_database(self, product_upc: str, trimester: int) -> Dict[str, Any]:
         """Real database checking for production"""
         from core_infra.database import get_db_session
-        from models.product_ingredients import ProductIngredient, IngredientSafety
+        from db.models.product_ingredients import ProductIngredient, IngredientSafety
         
         with get_db_session() as db:
             # 1. Get product ingredients from database
