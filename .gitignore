@@ -65,6 +65,13 @@ dev.db
 local_reports.db
 test_*.db
 
+# Backup files - NEVER commit these!
+*.orig
+*.orig.*
+*.backup
+*.bak
+*~
+
 # Flask stuff:
 instance/
 .webassets-cache
