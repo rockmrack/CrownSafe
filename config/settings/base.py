@@ -11,6 +11,10 @@ from pydantic_settings import BaseSettings
 from decouple import config as env_config
 
 class BaseConfig(BaseSettings):
+    """Base configuration settings for BabyShield backend"""
+    
+    # Environment identification
+    ENVIRONMENT: str = Field(default="development", description="Application environment")
     """Base configuration class with common settings"""
     
     # Application Settings
@@ -20,7 +24,7 @@ class BaseConfig(BaseSettings):
     
     # Server Settings
     HOST: str = Field(default="0.0.0.0", env="HOST")
-    PORT: int = Field(default=8000, env="PORT")
+    PORT: int = Field(default=8001, env="PORT")
     RELOAD: bool = Field(default=False, env="RELOAD")
     
     # Database Settings
@@ -94,4 +98,5 @@ class BaseConfig(BaseSettings):
         # Create database directory if SQLite
         if self.DATABASE_URL.startswith("sqlite:///"):
             self.database_path.parent.mkdir(parents=True, exist_ok=True)
+
 
