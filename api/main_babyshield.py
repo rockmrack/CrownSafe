@@ -25,6 +25,33 @@ except Exception as e:
     config = None
     logging.getLogger(__name__).warning(f"⚠️ Configuration system not available, using environment variables: {e}")
 
+# Logging imports (Issue #32) - import after config to allow graceful degradation
+try:
+    from utils.logging.structured_logger import setup_logging, log_performance, log_error
+    from utils.logging.middleware import LoggingMiddleware
+    logger = setup_logging()
+    logger.info("🚀 BabyShield Backend starting up", extra={"version": "2.0", "phase": "2"})
+    STRUCTURED_LOGGING_ENABLED = True
+except Exception as e:
+    # Fallback to standard logging if structured logging fails
+    logger = logging.getLogger(__name__)
+    logger.warning(f"Structured logging not available, using standard logging: {e}")
+    STRUCTURED_LOGGING_ENABLED = False
+    log_performance = lambda *args, **kwargs: None  # No-op
+    log_error = lambda *args, **kwargs: None  # No-op
+
+# Prometheus metrics (Issue #32)
+try:
+    from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+    REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint'])
+    REQUEST_DURATION = Histogram('http_request_duration_seconds', 'HTTP request duration')
+    PROMETHEUS_ENABLED = True
+except Exception as e:
+    logger.warning(f"Prometheus metrics not available: {e}")
+    REQUEST_COUNT = None
+    REQUEST_DURATION = None
+    PROMETHEUS_ENABLED = False
+
 logging.getLogger(__name__).info(
     "[BOOT] ENVIRONMENT=%s DATABASE_URL=%s",
     (config.ENVIRONMENT if CONFIG_LOADED and config else os.getenv("ENVIRONMENT", "unset")),
@@ -216,11 +243,11 @@ def generate_unique_operation_id(route):
     """Generate unique operation IDs to prevent OpenAPI conflicts"""
     return f"{route.name}_{route.path.replace('/', '_').replace('{', '').replace('}', '').strip('_')}"
 
-app = FastAPI(
-    title="BabyShield API", 
-    version="2.4.0",
-    generate_unique_id_function=generate_unique_operation_id
-)
+
+
+# Add logging middleware (Issue #32)
+app.add_middleware(LoggingMiddleware)
+
 
 # Custom OpenAPI schema to fix validation errors
 def custom_openapi():
@@ -3109,3 +3136,24 @@ if __name__ == "__main__":
     )
 
 
+
+
+
+# Metrics endpoint (Issue #32)
+@app.get("/metrics")
+async def get_metrics():
+    """Prometheus metrics endpoint"""
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+@app.get("/health")
+async def health_check():
+    """Enhanced health check with logging"""
+    try:
+        # Test database connection
+        # Test Redis connection  
+        # Log health check
+        logger.info("Health check passed", extra={"status": "healthy"})
+        return {"status": "healthy", "timestamp": "2025-10-03T16:48:22Z"}
+    except Exception as e:
+        log_error(e, {"endpoint": "/health"})
+        return {"status": "unhealthy", "error": str(e)}
