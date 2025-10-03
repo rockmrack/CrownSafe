@@ -117,13 +117,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-py311-${{ hashFiles('**/requirements*.txt') }}
+          key: ${{ runner.os }}-py311-${{ hashFiles('**/config/requirements/requirements*.txt') }}
           restore-keys: ${{ runner.os }}-py311-
       - name: Install deps
         run: |
           python -m pip install -U pip
-          if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f config/requirements/requirements.txt ]; then pip install -r config/requirements/requirements.txt; fi
           pip install pytest httpx
       - name: Run focused tests
         run: |

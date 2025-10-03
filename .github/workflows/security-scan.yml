@@ -274,7 +274,7 @@ jobs:
       
       - name: Check licenses
         run: |
-          pip install -r requirements.txt
+          pip install -r config/requirements/requirements.txt
           pip-licenses --from=mixed --format=json --output-file=licenses.json
           pip-licenses --from=mixed --fail-on="GPL;LGPL;AGPL;MPL"
 
