@@ -41,7 +41,7 @@ function Test-ProductionEndpoint {
     
     try {
         Write-Log "Testing: $Name at $Url" -Level "INFO"
-        $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 10
+        $response = Invoke-WebRequest -Uri $Url -TimeoutSec 10
         
         if ($response.StatusCode -eq $ExpectedStatus) {
             Write-Log "PASS: $Name (Status: $($response.StatusCode))" -Level "SUCCESS"

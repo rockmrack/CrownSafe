@@ -12,6 +12,27 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Build authenticated headers for GitHub API
+function Get-GitHubHeaders {
+    $headers = @{
+        "Accept" = "application/vnd.github+json"
+        "User-Agent" = "PowerShell"
+        "X-GitHub-Api-Version" = "2022-11-28"
+    }
+    
+    # Try to get GitHub token from environment
+    $token = $env:GITHUB_TOKEN
+    if (-not $token) {
+        $token = $env:GH_TOKEN
+    }
+    
+    if ($token) {
+        $headers["Authorization"] = "Bearer $token"
+    }
+    
+    return $headers
+}
+
 function Get-WorkflowRuns {
     param(
         [string]$Owner,
@@ -21,10 +42,8 @@ function Get-WorkflowRuns {
     
     try {
         $url = "https://api.github.com/repos/$Owner/$Repo/actions/runs?branch=$Branch&per_page=10"
-        $response = Invoke-RestMethod -Uri $url -Method Get -Headers @{
-            "Accept" = "application/vnd.github.v3+json"
-            "User-Agent" = "PowerShell"
-        }
+        $headers = Get-GitHubHeaders
+        $response = Invoke-RestMethod -Uri $url -Method Get -Headers $headers
         
         return $response.workflow_runs
     }
@@ -34,30 +53,17 @@ function Get-WorkflowRuns {
     }
 }
 
-function Get-CheckRuns {
-    param(
-        [string]$Owner,
-        [string]$Repo,
-        [string]$Ref
-    )
-    
-    try {
-        $url = "https://api.github.com/repos/$Owner/$Repo/commits/$Ref/check-runs"
-        $response = Invoke-RestMethod -Uri $url -Method Get -Headers @{
-            "Accept" = "application/vnd.github.v3+json"
-            "User-Agent" = "PowerShell"
-        }
-        
-        return $response.check_runs
-    }
-    catch {
-        Write-Host "Error fetching check runs: $($_.Exception.Message)" -ForegroundColor Red
-        return $null
-    }
-}
-
 function Show-Status {
-    param($Runs)
+    param(
+        [Parameter(Mandatory=$true)]
+        $Runs,
+        [Parameter(Mandatory=$true)]
+        [string]$Owner,
+        [Parameter(Mandatory=$true)]
+        [string]$Repo,
+        [Parameter(Mandatory=$true)]
+        [string]$Branch
+    )
     
     Clear-Host
     Write-Host "======================================" -ForegroundColor Cyan
@@ -158,13 +164,20 @@ function Show-Status {
 Write-Host "Starting CI monitor for $Owner/$Repo (branch: $Branch)..." -ForegroundColor Cyan
 Write-Host ""
 
+# Check for GitHub token
+if (-not $env:GITHUB_TOKEN -and -not $env:GH_TOKEN) {
+    Write-Host "Warning: No GITHUB_TOKEN or GH_TOKEN found in environment." -ForegroundColor Yellow
+    Write-Host "         API requests will be subject to low rate limits." -ForegroundColor Yellow
+    Write-Host "         For private repos, authentication is required." -ForegroundColor Yellow
+    Write-Host ""
+}
+
 do {
     $runs = Get-WorkflowRuns -Owner $Owner -Repo $Repo -Branch $Branch
-    Show-Status -Runs $runs
+    Show-Status -Runs $runs -Owner $Owner -Repo $Repo -Branch $Branch
     
     if (-not $Once) {
         Write-Host "Press Ctrl+C to exit. Refreshing in $RefreshInterval seconds..." -ForegroundColor Gray
         Start-Sleep -Seconds $RefreshInterval
     }
 } while (-not $Once)
-

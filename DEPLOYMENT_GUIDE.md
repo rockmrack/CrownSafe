@@ -387,7 +387,7 @@ Notes: [Any additional notes]
 ### Common Issues
 
 **Issue:** Container fails health check
-**Solution:** Check logs, verify environment variables, ensure port 8000 exposed
+**Solution:** Check logs, verify environment variables, ensure port 8001 exposed
 
 **Issue:** Import errors in logs
 **Solution:** Verify all service files copied to correct locations
