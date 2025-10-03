@@ -239,14 +239,29 @@ class RecallAnalyticsResponse(BaseModel):
 # 3) FastAPI + Commander setup
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
+# Create FastAPI app instance
+from fastapi import FastAPI
+app = FastAPI(
+    title="BabyShield API",
+    description="Production-ready baby product safety checking system with 39-agency coverage",
+    version="2.4.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    generate_unique_id_function=lambda route: f"{route.name}_{route.path.replace('/', '_').replace('{', '').replace('}', '').strip('_')}"
+)
+
+# Add logging middleware if available (Issue #32)
+if STRUCTURED_LOGGING_ENABLED:
+    try:
+        app.add_middleware(LoggingMiddleware)
+        logger.info("✅ Structured logging middleware added")
+    except Exception as e:
+        logger.warning(f"Could not add logging middleware: {e}")
+
 def generate_unique_operation_id(route):
     """Generate unique operation IDs to prevent OpenAPI conflicts"""
     return f"{route.name}_{route.path.replace('/', '_').replace('{', '').replace('}', '').strip('_')}"
 
-
-
-# Add logging middleware (Issue #32)
-app.add_middleware(LoggingMiddleware)
 
 
 # Custom OpenAPI schema to fix validation errors
