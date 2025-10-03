@@ -99,4 +99,3 @@ class BaseConfig(BaseSettings):
         if self.DATABASE_URL.startswith("sqlite:///"):
             self.database_path.parent.mkdir(parents=True, exist_ok=True)
 
-
