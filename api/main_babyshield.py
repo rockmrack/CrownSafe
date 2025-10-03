@@ -13,10 +13,22 @@ socket.getaddrinfo = _ipv4_only
 
 import os, sys, logging, asyncio, uuid
 from typing import Optional, List, Dict, Any
+
+# CONFIGURATION SYSTEM INTEGRATION (load early before first use)
+try:
+    from config.settings import get_config
+    config = get_config()
+    CONFIG_LOADED = True
+    logging.getLogger(__name__).info("✅ Configuration system loaded successfully")
+except Exception as e:
+    CONFIG_LOADED = False
+    config = None
+    logging.getLogger(__name__).warning(f"⚠️ Configuration system not available, using environment variables: {e}")
+
 logging.getLogger(__name__).info(
     "[BOOT] ENVIRONMENT=%s DATABASE_URL=%s",
-    os.getenv("ENVIRONMENT", "unset"),
-    "***REDACTED***" if os.getenv("DATABASE_URL") else "unset",
+    (config.ENVIRONMENT if CONFIG_LOADED and config else os.getenv("ENVIRONMENT", "unset")),
+    "***REDACTED***" if (config.DATABASE_URL if CONFIG_LOADED and config else os.getenv("DATABASE_URL")) else "unset",
 )
 # Local-only shim (no-op in prod)
 try:
@@ -36,8 +48,13 @@ from datetime import date, datetime, timedelta
 import httpx
 from api.pydantic_base import AppModel
 
-# Environment configuration
-ENVIRONMENT = os.getenv("ENVIRONMENT", "development")  # development, staging, production
+# Environment configuration - integrated with new config system
+if CONFIG_LOADED and config:
+    ENVIRONMENT = config.ENVIRONMENT
+    DEBUG_MODE = getattr(config, 'DEBUG', False)
+else:
+    ENVIRONMENT = (config.ENVIRONMENT if CONFIG_LOADED else os.getenv("ENVIRONMENT", "development"))  # development, staging, production
+    DEBUG_MODE = (config.DEBUG if CONFIG_LOADED else os.getenv("DEBUG", "false").lower() == "true")
 
 # OAuth configuration
 OAUTH_ENABLED = os.getenv("OAUTH_ENABLED", "false").lower() == "true"
@@ -54,7 +71,7 @@ IS_PRODUCTION = ENVIRONMENT == "production"
 DEV_OVERRIDE_ENABLED = not IS_PRODUCTION
 MOCK_DATA_ENABLED = not IS_PRODUCTION
 
-# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 # 0) Ensure project root is on sys.path
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
@@ -294,9 +311,9 @@ class HealthCheckWrapper:
 try:
     from prometheus_client import make_asgi_app  # type: ignore
     app.mount("/metrics", make_asgi_app())
-    logging.info("âœ… Prometheus metrics endpoint mounted at /metrics")
+    logging.info("Ã¢Å“â€¦ Prometheus metrics endpoint mounted at /metrics")
 except Exception as e:
-    logging.info(f"â„¹ï¸ Prometheus metrics not available: {e}")
+    logging.info(f"Ã¢â€žÂ¹Ã¯Â¸Â Prometheus metrics not available: {e}")
 
 # Mount static files for favicon, robots.txt, etc.
 from fastapi.staticfiles import StaticFiles
@@ -386,7 +403,7 @@ async def serve_terms():
 try:
     from core_infra.error_handlers import register_error_handlers
     register_error_handlers(app)
-    logging.info("âœ… Error handlers registered")
+    logging.info("Ã¢Å“â€¦ Error handlers registered")
 except Exception as e:
     logging.warning(f"Could not register error handlers: {e}")
 
@@ -399,18 +416,18 @@ try:
     
     app.state.limiter = limiter
     app.add_exception_handler(RateLimitExceeded, custom_rate_limit_exceeded_handler)
-    logging.info("âœ… Rate limiting configured")
+    logging.info("Ã¢Å“â€¦ Rate limiting configured")
 except Exception as e:
     logging.warning(f"Could not configure rate limiting: {e}")
 
-# ðŸ—œï¸ PERFORMANCE: Add response compression for faster mobile/API responses
+# Ã°Å¸â€”Å“Ã¯Â¸Â PERFORMANCE: Add response compression for faster mobile/API responses
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Enhanced Security Middleware (bulletproof protection)
 try:
     from security.security_headers import bulletproof_security_middleware
     app.middleware("http")(bulletproof_security_middleware)
-    logging.info("âœ… Bulletproof security middleware enabled")
+    logging.info("Ã¢Å“â€¦ Bulletproof security middleware enabled")
 except ImportError as e:
     logging.warning(f"Enhanced security middleware not available: {e}")
 except Exception as e:
@@ -432,12 +449,12 @@ app.add_middleware(
 try:
     from core_infra.security_headers_middleware import SecurityHeadersMiddleware
     app.add_middleware(SecurityHeadersMiddleware)
-    logging.info("âœ… Security headers middleware added")
+    logging.info("Ã¢Å“â€¦ Security headers middleware added")
 except Exception as e:
     logging.warning(f"Could not add security headers middleware: {e}")
 
 # Add CORS middleware
-ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "").split(",") if os.getenv("ALLOWED_ORIGINS") else [
+ALLOWED_ORIGINS = (getattr(config, "ALLOWED_ORIGINS", "") if CONFIG_LOADED else os.getenv("ALLOWED_ORIGINS", "")).split(",") if (getattr(config, "ALLOWED_ORIGINS", None) if CONFIG_LOADED else os.getenv("ALLOWED_ORIGINS")) else [
     "https://app.babyshield.app",
     "https://api.babyshield.app",
     "https://app.babyshield.ai",     # Alternative domain
@@ -456,7 +473,7 @@ try:
         allowed_origins=ALLOWED_ORIGINS,
         allow_credentials=True
     )
-    logging.info("âœ… Enhanced CORS middleware added")
+    logging.info("Ã¢Å“â€¦ Enhanced CORS middleware added")
 except:
     # Fallback to standard CORS
     app.add_middleware(
@@ -470,14 +487,14 @@ except:
 # CRITICAL: Register Chat endpoints EARLY before anything can fail
 # This ensures chat features are available even if other components fail
 try:
-    logging.info("ðŸš€ Registering CHAT endpoints FIRST (high priority)...")
+    logging.info("Ã°Å¸Å¡â‚¬ Registering CHAT endpoints FIRST (high priority)...")
     from api.routers.chat import router as chat_router
     app.include_router(chat_router, prefix="/api/v1/chat", tags=["chat"])
-    logging.info("âœ… CHAT ENDPOINTS REGISTERED SUCCESSFULLY at /api/v1/chat/*")
+    logging.info("Ã¢Å“â€¦ CHAT ENDPOINTS REGISTERED SUCCESSFULLY at /api/v1/chat/*")
     chat_routes = [route.path for route in chat_router.routes if hasattr(route, 'path')]
-    logging.info(f"âœ… Active chat routes: {chat_routes}")
+    logging.info(f"Ã¢Å“â€¦ Active chat routes: {chat_routes}")
 except Exception as chat_error:
-    logging.error(f"âŒ CRITICAL: Chat registration failed: {chat_error}")
+    logging.error(f"Ã¢ÂÅ’ CRITICAL: Chat registration failed: {chat_error}")
     import traceback
     logging.error(f"Traceback: {traceback.format_exc()}")
     # Try minimal fallback
@@ -485,10 +502,10 @@ except Exception as chat_error:
         logging.info("Trying fallback import...")
         from api.routers import chat
         app.include_router(chat.router, prefix="/api/v1/chat", tags=["chat"])
-        logging.info("âœ… Chat registered via fallback")
+        logging.info("Ã¢Å“â€¦ Chat registered via fallback")
     except Exception as fallback_error:
-        logging.error(f"âŒ Chat fallback also failed: {fallback_error}")
-        logging.error("âŒ Chat features completely unavailable!")
+        logging.error(f"Ã¢ÂÅ’ Chat fallback also failed: {fallback_error}")
+        logging.error("Ã¢ÂÅ’ Chat features completely unavailable!")
 
 # Add a catch-all for common bot patterns to reduce 404 noise
 @app.get("/hello.world", include_in_schema=False)
@@ -589,7 +606,7 @@ async def security_middleware(request: Request, call_next):
 # try:
 #     from core_infra.security_middleware import SecurityMiddleware
 #     app.add_middleware(SecurityMiddleware)
-#     logging.info("âœ… Security headers middleware added")
+#     logging.info("Ã¢Å“â€¦ Security headers middleware added")
 # except Exception as e:
 #     logging.warning(f"Could not add security middleware: {e}")
 
@@ -597,7 +614,7 @@ async def security_middleware(request: Request, call_next):
 # try:
 #     from core_infra.graceful_shutdown import GracefulShutdownMiddleware
 #     app.add_middleware(GracefulShutdownMiddleware)
-#     logging.info("âœ… Graceful shutdown middleware added")
+#     logging.info("Ã¢Å“â€¦ Graceful shutdown middleware added")
 # except Exception as e:
 #     logging.warning(f"Could not add graceful shutdown middleware: {e}")
 
@@ -605,7 +622,7 @@ async def security_middleware(request: Request, call_next):
 # try:
 #     from core_infra.audit_logger import AuditLoggerMiddleware
 #     app.add_middleware(AuditLoggerMiddleware)
-#     logging.info("âœ… Audit logging middleware added")
+#     logging.info("Ã¢Å“â€¦ Audit logging middleware added")
 # except Exception as e:
 #     logging.warning(f"Could not add audit logging middleware: {e}")
 
@@ -613,7 +630,7 @@ async def security_middleware(request: Request, call_next):
 # try:
 #     from core_infra.graceful_shutdown import RequestIDMiddleware
 #     app.add_middleware(RequestIDMiddleware)
-#     logging.info("âœ… Request ID middleware added")
+#     logging.info("Ã¢Å“â€¦ Request ID middleware added")
 # except Exception as e:
 #     logging.warning(f"Could not add request ID middleware: {e}")
 
@@ -621,7 +638,7 @@ async def security_middleware(request: Request, call_next):
 # try:
 #     from core_infra.transactions import TransactionMiddleware
 #     app.add_middleware(TransactionMiddleware)
-#     logging.info("âœ… Transaction middleware added")
+#     logging.info("Ã¢Å“â€¦ Transaction middleware added")
 # except Exception as e:
 #     logging.warning(f"Could not add transaction middleware: {e}")
 
@@ -629,7 +646,7 @@ async def security_middleware(request: Request, call_next):
 # try:
 #     from core_infra.circuit_breaker import CircuitBreakerMiddleware
 #     app.add_middleware(CircuitBreakerMiddleware)
-#     logging.info("âœ… Circuit breaker middleware added")
+#     logging.info("Ã¢Å“â€¦ Circuit breaker middleware added")
 # except Exception as e:
 #     logging.warning(f"Could not add circuit breaker middleware: {e}")
 
@@ -637,7 +654,7 @@ async def security_middleware(request: Request, call_next):
 # try:
 #     from core_infra.pagination import PaginationMiddleware
 #     app.add_middleware(PaginationMiddleware)
-#     logging.info("âœ… Pagination middleware added")
+#     logging.info("Ã¢Å“â€¦ Pagination middleware added")
 # except Exception as e:
 #     logging.warning(f"Could not add pagination middleware: {e}")
 
@@ -645,7 +662,7 @@ async def security_middleware(request: Request, call_next):
 # try:
 #     from core_infra.validators import InputValidationMiddleware
 #     app.add_middleware(InputValidationMiddleware)
-#     logging.info("âœ… Input validation middleware added")
+#     logging.info("Ã¢Å“â€¦ Input validation middleware added")
 # except Exception as e:
 #     logging.warning(f"Could not add input validation middleware: {e}")
 
@@ -653,7 +670,7 @@ async def security_middleware(request: Request, call_next):
 # try:
 #     from core_infra.encryption import PIIEncryptionMiddleware
 #     app.add_middleware(PIIEncryptionMiddleware)
-#     logging.info("âœ… PII encryption middleware added")
+#     logging.info("Ã¢Å“â€¦ PII encryption middleware added")
 # except Exception as e:
 #     logging.warning(f"Could not add PII encryption middleware: {e}")
 
@@ -664,7 +681,7 @@ visual_search_agent: Optional[VisualSearchAgentLogic] = None
 try:
     from api.auth_deprecated import router as auth_deprecated_router
     app.include_router(auth_deprecated_router)
-    logging.info("âœ… Deprecated auth endpoints registered")
+    logging.info("Ã¢Å“â€¦ Deprecated auth endpoints registered")
 except Exception as e:
     logging.warning(f"Deprecated auth endpoints not available: {e}")
 
@@ -672,7 +689,7 @@ except Exception as e:
 try:
     from api.auth_endpoints import router as auth_router
     app.include_router(auth_router)
-    logging.info("âœ… Authentication endpoints registered")
+    logging.info("Ã¢Å“â€¦ Authentication endpoints registered")
 except Exception as e:
     logging.error(f"Failed to register auth endpoints: {e}")
 
@@ -680,7 +697,7 @@ except Exception as e:
 try:
     from api.password_reset_endpoints import router as password_reset_router
     app.include_router(password_reset_router)
-    logging.info("âœ… Password reset endpoints registered")
+    logging.info("Ã¢Å“â€¦ Password reset endpoints registered")
 except Exception as e:
     logging.warning(f"Password reset endpoints not available: {e}")
 
@@ -688,7 +705,7 @@ except Exception as e:
 try:
     from api.scan_history_endpoints import router as scan_history_router
     app.include_router(scan_history_router)
-    logging.info("âœ… Scan history endpoints registered")
+    logging.info("Ã¢Å“â€¦ Scan history endpoints registered")
 except Exception as e:
     logging.warning(f"Scan history endpoints not available: {e}")
 
@@ -696,7 +713,7 @@ except Exception as e:
 try:
     from api.notification_endpoints import router as notification_router
     app.include_router(notification_router)
-    logging.info("âœ… Enhanced notification endpoints registered")
+    logging.info("Ã¢Å“â€¦ Enhanced notification endpoints registered")
 except Exception as e:
     logging.warning(f"Enhanced notification endpoints not available: {e}")
 
@@ -704,7 +721,7 @@ except Exception as e:
 try:
     from api.monitoring_endpoints import router as monitoring_router
     app.include_router(monitoring_router)
-    logging.info("âœ… Product monitoring endpoints registered")
+    logging.info("Ã¢Å“â€¦ Product monitoring endpoints registered")
 except Exception as e:
     logging.warning(f"Product monitoring endpoints not available: {e}")
 
@@ -712,7 +729,7 @@ except Exception as e:
 try:
     from api.user_dashboard_endpoints import router as dashboard_router
     app.include_router(dashboard_router)
-    logging.info("âœ… User dashboard endpoints registered")
+    logging.info("Ã¢Å“â€¦ User dashboard endpoints registered")
 except Exception as e:
     logging.warning(f"User dashboard endpoints not available: {e}")
 
@@ -720,16 +737,16 @@ except Exception as e:
 # try:
 #     from api.health_endpoints import router as health_router
 #     app.include_router(health_router)
-#     logging.info("âœ… Health check endpoints registered")
+#     logging.info("Ã¢Å“â€¦ Health check endpoints registered")
 # except Exception as e:
 #     logging.error(f"Failed to register health endpoints: {e}")
-logging.info("âœ… Using built-in health endpoints (/healthz, /readyz)")
+logging.info("Ã¢Å“â€¦ Using built-in health endpoints (/healthz, /readyz)")
 
 # Import and include v1 endpoints after app is created
 try:
     from api.v1_endpoints import router as v1_router
     app.include_router(v1_router)
-    logging.info("âœ… v1 endpoints registered")
+    logging.info("Ã¢Å“â€¦ v1 endpoints registered")
 except Exception as e:
     logging.error(f"Failed to register v1 endpoints: {e}")
 
@@ -738,8 +755,8 @@ try:
     from api.barcode_endpoints import barcode_router, mobile_scan_router
     app.include_router(barcode_router)
     app.include_router(mobile_scan_router)
-    logging.info("âœ… Barcode scanning endpoints registered")
-    logging.info("âœ… Mobile scan results endpoints registered")
+    logging.info("Ã¢Å“â€¦ Barcode scanning endpoints registered")
+    logging.info("Ã¢Å“â€¦ Mobile scan results endpoints registered")
 except Exception as e:
     logging.error(f"Failed to register barcode endpoints: {e}")
 
@@ -747,7 +764,7 @@ except Exception as e:
 try:
     from api.barcode_bridge import router as barcode_bridge_router
     app.include_router(barcode_bridge_router)
-    logging.info("âœ… Enhanced Barcode Bridge (Task 12) registered")
+    logging.info("Ã¢Å“â€¦ Enhanced Barcode Bridge (Task 12) registered")
 except Exception as e:
     logging.error(f"Failed to register barcode bridge: {e}")
 
@@ -755,7 +772,7 @@ except Exception as e:
 try:
     from api.enhanced_barcode_endpoints import enhanced_barcode_router
     app.include_router(enhanced_barcode_router)
-    logging.info("âœ… Enhanced Barcode Scanning (A-5) registered")
+    logging.info("Ã¢Å“â€¦ Enhanced Barcode Scanning (A-5) registered")
 except Exception as e:
     logging.error(f"Failed to register enhanced barcode scanning: {e}")
 
@@ -763,7 +780,7 @@ except Exception as e:
 try:
     from api.safety_reports_endpoints import safety_reports_router
     app.include_router(safety_reports_router)
-    logging.info("âœ… Safety Reports endpoints registered")
+    logging.info("Ã¢Å“â€¦ Safety Reports endpoints registered")
 except Exception as e:
     logging.error(f"Failed to register safety reports: {e}")
 
@@ -771,7 +788,7 @@ except Exception as e:
 try:
     from api.share_results_endpoints import share_router
     app.include_router(share_router)
-    logging.info("âœ… Share Results endpoints registered")
+    logging.info("Ã¢Å“â€¦ Share Results endpoints registered")
 except Exception as e:
     logging.error(f"Failed to register share results: {e}")
 
@@ -779,7 +796,7 @@ except Exception as e:
 try:
     from api.recall_alert_system import recall_alert_router
     app.include_router(recall_alert_router)
-    logging.info("âœ… Recall Alert System registered")
+    logging.info("Ã¢Å“â€¦ Recall Alert System registered")
 except Exception as e:
     logging.error(f"Failed to register recall alert system: {e}")
 
@@ -787,7 +804,7 @@ except Exception as e:
 try:
     from api.recalls_endpoints import router as recalls_router
     app.include_router(recalls_router)
-    logging.info("âœ… Recall Search System registered")
+    logging.info("Ã¢Å“â€¦ Recall Search System registered")
 except Exception as e:
     logging.error(f"Failed to register recall search system: {e}")
 
@@ -803,7 +820,7 @@ try:
         """Serve the incident report page directly at /report-incident"""
         return FileResponse("static/report_incident.html")
     
-    logging.info("âœ… Incident Reporting System registered")
+    logging.info("Ã¢Å“â€¦ Incident Reporting System registered")
 except Exception as e:
     logging.error(f"Failed to register incident reporting: {e}")
 
@@ -1001,7 +1018,7 @@ def get_safety_hub_articles(
 try:
     from api.visual_agent_endpoints import visual_router
     app.include_router(visual_router)
-    logging.info("âœ… Visual agent endpoints registered")
+    logging.info("Ã¢Å“â€¦ Visual agent endpoints registered")
 except ImportError as e:
     logging.warning(f"Visual agent endpoints not available: {e}")
 except Exception as e:
@@ -1011,7 +1028,7 @@ except Exception as e:
 try:
     from api.risk_assessment_endpoints import risk_router
     app.include_router(risk_router)
-    logging.info("âœ… Risk assessment endpoints registered")
+    logging.info("Ã¢Å“â€¦ Risk assessment endpoints registered")
 except ImportError as e:
     logging.warning(f"Risk assessment endpoints not available: {e}")
 except Exception as e:
@@ -1021,7 +1038,7 @@ except Exception as e:
 try:
     from api.subscription_endpoints import router as subscription_router
     app.include_router(subscription_router)
-    logging.info("âœ… Subscription endpoints registered")
+    logging.info("Ã¢Å“â€¦ Subscription endpoints registered")
 except Exception as e:
     logging.error(f"Failed to register subscription endpoints: {e}")
 
@@ -1031,7 +1048,7 @@ except Exception as e:
 try:
     from api.recall_detail_endpoints import router as recall_detail_router
     app.include_router(recall_detail_router)
-    logging.info("âœ… Recall detail endpoints registered")
+    logging.info("Ã¢Å“â€¦ Recall detail endpoints registered")
 except Exception as e:
     logging.error(f"Failed to register recall detail endpoints: {e}")
 
@@ -1042,7 +1059,7 @@ try:
     if OAUTH_ENABLED:
         app.include_router(oauth_router)
         providers = OAUTH_PROVIDERS if OAUTH_PROVIDERS else "auto-detect"
-        logging.info(f"âœ… OAuth endpoints registered (providers: {providers})")
+        logging.info(f"Ã¢Å“â€¦ OAuth endpoints registered (providers: {providers})")
     else:
         logging.info("OAuth router NOT mounted (OAUTH_ENABLED is false or missing)")
         
@@ -1053,7 +1070,7 @@ except Exception as e:
 try:
     from api.settings_endpoints import router as settings_router
     app.include_router(settings_router)
-    logging.info("âœ… Settings endpoints registered")
+    logging.info("Ã¢Å“â€¦ Settings endpoints registered")
 except Exception as e:
     logging.error(f"Failed to register settings endpoints: {e}")
 
@@ -1062,7 +1079,7 @@ try:
     from api.user_data_endpoints import router as user_data_router, privacy_router
     app.include_router(user_data_router)
     app.include_router(privacy_router)
-    logging.info("âœ… User data management and privacy endpoints registered")
+    logging.info("Ã¢Å“â€¦ User data management and privacy endpoints registered")
 except Exception as e:
     logging.error(f"Failed to register user data endpoints: {e}")
 
@@ -1070,7 +1087,7 @@ except Exception as e:
 try:
     from api.routers.account import router as account_router
     app.include_router(account_router)
-    logging.info("âœ… Account management endpoints registered")
+    logging.info("Ã¢Å“â€¦ Account management endpoints registered")
 except Exception as e:
     logging.error(f"Failed to register account endpoints: {e}")
 
@@ -1078,7 +1095,7 @@ except Exception as e:
 try:
     from api.routers.devices import router as devices_router
     app.include_router(devices_router)
-    logging.info("âœ… Device management endpoints registered")
+    logging.info("Ã¢Å“â€¦ Device management endpoints registered")
 except Exception as e:
     logging.error(f"Failed to register device endpoints: {e}")
 
@@ -1086,7 +1103,7 @@ except Exception as e:
 try:
     from api.routers import account_legacy as account_legacy_router
     app.include_router(account_legacy_router.router)
-    logging.info("âœ… Legacy account endpoints registered")
+    logging.info("Ã¢Å“â€¦ Legacy account endpoints registered")
 except Exception as e:
     logging.error(f"Failed to register legacy account endpoints: {e}")
 
@@ -1094,7 +1111,7 @@ except Exception as e:
 try:
     from api.localization import router as i18n_router
     app.include_router(i18n_router)
-    logging.info("âœ… Localization & Accessibility (Task 13) registered")
+    logging.info("Ã¢Å“â€¦ Localization & Accessibility (Task 13) registered")
 except Exception as e:
     logging.error(f"Failed to register localization endpoints: {e}")
 
@@ -1103,7 +1120,7 @@ try:
     from api.monitoring import router as monitoring_router, metrics_router
     app.include_router(monitoring_router)
     app.include_router(metrics_router)
-    logging.info("âœ… Monitoring & SLO endpoints (Task 14) registered")
+    logging.info("Ã¢Å“â€¦ Monitoring & SLO endpoints (Task 14) registered")
 except Exception as e:
     logging.error(f"Failed to register monitoring endpoints: {e}")
 
@@ -1111,7 +1128,7 @@ except Exception as e:
 try:
     from api.legal_endpoints import router as legal_router
     app.include_router(legal_router)
-    logging.info("âœ… Legal & Privacy endpoints (Task 15) registered")
+    logging.info("Ã¢Å“â€¦ Legal & Privacy endpoints (Task 15) registered")
 except Exception as e:
     logging.error(f"Failed to register legal endpoints: {e}")
 
@@ -1119,20 +1136,20 @@ except Exception as e:
 try:
     from api.feedback_endpoints import router as feedback_router
     app.include_router(feedback_router)
-    logging.info("âœ… Support & Feedback endpoints (Task 20) registered")
+    logging.info("Ã¢Å“â€¦ Support & Feedback endpoints (Task 20) registered")
 except Exception as e:
     logging.error(f"Failed to register feedback endpoints: {e}")
 
 # Include Premium Features (Pregnancy & Allergy) endpoints
 from api.premium_features_endpoints import router as premium_router
 app.include_router(premium_router)
-logging.info("âœ… Premium Features (Pregnancy & Allergy) endpoints registered")
+logging.info("Ã¢Å“â€¦ Premium Features (Pregnancy & Allergy) endpoints registered")
 
 # Include Baby Safety Features (Alternatives, Notifications, Reports) endpoints
 try:
     from api.baby_features_endpoints import router as baby_router
     app.include_router(baby_router)
-    logging.info("âœ… Baby Safety Features (Alternatives, Notifications, Reports) endpoints registered")
+    logging.info("Ã¢Å“â€¦ Baby Safety Features (Alternatives, Notifications, Reports) endpoints registered")
 except (ImportError, FileNotFoundError) as e:
     logging.warning(f"Baby Safety Features not available (missing dependency pylibdmtx): {e}")
     # Continue without baby features - they're optional
@@ -1141,7 +1158,7 @@ except (ImportError, FileNotFoundError) as e:
 try:
     from api.advanced_features_endpoints import router as advanced_router
     app.include_router(advanced_router)
-    logging.info("âœ… Advanced Features (Web Research, Guidelines, Visual) endpoints registered")
+    logging.info("Ã¢Å“â€¦ Advanced Features (Web Research, Guidelines, Visual) endpoints registered")
 except (ImportError, FileNotFoundError) as e:
     logging.warning(f"Advanced Features not available (missing dependency): {e}")
     # Continue without advanced features - they're optional
@@ -1149,13 +1166,13 @@ except (ImportError, FileNotFoundError) as e:
 # Include Legal Compliance endpoints (COPPA, GDPR, Children's Code)
 from api.compliance_endpoints import router as compliance_router
 app.include_router(compliance_router)
-logging.info("âœ… Legal Compliance endpoints (COPPA, GDPR, Children's Code) registered")
+logging.info("Ã¢Å“â€¦ Legal Compliance endpoints (COPPA, GDPR, Children's Code) registered")
 
 # Include Supplemental Data endpoints for enhanced safety reports
 try:
     from api.supplemental_data_endpoints import router as supplemental_router
     app.include_router(supplemental_router)
-    logging.info("âœ… Supplemental data endpoints registered")
+    logging.info("Ã¢Å“â€¦ Supplemental data endpoints registered")
 except ImportError as e:
     logging.error(f"Import error for supplemental data endpoints: {e}")
 except Exception as e:
@@ -1167,7 +1184,7 @@ except Exception as e:
 try:
     from api.routers.lookup import router as lookup_router
     app.include_router(lookup_router)
-    logging.info("âœ… Clean lookup endpoints registered")
+    logging.info("Ã¢Å“â€¦ Clean lookup endpoints registered")
 except ImportError as e:
     logging.error(f"Import error for lookup endpoints: {e}")
 except Exception as e:
@@ -1179,7 +1196,7 @@ except Exception as e:
 try:
     from api.routers.analytics import router as analytics_router
     app.include_router(analytics_router, prefix="/api/v1/analytics", tags=["analytics"])
-    logging.info("âœ… Analytics endpoints registered")
+    logging.info("Ã¢Å“â€¦ Analytics endpoints registered")
 except ImportError as e:
     logging.error(f"Import error for analytics endpoints: {e}")
 except Exception as e:
@@ -1189,7 +1206,7 @@ except Exception as e:
 try:
     from api.routers.honeypots import router as honeypots_router
     app.include_router(honeypots_router, tags=["security"])
-    logging.info("âœ… Security honeypot endpoints deployed")
+    logging.info("Ã¢Å“â€¦ Security honeypot endpoints deployed")
 except ImportError as e:
     logging.warning(f"Honeypot endpoints not available: {e}")
 except Exception as e:
@@ -1199,7 +1216,7 @@ except Exception as e:
 try:
     from security.monitoring_dashboard import router as security_dashboard_router
     app.include_router(security_dashboard_router, tags=["security-monitoring"])
-    logging.info("âœ… Security monitoring dashboard deployed")
+    logging.info("Ã¢Å“â€¦ Security monitoring dashboard deployed")
 except ImportError as e:
     logging.warning(f"Security dashboard not available: {e}")
 except Exception as e:
@@ -1209,7 +1226,7 @@ except Exception as e:
 try:
     from api.openapi_spec import custom_openapi
     app.openapi = lambda: custom_openapi(app)
-    logging.info("âœ… OpenAPI spec loaded and applied")
+    logging.info("Ã¢Å“â€¦ OpenAPI spec loaded and applied")
 except Exception as e:
     logging.error(f"Failed to load OpenAPI spec: {e}")
 
@@ -1331,7 +1348,7 @@ async def general_exception_handler(request, exc):
     
     # Don't expose internal error details in production
     error_msg = "An internal error occurred"
-    if os.getenv("DEBUG", "false").lower() == "true":
+    if (config.DEBUG if CONFIG_LOADED else os.getenv("DEBUG", "false").lower() == "true"):
         error_msg = f"Internal error: {str(exc)}"
     
     return JSONResponse(
@@ -1353,34 +1370,34 @@ _agents_initialized = False
 def on_startup():
     global commander_agent, visual_search_agent, _agents_initialized
     logger = logging.getLogger(__name__)
-    logger.info(f"ðŸ”§ Starting up BabyShield API in {ENVIRONMENT.upper()} environmentâ€¦")
+    logger.info(f"Ã°Å¸â€Â§ Starting up BabyShield API in {ENVIRONMENT.upper()} environmentÃ¢â‚¬Â¦")
     
     # Prevent double initialization
     if _agents_initialized:
-        logger.info("ðŸš« Agents already initialized, skipping")
+        logger.info("Ã°Å¸Å¡Â« Agents already initialized, skipping")
         return
     
     # Only initialize agents in production or when explicitly enabled
-    if IS_PRODUCTION or os.getenv("ENABLE_AGENTS", "false").lower() == "true":
+    if IS_PRODUCTION or (getattr(config, "ENABLE_AGENTS", False) if CONFIG_LOADED else os.getenv("ENABLE_AGENTS", "false").lower() == "true"):
         commander_agent = BabyShieldCommanderLogic(agent_id="api_commander_001", logger_instance=logger)
-        logger.info("âœ… Commander Agent initialized.")
+        logger.info("Ã¢Å“â€¦ Commander Agent initialized.")
         logger.info("Initializing the Visual Search Agent...")
         visual_search_agent = VisualSearchAgentLogic(agent_id="api_visual_search_001", logger_instance=logger)
-        logger.info("âœ… Visual Search Agent initialized.")
+        logger.info("Ã¢Å“â€¦ Visual Search Agent initialized.")
     else:
-        logger.info("ðŸš« Agents disabled in development mode")
+        logger.info("Ã°Å¸Å¡Â« Agents disabled in development mode")
         commander_agent = None
         visual_search_agent = None
     
     _agents_initialized = True
     
-    logger.info(f"ðŸŒ Environment: {ENVIRONMENT} (Dev overrides: {DEV_OVERRIDE_ENABLED}, Mock data: {MOCK_DATA_ENABLED})")
+    logger.info(f"Ã°Å¸Å’Â Environment: {ENVIRONMENT} (Dev overrides: {DEV_OVERRIDE_ENABLED}, Mock data: {MOCK_DATA_ENABLED})")
 
-    # â”€â”€ Auto-create tables & seed a subscribed user â”€â”€
+    # Ã¢â€â‚¬Ã¢â€â‚¬ Auto-create tables & seed a subscribed user Ã¢â€â‚¬Ã¢â€â‚¬
     try:
         from core_infra.database import engine, Base, SessionLocal, User
         Base.metadata.create_all(bind=engine)
-        logger.info("ðŸ“‹ Database tables created/verified.")
+        logger.info("Ã°Å¸â€œâ€¹ Database tables created/verified.")
         
         # Simple user seeding
         db = SessionLocal()
@@ -1389,24 +1406,24 @@ def on_startup():
                 u = User(id=1, email="test_parent@babyshield.com", hashed_password="testhash", is_subscribed=True)
                 db.add(u)
                 db.commit()
-                logger.info("ðŸ—¿ Seeded default user test_parent@babyshield.com (id=1, subscribed).")
+                logger.info("Ã°Å¸â€”Â¿ Seeded default user test_parent@babyshield.com (id=1, subscribed).")
             else:
-                logger.info("ðŸ‘¤ User id=1 already exists.")
+                logger.info("Ã°Å¸â€˜Â¤ User id=1 already exists.")
         except Exception as e:
-            logger.error(f"âŒ Failed to seed user: {e}")
+            logger.error(f"Ã¢ÂÅ’ Failed to seed user: {e}")
             db.rollback()
         finally:
             db.close()
             
     except Exception as db_error:
         logger.warning(f"Database initialization skipped: {db_error}")
-        logger.info("âš ï¸ Running without database - some features may not work")
+        logger.info("Ã¢Å¡Â Ã¯Â¸Â Running without database - some features may not work")
     
-    # ðŸ”¥ START BACKGROUND CACHE WARMING for 70%+ hit rate
+    # Ã°Å¸â€Â¥ START BACKGROUND CACHE WARMING for 70%+ hit rate
     try:
-        logger.info("ðŸš€ Starting intelligent cache warming for 39-agency system...")
+        logger.info("Ã°Å¸Å¡â‚¬ Starting intelligent cache warming for 39-agency system...")
         asyncio.create_task(start_background_cache_warming())
-        logger.info("âœ… Background cache warming started - will boost hit rate to 70%+")
+        logger.info("Ã¢Å“â€¦ Background cache warming started - will boost hit rate to 70%+")
     except Exception as e:
         logger.warning(f"Cache warming startup failed: {e}")
 
@@ -1417,7 +1434,7 @@ async def shutdown_event():
     try:
         # Dispose of the engine connection pool
         engine.dispose()
-        logger.info("âœ… Database connections closed cleanly")
+        logger.info("Ã¢Å“â€¦ Database connections closed cleanly")
     except Exception as e:
         logger.error(f"Error during shutdown: {e}")
 
@@ -1497,7 +1514,7 @@ def test_endpoint():
     return {
         "status": "ok",
         "message": "BabyShield API is running",
-        "environment": os.getenv("ENVIRONMENT", "development"),
+        "environment": (config.ENVIRONMENT if CONFIG_LOADED else os.getenv("ENVIRONMENT", "development")),
         "timestamp": datetime.datetime.now().isoformat(),
         "version": "2.4.0"
     }
@@ -1553,12 +1570,12 @@ async def warm_cache():
 @app.post("/api/v1/safety-check")
 @limiter.limit("30 per minute")  # Rate limiting for bursty endpoint
 async def safety_check(req: SafetyCheckRequest, request: Request):
-    # âš¡ PERFORMANCE MONITORING - Track response times for 39-agency system
+    # Ã¢Å¡Â¡ PERFORMANCE MONITORING - Track response times for 39-agency system
     start_time = datetime.now()
     logger = logging.getLogger(__name__)
     logger.info(f"Safety-check for user_id={req.user_id}, barcode={req.barcode}, model_number={req.model_number}, product_name={req.product_name}")
     
-    # ðŸš€ SMART VALIDATION - Optimize for common use cases
+    # Ã°Å¸Å¡â‚¬ SMART VALIDATION - Optimize for common use cases
     if not req.barcode and not req.model_number and not req.image_url and not req.product_name:
         return JSONResponse(
             status_code=400,
@@ -1598,7 +1615,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
 
     # 4b) Run the full live workflow and return its raw result (with environment-aware error handling)
     try:
-        # ðŸš€ USE OPTIMIZED ASYNC WORKFLOW for 3-5x performance boost!
+        # Ã°Å¸Å¡â‚¬ USE OPTIMIZED ASYNC WORKFLOW for 3-5x performance boost!
         result = await run_optimized_safety_check({
             "user_id":      req.user_id,
             "barcode":      req.barcode,
@@ -1610,7 +1627,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         
         # Fallback to standard workflow if optimized fails
         if result.get("status") == "FAILED" and "optimized workflow error" in result.get("error", ""):
-            logger.warning("âš ï¸ Optimized workflow failed, falling back to standard workflow...")
+            logger.warning("Ã¢Å¡Â Ã¯Â¸Â Optimized workflow failed, falling back to standard workflow...")
         result = await commander_agent.start_safety_check_workflow({
                 "user_id":      req.user_id,
                 "barcode":      req.barcode,
@@ -1622,7 +1639,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         
         # If workflow succeeds with real data, return it with performance info
         if result.get("status") == "COMPLETED" and result.get("data"):
-            # âš¡ ADD PERFORMANCE METRICS to successful responses
+            # Ã¢Å¡Â¡ ADD PERFORMANCE METRICS to successful responses
             response_time = int((datetime.now() - start_time).total_seconds() * 1000)
             
             # Enhance the response with performance data
@@ -1632,7 +1649,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                 enhanced_result["data"]["agencies_checked"] = 39
                 enhanced_result["data"]["performance"] = "optimized" if response_time < 1000 else "standard"
                 
-                # ðŸŽ¯ INTEGRATE PREMIUM FEATURES: Pregnancy & Allergy Checks
+                # Ã°Å¸Å½Â¯ INTEGRATE PREMIUM FEATURES: Pregnancy & Allergy Checks
                 premium_alerts = []
                 
                 # Pregnancy safety check if requested
@@ -1652,7 +1669,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                                 "trimester": req.pregnancy_trimester
                             }
                             for alert in pregnancy_result.get("alerts", []):
-                                premium_alerts.append(f"âš ï¸ PREGNANCY: {alert['ingredient']} - {alert.get('reason', 'Risk during pregnancy')}")
+                                premium_alerts.append(f"Ã¢Å¡Â Ã¯Â¸Â PREGNANCY: {alert['ingredient']} - {alert.get('reason', 'Risk during pregnancy')}")
                         else:
                             enhanced_result["data"]["pregnancy_safety"] = {
                                 "safe": True,
@@ -1679,7 +1696,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                             }
                             for alert in allergy_result.get("alerts", []):
                                 allergens = ", ".join(alert.get("found_allergens", []))
-                                premium_alerts.append(f"âš ï¸ ALLERGY ({alert['member_name']}): Contains {allergens}")
+                                premium_alerts.append(f"Ã¢Å¡Â Ã¯Â¸Â ALLERGY ({alert['member_name']}): Contains {allergens}")
                         else:
                             enhanced_result["data"]["allergy_safety"] = {"safe": True}
                     except Exception as allergy_err:
@@ -1692,7 +1709,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                     enhanced_result["data"]["summary"] = current_summary + "\n\nPREMIUM SAFETY ALERTS:\n" + "\n".join(premium_alerts)
                     enhanced_result["data"]["premium_checks_performed"] = True
                 
-                # ðŸ”„ AUTO-SUGGEST ALTERNATIVES if recall found
+                # Ã°Å¸â€â€ž AUTO-SUGGEST ALTERNATIVES if recall found
                 if enhanced_result["data"].get("recalls_found") or enhanced_result["data"].get("risk_level") in ["Medium", "High", "Critical"]:
                     try:
                         from agents.value_add.alternatives_agent.agent_logic import AlternativesAgentLogic
@@ -1715,9 +1732,9 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                                 enhanced_result["data"]["alternatives_suggested"] = len(alternatives)
                                 
                                 # Add to summary
-                                alt_summary = "\n\nâœ… SAFER ALTERNATIVES AVAILABLE:\n"
+                                alt_summary = "\n\nÃ¢Å“â€¦ SAFER ALTERNATIVES AVAILABLE:\n"
                                 for alt in alternatives[:3]:
-                                    alt_summary += f"â€¢ {alt['product_name']}: {alt['reason']}\n"
+                                    alt_summary += f"Ã¢â‚¬Â¢ {alt['product_name']}: {alt['reason']}\n"
                                 enhanced_result["data"]["summary"] = enhanced_result["data"].get("summary", "") + alt_summary
                                 
                     except Exception as alt_err:
@@ -1728,7 +1745,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         # If workflow returns no data, handle based on environment
         if ENVIRONMENT in ["development", "staging"]:
             logger.warning(f"Workflow returned no data, using mock response for {ENVIRONMENT} environment")
-            # âš¡ ADD PERFORMANCE METRICS to mock responses
+            # Ã¢Å¡Â¡ ADD PERFORMANCE METRICS to mock responses
             response_time = int((datetime.now() - start_time).total_seconds() * 1000)
             return JSONResponse(
                 status_code=200,
@@ -1910,7 +1927,7 @@ async def autocomplete_products(
         # Normalize query for consistent matching
         q_norm = normalize_query(q)
         
-        # ðŸš€ CHECK CACHE FIRST for instant responses
+        # Ã°Å¸Å¡â‚¬ CHECK CACHE FIRST for instant responses
         cache_key = f"autocomplete_{q_norm}_{limit}_{domain or 'all'}"
         cached_suggestions = get_cached("autocomplete", cache_key)
         if cached_suggestions:
@@ -1999,7 +2016,7 @@ async def autocomplete_products(
                     if len(unique_suggestions) >= limit:
                         break
             
-            # ðŸš€ CACHE THE RESULTS for instant future responses
+            # Ã°Å¸Å¡â‚¬ CACHE THE RESULTS for instant future responses
             set_cached("autocomplete", cache_key, unique_suggestions, ttl=3600)
             
             return JSONResponse(
@@ -2133,7 +2150,7 @@ async def advanced_search(request: Request):
     - pg_trgm fuzzy text search
     - Exact ID lookup
     - Keyword AND logic
-    - Deterministic sorting (score â†’ date â†’ id)
+    - Deterministic sorting (score Ã¢â€ â€™ date Ã¢â€ â€™ id)
     """
     logger = logging.getLogger(__name__)
     trace_id = f"trace_{uuid.uuid4().hex[:16]}_{int(datetime.now().timestamp())}"
@@ -2728,7 +2745,7 @@ async def mobile_scan(req: MobileScanRequest):
     """
     start_time = datetime.now()
     logger = logging.getLogger(__name__)
-    logger.info(f"ðŸ“± Mobile scan: user={req.user_id}, barcode={req.barcode}, quick={req.quick_scan}")
+    logger.info(f"Ã°Å¸â€œÂ± Mobile scan: user={req.user_id}, barcode={req.barcode}, quick={req.quick_scan}")
     
     try:
         # Use existing safety check logic but optimized for mobile, including premium features
@@ -2849,7 +2866,7 @@ async def mobile_instant_check(
     x_user_id: Optional[int] = Header(None, alias="X-User-Id", description="User ID (header)")
 ):
     """
-    ðŸš€ ULTRA-FAST mobile endpoint using hot path optimization
+    Ã°Å¸Å¡â‚¬ ULTRA-FAST mobile endpoint using hot path optimization
     Target: <100ms responses for real-time scanning across 39 agencies
     """
     logger = logging.getLogger(__name__)
@@ -2902,7 +2919,7 @@ async def mobile_quick_check(
     x_user_id: Optional[int] = Header(None, alias="X-User-Id", description="User ID (header)")
 ):
     """
-    ðŸŽ¯ OPTIMIZED mobile endpoint with enhanced caching
+    Ã°Å¸Å½Â¯ OPTIMIZED mobile endpoint with enhanced caching
     Backward compatible but now much faster with optimizations
     """
     logger = logging.getLogger(__name__)
@@ -2981,10 +2998,10 @@ async def mobile_performance_stats():
 @app.post("/system/fix-upc-data", tags=["system"])
 async def fix_upc_data():
     """
-    ðŸš¨ CRITICAL FIX: Enhance existing recalls with UPC data for proper barcode scanning
+    Ã°Å¸Å¡Â¨ CRITICAL FIX: Enhance existing recalls with UPC data for proper barcode scanning
     """
     logger = logging.getLogger(__name__)
-    logger.info("ðŸš¨ Starting critical UPC data enhancement...")
+    logger.info("Ã°Å¸Å¡Â¨ Starting critical UPC data enhancement...")
     
     try:
         from core_infra.database import RecallDB
@@ -3040,7 +3057,7 @@ async def fix_upc_data():
                                 
                                 recall.upc = enhanced_upc
                                 enhanced_count += 1
-                                logger.info(f"âœ… Enhanced '{recall.product_name[:40]}...' with UPC {enhanced_upc}")
+                                logger.info(f"Ã¢Å“â€¦ Enhanced '{recall.product_name[:40]}...' with UPC {enhanced_upc}")
                                 break
                 
                 except Exception as e:
@@ -3049,7 +3066,7 @@ async def fix_upc_data():
             # Commit changes
             if enhanced_count > 0:
                 db.commit()
-                logger.info(f"ðŸŽ¯ Successfully enhanced {enhanced_count} recalls with UPC data")
+                logger.info(f"Ã°Å¸Å½Â¯ Successfully enhanced {enhanced_count} recalls with UPC data")
             
             # Get final statistics
             final_upc_count = db.query(RecallDB).filter(RecallDB.upc.isnot(None)).count()
@@ -3066,7 +3083,7 @@ async def fix_upc_data():
                 "impact": "Barcode scanning now functional!"
             }
             
-            logger.info(f"ðŸŽ‰ UPC Enhancement Complete: {upc_coverage}% coverage achieved!")
+            logger.info(f"Ã°Å¸Å½â€° UPC Enhancement Complete: {upc_coverage}% coverage achieved!")
             
             return result
             
@@ -3086,7 +3103,9 @@ if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
         app, 
-        host="0.0.0.0", 
-        port=8001,
+        host=getattr(config, "HOST", "0.0.0.0") if CONFIG_LOADED else "0.0.0.0",
+        port=getattr(config, "PORT", 8001) if CONFIG_LOADED else 8001,
         lifespan="off"  # Silence ASGI lifespan warning
     )
+
+
