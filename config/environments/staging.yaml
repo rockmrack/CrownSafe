@@ -1,0 +1,58 @@
+# Staging Environment Configuration
+# Production-like settings for testing and staging
+
+app:
+  name: "BabyShield Backend (Staging)"
+  debug: false
+  reload: false
+  log_level: "DEBUG"  # More verbose for testing
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+
+database:
+  url: "${DATABASE_URL:-sqlite:///./babyshield_staging.db}"
+  echo: true  # Show queries for debugging
+
+security:
+  secret_key: "${SECRET_KEY:-staging-secret-key-change-me}"
+  token_expire_minutes: 30
+
+cors:
+  origins:
+    - "https://staging.yourdomain.com"
+    - "https://staging-api.yourdomain.com"
+    - "http://localhost:3000"  # For testing
+
+uploads:
+  directory: "/app/uploads_staging"
+  max_size_mb: 25
+
+ai:
+  model_cache_dir: "/app/models_staging"
+  openai_api_key: "${OPENAI_API_KEY}"
+
+rate_limiting:
+  enabled: true
+  requests_per_minute: 200  # More relaxed for testing
+  period_seconds: 60
+
+monitoring:
+  enabled: true
+  metrics_port: 9090
+
+workers:
+  broker_url: "${CELERY_BROKER_URL:-redis://redis:6379/1}"
+  result_backend: "${CELERY_RESULT_BACKEND:-redis://redis:6379/1}"
+
+security_headers:
+  ssl_redirect: false  # May not have SSL in staging
+  hsts_seconds: 0
+  hsts_include_subdomains: false
+  frame_deny: true
+  content_type_nosniff: true
+
+trusted_hosts:
+  - "staging.yourdomain.com"
+  - "staging-api.yourdomain.com"

@@ -1,0 +1,81 @@
+# Development Docker Compose Configuration
+# Optimized for local development with hot reload and debugging
+
+version: '3.8'
+
+services:
+  babyshield-backend:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    container_name: babyshield-backend-dev
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - RELOAD=true
+      - DATABASE_URL=sqlite:///./babyshield_dev.db
+      - SECRET_KEY=dev-secret-key-not-for-production
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - ../..:/app
+      - uploads_dev:/app/uploads_dev
+      - models_dev:/app/models_dev
+    depends_on:
+      - redis
+      - postgres-dev
+    networks:
+      - babyshield-dev
+    restart: unless-stopped
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: babyshield-postgres-dev
+    environment:
+      - POSTGRES_DB=babyshield_dev
+      - POSTGRES_USER=babyshield_user
+      - POSTGRES_PASSWORD=dev_password_change_me
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - babyshield-dev
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: babyshield-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - babyshield-dev
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  nginx-dev:
+    image: nginx:alpine
+    container_name: babyshield-nginx-dev
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - babyshield-backend
+    networks:
+      - babyshield-dev
+    restart: unless-stopped
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
+  uploads_dev:
+  models_dev:
+
+networks:
+  babyshield-dev:
+    driver: bridge

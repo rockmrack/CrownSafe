@@ -1,0 +1,45 @@
+# Development Environment Configuration
+# Override settings for local development
+
+app:
+  name: "BabyShield Backend (Development)"
+  debug: true
+  reload: true
+  log_level: "DEBUG"
+
+server:
+  host: "127.0.0.1"
+  port: 8000
+
+database:
+  url: "sqlite:///./babyshield_dev.db"
+  echo: true
+
+security:
+  secret_key: "dev-secret-key-not-for-production"
+  token_expire_minutes: 60
+
+cors:
+  origins:
+    - "http://localhost:3000"
+    - "http://localhost:8080"
+    - "http://127.0.0.1:3000"
+    - "http://127.0.0.1:8080"
+    - "http://localhost:5173"
+
+uploads:
+  directory: "uploads_dev"
+  max_size_mb: 50
+
+ai:
+  model_cache_dir: "models_dev"
+
+rate_limiting:
+  enabled: false
+
+monitoring:
+  enabled: false
+
+workers:
+  broker_url: "redis://localhost:6379/0"
+  result_backend: "redis://localhost:6379/0"

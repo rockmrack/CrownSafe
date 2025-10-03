@@ -1,0 +1,133 @@
+# Production Docker Compose Configuration
+# Optimized for production deployment with security and performance
+
+version: '3.8'
+
+services:
+  babyshield-backend:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.final
+    container_name: babyshield-backend-prod
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LOG_LEVEL=INFO
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - uploads_prod:/app/uploads
+      - models_prod:/app/models
+      - logs_prod:/app/logs
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - babyshield-prod
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: babyshield-postgres-prod
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-babyshield}
+      - POSTGRES_USER=${POSTGRES_USER:-babyshield_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - babyshield-prod
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-babyshield_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: babyshield-redis-prod
+    volumes:
+      - redis_prod_data:/data
+    networks:
+      - babyshield-prod
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  nginx:
+    image: nginx:alpine
+    container_name: babyshield-nginx-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - uploads_prod:/app/uploads:ro
+    depends_on:
+      - babyshield-backend
+    networks:
+      - babyshield-prod
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  celery-worker:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.final
+    container_name: babyshield-celery-worker
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=${DATABASE_URL}
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - SECRET_KEY=${SECRET_KEY}
+    volumes:
+      - uploads_prod:/app/uploads
+      - models_prod:/app/models
+      - logs_prod:/app/logs
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - babyshield-prod
+    restart: unless-stopped
+    command: celery -A workers.celery worker --loglevel=info
+
+volumes:
+  postgres_prod_data:
+  redis_prod_data:
+  uploads_prod:
+  models_prod:
+  logs_prod:
+
+networks:
+  babyshield-prod:
+    driver: bridge
+
+secrets:
+  postgres_password:
+    external: true
+  redis_password:
+    external: true
+  secret_key:
+    external: true
