@@ -258,6 +258,49 @@ if STRUCTURED_LOGGING_ENABLED:
     except Exception as e:
         logger.warning(f"Could not add logging middleware: {e}")
 
+# ===== PHASE 2: SECURITY HEADERS MIDDLEWARE =====
+# Add comprehensive security headers (OWASP-compliant)
+try:
+    from utils.security.security_headers import (
+        SecurityHeadersMiddleware,
+        RateLimitMiddleware,
+        RequestSizeLimitMiddleware
+    )
+    
+    # Add request size limiting (DoS protection)
+    app.add_middleware(RequestSizeLimitMiddleware, max_body_size=10 * 1024 * 1024)
+    logger.info("✅ Request size limiting middleware added")
+    
+    # Add security headers
+    app.add_middleware(
+        SecurityHeadersMiddleware,
+        enable_hsts=IS_PRODUCTION,
+        enable_csp=True,
+        enable_frame_options=True,
+        enable_xss_protection=True,
+    )
+    logger.info("✅ Phase 2 SecurityHeadersMiddleware added")
+    
+    # Add rate limiting (more lenient in development)
+    if IS_PRODUCTION:
+        app.add_middleware(RateLimitMiddleware, requests_per_minute=60, burst_size=10)
+    else:
+        app.add_middleware(RateLimitMiddleware, requests_per_minute=120, burst_size=20)
+    logger.info("✅ Rate limiting middleware added")
+    
+    logger.info("✅ Phase 2 security headers middleware activated")
+    logger.info("✅ OWASP-compliant security headers enabled")
+    
+except ImportError as e:
+    logger.error(f"❌ Phase 2 security middleware IMPORT FAILED: {e}")
+    import traceback
+    logger.error(f"Traceback: {traceback.format_exc()}")
+except Exception as e:
+    logger.error(f"❌ Phase 2 security middleware REGISTRATION FAILED: {e}")
+    import traceback
+    logger.error(f"Traceback: {traceback.format_exc()}")
+# ===== END PHASE 2 SECURITY =====
+
 def generate_unique_operation_id(route):
     """Generate unique operation IDs to prevent OpenAPI conflicts"""
     return f"{route.name}_{route.path.replace('/', '_').replace('{', '').replace('}', '').strip('_')}"
@@ -465,15 +508,8 @@ except Exception as e:
 # Ã°Å¸â€”Å“Ã¯Â¸Â PERFORMANCE: Add response compression for faster mobile/API responses
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-# Enhanced Security Middleware (bulletproof protection)
-try:
-    from security.security_headers import bulletproof_security_middleware
-    app.middleware("http")(bulletproof_security_middleware)
-    logging.info("Ã¢Å“â€¦ Bulletproof security middleware enabled")
-except ImportError as e:
-    logging.warning(f"Enhanced security middleware not available: {e}")
-except Exception as e:
-    logging.warning(f"Enhanced security middleware disabled due to dependency issue: {e}")
+# NOTE: Old security middleware replaced with Phase 2 OWASP-compliant middleware (see lines 261-297)
+# The new middleware includes: SecurityHeaders, RateLimiting, RequestSizeLimiting
 
 # Trusted Host Middleware (prevent Host header attacks)
 app.add_middleware(
@@ -488,10 +524,14 @@ app.add_middleware(
 )
 
 # Add security headers middleware for app store compliance
+# ✅ DISABLED: Phase 2 middleware is now active and working!
+# The OLD middleware was overwriting Phase 2 headers due to middleware execution order.
+# Phase 2 provides ALL the same headers plus more (CSP, Permissions-Policy, etc.)
 try:
-    from core_infra.security_headers_middleware import SecurityHeadersMiddleware
-    app.add_middleware(SecurityHeadersMiddleware)
-    logging.info("Ã¢Å“â€¦ Security headers middleware added")
+    pass  # OLD middleware permanently disabled - Phase 2 is superior
+    # from core_infra.security_headers_middleware import SecurityHeadersMiddleware as OldSecurityMiddleware
+    # app.add_middleware(OldSecurityMiddleware)
+    logging.info("✅ Using Phase 2 security headers exclusively (OLD middleware disabled)")
 except Exception as e:
     logging.warning(f"Could not add security headers middleware: {e}")
 
@@ -642,6 +682,72 @@ async def security_middleware(request: Request, call_next):
     
     response = await call_next(request)
     return response
+
+
+# ===== PHASE 2: SECURITY HEADERS (DECORATOR PATTERN) =====
+# Add comprehensive OWASP security headers to ALL responses
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    """
+    Add OWASP-recommended security headers to all responses.
+    
+    Implements:
+    - Content Security Policy (CSP) - XSS protection
+    - X-Frame-Options - Clickjacking protection
+    - X-Content-Type-Options - MIME sniffing protection
+    - Strict-Transport-Security (HSTS) - HTTPS enforcement (production only)
+    - X-XSS-Protection - Legacy XSS filter
+    - Referrer-Policy - Privacy protection
+    - Permissions-Policy - Feature restrictions
+    - X-Permitted-Cross-Domain-Policies - Flash/Adobe policy
+    """
+    response = await call_next(request)
+    
+    # 1. Content-Security-Policy (CSP)
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; "
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+        "img-src 'self' data: https:; "
+        "font-src 'self' data: https://fonts.gstatic.com; "
+        "connect-src 'self' https://api.babyshield.cureviax.ai; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'"
+    )
+    
+    # 2. X-Frame-Options (Clickjacking protection)
+    response.headers["X-Frame-Options"] = "DENY"
+    
+    # 3. X-Content-Type-Options (MIME sniffing protection)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    
+    # 4. Strict-Transport-Security (HSTS) - only in production
+    if IS_PRODUCTION:
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+    
+    # 5. X-XSS-Protection (legacy, but still useful)
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    
+    # 6. Referrer-Policy (privacy)
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    
+    # 7. Permissions-Policy (feature restrictions)
+    response.headers["Permissions-Policy"] = (
+        "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+    )
+    
+    # 8. X-Permitted-Cross-Domain-Policies
+    response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+    
+    # 9. Cache-Control for sensitive endpoints
+    if request.url.path.startswith(("/api/v1/auth", "/api/v1/user")):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+    
+    return response
+# ===== END PHASE 2 SECURITY HEADERS =====
+
 
 # Add all production middleware
 # Security middleware - not implemented yet
