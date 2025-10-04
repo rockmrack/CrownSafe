@@ -72,6 +72,17 @@ test_*.db
 *.bak
 *~
 
+# Secrets and credentials - NEVER commit these!
+secrets/
+serviceAccountKey.json
+*.pem
+*.key
+*.crt
+*_secret.json
+*_credentials.json
+.env.production
+.env.staging
+
 # Flask stuff:
 instance/
 .webassets-cache
