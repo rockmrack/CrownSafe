@@ -15,7 +15,7 @@ from core_infra.subscription_service import SubscriptionService
 from core_infra.receipt_validator import ReceiptValidationService
 from core_infra.subscription_config import SubscriptionConfig
 from core_infra.rate_limiter import limiter
-from services.dev_override import dev_entitled
+from api.services.dev_override import dev_entitled
 
 logger = logging.getLogger(__name__)
 

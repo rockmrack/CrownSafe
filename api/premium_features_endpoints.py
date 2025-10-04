@@ -437,7 +437,7 @@ async def check_pregnancy_safety_dev(
     """
     try:
         # Check dev override for premium features
-        from services.dev_override import dev_entitled
+        from api.services.dev_override import dev_entitled
         REQUIRED_FEATURE = "premium.pregnancy"
         
         if not dev_entitled(payload.user_id or 0, REQUIRED_FEATURE):
@@ -480,7 +480,7 @@ async def check_allergy_safety_dev(
     """
     try:
         # Check dev override for premium features
-        from services.dev_override import dev_entitled
+        from api.services.dev_override import dev_entitled
         REQUIRED_FEATURE = "premium.allergy"
         
         if not dev_entitled(payload.user_id or 0, REQUIRED_FEATURE):
@@ -531,7 +531,7 @@ async def comprehensive_safety_check(
         logger.info(f"Comprehensive safety check for user {request.user_id}")
         
         # Check dev override for premium features
-        from services.dev_override import dev_entitled
+        from api.services.dev_override import dev_entitled
         REQUIRED_FEATURE = "safety.comprehensive"
         
         if not dev_entitled(request.user_id, REQUIRED_FEATURE):

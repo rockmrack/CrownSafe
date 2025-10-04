@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from core_infra.database import get_db_session
 from core_infra.enhanced_barcode_service import enhanced_barcode_service, ExactScanResult
 from core_infra.barcode_validator import BarcodeType, ValidationResult
-from services.dev_override import dev_entitled
+from api.services.dev_override import dev_entitled
 
 logger = logging.getLogger(__name__)
 

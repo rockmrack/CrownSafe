@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 
 from core_infra.database import get_db
-from services.search_service import SearchService
+from api.services.search_service import SearchService
 
 logger = logging.getLogger(__name__)
 

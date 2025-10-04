@@ -1361,7 +1361,7 @@ except Exception as e:
 
 # Include Security Monitoring Dashboard
 try:
-    from security.monitoring_dashboard import router as security_dashboard_router
+    from api.security.monitoring_dashboard import router as security_dashboard_router
     app.include_router(security_dashboard_router, tags=["security-monitoring"])
     logging.info("Ã¢Å“â€¦ Security monitoring dashboard deployed")
 except ImportError as e:
@@ -1745,7 +1745,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         )
 
     # 4a) DEV override bypass - check dev entitlement first
-    from services.dev_override import dev_entitled
+    from api.services.dev_override import dev_entitled
     REQUIRED_FEATURE = "safety.check"
     
     if dev_entitled(req.user_id, REQUIRED_FEATURE):
@@ -2303,7 +2303,7 @@ async def advanced_search(request: Request):
     trace_id = f"trace_{uuid.uuid4().hex[:16]}_{int(datetime.now().timestamp())}"
     
     # Import search service
-    from services.search_service import SearchService
+    from api.services.search_service import SearchService
     
     # Parse request body manually
     try:

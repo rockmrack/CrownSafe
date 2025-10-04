@@ -25,7 +25,7 @@ from api.utils import (
     add_cache_headers
 )
 from api.utils.redis_cache import get_cache, RedisSearchCache
-from services.search_service_v2 import SearchServiceV2
+from api.services.search_service_v2 import SearchServiceV2
 from core_infra.database import get_db
 from core_infra.enhanced_database_schema import EnhancedRecallDB
 

@@ -139,7 +139,7 @@ async def generate_90_day_report_dev(
     """
     try:
         # Check dev override for premium features
-        from services.dev_override import dev_entitled
+        from api.services.dev_override import dev_entitled
         REQUIRED_FEATURE = "safety.comprehensive"
         
         if not dev_entitled(request.user_id, REQUIRED_FEATURE):
@@ -652,7 +652,7 @@ async def generate_quarterly_nursery_report_dev(
     """
     try:
         # Check dev override for premium features
-        from services.dev_override import dev_entitled
+        from api.services.dev_override import dev_entitled
         REQUIRED_FEATURE = "safety.comprehensive"
         
         if not dev_entitled(request.user_id, REQUIRED_FEATURE):
