@@ -603,9 +603,17 @@ async def track_scan(
     Called after each scan to build history for reports
     """
     try:
-        # Create scan history record
+        # Validate required fields
+        if not scan_data:
+            raise HTTPException(status_code=400, detail="scan_data is required")
+        
+        user_id = scan_data.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=400, detail="user_id is required")
+        
+        # Create scan history record with safe defaults
         scan_history = ScanHistory(
-            user_id=scan_data.get("user_id"),
+            user_id=user_id,
             scan_id=scan_data.get("scan_id", f"scan_{uuid.uuid4().hex[:8]}"),
             product_name=scan_data.get("product_name"),
             brand=scan_data.get("brand"),
@@ -628,6 +636,7 @@ async def track_scan(
         
         db.add(scan_history)
         db.commit()
+        db.refresh(scan_history)
         
         return ApiResponse(
             success=True,
@@ -637,8 +646,10 @@ async def track_scan(
             }
         )
         
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Error tracking scan: {e}")
+        logger.error(f"Error tracking scan: {e}", exc_info=True)
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 

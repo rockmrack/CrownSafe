@@ -286,12 +286,23 @@ async def get_subscription_history(
     
     Returns a list of past and current subscriptions.
     """
-    history = SubscriptionService.get_subscription_history(current_user.id, limit)
-    
-    return {
-        "subscriptions": history,
-        "count": len(history)
-    }
+    try:
+        # Ensure user is authenticated
+        if not current_user or not hasattr(current_user, 'id'):
+            raise HTTPException(status_code=401, detail="Authentication required")
+        
+        history = SubscriptionService.get_subscription_history(current_user.id, limit)
+        
+        return {
+            "subscriptions": history or [],
+            "count": len(history) if history else 0
+        }
+    except HTTPException:
+        # Re-raise HTTP exceptions (like 401)
+        raise
+    except Exception as e:
+        logger.error(f"Error getting subscription history for user {current_user.id if current_user else 'unknown'}: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to retrieve subscription history")
 
 @router.get("/history-dev")
 async def get_subscription_history_dev(
