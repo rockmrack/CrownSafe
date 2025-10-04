@@ -842,10 +842,9 @@ async def chat_flags(request: Request) -> JSONResponse:
 @router.post("/demo")
 async def chat_demo(
     request: Request,
-    user_query: str,
-    chat_agent: ChatAgentLogic = Depends(get_chat_agent)
+    user_query: str
 ) -> JSONResponse:
-    """Demo endpoint without database requirement"""
+    """Demo endpoint that does not require database access."""
     try:
         trace_id = getattr(request.state, "trace_id", str(uuid4()))
         
@@ -860,6 +859,19 @@ async def chat_demo(
         
         # Generate response
         llm_client = get_llm_client()
+        if not llm_client:
+            # Provide fallback if LLM client fails to initialize
+            return JSONResponse({
+                "success": True,
+                "data": {
+                    "summary": "Demo response: I can help you understand product safety information.",
+                    "reasons": ["This is a demo endpoint showing chat functionality"],
+                    "checks": ["Always check product labels", "Verify expiration dates"],
+                    "flags": ["demo_mode"]
+                },
+                "traceId": trace_id
+            })
+        
         response = llm_client.chat_json(user=user_query)
         
         return JSONResponse({
@@ -869,10 +881,14 @@ async def chat_demo(
         })
         
     except Exception as e:
-        logger.error(f"Demo error: {e}")
+        logger.error(f"Demo error: {e}", exc_info=True)
         return JSONResponse(
             status_code=500,
-            content={"success": False, "error": str(e)}
+            content={
+                "success": False, 
+                "error": {"code": "INTERNAL_ERROR", "message": "An internal error occurred"},
+                "traceId": getattr(request.state, "trace_id", "unknown")
+            }
         )
 
 
