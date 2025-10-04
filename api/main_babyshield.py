@@ -104,27 +104,26 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-# 1) Imports with error handling - DEPLOYMENT FIX (UPDATED)
+# 1) Core imports - Must succeed or application fails immediately
+# COPILOT AUDIT FIX: Removed masking try/except block that was hiding import failures
+from core_infra.database import get_db_session, User, engine
+from core_infra.cache_manager import get_cache_stats
+from core_infra.async_optimizer import run_optimized_safety_check
+from core_infra.connection_pool_optimizer import optimized_recall_search, connection_optimizer
+from core_infra.smart_cache_warmer import warm_cache_now, start_background_cache_warming
+from core_infra.mobile_hot_path import ultra_fast_check, get_mobile_stats
+from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
+from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
+
+# Optional imports - Graceful degradation for performance monitoring only
 try:
-    from core_infra.database import get_db_session, User, engine
-    from core_infra.cache_manager import get_cache_stats
-    from core_infra.async_optimizer import run_optimized_safety_check
-    from core_infra.connection_pool_optimizer import optimized_recall_search, connection_optimizer
-    from core_infra.smart_cache_warmer import warm_cache_now, start_background_cache_warming
-    from core_infra.mobile_hot_path import ultra_fast_check, get_mobile_stats
     from core_infra.memory_optimizer import get_memory_stats, optimize_memory
-    from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
-    from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
+    MEMORY_OPTIMIZATION_ENABLED = True
 except ImportError as e:
-    logging.error(f"Critical import error: {e}")
-    # Set fallback values for development
-    if ENVIRONMENT == "development":
-        logging.warning("Running in development mode with limited functionality")
-        get_db_session = None
-        User = None
-        engine = None
-    else:
-        raise
+    logger.warning(f"Memory optimization disabled: {e}")
+    MEMORY_OPTIMIZATION_ENABLED = False
+    get_memory_stats = lambda *args, **kwargs: {"status": "disabled"}
+    optimize_memory = lambda *args, **kwargs: None
 
 # 2) Pydantic models
 class SafetyCheckRequest(AppModel):

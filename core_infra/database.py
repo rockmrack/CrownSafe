@@ -146,65 +146,17 @@ class Allergy(Base):
 
 
 # -------------------------------------------------------------------
-# Migration: add missing columns and handle existing ones
+# COPILOT AUDIT FIX: Removed runtime schema modification functions
+# These have been replaced with proper Alembic migrations:
+# - alembic/versions/202410_04_add_user_columns.py
+# 
+# If you need to modify the database schema:
+# 1. Create a new Alembic migration: `alembic revision -m "description"`
+# 2. Edit the generated file in alembic/versions/
+# 3. Run the migration: `alembic upgrade head`
+#
+# DO NOT add runtime schema modifications here!
 # -------------------------------------------------------------------
-def ensure_user_columns():
-    """Add missing columns and handle deprecated columns from users table."""
-    insp = inspect(engine)
-    if "users" not in insp.get_table_names():
-        return
-
-    existing = {col["name"] for col in insp.get_columns("users")}
-    migrations = []
-    
-    # Add new columns only if they don't exist
-    if "hashed_password" not in existing:
-        migrations.append("ALTER TABLE users ADD COLUMN hashed_password TEXT NOT NULL DEFAULT ''")
-    if "is_pregnant" not in existing:
-        migrations.append("ALTER TABLE users ADD COLUMN is_pregnant BOOLEAN DEFAULT FALSE")
-    if "is_active" not in existing:
-        migrations.append("ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT TRUE")
-    
-    # Handle is_subscribed column
-    if "is_subscribed" not in existing:
-        if "is_premium" in existing:
-            # Migrate from is_premium to is_subscribed
-            migrations.append("ALTER TABLE users ADD COLUMN is_subscribed BOOLEAN DEFAULT FALSE")
-            migrations.append("UPDATE users SET is_subscribed = is_premium")
-        else:
-            # Just add is_subscribed
-            migrations.append("ALTER TABLE users ADD COLUMN is_subscribed BOOLEAN DEFAULT FALSE")
-    
-    # Apply migrations
-    if migrations:
-        with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
-            for ddl in migrations:
-                try:
-                    print(f"Applying migration: {ddl}")
-                    conn.execute(text(ddl))
-                except Exception as e:
-                    print(f"Migration already applied or error: {e}")
-        print("User table migrations completed.")
-    
-    # Handle column cleanup separately
-    cleanup_deprecated_columns()
-
-def cleanup_deprecated_columns():
-    """Remove deprecated columns if they exist."""
-    insp = inspect(engine)
-    if "users" not in insp.get_table_names():
-        return
-    
-    existing = {col["name"] for col in insp.get_columns("users")}
-    
-    # Only try to drop is_premium if it exists and we're on PostgreSQL
-    if "is_premium" in existing and DATABASE_URL.startswith("postgresql"):
-        try:
-            with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
-                conn.execute(text("ALTER TABLE users DROP COLUMN is_premium"))
-                print("Removed deprecated is_premium column")
-        except Exception as e:
-            print(f"Note: Could not remove is_premium column: {e}")
 
 # -------------------------------------------------------------------
 # Helper functions
@@ -233,7 +185,8 @@ def drop_all_tables_forcefully():
 # This prevents import errors when database is not available
 if os.getenv("CREATE_TABLES_ON_IMPORT", "false").lower() == "true":
     Base.metadata.create_all(bind=engine)
-    ensure_user_columns()
+    # COPILOT AUDIT FIX: Removed ensure_user_columns() call
+    # Database schema changes now handled by Alembic migrations
 
 # -------------------------------------------------------------------
 # Session context manager
@@ -276,7 +229,8 @@ def get_test_session():
 
 def create_tables():
     Base.metadata.create_all(bind=engine)
-    ensure_user_columns()
+    # COPILOT AUDIT FIX: Removed ensure_user_columns() call
+    # Database schema changes now handled by Alembic migrations
 
 def drop_tables():
     """Drop all tables handling foreign key constraints."""
