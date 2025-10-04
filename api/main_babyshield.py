@@ -1975,14 +1975,24 @@ async def suggest_product_from_image(request: Dict[str, Any]):
     
     logger.info(f"Received request for /api/v1/visual/suggest-product with image_url: {image_url}, image_id: {image_id}")
 
-    if not visual_search_agent:
-        raise HTTPException(status_code=503, detail="Visual search service is not ready.")
-    
     # Validate that at least one image input is provided
     if not any([image_url, image_id, image_base64]):
         raise HTTPException(
             status_code=400, 
             detail="One of image_url, image_id, or image_base64 is required."
+        )
+
+    # Check if visual search agent is available
+    if not visual_search_agent:
+        logger.warning("Visual search service is not available")
+        return JSONResponse(
+            status_code=503,
+            content={
+                "success": False,
+                "error": "Visual search service is temporarily unavailable",
+                "message": "Please try again later or use barcode scanning instead.",
+                "alternative": "Use /api/v1/scan/barcode for instant product lookup"
+            }
         )
 
     try:

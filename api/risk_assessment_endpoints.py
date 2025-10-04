@@ -446,9 +446,12 @@ async def get_risk_profile(
         
         return response
         
+    except HTTPException:
+        # Re-raise HTTP exceptions (404, 400) as-is
+        raise
     except Exception as e:
-        logger.error(f"Failed to get risk profile: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Failed to get risk profile for {product_id}: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to retrieve risk profile")
 
 
 @risk_router.get("/report/{report_id}")
@@ -487,9 +490,12 @@ async def get_report(
             
             return {"message": "Report regeneration in progress"}
             
+    except HTTPException:
+        # Re-raise HTTP exceptions (404, 400) as-is
+        raise
     except Exception as e:
-        logger.error(f"Failed to get report: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Failed to get report for {report_id}: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to retrieve report")
 
 
 @risk_router.post("/ingest")

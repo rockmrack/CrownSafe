@@ -267,12 +267,24 @@ async def cancel_subscription(
     This marks the subscription as cancelled but it remains active
     until the current period expires.
     """
-    result = SubscriptionService.cancel_subscription(current_user.id)
-    
-    if not result["success"]:
-        raise HTTPException(status_code=400, detail=result.get("error"))
-    
-    return result
+    try:
+        # Validate user is authenticated
+        if not current_user or not hasattr(current_user, 'id'):
+            raise HTTPException(status_code=401, detail="Authentication required")
+        
+        result = SubscriptionService.cancel_subscription(current_user.id)
+        
+        if not result["success"]:
+            raise HTTPException(status_code=400, detail=result.get("error", "Failed to cancel subscription"))
+        
+        return result
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (401, 400) as-is
+        raise
+    except Exception as e:
+        logger.error(f"Error cancelling subscription for user {current_user.id if current_user else 'unknown'}: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to cancel subscription")
 
 
 @router.get("/history")
