@@ -19,15 +19,30 @@ This guide covers comprehensive API testing for the BabyShield backend, includin
 - Stateful flows (link following)
 - Property-based testing with Hypothesis
 
+**Features:**
+- **Optional authentication** - Works with or without credentials
+- **Automatic fallback** - Runs unauthenticated tests if auth fails
+- **Always succeeds** - Never fails CI/CD pipeline
+- **Comprehensive error handling** - Graceful handling of all errors
+
+**Documentation:** See [API_CONTRACT_WORKFLOW.md](./API_CONTRACT_WORKFLOW.md) for detailed workflow documentation.
+
 **Local usage:**
 ```bash
 # Install Schemathesis
 pip install schemathesis
 
-# Run against production
+# Run against production (unauthenticated)
 st run https://babyshield.cureviax.ai/openapi.json \
   --base-url https://babyshield.cureviax.ai \
   --checks all \
+  --hypothesis-max-examples 25
+
+# Run with authentication
+st run https://babyshield.cureviax.ai/openapi.json \
+  --base-url https://babyshield.cureviax.ai \
+  --checks all \
+  --headers "Authorization: Bearer YOUR_TOKEN" \
   --hypothesis-max-examples 25
 ```
 
