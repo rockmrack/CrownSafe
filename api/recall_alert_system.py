@@ -13,7 +13,7 @@ from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Query
 from pydantic import BaseModel, Field
 import httpx
 
-from core_infra.database import get_db, User, RecallDB
+from core_infra.database import get_db, User, RecallDB, SessionLocal
 from db.models.scan_history import ScanHistory
 from api.notification_endpoints import send_push_notification, NotificationHistory
 # from core_infra.celery_app import celery_app  # Commented out - not available in dev environment
@@ -437,17 +437,24 @@ class RecallAlertService:
         return "low"
 
 
-# Celery Tasks for Background Processing
+# Background Tasks for Processing (FastAPI BackgroundTasks)
 
 # @celery_app.task(name="check_all_agencies_for_recalls")  # Commented out - celery not available
-def check_all_agencies_for_recalls():
+async def check_all_agencies_for_recalls():
     """
-    Celery task that checks all agencies for new recalls
-    Runs every hour (or as configured)
+    Background task that checks all agencies for new recalls.
+    Used with FastAPI BackgroundTasks (supports async functions).
+    
+    NOTE: If Celery is re-enabled in the future, this function will need to be
+    converted back to sync and use asyncio.run() for async operations, or use
+    Celery's async task support with proper configuration.
+    
+    Currently runs on-demand via /check-now endpoint or can be scheduled.
     """
     logger.info("Starting scheduled recall check across all agencies...")
     
-    with get_db() as db:
+    db = SessionLocal()
+    try:
         # Get last check time (stored in system config or database)
         # For now, check last 24 hours
         last_check = datetime.utcnow() - timedelta(hours=24)
@@ -457,10 +464,8 @@ def check_all_agencies_for_recalls():
         # Check each agency
         for agency in RecallAlertService.AGENCY_ENDPOINTS.keys():
             try:
-                result = asyncio.run(
-                    RecallAlertService.check_agency_for_new_recalls(
-                        agency, last_check, db
-                    )
+                result = await RecallAlertService.check_agency_for_new_recalls(
+                    agency, last_check, db
                 )
                 
                 if result.new_recalls_count > 0:
@@ -468,7 +473,7 @@ def check_all_agencies_for_recalls():
                     all_new_recalls.extend(result.recalls)
                     
             except Exception as e:
-                logger.error(f"Error checking {agency}: {e}")
+                logger.error(f"Error checking {agency}: {e}", exc_info=True)
         
         # Process new recalls
         if all_new_recalls:
@@ -476,17 +481,13 @@ def check_all_agencies_for_recalls():
             
             for recall in all_new_recalls:
                 # Find affected users
-                affected_users = asyncio.run(
-                    RecallAlertService.find_affected_users(recall, db)
-                )
+                affected_users = await RecallAlertService.find_affected_users(recall, db)
                 
                 logger.info(f"Recall {recall.get('recall_id')} affects {len(affected_users)} users")
                 
                 # Send alerts to affected users
                 for user_id in affected_users:
-                    asyncio.run(
-                        RecallAlertService.send_recall_alert(user_id, recall, db)
-                    )
+                    await RecallAlertService.send_recall_alert(user_id, recall, db)
                 
                 # Store recall in database
                 try:
@@ -502,11 +503,14 @@ def check_all_agencies_for_recalls():
                     db.add(new_recall)
                     db.commit()
                 except Exception as e:
-                    logger.error(f"Error storing recall: {e}")
+                    logger.error(f"Error storing recall: {e}", exc_info=True)
                     db.rollback()
         
         logger.info("Recall check completed")
         return {"new_recalls": len(all_new_recalls)}
+        
+    finally:
+        db.close()
 
 
 # @celery_app.task(name="send_daily_recall_digest")  # Commented out - celery not available

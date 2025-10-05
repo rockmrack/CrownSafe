@@ -1549,13 +1549,16 @@ def on_startup():
         # Simple user seeding
         db = SessionLocal()
         try:
-            if not db.query(User).filter(User.id == 1).first():
+            # Race-condition safe: try to insert, catch IntegrityError if user exists
+            from sqlalchemy.exc import IntegrityError as UserIntegrityError
+            try:
                 u = User(id=1, email="test_parent@babyshield.com", hashed_password="testhash", is_subscribed=True)
                 db.add(u)
                 db.commit()
-                logger.info("Ã°Å¸â€”Â¿ Seeded default user test_parent@babyshield.com (id=1, subscribed).")
-            else:
-                logger.info("Ã°Å¸â€˜Â¤ User id=1 already exists.")
+                logger.info("Ã°Å¸â€"Â¿ Seeded default user test_parent@babyshield.com (id=1, subscribed).")
+            except UserIntegrityError:
+                db.rollback()
+                logger.info("Ã°Å¸â€˜Â¤ User id=1 already exists (inserted by another worker).")
         except Exception as e:
             logger.error(f"Ã¢ÂÅ’ Failed to seed user: {e}")
             db.rollback()

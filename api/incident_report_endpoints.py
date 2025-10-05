@@ -3,6 +3,7 @@ Incident Report API Endpoints
 Handles crowdsourced safety incident reporting
 """
 
+import asyncio
 import logging
 import uuid
 from typing import List, Optional, Dict, Any
@@ -13,7 +14,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from sqlalchemy import func, and_, or_
 
-from core_infra.database import get_db, User
+from core_infra.database import get_db, User, SessionLocal
 from db.models.incident_report import IncidentReport, IncidentCluster, IncidentType, SeverityLevel, IncidentStatus, AgencyNotification
 from core_infra.s3_uploads import upload_file
 from api.schemas.common import ApiResponse
@@ -312,6 +313,31 @@ class IncidentAnalyzer:
         logger.info(f"CPSC notified about {cluster.incident_count} incidents for {cluster.product_name}")
 
 
+# Background task wrapper for incident analysis
+def analyze_incident_background(incident_id: int):
+    """
+    Background task to analyze an incident.
+    Creates its own database session to avoid DetachedInstanceError.
+    """
+    db = SessionLocal()
+    try:
+        # Fetch incident by ID
+        incident = db.query(IncidentReport).filter(IncidentReport.id == incident_id).first()
+        
+        if not incident:
+            logger.warning(f"Incident {incident_id} not found for background analysis")
+            return
+        
+        # Run async analysis
+        asyncio.run(IncidentAnalyzer.analyze_incident(incident, db))
+        
+    except Exception as e:
+        logger.error(f"Background incident analysis failed for incident {incident_id}: {e}", exc_info=True)
+        db.rollback()
+    finally:
+        db.close()
+
+
 # API Endpoints
 
 @incident_router.post("/submit", response_model=ApiResponse)
@@ -476,14 +502,16 @@ async def submit_incident_json(
         db.add(incident)
         db.flush()  # Get the ID
         
-        # Analyze incident in background
-        background_tasks.add_task(
-            IncidentAnalyzer.analyze_incident,
-            incident,
-            db
-        )
+        # Get incident ID before session closes
+        incident_id = incident.id
         
         db.commit()
+        
+        # Analyze incident in background (session is now closed, pass ID only)
+        background_tasks.add_task(
+            analyze_incident_background,
+            incident_id
+        )
         
         logger.info(f"Incident report submitted via JSON: {report_id}")
         
@@ -491,7 +519,7 @@ async def submit_incident_json(
             success=True,
             data={
                 "report_id": report_id,
-                "incident_id": incident.id,
+                "incident_id": incident_id,
                 "status": "submitted",
                 "product_found": product_found,
                 "product_id": product_id,
