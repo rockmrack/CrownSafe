@@ -30,7 +30,7 @@ try:
     from utils.logging.structured_logger import setup_logging, log_performance, log_error
     from utils.logging.middleware import LoggingMiddleware
     logger = setup_logging()
-    logger.info("🚀 BabyShield Backend starting up", extra={"version": "2.0", "phase": "2"})
+    logger.info(" BabyShield Backend starting up", extra={"version": "2.0", "phase": "2"})
     STRUCTURED_LOGGING_ENABLED = True
 except Exception as e:
     # Fallback to standard logging if structured logging fails
@@ -1556,10 +1556,10 @@ def on_startup():
                 u = User(id=1, email="test_parent@babyshield.com", hashed_password="testhash", is_subscribed=True)
                 db.add(u)
                 db.commit()
-                logger.info("Ã°Å¸â€"Â¿ Seeded default user test_parent@babyshield.com (id=1, subscribed).")
+                logger.info("✅ Seeded default user test_parent@babyshield.com (id=1, subscribed).")
             except UserIntegrityError:
                 db.rollback()
-                logger.info("Ã°Å¸â€˜Â¤ User id=1 already exists (inserted by another worker).")
+                logger.info("ℹ️ User id=1 already exists (inserted by another worker).")
         except Exception as e:
             logger.error(f"Ã¢ÂÅ’ Failed to seed user: {e}")
             db.rollback()

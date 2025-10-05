@@ -81,7 +81,7 @@ def main():
         run = runner.start_run(
             source=IngestionSource.MANUAL_UPLOAD, run_name="Test Run"
         )
-        print(f"Started run: {run.id} at {run.started_at}")
+        logger.info(f"Started run: {run.id} at {run.started_at}")
 
         # Simulate work
         import time
@@ -97,8 +97,8 @@ def main():
             errors=errors,
             details=f"Processed {records_processed} records with {errors} errors.",
         )
-        print(f"Ended run: {run.id} at {run.finished_at}")
-        print(f"Status: {run.status}")
+        logger.info(f"Ended run: {run.id} at {run.finished_at}")
+        logger.info(f"Status: {run.status}")
 
 
 if __name__ == "__main__":

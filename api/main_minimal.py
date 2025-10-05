@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="BabyShield API", version="1.0.0")
 
@@ -20,4 +23,4 @@ async def health():
 async def root():
     return {"status": "ok", "service": "BabyShield API (Minimal)"}
 
-print("Minimal API created")
+logger.info("Minimal API created")

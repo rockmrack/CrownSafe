@@ -36,21 +36,25 @@ async def app_lifespan(app: FastAPI):
     Manage application lifecycle
     """
     # Startup
-    print("Starting up...")
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info("Starting up...")
     
     # Initialize rate limiter
     rate_limit_enabled = await init_rate_limiter()
     if rate_limit_enabled:
-        print("✅ Rate limiting enabled")
+        logger.info("✅ Rate limiting enabled")
     else:
-        print("⚠️ Rate limiting disabled - Redis not available")
+        logger.warning("⚠️ Rate limiting disabled - Redis not available")
     
     yield
     
     # Shutdown
-    print("Shutting down...")
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info("Shutting down...")
     await close_rate_limiter()
-    print("✅ Cleanup completed")
+    logger.info("✅ Cleanup completed")
 
 # ============================================================================
 # CREATE APP WITH OBSERVABILITY

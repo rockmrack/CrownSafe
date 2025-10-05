@@ -3,8 +3,11 @@ Privacy compliance integration for FastAPI app
 Integrates all privacy features from Task 8
 """
 
+import logging
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+
+logger = logging.getLogger(__name__)
 
 
 def setup_privacy_compliance(app: FastAPI):
@@ -52,14 +55,14 @@ def setup_privacy_compliance(app: FastAPI):
             StaticFiles(directory="static/legal", html=True),
             name="legal"
         )
-        print("✅ Legal pages mounted at /legal/*")
+        logger.info("✅ Legal pages mounted at /legal/*")
     except RuntimeError as e:
-        print(f"⚠️ Could not mount legal pages: {e}")
+        logger.warning(f"⚠️ Could not mount legal pages: {e}")
     
     # Configure logging with PII masking
     configure_privacy_logging()
     
-    print("✅ Privacy compliance features integrated")
+    logger.info("✅ Privacy compliance features integrated")
 
 
 def configure_privacy_logging():
@@ -91,7 +94,7 @@ def configure_privacy_logging():
     for handler in root_logger.handlers:
         handler.setFormatter(formatter)
     
-    print("✅ PII masking configured for logs")
+    logger.info("✅ PII masking configured for logs")
 
 
 def get_privacy_config():

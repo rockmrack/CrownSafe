@@ -87,32 +87,57 @@ def _blocklist_access_token(raw_token: str):
 def revoke_tokens_for_user(db: Session, user_id: int):
     """Revoke refresh/access tokens in your token store/DB/Redis"""
     try:
-        # TODO: Implement actual token revocation
-        # e.g., db.execute("DELETE FROM refresh_tokens WHERE user_id=:id", {"id": user_id})
-        logger.info(f"Revoking tokens for user {user_id}")
-        pass
+        # Revoke user's refresh tokens (if stored in database)
+        # NOTE: If using JWT-only without database storage, implement token blacklist
+        from db.models.auth import RefreshToken
+        deleted_count = db.query(RefreshToken).filter(
+            RefreshToken.user_id == user_id
+        ).delete(synchronize_session=False)
+        db.commit()
+        logger.info(f"Revoked {deleted_count} tokens for user {user_id}")
+    except ImportError:
+        # RefreshToken model doesn't exist - using JWT-only approach
+        # In this case, tokens should be blacklisted in Redis/cache
+        logger.warning(f"Token revocation not fully implemented - consider adding token blacklist for user {user_id}")
     except Exception as e:
         logger.error(f"Failed to revoke tokens for user {user_id}: {e}")
+        db.rollback()
 
 def invalidate_push_tokens(db: Session, user_id: int):
     """Remove FCM/APNS tokens tied to the user"""
     try:
-        # TODO: Implement actual push token invalidation
-        # e.g., remove from Firebase/APNS token store
-        logger.info(f"Invalidating push tokens for user {user_id}")
-        pass
+        # Import DeviceToken model and delete user's device tokens
+        from api.notification_endpoints import DeviceToken
+        deleted_count = db.query(DeviceToken).filter(
+            DeviceToken.user_id == user_id
+        ).delete(synchronize_session=False)
+        db.commit()
+        logger.info(f"Invalidated {deleted_count} push tokens for user {user_id}")
     except Exception as e:
         logger.error(f"Failed to invalidate push tokens for user {user_id}: {e}")
+        db.rollback()
 
 def unlink_devices_and_sessions(db: Session, user_id: int):
     """Delete device links; wipe server-side sessions"""
     try:
-        # TODO: Implement actual device/session cleanup
-        # e.g., delete device links, clear server-side sessions
-        logger.info(f"Unlinking devices and sessions for user {user_id}")
-        pass
+        # Delete device tokens (already covered by invalidate_push_tokens)
+        # Clear any server-side session data
+        # NOTE: If using Redis for sessions, clear those as well
+        from api.notification_endpoints import DeviceToken
+        
+        # Mark devices as inactive instead of deleting (for audit trail)
+        updated_count = db.query(DeviceToken).filter(
+            DeviceToken.user_id == user_id
+        ).update({"is_active": False}, synchronize_session=False)
+        db.commit()
+        
+        logger.info(f"Unlinked {updated_count} devices for user {user_id}")
+        
+        # TODO: Clear Redis session cache if implemented
+        # redis_client.delete(f"session:user:{user_id}:*")
     except Exception as e:
         logger.error(f"Failed to unlink devices/sessions for user {user_id}: {e}")
+        db.rollback()
 
 router = APIRouter(prefix="/api/v1", tags=["account"])
 
