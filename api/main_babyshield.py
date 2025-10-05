@@ -554,9 +554,10 @@ try:
         allowed_origins=ALLOWED_ORIGINS,
         allow_credentials=True
     )
-    logging.info("Ã¢Å“â€¦ Enhanced CORS middleware added")
-except:
+    logging.info("✅ Enhanced CORS middleware added")
+except Exception as e:
     # Fallback to standard CORS
+    logging.warning(f"Enhanced CORS not available, using standard: {e}")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=ALLOWED_ORIGINS,
@@ -2754,8 +2755,8 @@ async def system_health():
             from core_infra.database import RecallDB
             with get_db_session() as db:
                 total_recalls = db.query(RecallDB).count()
-        except:
-            pass
+        except Exception as e:
+            logger.warning(f"Unable to count recalls for health check: {e}")
         
         # Overall system health
         overall_health = "healthy" if (db_healthy and total_recalls > 1000) else "degraded"

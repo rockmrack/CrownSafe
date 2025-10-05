@@ -197,27 +197,27 @@ notification_agent = PushNotificationAgentLogic(agent_id="api_notification_agent
 # Initialize other agents with try/except for graceful degradation
 try:
     report_agent = ReportBuilderAgentLogic(agent_id="api_report_agent", version="1.0")
-except:
+except Exception as e:
     report_agent = None
-    logger.warning("Report Builder Agent not available")
+    logger.warning(f"Report Builder Agent not available: {e}", exc_info=True)
 
 try:
     community_agent = CommunityAlertAgentLogic(agent_id="api_community_agent")
-except:
+except Exception as e:
     community_agent = None
-    logger.warning("Community Alert Agent not available")
+    logger.warning(f"Community Alert Agent not available: {e}", exc_info=True)
 
 try:
     onboarding_agent = OnboardingAgentLogic(agent_id="api_onboarding_agent")
-except:
+except Exception as e:
     onboarding_agent = None
-    logger.warning("Onboarding Agent not available")
+    logger.warning(f"Onboarding Agent not available: {e}", exc_info=True)
 
 try:
     hazard_agent = HazardAnalysisLogic(agent_id="api_hazard_agent")
-except:
+except Exception as e:
     hazard_agent = None
-    logger.warning("Hazard Analysis Agent not available")
+    logger.warning(f"Hazard Analysis Agent not available: {e}", exc_info=True)
 
 # ==================== Alternatives Endpoints ====================
 

@@ -24,14 +24,16 @@ from core_infra.database import get_db, User, RecallDB
 try:
     from agents.research.web_research_agent.agent_logic import WebResearchAgentLogic
     web_research_agent = WebResearchAgentLogic(agent_id="api_web_research")
-except:
+except Exception as e:
     web_research_agent = None
-    
+    logging.warning(f"Web Research Agent not available: {e}")
+
 try:
     from agents.guideline_agent.agent_logic import GuidelineAgentLogic
     guideline_agent = GuidelineAgentLogic(agent_id="api_guideline")
-except:
+except Exception as e:
     guideline_agent = None
+    logging.warning(f"Guideline Agent not available: {e}")
 
 logger = logging.getLogger(__name__)
 
