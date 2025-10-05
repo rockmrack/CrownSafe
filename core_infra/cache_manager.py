@@ -8,8 +8,15 @@ import hashlib
 import logging
 from typing import Optional, Dict, Any, List
 from datetime import datetime, timedelta, date
-import redis
 from contextlib import asynccontextmanager
+
+# Make redis optional (for test environments without Redis)
+try:
+    import redis
+    REDIS_AVAILABLE = True
+except ImportError:
+    redis: Optional[Any] = None
+    REDIS_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +62,12 @@ class BabyShieldCacheManager:
     
     def init_redis(self):
         """Initialize Redis connection with error handling"""
+        if not REDIS_AVAILABLE:
+            logger.debug("Redis library not installed. Cache disabled.")
+            self.cache_enabled = False
+            self.redis_client = None
+            return
+            
         try:
             self.redis_client = redis.from_url(
                 self.redis_url,
@@ -219,8 +232,24 @@ def delete_cached(cache_type: str, identifier: str, **kwargs) -> bool:
     """Delete cached data"""
     return cache_manager.delete(cache_type, identifier, **kwargs)
 
-def invalidate_cached_pattern(pattern: str) -> int:
-    """Invalidate cache pattern"""
+def invalidate_pattern(pattern: str) -> int:
+    """
+    Invalidate multiple cache keys matching a Redis pattern.
+
+    This is a module-level convenience function that delegates to the
+    BabyShieldCacheManager instance.
+
+    Args:
+        pattern (str): Redis key pattern to match for invalidation.
+            Example: "bsc:recall:*" will match all recall cache keys.
+
+    Returns:
+        int: The number of keys deleted from the cache.
+
+    Example:
+        >>> invalidate_pattern("bsc:recall:*")
+        5
+    """
     return cache_manager.invalidate_pattern(pattern)
 
 def get_cache_stats() -> Dict[str, Any]:

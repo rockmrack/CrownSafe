@@ -11,24 +11,35 @@ pytest-timeout==2.2.0
 pytest-benchmark==4.0.0
 pytest-sugar==0.9.7  # Better test output
 
+# Ensure pydantic v2 compatibility (prevent downgrades from test dependencies)
+pydantic>=2.3.0
+pydantic-settings>=2.0.0
+
 # Test Data Generation
-faker==20.1.0
-factory-boy==3.3.0
+faker>=20.1.0  # Relaxed for pydantic v2 compatibility
+factory-boy>=3.3.0  # Relaxed for pydantic v2 compatibility
 
 # HTTP Testing
 httpx==0.25.2
 requests-mock==1.11.0
 
 # Performance & Load Testing
-locust==2.18.3  # Load testing framework
+locust>=2.20.0  # Load testing framework - updated for pydantic v2 compatibility
 
 # Security Testing
-bandit==1.7.5  # Security linter
-safety==2.3.5  # Dependency vulnerability scanner
+bandit==1.7.5  # Static security linter for code analysis
+pip-audit>=2.6.1  # PyPA's official dependency vulnerability scanner (PyPI Advisory Database)
+
+# Security Coverage Strategy:
+# - pip-audit: Used in test requirements (pydantic v2 compatible)
+# - safety + pip-audit: Both run in .github/workflows/security-scan.yml for defense-in-depth
+# - bandit: Static code analysis for security issues
+# - Additional: Trivy, Grype, Semgrep, CodeQL in security-scan workflow
+# This multi-layered approach ensures comprehensive vulnerability detection
 
 # Database Testing
-pytest-postgresql==5.0.0
-pytest-redis==3.0.2
+pytest-postgresql>=5.0.0  # Relaxed for pydantic v2 compatibility
+pytest-redis>=3.0.2  # Relaxed for pydantic v2 compatibility
 
 # Mocking & Fixtures
 responses==0.24.1

@@ -28,7 +28,7 @@ jobs:
       - name: Run unit subset (validators)
         env:
           PYTEST_DISABLE_PLUGIN_AUTOLOAD: 1
-          PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/api:${{ github.workspace }}/core_infra
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           python - <<'PY'
           import sys, os

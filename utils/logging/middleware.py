@@ -3,7 +3,15 @@ FastAPI Logging Middleware - Issue #32
 """
 import time
 from fastapi import Request, Response
-from fastapi.middleware.base import BaseHTTPMiddleware
+
+# Import BaseHTTPMiddleware with proper fallback
+# FastAPI >= 0.95 uses starlette directly
+# FastAPI < 0.95 re-exports from fastapi.middleware.base
+
+try:
+    from starlette.middleware.base import BaseHTTPMiddleware
+except ImportError:
+    from fastapi.middleware.base import BaseHTTPMiddleware
 from utils.logging.structured_logger import log_request, log_error, log_performance
 
 class LoggingMiddleware(BaseHTTPMiddleware):

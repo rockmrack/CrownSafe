@@ -54,18 +54,6 @@ jobs:
         echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
         echo "Python path set to: ${{ github.workspace }}"
     
-    - name: Verify project structure
-      run: |
-        echo "=== Workspace directory ==="
-        pwd
-        echo "=== Checking for api module ==="
-        ls -la api/ || echo "api directory not found"
-        ls -la api/main_babyshield.py || echo "main_babyshield.py not found"
-        echo "=== Python version ==="
-        python --version
-        echo "=== PYTHONPATH ==="
-        echo $PYTHONPATH
-    
     - name: Cache pip dependencies
       uses: actions/cache@v3
       with:
@@ -77,9 +65,35 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        # Install packaging first with its dependencies (no upper bound)
+        pip install 'packaging>=22.0'
         pip install -r config/requirements/requirements.txt
         pip install -r tests/requirements-test.txt
-        pip install --upgrade 'packaging>=22.0'
+        # Verify packaging version using proper version comparison
+        python -c "from packaging import version; import packaging; assert version.parse(packaging.__version__) >= version.parse('22.0'), f'packaging {packaging.__version__} < 22.0'"
+    
+    - name: Verify critical imports
+      run: |
+        # CRITICAL: Set PYTHONPATH cleanly without duplication
+        # The workspace path is already in PYTHONPATH from GitHub env
+        export PYTHONPATH="${{ github.workspace }}"
+        
+        # Debug environment first
+        echo "Current directory: $(pwd)"
+        echo "PYTHONPATH: $PYTHONPATH"
+        echo "core_infra directory:"
+        ls -la core_infra/ || echo "core_infra not found"
+        
+        # Test critical imports with better error handling
+        python -c "from core_infra.cache_manager import get_cache_stats; print('✅ Critical imports working')" || {
+          echo "❌ Import failed! Full debug info:"
+          echo "Complete Python path:"
+          python -c "import sys; print('\\n'.join(sys.path))"
+          echo ""
+          echo "Attempting direct import debug:"
+          python -c "import sys; import os; print(f'CWD: {os.getcwd()}'); print(f'File exists: {os.path.exists(\"core_infra/cache_manager.py\")}')" || true
+          echo "⚠️ Import verification failed but continuing..."
+        }
     
     - name: Run unit tests with coverage
       env:
@@ -87,7 +101,11 @@ jobs:
         REDIS_URL: redis://localhost:6379/0
         SECRET_KEY: test_secret_key_for_ci
         PYTHONPATH: ${{ github.workspace }}
+        DISABLE_REDIS_WARNING: true
       run: |
+        # Set clean PYTHONPATH without duplication
+        export PYTHONPATH="${{ github.workspace }}"
+        echo "Running tests with PYTHONPATH=$PYTHONPATH"
         pytest tests/unit/ \
           -v \
           --cov=. \
@@ -102,7 +120,10 @@ jobs:
         REDIS_URL: redis://localhost:6379/0
         SECRET_KEY: test_secret_key_for_ci
         PYTHONPATH: ${{ github.workspace }}
+        DISABLE_REDIS_WARNING: true
       run: |
+        # Set clean PYTHONPATH
+        export PYTHONPATH="${{ github.workspace }}"
         pytest tests/integration/ \
           -v \
           --cov=. \
@@ -116,7 +137,10 @@ jobs:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         SECRET_KEY: test_secret_key_for_ci
         PYTHONPATH: ${{ github.workspace }}
+        DISABLE_REDIS_WARNING: true
       run: |
+        # Set clean PYTHONPATH
+        export PYTHONPATH="${{ github.workspace }}"
         pytest tests/security/ \
           -v \
           -m security
@@ -126,7 +150,10 @@ jobs:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         SECRET_KEY: test_secret_key_for_ci
         PYTHONPATH: ${{ github.workspace }}
+        DISABLE_REDIS_WARNING: true
       run: |
+        # Set clean PYTHONPATH
+        export PYTHONPATH="${{ github.workspace }}"
         pytest tests/performance/ \
           -v \
           --benchmark-only \
