@@ -1,6 +1,14 @@
+import sys
 import time
+from pathlib import Path
 import pytest
 from httpx import AsyncClient, ASGITransport
+
+# Add project root to Python path for imports
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 from api.main_babyshield import app  # FastAPI app
 
 # Basic ASGI test client

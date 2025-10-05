@@ -4,11 +4,15 @@ on:
   workflow_dispatch:
   push:
     branches: [ "main", "staging" ]
+  # Only run on PRs targeting main/staging (not on all branches)
   pull_request:
     branches: [ "main", "staging" ]
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   schemathesis:
+    # Only run if secrets are available (typically main/staging branches)
+    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.base_ref == 'main') }}
     runs-on: ubuntu-latest
     env:
       BASE: https://babyshield.cureviax.ai

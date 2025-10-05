@@ -408,12 +408,12 @@ async def submit_incident_report(
         
         db.add(incident)
         db.flush()  # Get the ID
+        incident_id = incident.id  # Capture ID before session closes
         
-        # Analyze incident in background
+        # Analyze incident in background (pass ID only, not session)
         background_tasks.add_task(
-            IncidentAnalyzer.analyze_incident,
-            incident,
-            db
+            analyze_incident_background,
+            incident_id
         )
         
         db.commit()

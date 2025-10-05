@@ -15,7 +15,8 @@ import httpx
 
 from core_infra.database import get_db, User, RecallDB, SessionLocal
 from db.models.scan_history import ScanHistory
-from api.notification_endpoints import send_push_notification, NotificationHistory
+from api.notification_endpoints import send_push_notification, NotificationHistory, DeviceToken
+from api.monitoring_scheduler import MonitoredProduct
 # from core_infra.celery_app import celery_app  # Commented out - not available in dev environment
 
 logger = logging.getLogger(__name__)

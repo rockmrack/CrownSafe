@@ -14,6 +14,9 @@ jobs:
       matrix:
         python-version: ["3.10", "3.11"]
     
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+    
     services:
       postgres:
         image: postgres:15
@@ -46,6 +49,23 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     
+    - name: Set up Python path
+      run: |
+        echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
+        echo "Python path set to: ${{ github.workspace }}"
+    
+    - name: Verify project structure
+      run: |
+        echo "=== Workspace directory ==="
+        pwd
+        echo "=== Checking for api module ==="
+        ls -la api/ || echo "api directory not found"
+        ls -la api/main_babyshield.py || echo "main_babyshield.py not found"
+        echo "=== Python version ==="
+        python --version
+        echo "=== PYTHONPATH ==="
+        echo $PYTHONPATH
+    
     - name: Cache pip dependencies
       uses: actions/cache@v3
       with:
@@ -59,12 +79,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r config/requirements/requirements.txt
         pip install -r tests/requirements-test.txt
+        pip install --upgrade 'packaging>=22.0'
     
     - name: Run unit tests with coverage
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         REDIS_URL: redis://localhost:6379/0
         SECRET_KEY: test_secret_key_for_ci
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         pytest tests/unit/ \
           -v \
@@ -79,6 +101,7 @@ jobs:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         REDIS_URL: redis://localhost:6379/0
         SECRET_KEY: test_secret_key_for_ci
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         pytest tests/integration/ \
           -v \
@@ -92,6 +115,7 @@ jobs:
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         SECRET_KEY: test_secret_key_for_ci
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         pytest tests/security/ \
           -v \
@@ -101,6 +125,7 @@ jobs:
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         SECRET_KEY: test_secret_key_for_ci
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         pytest tests/performance/ \
           -v \

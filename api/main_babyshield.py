@@ -1779,14 +1779,14 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         # Fallback to standard workflow if optimized fails
         if result.get("status") == "FAILED" and "optimized workflow error" in result.get("error", ""):
             logger.warning("Ã¢Å¡Â Ã¯Â¸Â Optimized workflow failed, falling back to standard workflow...")
-        result = await commander_agent.start_safety_check_workflow({
+            result = await commander_agent.start_safety_check_workflow({
                 "user_id":      req.user_id,
                 "barcode":      req.barcode,
                 "model_number": req.model_number,
                 "product_name": req.product_name,
                 "image_url":    req.image_url
             })
-        logger.info(f"Fallback workflow result: {result}")
+            logger.info(f"Fallback workflow result: {result}")
         
         # If workflow succeeds with real data, return it with performance info
         if result.get("status") == "COMPLETED" and result.get("data"):
