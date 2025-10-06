@@ -264,10 +264,10 @@ pytest -v
 def test_create_user_success():
     # Arrange
     user_data = {"username": "test", "email": "test@example.com"}
-    
+
     # Act
     result = create_user(**user_data)
-    
+
     # Assert
     assert result["username"] == "test"
     assert "id" in result
