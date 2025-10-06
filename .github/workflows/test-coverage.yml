@@ -2,7 +2,7 @@ name: Test Coverage
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, fix/** ]
   pull_request:
     branches: [ main ]
 
@@ -25,7 +25,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: test_db
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U postgres"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -68,15 +68,20 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('config/requirements/*.txt', 'tests/*.txt') }}
+        key: ${{ runner.os }}-pip-v2-${{ hashFiles('config/requirements/*.txt', 'tests/*.txt') }}
         restore-keys: |
-          ${{ runner.os }}-pip-
+          ${{ runner.os }}-pip-v2-
     
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        # Clear pip cache to prevent issues from stale or incompatible cached packages,
+        # which can occur if requirements have changed or if cached wheels are incompatible
+        # with the current Python version. This helps avoid installation conflicts and ensures
+        # dependencies are freshly installed.
+        pip cache purge 2>/dev/null || echo "Skipping cache purge"
         # Install packaging first with its dependencies (no upper bound)
-        pip install 'packaging>=22.0'
+        pip install --force-reinstall 'packaging>=22.0'
         pip install -r config/requirements/requirements.txt
         pip install -r tests/requirements-test.txt
         # Verify packaging version using proper version comparison
@@ -92,36 +97,52 @@ jobs:
         echo "DATABASE_URL: ${DATABASE_URL:-not set}"
         echo ""
         echo "=== Testing PostgreSQL connection ==="
-        python -c "
+        cat <<EOF > check_pg_env.py
 import os
-print(f'Python sees PGUSER: {os.environ.get(\"PGUSER\", \"NOT SET\")}')
-print(f'Python sees DATABASE_URL: {os.environ.get(\"DATABASE_URL\", \"NOT SET\")}')
-print(f'Current user from OS: {os.environ.get(\"USER\", \"NOT SET\")}')
-"
+print(f"Python sees PGUSER: {os.environ.get('PGUSER', 'NOT SET')}")
+print(f"Python sees DATABASE_URL: {os.environ.get('DATABASE_URL', 'NOT SET')}")
+print(f"Current user from OS: {os.environ.get('USER', 'NOT SET')}")
+EOF
+        python check_pg_env.py
         echo "=== PostgreSQL connection test complete ==="
     
     - name: Verify critical imports
       run: |
         # CRITICAL: Set PYTHONPATH cleanly without duplication
-        # The workspace path is already in PYTHONPATH from GitHub env
         export PYTHONPATH="${{ github.workspace }}"
         
         # Debug environment first
+        echo "=== Directory Structure Debug ==="
         echo "Current directory: $(pwd)"
+        echo "Workspace: ${{ github.workspace }}"
         echo "PYTHONPATH: $PYTHONPATH"
-        echo "core_infra directory:"
-        ls -la core_infra/ || echo "core_infra not found"
-        
-        # Test critical imports with better error handling
-        python -c "from core_infra.cache_manager import get_cache_stats; print('✅ Critical imports working')" || {
-          echo "❌ Import failed! Full debug info:"
-          echo "Complete Python path:"
-          python -c "import sys; print('\\n'.join(sys.path))"
+        echo ""
+        echo "=== Listing root directory ==="
+        ls -la
+        echo ""
+        echo "=== Checking core_infra ==="
+        if [ -d "core_infra" ]; then
+          echo "✓ core_infra directory exists"
+          ls -la core_infra/ | head -20
           echo ""
-          echo "Attempting direct import debug:"
-          python -c "import sys; import os; print(f'CWD: {os.getcwd()}'); print(f'File exists: {os.path.exists(\"core_infra/cache_manager.py\")}')" || true
-          echo "⚠️ Import verification failed but continuing..."
-        }
+          echo "=== Checking __init__.py ==="
+          if [ -f "core_infra/__init__.py" ]; then
+            echo "✓ core_infra/__init__.py exists"
+            wc -l core_infra/__init__.py
+          else
+            echo "✗ core_infra/__init__.py NOT FOUND"
+            exit 1
+          fi
+        else
+          echo "✗ core_infra directory NOT FOUND"
+          echo "This is a CRITICAL ERROR - core_infra must exist!"
+          exit 1
+        fi
+        
+        # Test critical imports
+        echo ""
+        echo "=== Testing Python imports ==="
+        python -c "from core_infra.cache_manager import get_cache_stats; print('✅ Critical imports working')"
     
     - name: Run unit tests with coverage
       env:
