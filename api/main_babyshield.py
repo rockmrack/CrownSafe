@@ -1830,6 +1830,15 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         # Fallback to standard workflow if optimized fails
         if result.get("status") == "FAILED" and "optimized workflow error" in result.get("error", ""):
             logger.warning("Ã¢Å¡Â Ã¯Â¸Â Optimized workflow failed, falling back to standard workflow...")
+            
+            # Check if commander_agent is available
+            if commander_agent is None:
+                logger.error("Commander agent not initialized")
+                raise HTTPException(
+                    status_code=503,
+                    detail="Safety check service temporarily unavailable"
+                )
+            
             result = await commander_agent.start_safety_check_workflow({
                 "user_id":      req.user_id,
                 "barcode":      req.barcode,
