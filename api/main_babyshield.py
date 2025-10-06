@@ -1820,10 +1820,12 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         # WORKAROUND: If image_url is provided, route to visual search directly
         if req.image_url and not req.barcode and not req.model_number and not req.product_name:
             logger.info(f"Routing image_url request directly to visual search endpoint")
+            
+            # Create a new visual agent instance directly (don't rely on global)
             try:
-                from api.visual_agent_endpoints import visual_router
-                # Call visual search directly
-                visual_result = await visual_search_agent.identify_product_from_image(req.image_url) if visual_search_agent else None
+                from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
+                temp_visual_agent = VisualSearchAgentLogic("temp_visual_001")
+                visual_result = await temp_visual_agent.identify_product_from_image(req.image_url)
                 
                 if visual_result and visual_result.get("status") == "COMPLETED":
                     return JSONResponse(
@@ -1836,12 +1838,15 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                                 "brand": visual_result.get("result", {}).get("brand"),
                                 "confidence": visual_result.get("result", {}).get("confidence", 0),
                                 "recalls_found": False,
-                                "message": "Visual recognition completed. Use /api/v1/visual/search for detailed results."
+                                "checked_sources": ["Visual Recognition"],
+                                "message": "Visual recognition completed via direct agent"
                             }
                         }
                     )
+                else:
+                    logger.warning(f"Visual agent returned non-completed status: {visual_result}")
             except Exception as visual_error:
-                logger.error(f"Visual search routing failed: {visual_error}")
+                logger.error(f"Visual search routing failed: {visual_error}", exc_info=True)
                 # Continue to normal workflow
         
         # USE OPTIMIZED ASYNC WORKFLOW for 3-5x performance boost!
