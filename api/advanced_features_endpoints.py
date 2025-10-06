@@ -22,8 +22,8 @@ from core_infra.database import get_db, User, RecallDB
 
 # Try to import agents with graceful fallback
 try:
-    from agents.research.web_research_agent.agent_logic import WebResearchAgentLogic
-    web_research_agent = WebResearchAgentLogic(agent_id="api_web_research")
+    from agents.research.web_research_agent.agent_logic import WebResearchLogic
+    web_research_agent = WebResearchLogic(agent_id="api_web_research", version="2.0", logger_instance=logger)
 except Exception as e:
     web_research_agent = None
     logging.warning(f"Web Research Agent not available: {e}")

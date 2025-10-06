@@ -36,6 +36,8 @@ Pillow==10.1.0
 opencv-python-headless==4.8.1.78
 qrcode[pil]==7.4.2
 pyzbar==0.1.9
+pylibdmtx==0.1.10
+PyMuPDF==1.23.8
 reportlab==4.0.7
 
 # Cloud Services

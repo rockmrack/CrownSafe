@@ -29,11 +29,17 @@ except Exception as e:
 try:
     from utils.logging.structured_logger import setup_logging, log_performance, log_error
     from utils.logging.middleware import LoggingMiddleware
-    logger = setup_logging()
-    logger.info(" BabyShield Backend starting up", extra={"version": "2.0", "phase": "2"})
-    STRUCTURED_LOGGING_ENABLED = True
+    
+    # Only use structured logging if config is available
+    if CONFIG_LOADED and config:
+        logger = setup_logging(config)
+        logger.info(" BabyShield Backend starting up", extra={"version": "2.0", "phase": "2"})
+        STRUCTURED_LOGGING_ENABLED = True
+    else:
+        raise Exception("Config not loaded, falling back to standard logging")
 except Exception as e:
     # Fallback to standard logging if structured logging fails
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     logger = logging.getLogger(__name__)
     logger.warning(f"Structured logging not available, using standard logging: {e}")
     STRUCTURED_LOGGING_ENABLED = False
