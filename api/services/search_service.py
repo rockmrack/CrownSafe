@@ -48,14 +48,10 @@ class SearchService:
             (sql_query, params, use_scoring)
         """
         
-        # Determine which table to use
-        table_check = text("""
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_name = 'recalls_enhanced'
-            )
-        """)
-        has_enhanced = self.db.execute(table_check).scalar()
+        # Determine which table to use (portable check)
+        from sqlalchemy import inspect
+        inspector = inspect(self.db.bind)
+        has_enhanced = inspector.has_table('recalls_enhanced')
         
         table = "recalls_enhanced" if has_enhanced else "recalls"
         

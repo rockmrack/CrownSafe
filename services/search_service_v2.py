@@ -98,14 +98,10 @@ class SearchServiceV2:
                 logger.warning(f"Invalid cursor: {e}")
                 raise
         
-        # Determine table
-        table_check = text("""
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_name = 'recalls_enhanced'
-            )
-        """)
-        has_enhanced = self.db.execute(table_check).scalar()
+        # Determine table (portable check)
+        from sqlalchemy import inspect
+        inspector = inspect(self.db.bind)
+        has_enhanced = inspector.has_table('recalls_enhanced')
         table = "recalls_enhanced" if has_enhanced else "recalls"
         
         # Build base query components
