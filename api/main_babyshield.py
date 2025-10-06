@@ -1817,7 +1817,34 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
 
     # 4b) Run the full live workflow and return its raw result (with environment-aware error handling)
     try:
-        # Ã°Å¸Å¡â‚¬ USE OPTIMIZED ASYNC WORKFLOW for 3-5x performance boost!
+        # WORKAROUND: If image_url is provided, route to visual search directly
+        if req.image_url and not req.barcode and not req.model_number and not req.product_name:
+            logger.info(f"Routing image_url request directly to visual search endpoint")
+            try:
+                from api.visual_agent_endpoints import visual_router
+                # Call visual search directly
+                visual_result = await visual_search_agent.identify_product_from_image(req.image_url) if visual_search_agent else None
+                
+                if visual_result and visual_result.get("status") == "COMPLETED":
+                    return JSONResponse(
+                        status_code=200,
+                        content={
+                            "status": "COMPLETED",
+                            "data": {
+                                "summary": visual_result.get("result", {}).get("summary", "Visual analysis completed"),
+                                "product_name": visual_result.get("result", {}).get("product_name"),
+                                "brand": visual_result.get("result", {}).get("brand"),
+                                "confidence": visual_result.get("result", {}).get("confidence", 0),
+                                "recalls_found": False,
+                                "message": "Visual recognition completed. Use /api/v1/visual/search for detailed results."
+                            }
+                        }
+                    )
+            except Exception as visual_error:
+                logger.error(f"Visual search routing failed: {visual_error}")
+                # Continue to normal workflow
+        
+        # USE OPTIMIZED ASYNC WORKFLOW for 3-5x performance boost!
         result = await run_optimized_safety_check({
             "user_id":      req.user_id,
             "barcode":      req.barcode,
