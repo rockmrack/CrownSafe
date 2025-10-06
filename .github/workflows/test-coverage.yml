@@ -21,6 +21,7 @@ jobs:
       postgres:
         image: postgres:15
         env:
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: test_db
         options: >-
@@ -43,6 +44,15 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Force PostgreSQL to use postgres user globally
+      run: |
+        echo "PGUSER=postgres" >> $GITHUB_ENV
+        echo "PGPASSWORD=postgres" >> $GITHUB_ENV
+        echo "PGDATABASE=test_db" >> $GITHUB_ENV
+        echo "PGHOST=localhost" >> $GITHUB_ENV
+        echo "PGPORT=5432" >> $GITHUB_ENV
+        echo "PostgreSQL environment variables set globally"
     
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
@@ -71,6 +81,24 @@ jobs:
         pip install -r tests/requirements-test.txt
         # Verify packaging version using proper version comparison
         python -c "from packaging import version; import packaging; assert version.parse(packaging.__version__) >= version.parse('22.0'), f'packaging {packaging.__version__} < 22.0'"
+    
+    - name: Verify PostgreSQL connection settings
+      run: |
+        echo "=== PostgreSQL Environment Variables ==="
+        echo "PGUSER: $PGUSER"
+        echo "PGHOST: $PGHOST"
+        echo "PGPORT: $PGPORT"
+        echo "PGDATABASE: $PGDATABASE"
+        echo "DATABASE_URL: ${DATABASE_URL:-not set}"
+        echo ""
+        echo "=== Testing PostgreSQL connection ==="
+        python -c "
+import os
+print(f'Python sees PGUSER: {os.environ.get(\"PGUSER\", \"NOT SET\")}')
+print(f'Python sees DATABASE_URL: {os.environ.get(\"DATABASE_URL\", \"NOT SET\")}')
+print(f'Current user from OS: {os.environ.get(\"USER\", \"NOT SET\")}')
+"
+        echo "=== PostgreSQL connection test complete ==="
     
     - name: Verify critical imports
       run: |
@@ -102,6 +130,9 @@ jobs:
         SECRET_KEY: test_secret_key_for_ci
         PYTHONPATH: ${{ github.workspace }}
         DISABLE_REDIS_WARNING: true
+        PGUSER: postgres
+        PGPASSWORD: postgres
+        PGDATABASE: test_db
       run: |
         # Set clean PYTHONPATH without duplication
         export PYTHONPATH="${{ github.workspace }}"
@@ -120,6 +151,9 @@ jobs:
         SECRET_KEY: test_secret_key_for_ci
         PYTHONPATH: ${{ github.workspace }}
         DISABLE_REDIS_WARNING: true
+        PGUSER: postgres
+        PGPASSWORD: postgres
+        PGDATABASE: test_db
       run: |
         # Set clean PYTHONPATH
         export PYTHONPATH="${{ github.workspace }}"
@@ -137,6 +171,9 @@ jobs:
         SECRET_KEY: test_secret_key_for_ci
         PYTHONPATH: ${{ github.workspace }}
         DISABLE_REDIS_WARNING: true
+        PGUSER: postgres
+        PGPASSWORD: postgres
+        PGDATABASE: test_db
       run: |
         # Set clean PYTHONPATH
         export PYTHONPATH="${{ github.workspace }}"
@@ -150,6 +187,9 @@ jobs:
         SECRET_KEY: test_secret_key_for_ci
         PYTHONPATH: ${{ github.workspace }}
         DISABLE_REDIS_WARNING: true
+        PGUSER: postgres
+        PGPASSWORD: postgres
+        PGDATABASE: test_db
       run: |
         # Set clean PYTHONPATH
         export PYTHONPATH="${{ github.workspace }}"

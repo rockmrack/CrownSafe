@@ -115,7 +115,7 @@ class TestExceptionHandling:
 
 @pytest.mark.unit
 @pytest.mark.parametrize("input_val,expected", [
-    (0, 0),
+    (0, 1),  # 0! = 1 by mathematical definition
     (1, 1),
     (5, 120),  # 5! = 120
     (10, 3628800),  # 10! = 3628800

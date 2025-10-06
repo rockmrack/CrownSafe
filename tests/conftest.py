@@ -4,6 +4,7 @@ import time
 from pathlib import Path
 import pytest
 from httpx import AsyncClient, ASGITransport
+from urllib.parse import quote_plus
 
 # Add project root to Python path for imports
 # Use absolute path consistently to avoid confusion
@@ -45,11 +46,50 @@ while project_root_str in sys.path:
     sys.path.remove(project_root_str)
 sys.path.insert(0, project_root_str)
 
+# CRITICAL: Set test environment variables BEFORE importing app
+# This prevents the app from trying to connect to production database
+if 'DATABASE_URL' not in os.environ:
+    # Construct DATABASE_URL from environment variables
+    # In CI, use postgres/postgres. Locally, can override with TEST_DB_* vars
+    is_ci = os.environ.get('CI') or os.environ.get('GITHUB_ACTIONS')
+    
+    db_user = os.environ.get('TEST_DB_USER', os.environ.get('PGUSER', 'postgres'))
+    db_host = os.environ.get('TEST_DB_HOST', 'localhost')
+    db_port = os.environ.get('TEST_DB_PORT', '5432')
+    db_name = os.environ.get('TEST_DB_NAME', os.environ.get('PGDATABASE', 'test_db'))
+    
+    # Password handling: check TEST_DB_PASSWORD and PGPASSWORD first (no default)
+    db_password = os.environ.get('TEST_DB_PASSWORD') or os.environ.get('PGPASSWORD')
+    
+    # Only default to 'postgres' in CI environments
+    if db_password is None:
+        if is_ci:
+            # In CI, default to 'postgres' password
+            db_password = 'postgres'
+        else:
+            raise RuntimeError(
+                "Database password for tests is not set. Please set either TEST_DB_PASSWORD or PGPASSWORD environment variable "
+                "in your local test environment. Do not hardcode database credentials in local development; "
+                "in CI environments, the password defaults to 'postgres'."
+            )
+    
+    # URL-encode credentials to handle special characters properly
+    encoded_user = quote_plus(db_user)
+    encoded_password = quote_plus(db_password)
+    
+    os.environ['DATABASE_URL'] = f'postgresql://{encoded_user}:{encoded_password}@{db_host}:{db_port}/{db_name}'
+
+# Force PostgreSQL tools to use correct user (prevents "role 'root' does not exist")
+os.environ.setdefault('PGUSER', 'postgres')
+os.environ.setdefault('PGPASSWORD', 'postgres')
+os.environ.setdefault('PGDATABASE', 'test_db')
+
 # Debug: Print sys.path in CI to verify
 if os.environ.get('CI') or os.environ.get('GITHUB_ACTIONS'):
     print(f"DEBUG: sys.path after conftest setup:")
     for i, p in enumerate(sys.path[:5]):
         print(f"  [{i}] {p}")
+    print(f"DEBUG: DATABASE_URL={os.environ.get('DATABASE_URL')}")
 
 from api.main_babyshield import app  # FastAPI app
 
