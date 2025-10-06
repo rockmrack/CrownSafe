@@ -369,8 +369,11 @@ class SearchService:
         return 0.08  # 8% similarity minimum
     
     def check_pg_trgm_enabled(self) -> bool:
-        """Check if pg_trgm extension is enabled"""
+        """Check if pg_trgm extension is enabled (Postgres only)"""
         try:
+            # Only check on PostgreSQL
+            if self.db.bind.dialect.name != "postgresql":
+                return False
             result = self.db.execute(text(
                 "SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')"
             ))

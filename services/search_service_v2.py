@@ -176,12 +176,16 @@ class SearchServiceV2:
         score_expression = "0.0"
         
         if text_query:
-            # Check if pg_trgm is available
+            # Check if pg_trgm is available (Postgres only)
             try:
-                trgm_check = self.db.execute(text(
-                    "SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')"
-                ))
-                has_trgm = trgm_check.scalar()
+                # Only check on PostgreSQL
+                if self.db.bind.dialect.name == "postgresql":
+                    trgm_check = self.db.execute(text(
+                        "SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')"
+                    ))
+                    has_trgm = trgm_check.scalar()
+                else:
+                    has_trgm = False
             except:
                 has_trgm = False
             
