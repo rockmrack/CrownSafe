@@ -2,8 +2,12 @@
 # Version 5.2 – Single subscription model with family profiles and allergies
 
 import os
+import logging
 from datetime import date
 from dotenv import load_dotenv
+
+# Initialize logger
+logger = logging.getLogger(__name__)
 from sqlalchemy import (
     create_engine,
     Column,
