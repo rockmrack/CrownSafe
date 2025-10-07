@@ -1,0 +1,15 @@
+﻿2025-10-06T17:59:20.604000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.32.107:25632 - "GET /healthz HTTP/1.1" 200 OK
+2025-10-06T17:59:20.779000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.7.239:48124 - "GET /healthz HTTP/1.1" 200 OK
+2025-10-06T17:59:20.786000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.30.169:17068 - "GET /healthz HTTP/1.1" 200 OK
+2025-10-06T17:59:30.615000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.32.107:15678 - "GET /healthz HTTP/1.1" 200 OK
+2025-10-06T17:59:30.791000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.7.239:26152 - "GET /healthz HTTP/1.1" 200 OK
+2025-10-06T17:59:30.794000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.30.169:55320 - "GET /healthz HTTP/1.1" 200 OK
+2025-10-06T17:59:40.626000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.32.107:29694 - "GET /healthz HTTP/1.1" 200 OK
+2025-10-06T17:59:40.801000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.30.169:56734 - "GET /healthz HTTP/1.1" 200 OK
+2025-10-06T17:59:40.802000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.7.239:5262 - "GET /healthz HTTP/1.1" 200 OK
+2025-10-06T17:59:50.627000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.32.107:57848 - "GET /healthz HTTP/1.1" 200 OK
+2025-10-06T17:59:50.803000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.30.169:5990 - "GET /healthz HTTP/1.1" 200 OK
+2025-10-06T17:59:50.812000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.7.239:44908 - "GET /healthz HTTP/1.1" 200 OK
+2025-10-06T18:00:00.638000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.32.107:43648 - "GET /healthz HTTP/1.1" 200 OK
+2025-10-06T18:00:00.806000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.30.169:36448 - "GET /healthz HTTP/1.1" 200 OK
+2025-10-06T18:00:00.817000+00:00 ecs/babyshield-backend/06b8ffd41f504971b6a50cba0ad17cd6 INFO:     172.31.7.239:31686 - "GET /healthz HTTP/1.1" 200 OK

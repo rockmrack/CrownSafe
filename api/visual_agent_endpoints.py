@@ -708,20 +708,28 @@ async def visual_search(
         
         if product_data.get("product_name"):
             # Simple recall check - in production this would be more sophisticated
-            from sqlalchemy import text
-            recall_query = text("""
-                SELECT COUNT(*) as count 
-                FROM recalls_enhanced 
-                WHERE LOWER(product_name) LIKE LOWER(:product_name)
-                LIMIT 1
-            """)
-            result_count = db.execute(recall_query, {
-                "product_name": f"%{product_data['product_name']}%"
-            }).fetchone()
-            
-            if result_count and result_count[0] > 0:
-                recall_found = True
-                recall_count = result_count[0]
+            try:
+                from sqlalchemy import text, inspect
+                # Check if table exists first
+                inspector = inspect(db.bind)
+                if inspector.has_table('recalls_enhanced'):
+                    recall_query = text("""
+                        SELECT COUNT(*) as count 
+                        FROM recalls_enhanced 
+                        WHERE LOWER(product_name) LIKE LOWER(:product_name)
+                        LIMIT 1
+                    """)
+                    result_count = db.execute(recall_query, {
+                        "product_name": f"%{product_data['product_name']}%"
+                    }).fetchone()
+                    
+                    if result_count and result_count[0] > 0:
+                        recall_found = True
+                        recall_count = result_count[0]
+                else:
+                    logger.warning("recalls_enhanced table not found, skipping recall check")
+            except Exception as recall_err:
+                logger.warning(f"Recall check failed: {recall_err}")
         
         # Build response with real data
         return ApiResponse(

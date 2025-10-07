@@ -48,14 +48,10 @@ class SearchService:
             (sql_query, params, use_scoring)
         """
         
-        # Determine which table to use
-        table_check = text("""
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_name = 'recalls_enhanced'
-            )
-        """)
-        has_enhanced = self.db.execute(table_check).scalar()
+        # Determine which table to use (portable check)
+        from sqlalchemy import inspect
+        inspector = inspect(self.db.bind)
+        has_enhanced = inspector.has_table('recalls_enhanced')
         
         table = "recalls_enhanced" if has_enhanced else "recalls"
         
@@ -373,8 +369,11 @@ class SearchService:
         return 0.08  # 8% similarity minimum
     
     def check_pg_trgm_enabled(self) -> bool:
-        """Check if pg_trgm extension is enabled"""
+        """Check if pg_trgm extension is enabled (Postgres only)"""
         try:
+            # Only check on PostgreSQL
+            if self.db.bind.dialect.name != "postgresql":
+                return False
             result = self.db.execute(text(
                 "SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')"
             ))

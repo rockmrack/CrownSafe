@@ -341,10 +341,9 @@ def convert_recall_to_safety_issue(recall: RecallDB, agency_code: str) -> Safety
 def check_table_exists(db_session) -> bool:
     """Check if recalls_enhanced table exists"""
     try:
-        result = db_session.execute(text(
-            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls_enhanced');"
-        ))
-        return result.scalar()
+        from sqlalchemy import inspect
+        inspector = inspect(db_session.bind)
+        return inspector.has_table('recalls_enhanced')
     except Exception as e:
         logger.warning(f"Could not check table existence: {e}")
         return False

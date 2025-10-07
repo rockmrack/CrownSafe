@@ -98,14 +98,10 @@ class SearchServiceV2:
                 logger.warning(f"Invalid cursor: {e}")
                 raise
         
-        # Determine table
-        table_check = text("""
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_name = 'recalls_enhanced'
-            )
-        """)
-        has_enhanced = self.db.execute(table_check).scalar()
+        # Determine table (portable check)
+        from sqlalchemy import inspect
+        inspector = inspect(self.db.bind)
+        has_enhanced = inspector.has_table('recalls_enhanced')
         table = "recalls_enhanced" if has_enhanced else "recalls"
         
         # Build base query components
@@ -180,12 +176,16 @@ class SearchServiceV2:
         score_expression = "0.0"
         
         if text_query:
-            # Check if pg_trgm is available
+            # Check if pg_trgm is available (Postgres only)
             try:
-                trgm_check = self.db.execute(text(
-                    "SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')"
-                ))
-                has_trgm = trgm_check.scalar()
+                # Only check on PostgreSQL
+                if self.db.bind.dialect.name == "postgresql":
+                    trgm_check = self.db.execute(text(
+                        "SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')"
+                    ))
+                    has_trgm = trgm_check.scalar()
+                else:
+                    has_trgm = False
             except:
                 has_trgm = False
             

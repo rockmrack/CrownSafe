@@ -96,8 +96,8 @@ def create_convincing_response(honeypot_type: str) -> JSONResponse:
 
 # Honeypot Endpoints (designed to attract attackers)
 
-@router.get("/admin/login.php", operation_id="admin_login_honeypot_get")
-@router.post("/admin/login.php", operation_id="admin_login_honeypot_post")
+@router.get("/admin/login.php", operation_id="admin_login_honeypot_get", include_in_schema=False)
+@router.post("/admin/login.php", operation_id="admin_login_honeypot_post", include_in_schema=False)
 async def admin_login_honeypot(request: Request):
     """Fake admin login panel to trap attackers"""
     record_honeypot_hit(request, "admin_login")
@@ -127,7 +127,7 @@ async def admin_login_honeypot(request: Request):
         headers={"X-Honeypot": "admin_panel"}
     )
 
-@router.get("/.env")
+@router.get("/.env", include_in_schema=False)
 async def env_file_honeypot(request: Request):
     """Fake environment file to trap config seekers"""
     record_honeypot_hit(request, "config_file")
@@ -143,29 +143,29 @@ SECRET_KEY=fake_jwt_secret_key_honeypot_trap
     
     return HTMLResponse(content=fake_env, headers={"X-Honeypot": "env_file"})
 
-@router.get("/backup.sql")
-@router.get("/backup/database.sql") 
+@router.get("/backup.sql", include_in_schema=False)
+@router.get("/backup/database.sql", include_in_schema=False) 
 async def backup_file_honeypot(request: Request):
     """Fake database backup to trap data seekers"""
     record_honeypot_hit(request, "backup_file")
     return create_convincing_response("backup_file")
 
-@router.get("/.git/config")
-@router.get("/.git/HEAD")
+@router.get("/.git/config", include_in_schema=False)
+@router.get("/.git/HEAD", include_in_schema=False)
 async def git_config_honeypot(request: Request):
     """Fake git config to trap repository scanners"""
     record_honeypot_hit(request, "git_config")
     return create_convincing_response("git_config")
 
-@router.get("/wp-admin/admin.php")
-@router.get("/phpmyadmin/index.php")
+@router.get("/wp-admin/admin.php", include_in_schema=False)
+@router.get("/phpmyadmin/index.php", include_in_schema=False)
 async def cms_honeypot(request: Request):
     """Fake CMS admin panels"""
     record_honeypot_hit(request, "cms_admin")
     return create_convincing_response("admin_login")
 
-@router.get("/api/admin/users")
-@router.get("/api/v1/admin/config")
+@router.get("/api/admin/users", include_in_schema=False)
+@router.get("/api/v1/admin/config", include_in_schema=False)
 async def api_admin_honeypot(request: Request):
     """Fake admin API endpoints"""
     record_honeypot_hit(request, "api_admin")
@@ -183,7 +183,7 @@ async def api_admin_honeypot(request: Request):
     )
 
 # Security Intelligence Endpoint (for monitoring)
-@router.get("/security/intelligence")
+@router.get("/security/intelligence", include_in_schema=False)
 async def get_attack_intelligence():
     """Get attack intelligence data (admin only)"""
     return {
