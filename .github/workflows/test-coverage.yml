@@ -1,4 +1,4 @@
-name: Test Coverage
+﻿name: Test Coverage
 
 on:
   push:
@@ -170,7 +170,7 @@ jobs:
                 'USA', 
                 'Test recall for legacy table'
             ))
-            print('✅ Inserted test data into legacy recalls table')
+            print('âœ… Inserted test data into legacy recalls table')
         
         # Create users table
         cursor.execute('''
@@ -205,13 +205,13 @@ jobs:
                     'USA', 
                     'Test recall for CI smoke tests'
                 ))
-                print('✅ Inserted test recall data')
+                print('âœ… Inserted test recall data')
         except Exception as e:
-            print(f'⚠️ Could not insert test data into recalls_enhanced: {e}')
+            print(f'âš ï¸ Could not insert test data into recalls_enhanced: {e}')
         
         conn.commit()
         conn.close()
-        print('✅ PostgreSQL database initialization complete')
+        print('âœ… PostgreSQL database initialization complete')
         "
     
     - name: Cache pip dependencies
@@ -271,19 +271,19 @@ jobs:
         echo ""
         echo "=== Checking core_infra ==="
         if [ -d "core_infra" ]; then
-          echo "✓ core_infra directory exists"
+          echo "âœ“ core_infra directory exists"
           ls -la core_infra/ | head -20
           echo ""
           echo "=== Checking __init__.py ==="
           if [ -f "core_infra/__init__.py" ]; then
-            echo "✓ core_infra/__init__.py exists"
+            echo "âœ“ core_infra/__init__.py exists"
             wc -l core_infra/__init__.py
           else
-            echo "✗ core_infra/__init__.py NOT FOUND"
+            echo "âœ— core_infra/__init__.py NOT FOUND"
             exit 1
           fi
         else
-          echo "✗ core_infra directory NOT FOUND"
+          echo "âœ— core_infra directory NOT FOUND"
           echo "This is a CRITICAL ERROR - core_infra must exist!"
           exit 1
         fi
@@ -291,7 +291,7 @@ jobs:
         # Test critical imports
         echo ""
         echo "=== Testing Python imports ==="
-        python -c "from core_infra.cache_manager import get_cache_stats; print('✅ Critical imports working')"
+        python -c "from core_infra.cache_manager import get_cache_stats; print('âœ… Critical imports working')"
     
     - name: Run unit tests with coverage
       env:
