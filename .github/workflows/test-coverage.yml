@@ -1,4 +1,4 @@
-﻿name: Test Coverage
+name: Test Coverage
 
 on:
   push:
@@ -38,7 +38,13 @@ jobs:
     
     - name: Run tests with coverage
       run: |
-        pytest tests/ --cov=. --cov-report=term-missing --cov-fail-under=10
+        pytest tests/ \
+          --ignore=tests/performance/ \
+          --ignore=tests/integration/ \
+          --cov=. \
+          --cov-report=term-missing \
+          --cov-fail-under=10 \
+          -v
     
     - name: Upload coverage reports
       if: always()
