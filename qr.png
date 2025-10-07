@@ -1,1 +1,0 @@
-{"ok":false,"error":{"code":"BAD_REQUEST","message":"Invalid parameter body.1: JSON decode error"},"traceId":"trace_1756826242__api_v1_scan_generate-qr"}

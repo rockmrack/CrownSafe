@@ -1,1 +1,0 @@
-ERROR:api.main_babyshield:[trace_1758234939__api_v1_recalls] Unhandled exception: 'EnhancedRecallDB' object has no attribute 'product_category'

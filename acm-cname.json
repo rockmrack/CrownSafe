@@ -1,1 +1,0 @@
-{"Changes":[{"Action":"UPSERT","ResourceRecordSet":{"Name":"_a90d5bc6ecb92552555ed958fb820fee.babyshield-backend.cureviax.ai","Type":"CNAME","TTL":300,"ResourceRecords":[{"Value":"_e3148bfeb2c010c43b9a27ed3ba91706.xlfgrmvvlj.acm-validations.aws."}]}}]}
