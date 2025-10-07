@@ -9,6 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     
     services:
       redis:
@@ -37,13 +38,16 @@ jobs:
         if [ -f config/requirements/requirements-complete.txt ]; then pip install -r config/requirements/requirements-complete.txt; fi
     
     - name: Run tests with coverage
+      timeout-minutes: 5
       run: |
         pytest tests/ \
           --ignore=tests/performance/ \
           --ignore=tests/integration/ \
+          --timeout=30 \
           --cov=. \
           --cov-report=term-missing \
           --cov-fail-under=10 \
+          -x \
           -v
     
     - name: Upload coverage reports
