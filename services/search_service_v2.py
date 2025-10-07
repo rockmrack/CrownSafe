@@ -254,12 +254,21 @@ class SearchServiceV2:
         # Build final query
         where_clause = " AND ".join(where_conditions) if where_conditions else "1=1"
         
-        # Deterministic ordering
-        order_by = [
-            f"{score_expression} DESC",
-            f"{table}.recall_date DESC NULLS LAST",
-            f"{table}.recall_id ASC"
-        ]
+        # Deterministic ordering - handle dialect differences
+        dialect = self.db.bind.dialect.name
+        if dialect == "postgresql":
+            order_by = [
+                f"{score_expression} DESC",
+                f"{table}.recall_date DESC NULLS LAST",
+                f"{table}.recall_id ASC"
+            ]
+        else:
+            # SQLite doesn't support NULLS LAST, use COALESCE
+            order_by = [
+                f"{score_expression} DESC",
+                f"COALESCE({table}.recall_date, '1900-01-01') DESC",
+                f"{table}.recall_id ASC"
+            ]
         
         # Fetch one extra to detect if there's a next page
         sql = f"""

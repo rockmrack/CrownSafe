@@ -125,21 +125,48 @@ class SearchService:
         
         if text_query:
             use_scoring = True
-            # Use pg_trgm similarity for fuzzy matching
-            # We'll calculate similarity across multiple fields and take the maximum
-            similarity_expressions = [
-                f"similarity(lower({table}.product_name), :search_text)",
-                f"similarity(lower({table}.brand), :search_text)",
-                f"similarity(lower({table}.description), :search_text)",
-                f"similarity(lower({table}.hazard), :search_text)"
-            ]
             
-            # Take the greatest similarity as the score
-            score_expression = f"GREATEST({', '.join(similarity_expressions)})"
+            # Check database dialect for compatibility
+            dialect = self.db.bind.dialect.name
             
-            # Filter to only reasonably similar results (threshold: 0.08)
-            where_conditions.append(f"{score_expression} >= 0.08")
-            params['search_text'] = text_query
+            if dialect == "postgresql":
+                # Use pg_trgm similarity for fuzzy matching (PostgreSQL only)
+                similarity_expressions = [
+                    f"similarity(lower({table}.product_name), :search_text)",
+                    f"similarity(lower({table}.brand), :search_text)",
+                    f"similarity(lower({table}.description), :search_text)",
+                    f"similarity(lower({table}.hazard), :search_text)"
+                ]
+                
+                # Take the greatest similarity as the score
+                score_expression = f"GREATEST({', '.join(similarity_expressions)})"
+                
+                # Filter to only reasonably similar results (threshold: 0.08)
+                where_conditions.append(f"{score_expression} >= 0.08")
+                params['search_text'] = text_query
+            else:
+                # SQLite-compatible search using LIKE
+                search_conditions = [
+                    f"lower({table}.product_name) LIKE :search_pattern",
+                    f"lower({table}.brand) LIKE :search_pattern",
+                    f"lower({table}.description) LIKE :search_pattern",
+                    f"lower({table}.hazard) LIKE :search_pattern"
+                ]
+                where_conditions.append(f"({' OR '.join(search_conditions)})")
+                params['search_pattern'] = f"%{text_query}%"
+                
+                # Simple relevance scoring for SQLite
+                score_expression = f"""
+                    CASE 
+                        WHEN lower({table}.product_name) = :search_text THEN 1.0
+                        WHEN lower({table}.brand) = :search_text THEN 0.9
+                        WHEN lower({table}.product_name) LIKE :search_start THEN 0.8
+                        WHEN lower({table}.brand) LIKE :search_start THEN 0.7
+                        ELSE 0.5
+                    END
+                """
+                params['search_text'] = text_query
+                params['search_start'] = f"{text_query}%"
         
         # 4. Keyword AND logic
         if keywords:
@@ -162,10 +189,20 @@ class SearchService:
         order_by = []
         if use_scoring:
             order_by.append("score DESC")
-        order_by.extend([
-            f"{table}.recall_date DESC NULLS LAST",
-            f"{table}.recall_id ASC"
-        ])
+        
+        # Handle NULLS LAST syntax for different dialects
+        dialect = self.db.bind.dialect.name
+        if dialect == "postgresql":
+            order_by.extend([
+                f"{table}.recall_date DESC NULLS LAST",
+                f"{table}.recall_id ASC"
+            ])
+        else:
+            # SQLite doesn't support NULLS LAST, use COALESCE
+            order_by.extend([
+                f"COALESCE({table}.recall_date, '1900-01-01') DESC",
+                f"{table}.recall_id ASC"
+            ])
         
         # Handle cursor-based pagination
         if cursor_data:
