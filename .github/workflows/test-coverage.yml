@@ -97,13 +97,7 @@ jobs:
         echo "DATABASE_URL: ${DATABASE_URL:-not set}"
         echo ""
         echo "=== Testing PostgreSQL connection ==="
-        cat <<EOF > check_pg_env.py
-import os
-print(f"Python sees PGUSER: {os.environ.get('PGUSER', 'NOT SET')}")
-print(f"Python sees DATABASE_URL: {os.environ.get('DATABASE_URL', 'NOT SET')}")
-print(f"Current user from OS: {os.environ.get('USER', 'NOT SET')}")
-EOF
-        python check_pg_env.py
+        python -c "import os; print(f'Python sees PGUSER: {os.environ.get(\"PGUSER\", \"NOT SET\")}'); print(f'Python sees DATABASE_URL: {os.environ.get(\"DATABASE_URL\", \"NOT SET\")}'); print(f'Current user from OS: {os.environ.get(\"USER\", \"NOT SET\")}')"
         echo "=== PostgreSQL connection test complete ==="
     
     - name: Verify critical imports

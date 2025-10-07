@@ -172,9 +172,14 @@ class AsyncWorkflowOptimizer:
                 }
             else:
                 # For image requests, use the full workflow
-                plan_result = planner.process_task(user_request)
-                if plan_result.get("status") != "COMPLETED":
-                    return {"status": "FAILED", "error": "Planning failed"}
+                try:
+                    plan_result = planner.process_task(user_request)
+                    if plan_result.get("status") != "COMPLETED":
+                        self.logger.error(f"Planning failed for image request: {plan_result}")
+                        return {"status": "FAILED", "error": "Planning failed"}
+                except Exception as plan_error:
+                    self.logger.error(f"Planner error with image_url: {plan_error}", exc_info=True)
+                    return {"status": "FAILED", "error": f"Planner error: {str(plan_error)}"}
             
             # Step 2: Execute with optimization
             execution_result = await router.execute_plan(plan_result.get("plan"))

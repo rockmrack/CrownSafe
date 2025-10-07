@@ -3,7 +3,7 @@ name: API Contract — Schemathesis
 on:
   workflow_dispatch:
   push:
-    branches: [ main, staging, fix/** ]
+    branches: [ main, staging, development, fix/** ]
   pull_request:
     branches: [ "main", "staging" ]
     types: [ opened, synchronize, reopened ]
