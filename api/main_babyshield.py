@@ -575,6 +575,7 @@ app.add_middleware(
         "*.babyshield.cureviax.ai",
         "localhost", 
         "127.0.0.1",
+        "testserver",  # Required for FastAPI TestClient in tests
         "*.amazonaws.com"  # For ALB health checks
     ]
 )

@@ -1,7 +1,7 @@
 name: CI (unit subset)
 on:
   push:
-    branches: [ "staging", "main" ]
+    branches: [ "staging", "main", "development" ]
   pull_request:
     branches: [ "staging", "main" ]
 concurrency:
@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f config/requirements/requirements.txt ]; then pip install -r config/requirements/requirements.txt; else pip install pytest; fi
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; else pip install pytest; fi
       - name: Run unit subset (validators)
         env:
           PYTEST_DISABLE_PLUGIN_AUTOLOAD: 1

@@ -265,10 +265,12 @@ def create_tables():
     """Create all database tables from all Base classes"""
     # Create tables from main Base class (User, FamilyMember, etc.)
     Base.metadata.create_all(bind=engine)
-    
+
     # Also create tables from enhanced schema (recalls_enhanced)
     from core_infra.enhanced_database_schema import Base as EnhancedBase
     EnhancedBase.metadata.create_all(bind=engine)
+    
+    # Risk assessment models use the same Base, so their tables are created above
     
     # Import all models to ensure they're registered with Base
     try:
@@ -278,7 +280,12 @@ def create_tables():
         from db.models.privacy_request import PrivacyRequest
         from db.models.scan_history import ScanHistory
         from db.models.ingestion_run import IngestionRun
-        from core_infra.risk_assessment_models import *
+        
+        # Import risk assessment models to register them with Base.metadata
+        try:
+            import core_infra.risk_assessment_models
+        except ImportError:
+            pass  # Risk assessment models not available
         
         # Create tables again to include any newly imported models
         Base.metadata.create_all(bind=engine)

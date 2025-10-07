@@ -102,6 +102,13 @@ class SearchServiceV2:
         from sqlalchemy import inspect
         inspector = inspect(self.db.bind)
         has_enhanced = inspector.has_table('recalls_enhanced')
+        has_legacy = inspector.has_table('recalls')
+        
+        if not has_enhanced and not has_legacy:
+            # No recall tables exist - return empty query tuple (4 elements expected)
+            from core_infra.search_constants import EMPTY_QUERY, EMPTY_PARAMS
+            return EMPTY_QUERY, EMPTY_PARAMS, datetime.now(timezone.utc), None
+        
         table = "recalls_enhanced" if has_enhanced else "recalls"
         
         # Build base query components

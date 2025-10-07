@@ -64,6 +64,156 @@ jobs:
         echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
         echo "Python path set to: ${{ github.workspace }}"
     
+    - name: Install PostgreSQL dependencies
+      run: |
+        pip install psycopg2-binary
+    
+    - name: Initialize PostgreSQL database
+      run: |
+        python -c "
+        import psycopg2
+        import os
+        
+        # Connect to PostgreSQL
+        conn = psycopg2.connect(
+            host='localhost',
+            port=5432,
+            user='postgres',
+            password='postgres',
+            database='test_db'
+        )
+        cursor = conn.cursor()
+        
+        # Create recalls_enhanced table
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS recalls_enhanced (
+            id SERIAL PRIMARY KEY,
+            recall_id TEXT,
+            product_name TEXT,
+            brand TEXT,
+            manufacturer TEXT,
+            model_number TEXT,
+            upc TEXT,
+            ean_code TEXT,
+            gtin TEXT,
+            article_number TEXT,
+            lot_number TEXT,
+            batch_number TEXT,
+            serial_number TEXT,
+            part_number TEXT,
+            expiry_date TEXT,
+            best_before_date TEXT,
+            production_date TEXT,
+            ndc_number TEXT,
+            din_number TEXT,
+            vehicle_make TEXT,
+            vehicle_model TEXT,
+            model_year TEXT,
+            vin_range TEXT,
+            registry_codes TEXT,
+            country TEXT,
+            regions_affected TEXT,
+            recall_date TEXT,
+            source_agency TEXT,
+            hazard TEXT,
+            hazard_category TEXT,
+            recall_reason TEXT,
+            remedy TEXT,
+            recall_class TEXT,
+            description TEXT,
+            manufacturer_contact TEXT,
+            url TEXT,
+            search_keywords TEXT,
+            agency_specific_data TEXT
+        )
+        ''')
+        
+        # Create legacy recalls table
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS recalls (
+            id SERIAL PRIMARY KEY,
+            recall_id TEXT,
+            product_name TEXT,
+            brand TEXT,
+            manufacturer TEXT,
+            model_number TEXT,
+            upc TEXT,
+            country TEXT,
+            recall_date TEXT,
+            hazard_description TEXT,
+            manufacturer_contact TEXT,
+            source_agency TEXT,
+            description TEXT,
+            hazard TEXT,
+            remedy TEXT,
+            url TEXT
+        )
+        ''')
+        
+        # Insert test data into legacy recalls table
+        cursor.execute('SELECT COUNT(*) FROM recalls')
+        count = cursor.fetchone()[0]
+        if count == 0:
+            cursor.execute('''
+            INSERT INTO recalls 
+            (recall_id, product_name, brand, manufacturer, hazard, recall_date, source_agency, url, country, description)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (
+                'TEST-002', 
+                'Baby Bottle', 
+                'SafeBaby', 
+                'SafeBaby Corp', 
+                'Chemical hazard', 
+                '2025-01-01', 
+                'FDA', 
+                'https://example.com/recall/test2', 
+                'USA', 
+                'Test recall for legacy table'
+            ))
+            print('✅ Inserted test data into legacy recalls table')
+        
+        # Create users table
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            is_active BOOLEAN DEFAULT TRUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        ''')
+        
+        # Insert test data into recalls_enhanced table
+        try:
+            cursor.execute('SELECT COUNT(*) FROM recalls_enhanced')
+            count = cursor.fetchone()[0]
+            if count == 0:
+                cursor.execute('''
+                INSERT INTO recalls_enhanced 
+                (recall_id, product_name, brand, manufacturer, hazard, recall_date, source_agency, url, country, description)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ''', (
+                    'TEST-001', 
+                    'Baby Pacifier', 
+                    'SafeBaby', 
+                    'SafeBaby Corp', 
+                    'Choking hazard', 
+                    '2025-01-01', 
+                    'CPSC', 
+                    'https://example.com/recall/test', 
+                    'USA', 
+                    'Test recall for CI smoke tests'
+                ))
+                print('✅ Inserted test recall data')
+        except Exception as e:
+            print(f'⚠️ Could not insert test data into recalls_enhanced: {e}')
+        
+        conn.commit()
+        conn.close()
+        print('✅ PostgreSQL database initialization complete')
+        "
+    
     - name: Cache pip dependencies
       uses: actions/cache@v3
       with:
@@ -82,7 +232,7 @@ jobs:
         pip cache purge 2>/dev/null || echo "Skipping cache purge"
         # Install packaging first with its dependencies (no upper bound)
         pip install --force-reinstall 'packaging>=22.0'
-        pip install -r config/requirements/requirements.txt
+        pip install -r requirements.txt
         pip install -r tests/requirements-test.txt
         # Verify packaging version using proper version comparison
         python -c "from packaging import version; import packaging; assert version.parse(packaging.__version__) >= version.parse('22.0'), f'packaging {packaging.__version__} < 22.0'"
@@ -101,6 +251,11 @@ jobs:
         echo "=== PostgreSQL connection test complete ==="
     
     - name: Verify critical imports
+      env:
+        PGPASSWORD: postgres
+        PGUSER: postgres
+        PGDATABASE: test_db
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
       run: |
         # CRITICAL: Set PYTHONPATH cleanly without duplication
         export PYTHONPATH="${{ github.workspace }}"

@@ -9,10 +9,8 @@ from datetime import datetime
 import uuid
 from enum import Enum
 
-# Import Base from the main database module
+# Import Base from the main database module to maintain a single declarative base
 from core_infra.database import Base
-
-
 class DataSource(Enum):
     """Data source types"""
     CPSC_RECALL = "cpsc_recall"

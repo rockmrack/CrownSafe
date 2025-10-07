@@ -3,7 +3,7 @@ name: API Smoke — Endpoints CSV
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "staging" ]
+    branches: [ "main", "staging", "development" ]
   pull_request:
     branches: [ "main", "staging" ]
 

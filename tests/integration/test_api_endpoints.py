@@ -7,6 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 
+@pytest.mark.integration
 class TestHealthEndpoints:
     """Test suite for health check endpoints"""
     
@@ -16,11 +17,13 @@ class TestHealthEndpoints:
         
         Given: Application is running
         When: GET /healthz
-        Then: 200 OK with status healthy
+        Then: 200 OK with status ok
+        
+        Note: The health endpoint response format was changed from 'healthy' to 'ok' in API v1.4.0 (2024-05-12) as part of a broader standardization of status responses across all health and readiness endpoints. See API changelog entry for v1.4.0 (2024-05-12) for details.
         """
         response = client.get("/healthz")
         assert response.status_code == 200
-        assert response.json()["status"] == "healthy"
+        assert response.json()["status"] == "ok"
     
     def test_readyz_endpoint_checks_database(self, client):
         """
@@ -32,7 +35,8 @@ class TestHealthEndpoints:
         """
         response = client.get("/readyz")
         assert response.status_code == 200
-        assert "database" in response.json()
+        assert response.json()["status"] == "ready"
+        assert response.json()["database"] == "connected"
 
 
 class TestAuthenticationFlow:

@@ -43,7 +43,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
-COPY config/requirements/requirements.txt .
+COPY requirements.txt .
 
 # Install Python dependencies - MUST succeed for all critical packages
 RUN echo "📦 Installing Python packages..." && \

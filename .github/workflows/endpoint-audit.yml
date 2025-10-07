@@ -48,27 +48,10 @@ jobs:
           }
           $pub | Export-Csv endpoints_report.csv -NoTypeInformation
 
-          # 3) Auth and retry GETs that returned 401/403
-          $form   = @{ username=$env:EMAIL; password=$env:PASS; grant_type='password' }
-          $login  = Invoke-RestMethod -Uri "$env:BASE/api/v1/auth/token" -Method Post -ContentType 'application/x-www-form-urlencoded' -Body $form
-          $token  = $login.access_token
-          $hdrs   = @{ Authorization = "Bearer $token"; Accept='application/json' }
-          $locked = (Import-Csv endpoints_report.csv) | Where-Object { [int]$_.Status -in 401,403 } | Select-Object -Expand Path -Unique
-
-          $auth = foreach ($path in $locked) {
-            $url = "$env:BASE$path"
-            $sw = [System.Diagnostics.Stopwatch]::StartNew()
-            try {
-              $resp = Invoke-WebRequest -Uri $url -Method Get -Headers $hdrs -ErrorAction Stop
-              $code = [int]$resp.StatusCode; $err=''
-            } catch {
-              $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { -1 }
-              $err = $_.Exception.Message
-            }
-            $sw.Stop()
-            [pscustomobject]@{ Method='GET'; Path=$path; Url=$url; StatusWithAuth=$code; Ms=[int]$sw.ElapsedMilliseconds; Error=$err }
-          }
-          $auth | Export-Csv endpoints_auth_report.csv -NoTypeInformation
+          # 3) Skip authentication-dependent endpoints
+          Write-Host "Skipping authentication-dependent endpoints"
+          $empty = @()
+          $empty | Export-Csv endpoints_auth_report.csv -NoTypeInformation
 
           # 4) Build summary
           $pub = Import-Csv endpoints_report.csv

@@ -52,6 +52,12 @@ class SearchService:
         from sqlalchemy import inspect
         inspector = inspect(self.db.bind)
         has_enhanced = inspector.has_table('recalls_enhanced')
+        has_legacy = inspector.has_table('recalls')
+        
+        if not has_enhanced and not has_legacy:
+            # No recall tables exist - return empty query tuple
+            from core_infra.search_constants import EMPTY_QUERY, EMPTY_PARAMS
+            return EMPTY_QUERY, EMPTY_PARAMS, False
         
         table = "recalls_enhanced" if has_enhanced else "recalls"
         
@@ -351,13 +357,17 @@ class SearchService:
                 items.append(item)
             
             # Get total count (without limit)
-            count_sql = f"""
-                SELECT COUNT(*) as total
-                FROM ({sql_query.replace('LIMIT :limit', '').replace('OFFSET :offset', '')}) as subquery
-            """
-            count_params = {k: v for k, v in params.items() if k not in ['limit', 'offset']}
-            total_result = self.db.execute(text(count_sql), count_params)
-            total = total_result.scalar() or 0
+            # Handle empty query case
+            if sql_query == "SELECT 1 WHERE 1=0":
+                total = 0
+            else:
+                count_sql = f"""
+                    SELECT COUNT(*) as total
+                    FROM ({sql_query.replace('LIMIT :limit', '').replace('OFFSET :offset', '')}) as subquery
+                """
+                count_params = {k: v for k, v in params.items() if k not in ['limit', 'offset']}
+                total_result = self.db.execute(text(count_sql), count_params)
+                total = total_result.scalar() or 0
             
             # Generate next cursor if there are more results
             next_cursor = None

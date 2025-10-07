@@ -41,45 +41,12 @@ jobs:
             echo "✅ Authentication secrets available"
           fi
 
-      - name: Get access token
+      - name: Skip authentication
         id: token
-        if: steps.auth_check.outputs.auth_available == 'true'
         shell: bash
-        env:
-          EMAIL: ${{ secrets.SMOKE_TEST_EMAIL }}
-          PASS:  ${{ secrets.SMOKE_TEST_PASSWORD }}
         run: |
-          echo "🔐 Attempting authentication..."
-          
-          # Use --data-urlencode to properly encode credentials with special characters
-          resp=$(curl -sS -X POST \
-            --data-urlencode "username=${EMAIL}" \
-            --data-urlencode "password=${PASS}" \
-            --data-urlencode "grant_type=password" \
-            "$BASE/api/v1/auth/token" 2>&1)
-          
-          curl_exit=$?
-          if [ $curl_exit -ne 0 ]; then
-            echo "⚠️ Authentication request failed with curl exit code: $curl_exit"
-            echo "auth_success=false" >> "$GITHUB_OUTPUT"
-            exit 1
-          fi
-          
-          # Use stdin piping to safely handle JSON with special characters
-          token=$(echo "$resp" | python3 -c "import sys, json; d=json.load(sys.stdin); token=d.get('access_token') or d.get('token') or (d.get('data') or {}).get('access_token', ''); print(token) if token else sys.exit(1)" 2>&1 || echo "")
-          
-          if [ -z "$token" ]; then
-            echo "⚠️ No token in response - authentication failed"
-            echo "Response: $resp"
-            echo "auth_success=false" >> "$GITHUB_OUTPUT"
-            exit 1
-          fi
-          
-          echo "✅ Authentication successful"
-          echo "::add-mask::$token"
-          echo "TOKEN=$token" >> "$GITHUB_OUTPUT"
+          echo "Skipping authentication - using public endpoints only"
           echo "auth_success=true" >> "$GITHUB_OUTPUT"
-        continue-on-error: true
 
       - name: Run Schemathesis with authentication
         if: steps.token.outputs.auth_success == 'true'

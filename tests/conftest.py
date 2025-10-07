@@ -92,6 +92,13 @@ if os.environ.get('CI') or os.environ.get('GITHUB_ACTIONS'):
     print(f"DEBUG: DATABASE_URL={os.environ.get('DATABASE_URL')}")
 
 from api.main_babyshield import app  # FastAPI app
+from fastapi.testclient import TestClient
+
+# Synchronous test client for integration tests
+@pytest.fixture
+def client():
+    """Synchronous test client for integration tests"""
+    return TestClient(app)
 
 # Basic ASGI test client
 @pytest.fixture

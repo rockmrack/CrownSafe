@@ -20,22 +20,23 @@ import hashlib
 
 from core_infra.database import get_db, User, RecallDB
 
+# Define logger first
+logger = logging.getLogger(__name__)
+
 # Try to import agents with graceful fallback
 try:
     from agents.research.web_research_agent.agent_logic import WebResearchLogic
     web_research_agent = WebResearchLogic(agent_id="api_web_research", version="2.0", logger_instance=logger)
 except Exception as e:
     web_research_agent = None
-    logging.warning(f"Web Research Agent not available: {e}")
+    logger.warning(f"Web Research Agent not available: {e}")
 
 try:
     from agents.guideline_agent.agent_logic import GuidelineAgentLogic
     guideline_agent = GuidelineAgentLogic(agent_id="api_guideline")
 except Exception as e:
     guideline_agent = None
-    logging.warning(f"Guideline Agent not available: {e}")
-
-logger = logging.getLogger(__name__)
+    logger.warning(f"Guideline Agent not available: {e}")
 
 # Create router with prefix
 router = APIRouter(prefix="/api/v1/advanced", tags=["Advanced Features"])
