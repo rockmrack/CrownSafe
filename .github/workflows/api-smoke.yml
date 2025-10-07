@@ -13,6 +13,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Initialize production database for smoke tests
+        run: |
+          # Install requests for API calls
+          pip install requests
+          
+          # Initialize the production SQLite database with required tables
+          python scripts/init_production_db.py
+
       - name: Run endpoint smoke
         shell: pwsh
         env:

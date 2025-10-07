@@ -80,6 +80,35 @@ from core_infra.enhanced_database_schema import EnhancedRecallDB
 # Use enhanced schema as RecallDB for backward compatibility
 RecallDB = EnhancedRecallDB
 
+# Legacy recalls table for backward compatibility
+class LegacyRecallDB(Base):
+    __tablename__ = "recalls"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    recall_id = Column(String, unique=True, index=True, nullable=False)
+    product_name = Column(String, index=True, nullable=False)
+    brand = Column(String, nullable=True)
+    country = Column(String, nullable=True)
+    recall_date = Column(Date, index=True, nullable=False)
+    hazard_description = Column(Text, nullable=True)
+    manufacturer_contact = Column(String, nullable=True)
+    upc = Column(String, index=True, nullable=True)
+    source_agency = Column(String, nullable=True)
+    description = Column(Text, nullable=True)
+    hazard = Column(Text, nullable=True)
+    remedy = Column(Text, nullable=True)
+    url = Column(String, nullable=True)
+    
+    def to_dict(self) -> dict:
+        result = {}
+        for c in self.__table__.columns:
+            v = getattr(self, c.name)
+            result[c.name] = v.isoformat() if isinstance(v, date) else v
+        return result
+    
+    def __repr__(self):
+        return f"<LegacyRecallDB(id={self.id}, recall_id={self.recall_id!r})>"
+
 
 class User(Base):
     __tablename__ = "users"
@@ -233,7 +262,32 @@ def get_test_session():
     return SessionLocal()
 
 def create_tables():
+    """Create all database tables from all Base classes"""
+    # Create tables from main Base class (User, FamilyMember, etc.)
     Base.metadata.create_all(bind=engine)
+    
+    # Also create tables from enhanced schema (recalls_enhanced)
+    from core_infra.enhanced_database_schema import Base as EnhancedBase
+    EnhancedBase.metadata.create_all(bind=engine)
+    
+    # Import all models to ensure they're registered with Base
+    try:
+        # Import models that use the main Base
+        from api.models.chat_memory import UserProfile, Conversation, ConversationMessage
+        from api.monitoring_scheduler import MonitoredProduct, MonitoringRun
+        from db.models.privacy_request import PrivacyRequest
+        from db.models.scan_history import ScanHistory
+        from db.models.ingestion_run import IngestionRun
+        from core_infra.risk_assessment_models import *
+        
+        # Create tables again to include any newly imported models
+        Base.metadata.create_all(bind=engine)
+        
+    except ImportError as e:
+        logger.warning(f"Some models could not be imported: {e}")
+    
+    logger.info("Database tables created successfully")
+    
     # COPILOT AUDIT FIX: Removed ensure_user_columns() call
     # Database schema changes now handled by Alembic migrations
 

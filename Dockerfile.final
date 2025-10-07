@@ -34,6 +34,7 @@ COPY . .
 # Environment variables (non-sensitive only)
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app \
     API_HOST=0.0.0.0 \
     API_PORT=8001 \
     DATABASE_URL=sqlite:///./babyshield.db \
@@ -49,4 +50,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8001/health || exit 1
 
 # Run with production startup
-CMD ["python", "startup_production.py"]
+CMD ["python", "core/startup.py"]
