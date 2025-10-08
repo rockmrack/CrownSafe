@@ -1,6 +1,12 @@
+import os
+import uuid
+
+# Enable chat feature for tests - MUST be set before importing app
+os.environ["BS_FEATURE_CHAT_ENABLED"] = "true"
+os.environ["BS_FEATURE_CHAT_ROLLOUT_PCT"] = "1.0"  # 100% rollout for tests
+
 from fastapi.testclient import TestClient
 from api.main_babyshield import app
-import uuid
 
 # monkeypatch helpers from your code if needed:
 from api.routers import chat as chat_router
@@ -102,7 +108,7 @@ def test_conversation_diagnostic_headers(monkeypatch):
     monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
     client = TestClient(app)
     r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc", "message":"Is this safe?", "user_id":"test-user-123"})
-    assert r.status_code == 200
+    assert r.status_code == 200, f"Expected 200 but got {r.status_code}: {r.text}"
     body = r.json()
     assert body.get("success") is True
     # Note: Diagnostic headers may not be present in current implementation

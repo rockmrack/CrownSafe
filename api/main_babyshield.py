@@ -806,6 +806,21 @@ async def security_middleware(request: Request, call_next):
     
     response = await call_next(request)
     return response
+# ===== TRACE ID MIDDLEWARE =====
+# Add X-Trace-Id header to all responses for request tracking
+@app.middleware("http")
+async def add_trace_id_header(request: Request, call_next):
+    """Add X-Trace-Id header to all responses for request tracking and debugging"""
+    # Get or create trace_id
+    trace_id = getattr(request.state, "trace_id", str(uuid.uuid4()))
+    
+    # Process request
+    response = await call_next(request)
+    
+    # Add header to response
+    response.headers["X-Trace-Id"] = trace_id
+    
+    return response
 
 
 # ===== PHASE 2: SECURITY HEADERS (DECORATOR PATTERN) =====
