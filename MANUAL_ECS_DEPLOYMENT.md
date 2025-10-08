@@ -1,7 +1,7 @@
 # Deployment Status & Manual ECS Deployment Guide
 
-**Date:** October 8, 2025, 19:30  
-**Image Built:** ✅ `production-20251008-1828`  
+**Date:** October 8, 2025, 21:06  
+**Image Built:** ✅ `production-20251008-2105`  
 **Pushed to ECR:** ✅ Confirmed
 
 ---
@@ -9,10 +9,10 @@
 ## ✅ What Was Completed (ECR Deployment)
 
 ### **1. Docker Image Built**
-- **Tag:** `production-20251008-1935` ⭐ **LATEST**
-- **Previous Tag:** `production-20251008-1828`
+- **Tag:** `production-20251008-2105` ⭐ **LATEST**
+- **Previous Tag:** `production-20251008-1935`
 - **Size:** 13.7 GB
-- **Built:** 2025-10-08 19:08
+- **Built:** 2025-10-08 21:05
 - **Dockerfile:** `Dockerfile.final` (production version)
 
 ### **2. ECR Authentication**
@@ -22,19 +22,26 @@
 - **Status:** ✅ Login Succeeded
 
 ### **3. Image Pushed to ECR**
-- **Full URI:** `180703226577.dkr.ecr.eu-north-1.amazonaws.com/babyshield-backend:production-20251008-1935`
+- **Full URI:** `180703226577.dkr.ecr.eu-north-1.amazonaws.com/babyshield-backend:production-20251008-2105`
 - **Also Tagged:** `latest`
-- **Digest:** `sha256:de2db16b555747e0b606d8f584bbaddd2c174fb121c770909faf398418e9f29b`
+- **Digest:** `sha256:51152c4d22d4fb988fdd120286387ecc758f0c75e02800d23693078dd61d1df6`
 - **Push Status:** ✅ Complete
-- **Push Time:** 2025-10-08 19:09
+- **Push Time:** 2025-10-08 21:06
 
 ### **4. Code Included in Image**
+- **NEW:** Added X-Trace-Id middleware for all responses
+- **NEW:** Fixed conversation smoke test feature flag configuration
 - All system scan fixes (117 errors fixed)
 - Boolean comparison fixes (90 instances)
 - Undefined name error fixes (8 instances)
 - Updated search service with better error handling
 - Database configuration validation
 - Latest Alembic migrations
+
+### **5. Test Status**
+- ✅ All 8 conversation smoke tests passing
+- ✅ X-Trace-Id header now present in all API responses
+- ✅ Feature flags properly configured for tests
 
 ---
 
