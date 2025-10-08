@@ -162,45 +162,39 @@ def validate_search_query(query: str) -> str:
     """
     if not query:
         return ""
-    
+
     query_upper = query.upper()
     
-    # SQL injection patterns that should raise ValueError
+    # Critical SQL injection patterns
     dangerous_patterns = [
-        'DROP TABLE',
-        'DROP DATABASE',
-        'DELETE FROM',
-        'INSERT INTO',
-        'UPDATE ',
-        'CREATE TABLE',
-        'ALTER TABLE',
-        'TRUNCATE',
-        'EXEC',
-        'EXECUTE',
-        'UNION SELECT',
-        'UNION ALL',
-        '--',  # SQL comment
-        '/*',  # SQL comment
-        '*/',  # SQL comment
-        'SCRIPT>',  # XSS
-        'JAVASCRIPT:',  # XSS
-        '<IFRAME',  # XSS
-        'ONERROR=',  # XSS
+        'DROP TABLE', 'DROP DATABASE', 'DELETE FROM', 'INSERT INTO',
+        'UPDATE ', 'CREATE TABLE', 'ALTER TABLE', 'TRUNCATE',
+        'EXEC', 'EXECUTE', 'UNION SELECT', 'UNION ALL',
+        '--', '/*', '*/',  # SQL comments
+        'SCRIPT>', 'JAVASCRIPT:', '<IFRAME', 'ONERROR=',  # XSS
+        "OR '1'='1",  # Classic SQL injection
+        "OR 1=1",     # Classic SQL injection
+        "' OR '",     # SQL injection attempt
+        '1=1',        # Often used in SQL injection
     ]
-    
+
     # Check for dangerous patterns
     for pattern in dangerous_patterns:
         if pattern in query_upper:
             raise ValueError(f"Dangerous pattern detected in search query: {pattern}")
     
-    # Check for SQL injection indicators
-    if ';' in query and ('DROP' in query_upper or 'DELETE' in query_upper or 'INSERT' in query_upper):
+    # Check for SQL injection with semicolon
+    if ';' in query and any(kw in query_upper for kw in ['DROP', 'DELETE', 'INSERT', 'UPDATE']):
         raise ValueError("SQL injection attempt detected")
+    
+    # Check for quotes followed by SQL comment (like "admin'--")
+    if ("'" in query or '"' in query) and '--' in query:
+        raise ValueError("SQL injection attempt detected: quote with comment")
     
     # Limit query length
     if len(query) > 500:
         raise ValueError("Search query too long (max 500 characters)")
-    
+
     return query.strip()
 def validate_file_upload(filename: str, content_type: str, size: int) -> bool:
     """
