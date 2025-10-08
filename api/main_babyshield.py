@@ -58,10 +58,20 @@ except Exception as e:
     REQUEST_DURATION = None
     PROMETHEUS_ENABLED = False
 
+# Get environment safely
+_env_value = "unset"
+_db_value = "unset"
+if CONFIG_LOADED and config:
+    _env_value = getattr(config, 'ENVIRONMENT', getattr(config, 'environment', 'unset'))
+    _db_value = "***REDACTED***" if getattr(config, 'DATABASE_URL', getattr(config, 'database_url', None)) else "unset"
+else:
+    _env_value = os.getenv("ENVIRONMENT", "unset")
+    _db_value = "***REDACTED***" if os.getenv("DATABASE_URL") else "unset"
+
 logging.getLogger(__name__).info(
     "[BOOT] ENVIRONMENT=%s DATABASE_URL=%s",
-    (config.ENVIRONMENT if CONFIG_LOADED and config else os.getenv("ENVIRONMENT", "unset")),
-    "***REDACTED***" if (config.DATABASE_URL if CONFIG_LOADED and config else os.getenv("DATABASE_URL")) else "unset",
+    _env_value,
+    _db_value,
 )
 # Local-only shim (no-op in prod)
 try:
@@ -83,11 +93,11 @@ from api.pydantic_base import AppModel
 
 # Environment configuration - integrated with new config system
 if CONFIG_LOADED and config:
-    ENVIRONMENT = config.ENVIRONMENT
-    DEBUG_MODE = getattr(config, 'DEBUG', False)
+    ENVIRONMENT = getattr(config, 'ENVIRONMENT', getattr(config, 'environment', 'development'))
+    DEBUG_MODE = getattr(config, 'DEBUG', getattr(config, 'debug', False))
 else:
-    ENVIRONMENT = (config.ENVIRONMENT if CONFIG_LOADED else os.getenv("ENVIRONMENT", "development"))  # development, staging, production
-    DEBUG_MODE = (config.DEBUG if CONFIG_LOADED else os.getenv("DEBUG", "false").lower() == "true")
+    ENVIRONMENT = os.getenv("ENVIRONMENT", "development")  # development, staging, production
+    DEBUG_MODE = os.getenv("DEBUG", "false").lower() == "true"
 
 # OAuth configuration
 OAUTH_ENABLED = os.getenv("OAUTH_ENABLED", "false").lower() == "true"
@@ -1720,10 +1730,16 @@ def test_endpoint():
     """Simple test endpoint to verify deployment"""
     import os
     import datetime
+    env_value = "development"
+    if CONFIG_LOADED and config:
+        env_value = getattr(config, 'ENVIRONMENT', getattr(config, 'environment', 'development'))
+    else:
+        env_value = os.getenv("ENVIRONMENT", "development")
+    
     return {
         "status": "ok",
         "message": "BabyShield API is running",
-        "environment": (config.ENVIRONMENT if CONFIG_LOADED else os.getenv("ENVIRONMENT", "development")),
+        "environment": env_value,
         "timestamp": datetime.datetime.now().isoformat(),
         "version": "2.4.0"
     }

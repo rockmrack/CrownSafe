@@ -10,6 +10,23 @@ on:
 jobs:
   smoke:
     runs-on: ubuntu-latest
+    
+    # Add PostgreSQL service
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
     steps:
       - uses: actions/checkout@v4
 
@@ -18,19 +35,42 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Initialize production database for smoke tests
+      - name: Install dependencies
         run: |
-          # Install requests for API calls
-          pip install requests
+          pip install -r config/requirements/requirements.txt
           
-          # Initialize the production SQLite database with required tables
-          python scripts/init_production_db.py
+      - name: Setup PostgreSQL database
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+          DB_USERNAME: "postgres"
+          DB_PASSWORD: "postgres"
+          DB_HOST: "localhost"
+          DB_PORT: "5432"
+          DB_NAME: "postgres"
+          ENVIRONMENT: "test"
+        run: |
+          # Install PostgreSQL client
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          
+          # Enable pg_trgm extension
+          PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+          
+          # Run Alembic migrations
+          alembic upgrade head
 
       - name: Run endpoint smoke
         shell: pwsh
         env:
           SMOKE_TEST_EMAIL: ${{ secrets.SMOKE_TEST_EMAIL }}
           SMOKE_TEST_PASSWORD: ${{ secrets.SMOKE_TEST_PASSWORD }}
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+          DB_USERNAME: "postgres"
+          DB_PASSWORD: "postgres"
+          DB_HOST: "localhost"
+          DB_PORT: "5432"
+          DB_NAME: "postgres"
+          ENVIRONMENT: "test"
         run: |
           ./scripts/smoke_endpoints.ps1 -BASE "https://babyshield.cureviax.ai" -Csv "smoke/endpoints.smoke.csv"
 

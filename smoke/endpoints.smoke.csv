@@ -6,7 +6,6 @@ GET,/docs,200,false,
 GET,/openapi.json,200,false,
 GET,/api/v1/agencies,200,false,
 POST,/api/v1/search/advanced,200,false,"{""query"":""pacifier"",""limit"":3}"
-# The following test expects a 500 status code due to missing database tables in production environment. This is intentional until tables are created.
 POST,/api/v1/search/advanced,200,false,"{""product"":""Triacting Night Time Cold"",""agencies"":[""FDA""],""limit"":5}"
 
 
