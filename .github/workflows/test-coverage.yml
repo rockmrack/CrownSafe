@@ -40,14 +40,7 @@ jobs:
     - name: Run tests with coverage
       timeout-minutes: 8
       run: |
-        pytest tests/ \
-          --ignore=tests/performance/ \
-          --ignore=tests/integration/ \
-          --cov=. \
-          --cov-report=term-missing \
-          --cov-fail-under=10 \
-          -x \
-          -v
+        pytest tests/ --ignore=tests/performance/ --ignore=tests/integration/ --cov=. --cov-report=term-missing --cov-fail-under=10 -x -v
     
     - name: Upload coverage reports
       if: always()
