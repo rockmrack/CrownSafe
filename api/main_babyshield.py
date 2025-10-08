@@ -16,14 +16,17 @@ from typing import Optional, List, Dict, Any
 
 # CONFIGURATION SYSTEM INTEGRATION (load early before first use)
 try:
-    from config.settings import get_config
+    from config.settings import get_config, validate_production_config
     config = get_config()
     CONFIG_LOADED = True
-    logging.getLogger(__name__).info("✅ Configuration system loaded successfully")
+    logging.getLogger(__name__).info("[OK] Configuration system loaded successfully")
+    
+    # Validate production configuration
+    validate_production_config()
 except Exception as e:
     CONFIG_LOADED = False
     config = None
-    logging.getLogger(__name__).warning(f"⚠️ Configuration system not available, using environment variables: {e}")
+    logging.getLogger(__name__).warning(f"[WARN] Configuration system not available, using environment variables: {e}")
 
 # Logging imports (Issue #32) - import after config to allow graceful degradation
 try:
@@ -58,20 +61,38 @@ except Exception as e:
     REQUEST_DURATION = None
     PROMETHEUS_ENABLED = False
 
-# Get environment safely
+# Construct DATABASE_URL from individual components if not provided
+database_url = None
+if CONFIG_LOADED and config:
+    database_url = getattr(config, 'database_url', getattr(config, 'DATABASE_URL', None))
+else:
+    database_url = os.getenv("DATABASE_URL")
+
+if not database_url:
+    # Try to construct from individual DB components
+    db_username = os.getenv("DB_USERNAME")
+    db_password = os.getenv("DB_PASSWORD")
+    db_host = os.getenv("DB_HOST")
+    db_port = os.getenv("DB_PORT")
+    db_name = os.getenv("DB_NAME")
+    
+    if all([db_username, db_password, db_host, db_port, db_name]):
+        database_url = f"postgresql://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}"
+        # Set the environment variable for the rest of the application
+        os.environ["DATABASE_URL"] = database_url
+        logging.getLogger(__name__).info("[OK] Constructed DATABASE_URL from individual DB components")
+
+# Get environment safely for logging
 _env_value = "unset"
-_db_value = "unset"
 if CONFIG_LOADED and config:
     _env_value = getattr(config, 'ENVIRONMENT', getattr(config, 'environment', 'unset'))
-    _db_value = "***REDACTED***" if getattr(config, 'DATABASE_URL', getattr(config, 'database_url', None)) else "unset"
 else:
     _env_value = os.getenv("ENVIRONMENT", "unset")
-    _db_value = "***REDACTED***" if os.getenv("DATABASE_URL") else "unset"
 
 logging.getLogger(__name__).info(
     "[BOOT] ENVIRONMENT=%s DATABASE_URL=%s",
     _env_value,
-    _db_value,
+    "***REDACTED***" if database_url else "unset",
 )
 # Local-only shim (no-op in prod)
 try:
@@ -320,7 +341,7 @@ app = FastAPI(
 if STRUCTURED_LOGGING_ENABLED:
     try:
         app.add_middleware(LoggingMiddleware)
-        logger.info("✅ Structured logging middleware added")
+        logger.info("[OK] Structured logging middleware added")
     except Exception as e:
         logger.warning(f"Could not add logging middleware: {e}")
 
@@ -335,7 +356,7 @@ try:
     
     # Add request size limiting (DoS protection)
     app.add_middleware(RequestSizeLimitMiddleware, max_body_size=10 * 1024 * 1024)
-    logger.info("✅ Request size limiting middleware added")
+    logger.info("[OK] Request size limiting middleware added")
     
     # Add security headers
     app.add_middleware(
@@ -345,24 +366,24 @@ try:
         enable_frame_options=True,
         enable_xss_protection=True,
     )
-    logger.info("✅ Phase 2 SecurityHeadersMiddleware added")
+    logger.info("[OK] Phase 2 SecurityHeadersMiddleware added")
     
     # Add rate limiting (more lenient in development)
     if IS_PRODUCTION:
         app.add_middleware(RateLimitMiddleware, requests_per_minute=60, burst_size=10)
     else:
         app.add_middleware(RateLimitMiddleware, requests_per_minute=120, burst_size=20)
-    logger.info("✅ Rate limiting middleware added")
+    logger.info("[OK] Rate limiting middleware added")
     
-    logger.info("✅ Phase 2 security headers middleware activated")
-    logger.info("✅ OWASP-compliant security headers enabled")
+    logger.info("[OK] Phase 2 security headers middleware activated")
+    logger.info("[OK] OWASP-compliant security headers enabled")
     
 except ImportError as e:
-    logger.error(f"❌ Phase 2 security middleware IMPORT FAILED: {e}")
+    logger.error(f"[ERROR] Phase 2 security middleware IMPORT FAILED: {e}")
     import traceback
     logger.error(f"Traceback: {traceback.format_exc()}")
 except Exception as e:
-    logger.error(f"❌ Phase 2 security middleware REGISTRATION FAILED: {e}")
+    logger.error(f"[ERROR] Phase 2 security middleware REGISTRATION FAILED: {e}")
     import traceback
     logger.error(f"Traceback: {traceback.format_exc()}")
 # ===== END PHASE 2 SECURITY =====
@@ -493,6 +514,26 @@ async def favicon_svg():
     """Serve modern SVG favicon"""
     return FileResponse(os.path.join(static_dir, "favicon.svg"), media_type="image/svg+xml")
 
+# Root endpoint to reduce 4xx noise
+@app.get("/", include_in_schema=False)
+async def root():
+    """Root endpoint - redirect to docs"""
+    return {"status": "ok", "service": "babyshield-backend", "docs": "/docs"}
+
+# Version endpoint for debugging and support
+@app.get("/api/v1/version", include_in_schema=False)
+async def version():
+    """Version endpoint with build metadata"""
+    return {
+        "service": "babyshield-backend",
+        "version": "2.4.0",
+        "environment": ENVIRONMENT,
+        "is_production": IS_PRODUCTION,
+        "build_time": "2025-10-08T10:26:00Z",
+        "git_sha": "4d39732",
+        "status": "healthy"
+    }
+
 # Add SEO files
 @app.get("/robots.txt", include_in_schema=False)
 async def robots():
@@ -598,7 +639,7 @@ try:
     pass  # OLD middleware permanently disabled - Phase 2 is superior
     # from core_infra.security_headers_middleware import SecurityHeadersMiddleware as OldSecurityMiddleware
     # app.add_middleware(OldSecurityMiddleware)
-    logging.info("✅ Using Phase 2 security headers exclusively (OLD middleware disabled)")
+    logging.info("[OK] Using Phase 2 security headers exclusively (OLD middleware disabled)")
 except Exception as e:
     logging.warning(f"Could not add security headers middleware: {e}")
 
@@ -622,7 +663,7 @@ try:
         allowed_origins=ALLOWED_ORIGINS,
         allow_credentials=True
     )
-    logging.info("✅ Enhanced CORS middleware added")
+    logging.info("[OK] Enhanced CORS middleware added")
 except Exception as e:
     # Fallback to standard CORS
     logging.warning(f"Enhanced CORS not available, using standard: {e}")
@@ -1613,7 +1654,32 @@ def on_startup():
     try:
         from core_infra.database import engine, Base, SessionLocal, User
         Base.metadata.create_all(bind=engine)
-        logger.info("Ã°Å¸â€œâ€¹ Database tables created/verified.")
+        logger.info("[OK] Database tables created/verified.")
+        
+        # Run Alembic migrations for PostgreSQL
+        try:
+            from alembic.config import Config
+            from alembic import command
+            import os
+            
+            # Check if we're using PostgreSQL
+            database_url = config.database_url if CONFIG_LOADED and config else os.getenv("DATABASE_URL", "")
+            if "postgresql" in database_url.lower():
+                logger.info("[OK] Running Alembic migrations for PostgreSQL...")
+                
+                # Set up Alembic config
+                alembic_cfg = Config("db/alembic.ini")
+                alembic_cfg.set_main_option("sqlalchemy.url", database_url)
+                
+                # Run migrations
+                command.upgrade(alembic_cfg, "head")
+                logger.info("[OK] Alembic migrations completed successfully.")
+            else:
+                logger.info("[INFO] Skipping Alembic migrations for non-PostgreSQL database.")
+                
+        except Exception as migration_error:
+            logger.warning(f"[WARN] Alembic migration failed: {migration_error}")
+            logger.info("[INFO] Continuing without migrations - tables may be missing columns.")
         
         # Simple user seeding
         db = SessionLocal()
@@ -1624,10 +1690,10 @@ def on_startup():
                 u = User(id=1, email="test_parent@babyshield.com", hashed_password="testhash", is_subscribed=True)
                 db.add(u)
                 db.commit()
-                logger.info("✅ Seeded default user test_parent@babyshield.com (id=1, subscribed).")
+                logger.info("[OK] Seeded default user test_parent@babyshield.com (id=1, subscribed).")
             except UserIntegrityError:
                 db.rollback()
-                logger.info("ℹ️ User id=1 already exists (inserted by another worker).")
+                logger.info("[INFO] User id=1 already exists (inserted by another worker).")
         except Exception as e:
             logger.error(f"Ã¢ÂÅ’ Failed to seed user: {e}")
             db.rollback()
