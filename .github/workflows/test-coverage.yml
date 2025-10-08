@@ -83,6 +83,9 @@ jobs:
         ENVIRONMENT: "test"
         BS_FEATURE_CHAT_ENABLED: "true"
         BS_FEATURE_CHAT_ROLLOUT_PCT: "1.0"
+        REDIS_URL: "redis://localhost:6379/0"
+        REDIS_CACHE_URL: "redis://localhost:6379/0"
+        RATE_LIMIT_REDIS_URL: "redis://localhost:6379/0"
       run: |
         pytest tests/ --ignore=tests/performance/ --ignore=tests/integration/ --cov=. --cov-report=term-missing --cov-fail-under=10 -x -v
     
