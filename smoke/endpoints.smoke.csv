@@ -1,12 +1,12 @@
-﻿METHOD,PATH,EXPECT,AUTH,BODY
+METHOD,PATH,EXPECT,AUTH,BODY
 GET,/readyz,200,false,
 GET,/health,200,false,
 GET,/api/v1/supplemental/health,200,false,
 GET,/docs,200,false,
 GET,/openapi.json,200,false,
 GET,/api/v1/agencies,200,false,
-POST,/api/v1/search/advanced,500,false,"{""query"":""pacifier"",""limit"":3}"
+POST,/api/v1/search/advanced,200,false,"{""query"":""pacifier"",""limit"":3}"
 # The following test expects a 500 status code due to missing database tables in production environment. This is intentional until tables are created.
-POST,/api/v1/search/advanced,500,false,"{""product"":""Triacting Night Time Cold"",""agencies"":[""FDA""],""limit"":5}"
+POST,/api/v1/search/advanced,200,false,"{""product"":""Triacting Night Time Cold"",""agencies"":[""FDA""],""limit"":5}"
 
 
