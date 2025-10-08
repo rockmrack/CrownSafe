@@ -74,11 +74,11 @@ def test_upsert_profile_create_new(db_session):
     db_session.refresh(profile)
     
     assert profile.user_id == user_id
-    assert profile.consent_personalization == True
+    assert profile.consent_personalization
     assert json.loads(profile.allergies) == ["peanuts", "milk"]
     assert profile.pregnancy_trimester == 2
     assert profile.pregnancy_due_date == date(2025, 6, 15)
-    assert profile.memory_paused == False  # default
+    assert not profile.memory_paused  # default
     assert profile.created_at is not None
     assert profile.updated_at is not None
 
@@ -103,7 +103,7 @@ def test_upsert_profile_update_existing(db_session):
     profile2 = upsert_profile(db_session, user_id, update_data)
     
     assert profile2.user_id == user_id
-    assert profile2.consent_personalization == True
+    assert profile2.consent_personalization
     assert profile2.allergies == ["peanuts", "milk", "soy"]
     assert profile2.pregnancy_trimester == 3
     assert profile2.updated_at > initial_updated_at
@@ -188,8 +188,8 @@ def test_profile_privacy_defaults(db_session):
     profile = upsert_profile(db_session, user_id, data)
     
     # Should have privacy-first defaults
-    assert profile.consent_personalization == False
-    assert profile.memory_paused == False
+    assert not profile.consent_personalization
+    assert not profile.memory_paused
     assert profile.allergies == ["peanuts"]
     assert profile.pregnancy_trimester is None
     assert profile.pregnancy_due_date is None

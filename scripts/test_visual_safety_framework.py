@@ -167,7 +167,7 @@ async def test_api_endpoint_integration():
                 logger.warning("⚠️ Visual search service not ready (expected if OpenAI key not configured)")
             elif response.status_code == 200:
                 data = response.json()
-                assert data.get("success") == True, "Expected success=true in response"
+                assert data.get("success"), "Expected success=true in response"
                 logger.info("✅ API Endpoint Test PASSED")
                 logger.info(f"Response: {json.dumps(data, indent=2)}")
             else:

@@ -137,7 +137,7 @@ def test_mark_erase_requested_existing_profile(db_session):
     # Refresh and check
     db_session.refresh(existing_profile)
     assert existing_profile.erase_requested_at is not None
-    assert existing_profile.consent_personalization == True  # Other fields preserved
+    assert existing_profile.consent_personalization  # Other fields preserved
     assert json.loads(existing_profile.allergies) == ["peanuts"]
 
 def test_purge_conversations_cascade_delete(db_session):

@@ -71,7 +71,7 @@ async def get_dashboard_overview(
         # Get monitoring statistics
         active_monitors = db.query(MonitoredProduct).filter(
             MonitoredProduct.user_id == current_user.id,
-            MonitoredProduct.is_active == True
+            MonitoredProduct.is_active
         ).count()
         
         recalls_detected = db.query(MonitoredProduct).filter(
@@ -262,7 +262,7 @@ async def get_safety_insights(
         
         monitored = db.query(MonitoredProduct).filter(
             MonitoredProduct.user_id == current_user.id,
-            MonitoredProduct.is_active == True
+            MonitoredProduct.is_active
         ).count()
         
         if total_scans > 0:
@@ -308,7 +308,7 @@ async def get_safety_insights(
         # Check for recalled products
         recalled = db.query(MonitoredProduct).filter(
             MonitoredProduct.user_id == current_user.id,
-            MonitoredProduct.is_active == True,
+            MonitoredProduct.is_active,
             MonitoredProduct.recall_status == "recalled"
         ).count()
         
@@ -354,7 +354,7 @@ async def get_recent_recalls(
         # From monitored products
         monitored = db.query(MonitoredProduct).filter(
             MonitoredProduct.user_id == current_user.id,
-            MonitoredProduct.is_active == True
+            MonitoredProduct.is_active
         ).all()
         
         for product in monitored:
@@ -454,7 +454,7 @@ async def get_user_achievements(
         # Monitoring achievements
         monitored = db.query(MonitoredProduct).filter(
             MonitoredProduct.user_id == current_user.id,
-            MonitoredProduct.is_active == True
+            MonitoredProduct.is_active
         ).count()
         
         if monitored >= 5:

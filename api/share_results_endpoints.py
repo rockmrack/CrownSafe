@@ -720,7 +720,7 @@ async def get_my_share_links(
         )
         
         if active_only:
-            query = query.filter(ShareToken.is_active == True)
+            query = query.filter(ShareToken.is_active)
         
         shares = query.order_by(ShareToken.created_at.desc()).limit(50).all()
         

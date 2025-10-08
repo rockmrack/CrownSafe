@@ -56,7 +56,7 @@ def test_patient_data_agent():
         "patient_id": "patient-001"
     })
     assert result['status'] == 'COMPLETED'
-    assert result['is_valid'] == True
+    assert result['is_valid']
     print("   -> SUCCESS: Patient-001 data is valid.")
     
     print("\n7. Testing audit log functionality...")

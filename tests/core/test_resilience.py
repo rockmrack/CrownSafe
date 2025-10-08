@@ -6,21 +6,21 @@ from core.resilience import CircuitBreaker, call_with_timeout
 def test_circuit_breaker_allows_initially():
     """Test that circuit breaker allows requests initially"""
     cb = CircuitBreaker(threshold=3, window_sec=60, cooldown_sec=30)
-    assert cb.allow("test_key") == True
+    assert cb.allow("test_key")
 
 def test_circuit_breaker_opens_after_failures():
     """Test that circuit breaker opens after threshold failures"""
     cb = CircuitBreaker(threshold=2, window_sec=60, cooldown_sec=30)
     
     # Should allow initially
-    assert cb.allow("test_key") == True
+    assert cb.allow("test_key")
     
     # Record failures
     cb.record_failure("test_key")
-    assert cb.allow("test_key") == True  # Still allows after 1 failure
+    assert cb.allow("test_key")  # Still allows after 1 failure
     
     cb.record_failure("test_key")
-    assert cb.allow("test_key") == False  # Opens after threshold reached
+    assert not cb.allow("test_key")  # Opens after threshold reached
 
 def test_circuit_breaker_resets_on_success():
     """Test that circuit breaker resets failure count on success"""
@@ -29,13 +29,13 @@ def test_circuit_breaker_resets_on_success():
     # Record some failures
     cb.record_failure("test_key")
     cb.record_failure("test_key")
-    assert cb.allow("test_key") == True  # Still below threshold
+    assert cb.allow("test_key")  # Still below threshold
     
     # Record success - should reset
     cb.record_success("test_key")
     
     # Should allow after reset
-    assert cb.allow("test_key") == True
+    assert cb.allow("test_key")
 
 def test_circuit_breaker_window_reset():
     """Test that circuit breaker resets after window expires"""
@@ -44,14 +44,14 @@ def test_circuit_breaker_window_reset():
     # Record failures
     cb.record_failure("test_key")
     cb.record_failure("test_key")
-    assert cb.allow("test_key") == False  # Circuit opens
+    assert not cb.allow("test_key")  # Circuit opens
     
     # Wait for window to expire and record another failure (should reset window)
     time.sleep(1.1)
     cb.record_failure("test_key")  # This should reset the window
     
     # Should allow since we're in a new window with only 1 failure
-    assert cb.allow("test_key") == True
+    assert cb.allow("test_key")
 
 def test_call_with_timeout_success():
     """Test successful function call with timeout"""
@@ -85,19 +85,19 @@ def test_circuit_breaker_different_keys():
     # Fail key1
     cb.record_failure("key1")
     cb.record_failure("key1")
-    assert cb.allow("key1") == False  # key1 opens
+    assert not cb.allow("key1")  # key1 opens
     
     # key2 should still work
-    assert cb.allow("key2") == True
+    assert cb.allow("key2")
     
     # Fail key2
     cb.record_failure("key2")
     cb.record_failure("key2")
-    assert cb.allow("key2") == False  # key2 also opens
+    assert not cb.allow("key2")  # key2 also opens
     
     # Both should be closed
-    assert cb.allow("key1") == False
-    assert cb.allow("key2") == False
+    assert not cb.allow("key1")
+    assert not cb.allow("key2")
 
 @patch('time.monotonic')
 def test_circuit_breaker_cooldown_recovery(mock_monotonic):
@@ -111,7 +111,7 @@ def test_circuit_breaker_cooldown_recovery(mock_monotonic):
     # Trigger circuit opening
     cb.record_failure("test_key")
     cb.record_failure("test_key")
-    assert cb.allow("test_key") == False  # Circuit opens
+    assert not cb.allow("test_key")  # Circuit opens
     
     # After cooldown period, should allow again
-    assert cb.allow("test_key") == True  # Should be open after cooldown
+    assert cb.allow("test_key")  # Should be open after cooldown

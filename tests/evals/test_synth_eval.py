@@ -41,13 +41,13 @@ def test_check_case_schema():
     expect = {}
     
     ok, errors = check_case(resp, expect)
-    assert ok == True
+    assert ok
     assert errors == []
     
     # Missing required field
     incomplete_resp = {"summary": "Test"}
     ok, errors = check_case(incomplete_resp, expect)
-    assert ok == False
+    assert not ok
     assert len(errors) > 0
     assert any("missing key" in err for err in errors)
 
@@ -61,12 +61,12 @@ def test_check_case_must_checks():
     # Should pass
     expect = {"must_checks": ["pasteuris"]}
     ok, errors = check_case(resp, expect)
-    assert ok == True
+    assert ok
     
     # Should fail
     expect = {"must_checks": ["sterilization"]}
     ok, errors = check_case(resp, expect)
-    assert ok == False
+    assert not ok
     assert any("missing check contains: sterilization" in err for err in errors)
 
 def test_check_case_must_flags():
@@ -79,12 +79,12 @@ def test_check_case_must_flags():
     # Should pass
     expect = {"must_flags": ["soft_cheese"]}
     ok, errors = check_case(resp, expect)
-    assert ok == True
+    assert ok
     
     # Should fail
     expect = {"must_flags": ["missing_flag"]}
     ok, errors = check_case(resp, expect)
-    assert ok == False
+    assert not ok
     assert any("missing flag: missing_flag" in err for err in errors)
 
 def test_check_case_must_flags_any():
@@ -97,12 +97,12 @@ def test_check_case_must_flags_any():
     # Should pass - has one of the required flags
     expect = {"must_flags_any": ["contains_peanuts", "contains_nuts"]}
     ok, errors = check_case(resp, expect)
-    assert ok == True
+    assert ok
     
     # Should fail - has none of the required flags
     expect = {"must_flags_any": ["missing_flag1", "missing_flag2"]}
     ok, errors = check_case(resp, expect)
-    assert ok == False
+    assert not ok
     assert any("missing any-of flags" in err for err in errors)
 
 def test_check_case_must_reasons():
@@ -116,12 +116,12 @@ def test_check_case_must_reasons():
     # Should pass
     expect = {"must_reasons": ["peanut"]}
     ok, errors = check_case(resp, expect)
-    assert ok == True
+    assert ok
     
     # Should fail
     expect = {"must_reasons": ["dairy"]}
     ok, errors = check_case(resp, expect)
-    assert ok == False
+    assert not ok
     assert any("missing reason contains: dairy" in err for err in errors)
 
 def test_check_case_evidence():
@@ -135,12 +135,12 @@ def test_check_case_evidence():
     # Should pass
     expect = {"must_evidence": {"type": "recall"}}
     ok, errors = check_case(resp, expect)
-    assert ok == True
+    assert ok
     
     # Should fail
     expect = {"must_evidence": {"type": "regulation"}}
     ok, errors = check_case(resp, expect)
-    assert ok == False
+    assert not ok
     assert any("missing evidence type: regulation" in err for err in errors)
 
 def test_dummy_llm_client():

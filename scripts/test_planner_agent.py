@@ -151,7 +151,7 @@ def test_template_based_planning(logic: MemoryAugmentedPlannerLogic):
     
     # Validate result
     assert result['status'] == 'COMPLETED', f"Expected COMPLETED, got {result['status']}"
-    assert result.get('template_based') == True, "Expected template_based flag"
+    assert result.get('template_based'), "Expected template_based flag"
     assert result.get('template_name') == 'prior_auth_plan_template', "Wrong template name"
     
     plan = result['plan']

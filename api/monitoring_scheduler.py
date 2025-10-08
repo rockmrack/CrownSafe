@@ -95,7 +95,7 @@ class ProductMonitoringScheduler:
                 and_(
                     MonitoredProduct.user_id == user_id,
                     MonitoredProduct.upc_code == upc_code if upc_code else MonitoredProduct.product_name == product_name,
-                    MonitoredProduct.is_active == True
+                    MonitoredProduct.is_active
                 )
             ).first()
             
@@ -211,7 +211,7 @@ class ProductMonitoringScheduler:
             # Get user's devices
             devices = db.query(DeviceToken).filter(
                 DeviceToken.user_id == user_id,
-                DeviceToken.is_active == True
+                DeviceToken.is_active
             ).all()
             
             if not devices:
@@ -318,7 +318,7 @@ class ProductMonitoringScheduler:
             with get_db_session() as db:
                 # Get products due for checking
                 due_products = db.query(MonitoredProduct).filter(
-                    MonitoredProduct.is_active == True,
+                    MonitoredProduct.is_active,
                     MonitoredProduct.next_check <= datetime.utcnow()
                 ).limit(1000).all()  # Process in batches
                 

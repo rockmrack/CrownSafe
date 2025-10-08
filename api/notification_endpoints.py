@@ -467,7 +467,7 @@ async def get_registered_devices(
     try:
         devices = db.query(DeviceToken).filter(
             DeviceToken.user_id == current_user.id,
-            DeviceToken.is_active == True
+            DeviceToken.is_active
         ).all()
         
         device_list = [
@@ -616,7 +616,7 @@ async def update_notification_preferences(
     try:
         devices = db.query(DeviceToken).filter(
             DeviceToken.user_id == current_user.id,
-            DeviceToken.is_active == True
+            DeviceToken.is_active
         ).all()
         
         for device in devices:
@@ -651,7 +651,7 @@ async def send_test_notification(
     try:
         devices = db.query(DeviceToken).filter(
             DeviceToken.user_id == current_user.id,
-            DeviceToken.is_active == True
+            DeviceToken.is_active
         ).all()
         
         if not devices:
