@@ -159,6 +159,7 @@ def validate_search_query(query: str) -> str:
     """
     Validate and sanitize search queries to prevent SQL injection.
     Raises ValueError if dangerous patterns detected.
+    Truncates queries that are too long.
     """
     if not query:
         return ""
@@ -191,9 +192,9 @@ def validate_search_query(query: str) -> str:
     if ("'" in query or '"' in query) and '--' in query:
         raise ValueError("SQL injection attempt detected: quote with comment")
     
-    # Limit query length
+    # Truncate query if too long (don't raise error, just truncate)
     if len(query) > 500:
-        raise ValueError("Search query too long (max 500 characters)")
+        query = query[:500]
 
     return query.strip()
 def validate_file_upload(filename: str, content_type: str, size: int) -> bool:
