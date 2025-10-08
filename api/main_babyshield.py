@@ -531,7 +531,7 @@ async def favicon_svg():
 
 # Root endpoint to reduce 4xx noise
 @app.get("/", include_in_schema=False)
-async def root():
+async def root_redirect():
     """Root endpoint - redirect to docs"""
     return {"status": "ok", "service": "babyshield-backend", "docs": "/docs"}
 
@@ -1674,7 +1674,6 @@ def on_startup():
         try:
             from alembic.config import Config
             from alembic import command
-            import os
             
             # Check if we're using PostgreSQL
             database_url = config.database_url if CONFIG_LOADED and config else os.getenv("DATABASE_URL", "")
