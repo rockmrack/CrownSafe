@@ -1,4 +1,4 @@
-﻿"""Tests for core_infra/audit_logger.py"""
+"""Tests for core_infra/audit_logger.py"""
 import unittest
 from unittest.mock import Mock, MagicMock, patch
 from sqlalchemy.orm import Session
@@ -53,11 +53,18 @@ class TestAuditLogger(unittest.TestCase):
         self.assertEqual(result, {"id": 1, "name": "Test"})
     
     def test_serialize_entity_with_dict(self):
-        entity = Mock()
-        entity.__dict__ = {"id": 2, "value": "data", "_private": "hidden"}
-        delattr(entity, 'to_dict')
+        # Create a simple object with __dict__ instead of Mock
+        class SimpleEntity:
+            def __init__(self):
+                self.id = 2
+                self.value = "data"
+                self._private = "hidden"
+        
+        entity = SimpleEntity()
         result = self.audit_logger._serialize_entity(entity)
         self.assertIn("id", result)
+        self.assertEqual(result["id"], 2)
+        self.assertIn("value", result)
         self.assertNotIn("_private", result)
     
     def test_log_create(self):
