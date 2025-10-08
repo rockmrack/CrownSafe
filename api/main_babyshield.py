@@ -11,7 +11,11 @@ def _ipv4_only(host, port, *args, **kwargs):
     return v4 or res
 socket.getaddrinfo = _ipv4_only
 
-import os, sys, logging, asyncio, uuid
+import os
+import sys
+import logging
+import asyncio
+import uuid
 from typing import Optional, List, Dict, Any
 
 # CONFIGURATION SYSTEM INTEGRATION (load early before first use)
@@ -100,16 +104,15 @@ try:
 except Exception as _e:
     logging.getLogger(__name__).warning("SQLite shim load skipped: %s", _e)
 
-from fastapi import FastAPI, HTTPException, Depends, Query, Request, Header, Path
-from fastapi.responses import HTMLResponse, PlainTextResponse
+from fastapi import FastAPI, HTTPException, Query, Request, Header, Path
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, Field, EmailStr
-from sqlalchemy import text, and_, or_
+from sqlalchemy import text, or_
 from datetime import date, datetime, timedelta
-import httpx
 from api.pydantic_base import AppModel
 
 # Environment configuration - integrated with new config system
@@ -327,7 +330,6 @@ class RecallAnalyticsResponse(BaseModel):
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 # Create FastAPI app instance
-from fastapi import FastAPI
 app = FastAPI(
     title="BabyShield API",
     description="Production-ready baby product safety checking system with 39-agency coverage",
@@ -445,7 +447,6 @@ app.openapi = custom_openapi
 
 # CRITICAL: Health check FIRST - Raw route to bypass ALL FastAPI processing
 from starlette.responses import JSONResponse as StarletteJSONResponse
-from starlette.routing import Route
 
 async def healthz_raw(scope, receive, send):
     """Ultra-raw ASGI health check - bypasses EVERYTHING including middleware"""
@@ -1101,7 +1102,6 @@ def get_safety_hub_articles(
     
     try:
         from core_infra.database import SafetyArticle, get_db
-        from sqlalchemy.orm import Session
         from sqlalchemy import desc, asc
         
         logging.info(f"Fetching safety articles: limit={limit}, offset={offset}, category={category}, language={language}")
@@ -1113,7 +1113,7 @@ def get_safety_hub_articles(
             
             # Apply filters
             if featured_only:
-                query = query.filter(SafetyArticle.is_featured == True)
+                query = query.filter(SafetyArticle.is_featured)
             
             if category:
                 # For now, we'll use source_agency as a proxy for category
@@ -1508,7 +1508,7 @@ async def validation_exception_handler(request, exc):
             if first_error.get("type") == "missing":
                 error_msg = f"Missing required parameter: {field}"
             elif "JSON decode error" in str(first_error.get('msg', '')):
-                error_msg = f"Invalid JSON format in request body"
+                error_msg = "Invalid JSON format in request body"
             else:
                 error_msg = f"Invalid parameter {field}: {first_error.get('msg', 'validation error')}"
     
@@ -1738,18 +1738,7 @@ def health_check():
     """Basic health check (backwards compatibility)"""
     return ok({"status": "ok"})
 
-# Root and favicon handlers to prevent 400 errors
-from fastapi.responses import RedirectResponse, Response
-
-@app.get("/", include_in_schema=False)
-async def root():
-    """Root endpoint redirects to docs"""
-    return RedirectResponse("/docs")
-
-@app.get("/favicon.ico", include_in_schema=False)
-async def favicon():
-    """Favicon handler to prevent 404s"""
-    return Response(status_code=204)
+# Root and favicon handlers already defined above - removed duplicate definitions
 
 # Health endpoint moved to top of file (line 190) - before middleware
 
@@ -1908,7 +1897,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
     try:
         # WORKAROUND: If image_url is provided, route to visual search directly
         if req.image_url and not req.barcode and not req.model_number and not req.product_name:
-            logger.info(f"Routing image_url request directly to visual search endpoint")
+            logger.info("Routing image_url request directly to visual search endpoint")
             
             # Create a new visual agent instance directly (don't rely on global)
             try:
@@ -2719,7 +2708,8 @@ async def bulk_search(req: BulkSearchRequest):
     for barcode in req.barcodes:
         try:
             # Use your existing safety check logic
-            safety_req = SafetyCheckRequest(
+            # SafetyCheckRequest created for validation but not used yet
+            _safety_req = SafetyCheckRequest(
                 user_id=req.user_id,
                 barcode=barcode,
                 model_number=None,
@@ -2815,7 +2805,7 @@ async def analytics_counts():
     """
     try:
         from core_infra.database import RecallDB
-        from sqlalchemy import func, text, select
+        from sqlalchemy import text
         
         with get_db_session() as db:
             # Total recalls from database
@@ -2856,7 +2846,6 @@ async def agency_health_check():
     logger = logging.getLogger(__name__)
     
     try:
-        from core_infra.database import RecallDB
         
         with get_db_session() as db:
             # Get last update time for each agency
@@ -3309,7 +3298,6 @@ async def mobile_performance_stats():
     """
     Get mobile hot path performance statistics
     """
-    logger = logging.getLogger(__name__)
     try:
         mobile_stats = get_mobile_stats()
         cache_stats = get_cache_stats()
@@ -3458,17 +3446,7 @@ if __name__ == "__main__":
 @app.get("/metrics")
 async def get_metrics():
     """Prometheus metrics endpoint"""
+    from fastapi.responses import Response
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
-@app.get("/health")
-async def health_check():
-    """Enhanced health check with logging"""
-    try:
-        # Test database connection
-        # Test Redis connection  
-        # Log health check
-        logger.info("Health check passed", extra={"status": "healthy"})
-        return {"status": "healthy", "timestamp": "2025-10-03T16:48:22Z"}
-    except Exception as e:
-        log_error(e, {"endpoint": "/health"})
-        return {"status": "unhealthy", "error": str(e)}
+# Enhanced health check endpoint removed - using simpler version at line 1737
