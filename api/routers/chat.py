@@ -74,7 +74,7 @@ class SuperSmartLLMClient:
         return {
             "safety_guidelines": {
                 "formula": {
-                    "temperature": "98.6°F (37°C) - body temperature", 
+                    "temperature": "98.6Â°F (37Â°C) - body temperature", 
                     "storage": "Use within 2 hours at room temp, 24 hours refrigerated",
                     "mixing": "1 scoop per 2 oz water unless specified otherwise"
                 },
@@ -169,8 +169,8 @@ class SuperSmartLLMClient:
     
     def _detect_language(self, query: str) -> str:
         """Simple language detection"""
-        spanish_indicators = ["hola", "bebé", "leche", "alergia", "ayuda", "por favor", "gracias"]
-        french_indicators = ["bonjour", "bébé", "lait", "allergie", "aide", "merci", "s'il vous plaît"]
+        spanish_indicators = ["hola", "bebÃ©", "leche", "alergia", "ayuda", "por favor", "gracias"]
+        french_indicators = ["bonjour", "bÃ©bÃ©", "lait", "allergie", "aide", "merci", "s'il vous plaÃ®t"]
         
         if any(word in query.lower() for word in spanish_indicators):
             return "es"
@@ -238,7 +238,7 @@ class SuperSmartLLMClient:
         self.emergency_count += 1
         
         response = {
-            "summary": "🚨 EMERGENCY: Call 911 immediately if your baby is in distress. Do not wait.",
+            "summary": "ðŸš¨ EMERGENCY: Call 911 immediately if your baby is in distress. Do not wait.",
             "reasons": [
                 "Emergency situation detected requiring immediate medical attention",
                 "Time is critical in emergency situations",
@@ -579,16 +579,16 @@ class SuperSmartLLMClient:
                 "Call 911": "Llame al 911",
                 "immediately": "inmediatamente",
                 "safety": "seguridad",
-                "baby": "bebé"
+                "baby": "bebÃ©"
             }
         elif language == "fr":
             # French translations
             translations = {
                 "EMERGENCY": "URGENCE",
                 "Call 911": "Appelez le 911",
-                "immediately": "immédiatement",
-                "safety": "sécurité",
-                "baby": "bébé"
+                "immediately": "immÃ©diatement",
+                "safety": "sÃ©curitÃ©",
+                "baby": "bÃ©bÃ©"
             }
         else:
             return response
@@ -724,7 +724,7 @@ async def chat_explain_result(
             return JSONResponse({
                 "success": True,
                 "data": {
-                    "summary": "🚨 EMERGENCY: Call 911 if baby is in distress",
+                    "summary": "ðŸš¨ EMERGENCY: Call 911 if baby is in distress",
                     "reasons": ["Emergency detected"],
                     "checks": ["Call 911 immediately"],
                     "emergency": {"level": "critical", "action": "call_911"}
@@ -805,7 +805,7 @@ async def chat_conversation(
             return JSONResponse({
                 "success": True,
                 "data": {
-                    "answer": "🚨 Call 911 immediately if emergency",
+                    "answer": "ðŸš¨ Call 911 immediately if emergency",
                     "conversation_id": chat_request.conversation_id or str(uuid4()),
                     "emergency": {"level": "critical", "action": "call_911"},
                     "suggested_questions": []
@@ -945,3 +945,28 @@ logger.info(f"Chat router initialized with {len(router.routes)} routes")
 for route in router.routes:
     if hasattr(route, 'path'):
         logger.info(f"  - {route.path}")
+
+
+def fetch_scan_data(db, scan_id: int):
+    """
+    Fetch scan data by scan ID.
+    Used by chat endpoints to retrieve scan history.
+    """
+    try:
+        from core_infra.database import ScanHistory
+        scan = db.query(ScanHistory).filter(ScanHistory.id == scan_id).first()
+        if scan:
+            return {
+                "id": scan.id,
+                "user_id": scan.user_id,
+                "barcode": getattr(scan, 'barcode', None),
+                "product_name": getattr(scan, 'product_name', None),
+                "risk_level": getattr(scan, 'risk_level', 'Unknown'),
+                "result": getattr(scan, 'result', {}),
+                "created_at": scan.created_at.isoformat() if hasattr(scan, 'created_at') else None
+            }
+        return None
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Error fetching scan data: {e}")
+        return None
