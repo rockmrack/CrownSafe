@@ -28,7 +28,7 @@ def test_conversation_pregnancy(monkeypatch):
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan("Brie Président"))
     client = TestClient(app)
-    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc","user_query":"Is this safe in pregnancy?"})
+    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc", "message":"Is this safe in pregnancy?"})
     assert r.status_code == 200, r.text
     body = r.json()
     assert body["intent"] in ("pregnancy_risk","ingredient_info")
@@ -39,7 +39,7 @@ def test_conversation_allergy(monkeypatch):
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan(extra={"profile":{"allergies":["peanut"]},"ingredients":["sugar","peanuts","cocoa"]}))
     client = TestClient(app)
-    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc","user_query":"My kid has a peanut allergy"})
+    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc", "message":"My kid has a peanut allergy"})
     assert r.status_code == 200
     assert "message" in r.json()
 
@@ -47,7 +47,7 @@ def test_conversation_recall_details(monkeypatch):
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan(extra={"recalls_found":1,"recalls":[{"id":"123","agency":"CPSC","date":"2023-01-01"}]}))
     client = TestClient(app)
-    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc","user_query":"Tell me about the recall"})
+    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc", "message":"Tell me about the recall"})
     assert r.status_code == 200
     body = r.json()
     assert "message" in body
@@ -57,7 +57,7 @@ def test_conversation_age_appropriateness(monkeypatch):
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan(extra={"age_min_months":0,"category":"feeding"}))
     client = TestClient(app)
-    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc","user_query":"Is this suitable for newborns?"})
+    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc", "message":"Is this suitable for newborns?"})
     assert r.status_code == 200
     body = r.json()
     assert "message" in body
@@ -67,7 +67,7 @@ def test_conversation_ingredient_info(monkeypatch):
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan(extra={"ingredients":["milk","sugar","vanilla"],"ingredients_notes":"Natural flavoring"}))
     client = TestClient(app)
-    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc","user_query":"What ingredients does this contain?"})
+    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc", "message":"What ingredients does this contain?"})
     assert r.status_code == 200
     body = r.json()
     assert "message" in body
@@ -77,7 +77,7 @@ def test_conversation_alternatives(monkeypatch):
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
     client = TestClient(app)
-    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc","user_query":"What are some safer alternatives?"})
+    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc", "message":"What are some safer alternatives?"})
     assert r.status_code == 200
     body = r.json()
     assert "message" in body
@@ -87,7 +87,7 @@ def test_conversation_unclear_intent(monkeypatch):
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
     client = TestClient(app)
-    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc","user_query":"Random unclear question"})
+    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc", "message":"Random unclear question"})
     assert r.status_code == 200
     body = r.json()
     assert "message" in body
@@ -97,7 +97,7 @@ def test_conversation_diagnostic_headers(monkeypatch):
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
     client = TestClient(app)
-    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc","user_query":"Is this safe?"})
+    r = client.post("/api/v1/chat/conversation", json={"scan_id":"abc", "message":"Is this safe?"})
     assert r.status_code == 200
     
     # Check diagnostic headers

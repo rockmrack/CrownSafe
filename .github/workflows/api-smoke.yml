@@ -56,8 +56,8 @@ jobs:
           # Enable pg_trgm extension
           PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
           
-          # Run Alembic migrations
-          alembic upgrade head
+          # Run Alembic migrations (alembic.ini is in db/ directory)
+          cd db && alembic upgrade head
 
       - name: Run endpoint smoke
         shell: pwsh
