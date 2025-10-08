@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 # api/main_babyshield.py  
 # Version 2.4.0 - Production-ready with versioned API endpoints
 
@@ -50,8 +51,15 @@ except Exception as e:
     logger = logging.getLogger(__name__)
     logger.warning(f"Structured logging not available, using standard logging: {e}")
     STRUCTURED_LOGGING_ENABLED = False
-    log_performance = lambda *args, **kwargs: None  # No-op
-    log_error = lambda *args, **kwargs: None  # No-op
+    
+    # No-op fallback functions when structured logging is unavailable
+    def log_performance(*args, **kwargs):
+        """No-op placeholder for performance logging"""
+        pass
+    
+    def log_error(*args, **kwargs):
+        """No-op placeholder for error logging"""
+        pass
 
 # Prometheus metrics (Issue #32)
 try:
@@ -213,8 +221,14 @@ try:
 except ImportError as e:
     logger.warning(f"Memory optimization disabled: {e}")
     MEMORY_OPTIMIZATION_ENABLED = False
-    get_memory_stats = lambda *args, **kwargs: {"status": "disabled"}
-    optimize_memory = lambda *args, **kwargs: None
+    
+    def get_memory_stats(*args, **kwargs):
+        """No-op placeholder for memory stats"""
+        return {"status": "disabled"}
+    
+    def optimize_memory(*args, **kwargs):
+        """No-op placeholder for memory optimization"""
+        pass
 
 # 2) Pydantic models
 class SafetyCheckRequest(AppModel):
