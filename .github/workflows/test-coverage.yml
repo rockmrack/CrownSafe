@@ -21,6 +21,20 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
+      
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     
     steps:
     - uses: actions/checkout@v3
@@ -37,8 +51,38 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if [ -f config/requirements/requirements-complete.txt ]; then pip install -r config/requirements/requirements-complete.txt; fi
     
+    - name: Setup PostgreSQL database
+      env:
+        DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+        DB_USERNAME: "postgres"
+        DB_PASSWORD: "postgres"
+        DB_HOST: "localhost"
+        DB_PORT: "5432"
+        DB_NAME: "postgres"
+        ENVIRONMENT: "test"
+      run: |
+        # Install PostgreSQL client
+        sudo apt-get update
+        sudo apt-get install -y postgresql-client
+        
+        # Enable pg_trgm extension
+        PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+        
+        # Run Alembic migrations (alembic.ini is in db/ directory)
+        cd db && alembic upgrade head
+    
     - name: Run tests with coverage
       timeout-minutes: 8
+      env:
+        DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+        DB_USERNAME: "postgres"
+        DB_PASSWORD: "postgres"
+        DB_HOST: "localhost"
+        DB_PORT: "5432"
+        DB_NAME: "postgres"
+        ENVIRONMENT: "test"
+        BS_FEATURE_CHAT_ENABLED: "true"
+        BS_FEATURE_CHAT_ROLLOUT_PCT: "1.0"
       run: |
         pytest tests/ --ignore=tests/performance/ --ignore=tests/integration/ --cov=. --cov-report=term-missing --cov-fail-under=10 -x -v
     
