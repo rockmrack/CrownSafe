@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements
-COPY config/requirements/requirements-complete.txt requirements.txt
+COPY requirements.txt requirements.txt
 
 # Install ALL Python packages
 RUN pip install --no-cache-dir -r requirements.txt
