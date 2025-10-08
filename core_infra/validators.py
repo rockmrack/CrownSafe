@@ -72,20 +72,41 @@ def validate_model_number(model: str) -> str:
 
 def sanitize_html(text: str) -> str:
     """
-    Sanitize HTML to prevent XSS
+    Sanitize HTML to prevent XSS attacks.
+    Removes dangerous tags, attributes, and JavaScript URIs.
     """
+    import re
+    
     if not text:
         return ""
+    
+    # Remove javascript: URIs (case insensitive) - CRITICAL for XSS prevention
+    text = re.sub(r'javascript:', '', text, flags=re.IGNORECASE)
+    
+    # Remove data: URIs
+    text = re.sub(r'data:', '', text, flags=re.IGNORECASE)
+    
+    # Remove vbscript: URIs
+    text = re.sub(r'vbscript:', '', text, flags=re.IGNORECASE)
     
     # Escape HTML entities
     text = html.escape(text)
     
-    # Use bleach for additional sanitization
-    allowed_tags = []  # No HTML tags allowed
-    text = bleach.clean(text, tags=allowed_tags, strip=True)
+    # Use bleach for additional sanitization if available
+    try:
+        import bleach
+        # Allow only safe tags and attributes
+        text = bleach.clean(
+            text,
+            tags=['p', 'br', 'strong', 'em', 'u', 'a'],
+            attributes={'a': ['href', 'title']},
+            strip=True
+        )
+    except ImportError:
+        # If bleach not available, we already escaped HTML above
+        pass
     
     return text
-
 def validate_email(email: str) -> str:
     """
     Validate email format
