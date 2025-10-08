@@ -116,7 +116,7 @@ class ObservabilityTester:
         if response.status_code == 404:
             try:
                 data = response.json()
-                self.test(data.get("ok") == False, "404 error has ok=false")
+                self.test(not data.get("ok"), "404 error has ok=false")
                 self.test("error" in data, "404 error has error object")
                 self.test("code" in data.get("error", {}), "404 error has error code")
                 self.test("message" in data.get("error", {}), "404 error has error message")
@@ -132,7 +132,7 @@ class ObservabilityTester:
         if response.status_code in [400, 422]:
             try:
                 data = response.json()
-                self.test(data.get("ok") == False, "Validation error has ok=false")
+                self.test(not data.get("ok"), "Validation error has ok=false")
                 self.test(
                     data.get("error", {}).get("code") in ["VALIDATION_ERROR", "INVALID_PARAMETERS", "BAD_REQUEST"],
                     "Validation error has appropriate error code"
@@ -151,7 +151,7 @@ class ObservabilityTester:
         self.test(response.status_code == 200, "Health endpoint returns 200")
         if response.status_code == 200:
             data = response.json()
-            self.test(data.get("ok") == True, "Health endpoint has ok=true")
+            self.test(data.get("ok"), "Health endpoint has ok=true")
             self.test(data.get("status") == "healthy", "Health endpoint shows healthy")
         
         # Test readiness endpoint

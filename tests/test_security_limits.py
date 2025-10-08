@@ -199,7 +199,7 @@ class SecurityLimitsTester:
         if response.status_code in (400, 422):
             data = response.json()
             self.test(
-                data.get("ok") == False,
+                not data.get("ok"),
                 "Error response has ok=false"
             )
             self.test(

@@ -161,7 +161,7 @@ class AllergySensitivityAgentLogic:
                     for ingredient in product_ingredients:
                         safety_records = db.query(IngredientSafety).filter(
                             IngredientSafety.ingredient_name.ilike(f"%{ingredient}%"),
-                            IngredientSafety.common_allergen == True
+                            IngredientSafety.common_allergen
                         ).all()
                         
                         for safety_record in safety_records:

@@ -91,7 +91,7 @@ class PrivacyEndpointTester:
         if response.status_code == 200:
             data = response.json()
             self.test(
-                data.get("ok") == True,
+                data.get("ok"),
                 "Response has ok=true"
             )
             self.test(
@@ -142,7 +142,7 @@ class PrivacyEndpointTester:
         if response.status_code == 200:
             data = response.json()
             self.test(
-                data.get("ok") == True,
+                data.get("ok"),
                 "Response has ok=true"
             )
             

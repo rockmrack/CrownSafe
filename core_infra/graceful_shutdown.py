@@ -5,6 +5,7 @@ Ensures clean shutdown without data loss
 
 import signal
 import sys
+import os
 import asyncio
 import threading
 import time

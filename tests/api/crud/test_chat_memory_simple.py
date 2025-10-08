@@ -66,7 +66,7 @@ def test_create_user_profile(db_session):
     db_session.refresh(profile)
     
     assert profile.user_id == user_id
-    assert profile.consent_personalization == True
+    assert profile.consent_personalization
     assert json.loads(profile.allergies) == ["peanuts", "milk"]
     assert profile.pregnancy_trimester == 2
     assert profile.pregnancy_due_date == date(2025, 6, 15)

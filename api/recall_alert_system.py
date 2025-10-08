@@ -354,7 +354,7 @@ class RecallAlertService:
             # Get user's devices
             devices = db.query(DeviceToken).filter(
                 DeviceToken.user_id == user_id,
-                DeviceToken.is_active == True
+                DeviceToken.is_active
             ).all()
             
             if not devices:

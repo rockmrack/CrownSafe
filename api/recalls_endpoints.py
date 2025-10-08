@@ -11,7 +11,7 @@ import json
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
-from sqlalchemy import or_, desc, asc, func, select
+from sqlalchemy import or_, and_, desc, asc, func, select
 from sqlalchemy.orm import Session
 
 from core_infra.database import get_db, RecallDB

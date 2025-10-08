@@ -115,7 +115,7 @@ async def get_monitored_products(
         )
         
         if active_only:
-            query = query.filter(MonitoredProduct.is_active == True)
+            query = query.filter(MonitoredProduct.is_active)
         
         # Get total count
         total = query.count()
@@ -147,7 +147,7 @@ async def get_monitored_products(
         # Count products with recalls
         recalled_count = db.query(MonitoredProduct).filter(
             MonitoredProduct.user_id == current_user.id,
-            MonitoredProduct.is_active == True,
+            MonitoredProduct.is_active,
             MonitoredProduct.recall_status == "recalled"
         ).count()
         
@@ -342,19 +342,19 @@ async def get_monitoring_status(
         # Get user's monitoring stats
         total_products = db.query(MonitoredProduct).filter(
             MonitoredProduct.user_id == current_user.id,
-            MonitoredProduct.is_active == True
+            MonitoredProduct.is_active
         ).count()
         
         recalled_products = db.query(MonitoredProduct).filter(
             MonitoredProduct.user_id == current_user.id,
-            MonitoredProduct.is_active == True,
+            MonitoredProduct.is_active,
             MonitoredProduct.recall_status == "recalled"
         ).count()
         
         # Get products needing check soon
         due_soon = db.query(MonitoredProduct).filter(
             MonitoredProduct.user_id == current_user.id,
-            MonitoredProduct.is_active == True,
+            MonitoredProduct.is_active,
             MonitoredProduct.next_check <= datetime.utcnow() + timedelta(hours=1)
         ).count()
         

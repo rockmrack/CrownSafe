@@ -50,7 +50,7 @@ class AdminToolsTester:
         if response.status_code in (401, 403):
             data = response.json()
             self.test(
-                data.get("ok") == False,
+                not data.get("ok"),
                 "Error response has ok=false"
             )
             self.test(
@@ -91,7 +91,7 @@ class AdminToolsTester:
         if response.status_code == 200:
             data = response.json()
             self.test(
-                data.get("ok") == True,
+                data.get("ok"),
                 "Response has ok=true"
             )
             self.test(

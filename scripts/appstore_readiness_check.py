@@ -76,7 +76,7 @@ payload = {
 }
 r, j = post_json("/api/v1/search/advanced", payload)
 expect(r and r.status_code == 200, "advanced search basic POST works")
-expect(j and j.get("ok") == True, "search returns ok=true")
+expect(j and j.get("ok"), "search returns ok=true")
 
 items = []
 if j and "data" in j and "items" in j["data"]:
@@ -158,7 +158,7 @@ if items and len(items) > 0:
     if rid:
         r, j = get_json(f"/api/v1/recall/{rid}")
         expect(r and r.status_code == 200, f"recall detail works for {rid}")
-        expect(j and (j.get("ok") == True or j.get("data")), "recall detail returns data")
+        expect(j and (j.get("ok") or j.get("data")), "recall detail returns data")
     else:
         print("   ⚠️ No recall ID field found in search results")
 else:

@@ -568,7 +568,7 @@ async def get_incident_clusters(
     query = db.query(IncidentCluster)
     
     if trending_only:
-        query = query.filter(IncidentCluster.trending == True)
+        query = query.filter(IncidentCluster.trending)
     
     query = query.filter(IncidentCluster.incident_count >= min_incidents)
     
@@ -630,7 +630,7 @@ async def get_incident_statistics(
     
     # Active clusters
     active_clusters = db.query(IncidentCluster).filter(
-        IncidentCluster.trending == True
+        IncidentCluster.trending
     ).count()
     
     return ApiResponse(

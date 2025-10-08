@@ -268,7 +268,7 @@ class SubscriptionService:
                     Subscription.status == SubscriptionStatus.ACTIVE,
                     Subscription.expires_at > datetime.utcnow(),
                     Subscription.expires_at <= threshold_date,
-                    Subscription.auto_renew == False  # Only non-auto-renewing
+                    not Subscription.auto_renew  # Only non-auto-renewing
                 )
             ).all()
             

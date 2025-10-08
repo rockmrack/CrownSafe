@@ -31,7 +31,7 @@ def test_erase_history_sync_mode(mock_purge, mock_mark_erase, mock_get_db):
         assert response.status_code == 200
         data = response.json()
         
-        assert data["ok"] == True
+        assert data["ok"]
         assert data["mode"] == "sync"
         assert data["deleted"] == 3
         assert "trace_id" in data
@@ -63,7 +63,7 @@ def test_erase_history_with_celery_task(mock_task, mock_mark_erase, mock_get_db)
         assert response.status_code == 200
         data = response.json()
         
-        assert data["ok"] == True
+        assert data["ok"]
         assert data["mode"] == "sync"  # Falls back to sync when direct call works
         assert data["deleted"] == 2
         
@@ -94,7 +94,7 @@ def test_erase_history_fallback_to_sync(mock_purge, mock_mark_erase, mock_get_db
             assert response.status_code == 200
             data = response.json()
             
-            assert data["ok"] == True
+            assert data["ok"]
             assert data["mode"] == "sync"
             assert data["deleted"] == 1
             
@@ -120,7 +120,7 @@ def test_erase_history_no_conversations(mock_mark_erase, mock_get_db):
             assert response.status_code == 200
             data = response.json()
             
-            assert data["ok"] == True
+            assert data["ok"]
             assert data["deleted"] == 0
             
             # Should still mark erase as requested

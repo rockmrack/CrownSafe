@@ -641,24 +641,6 @@ async def verify_unit(
     except Exception as e:
         logger.error(f"Unit verification error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-        
-        # Build response
-        response_data = ScanResponse(
-            ok=True,
-            scan_results=[scan_result.to_dict()],
-            recall_check=recall_check,
-            trace_id=trace_id,
-            verification=verification,
-        )
-        
-        if recall_check.recall_found:
-            response_data.message = f"⚠️ RECALL ALERT: {recall_check.recall_count} recall(s) found!"
-        
-        return ApiResponse(success=True, data=response_data.model_dump(), message=None)
-        
-    except Exception as e:
-        logger.error(f"GS1 parse error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 @barcode_router.post("/generate-qr")

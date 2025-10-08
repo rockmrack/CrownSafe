@@ -135,7 +135,7 @@ def test_share_results():
         print("\n5. Testing share token validation...")
         
         # Test valid token
-        assert share1.is_valid() == True, "Share 1 should be valid"
+        assert share1.is_valid(), "Share 1 should be valid"
         print("✅ Share 1 is valid")
         
         # Test view counting
@@ -148,11 +148,11 @@ def test_share_results():
         share2.increment_view()
         db.commit()
         assert share2.view_count == 3, "View count should be 3"
-        assert share2.is_valid() == False, "Share should be invalid after max views"
+        assert not share2.is_valid(), "Share should be invalid after max views"
         print("✅ Share 2 correctly invalidated after max views")
         
         # Test password verification
-        assert pwd_context.verify(password, share3.password_hash) == True, "Password should verify"
+        assert pwd_context.verify(password, share3.password_hash), "Password should verify"
         print("✅ Password verification works")
         
         # Test 5: Revoke a share
@@ -161,7 +161,7 @@ def test_share_results():
         share1.revoked_at = datetime.utcnow()
         db.commit()
         
-        assert share1.is_valid() == False, "Revoked share should be invalid"
+        assert not share1.is_valid(), "Revoked share should be invalid"
         print("✅ Share successfully revoked")
         
         # Test 6: Query user's shares

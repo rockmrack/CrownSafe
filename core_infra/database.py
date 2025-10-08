@@ -316,8 +316,8 @@ def reset_database():
     if TEST_MODE:
         drop_all_tables_forcefully()
         create_tables()
-    else:
-        ensure_user_columns()
+    # COPILOT AUDIT FIX: ensure_user_columns() function removed as schema modifications
+    # should be handled via Alembic migrations, not runtime code
 
 # -------------------------------------------------------------------
 # Test user creation/update

@@ -78,14 +78,14 @@ class SoftDeleteMixin:
         """
         Query only active (non-deleted) records
         """
-        return session.query(cls).filter(cls.is_deleted == False)
+        return session.query(cls).filter(not cls.is_deleted)
     
     @classmethod
     def query_deleted(cls, session: Session) -> Query:
         """
         Query only deleted records
         """
-        return session.query(cls).filter(cls.is_deleted == True)
+        return session.query(cls).filter(cls.is_deleted)
     
     @classmethod
     def query_all(cls, session: Session) -> Query:
@@ -115,7 +115,7 @@ class SoftDeleteQuery(Query):
         """
         Return only soft-deleted records
         """
-        return self.filter(self.column_descriptions[0]['type'].is_deleted == True)
+        return self.filter(self.column_descriptions[0]['type'].is_deleted)
     
     def __iter__(self):
         """
@@ -125,7 +125,7 @@ class SoftDeleteQuery(Query):
             # Check if model has soft delete
             model = self.column_descriptions[0]['type']
             if hasattr(model, 'is_deleted'):
-                return super().filter(model.is_deleted == False).__iter__()
+                return super().filter(not model.is_deleted).__iter__()
         
         return super().__iter__()
     
@@ -136,7 +136,7 @@ class SoftDeleteQuery(Query):
         if not self._include_deleted:
             model = self.column_descriptions[0]['type']
             if hasattr(model, 'is_deleted'):
-                return super().filter(model.is_deleted == False).all()
+                return super().filter(not model.is_deleted).all()
         
         return super().all()
     
@@ -147,7 +147,7 @@ class SoftDeleteQuery(Query):
         if not self._include_deleted:
             model = self.column_descriptions[0]['type']
             if hasattr(model, 'is_deleted'):
-                return super().filter(model.is_deleted == False).first()
+                return super().filter(not model.is_deleted).first()
         
         return super().first()
     
@@ -158,7 +158,7 @@ class SoftDeleteQuery(Query):
         if not self._include_deleted:
             model = self.column_descriptions[0]['type']
             if hasattr(model, 'is_deleted'):
-                return super().filter(model.is_deleted == False).one()
+                return super().filter(not model.is_deleted).one()
         
         return super().one()
     
@@ -169,7 +169,7 @@ class SoftDeleteQuery(Query):
         if not self._include_deleted:
             model = self.column_descriptions[0]['type']
             if hasattr(model, 'is_deleted'):
-                return super().filter(model.is_deleted == False).count()
+                return super().filter(not model.is_deleted).count()
         
         return super().count()
 
@@ -211,7 +211,7 @@ class RecycleBin:
             raise ValueError(f"{model.__name__} doesn't support soft delete")
         
         return self.session.query(model)\
-            .filter(model.is_deleted == True)\
+            .filter(model.is_deleted)\
             .order_by(model.deleted_at.desc())\
             .offset(offset)\
             .limit(limit)\
@@ -241,7 +241,7 @@ class RecycleBin:
             raise ValueError(f"{model.__name__} doesn't support soft delete")
         
         count = self.session.query(model)\
-            .filter(model.is_deleted == True)\
+            .filter(model.is_deleted)\
             .update({
                 model.is_deleted: False,
                 model.deleted_at: None,
@@ -270,7 +270,7 @@ class RecycleBin:
         # Get records to delete
         to_delete = self.session.query(model)\
             .filter(
-                model.is_deleted == True,
+                model.is_deleted,
                 model.deleted_at < cutoff_date
             ).all()
         
@@ -296,7 +296,7 @@ class RecycleBin:
         for model in Base.__subclasses__():
             if hasattr(model, 'is_deleted'):
                 count = self.session.query(model)\
-                    .filter(model.is_deleted == True)\
+                    .filter(model.is_deleted)\
                     .count()
                 stats[model.__name__] = count
         
