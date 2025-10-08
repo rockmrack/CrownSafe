@@ -157,33 +157,51 @@ def validate_id(id_value: Any) -> int:
 
 def validate_search_query(query: str) -> str:
     """
-    Validate search query
-    Remove dangerous characters
+    Validate and sanitize search queries to prevent SQL injection.
+    Raises ValueError if dangerous patterns detected.
     """
     if not query:
         return ""
     
-    # Remove SQL keywords
-    dangerous_words = [
-        "DROP", "DELETE", "INSERT", "UPDATE", "ALTER",
-        "CREATE", "TRUNCATE", "EXEC", "EXECUTE", "UNION",
-        "--", ";", "/*", "*/"
+    query_upper = query.upper()
+    
+    # SQL injection patterns that should raise ValueError
+    dangerous_patterns = [
+        'DROP TABLE',
+        'DROP DATABASE',
+        'DELETE FROM',
+        'INSERT INTO',
+        'UPDATE ',
+        'CREATE TABLE',
+        'ALTER TABLE',
+        'TRUNCATE',
+        'EXEC',
+        'EXECUTE',
+        'UNION SELECT',
+        'UNION ALL',
+        '--',  # SQL comment
+        '/*',  # SQL comment
+        '*/',  # SQL comment
+        'SCRIPT>',  # XSS
+        'JAVASCRIPT:',  # XSS
+        '<IFRAME',  # XSS
+        'ONERROR=',  # XSS
     ]
     
-    query_upper = query.upper()
-    for word in dangerous_words:
-        if word in query_upper:
-            raise ValueError(f"Invalid search query: contains {word}")
+    # Check for dangerous patterns
+    for pattern in dangerous_patterns:
+        if pattern in query_upper:
+            raise ValueError(f"Dangerous pattern detected in search query: {pattern}")
     
-    # Limit length
+    # Check for SQL injection indicators
+    if ';' in query and ('DROP' in query_upper or 'DELETE' in query_upper or 'INSERT' in query_upper):
+        raise ValueError("SQL injection attempt detected")
+    
+    # Limit query length
     if len(query) > 500:
-        query = query[:500]
+        raise ValueError("Search query too long (max 500 characters)")
     
-    # Escape special regex characters if using in LIKE query
-    query = query.replace("%", "\\%").replace("_", "\\_")
-    
-    return query
-
+    return query.strip()
 def validate_file_upload(filename: str, content_type: str, size: int) -> bool:
     """
     Validate file upload
