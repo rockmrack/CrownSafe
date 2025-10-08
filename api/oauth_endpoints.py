@@ -27,6 +27,9 @@ router = APIRouter(
     tags=["OAuth Authentication"]
 )
 
+# Google OAuth constants
+GOOGLE_TOKEN_INFO_URL = "https://oauth2.googleapis.com/tokeninfo"
+GOOGLE_ISSUER = "https://accounts.google.com"
 
 # ========================= MODELS =========================
 
