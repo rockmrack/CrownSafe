@@ -25,37 +25,47 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 TEST_BARCODE_ALLERGEN_PRODUCT = "041220787346"
 TEST_USER_ID = 1
 
+
 class MockProductIdentifierLogic:
     def __init__(self, *args, **kwargs):
-        self.process_task = AsyncMock(return_value={
-            "status": "COMPLETED",
-            "result": {
-                "product_name": "Organic Baby Food with Milk",
-                "upc": TEST_BARCODE_ALLERGEN_PRODUCT,
-                "ingredients": ["Organic Apples", "Water", "Whole Milk Powder", "Vitamin C"]
+        self.process_task = AsyncMock(
+            return_value={
+                "status": "COMPLETED",
+                "result": {
+                    "product_name": "Organic Baby Food with Milk",
+                    "upc": TEST_BARCODE_ALLERGEN_PRODUCT,
+                    "ingredients": ["Organic Apples", "Water", "Whole Milk Powder", "Vitamin C"],
+                },
             }
-        })
+        )
+
 
 class MockRecallDataAgentLogic:
     def __init__(self, *args, **kwargs):
-        self.process_task = AsyncMock(return_value={
-            "status": "COMPLETED",
-            "result": {"recalls_found": 0, "recalls": []}
-        })
+        self.process_task = AsyncMock(
+            return_value={"status": "COMPLETED", "result": {"recalls_found": 0, "recalls": []}}
+        )
+
 
 class MockAllergySensitivityLogic:
     def __init__(self, *args, **kwargs):
-        self.process_task = AsyncMock(return_value={
-            "status": "COMPLETED",
-            "result": {"allergens_found": 1, "allergens": ["milk"]}
-        })
+        self.process_task = AsyncMock(
+            return_value={
+                "status": "COMPLETED",
+                "result": {"allergens_found": 1, "allergens": ["milk"]},
+            }
+        )
+
 
 class MockHazardAnalysisLogic:
     def __init__(self, *args, **kwargs):
-        self.process_task = AsyncMock(return_value={
-            "status": "COMPLETED",
-            "result": {"summary": "Analysis complete.", "risk_level": "Low"}
-        })
+        self.process_task = AsyncMock(
+            return_value={
+                "status": "COMPLETED",
+                "result": {"summary": "Analysis complete.", "risk_level": "Low"},
+            }
+        )
+
 
 # ─── 3) Utility: drop all tables (cascade support) ────────────────────────────
 def drop_all_cascade():
@@ -72,6 +82,7 @@ def drop_all_cascade():
     finally:
         conn.close()
 
+
 # ─── 4) Main Test Runner ───────────────────────────────────────────────────────
 async def main():
     # 4.1 Load the JSON plan
@@ -82,10 +93,10 @@ async def main():
     # 4.2 Inject concrete test inputs
     for step in test_plan.get("steps", []):
         if step["step_id"] == "step1_identify_product":
-            step["inputs"]["barcode"]   = TEST_BARCODE_ALLERGEN_PRODUCT
+            step["inputs"]["barcode"] = TEST_BARCODE_ALLERGEN_PRODUCT
             step["inputs"]["image_url"] = None
         if step["step_id"] == "step3_allergy_check":
-            step["inputs"]["user_id"]   = TEST_USER_ID
+            step["inputs"]["user_id"] = TEST_USER_ID
 
     # 4.3 Reset & recreate schema
     drop_all_cascade()
@@ -102,27 +113,29 @@ async def main():
     # 4.5 Wire mocks into CommanderAgent
     logger = logging.getLogger(__name__)
     commander = BabyShieldCommanderLogic(agent_id="test_commander", logger_instance=logger)
-    commander.router.agent_registry["identify_product"]           = MockProductIdentifierLogic()
-    commander.router.agent_registry["query_recalls_by_product"]  = MockRecallDataAgentLogic()
+    commander.router.agent_registry["identify_product"] = MockProductIdentifierLogic()
+    commander.router.agent_registry["query_recalls_by_product"] = MockRecallDataAgentLogic()
     commander.router.agent_registry["check_allergy_sensitivity"] = MockAllergySensitivityLogic()
-    commander.router.agent_registry["analyze_hazards"]           = MockHazardAnalysisLogic()
+    commander.router.agent_registry["analyze_hazards"] = MockHazardAnalysisLogic()
 
     # 4.6 Run the workflow
     user_request = {"barcode": TEST_BARCODE_ALLERGEN_PRODUCT, "user_id": TEST_USER_ID}
-    with patch.object(commander.planner, "process_task", return_value={"status": "COMPLETED", "plan": test_plan}):
+    with patch.object(
+        commander.planner, "process_task", return_value={"status": "COMPLETED", "plan": test_plan}
+    ):
         result = await commander.start_safety_check_workflow(user_request)
 
     # 4.7 Print & validate
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("        TEST RESULT: Allergy Scan")
-    print("="*60)
+    print("=" * 60)
     print(json.dumps(result, indent=2))
 
     # **Updated validation**:
     if result.get("status") == "COMPLETED":
         data = result.get("data", {})
         summary = data.get("summary")
-        risk    = data.get("risk_level")
+        risk = data.get("risk_level")
         if summary == "Analysis complete." and risk == "Low":
             print("\n✅✅✅ TEST PASSED: Final analysis summary and risk level are correct.")
         else:
@@ -132,6 +145,7 @@ async def main():
 
     # 4.8 Final cleanup
     drop_all_cascade()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

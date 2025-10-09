@@ -10,7 +10,9 @@ if "from sqlalchemy import text" not in s:
     if "\nfrom sqlalchemy import " in s:
         s = s.replace("\nfrom sqlalchemy import ", "\nfrom sqlalchemy import text, ")
     else:
-        s = s.replace("\nimport sqlalchemy as sa", "\nimport sqlalchemy as sa\nfrom sqlalchemy import text")
+        s = s.replace(
+            "\nimport sqlalchemy as sa", "\nimport sqlalchemy as sa\nfrom sqlalchemy import text"
+        )
 if "import os" not in s:
     s = "import os\n" + s
 if "import pathlib" not in s:

@@ -10,17 +10,18 @@ from datetime import datetime, timedelta
 import random
 
 # Add parent directory to path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 from db.models.scan_history import ScanHistory, SafetyReport
 
+
 def create_test_scan_history(db_session, user_id=1):
     """Create sample scan history for testing"""
-    
+
     print(f"Creating test scan history for user {user_id}...")
-    
+
     # Product samples with varying risk levels
     products = [
         {
@@ -30,7 +31,7 @@ def create_test_scan_history(db_session, user_id=1):
             "category": "Electronics",
             "risk_level": "low",
             "recalls_found": 0,
-            "verdict": "No Recalls Found"
+            "verdict": "No Recalls Found",
         },
         {
             "product_name": "Organic Baby Food",
@@ -39,7 +40,7 @@ def create_test_scan_history(db_session, user_id=1):
             "category": "Food",
             "risk_level": "low",
             "recalls_found": 0,
-            "verdict": "No Recalls Found"
+            "verdict": "No Recalls Found",
         },
         {
             "product_name": "Teething Ring",
@@ -48,7 +49,7 @@ def create_test_scan_history(db_session, user_id=1):
             "category": "Toys",
             "risk_level": "medium",
             "recalls_found": 0,
-            "verdict": "No Recalls Found"
+            "verdict": "No Recalls Found",
         },
         {
             "product_name": "Baby Crib Model X",
@@ -58,7 +59,7 @@ def create_test_scan_history(db_session, user_id=1):
             "risk_level": "high",
             "recalls_found": 1,
             "verdict": "Recall Alert",
-            "recall_ids": ["CPSC-2024-001"]
+            "recall_ids": ["CPSC-2024-001"],
         },
         {
             "product_name": "Car Seat Alpha",
@@ -67,7 +68,7 @@ def create_test_scan_history(db_session, user_id=1):
             "category": "Car Seats",
             "risk_level": "low",
             "recalls_found": 0,
-            "verdict": "No Recalls Found"
+            "verdict": "No Recalls Found",
         },
         {
             "product_name": "Baby Bottle Set",
@@ -77,20 +78,20 @@ def create_test_scan_history(db_session, user_id=1):
             "risk_level": "critical",
             "recalls_found": 2,
             "verdict": "Recall Alert",
-            "recall_ids": ["FDA-2024-001", "FDA-2024-002"]
-        }
+            "recall_ids": ["FDA-2024-001", "FDA-2024-002"],
+        },
     ]
-    
+
     # Create scans over the past 90 days
     scans_created = 0
     for days_ago in range(90, 0, -7):  # Weekly scans
         scan_date = datetime.utcnow() - timedelta(days=days_ago)
-        
+
         # Scan 2-3 random products each week
         num_scans = random.randint(2, 3)
         for _ in range(num_scans):
             product = random.choice(products)
-            
+
             scan = ScanHistory(
                 user_id=user_id,
                 scan_id=f"test_scan_{scans_created}",
@@ -106,17 +107,17 @@ def create_test_scan_history(db_session, user_id=1):
                 risk_level=product["risk_level"],
                 recalls_found=product["recalls_found"],
                 recall_ids=product.get("recall_ids"),
-                agencies_checked="39+ agencies"
+                agencies_checked="39+ agencies",
             )
-            
+
             db_session.add(scan)
             scans_created += 1
-    
+
     # Add some recent scans
     for days_ago in [3, 2, 1, 0]:
         scan_date = datetime.utcnow() - timedelta(days=days_ago)
         product = random.choice(products)
-        
+
         scan = ScanHistory(
             user_id=user_id,
             scan_id=f"test_scan_{scans_created}",
@@ -132,12 +133,12 @@ def create_test_scan_history(db_session, user_id=1):
             risk_level=product["risk_level"],
             recalls_found=product["recalls_found"],
             recall_ids=product.get("recall_ids"),
-            agencies_checked="39+ agencies"
+            agencies_checked="39+ agencies",
         )
-        
+
         db_session.add(scan)
         scans_created += 1
-    
+
     db_session.commit()
     print(f"✅ Created {scans_created} test scans")
     return scans_created
@@ -145,58 +146,62 @@ def create_test_scan_history(db_session, user_id=1):
 
 def test_90_day_report():
     """Test the 90-day safety summary generation"""
-    
+
     print("Testing 90-Day Safety Summary Report Generation...")
-    print("="*60)
-    
+    print("=" * 60)
+
     # Create test database session
     engine = create_engine("sqlite:///test_safety_reports.db")
-    
+
     # Create only the tables we need for this test
     metadata = MetaData()
     ScanHistory.__table__.create(engine, checkfirst=True)
     SafetyReport.__table__.create(engine, checkfirst=True)
-    
+
     SessionLocal = sessionmaker(bind=engine)
     db = SessionLocal()
-    
+
     try:
         # Create test data
         user_id = 1
         scans_created = create_test_scan_history(db, user_id)
-        
+
         # Test report generation
         print("\nGenerating 90-day report...")
-        
+
         # Simulate the API call
         from api.safety_reports_endpoints import (
             SafetyReportRequest,
             SafetySummaryStats,
-            ProductScanSummary
+            ProductScanSummary,
         )
-        
+
         # Get scan history
         end_date = datetime.utcnow()
         start_date = end_date - timedelta(days=90)
-        
-        scan_history = db.query(ScanHistory).filter(
-            ScanHistory.user_id == user_id,
-            ScanHistory.scan_timestamp >= start_date,
-            ScanHistory.scan_timestamp <= end_date
-        ).all()
-        
+
+        scan_history = (
+            db.query(ScanHistory)
+            .filter(
+                ScanHistory.user_id == user_id,
+                ScanHistory.scan_timestamp >= start_date,
+                ScanHistory.scan_timestamp <= end_date,
+            )
+            .all()
+        )
+
         print(f"Found {len(scan_history)} scans in the last 90 days")
-        
+
         # Calculate statistics
         total_scans = len(scan_history)
         unique_products = len(set(s.barcode for s in scan_history if s.barcode))
         recalls_found = sum(s.recalls_found or 0 for s in scan_history)
-        
+
         risk_counts = {"low": 0, "medium": 0, "high": 0, "critical": 0}
         for scan in scan_history:
             if scan.risk_level:
                 risk_counts[scan.risk_level] += 1
-        
+
         # Calculate safety score
         safety_score = 100.0
         if total_scans > 0:
@@ -205,7 +210,7 @@ def test_90_day_report():
             medium_weight = risk_counts["medium"] * 2
             total_weight = critical_weight + high_weight + medium_weight
             safety_score = max(0, 100 - (total_weight / total_scans * 10))
-        
+
         print("\n📊 90-Day Safety Summary Statistics:")
         print(f"  Total Scans: {total_scans}")
         print(f"  Unique Products: {unique_products}")
@@ -214,7 +219,7 @@ def test_90_day_report():
         print(f"  Medium Risk Products: {risk_counts['medium']}")
         print(f"  Low Risk Products: {risk_counts['low']}")
         print(f"  Safety Score: {round(safety_score, 1)}/100")
-        
+
         # Group products
         product_groups = {}
         for scan in scan_history:
@@ -225,22 +230,30 @@ def test_90_day_report():
                     "brand": scan.brand,
                     "barcode": scan.barcode,
                     "scans": [],
-                    "risk_levels": []
+                    "risk_levels": [],
                 }
             product_groups[key]["scans"].append(scan)
             if scan.risk_level:
                 product_groups[key]["risk_levels"].append(scan.risk_level)
-        
+
         print(f"\n📦 Top Scanned Products:")
-        sorted_products = sorted(product_groups.items(), key=lambda x: len(x[1]["scans"]), reverse=True)
+        sorted_products = sorted(
+            product_groups.items(), key=lambda x: len(x[1]["scans"]), reverse=True
+        )
         for i, (key, group) in enumerate(sorted_products[:5], 1):
             scan_count = len(group["scans"])
-            risk = "critical" if "critical" in group["risk_levels"] else \
-                   "high" if "high" in group["risk_levels"] else \
-                   "medium" if "medium" in group["risk_levels"] else "low"
+            risk = (
+                "critical"
+                if "critical" in group["risk_levels"]
+                else "high"
+                if "high" in group["risk_levels"]
+                else "medium"
+                if "medium" in group["risk_levels"]
+                else "low"
+            )
             print(f"  {i}. {group['product_name']} ({group['brand']})")
             print(f"     Scanned: {scan_count} times | Risk: {risk}")
-        
+
         # Test report saving
         print("\n💾 Saving report to database...")
         report = SafetyReport(
@@ -258,25 +271,25 @@ def test_90_day_report():
                     "total_scans": total_scans,
                     "unique_products": unique_products,
                     "recalls_found": recalls_found,
-                    "safety_score": round(safety_score, 1)
+                    "safety_score": round(safety_score, 1),
                 }
-            }
+            },
         )
         db.add(report)
         db.commit()
-        
+
         print(f"✅ Report saved with ID: {report.report_id}")
-        
+
         # Verify report retrieval
-        saved_report = db.query(SafetyReport).filter(
-            SafetyReport.report_id == report.report_id
-        ).first()
-        
+        saved_report = (
+            db.query(SafetyReport).filter(SafetyReport.report_id == report.report_id).first()
+        )
+
         assert saved_report is not None, "Report should be saved"
         assert saved_report.total_scans == total_scans, "Total scans should match"
         assert saved_report.unique_products == unique_products, "Unique products should match"
-        
-        print("\n" + "="*60)
+
+        print("\n" + "=" * 60)
         print("✅ All tests passed!")
         print("\n🎯 90-Day Safety Summary Features:")
         print("  1. ✅ Tracks all scans over 90 days")
@@ -286,8 +299,8 @@ def test_90_day_report():
         print("  5. ✅ Generates safety score (0-100)")
         print("  6. ✅ Saves reports for future access")
         print("  7. ✅ Ready for PDF generation")
-        print("="*60)
-        
+        print("=" * 60)
+
     finally:
         db.close()
         # Clean up test database

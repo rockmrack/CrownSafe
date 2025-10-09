@@ -4,6 +4,7 @@ from uuid import UUID
 from typing import Optional
 
 from core_infra.database import SessionLocal  # adjust to your DB session factory
+
 try:
     from core_infra.celery_tasks import celery_app as celery  # existing Celery app
 except Exception:  # fallback shim if Celery not wired in tests
@@ -13,6 +14,7 @@ from api.crud.chat_memory import purge_conversations_for_user, mark_erase_reques
 
 TASK_NAME = "chat.cleanup.purge_user_history"
 
+
 def _run_purge(user_id: UUID) -> int:
     db = SessionLocal()
     try:
@@ -21,10 +23,13 @@ def _run_purge(user_id: UUID) -> int:
     finally:
         db.close()
 
+
 if celery:
+
     @celery.task(name=TASK_NAME, autoretry_for=(Exception,), retry_backoff=True, max_retries=5)
     def purge_user_history_task(user_id_str: str) -> int:
         return _run_purge(UUID(user_id_str))  # Celery passes strings
+
 else:
     # direct callable fallback (for local/dev/tests without Celery)
     def purge_user_history_task(user_id_str: str) -> int:

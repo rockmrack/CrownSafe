@@ -18,11 +18,11 @@ class RedisSearchCache:
     """
     Redis-based cache for search results
     """
-    
+
     def __init__(self, redis_client: Optional[Redis] = None):
         """
         Initialize cache with Redis client
-        
+
         Args:
             redis_client: Existing Redis client or None to create new
         """
@@ -31,95 +31,87 @@ class RedisSearchCache:
         self.enabled = os.getenv("SEARCH_CACHE_ENABLED", "true").lower() == "true"
         self.key_prefix = "search:v1:"
         self.epoch_key = "search:epoch"
-        
+
     async def connect(self):
         """Connect to Redis if not already connected"""
         if not self.redis and self.enabled:
             try:
-                redis_url = os.getenv("REDIS_CACHE_URL", os.getenv("RATE_LIMIT_REDIS_URL", "redis://localhost:6379/0"))
-                self.redis = Redis.from_url(
-                    redis_url,
-                    encoding="utf-8",
-                    decode_responses=True
+                redis_url = os.getenv(
+                    "REDIS_CACHE_URL", os.getenv("RATE_LIMIT_REDIS_URL", "redis://localhost:6379/0")
                 )
+                self.redis = Redis.from_url(redis_url, encoding="utf-8", decode_responses=True)
                 await self.redis.ping()
                 logger.info(f"Redis cache connected to {redis_url}")
             except Exception as e:
                 logger.warning(f"Redis cache connection failed: {e}")
                 self.enabled = False
-    
+
     async def close(self):
         """Close Redis connection"""
         if self.redis:
             await self.redis.close()
-    
+
     def _make_cache_key(
-        self,
-        filters_hash: str,
-        as_of: str,
-        after_tuple: Optional[tuple] = None
+        self, filters_hash: str, as_of: str, after_tuple: Optional[tuple] = None
     ) -> str:
         """
         Generate cache key for search results
-        
+
         Args:
             filters_hash: Hash of search filters
             as_of: Snapshot timestamp
             after_tuple: Pagination cursor tuple
-        
+
         Returns:
             Redis key string
         """
         # Get current epoch for cache invalidation
         epoch = "0"  # Default if can't get from Redis
-        
+
         # Build key components
         components = [
             self.key_prefix,
             epoch,
             filters_hash,
-            as_of.replace(':', '-').replace('.', '-')  # Make timestamp Redis-safe
+            as_of.replace(":", "-").replace(".", "-"),  # Make timestamp Redis-safe
         ]
-        
+
         # Add pagination info if present
         if after_tuple:
             after_str = f"{after_tuple[0]:.6f}:{after_tuple[1]}:{after_tuple[2]}"
             after_hash = hashlib.md5(after_str.encode()).hexdigest()[:8]
             components.append(after_hash)
-        
+
         return ":".join(components)
-    
+
     async def get(
-        self,
-        filters_hash: str,
-        as_of: str,
-        after_tuple: Optional[tuple] = None
+        self, filters_hash: str, as_of: str, after_tuple: Optional[tuple] = None
     ) -> Optional[Dict[str, Any]]:
         """
         Get cached search results
-        
+
         Args:
             filters_hash: Hash of search filters
             as_of: Snapshot timestamp
             after_tuple: Pagination cursor tuple
-        
+
         Returns:
             Cached results or None if not found/expired
         """
         if not self.enabled or not self.redis:
             return None
-        
+
         try:
             # Get current epoch
             epoch = await self.redis.get(self.epoch_key) or "0"
-            
+
             # Build key with epoch
             key = self._make_cache_key(filters_hash, as_of, after_tuple)
             # Update key with actual epoch
             key_parts = key.split(":")
             key_parts[2] = epoch  # Replace default epoch with actual
             key = ":".join(key_parts)
-            
+
             # Get cached value
             cached = await self.redis.get(key)
             if cached:
@@ -128,140 +120,136 @@ class RedisSearchCache:
             else:
                 logger.debug(f"Cache miss for key: {key}")
                 return None
-                
+
         except Exception as e:
             logger.warning(f"Cache get error: {e}")
             return None
-    
+
     async def set(
         self,
         filters_hash: str,
         as_of: str,
         after_tuple: Optional[tuple],
         value: Dict[str, Any],
-        ttl: Optional[int] = None
+        ttl: Optional[int] = None,
     ) -> bool:
         """
         Set cached search results
-        
+
         Args:
             filters_hash: Hash of search filters
             as_of: Snapshot timestamp
             after_tuple: Pagination cursor tuple
             value: Results to cache
             ttl: Time to live in seconds
-        
+
         Returns:
             True if cached successfully
         """
         if not self.enabled or not self.redis:
             return False
-        
+
         try:
             # Get current epoch
             epoch = await self.redis.get(self.epoch_key) or "0"
-            
+
             # Build key with epoch
             key = self._make_cache_key(filters_hash, as_of, after_tuple)
             key_parts = key.split(":")
             key_parts[2] = epoch
             key = ":".join(key_parts)
-            
+
             # Serialize value
-            serialized = json.dumps(value, separators=(',', ':'))
-            
+            serialized = json.dumps(value, separators=(",", ":"))
+
             # Set with TTL
             cache_ttl = ttl or self.ttl
             await self.redis.setex(key, cache_ttl, serialized)
-            
+
             logger.debug(f"Cached results for key: {key} (TTL: {cache_ttl}s)")
             return True
-            
+
         except Exception as e:
             logger.warning(f"Cache set error: {e}")
             return False
-    
+
     async def invalidate_all(self):
         """
         Invalidate all cached search results by incrementing epoch
         """
         if not self.enabled or not self.redis:
             return
-        
+
         try:
             # Increment epoch to invalidate all existing cache keys
             new_epoch = await self.redis.incr(self.epoch_key)
             logger.info(f"Cache invalidated, new epoch: {new_epoch}")
-            
+
             # Set TTL on epoch key to prevent it from growing forever
             await self.redis.expire(self.epoch_key, 86400)  # 24 hours
-            
+
         except Exception as e:
             logger.warning(f"Cache invalidation error: {e}")
-    
+
     async def invalidate_pattern(self, pattern: str):
         """
         Invalidate cache keys matching a pattern
-        
+
         Args:
             pattern: Redis key pattern (e.g., "search:v1:*:FDA*")
         """
         if not self.enabled or not self.redis:
             return
-        
+
         try:
             # Find matching keys
             cursor = 0
             deleted = 0
-            
+
             while True:
-                cursor, keys = await self.redis.scan(
-                    cursor,
-                    match=pattern,
-                    count=100
-                )
-                
+                cursor, keys = await self.redis.scan(cursor, match=pattern, count=100)
+
                 if keys:
                     deleted += await self.redis.delete(*keys)
-                
+
                 if cursor == 0:
                     break
-            
+
             if deleted > 0:
                 logger.info(f"Invalidated {deleted} cache keys matching pattern: {pattern}")
-                
+
         except Exception as e:
             logger.warning(f"Pattern invalidation error: {e}")
-    
+
     async def get_stats(self) -> Dict[str, Any]:
         """
         Get cache statistics
-        
+
         Returns:
             Dictionary with cache stats
         """
         if not self.enabled or not self.redis:
             return {"enabled": False}
-        
+
         try:
             # Get info
             info = await self.redis.info("stats")
             memory = await self.redis.info("memory")
-            
+
             # Count cache keys
             cursor = 0
             key_count = 0
             pattern = f"{self.key_prefix}*"
-            
+
             while True:
                 cursor, keys = await self.redis.scan(cursor, match=pattern, count=100)
                 key_count += len(keys)
                 if cursor == 0:
                     break
-            
+
             # Get epoch
             epoch = await self.redis.get(self.epoch_key) or "0"
-            
+
             return {
                 "enabled": True,
                 "connected": True,
@@ -271,12 +259,13 @@ class RedisSearchCache:
                 "hits": info.get("keyspace_hits", 0),
                 "misses": info.get("keyspace_misses", 0),
                 "hit_rate": round(
-                    info.get("keyspace_hits", 0) / 
-                    max(info.get("keyspace_hits", 0) + info.get("keyspace_misses", 1), 1) * 100,
-                    2
-                )
+                    info.get("keyspace_hits", 0)
+                    / max(info.get("keyspace_hits", 0) + info.get("keyspace_misses", 1), 1)
+                    * 100,
+                    2,
+                ),
             }
-            
+
         except Exception as e:
             logger.warning(f"Stats error: {e}")
             return {"enabled": True, "connected": False, "error": str(e)}

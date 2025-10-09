@@ -25,17 +25,18 @@ class ProductIdentifierLogic:
     Handles the logic for identifying a product by barcode via UPCitemdb's trial API.
     Falls back to the in-memory RecallDB if the API call fails (for test scenarios).
     """
+
     def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
-        
+
         # Check if trial endpoint is allowed in production
         USE_TRIAL_UPCITEMDB = os.getenv("USE_TRIAL_UPCITEMDB", "false").lower() == "true"
         ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
-        
+
         if ENVIRONMENT == "production" and USE_TRIAL_UPCITEMDB:
             raise RuntimeError("Production environment cannot use trial UPCitemdb endpoint")
-        
+
         if USE_TRIAL_UPCITEMDB:
             self.logger.info(
                 f"ProductIdentifierLogic initialized for agent {self.agent_id}. "
@@ -64,9 +65,7 @@ class ProductIdentifierLogic:
                     )
 
                     if response.status != 200:
-                        self.logger.error(
-                            f"UPCitemdb HTTP {response.status} for barcode {barcode}"
-                        )
+                        self.logger.error(f"UPCitemdb HTTP {response.status} for barcode {barcode}")
                         return None
 
                     data = json.loads(text)
@@ -84,7 +83,7 @@ class ProductIdentifierLogic:
                             "manufacturer": item.get("manufacturer") or item.get("brand"),
                             "category": item.get("category"),
                             "description": item.get("description"),
-                            "source": "upcitemdb.com (trial)"
+                            "source": "upcitemdb.com (trial)",
                         }
                         self.logger.info(
                             f"Extracted product details for {barcode}: "
@@ -134,10 +133,7 @@ class ProductIdentifierLogic:
 
         # Require barcode for now
         if not barcode:
-            return {
-                "status": "FAILED",
-                "error": "Barcode is required for product identification."
-            }
+            return {"status": "FAILED", "error": "Barcode is required for product identification."}
 
         # Test with known working mock data for specific barcodes
         test_barcodes = {
@@ -147,32 +143,26 @@ class ProductIdentifierLogic:
                 "manufacturer": "Test Baby Corp",
                 "category": "Baby Safety",
                 "description": "Mock test product for development",
-                "source": "mock-test-data"
+                "source": "mock-test-data",
             },
             "043000200605": {
                 "product_name": "Tide Laundry Detergent",
-                "upc": "043000200605", 
+                "upc": "043000200605",
                 "manufacturer": "Procter & Gamble",
                 "category": "Household",
                 "description": "Tide Ultra Concentrated Liquid Laundry Detergent",
-                "source": "mock-test-data"
-            }
+                "source": "mock-test-data",
+            },
         }
-        
+
         if barcode in test_barcodes:
             self.logger.info(f"Using mock test data for known barcode {barcode}")
-            return {
-                "status": "COMPLETED",
-                "result": test_barcodes[barcode]
-            }
+            return {"status": "COMPLETED", "result": test_barcodes[barcode]}
 
         # 1) Attempt live UPCitemdb lookup
         product_details = await self._lookup_barcode_api(barcode)
         if product_details:
-            return {
-                "status": "COMPLETED",
-                "result": product_details
-            }
+            return {"status": "COMPLETED", "result": product_details}
 
         # 2) Enhanced fallback to RecallDB with better logic
         self.logger.warning(
@@ -182,32 +172,31 @@ class ProductIdentifierLogic:
             with get_db_session() as db:
                 # Try to find a recall with matching UPC first
                 recall_row = db.query(RecallDB).filter(RecallDB.upc == barcode).first()
-                
+
                 # If no exact UPC match, get any recall for testing
                 if not recall_row:
                     recall_row = db.query(RecallDB).first()
-                
+
                 if recall_row:
                     fallback = {
                         "product_name": recall_row.product_name or f"Product {barcode}",
                         "upc": barcode,
-                        "manufacturer": getattr(recall_row, 'manufacturer', None) or "Unknown Manufacturer",
+                        "manufacturer": getattr(recall_row, "manufacturer", None)
+                        or "Unknown Manufacturer",
                         "category": "Consumer Product",
-                        "description": recall_row.reason or "Product information from recall database",
+                        "description": recall_row.reason
+                        or "Product information from recall database",
                         "source": "recall-db-fallback",
                         "recall_info": {
                             "recall_id": recall_row.recall_id,
                             "reason": recall_row.reason,
-                            "date": str(recall_row.date) if recall_row.date else None
-                        }
+                            "date": str(recall_row.date) if recall_row.date else None,
+                        },
                     }
                     self.logger.info(
                         f"Enhanced RecallDB fallback for {barcode}: '{fallback['product_name']}'"
                     )
-                    return {
-                        "status": "COMPLETED",
-                        "result": fallback
-                    }
+                    return {"status": "COMPLETED", "result": fallback}
                 else:
                     # Create a basic mock product if no recalls exist
                     fallback = {
@@ -216,15 +205,12 @@ class ProductIdentifierLogic:
                         "manufacturer": "Unknown Manufacturer",
                         "category": "Consumer Product",
                         "description": "Mock product for testing purposes",
-                        "source": "mock-fallback"
+                        "source": "mock-fallback",
                     }
                     self.logger.info(
                         f"Using mock fallback for {barcode}: '{fallback['product_name']}'"
                     )
-                    return {
-                        "status": "COMPLETED",
-                        "result": fallback
-                    }
+                    return {"status": "COMPLETED", "result": fallback}
         except Exception as e:
             self.logger.error(f"Enhanced RecallDB fallback error: {e}", exc_info=True)
 
@@ -232,5 +218,5 @@ class ProductIdentifierLogic:
         self.logger.error(f"Could not identify product for barcode {barcode}")
         return {
             "status": "FAILED",
-            "error": f"Could not find product information for barcode: {barcode}"
+            "error": f"Could not find product information for barcode: {barcode}",
         }

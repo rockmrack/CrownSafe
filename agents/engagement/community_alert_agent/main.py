@@ -5,11 +5,14 @@ import time
 from threading import Thread
 from .agent_logic import CommunityAlertAgentLogic
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "community_alert_agent_01"
-SCRAPE_INTERVAL_HOURS = 6 # Run every 6 hours
+SCRAPE_INTERVAL_HOURS = 6  # Run every 6 hours
+
 
 class CommunityAlertAgent:
     def __init__(self):
@@ -30,11 +33,11 @@ class CommunityAlertAgent:
     def start(self):
         """Starts the agent's scheduled data scraping."""
         logger.info(f"Starting {self.agent_id}...")
-        
+
         schedule.every(SCRAPE_INTERVAL_HOURS).hours.do(lambda: asyncio.run(self._run_scrape_job()))
-        
+
         self.is_running = True
-        
+
         def run_scheduler():
             logger.info("Scheduler thread started.")
             while self.is_running:
@@ -44,8 +47,10 @@ class CommunityAlertAgent:
 
         self.scheduler_thread = Thread(target=run_scheduler)
         self.scheduler_thread.start()
-        
-        logger.info(f"{self.agent_id} started. Scraping will run every {SCRAPE_INTERVAL_HOURS} hour(s).")
+
+        logger.info(
+            f"{self.agent_id} started. Scraping will run every {SCRAPE_INTERVAL_HOURS} hour(s)."
+        )
         # Run one initial scrape immediately on startup
         logger.info("Performing initial scrape on startup...")
         asyncio.run(self._run_scrape_job())
@@ -54,10 +59,12 @@ class CommunityAlertAgent:
         # ... (Standard stop method) ...
         pass
 
+
 def main():
     agent = CommunityAlertAgent()
     # ... (Standard main execution block) ...
     agent.start()
+
 
 if __name__ == "__main__":
     main()

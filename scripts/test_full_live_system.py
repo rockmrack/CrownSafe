@@ -16,6 +16,7 @@ from agents.hazard_analysis_agent.agent_logic import HazardAnalysisLogic
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("test_live_direct")
 
+
 async def run_live_test(barcode: str):
     logger.info(f"Starting 100% live test for barcode: {barcode}")
 
@@ -25,7 +26,7 @@ async def run_live_test(barcode: str):
         FDAConnector(),
         EURapexConnector(),
         UKOPSSConnector(),
-        SGCPSoConnector()
+        SGCPSoConnector(),
     ]
     all_recalls = []
     for connector in connectors:
@@ -62,6 +63,7 @@ async def run_live_test(barcode: str):
     except Exception as e:
         logger.error(f"Hazard analysis failed: {e}")
         return
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run 100% live end-to-end recall + hazard test")

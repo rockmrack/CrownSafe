@@ -7,13 +7,16 @@ import logging
 import json
 
 # --- Add project root to Python's path ---
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
 from agents.engagement.community_alert_agent.agent_logic import CommunityAlertAgentLogic
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+
 
 async def main():
     """Main function to run the CommunityAlertAgent test."""
@@ -21,9 +24,9 @@ async def main():
     logger.info("--- Starting CommunityAlertAgent Test ---")
 
     # 1. Load the mock HTML file from our test fixtures.
-    fixture_path = os.path.join(project_root, 'tests', 'fixtures', 'mock_forum_page.html')
+    fixture_path = os.path.join(project_root, "tests", "fixtures", "mock_forum_page.html")
     try:
-        with open(fixture_path, 'r') as f:
+        with open(fixture_path, "r") as f:
             mock_html = f.read()
         logger.info("Successfully loaded mock HTML fixture.")
     except FileNotFoundError:
@@ -36,10 +39,7 @@ async def main():
         logger.info("Agent logic initialized.")
 
         # 3. Define the task payload.
-        task_inputs = {
-            "html_content": mock_html,
-            "product_name": "Happy Baby Super-Puffs"
-        }
+        task_inputs = {"html_content": mock_html, "product_name": "Happy Baby Super-Puffs"}
         logger.info(f"Created task with inputs.")
 
         # 4. Process the task.
@@ -48,9 +48,9 @@ async def main():
         logger.info("Task processing finished.")
 
         # 5. Analyze and print the result.
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("          AGENT TEST RESULT")
-        print("="*50)
+        print("=" * 50)
         print(json.dumps(result, indent=2))
 
         # 6. Validate the result.
@@ -58,20 +58,27 @@ async def main():
             risks_found = result.get("result", {}).get("risks", [])
             # We expect to find "rash", "choking", "hazard", and "safety issue"
             if len(risks_found) >= 4:
-                print("\n" + "="*50)
-                print(f"✅✅✅ TEST PASSED: Agent successfully scraped the page and found {len(risks_found)} risk keywords.")
+                print("\n" + "=" * 50)
+                print(
+                    f"✅✅✅ TEST PASSED: Agent successfully scraped the page and found {len(risks_found)} risk keywords."
+                )
             else:
-                print("\n" + "="*50)
-                print(f"❌ TEST FAILED: The agent only found {len(risks_found)} keywords, but expected at least 4.")
+                print("\n" + "=" * 50)
+                print(
+                    f"❌ TEST FAILED: The agent only found {len(risks_found)} keywords, but expected at least 4."
+                )
         else:
-            print("\n" + "="*50)
-            print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")
+            print("\n" + "=" * 50)
+            print(
+                f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}"
+            )
 
     except Exception as e:
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print(f"❌ TEST FAILED: An unexpected error occurred: {e}")
 
     print("--- Test Complete ---")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

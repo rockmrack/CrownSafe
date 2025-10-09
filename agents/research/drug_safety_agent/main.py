@@ -26,21 +26,20 @@ except ImportError as e:
 
 from .agent_logic import DrugSafetyAgentLogic
 
+
 # Environment setup
 def setup_environment():
     """Setup environment variables with proper fallback"""
-    dotenv_paths = [
-        os.path.join(project_root_main, '.env'),
-        ".env"
-    ]
-    
+    dotenv_paths = [os.path.join(project_root_main, ".env"), ".env"]
+
     for dotenv_path in dotenv_paths:
         if os.path.exists(dotenv_path):
             load_dotenv(dotenv_path)
             return dotenv_path
-    
+
     load_dotenv()  # Final fallback
     return "default locations"
+
 
 env_source = setup_environment()
 
@@ -55,9 +54,7 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
 # Logging setup
 logging.basicConfig(
-    level=LOG_LEVEL,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    force=True
+    level=LOG_LEVEL, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", force=True
 )
 
 logger = logging.getLogger(f"{AGENT_ID}.main")
@@ -67,9 +64,10 @@ logic_logger = logging.getLogger(f"{AGENT_ID}.logic")
 mcp_client_instance: Optional[MCPClient] = None
 agent_logic_instance: Optional[DrugSafetyAgentLogic] = None
 
+
 class DrugSafetyAgentManager:
     """Main agent manager for DrugSafetyAgent"""
-    
+
     def __init__(self):
         self.mcp_client: Optional[MCPClient] = None
         self.drug_safety_logic: Optional[DrugSafetyAgentLogic] = None
@@ -94,9 +92,11 @@ class DrugSafetyAgentManager:
 
             # Convert message to dict format expected by logic
             message_dict = message.model_dump()
-            
+
             # Process through logic
-            response_from_logic = await self.drug_safety_logic.process_message(message_dict, self.mcp_client)
+            response_from_logic = await self.drug_safety_logic.process_message(
+                message_dict, self.mcp_client
+            )
 
             # Handle response if present
             if response_from_logic is not None:
@@ -138,15 +138,17 @@ class DrugSafetyAgentManager:
                 return
 
             # Send response
-            logger.info(f"Sending {response_message_type} response to {target_agent_id} (CorrID: {correlation_id})")
-            
+            logger.info(
+                f"Sending {response_message_type} response to {target_agent_id} (CorrID: {correlation_id})"
+            )
+
             await self.mcp_client.send_message(
                 payload=response_payload,
                 message_type=response_message_type,
                 target_agent_id=target_agent_id,
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
-            
+
             logger.debug(f"Successfully sent {response_message_type} response")
 
         except Exception as e:
@@ -179,7 +181,7 @@ class DrugSafetyAgentManager:
                     "error_message": f"DrugSafetyAgent failed to process {message_type}: {str(error)}",
                     "workflow_id": workflow_id,
                     "task_id": task_id,
-                    "status": "FAILED"
+                    "status": "FAILED",
                 }
 
                 # Remove None values
@@ -189,9 +191,9 @@ class DrugSafetyAgentManager:
                     payload=error_payload,
                     message_type="TASK_FAIL",
                     target_agent_id=sender_id,
-                    correlation_id=correlation_id
+                    correlation_id=correlation_id,
                 )
-                
+
                 logger.info(f"Sent TASK_FAIL response for error in {message_type}")
 
         except Exception as send_error:
@@ -202,16 +204,14 @@ class DrugSafetyAgentManager:
         try:
             # Initialize DrugSafetyAgentLogic
             self.drug_safety_logic = DrugSafetyAgentLogic(
-                agent_id=AGENT_ID,
-                version=AGENT_VERSION,
-                logger_instance=logic_logger
+                agent_id=AGENT_ID, version=AGENT_VERSION, logger_instance=logic_logger
             )
-            
+
             # Get MCP server URL
             mcp_settings = MCPConfig()
             base_mcp_server_url = mcp_settings.DEFAULT_ROUTER_URL
             if "/ws/" in base_mcp_server_url:
-                base_mcp_server_url = base_mcp_server_url.split('/ws/')[0]
+                base_mcp_server_url = base_mcp_server_url.split("/ws/")[0]
 
             # Initialize MCPClient
             self.mcp_client = MCPClient(
@@ -220,13 +220,13 @@ class DrugSafetyAgentManager:
                 agent_type=AGENT_TYPE,
                 mcp_server_url=base_mcp_server_url,
                 capabilities=self.drug_safety_logic.get_capabilities(),
-                message_handler=self.handle_incoming_message
+                message_handler=self.handle_incoming_message,
             )
-            
+
             logger.info(f"DrugSafetyAgent components initialized (Version: {AGENT_VERSION})")
             logger.info(f"Environment loaded from: {env_source}")
             logger.info(f"MCP Server URL: {base_mcp_server_url}")
-            
+
             return True
 
         except Exception as e:
@@ -237,19 +237,19 @@ class DrugSafetyAgentManager:
         """Setup signal handlers for graceful shutdown"""
         try:
             loop = asyncio.get_running_loop()
-            
+
             def signal_handler(signum):
                 signal_name = signal.Signals(signum).name
                 logger.info(f"Received shutdown signal: {signal_name}")
                 self.stop_event.set()
-            
+
             for sig in [signal.SIGINT, signal.SIGTERM]:
                 try:
                     loop.add_signal_handler(sig, lambda s=sig: signal_handler(s))
                     logger.debug(f"Added signal handler for {signal.Signals(sig).name}")
                 except (NotImplementedError, OSError) as e:
                     logger.warning(f"Cannot add signal handler for {signal.Signals(sig).name}: {e}")
-                    
+
         except RuntimeError as e:
             logger.warning(f"Could not setup signal handlers: {e}")
 
@@ -257,15 +257,15 @@ class DrugSafetyAgentManager:
         """Connect to MCP server and register agent"""
         try:
             await self.mcp_client.connect()
-            
+
             if not self.mcp_client.is_connected:
                 logger.critical("Failed to connect to MCP server")
                 return False
-            
+
             await self.mcp_client.register_self()
             logger.info(f"{AGENT_ID} connected and registered successfully")
             return True
-            
+
         except MCPConnectionError as e:
             logger.critical(f"MCP Connection Error: {e}")
             return False
@@ -276,12 +276,12 @@ class DrugSafetyAgentManager:
     async def run_main_loop(self):
         """Main agent event loop"""
         logger.info(f"{AGENT_ID} entering main event loop...")
-        
+
         try:
             # Wait for shutdown signal
             await self.stop_event.wait()
             logger.info("Shutdown signal received")
-            
+
         except Exception as e:
             logger.error(f"Error in main event loop: {e}", exc_info=True)
 
@@ -289,56 +289,57 @@ class DrugSafetyAgentManager:
         """Graceful shutdown of all components"""
         if self.shutdown_complete:
             return
-            
+
         logger.info(f"Shutting down {AGENT_ID}...")
-        
+
         try:
             # Shutdown DrugSafetyAgentLogic first - FIXED: Added missing shutdown call
-            if self.drug_safety_logic and hasattr(self.drug_safety_logic, 'shutdown'):
+            if self.drug_safety_logic and hasattr(self.drug_safety_logic, "shutdown"):
                 await self.drug_safety_logic.shutdown()
                 logger.debug("DrugSafetyAgentLogic shutdown complete")
-            
+
             # Disconnect MCP client
             if self.mcp_client and self.mcp_client.is_connected:
                 await self.mcp_client.disconnect()
                 logger.debug("MCP client disconnected")
-            
+
             self.shutdown_complete = True
             logger.info(f"{AGENT_ID} shutdown complete")
-            
+
         except Exception as e:
             logger.error(f"Error during shutdown: {e}", exc_info=True)
+
 
 async def main():
     """Main entry point"""
     agent_manager = DrugSafetyAgentManager()
-    
+
     # Update global instances for backward compatibility
     global mcp_client_instance, agent_logic_instance
-    
+
     try:
         # Initialize components
         if not await agent_manager.initialize_components():
             logger.critical("Failed to initialize agent components")
             return 1
-        
+
         # Update global references
         mcp_client_instance = agent_manager.mcp_client
         agent_logic_instance = agent_manager.drug_safety_logic
-        
+
         # Setup signal handlers
         agent_manager.setup_signal_handlers()
-        
+
         # Connect and register
         if not await agent_manager.connect_and_register():
             logger.critical("Failed to connect and register agent")
             return 1
-        
+
         # Run main loop
         await agent_manager.run_main_loop()
-        
+
         return 0
-        
+
     except KeyboardInterrupt:
         logger.info("Received keyboard interrupt")
         return 0
@@ -347,6 +348,7 @@ async def main():
         return 1
     finally:
         await agent_manager.shutdown()
+
 
 if __name__ == "__main__":
     try:

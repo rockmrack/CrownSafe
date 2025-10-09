@@ -8,13 +8,15 @@ import json
 from unittest.mock import patch, AsyncMock
 
 # --- Add project root to Python's path ---
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
 from agents.recall_data_agent.connectors import NHTSAConnector
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # --- Mock API Response ---
 # This is a simplified structure based on the real NHTSA API response for a car seat recall.
@@ -28,7 +30,7 @@ MOCK_NHTSA_RESPONSE = {
             "Make": "Safety 1st",
             "Model": "Grow and Go Sprint",
             "Summary": "Child car seat harness may fail during crash",
-            "DefectSummary": "Harness webbing defect in child safety seats"
+            "DefectSummary": "Harness webbing defect in child safety seats",
         },
         {
             "ReportReceivedDate": "2025-03-22T00:00:00",
@@ -38,11 +40,12 @@ MOCK_NHTSA_RESPONSE = {
             "Make": "Graco",
             "Model": "4Ever DLX",
             "Summary": "Child seat base separation risk",
-            "DefectSummary": "Base attachment mechanism defective"
-        }
+            "DefectSummary": "Base attachment mechanism defective",
+        },
     ]
 }
 # --------------------------
+
 
 async def main():
     """Main function to test the NHTSAConnector with a mocked API call."""
@@ -50,7 +53,7 @@ async def main():
     logger.info("--- Starting NHTSA Connector Test ---")
 
     # We use @patch to intercept any 'aiohttp.ClientSession.get' call
-    with patch('aiohttp.ClientSession.get') as mock_get:
+    with patch("aiohttp.ClientSession.get") as mock_get:
         # Configure the mock response
         mock_response = AsyncMock()
         mock_response.status = 200
@@ -62,10 +65,10 @@ async def main():
         nhtsa_connector = NHTSAConnector()
         nhtsa_recalls = await nhtsa_connector.fetch_recent_recalls()
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("          NHTSA Connector Test Result")
-        print("="*60)
-        
+        print("=" * 60)
+
         for recall in nhtsa_recalls:
             print(f"ID: {recall.recall_id}")
             print(f"Agency: {recall.source_agency}")
@@ -78,18 +81,25 @@ async def main():
         # Validate the result
         if len(nhtsa_recalls) == 2:
             first_recall = nhtsa_recalls[0]
-            if (first_recall.recall_id == "NHTSA-25V123456" and 
-                first_recall.source_agency == "NHTSA" and
-                "Safety 1st" in first_recall.product_name):
-                print("\n✅✅✅ NHTSA Connector Test PASSED: Successfully parsed the mock JSON response.")
+            if (
+                first_recall.recall_id == "NHTSA-25V123456"
+                and first_recall.source_agency == "NHTSA"
+                and "Safety 1st" in first_recall.product_name
+            ):
+                print(
+                    "\n✅✅✅ NHTSA Connector Test PASSED: Successfully parsed the mock JSON response."
+                )
             else:
                 print(f"\n❌❌❌ NHTSA Connector Test FAILED: Incorrect data parsing.")
                 print(f"Expected ID: NHTSA-25V123456, Got: {first_recall.recall_id}")
                 print(f"Expected Agency: NHTSA, Got: {first_recall.source_agency}")
         else:
-            print(f"\n❌❌❌ NHTSA Connector Test FAILED: Expected 2 recalls, got {len(nhtsa_recalls)}")
+            print(
+                f"\n❌❌❌ NHTSA Connector Test FAILED: Expected 2 recalls, got {len(nhtsa_recalls)}"
+            )
 
     print("\n--- Test Complete ---")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

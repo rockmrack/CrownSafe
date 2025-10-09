@@ -1,4 +1,5 @@
 from api.pydantic_base import AppModel
+
 """
 Integration module for pagination and caching features (Task 5)
 Shows how to wire cursor pagination and HTTP caching into existing endpoints
@@ -22,7 +23,7 @@ from api.utils import (
     check_if_none_match,
     check_if_modified_since,
     create_not_modified_response,
-    add_cache_headers
+    add_cache_headers,
 )
 from api.utils.redis_cache import get_cache, RedisSearchCache
 from api.services.search_service_v2 import SearchServiceV2
@@ -35,23 +36,24 @@ logger = logging.getLogger(__name__)
 def setup_pagination_cache(app: FastAPI):
     """
     Configure pagination and caching for the FastAPI app
-    
+
     Args:
         app: FastAPI application instance
     """
-    
+
     # Add startup/shutdown for cache
     @app.on_event("startup")
     async def init_cache():
         cache = await get_cache()
         logger.info("Redis search cache initialized")
-    
+
     @app.on_event("shutdown")
     async def close_cache():
         from api.utils.redis_cache import close_cache as close_redis_cache
+
         await close_redis_cache()
         logger.info("Redis search cache closed")
-    
+
     logger.info("Pagination and cache setup complete")
 
 
@@ -59,16 +61,14 @@ def create_search_endpoint_v2(app: FastAPI):
     """
     Create enhanced search endpoint with cursor pagination and caching
     """
-    
+
     @app.post("/api/v2/search/advanced")
     async def search_advanced_v2(
-        request: Request,
-        payload: Dict[str, Any],
-        db: Session = Depends(get_db)
+        request: Request, payload: Dict[str, Any], db: Session = Depends(get_db)
     ):
         """
         Enhanced search with cursor pagination and HTTP caching
-        
+
         Features:
         - Opaque, signed cursor tokens
         - Snapshot isolation via as_of timestamp
@@ -79,18 +79,18 @@ def create_search_endpoint_v2(app: FastAPI):
         try:
             # Extract trace ID if available
             trace_id = getattr(request.state, "trace_id", None)
-            
+
             # Check cache first
             cache = await get_cache()
-            
+
             # Generate filter hash for caching
             filters_hash = hash_filters(payload, exclude_cursor=True)
-            
+
             # Parse cursor if present
             cursor_token = payload.get("nextCursor")
             as_of_str = None
             after_tuple = None
-            
+
             if cursor_token:
                 try:
                     cursor_data = verify_cursor(cursor_token)
@@ -101,48 +101,41 @@ def create_search_endpoint_v2(app: FastAPI):
                     error_code = "INVALID_CURSOR"
                     if "filter" in str(e) and "mismatch" in str(e):
                         error_code = "INVALID_CURSOR_FILTER_MISMATCH"
-                    
+
                     return JSONResponse(
                         content={
                             "ok": False,
-                            "error": {
-                                "code": error_code,
-                                "message": str(e)
-                            },
-                            "traceId": trace_id
+                            "error": {"code": error_code, "message": str(e)},
+                            "traceId": trace_id,
                         },
-                        status_code=400
+                        status_code=400,
                     )
             else:
                 # New search - set snapshot time
                 as_of = datetime.now(timezone.utc)
-                as_of_str = as_of.isoformat().replace('+00:00', 'Z')
-            
+                as_of_str = as_of.isoformat().replace("+00:00", "Z")
+
             # Check Redis cache
             cached_result = await cache.get(filters_hash, as_of_str, after_tuple)
-            
+
             if cached_result:
                 # Generate ETag for cached result
-                result_ids = [item["id"] for item in cached_result.get("data", {}).get("items", [])][:5]
+                result_ids = [
+                    item["id"] for item in cached_result.get("data", {}).get("items", [])
+                ][:5]
                 etag = make_search_etag(filters_hash, as_of_str, result_ids)
-                
+
                 # Check If-None-Match
                 if check_if_none_match(request, etag):
                     return create_not_modified_response(
-                        etag=etag,
-                        cache_control="private, max-age=60"
+                        etag=etag, cache_control="private, max-age=60"
                     )
-                
+
                 # Return cached result with headers
                 response = JSONResponse(cached_result)
-                add_cache_headers(
-                    response,
-                    etag=etag,
-                    max_age=60,
-                    private=True
-                )
+                add_cache_headers(response, etag=etag, max_age=60, private=True)
                 return response
-            
+
             # Not cached - execute search
             service = SearchServiceV2(db)
             result = service.search_with_cursor(
@@ -156,55 +149,38 @@ def create_search_endpoint_v2(app: FastAPI):
                 date_from=payload.get("date_from"),
                 date_to=payload.get("date_to"),
                 limit=min(payload.get("limit", 20), 100),
-                next_cursor=cursor_token
+                next_cursor=cursor_token,
             )
-            
+
             # Add trace ID to response
             result["traceId"] = trace_id
-            
+
             # Cache the result
-            await cache.set(
-                filters_hash,
-                as_of_str,
-                after_tuple,
-                result,
-                ttl=60  # 60 seconds
-            )
-            
+            await cache.set(filters_hash, as_of_str, after_tuple, result, ttl=60)  # 60 seconds
+
             # Generate ETag
             result_ids = [item["id"] for item in result.get("data", {}).get("items", [])][:5]
             etag = make_search_etag(filters_hash, as_of_str, result_ids)
-            
+
             # Check If-None-Match
             if check_if_none_match(request, etag):
-                return create_not_modified_response(
-                    etag=etag,
-                    cache_control="private, max-age=60"
-                )
-            
+                return create_not_modified_response(etag=etag, cache_control="private, max-age=60")
+
             # Return with cache headers
             response = JSONResponse(result)
-            add_cache_headers(
-                response,
-                etag=etag,
-                max_age=60,
-                private=True
-            )
-            
+            add_cache_headers(response, etag=etag, max_age=60, private=True)
+
             return response
-            
+
         except Exception as e:
             logger.error(f"Search error: {e}", exc_info=True)
             return JSONResponse(
                 content={
                     "ok": False,
-                    "error": {
-                        "code": "SEARCH_ERROR",
-                        "message": str(e)
-                    },
-                    "traceId": getattr(request.state, "trace_id", None)
+                    "error": {"code": "SEARCH_ERROR", "message": str(e)},
+                    "traceId": getattr(request.state, "trace_id", None),
                 },
-                status_code=500
+                status_code=500,
             )
 
 
@@ -212,19 +188,15 @@ def enhance_recall_detail_endpoint(app: FastAPI):
     """
     Enhance recall detail endpoint with HTTP caching
     """
-    
+
     # Get the existing endpoint and wrap it
     # Or define a new one:
-    
+
     @app.get("/api/v2/recall/{recall_id}")
-    async def get_recall_detail_v2(
-        recall_id: str,
-        request: Request,
-        db: Session = Depends(get_db)
-    ):
+    async def get_recall_detail_v2(recall_id: str, request: Request, db: Session = Depends(get_db)):
         """
         Get recall detail with HTTP caching support
-        
+
         Features:
         - ETag based on ID + last_updated
         - Last-Modified header
@@ -233,32 +205,30 @@ def enhance_recall_detail_endpoint(app: FastAPI):
         """
         try:
             # Query database
-            recall = db.query(EnhancedRecallDB).filter(
-                EnhancedRecallDB.recall_id == recall_id
-            ).first()
-            
+            recall = (
+                db.query(EnhancedRecallDB).filter(EnhancedRecallDB.recall_id == recall_id).first()
+            )
+
             if not recall:
                 raise HTTPException(status_code=404, detail="Recall not found")
-            
+
             # Get last modified time
             last_updated = recall.last_updated or recall.recall_date
-            
+
             # Generate ETag
             etag = make_detail_etag(recall_id, last_updated)
-            
+
             # Check conditional requests
             if check_if_none_match(request, etag):
                 return create_not_modified_response(
-                    etag=etag,
-                    cache_control="public, max-age=300, stale-while-revalidate=30"
+                    etag=etag, cache_control="public, max-age=300, stale-while-revalidate=30"
                 )
-            
+
             if check_if_modified_since(request, last_updated):
                 return create_not_modified_response(
-                    etag=etag,
-                    cache_control="public, max-age=300, stale-while-revalidate=30"
+                    etag=etag, cache_control="public, max-age=300, stale-while-revalidate=30"
                 )
-            
+
             # Build response data
             data = {
                 "ok": True,
@@ -278,21 +248,23 @@ def enhance_recall_detail_endpoint(app: FastAPI):
                     "sourceAgency": recall.source_agency,
                     "url": recall.url,
                     "imageUrl": recall.image_url,
-                    "affectedCountries": recall.regions_affected or [recall.country] if recall.country else [],
-                    "status": recall.status
+                    "affectedCountries": recall.regions_affected or [recall.country]
+                    if recall.country
+                    else [],
+                    "status": recall.status,
                 },
-                "traceId": getattr(request.state, "trace_id", None)
+                "traceId": getattr(request.state, "trace_id", None),
             }
-            
+
             # Create response with cache headers
             return CacheableResponse.detail_response(
                 content=data,
                 item_id=recall_id,
                 last_updated=last_updated,
                 request=request,
-                max_age=300  # 5 minutes
+                max_age=300,  # 5 minutes
             )
-            
+
         except HTTPException:
             raise
         except Exception as e:
@@ -359,29 +331,31 @@ return CacheableResponse.search_response(
 
 class PaginationConfig:
     """Configuration for pagination settings"""
-    
+
     # Cursor settings
     CURSOR_TTL_HOURS = int(os.getenv("CURSOR_TTL_HOURS", "24"))
     CURSOR_SIGNING_KEY = os.getenv("CURSOR_SIGNING_KEY", "change-this-in-production")
-    
+
     # Cache settings
     SEARCH_CACHE_TTL = int(os.getenv("SEARCH_CACHE_TTL", "60"))
     DETAIL_CACHE_TTL = int(os.getenv("DETAIL_CACHE_TTL", "300"))
-    
+
     # Pagination settings
     DEFAULT_LIMIT = int(os.getenv("DEFAULT_PAGE_SIZE", "20"))
     MAX_LIMIT = int(os.getenv("MAX_PAGE_SIZE", "100"))
-    
+
     @classmethod
     def validate(cls):
         """Validate configuration"""
         if cls.CURSOR_SIGNING_KEY == "change-this-in-production":
             logger.warning("Using default cursor signing key - change in production!")
-        
+
         if len(cls.CURSOR_SIGNING_KEY) < 32:
             logger.warning("Cursor signing key should be at least 32 bytes")
-        
-        logger.info(f"Pagination config: TTL={cls.CURSOR_TTL_HOURS}h, Cache={cls.SEARCH_CACHE_TTL}s")
+
+        logger.info(
+            f"Pagination config: TTL={cls.CURSOR_TTL_HOURS}h, Cache={cls.SEARCH_CACHE_TTL}s"
+        )
 
 
 # Validate config on import

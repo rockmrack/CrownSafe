@@ -11,7 +11,7 @@ except:
 
 # 2. Clear Redis
 print("Clearing Redis...")
-r = redis.Redis(host='localhost', port=6379)
+r = redis.Redis(host="localhost", port=6379)
 r.flushall()
 print("Redis cleared")
 
@@ -21,7 +21,7 @@ process = subprocess.Popen(
     ["python", "commander_agent/main.py"],
     stdout=subprocess.PIPE,
     stderr=subprocess.STDOUT,
-    text=True
+    text=True,
 )
 
 # 4. Watch output for 10 seconds

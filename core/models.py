@@ -2,8 +2,13 @@
 # Step 106.3: Drastically simplify MCPMessage payload validation.
 
 from pydantic import BaseModel, Field, field_validator, root_validator
-from typing import Dict, Any, Optional, List # Removed Set, Union as not used in this simplified version
-from datetime import datetime, timezone 
+from typing import (
+    Dict,
+    Any,
+    Optional,
+    List,
+)  # Removed Set, Union as not used in this simplified version
+from datetime import datetime, timezone
 import uuid
 import logging
 import json
@@ -17,10 +22,11 @@ REQUIRED_PAYLOAD_FIELDS = {
     "DISCOVERY_QUERY": {"requester_agent_id", "query_by_capability_list"},
     "DISCOVERY_RESPONSE": {"query", "results", "status"},
     "DISCOVERY_ACK": {"status", "agent_id"},
-    "TASK_COMPLETE": {"workflow_id", "task_id", "agent_id"}, 
-    "TASK_FAIL": {"workflow_id", "task_id", "agent_id", "error_message"}, 
-    "PROCESS_USER_REQUEST": {"goal"}, 
+    "TASK_COMPLETE": {"workflow_id", "task_id", "agent_id"},
+    "TASK_FAIL": {"workflow_id", "task_id", "agent_id", "error_message"},
+    "PROCESS_USER_REQUEST": {"goal"},
 }
+
 
 class MCPHeader(BaseModel):
     sender_id: str = Field(..., description="Unique ID of the sending agent or service")
@@ -31,22 +37,35 @@ class MCPHeader(BaseModel):
     target_agent_id: Optional[str] = Field(None)
     target_service: Optional[str] = Field(None)
 
-    @field_validator('timestamp')
+    @field_validator("timestamp")
     @classmethod
     def timestamp_must_be_iso(cls, v):
-        try: datetime.fromisoformat(v.replace('Z', '+00:00')); return v
-        except (ValueError, TypeError): raise ValueError('Timestamp must be ISO 8601 format')
+        try:
+            datetime.fromisoformat(v.replace("Z", "+00:00"))
+            return v
+        except (ValueError, TypeError):
+            raise ValueError("Timestamp must be ISO 8601 format")
 
-    @field_validator('message_type')
+    @field_validator("message_type")
     @classmethod
     def message_type_must_be_valid(cls, v: str) -> str:
-        known_types = { 
-            "DISCOVERY_REGISTER", "DISCOVERY_QUERY", "DISCOVERY_RESPONSE", "DISCOVERY_ACK", 
-            "TASK_ASSIGN", "TASK_COMPLETE", "TASK_FAIL", 
-            "PING", "PONG", "ERROR", "PROCESS_USER_REQUEST" 
+        known_types = {
+            "DISCOVERY_REGISTER",
+            "DISCOVERY_QUERY",
+            "DISCOVERY_RESPONSE",
+            "DISCOVERY_ACK",
+            "TASK_ASSIGN",
+            "TASK_COMPLETE",
+            "TASK_FAIL",
+            "PING",
+            "PONG",
+            "ERROR",
+            "PROCESS_USER_REQUEST",
         }
-        if v not in known_types: logger.warning(f"Unknown message type in MCPHeader: '{v}'")
+        if v not in known_types:
+            logger.warning(f"Unknown message type in MCPHeader: '{v}'")
         return v
+
 
 class MCPMessage(BaseModel):
     mcp_header: MCPHeader
@@ -56,26 +75,27 @@ class MCPMessage(BaseModel):
     # The type hint Dict[str, Any] means Pydantic will expect a dict-like structure.
     payload: Dict[str, Any] = Field(default_factory=dict)
 
-    @root_validator(pre=True) # Keep this to ensure basic structure
+    @root_validator(pre=True)  # Keep this to ensure basic structure
     @classmethod
     def ensure_basic_structure(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        if not isinstance(values, dict): 
+        if not isinstance(values, dict):
             raise ValueError("MCPMessage input must be a dictionary.")
-        if 'mcp_header' not in values: # mcp_header is mandatory
+        if "mcp_header" not in values:  # mcp_header is mandatory
             raise ValueError("MCPMessage input must contain 'mcp_header'.")
-        
+
         # If 'payload' is missing, Pydantic's Field default_factory will handle it.
         # If 'payload' is present but not a dict, Pydantic will raise a validation error
         # because the type hint is Dict[str, Any]. So, this explicit check might be redundant
         # or could be made more specific if needed. For now, let Pydantic handle type.
         # if 'payload' in values and not isinstance(values['payload'], dict):
         #     logger.warning(f"MCPMessage 'payload' was provided but not as a dict (type: {type(values['payload'])}). This might cause issues.")
-            # Not forcing to {} here, let Pydantic's type validation for Dict[str, Any] catch it if it's not a dict.
+        # Not forcing to {} here, let Pydantic's type validation for Dict[str, Any] catch it if it's not a dict.
         return values
 
     # REMOVED the custom 'validate_payload_fields_conditionally' field_validator for 'payload'
     # We will rely on the receiving agent's logic to validate the contents of the payload
     # based on the message_type from the header. This Pydantic model will only ensure
     # that 'payload' itself is a dictionary (or an empty one if not provided).
+
 
 logger.info("MCP Pydantic models loaded (Step 106.3 Simplified Payload Validation).")

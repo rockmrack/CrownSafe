@@ -11,17 +11,27 @@ def get_profile(db: Session, user_id: Optional[UUID]):
     return None
 
 
-def get_or_create_conversation(db: Session, conversation_id: Optional[UUID], user_id: Optional[UUID], scan_id: str):
+def get_or_create_conversation(
+    db: Session, conversation_id: Optional[UUID], user_id: Optional[UUID], scan_id: str
+):
     """Get or create conversation record"""
+
     # Return a simple object with an id
     class MockConversation:
         def __init__(self):
             self.id = conversation_id or UUID("00000000-0000-0000-0000-000000000000")
-    
+
     return MockConversation()
 
 
-def log_message(db: Session, conversation, role: str, content: Dict[str, Any], intent: str = None, trace_id: str = None):
+def log_message(
+    db: Session,
+    conversation,
+    role: str,
+    content: Dict[str, Any],
+    intent: str = None,
+    trace_id: str = None,
+):
     """Log chat message"""
     pass
 

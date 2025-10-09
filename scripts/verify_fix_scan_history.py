@@ -2,11 +2,27 @@ import sqlite3, os, sys
 
 DB = os.path.abspath("dev.db")
 REQUIRED = [
-    "scan_id","product_name","brand","manufacturer","model_number",
-    "barcode","upc_gtin","category","scan_type","confidence_score",
-    "barcode_format","verdict","risk_level","recalls_found","recall_ids",
-    "agencies_checked","allergen_alerts","pregnancy_warnings","age_warnings",
-    "included_in_reports","created_at"
+    "scan_id",
+    "product_name",
+    "brand",
+    "manufacturer",
+    "model_number",
+    "barcode",
+    "upc_gtin",
+    "category",
+    "scan_type",
+    "confidence_score",
+    "barcode_format",
+    "verdict",
+    "risk_level",
+    "recalls_found",
+    "recall_ids",
+    "agencies_checked",
+    "allergen_alerts",
+    "pregnancy_warnings",
+    "age_warnings",
+    "included_in_reports",
+    "created_at",
 ]
 
 conn = sqlite3.connect(DB)
@@ -23,16 +39,16 @@ missing = [c for c in REQUIRED if c not in have]
 
 # Add any missing columns with safe defaults
 defaults = {
-    "confidence_score":"REAL DEFAULT 1.0",
-    "verdict":"TEXT DEFAULT 'safe'",
-    "risk_level":"TEXT DEFAULT 'low'",
-    "recalls_found":"INTEGER DEFAULT 0",
-    "recall_ids":"TEXT DEFAULT '[]'",
-    "agencies_checked":"INTEGER DEFAULT 39",
-    "allergen_alerts":"TEXT DEFAULT '[]'",
-    "pregnancy_warnings":"TEXT DEFAULT '[]'",
-    "age_warnings":"TEXT DEFAULT '[]'",
-    "included_in_reports":"INTEGER DEFAULT 0",
+    "confidence_score": "REAL DEFAULT 1.0",
+    "verdict": "TEXT DEFAULT 'safe'",
+    "risk_level": "TEXT DEFAULT 'low'",
+    "recalls_found": "INTEGER DEFAULT 0",
+    "recall_ids": "TEXT DEFAULT '[]'",
+    "agencies_checked": "INTEGER DEFAULT 39",
+    "allergen_alerts": "TEXT DEFAULT '[]'",
+    "pregnancy_warnings": "TEXT DEFAULT '[]'",
+    "age_warnings": "TEXT DEFAULT '[]'",
+    "included_in_reports": "INTEGER DEFAULT 0",
 }
 for c in missing:
     sqltype = defaults.get(c, "TEXT")

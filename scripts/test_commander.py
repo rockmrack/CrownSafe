@@ -9,7 +9,7 @@ import json
 from datetime import date
 
 # --- Add project root to Python's path ---
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
@@ -17,8 +17,7 @@ from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
 from core_infra.database import Base, engine, SessionLocal, RecallDB
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 # --- Test Configuration ---
@@ -26,6 +25,7 @@ logging.basicConfig(
 # Johnson's Baby Shampoo 15oz: UPC 381370037248
 TEST_BARCODE = "381370037248"
 # --------------------------
+
 
 async def main():
     logger = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ async def main():
             hazard="Integration test hazard",
             remedy="Integration test remedy",
             product_name="Johnson and Johnson Baby Shampoo, 15 Ounce",
-            url="http://example.com/recall"
+            url="http://example.com/recall",
         )
         db.add(test_recall)
         db.commit()
@@ -53,8 +53,7 @@ async def main():
     try:
         # 2. Initialize the live Commander (with real sub-agents)
         commander = BabyShieldCommanderLogic(
-            agent_id="golden_master_commander",
-            logger_instance=logger
+            agent_id="golden_master_commander", logger_instance=logger
         )
         logger.info("Commander initialized with live sub-agents.")
 
@@ -68,22 +67,24 @@ async def main():
         logger.info("Commander workflow completed.")
 
         # 5. Print and validate the golden master output
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("          GOLDEN MASTER TEST RESULT")
-        print("="*60)
+        print("=" * 60)
         print(json.dumps(final_result, indent=2))
 
         status = final_result.get("status")
         if status == "COMPLETED":
             risk_level = final_result.get("data", {}).get("risk_level")
             if risk_level and risk_level != "None":
-                print("\n" + "="*60)
-                print("✅✅✅ GOLDEN MASTER TEST PASSED: Live end-to-end baby product workflow succeeded.")
+                print("\n" + "=" * 60)
+                print(
+                    "✅✅✅ GOLDEN MASTER TEST PASSED: Live end-to-end baby product workflow succeeded."
+                )
             else:
-                print("\n" + "="*60)
+                print("\n" + "=" * 60)
                 print(f"❌ TEST FAILED: Workflow completed but risk_level was '{risk_level}'.")
         else:
-            print("\n" + "="*60)
+            print("\n" + "=" * 60)
             print(f"❌ TEST FAILED: Workflow failed with status '{status}'.")
             print(f"Error: {final_result.get('error')}")
 
@@ -95,8 +96,6 @@ async def main():
 
     print("--- Test Complete ---")
 
+
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-

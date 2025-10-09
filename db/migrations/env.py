@@ -6,7 +6,7 @@ import os
 import sys
 
 # Add project root to Python path (two levels up from db/migrations/)
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
@@ -32,15 +32,17 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+
 def get_database_url():
     """Get database URL from environment or config"""
     # First try environment variable (for Docker/production)
-    database_url = os.getenv('DATABASE_URL')
+    database_url = os.getenv("DATABASE_URL")
     if database_url:
         return database_url
-    
+
     # Fallback to config file
-    return config.get_main_option('sqlalchemy.url')
+    return config.get_main_option("sqlalchemy.url")
+
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
@@ -74,8 +76,8 @@ def run_migrations_online() -> None:
 
     """
     configuration = config.get_section(config.config_ini_section)
-    configuration['sqlalchemy.url'] = get_database_url()
-    
+    configuration["sqlalchemy.url"] = get_database_url()
+
     connectable = engine_from_config(
         configuration,
         prefix="sqlalchemy.",
@@ -83,9 +85,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

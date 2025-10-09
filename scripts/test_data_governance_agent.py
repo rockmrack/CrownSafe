@@ -7,18 +7,21 @@ import logging
 import json
 
 # --- Add project root to Python's path ---
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
 from agents.governance.datagovernance_agent.agent_logic import DataGovernanceAgentLogic
 from core_infra.database import Base, engine, SessionLocal, User, create_tables, drop_tables
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # --- Test Configuration ---
 TEST_USER_ID_TO_DELETE = 99
 # --------------------------
+
 
 async def main():
     """Main function to run the DataGovernanceAgent test."""
@@ -29,7 +32,9 @@ async def main():
     drop_tables()
     create_tables()
     with SessionLocal() as db:
-        user_to_delete = User(id=TEST_USER_ID_TO_DELETE, email="delete.me@example.com", is_subscribed=True)
+        user_to_delete = User(
+            id=TEST_USER_ID_TO_DELETE, email="delete.me@example.com", is_subscribed=True
+        )
         db.add(user_to_delete)
         db.commit()
     logger.info(f"Database seeded with user to be deleted, ID: {TEST_USER_ID_TO_DELETE}")
@@ -40,12 +45,7 @@ async def main():
         logger.info("Agent logic initialized.")
 
         # 3. Define the task payload.
-        task_inputs = {
-            "action": "delete_user_data",
-            "payload": {
-                "user_id": TEST_USER_ID_TO_DELETE
-            }
-        }
+        task_inputs = {"action": "delete_user_data", "payload": {"user_id": TEST_USER_ID_TO_DELETE}}
         logger.info(f"Created task with inputs: {task_inputs}")
 
         # 4. Process the task.
@@ -54,9 +54,9 @@ async def main():
         logger.info("Task processing finished.")
 
         # 5. Analyze and print the result.
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("          AGENT TEST RESULT")
-        print("="*50)
+        print("=" * 50)
         print(json.dumps(result, indent=2))
 
         # 6. Verify the user was deleted from the database.
@@ -69,17 +69,21 @@ async def main():
 
         # 7. Validate the final result.
         if result.get("status") == "COMPLETED" and user_was_deleted:
-            print("\n" + "="*50)
+            print("\n" + "=" * 50)
             print(f"✅✅✅ TEST PASSED: Agent successfully deleted the user's data from the database.")
         else:
-            print("\n" + "="*50)
+            print("\n" + "=" * 50)
             if not user_was_deleted:
-                print(f"❌ TEST FAILED: The agent did not correctly delete the user from the database.")
+                print(
+                    f"❌ TEST FAILED: The agent did not correctly delete the user from the database."
+                )
             else:
-                print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")
+                print(
+                    f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}"
+                )
 
     except Exception as e:
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print(f"❌ TEST FAILED: An unexpected error occurred: {e}")
 
     finally:
@@ -88,6 +92,7 @@ async def main():
         logger.info("Database tables dropped.")
 
     print("--- Test Complete ---")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

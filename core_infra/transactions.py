@@ -13,12 +13,13 @@ import asyncio
 
 logger = logging.getLogger(__name__)
 
+
 @contextmanager
 def transaction(db: Session, read_only: bool = False):
     """
     Context manager for database transactions
     Ensures commit or rollback
-    
+
     Usage:
         with transaction(db) as session:
             user = User(email="test@example.com")
@@ -28,9 +29,9 @@ def transaction(db: Session, read_only: bool = False):
     try:
         if read_only:
             db.execute("SET TRANSACTION READ ONLY")
-        
+
         yield db
-        
+
         if not read_only:
             db.commit()
             logger.debug("Transaction committed successfully")
@@ -62,17 +63,17 @@ class TransactionManager:
     """
     Advanced transaction management with retry logic
     """
-    
+
     def __init__(self, db: Session, max_retries: int = 3):
         self.db = db
         self.max_retries = max_retries
-    
+
     def execute(self, func: Callable, *args, **kwargs) -> Any:
         """
         Execute function within transaction with retry logic
         """
         last_exception = None
-        
+
         for attempt in range(self.max_retries):
             try:
                 with transaction(self.db) as session:
@@ -81,38 +82,33 @@ class TransactionManager:
             except SQLAlchemyError as e:
                 last_exception = e
                 logger.warning(f"Transaction attempt {attempt + 1} failed: {str(e)}")
-                
+
                 # Check if error is retryable
                 if not self._is_retryable_error(e):
                     raise
-                
+
                 # Exponential backoff
                 if attempt < self.max_retries - 1:
-                    wait_time = 2 ** attempt * 0.1
+                    wait_time = 2**attempt * 0.1
                     asyncio.sleep(wait_time)
-        
+
         # All retries exhausted
         logger.error(f"All transaction attempts failed: {str(last_exception)}")
         raise last_exception
-    
+
     def _is_retryable_error(self, error: SQLAlchemyError) -> bool:
         """
         Check if error is retryable
         """
         error_str = str(error).lower()
-        retryable_errors = [
-            "deadlock",
-            "lock timeout",
-            "connection lost",
-            "connection reset"
-        ]
+        retryable_errors = ["deadlock", "lock timeout", "connection lost", "connection reset"]
         return any(err in error_str for err in retryable_errors)
 
 
 def transactional(read_only: bool = False, max_retries: int = 1):
     """
     Decorator for transactional methods
-    
+
     Usage:
         @transactional()
         def create_user(db: Session, email: str):
@@ -120,6 +116,7 @@ def transactional(read_only: bool = False, max_retries: int = 1):
             db.add(user)
             return user
     """
+
     def decorator(func):
         @wraps(func)
         def wrapper(db: Session, *args, **kwargs):
@@ -131,7 +128,9 @@ def transactional(read_only: bool = False, max_retries: int = 1):
                     if attempt == max_retries - 1:
                         raise
                     logger.warning(f"Transaction retry {attempt + 1}: {str(e)}")
+
         return wrapper
+
     return decorator
 
 
@@ -139,25 +138,25 @@ class OptimisticLock:
     """
     Optimistic locking for preventing lost updates
     """
-    
+
     @staticmethod
     def check_version(entity, expected_version: int):
         """
         Check if entity version matches expected
         """
-        if hasattr(entity, 'version'):
+        if hasattr(entity, "version"):
             if entity.version != expected_version:
                 raise ValueError(
                     f"Version mismatch: expected {expected_version}, "
                     f"got {entity.version}. Data may have been modified."
                 )
-    
+
     @staticmethod
     def increment_version(entity):
         """
         Increment entity version
         """
-        if hasattr(entity, 'version'):
+        if hasattr(entity, "version"):
             entity.version += 1
         else:
             entity.version = 1
@@ -167,20 +166,20 @@ class DistributedLock:
     """
     Distributed locking using Redis for preventing race conditions
     """
-    
+
     def __init__(self, redis_client, lock_name: str, timeout: int = 10):
         self.redis = redis_client
         self.lock_name = f"lock:{lock_name}"
         self.timeout = timeout
         self.lock = None
-    
+
     def __enter__(self):
         import time
         import uuid
-        
+
         # Generate unique lock value
         lock_value = str(uuid.uuid4())
-        
+
         # Try to acquire lock
         start_time = time.time()
         while time.time() - start_time < self.timeout:
@@ -188,9 +187,9 @@ class DistributedLock:
                 self.lock = lock_value
                 return self
             time.sleep(0.1)
-        
+
         raise TimeoutError(f"Could not acquire lock: {self.lock_name}")
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.lock:
             # Only release if we own the lock
@@ -211,10 +210,10 @@ def bulk_operation(db: Session, items: list, operation: Callable, batch_size: in
     total = len(items)
     processed = 0
     errors = []
-    
+
     for i in range(0, total, batch_size):
-        batch = items[i:i + batch_size]
-        
+        batch = items[i : i + batch_size]
+
         try:
             with transaction(db) as session:
                 for item in batch:
@@ -225,10 +224,10 @@ def bulk_operation(db: Session, items: list, operation: Callable, batch_size: in
             logger.error(f"Batch {i//batch_size + 1} failed: {str(e)}")
             errors.append((i, str(e)))
             # Continue with next batch
-    
+
     if errors:
         logger.warning(f"Bulk operation completed with {len(errors)} errors")
-    
+
     return processed, errors
 
 
@@ -251,19 +250,19 @@ class Saga:
     """
     Saga pattern for distributed transactions
     """
-    
+
     def __init__(self):
         self.steps = []
         self.compensations = []
         self.completed_steps = []
-    
+
     def add_step(self, step_func: Callable, compensation_func: Callable):
         """
         Add a step with its compensation
         """
         self.steps.append(step_func)
         self.compensations.append(compensation_func)
-    
+
     async def execute(self):
         """
         Execute all steps, compensate on failure
@@ -273,13 +272,13 @@ class Saga:
                 result = await step()
                 self.completed_steps.append((i, result))
                 logger.info(f"Saga step {i + 1} completed")
-            
+
             return True
         except Exception as e:
             logger.error(f"Saga failed at step {len(self.completed_steps)}: {str(e)}")
             await self._compensate()
             raise
-    
+
     async def _compensate(self):
         """
         Run compensations in reverse order
@@ -295,22 +294,23 @@ class Saga:
 
 # Example usage functions
 
+
 @transactional()
 def create_user_with_profile(db: Session, email: str, name: str):
     """
     Example: Create user and profile in single transaction
     """
     from core_infra.database import User
-    
+
     # Create user
     user = User(email=email)
     db.add(user)
     db.flush()  # Get user ID without committing
-    
+
     # Create profile (would fail and rollback if error)
     # profile = UserProfile(user_id=user.id, name=name)
     # db.add(profile)
-    
+
     return user
 
 
@@ -318,8 +318,9 @@ def safe_bulk_insert(db: Session, records: list):
     """
     Example: Bulk insert with transaction management
     """
+
     def insert_record(session, record):
         # Your insert logic here
         session.add(record)
-    
+
     return bulk_operation(db, records, insert_record)

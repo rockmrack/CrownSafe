@@ -82,7 +82,7 @@ jobs:
 
   dependency-review:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.repository_owner == 'BabyShield' && github.event.repository.private == false
     steps:
       - uses: actions/checkout@v4
       

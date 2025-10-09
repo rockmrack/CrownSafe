@@ -89,7 +89,7 @@ def main() -> int:
             ),
         )
 
-    print("SUMMARY:" , json.dumps(results, indent=2))
+    print("SUMMARY:", json.dumps(results, indent=2))
     # Exit non-zero if any critical failed
     failures = [k for k, v in results.items() if v >= 400]
     return 0 if not failures else 1
@@ -97,5 +97,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
-

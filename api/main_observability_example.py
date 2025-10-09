@@ -19,9 +19,9 @@ from api.logging_setup import setup_json_logging
 from api import errors
 from api.rate_limiting import (
     init_rate_limiter,
-    close_rate_limiter, 
+    close_rate_limiter,
     rate_limit_exceeded_handler,
-    RateLimiters
+    RateLimiters,
 )
 from api.routes import system
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -30,6 +30,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 # LIFESPAN MANAGER (replaces @app.on_event decorators)
 # ============================================================================
 
+
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
     """
@@ -37,71 +38,70 @@ async def app_lifespan(app: FastAPI):
     """
     # Startup
     import logging
+
     logger = logging.getLogger(__name__)
     logger.info("Starting up...")
-    
+
     # Initialize rate limiter
     rate_limit_enabled = await init_rate_limiter()
     if rate_limit_enabled:
         logger.info("✅ Rate limiting enabled")
     else:
         logger.warning("⚠️ Rate limiting disabled - Redis not available")
-    
+
     yield
-    
+
     # Shutdown
     import logging
+
     logger = logging.getLogger(__name__)
     logger.info("Shutting down...")
     await close_rate_limiter()
     logger.info("✅ Cleanup completed")
 
+
 # ============================================================================
 # CREATE APP WITH OBSERVABILITY
 # ============================================================================
+
 
 def create_app_with_observability() -> FastAPI:
     """
     Create FastAPI app with all observability features
     """
-    
+
     # 1. Setup JSON logging FIRST
     setup_json_logging(os.getenv("LOG_LEVEL", "INFO"))
-    
+
     # 2. Create app with lifespan
-    app = FastAPI(
-        title="BabyShield API",
-        version="1.2.0",
-        lifespan=app_lifespan
-    )
-    
+    app = FastAPI(title="BabyShield API", version="1.2.0", lifespan=app_lifespan)
+
     # 3. Add middleware (order matters!)
     # Correlation ID middleware
-    app.add_middleware(
-        CorrelationIdMiddleware,
-        api_version=os.getenv("API_VERSION", "v1.2.0")
-    )
-    
+    app.add_middleware(CorrelationIdMiddleware, api_version=os.getenv("API_VERSION", "v1.2.0"))
+
     # Access logging middleware
     app.add_middleware(AccessLogMiddleware)
-    
+
     # 4. Add error handlers
     app.add_exception_handler(RequestValidationError, errors.handle_request_validation_error)
     app.add_exception_handler(StarletteHTTPException, errors.handle_http_exception)
     app.add_exception_handler(Exception, errors.handle_generic_exception)
-    
+
     # Rate limit error handler
     from fastapi_limiter import RateLimitExceeded
+
     app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
-    
+
     # 5. Add Prometheus metrics
     instrumentator = Instrumentator()
     instrumentator.instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
-    
+
     # 6. Add system routes
     app.include_router(system.router, tags=["system"])
-    
+
     return app
+
 
 # ============================================================================
 # EXAMPLE: ADD RATE LIMITING TO EXISTING ROUTES
@@ -169,12 +169,13 @@ async def search_advanced(...):
 if __name__ == "__main__":
     # Create app with observability
     app = create_app_with_observability()
-    
+
     # Add a test route
     @app.get("/test")
     async def test_endpoint():
         return {"message": "Observability is working!", "ok": True}
-    
+
     # Run with uvicorn
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

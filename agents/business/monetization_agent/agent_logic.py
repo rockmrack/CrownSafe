@@ -13,10 +13,12 @@ logger = logging.getLogger(__name__)
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 FAMILY_TIER_PRICE_ID = "price_1RmzVqGvt4HMLy3kEwtI8AtZ"  # Replace with your actual price
 
+
 class MonetizationAgentLogic:
     """
     Manages user monetization, Stripe integration, and subscription state.
     """
+
     def __init__(self, agent_id: str):
         self.agent_id = agent_id
         self.logger = logger
@@ -40,8 +42,7 @@ class MonetizationAgentLogic:
 
                 # Create customer on Stripe
                 customer = stripe.Customer.create(
-                    email=user.email,
-                    metadata={"babyshield_user_id": user.id}
+                    email=user.email, metadata={"babyshield_user_id": user.id}
                 )
                 user.stripe_customer_id = customer.id
                 db.commit()
@@ -81,13 +82,15 @@ class MonetizationAgentLogic:
                 # Now create the Checkout Session
                 checkout_session = stripe.checkout.Session.create(
                     customer=user.stripe_customer_id,
-                    payment_method_types=['card'],
-                    line_items=[{'price': price_id, 'quantity': 1}],
-                    mode='subscription',
-                    success_url='https://babyshield.com/subscribe/success?session_id={CHECKOUT_SESSION_ID}',
-                    cancel_url='https://babyshield.com/subscribe/cancel',
+                    payment_method_types=["card"],
+                    line_items=[{"price": price_id, "quantity": 1}],
+                    mode="subscription",
+                    success_url="https://babyshield.com/subscribe/success?session_id={CHECKOUT_SESSION_ID}",
+                    cancel_url="https://babyshield.com/subscribe/cancel",
                 )
-                self.logger.info(f"Created Stripe checkout session for user {user.id}: {checkout_session.url}")
+                self.logger.info(
+                    f"Created Stripe checkout session for user {user.id}: {checkout_session.url}"
+                )
                 return {"status": "success", "checkout_url": checkout_session.url}
 
         except Exception as e:
@@ -107,10 +110,19 @@ class MonetizationAgentLogic:
 
             subscriptions = stripe.Subscription.list(customer=user.stripe_customer_id)
             for sub in subscriptions.data:
-                if sub.status == 'active':
-                    sub_tier = "family_tier" if sub.items.data[0].price.id == FAMILY_TIER_PRICE_ID else "standard"
+                if sub.status == "active":
+                    sub_tier = (
+                        "family_tier"
+                        if sub.items.data[0].price.id == FAMILY_TIER_PRICE_ID
+                        else "standard"
+                    )
                     self.logger.info(f"User {user.id} has an active '{sub_tier}' subscription.")
-                    return {"status": "success", "tier": sub_tier, "is_active": True, "stripe_subscription_id": sub.id}
+                    return {
+                        "status": "success",
+                        "tier": sub_tier,
+                        "is_active": True,
+                        "stripe_subscription_id": sub.id,
+                    }
 
             self.logger.info(f"User {user.id} has no active subscriptions.")
             return {"status": "success", "tier": "free", "is_active": False}
@@ -131,7 +143,7 @@ class MonetizationAgentLogic:
 
             subscriptions = stripe.Subscription.list(customer=user.stripe_customer_id)
             for sub in subscriptions.data:
-                if sub.status == 'active':
+                if sub.status == "active":
                     stripe.Subscription.delete(sub.id)
                     self.logger.info(f"Cancelled Stripe subscription {sub.id} for user {user.id}")
                     return {"status": "success", "cancelled_subscription_id": sub.id}

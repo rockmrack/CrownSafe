@@ -5,7 +5,8 @@ con = sqlite3.connect(DB)
 cur = con.cursor()
 
 # bare-bones scan storage (names kept generic so we don't collide)
-cur.execute("""
+cur.execute(
+    """
 CREATE TABLE IF NOT EXISTS barcode_scans (
   trace_id TEXT PRIMARY KEY,
   barcode TEXT,
@@ -14,10 +15,12 @@ CREATE TABLE IF NOT EXISTS barcode_scans (
   created_at TEXT,
   raw_json TEXT
 )
-""")
+"""
+)
 
 # chat explanations storage (all TEXT for SQLite friendliness)
-cur.execute("""
+cur.execute(
+    """
 CREATE TABLE IF NOT EXISTS chat_explanations (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   scan_id TEXT,
@@ -28,7 +31,8 @@ CREATE TABLE IF NOT EXISTS chat_explanations (
   disclaimer TEXT,
   created_at TEXT
 )
-""")
+"""
+)
 
 con.commit()
 con.close()

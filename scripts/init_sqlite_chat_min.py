@@ -1,9 +1,11 @@
 import os, sqlite3
+
 DB = os.path.abspath("dev.db")
 con = sqlite3.connect(DB)
 cur = con.cursor()
 
-cur.executescript("""
+cur.executescript(
+    """
 CREATE TABLE IF NOT EXISTS chat_requests (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     scan_id TEXT,
@@ -27,7 +29,8 @@ CREATE TABLE IF NOT EXISTS conversation_logs (
     meta_json TEXT,
     created_at TEXT
 );
-""")
+"""
+)
 
 con.commit()
 con.close()

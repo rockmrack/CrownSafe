@@ -3,12 +3,13 @@
 import logging
 from typing import Optional, Dict, Any
 from fastapi import WebSocket, HTTPException, status
-import jwt # PyJWT library, install with: pip install pyjwt
+import jwt  # PyJWT library, install with: pip install pyjwt
 
 # Import settings and logger from config
 from .config import settings, logger
 
 # --- Placeholder Functions for Authentication ---
+
 
 async def authenticate_connection(websocket: WebSocket, agent_id: str) -> bool:
     """
@@ -42,7 +43,8 @@ async def authenticate_connection(websocket: WebSocket, agent_id: str) -> bool:
     #     return False
 
     logger.debug(f"Authentication placeholder for agent '{agent_id}': Returning True.")
-    return True # Placeholder - REMOVE IN PRODUCTION
+    return True  # Placeholder - REMOVE IN PRODUCTION
+
 
 def decode_jwt_token(token: str) -> Dict[str, Any]:
     """
@@ -50,11 +52,7 @@ def decode_jwt_token(token: str) -> Dict[str, Any]:
     Raises jwt.ExpiredSignatureError or jwt.InvalidTokenError on failure.
     """
     try:
-        payload = jwt.decode(
-            token,
-            settings.JWT_SECRET_KEY,
-            algorithms=[settings.JWT_ALGORITHM]
-        )
+        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
         return payload
     except jwt.ExpiredSignatureError:
         logger.warning("JWT decode failed: Token has expired.")
@@ -94,23 +92,21 @@ async def validate_message_authentication(message: Dict[str, Any]) -> bool:
     #     return False
 
     logger.debug("Message authentication placeholder: Returning True.")
-    return True # Placeholder - REMOVE IN PRODUCTION
+    return True  # Placeholder - REMOVE IN PRODUCTION
+
 
 # --- Example function to generate a token (for testing/development ONLY) ---
 # DO NOT use this simplistic generation in production. Use a proper identity provider.
 def generate_test_jwt(agent_id: str) -> str:
     """Generates a simple JWT for testing purposes."""
     import datetime
+
     payload = {
-        'sub': agent_id,
-        'iat': datetime.datetime.utcnow(),
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1), # Token valid for 1 hour
-        'iss': settings.SERVICE_NAME # Issuer
+        "sub": agent_id,
+        "iat": datetime.datetime.utcnow(),
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),  # Token valid for 1 hour
+        "iss": settings.SERVICE_NAME  # Issuer
         # Add other claims like scope ('scp') if needed
     }
-    token = jwt.encode(
-        payload,
-        settings.JWT_SECRET_KEY,
-        algorithm=settings.JWT_ALGORITHM
-    )
+    token = jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return token

@@ -2,6 +2,7 @@ from __future__ import annotations
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
+
 class PregnancyCheckIn(BaseModel):
     schema: str = "PregnancyCheck@v1"
     product_name: Optional[str] = None
@@ -10,15 +11,18 @@ class PregnancyCheckIn(BaseModel):
     flags: List[str] = Field(default_factory=list)
     jurisdiction: Optional[dict] = None
 
+
 class RiskItem(BaseModel):
-    code: str           # e.g., "soft_cheese_pasteurisation", "unpasteurised_dairy"
-    reason: str         # short human reason
-    severity: str       # "low"|"moderate"|"high"
+    code: str  # e.g., "soft_cheese_pasteurisation", "unpasteurised_dairy"
+    reason: str  # short human reason
+    severity: str  # "low"|"moderate"|"high"
+
 
 class PregnancyCheckOut(BaseModel):
     schema: str = "PregnancyCheckOut@v1"
     risks: List[RiskItem] = Field(default_factory=list)
     notes: Optional[str] = None
+
 
 class AllergyCheckIn(BaseModel):
     schema: str = "AllergyCheck@v1"
@@ -26,10 +30,12 @@ class AllergyCheckIn(BaseModel):
     profile_allergies: List[str] = Field(default_factory=list)
     product_name: Optional[str] = None
 
+
 class AllergyHit(BaseModel):
     allergen: str
     present: bool
     evidence: Optional[str] = None  # e.g., "ingredient_list", "may_contains_label"
+
 
 class AllergyCheckOut(BaseModel):
     schema: str = "AllergyCheckOut@v1"
@@ -48,8 +54,8 @@ class RecallDetailsIn(BaseModel):
 
 class RecallRecord(BaseModel):
     id: str
-    agency: str        # "CPSC" | "FDA" | "EU Safety Gate" | ...
-    date: str          # ISO
+    agency: str  # "CPSC" | "FDA" | "EU Safety Gate" | ...
+    date: str  # ISO
     url: Optional[str] = None
     title: Optional[str] = None
     hazard: Optional[str] = None

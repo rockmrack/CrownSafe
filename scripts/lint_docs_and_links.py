@@ -32,26 +32,31 @@ MD_FILES = [
 BASE = os.getenv("BABYSHIELD_BASE_URL", "https://babyshield.cureviax.ai")
 REQUIRED_200 = [f"{BASE}/legal/privacy", f"{BASE}/legal/terms", f"{BASE}/legal/data-deletion"]
 
+
 def ok(cond, msg):
     """Print status and exit if condition is false"""
     print(("✅ " if cond else "❌ ") + msg)
     if not cond:
         sys.exit(1)
 
+
 def load_json(path):
     """Load and parse JSON file"""
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
 
 def load_yaml(path):
     """Load and parse YAML file"""
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
+
 def find_links(text):
     """Find all HTTP(S) links in text"""
     # crude but effective: http(s) links
     return re.findall(r"https?://[^\s)>\]]+", text)
+
 
 def http_ok(url, expect=200, timeout=15):
     """Check if URL returns expected status code"""
@@ -61,11 +66,12 @@ def http_ok(url, expect=200, timeout=15):
     except Exception:
         return False
 
+
 def main():
     """Main validation function"""
     print("🔍 Starting docs and links validation...")
     print("=" * 60)
-    
+
     # JSON lint
     print("\n📋 Validating JSON files...")
     for rel in JSON_FILES:
@@ -95,10 +101,10 @@ def main():
         if not os.path.exists(p):
             print(f"⚠️  {rel} not found, skipping")
             continue
-        
+
         with open(p, "r", encoding="utf-8") as f:
             txt = f.read()
-        
+
         links = find_links(txt)
         if links:
             print(f"   Checking {len(links)} links in {rel}...")
@@ -119,6 +125,7 @@ def main():
     print("\n" + "=" * 60)
     print("🎉 Docs & links look good.")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

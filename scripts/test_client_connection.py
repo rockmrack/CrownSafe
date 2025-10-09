@@ -20,11 +20,14 @@ from core_infra.mcp_client_library.exceptions import MCPClientError, ConnectionE
 
 # --- Configuration ---
 # Configure basic logging for the script
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger("TestClientScript")
 
 # Define Agent ID for this test client
 TEST_AGENT_ID = "test_agent_001"
+
 
 # --- Message Handler ---
 async def handle_incoming_message(message: Dict[str, Any]):
@@ -36,6 +39,7 @@ async def handle_incoming_message(message: Dict[str, Any]):
     payload = message.get("payload", {})
     logger.info(f"Received message of type '{message_type}' from '{sender}': {payload}")
     # Add specific logic here to handle different message types if needed for testing
+
 
 # --- Main Test Function ---
 async def run_test_client():
@@ -65,23 +69,24 @@ async def run_test_client():
             logger.info("Client appears connected. Waiting for 15 seconds...")
             # Optional: Send a test message (e.g., register with discovery)
             try:
-                 logger.info("Attempting to send DISCOVERY_REGISTER message...")
-                 await client.send_discovery_register(
-                     agent_type="TEST_CLIENT",
-                     capabilities=[{"name": "test_capability", "input_schema": {}, "output_schema": {}}]
-                 )
-                 logger.info("DISCOVERY_REGISTER message sent.")
+                logger.info("Attempting to send DISCOVERY_REGISTER message...")
+                await client.send_discovery_register(
+                    agent_type="TEST_CLIENT",
+                    capabilities=[
+                        {"name": "test_capability", "input_schema": {}, "output_schema": {}}
+                    ],
+                )
+                logger.info("DISCOVERY_REGISTER message sent.")
             except Exception as send_e:
-                 logger.error(f"Error sending register message: {send_e}")
+                logger.error(f"Error sending register message: {send_e}")
 
-            await asyncio.sleep(15) # Keep connection open for a while
+            await asyncio.sleep(15)  # Keep connection open for a while
             logger.info("Wait finished.")
         else:
             logger.warning("Client did not connect successfully within the expected time.")
             # Check if the connect task raised an exception
             if connect_task.done() and connect_task.exception():
-                 logger.error(f"Connection task failed: {connect_task.exception()}")
-
+                logger.error(f"Connection task failed: {connect_task.exception()}")
 
     except ConnectionError as e:
         logger.error(f"Connection failed permanently: {e}")
@@ -91,15 +96,15 @@ async def run_test_client():
         logger.error(f"An unexpected error occurred: {e}", exc_info=True)
     finally:
         logger.info("Attempting to disconnect client...")
-        if client and client.is_connected: # Check if client exists and is connected
-             await client.disconnect()
+        if client and client.is_connected:  # Check if client exists and is connected
+            await client.disconnect()
         # Ensure the connection task is cancelled if it's still running
-        if 'connect_task' in locals() and not connect_task.done():
-             connect_task.cancel()
-             try:
-                 await connect_task # Allow cancellation to propagate
-             except asyncio.CancelledError:
-                 logger.info("Connection task cancelled.")
+        if "connect_task" in locals() and not connect_task.done():
+            connect_task.cancel()
+            try:
+                await connect_task  # Allow cancellation to propagate
+            except asyncio.CancelledError:
+                logger.info("Connection task cancelled.")
         logger.info("Client test finished.")
 
 

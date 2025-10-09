@@ -10,10 +10,12 @@ from core_infra.database import get_db_session, User
 
 logger = logging.getLogger(__name__)
 
+
 class DataGovernanceAgentLogic:
     """
     Handles data privacy tasks, such as user data deletion, to comply with regulations.
     """
+
     def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
@@ -24,7 +26,7 @@ class DataGovernanceAgentLogic:
         Finds a user in the database and deletes their entire record.
         This is a destructive action and should be handled with care.
         """
-        await asyncio.sleep(0.1) # Simulate I/O delay
+        await asyncio.sleep(0.1)  # Simulate I/O delay
         self.logger.info(f"Processing data deletion request for user_id: {user_id}")
         try:
             with get_db_session() as db:
@@ -33,7 +35,7 @@ class DataGovernanceAgentLogic:
                     self.logger.warning(f"User with id {user_id} not found for deletion.")
                     # In this case, the goal is achieved (no data exists), so we return success.
                     return True
-                
+
                 db.delete(user)
                 db.commit()
                 self.logger.info(f"Successfully deleted all data for user_id: {user_id}.")
@@ -60,7 +62,9 @@ class DataGovernanceAgentLogic:
             if success:
                 return {
                     "status": "COMPLETED",
-                    "result": {"message": f"Data deletion process completed for user_id: {user_id}."}
+                    "result": {
+                        "message": f"Data deletion process completed for user_id: {user_id}."
+                    },
                 }
             else:
                 return {"status": "FAILED", "error": "Failed to process data deletion request."}

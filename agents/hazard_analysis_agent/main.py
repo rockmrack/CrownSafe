@@ -7,10 +7,13 @@ import time
 
 from .agent_logic import HazardAnalysisLogic
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "hazard_analysis_agent_01"
+
 
 class HazardAnalysisAgent:
     """
@@ -18,6 +21,7 @@ class HazardAnalysisAgent:
     Like the ProductIdentifierAgent, its logic is called directly by the Router
     in our current architecture.
     """
+
     def __init__(self):
         self.agent_id = AGENT_ID
         self.logic = HazardAnalysisLogic(agent_id=self.agent_id)
@@ -36,6 +40,7 @@ class HazardAnalysisAgent:
         self.is_running = False
         logger.info(f"Stopping {self.agent_id}...")
 
+
 def main():
     """Main function to run the agent."""
     agent = HazardAnalysisAgent()
@@ -45,6 +50,7 @@ def main():
         logger.info("Shutdown signal received.")
     finally:
         agent.stop()
+
 
 if __name__ == "__main__":
     main()

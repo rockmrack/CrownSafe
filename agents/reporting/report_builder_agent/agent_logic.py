@@ -14,6 +14,7 @@ from pathlib import Path
 
 try:
     import markdown
+
     MARKDOWN_AVAILABLE = True
 except ImportError:
     MARKDOWN_AVAILABLE = False
@@ -21,6 +22,7 @@ except ImportError:
 
 try:
     from xhtml2pdf import pisa
+
     XHTML2PDF_AVAILABLE = True
 except ImportError:
     XHTML2PDF_AVAILABLE = False
@@ -29,6 +31,7 @@ except ImportError:
 try:
     # Optional high-fidelity HTML renderer
     from weasyprint import HTML as WEASY_HTML, CSS as WEASY_CSS  # type: ignore
+
     WEASYPRINT_AVAILABLE = True
 except Exception:
     WEASYPRINT_AVAILABLE = False
@@ -37,6 +40,7 @@ except Exception:
 
 try:
     import matplotlib.pyplot as plt
+
     MATPLOTLIB_AVAILABLE = True
 except ImportError:
     MATPLOTLIB_AVAILABLE = False
@@ -44,6 +48,7 @@ except ImportError:
 
 try:
     import qrcode
+
     QRCODE_AVAILABLE = True
 except ImportError:
     QRCODE_AVAILABLE = False
@@ -51,6 +56,7 @@ except ImportError:
 
 try:
     from jinja2 import Environment, FileSystemLoader
+
     JINJA2_AVAILABLE = True
 except ImportError:
     JINJA2_AVAILABLE = False
@@ -62,7 +68,9 @@ COMPANY_NAME = "CureViaX"
 TAGLINE = "Intelligent Biomedical Research, Verified by AI"
 CONTACT_EMAIL = "support@cureviax.com"
 COMPANY_URL = "https://www.cureviax.com"
-REPORTS_OUTPUT_DIR = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")), "generated_reports")
+REPORTS_OUTPUT_DIR = os.path.join(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")), "generated_reports"
+)
 LOGO_PATH = "C:/Users/rossd/Downloads/RossNetAgents/branding/cureviax_logo.png"
 
 # CRITICAL: Define templates directory relative to this file
@@ -76,9 +84,14 @@ if not os.path.exists(REPORTS_OUTPUT_DIR):
         os.makedirs(REPORTS_OUTPUT_DIR)
         logger_rb_logic_default.info(f"Created reports output directory: {REPORTS_OUTPUT_DIR}")
     except Exception as e_mkdir:
-        logger_rb_logic_default.error(f"Failed to create reports output directory {REPORTS_OUTPUT_DIR}: {e_mkdir}", exc_info=True)
+        logger_rb_logic_default.error(
+            f"Failed to create reports output directory {REPORTS_OUTPUT_DIR}: {e_mkdir}",
+            exc_info=True,
+        )
         REPORTS_OUTPUT_DIR = os.path.abspath(os.path.dirname(__file__))
-        logger_rb_logic_default.warning(f"Falling back to report output directory: {REPORTS_OUTPUT_DIR}")
+        logger_rb_logic_default.warning(
+            f"Falling back to report output directory: {REPORTS_OUTPUT_DIR}"
+        )
 
 # Create templates directory if it doesn't exist
 if not TEMPLATES_DIR.exists():
@@ -88,6 +101,7 @@ if not TEMPLATES_DIR.exists():
     except Exception as e:
         logger_rb_logic_default.error(f"Failed to create templates directory: {e}", exc_info=True)
 
+
 class MessageType(Enum):
     TASK_ASSIGN = "TASK_ASSIGN"
     TASK_COMPLETE = "TASK_COMPLETE"
@@ -95,32 +109,48 @@ class MessageType(Enum):
     DISCOVERY_ACK = "DISCOVERY_ACK"
     PONG = "PONG"
 
+
 # --- Utilities ---
 def escape_html(text):
     import html
+
     return html.escape(str(text)) if text else ""
+
 
 def html_img_tag(path, width=180, style="margin-bottom:18px;"):
     local_url = "file:///" + path.replace("\\", "/")
     return f'<img src="{local_url}" width="{width}" style="{style}" alt="CureViaX Logo">'
 
+
 def markdown_to_html(md):
-    return markdown.markdown(md, extensions=[
-        'tables', 'fenced_code', 'sane_lists', 'nl2br', 'extra', 'toc', 'attr_list', 'md_in_html', 'def_list'
-    ])
+    return markdown.markdown(
+        md,
+        extensions=[
+            "tables",
+            "fenced_code",
+            "sane_lists",
+            "nl2br",
+            "extra",
+            "toc",
+            "attr_list",
+            "md_in_html",
+            "def_list",
+        ],
+    )
+
 
 def generate_adverse_event_chart(top_reactions, output_dir, basename):
     if not top_reactions or not isinstance(top_reactions, list) or len(top_reactions) == 0:
         return None
     try:
-        labels = [r.get('term') or r.get('reaction') or "Unknown" for r in top_reactions][:10]
-        counts = [int(r.get('count', 0)) for r in top_reactions][:10]
+        labels = [r.get("term") or r.get("reaction") or "Unknown" for r in top_reactions][:10]
+        counts = [int(r.get("count", 0)) for r in top_reactions][:10]
         fig, ax = plt.subplots(figsize=(6, 3))
         bars = ax.bar(labels, counts, color="#3071B8", alpha=0.85)
-        ax.set_title("Top Adverse Reactions (openFDA)", fontsize=13, weight='bold')
+        ax.set_title("Top Adverse Reactions (openFDA)", fontsize=13, weight="bold")
         ax.set_xlabel("Reaction")
         ax.set_ylabel("Number of Reports")
-        plt.xticks(rotation=22, ha='right')
+        plt.xticks(rotation=22, ha="right")
         plt.tight_layout()
         chart_path = os.path.join(output_dir, f"{basename}_ae_chart.png")
         plt.savefig(chart_path, dpi=150)
@@ -130,9 +160,12 @@ def generate_adverse_event_chart(top_reactions, output_dir, basename):
         logger_rb_logic_default.error(f"Failed to generate AE chart: {e}", exc_info=True)
         return None
 
+
 def generate_qr_code(data: str, output_dir: str, basename: str) -> Optional[str]:
     try:
-        qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=3, border=2)
+        qr = qrcode.QRCode(
+            version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=3, border=2
+        )
         qr.add_data(data)
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
@@ -143,7 +176,9 @@ def generate_qr_code(data: str, output_dir: str, basename: str) -> Optional[str]
         logger_rb_logic_default.error(f"Failed to generate QR code: {e}", exc_info=True)
         return None
 
+
 # --- Section Formatters for Research Reports ---
+
 
 def format_highlights(pubmed_articles, trials, adverse_events):
     n = len(pubmed_articles.get("articles", [])) if pubmed_articles else 0
@@ -157,6 +192,7 @@ def format_highlights(pubmed_articles, trials, adverse_events):
     </div>
     """
 
+
 def format_executive_summary(pubmed_articles, trials, adverse_events):
     n = len(pubmed_articles.get("articles", [])) if pubmed_articles else 0
     t = len(trials.get("trials_data", [])) if trials else 0
@@ -168,6 +204,7 @@ def format_executive_summary(pubmed_articles, trials, adverse_events):
     This evidence report summarises findings on the efficacy and safety of the queried intervention, using structured data from PubMed (n={n} studies), ClinicalTrials.gov (n={t} trials), and openFDA (n={aecount} top adverse reactions). Please refer to each section for a detailed, source-linked analysis.
     </p>
     """
+
 
 def format_background(goal, drug, disease):
     disease_line = f"<b>Disease Context:</b> {escape_html(disease)}." if disease else ""
@@ -184,6 +221,7 @@ def format_background(goal, drug, disease):
     <p>This report was prepared by the CureViaX platform, leveraging AI-powered biomedical research and validated data sources.</p>
     """
 
+
 def format_methods():
     return f"""
     <a name="methods"></a>
@@ -196,6 +234,7 @@ def format_methods():
     </ul>
     """
 
+
 def format_pubmed_articles(pubmed_data):
     if not pubmed_data or not isinstance(pubmed_data, dict):
         return "<h2>Literature Review</h2><p>No PubMed data available.</p>"
@@ -203,10 +242,10 @@ def format_pubmed_articles(pubmed_data):
     q_used = pubmed_data.get("query_used_for_api", "N/A")
     out = [
         '<a name="literature"></a>',
-        '<h1>2. Literature Review</h1>',
-        f'<p><b>Query Used:</b> <i>{escape_html(q_used)}</i></p>',
+        "<h1>2. Literature Review</h1>",
+        f"<p><b>Query Used:</b> <i>{escape_html(q_used)}</i></p>",
         "<table border='1' style='font-size:10pt; margin-bottom:1em;'><thead><tr>"
-        "<th>PMID</th><th>Title</th><th>Authors</th><th>Journal (Date)</th></tr></thead><tbody>"
+        "<th>PMID</th><th>Title</th><th>Authors</th><th>Journal (Date)</th></tr></thead><tbody>",
     ]
     if not articles:
         out.append("<tr><td colspan='4'>No articles found for these search criteria.</td></tr>")
@@ -214,16 +253,25 @@ def format_pubmed_articles(pubmed_data):
         for art in articles:
             a = art if isinstance(art, dict) else asdict(art)
             pmid = a.get("pmid", "N/A")
-            pmid_html = f'<a href="https://pubmed.ncbi.nlm.nih.gov/{pmid}/">{pmid}</a>' if pmid and pmid != "N/A" else pmid
+            pmid_html = (
+                f'<a href="https://pubmed.ncbi.nlm.nih.gov/{pmid}/">{pmid}</a>'
+                if pmid and pmid != "N/A"
+                else pmid
+            )
             title = escape_html(a.get("title", "N/A"))
             authors = ", ".join(a.get("authors", [])) if a.get("authors") else "N/A"
             journal = escape_html(a.get("journal", "N/A"))
             pub_date = escape_html(a.get("publication_date", "N/A"))
-            out.append(f"<tr><td>{pmid_html}</td><td>{title}</td><td>{authors}</td><td>{journal} ({pub_date})</td></tr>")
+            out.append(
+                f"<tr><td>{pmid_html}</td><td>{title}</td><td>{authors}</td><td>{journal} ({pub_date})</td></tr>"
+            )
             if a.get("abstract"):
-                out.append(f'<tr><td colspan="4"><div style="font-size:9pt;"><b>Abstract:</b> {escape_html(a["abstract"])}</div></td></tr>')
+                out.append(
+                    f'<tr><td colspan="4"><div style="font-size:9pt;"><b>Abstract:</b> {escape_html(a["abstract"])}</div></td></tr>'
+                )
     out.append("</tbody></table>")
     return "\n".join(out)
+
 
 def format_clinical_trials(trials_data):
     if not trials_data or not isinstance(trials_data, dict):
@@ -231,9 +279,9 @@ def format_clinical_trials(trials_data):
     trials = trials_data.get("trials_data", [])
     out = [
         '<a name="trials"></a>',
-        '<h1>3. Clinical Trials</h1>',
+        "<h1>3. Clinical Trials</h1>",
         "<table border='1' style='font-size:10pt; margin-bottom:1em;'><thead><tr>"
-        "<th>NCT ID</th><th>Title</th><th>Status</th><th>Condition</th><th>Intervention</th></tr></thead><tbody>"
+        "<th>NCT ID</th><th>Title</th><th>Status</th><th>Condition</th><th>Intervention</th></tr></thead><tbody>",
     ]
     if not trials:
         out.append("<tr><td colspan='5'>No clinical trials available.</td></tr>")
@@ -241,51 +289,65 @@ def format_clinical_trials(trials_data):
         for t in trials:
             tr = t if isinstance(t, dict) else asdict(t)
             nct = tr.get("nct_id", "N/A")
-            nct_html = f'<a href="{tr.get("url", "#")}" target="_blank">{nct}</a>' if nct and nct != "N/A" else nct
+            nct_html = (
+                f'<a href="{tr.get("url", "#")}" target="_blank">{nct}</a>'
+                if nct and nct != "N/A"
+                else nct
+            )
             title = escape_html(tr.get("title", "N/A"))
             status = escape_html(tr.get("status", "N/A"))
             condition = escape_html(tr.get("condition", "N/A"))
             intervention = escape_html(tr.get("intervention", "N/A"))
-            out.append(f"<tr><td>{nct_html}</td><td>{title}</td><td>{status}</td><td>{condition}</td><td>{intervention}</td></tr>")
+            out.append(
+                f"<tr><td>{nct_html}</td><td>{title}</td><td>{status}</td><td>{condition}</td><td>{intervention}</td></tr>"
+            )
     out.append("</tbody></table>")
     return "\n".join(out)
 
+
 def format_adverse_events(safety_data, chart_path=None):
-    out = [
-        '<a name="adverse_events"></a>',
-        '<h1>4. Drug Safety Profile</h1>'
-    ]
+    out = ['<a name="adverse_events"></a>', "<h1>4. Drug Safety Profile</h1>"]
     if chart_path and os.path.exists(chart_path):
-        out.append(html_img_tag(chart_path, width=360, style="margin-bottom:22px; margin-top:12px;"))
+        out.append(
+            html_img_tag(chart_path, width=360, style="margin-bottom:22px; margin-top:12px;")
+        )
     top_reactions = safety_data.get("top_adverse_reactions", []) if safety_data else []
     if not top_reactions:
         out.append("<p>No adverse event data available.</p>")
     else:
-        out.append("<table border='1' style='font-size:10pt;'><thead><tr><th>Adverse Event</th><th>Report Count</th></tr></thead><tbody>")
+        out.append(
+            "<table border='1' style='font-size:10pt;'><thead><tr><th>Adverse Event</th><th>Report Count</th></tr></thead><tbody>"
+        )
         for r in top_reactions:
-            rname = escape_html(r.get('term', r.get('reaction', 'N/A')))
-            rcnt = escape_html(r.get('count', 'N/A'))
+            rname = escape_html(r.get("term", r.get("reaction", "N/A")))
+            rcnt = escape_html(r.get("count", "N/A"))
             out.append(f"<tr><td>{rname}</td><td>{rcnt}</td></tr>")
         out.append("</tbody></table>")
     return "\n".join(out)
 
+
 def format_references(pubmed_data, trials_data):
-    refs = ['<a name="references"></a>', '<h1>References</h1>', '<ul style="font-size:9.5pt;">']
+    refs = ['<a name="references"></a>', "<h1>References</h1>", '<ul style="font-size:9.5pt;">']
     if pubmed_data and isinstance(pubmed_data, dict):
         for a in pubmed_data.get("articles", []):
             pmid = a.get("pmid", "N/A")
             title = escape_html(a.get("title", "N/A"))
             if pmid and pmid != "N/A":
-                refs.append(f'<li>PubMed: <a href="https://pubmed.ncbi.nlm.nih.gov/{pmid}/">{title} (PMID: {pmid})</a></li>')
+                refs.append(
+                    f'<li>PubMed: <a href="https://pubmed.ncbi.nlm.nih.gov/{pmid}/">{title} (PMID: {pmid})</a></li>'
+                )
     if trials_data and isinstance(trials_data, dict):
         for t in trials_data.get("trials_data", []):
             nct = t.get("nct_id", "N/A")
             title = escape_html(t.get("title", "N/A"))
             url = t.get("url", "#")
             if nct and nct != "N/A":
-                refs.append(f'<li>ClinicalTrials.gov: <a href="{url}">{title} (NCT: {nct})</a></li>')
+                refs.append(
+                    f'<li>ClinicalTrials.gov: <a href="{url}">{title} (NCT: {nct})</a></li>'
+                )
     refs.append("</ul>")
     return "\n".join(refs)
+
 
 def format_disclaimer():
     return """
@@ -295,6 +357,7 @@ def format_disclaimer():
     This report is AI-generated for informational purposes only. Not a substitute for medical advice. Contact: <a href="mailto:support@cureviax.com">support@cureviax.com</a> or <a href="https://www.cureviax.com">cureviax.com</a>.
     </div>
     """
+
 
 def format_metadata(agent_id, version, dt_str, workflow_id, pdf_path, pubmed, trials):
     meta = f"""
@@ -312,8 +375,11 @@ def format_metadata(agent_id, version, dt_str, workflow_id, pdf_path, pubmed, tr
     """
     return meta
 
+
 class ReportBuilderAgentLogic:
-    def __init__(self, agent_id: str, version: str, logger_instance: Optional[logging.Logger] = None):
+    def __init__(
+        self, agent_id: str, version: str, logger_instance: Optional[logging.Logger] = None
+    ):
         self.agent_id = agent_id
         self.version = version
         self.logger = logger_instance if logger_instance else logger_rb_logic_default
@@ -322,43 +388,56 @@ class ReportBuilderAgentLogic:
         )
         self.logger.info(f"Reports directory ready: {REPORTS_OUTPUT_DIR}")
         self.logger.info(f"Templates directory: {TEMPLATES_DIR}")
-        
+
         # Initialize Jinja2 environment with the correct templates directory
         try:
             self.jinja_env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
             self.logger.info(f"Jinja2 environment initialized with templates from: {TEMPLATES_DIR}")
-            
+
             # Check if pa_summary_template.html exists
             template_file = TEMPLATES_DIR / "pa_summary_template.html"
             if template_file.exists():
                 self.logger.info(f"Found PA summary template at: {template_file}")
             else:
                 self.logger.warning(f"PA summary template not found at: {template_file}")
-                
+
         except Exception as e:
             self.logger.error(f"Failed to initialize Jinja2 environment: {e}", exc_info=True)
             raise
 
     def get_capabilities(self) -> List[Dict[str, Any]]:
-        return [{
-            "name": "build_final_report",
-            "description": "Compiles research information into a highly professional PDF evidence report.",
-            "parameters": {
-                "original_goal": "string (research objective)",
-                "pubmed_articles": "resolved from step dependencies", 
-                "clinical_trials": "resolved from step dependencies",
-                "drug_safety": "resolved from step dependencies",
-                "workflow_id": "string (optional, for report metadata)",
-                "report_type": "string (type of report to generate)",
-                "report_data": "dict (data for specific report types)"
-            },
-            "output_formats": ["pdf"], 
-            "features": [
-                "executive_summary", "background", "methods", "clickable_toc", "figures",
-                "professional_formatting", "title_page_logo", "numbered_sections", "data_tables",
-                "footer", "page_numbers", "references", "error_handling", "prior_authorization_summary"
-            ]
-        }]
+        return [
+            {
+                "name": "build_final_report",
+                "description": "Compiles research information into a highly professional PDF evidence report.",
+                "parameters": {
+                    "original_goal": "string (research objective)",
+                    "pubmed_articles": "resolved from step dependencies",
+                    "clinical_trials": "resolved from step dependencies",
+                    "drug_safety": "resolved from step dependencies",
+                    "workflow_id": "string (optional, for report metadata)",
+                    "report_type": "string (type of report to generate)",
+                    "report_data": "dict (data for specific report types)",
+                },
+                "output_formats": ["pdf"],
+                "features": [
+                    "executive_summary",
+                    "background",
+                    "methods",
+                    "clickable_toc",
+                    "figures",
+                    "professional_formatting",
+                    "title_page_logo",
+                    "numbered_sections",
+                    "data_tables",
+                    "footer",
+                    "page_numbers",
+                    "references",
+                    "error_handling",
+                    "prior_authorization_summary",
+                ],
+            }
+        ]
 
     def _convert_html_to_pdf(self, html_content: str, pdf_filepath: str) -> bool:
         try:
@@ -366,7 +445,9 @@ class ReportBuilderAgentLogic:
             preferred_renderer = (os.getenv("HTML_RENDERER") or "").strip().lower()
 
             # 1) WeasyPrint (if requested or xhtml2pdf unavailable)
-            if (preferred_renderer == "weasyprint" and WEASYPRINT_AVAILABLE) or (not XHTML2PDF_AVAILABLE and WEASYPRINT_AVAILABLE):
+            if (preferred_renderer == "weasyprint" and WEASYPRINT_AVAILABLE) or (
+                not XHTML2PDF_AVAILABLE and WEASYPRINT_AVAILABLE
+            ):
                 try:
                     WEASY_HTML(string=html_content).write_pdf(pdf_filepath)
                 except Exception as we_err:
@@ -379,7 +460,9 @@ class ReportBuilderAgentLogic:
             # 2) xhtml2pdf (default path)
             if XHTML2PDF_AVAILABLE and pisa is not None and not os.path.exists(pdf_filepath):
                 with open(pdf_filepath, "wb") as pdf_file_handle:
-                    pdf_context = pisa.CreatePDF(html_content, dest=pdf_file_handle, encoding='utf-8')
+                    pdf_context = pisa.CreatePDF(
+                        html_content, dest=pdf_file_handle, encoding="utf-8"
+                    )
                     if pdf_context.err:
                         self.logger.error(f"pisa.CreatePDF error: {pdf_context.err}")
                         # Remove incomplete file if any
@@ -395,13 +478,17 @@ class ReportBuilderAgentLogic:
                     from reportlab.pdfgen import canvas
                     from reportlab.lib.pagesizes import A4
                 except Exception as imp_err:
-                    self.logger.error(f"PDF fallback unavailable (reportlab import failed): {imp_err}")
+                    self.logger.error(
+                        f"PDF fallback unavailable (reportlab import failed): {imp_err}"
+                    )
                     return False
                 tmp_path = pdf_filepath + ".tmp"
                 c = canvas.Canvas(tmp_path, pagesize=A4)
                 c.setTitle("BabyShield Report")
                 c.drawString(72, 800, "BabyShield Report")
-                c.drawString(72, 784, "Note: HTML renderer not available; using PDF fallback content.")
+                c.drawString(
+                    72, 784, "Note: HTML renderer not available; using PDF fallback content."
+                )
                 c.showPage()
                 c.save()
                 try:
@@ -409,6 +496,7 @@ class ReportBuilderAgentLogic:
                 except Exception:
                     # Best-effort move
                     import shutil
+
                     shutil.copyfile(tmp_path, pdf_filepath)
                     try:
                         os.remove(tmp_path)
@@ -437,17 +525,17 @@ class ReportBuilderAgentLogic:
             template_path = TEMPLATES_DIR / template_name
             if not template_path.exists():
                 raise FileNotFoundError(f"Template not found: {template_path}")
-                
+
             self.logger.info(f"Loading template: {template_name}")
             template = self.jinja_env.get_template(template_name)
-            
+
             self.logger.info(f"Rendering template with context keys: {list(context.keys())}")
             html_content = template.render(**context)
-            
+
             # Generate PDF filename
             pdf_filename = f"PA_Summary_{str(uuid.uuid4())[:8]}.pdf"
             pdf_filepath = os.path.join(REPORTS_OUTPUT_DIR, pdf_filename)
-            
+
             self.logger.info(f"Converting HTML to PDF: {pdf_filepath}")
             # Convert to PDF
             if self._convert_html_to_pdf(html_content, pdf_filepath):
@@ -455,7 +543,7 @@ class ReportBuilderAgentLogic:
                 return pdf_filepath
             else:
                 raise Exception("PDF conversion failed")
-                
+
         except Exception as e:
             self.logger.error(f"Failed to generate PDF from template: {e}", exc_info=True)
             raise
@@ -464,30 +552,30 @@ class ReportBuilderAgentLogic:
         """Build Prior Authorization Summary Report"""
         self.logger.info("Building Prior Authorization Summary PDF...")
         self.logger.info(f"Received data keys: {list(data.keys())}")
-        
+
         # Template name
         template_name = "pa_summary_template.html"
-        
+
         # Prepare context for the template
         context = {
             "prediction_data": data,
             "report_date": datetime.now().strftime("%Y-%m-%d %H:%M UTC"),
             "workflow_id": workflow_id or f"WF_{str(uuid.uuid4())[:8]}",
-            "logo_path": f"file:///{LOGO_PATH.replace(chr(92), '/')}"
+            "logo_path": f"file:///{LOGO_PATH.replace(chr(92), '/')}",
         }
-        
+
         try:
             # Generate PDF using the template
             pdf_path = self.generate_pdf_from_template(template_name, context)
-            
+
             self.logger.info(f"Successfully generated PA Summary report at: {pdf_path}")
             return {
-                "status": "success", 
+                "status": "success",
                 "pdf_path": pdf_path,
                 "report_type": "prior_authorization_summary",
-                "generation_timestamp": datetime.now(timezone.utc).isoformat()
+                "generation_timestamp": datetime.now(timezone.utc).isoformat(),
             }
-            
+
         except FileNotFoundError as e:
             error_msg = f"Template file not found: {e}. Please ensure pa_summary_template.html exists in {TEMPLATES_DIR}"
             self.logger.error(error_msg)
@@ -496,7 +584,9 @@ class ReportBuilderAgentLogic:
             self.logger.error(f"Failed to build PA summary report: {e}", exc_info=True)
             return {"status": "error", "message": str(e)}
 
-    def _compute_composite_risk(self, recalls: List[dict], community: dict, hazards: dict) -> Dict[str, Any]:
+    def _compute_composite_risk(
+        self, recalls: List[dict], community: dict, hazards: dict
+    ) -> Dict[str, Any]:
         """Compute a simple deterministic composite risk score and level."""
         score = 0
         level = "LOW"
@@ -535,7 +625,10 @@ class ReportBuilderAgentLogic:
             template_name = "product_safety_report.html"
             # Validate template exists
             if not (TEMPLATES_DIR / template_name).exists():
-                return {"status": "error", "message": f"Template not found: {TEMPLATES_DIR / template_name}"}
+                return {
+                    "status": "error",
+                    "message": f"Template not found: {TEMPLATES_DIR / template_name}",
+                }
 
             # Coerce expected fields with defaults
             product = data.get("product", {}) or {}
@@ -546,14 +639,16 @@ class ReportBuilderAgentLogic:
             hazards = data.get("hazards", {}) or {}
 
             # Compute composite risk
-            risk = self._compute_composite_risk(recalls=recalls, community=community, hazards=hazards)
+            risk = self._compute_composite_risk(
+                recalls=recalls, community=community, hazards=hazards
+            )
 
             # Final assessment text (deterministic)
             final_assessment = {
                 "CRITICAL": "CRITICAL RISK - Immediate action recommended",
                 "HIGH": "HIGH RISK - Action recommended",
                 "MEDIUM": "MEDIUM RISK - Use caution and monitor",
-                "LOW": "LOW RISK - No issues detected at this time"
+                "LOW": "LOW RISK - No issues detected at this time",
             }[risk["level"]]
 
             # Executive summary
@@ -568,7 +663,11 @@ class ReportBuilderAgentLogic:
             report_id = workflow_id or uuid.uuid4().hex[:8]
             # QR code links to live web version for easy sharing with partners/pediatricians
             live_report_url = f"{COMPANY_URL}/reports/view/{report_id}"
-            qr_path = generate_qr_code(live_report_url, REPORTS_OUTPUT_DIR, basename) if QRCODE_AVAILABLE else None
+            qr_path = (
+                generate_qr_code(live_report_url, REPORTS_OUTPUT_DIR, basename)
+                if QRCODE_AVAILABLE
+                else None
+            )
 
             # Determine which data sources were checked
             data_sources_checked = []
@@ -580,19 +679,25 @@ class ReportBuilderAgentLogic:
                     if agency:
                         agencies_in_recalls.add(agency)
                 data_sources_checked = list(agencies_in_recalls)
-            
+
             # If no recalls, show default agencies we check
             if not data_sources_checked:
-                data_sources_checked = ["CPSC", "FDA", "EU Safety Gate", "Health Canada", "ACCC (Australia)"]
+                data_sources_checked = [
+                    "CPSC",
+                    "FDA",
+                    "EU Safety Gate",
+                    "Health Canada",
+                    "ACCC (Australia)",
+                ]
 
             # Conditional section visibility based on risk level
             show_recall_details = len(recalls) > 0
             show_critical_warning = risk["level"] in ["CRITICAL", "HIGH"]
-            
+
             # Build context
             context = {
                 "company_name": COMPANY_NAME,
-                "report_date": datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
+                "report_date": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
                 "workflow_id": workflow_id or f"WF_{uuid.uuid4().hex[:8]}",
                 "logo_path": f"file:///{LOGO_PATH.replace(chr(92), '/')}" if LOGO_PATH else None,
                 "data_sources_checked": data_sources_checked,
@@ -601,9 +706,13 @@ class ReportBuilderAgentLogic:
                 "product": {
                     "product_name": product.get("product_name"),
                     "brand": product.get("brand"),
-                    "upc_gtin": product.get("upc_gtin") or product.get("upc") or product.get("gtin"),
+                    "upc_gtin": product.get("upc_gtin")
+                    or product.get("upc")
+                    or product.get("gtin"),
                     "model_number": product.get("model_number"),
-                    "lot_or_serial": product.get("lot_or_serial") or product.get("lot_number") or product.get("serial_number"),
+                    "lot_or_serial": product.get("lot_or_serial")
+                    or product.get("lot_number")
+                    or product.get("serial_number"),
                 },
                 "risk": {
                     "score": risk["score"],
@@ -645,7 +754,7 @@ class ReportBuilderAgentLogic:
                     "Keep products within age-appropriate guidelines and follow instructions.",
                     "Personalized checks (allergy/pregnancy) are best-effort and not exhaustive.",
                     "This is not medical or legal advice.",
-                    "Use at your own discretion; BabyShield is not liable for misuse."
+                    "Use at your own discretion; BabyShield is not liable for misuse.",
                 ],
                 "qr_path": ("file:///" + qr_path.replace("\\", "/")) if qr_path else None,
             }
@@ -671,7 +780,9 @@ class ReportBuilderAgentLogic:
             self.logger.error(f"Failed to build product safety report: {e}", exc_info=True)
             return {"status": "error", "message": str(e)}
 
-    def _build_nursery_quarterly_report(self, data: dict, workflow_id: Optional[str] = None) -> dict:
+    def _build_nursery_quarterly_report(
+        self, data: dict, workflow_id: Optional[str] = None
+    ) -> dict:
         """
         Build Nursery Quarterly Report over multiple products.
         Expects data: { products: [ {product, recalls, personalized, community, manufacturer, hazards}, ... ] }
@@ -679,7 +790,10 @@ class ReportBuilderAgentLogic:
         try:
             template_name = "nursery_quarterly_report.html"
             if not (TEMPLATES_DIR / template_name).exists():
-                return {"status": "error", "message": f"Template not found: {TEMPLATES_DIR / template_name}"}
+                return {
+                    "status": "error",
+                    "message": f"Template not found: {TEMPLATES_DIR / template_name}",
+                }
 
             items = data.get("products", []) or []
             rendered_items = []
@@ -699,33 +813,44 @@ class ReportBuilderAgentLogic:
                     "CRITICAL": "CRITICAL RISK - Immediate action recommended",
                     "HIGH": "HIGH RISK - Action recommended",
                     "MEDIUM": "MEDIUM RISK - Use caution and monitor",
-                    "LOW": "LOW RISK - No issues detected at this time"
+                    "LOW": "LOW RISK - No issues detected at this time",
                 }[risk["level"]]
                 if recalls:
                     hazard_summary = (recalls[0].get("hazard") or "safety issue").strip()
                     summary = f"Active recall(s) detected. Primary issue: {hazard_summary}."
                 else:
                     summary = "No official recalls detected in the period."
-                rendered_items.append({
-                    "product": {
-                        "product_name": product.get("product_name"),
-                        "brand": product.get("brand"),
-                        "upc_gtin": product.get("upc_gtin") or product.get("upc") or product.get("gtin"),
-                        "model_number": product.get("model_number"),
-                        "lot_or_serial": product.get("lot_or_serial") or product.get("lot_number") or product.get("serial_number"),
-                    },
-                    "recalls": [
-                        {
-                            "id": r.get("id") or r.get("recall_id"),
-                            "agency": r.get("agency") or r.get("source_agency"),
-                            "date": r.get("date") or (r.get("recall_date") or ""),
-                            "hazard": r.get("hazard"),
-                            "remedy": r.get("remedy"),
-                        }
-                        for r in recalls
-                    ],
-                    "risk": {"score": risk["score"], "level": risk["level"], "final_assessment": final_assessment, "summary": summary},
-                })
+                rendered_items.append(
+                    {
+                        "product": {
+                            "product_name": product.get("product_name"),
+                            "brand": product.get("brand"),
+                            "upc_gtin": product.get("upc_gtin")
+                            or product.get("upc")
+                            or product.get("gtin"),
+                            "model_number": product.get("model_number"),
+                            "lot_or_serial": product.get("lot_or_serial")
+                            or product.get("lot_number")
+                            or product.get("serial_number"),
+                        },
+                        "recalls": [
+                            {
+                                "id": r.get("id") or r.get("recall_id"),
+                                "agency": r.get("agency") or r.get("source_agency"),
+                                "date": r.get("date") or (r.get("recall_date") or ""),
+                                "hazard": r.get("hazard"),
+                                "remedy": r.get("remedy"),
+                            }
+                            for r in recalls
+                        ],
+                        "risk": {
+                            "score": risk["score"],
+                            "level": risk["level"],
+                            "final_assessment": final_assessment,
+                            "summary": summary,
+                        },
+                    }
+                )
 
             # Collect all unique data sources from all products
             all_agencies = set()
@@ -735,12 +860,16 @@ class ReportBuilderAgentLogic:
                     agency = r.get("agency") or r.get("source_agency") or ""
                     if agency:
                         all_agencies.add(agency)
-            
-            data_sources_checked = list(all_agencies) if all_agencies else ["CPSC", "FDA", "EU Safety Gate", "Health Canada", "ACCC (Australia)"]
+
+            data_sources_checked = (
+                list(all_agencies)
+                if all_agencies
+                else ["CPSC", "FDA", "EU Safety Gate", "Health Canada", "ACCC (Australia)"]
+            )
 
             context = {
                 "company_name": COMPANY_NAME,
-                "report_date": datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
+                "report_date": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
                 "workflow_id": workflow_id or f"WF_{uuid.uuid4().hex[:8]}",
                 "logo_path": f"file:///{LOGO_PATH.replace(chr(92), '/')}" if LOGO_PATH else None,
                 "data_sources_checked": data_sources_checked,
@@ -758,7 +887,7 @@ class ReportBuilderAgentLogic:
                     "Keep products within age-appropriate guidelines and follow instructions.",
                     "Personalized checks (allergy/pregnancy) are best-effort and not exhaustive.",
                     "This is not medical or legal advice.",
-                    "Use at your own discretion; BabyShield is not liable for misuse."
+                    "Use at your own discretion; BabyShield is not liable for misuse.",
                 ],
             }
             template = self.jinja_env.get_template(template_name)
@@ -767,7 +896,12 @@ class ReportBuilderAgentLogic:
             pdf_filepath = os.path.join(REPORTS_OUTPUT_DIR, pdf_filename)
             if not self._convert_html_to_pdf(html_content, pdf_filepath):
                 return {"status": "error", "message": "PDF conversion failed"}
-            return {"status": "success", "pdf_path": pdf_filepath, "report_type": "nursery_quarterly", "generation_timestamp": datetime.now(timezone.utc).isoformat()}
+            return {
+                "status": "success",
+                "pdf_path": pdf_filepath,
+                "report_type": "nursery_quarterly",
+                "generation_timestamp": datetime.now(timezone.utc).isoformat(),
+            }
         except Exception as e:
             self.logger.error(f"Failed to build nursery quarterly report: {e}", exc_info=True)
             return {"status": "error", "message": str(e)}
@@ -782,7 +916,12 @@ class ReportBuilderAgentLogic:
         pdf_filepath = os.path.join(REPORTS_OUTPUT_DIR, pdf_filename)
         if not self._convert_html_to_pdf(html_content, pdf_filepath):
             return {"status": "error", "message": "PDF conversion failed"}
-        return {"status": "success", "pdf_path": pdf_filepath, "report_type": filename_prefix, "generation_timestamp": datetime.now(timezone.utc).isoformat()}
+        return {
+            "status": "success",
+            "pdf_path": pdf_filepath,
+            "report_type": filename_prefix,
+            "generation_timestamp": datetime.now(timezone.utc).isoformat(),
+        }
 
     def build_safety_summary(self, db, user_id: int, window_days: int = 90) -> dict:
         """Generate a simple safety summary report over recent recalls."""
@@ -794,15 +933,22 @@ class ReportBuilderAgentLogic:
         recalls = []
         if RecallModel and db is not None:
             try:
-                recalls = db.query(RecallModel).order_by(RecallModel.recall_date.desc()).limit(15).all()
+                recalls = (
+                    db.query(RecallModel).order_by(RecallModel.recall_date.desc()).limit(15).all()
+                )
             except Exception as e:
                 self.logger.error(f"Failed to fetch recalls for summary: {e}")
                 recalls = []
 
-        hazards = [(getattr(r, "hazard_category", None) or getattr(r, "hazard", None)) for r in recalls if r]
+        hazards = [
+            (getattr(r, "hazard_category", None) or getattr(r, "hazard", None))
+            for r in recalls
+            if r
+        ]
         brands = [getattr(r, "brand", None) for r in recalls if r]
+
         def top(xs, k):
-            return [v for v,_ in Counter([x for x in xs if x]).most_common(k)]
+            return [v for v, _ in Counter([x for x in xs if x]).most_common(k)]
 
         ctx = {
             "title": "Nursery Safety Summary",
@@ -830,9 +976,9 @@ class ReportBuilderAgentLogic:
         report_type = task_payload.get("report_type", "default_research")
         report_data = task_payload.get("report_data", {})
         workflow_id = task_payload.get("workflow_id")
-        
+
         self.logger.info(f"Building report of type: {report_type}")
-        
+
         if report_type == "prior_authorization_summary":
             # Call the dedicated method for PA reports
             return self._build_pa_summary_report(report_data, workflow_id)
@@ -848,7 +994,9 @@ class ReportBuilderAgentLogic:
             # Keep the existing logic for building the old research reports
             return self._build_default_research_report(report_data)
 
-    def _extract_data_from_dependency_result(self, dep_result: Any, expected_key: str) -> Dict[str, Any]:
+    def _extract_data_from_dependency_result(
+        self, dep_result: Any, expected_key: str
+    ) -> Dict[str, Any]:
         """
         Enhanced extraction logic that handles various formats of dependency results.
         This is more flexible and can handle nested structures.
@@ -856,62 +1004,75 @@ class ReportBuilderAgentLogic:
         if not dep_result:
             self.logger.warning(f"No dependency result for {expected_key}")
             return {}
-        
+
         # If it's already a dict, check various possible structures
         if isinstance(dep_result, dict):
             # Direct format (the data we want is at the top level)
-            if "articles" in dep_result or "trials_data" in dep_result or "top_adverse_reactions" in dep_result:
+            if (
+                "articles" in dep_result
+                or "trials_data" in dep_result
+                or "top_adverse_reactions" in dep_result
+            ):
                 return dep_result
-            
+
             # Nested in 'result' key
             if "result" in dep_result and isinstance(dep_result["result"], dict):
                 return dep_result["result"]
-            
+
             # Nested in 'data' key
             if "data" in dep_result and isinstance(dep_result["data"], dict):
                 return dep_result["data"]
-            
+
             # Check for expected_key as a nested key
             if expected_key in dep_result and isinstance(dep_result[expected_key], dict):
                 return dep_result[expected_key]
-            
+
             # If we have status=success, try to find the actual data
             if dep_result.get("status") == "success" or dep_result.get("status") == "COMPLETED":
                 # Look for common data keys
                 for key in ["result", "data", "output", "response"]:
                     if key in dep_result and isinstance(dep_result[key], dict):
                         return dep_result[key]
-            
+
             # Last resort - return as is
             return dep_result
-        
+
         # If it's not a dict, log warning and return empty
-        self.logger.warning(f"Dependency result for {expected_key} is not a dict: {type(dep_result)}")
+        self.logger.warning(
+            f"Dependency result for {expected_key} is not a dict: {type(dep_result)}"
+        )
         return {}
 
-    def _compose_html_report(self, context: Dict[str, Any], logo_path: str, chart_path: Optional[str], qr_path: Optional[str], pdf_path: str) -> str:
+    def _compose_html_report(
+        self,
+        context: Dict[str, Any],
+        logo_path: str,
+        chart_path: Optional[str],
+        qr_path: Optional[str],
+        pdf_path: str,
+    ) -> str:
         pubmed = context.get("pubmed_articles", {})
         trials = context.get("clinical_trials_info", {})
         safety = context.get("drug_safety_info", {})
         goal = context.get("original_goal", "")
-        
+
         # Enhanced extraction of drug and disease info
         drug = None
         disease = None
-        
+
         # Try to get from pubmed data
         if pubmed:
             drug = pubmed.get("drug_queried") or pubmed.get("drug_name")
             disease = pubmed.get("disease_queried") or pubmed.get("disease_name")
-        
+
         # If not found, try to extract from original goal or other sources
         if not drug and context.get("extracted_drug_name"):
             drug = context["extracted_drug_name"]
         if not disease and context.get("extracted_disease_name"):
             disease = context["extracted_disease_name"]
-            
+
         workflow_id = context.get("workflow_id", "")
-        dt_str = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
+        dt_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
         toc = """
         <div style="page-break-after:always;">
@@ -993,51 +1154,62 @@ a {{ color: #2561b1; text-decoration: none; }}
     Page <pdf:pagenumber /> of <pdf:pagecount /> &nbsp;|&nbsp; Workflow ID: {workflow_id} &nbsp;|&nbsp; CureViaX Confidential
 </div>
 </body></html>
-""".format(workflow_id=escape_html(workflow_id))
+""".format(
+            workflow_id=escape_html(workflow_id)
+        )
         return html
 
-    async def process_message(self, message_data: Dict[str, Any], client: Any) -> Optional[Dict[str, Any]]:
+    async def process_message(
+        self, message_data: Dict[str, Any], client: Any
+    ) -> Optional[Dict[str, Any]]:
         header = message_data.get("mcp_header", {})
         payload = message_data.get("payload", {})
         message_type_str = header.get("message_type", "UNKNOWN")
         sender_id = header.get("sender_id", "UnknownSender")
         correlation_id = header.get("correlation_id")
         task_id = payload.get("task_id", "task_id_missing_in_assign_payload")
-        
+
         try:
             message_type = MessageType(message_type_str)
         except ValueError:
-            self.logger.warning(f"Unknown msg type '{message_type_str}' from {sender_id}. Ignoring.")
+            self.logger.warning(
+                f"Unknown msg type '{message_type_str}' from {sender_id}. Ignoring."
+            )
             return None
-            
-        if message_type == MessageType.PONG: 
+
+        if message_type == MessageType.PONG:
             return None
-        if message_type == MessageType.DISCOVERY_ACK: 
+        if message_type == MessageType.DISCOVERY_ACK:
             return None
 
         if message_type == MessageType.TASK_ASSIGN:
             self.logger.info(f"Processing TASK_ASSIGN from {sender_id} for task {task_id}")
-            
+
             task_parameters = payload.get("parameters", {})
-            workflow_id = payload.get("workflow_id") or correlation_id or f"WF_{str(uuid.uuid4())[:8]}"
-            
+            workflow_id = (
+                payload.get("workflow_id") or correlation_id or f"WF_{str(uuid.uuid4())[:8]}"
+            )
+
             # Check if this is a prior authorization report request
             report_type = task_parameters.get("report_type", "default_research")
-            
+
             if report_type == "prior_authorization_summary":
                 # Handle the new PA summary report
                 report_data = task_parameters.get("report_data", {})
-                
+
                 # If report_data is a string (from template substitution), try to parse it
                 if isinstance(report_data, str):
                     try:
                         import json
+
                         report_data = json.loads(report_data)
                         self.logger.info("Successfully parsed report_data from string")
                     except json.JSONDecodeError:
-                        self.logger.error(f"Failed to parse report_data as JSON: {report_data[:100]}...")
+                        self.logger.error(
+                            f"Failed to parse report_data as JSON: {report_data[:100]}..."
+                        )
                         report_data = {"error": "Failed to parse prediction data"}
-                
+
                 # Check dependency results for actual data from step6
                 dependency_results = task_parameters.get("dependency_results", {})
                 if dependency_results:
@@ -1051,49 +1223,59 @@ a {{ color: #2561b1; text-decoration: none; }}
                                 elif "prediction" in dep_result:
                                     report_data = dep_result["prediction"]
                                 break
-                
-                result = await self.build_report({
-                    "report_type": report_type,
-                    "report_data": report_data,
-                    "workflow_id": workflow_id
-                })
-                
+
+                result = await self.build_report(
+                    {
+                        "report_type": report_type,
+                        "report_data": report_data,
+                        "workflow_id": workflow_id,
+                    }
+                )
+
                 response_payload = {
                     "workflow_id": workflow_id,
                     "task_id": task_id,
                     "agent_id": self.agent_id,
                     "status": "COMPLETED" if result.get("status") == "success" else "FAILED",
                     "result": result,
-                    "error_message": result.get("message") if result.get("status") != "success" else None
+                    "error_message": result.get("message")
+                    if result.get("status") != "success"
+                    else None,
                 }
-                
+
                 return {
-                    "message_type": MessageType.TASK_COMPLETE.value if result.get("status") == "success" else MessageType.TASK_FAIL.value,
-                    "payload": response_payload
+                    "message_type": MessageType.TASK_COMPLETE.value
+                    if result.get("status") == "success"
+                    else MessageType.TASK_FAIL.value,
+                    "payload": response_payload,
                 }
-            
+
             # Otherwise, handle the existing research report logic
             dependency_results = task_parameters.get("dependency_results", {})
             if not isinstance(dependency_results, dict):
                 self.logger.warning(f"dependency_results not dict. Using empty.")
                 dependency_results = {}
-            
+
             # Log the structure we received for debugging
-            self.logger.debug(f"Received dependency_results keys: {list(dependency_results.keys())}")
+            self.logger.debug(
+                f"Received dependency_results keys: {list(dependency_results.keys())}"
+            )
             for key, value in dependency_results.items():
                 if isinstance(value, dict):
-                    self.logger.debug(f"  {key} has keys: {list(value.keys())[:5]}...")  # First 5 keys
-            
+                    self.logger.debug(
+                        f"  {key} has keys: {list(value.keys())[:5]}..."
+                    )  # First 5 keys
+
             # Extract parameters with fallbacks
             original_goal = (
-                task_parameters.get("original_goal") or 
-                task_parameters.get("goal") or 
-                payload.get("original_goal") or
-                "Research Topic Not Specified"
+                task_parameters.get("original_goal")
+                or task_parameters.get("goal")
+                or payload.get("original_goal")
+                or "Research Topic Not Specified"
             )
-            
+
             workflow_id_for_report = workflow_id
-            
+
             # Enhanced extraction with multiple fallback strategies
             # Try to get pubmed data
             pubmed_articles_data = None
@@ -1105,7 +1287,7 @@ a {{ color: #2561b1; text-decoration: none; }}
                     if pubmed_articles_data:
                         self.logger.info(f"Found pubmed data under key: {key}")
                         break
-            
+
             # Try to get clinical trials data
             clinical_trials_data = None
             for key in ["step2a_find_trials", "clinical_trials", "trials", "clinical_trials_info"]:
@@ -1116,7 +1298,7 @@ a {{ color: #2561b1; text-decoration: none; }}
                     if clinical_trials_data:
                         self.logger.info(f"Found trials data under key: {key}")
                         break
-            
+
             # Try to get drug safety data
             drug_safety_data_from_deps = None
             for key in ["step2b_check_drug_safety", "drug_safety", "safety_data", "adverse_events"]:
@@ -1127,7 +1309,7 @@ a {{ color: #2561b1; text-decoration: none; }}
                     if drug_safety_data_from_deps:
                         self.logger.info(f"Found safety data under key: {key}")
                         break
-            
+
             # If we still don't have data, check if parameters have direct references
             if not pubmed_articles_data and "pubmed_articles" in task_parameters:
                 pubmed_articles_data = task_parameters["pubmed_articles"]
@@ -1135,37 +1317,45 @@ a {{ color: #2561b1; text-decoration: none; }}
                 clinical_trials_data = task_parameters["clinical_trials"]
             if not drug_safety_data_from_deps and "safety_data" in task_parameters:
                 drug_safety_data_from_deps = task_parameters["safety_data"]
-            
+
             # Log what we found
             self.logger.info(f"Data extraction results:")
-            self.logger.info(f"  - PubMed articles: {'Found' if pubmed_articles_data else 'Not found'}")
-            self.logger.info(f"  - Clinical trials: {'Found' if clinical_trials_data else 'Not found'}")
-            self.logger.info(f"  - Drug safety: {'Found' if drug_safety_data_from_deps else 'Not found'}")
-            
+            self.logger.info(
+                f"  - PubMed articles: {'Found' if pubmed_articles_data else 'Not found'}"
+            )
+            self.logger.info(
+                f"  - Clinical trials: {'Found' if clinical_trials_data else 'Not found'}"
+            )
+            self.logger.info(
+                f"  - Drug safety: {'Found' if drug_safety_data_from_deps else 'Not found'}"
+            )
+
             # Generate chart if we have safety data
             chart_path = None
             if drug_safety_data_from_deps:
                 top_reactions = drug_safety_data_from_deps.get("top_adverse_reactions", [])
                 if top_reactions:
                     chart_path = generate_adverse_event_chart(
-                        top_reactions,
-                        REPORTS_OUTPUT_DIR,
-                        f"chart_{task_id}_{uuid.uuid4().hex[:6]}"
+                        top_reactions, REPORTS_OUTPUT_DIR, f"chart_{task_id}_{uuid.uuid4().hex[:6]}"
                     )
 
             # Generate filename
-            safe_goal_filename_part = "".join(
-                c if c.isalnum() or c in (' ') else '_' for c in original_goal[:50]
-            ).replace(' ', '_').rstrip('_')
-            if not safe_goal_filename_part: 
+            safe_goal_filename_part = (
+                "".join(c if c.isalnum() or c in (" ") else "_" for c in original_goal[:50])
+                .replace(" ", "_")
+                .rstrip("_")
+            )
+            if not safe_goal_filename_part:
                 safe_goal_filename_part = "CureViaX_Report"
-                
+
             pdf_filename = f"{safe_goal_filename_part}_{str(uuid.uuid4())[:8]}.pdf"
             pdf_filepath = os.path.join(REPORTS_OUTPUT_DIR, pdf_filename)
 
             # Generate QR code
             qr_data = f"{COMPANY_URL}/view/{pdf_filename}"
-            qr_path = generate_qr_code(qr_data, REPORTS_OUTPUT_DIR, f"qr_{task_id}_{uuid.uuid4().hex[:6]}")
+            qr_path = generate_qr_code(
+                qr_data, REPORTS_OUTPUT_DIR, f"qr_{task_id}_{uuid.uuid4().hex[:6]}"
+            )
 
             # Prepare context with all extracted data
             context = {
@@ -1177,21 +1367,23 @@ a {{ color: #2561b1; text-decoration: none; }}
                 "extracted_drug_name": task_parameters.get("extracted_drug_name"),
                 "extracted_disease_name": task_parameters.get("extracted_disease_name"),
             }
-            
+
             # Generate HTML report
             try:
-                html = self._compose_html_report(context, LOGO_PATH, chart_path, qr_path, pdf_filepath)
-                
+                html = self._compose_html_report(
+                    context, LOGO_PATH, chart_path, qr_path, pdf_filepath
+                )
+
                 # Convert to PDF
                 pdf_creation_success = self._convert_html_to_pdf(html, pdf_filepath)
-                
+
                 if pdf_creation_success:
                     self.logger.info(f"PDF report generated successfully: {pdf_filepath}")
                     generation_status_msg_part = "succeeded and file created."
                 else:
                     self.logger.error(f"PDF generation failed for: {pdf_filepath}")
                     generation_status_msg_part = "failed or file not found."
-                    
+
             except Exception as e:
                 self.logger.error(f"Error during report generation: {e}", exc_info=True)
                 pdf_creation_success = False
@@ -1203,27 +1395,41 @@ a {{ color: #2561b1; text-decoration: none; }}
                 "pdf_file_path": pdf_filepath if pdf_creation_success else None,
                 "generation_status_message": f"PDF conversion {generation_status_msg_part}",
                 "data_sources": {
-                    "pubmed_articles_count": len(pubmed_articles_data.get("articles", [])) if pubmed_articles_data else 0,
-                    "clinical_trials_count": len(clinical_trials_data.get("trials_data", [])) if clinical_trials_data else 0,
-                    "adverse_events_count": len(drug_safety_data_from_deps.get("top_adverse_reactions", [])) if drug_safety_data_from_deps else 0
-                }
+                    "pubmed_articles_count": len(pubmed_articles_data.get("articles", []))
+                    if pubmed_articles_data
+                    else 0,
+                    "clinical_trials_count": len(clinical_trials_data.get("trials_data", []))
+                    if clinical_trials_data
+                    else 0,
+                    "adverse_events_count": len(
+                        drug_safety_data_from_deps.get("top_adverse_reactions", [])
+                    )
+                    if drug_safety_data_from_deps
+                    else 0,
+                },
             }
-            
+
             response_payload = {
                 "workflow_id": workflow_id_for_report,
                 "task_id": task_id,
                 "agent_id": self.agent_id,
                 "status": "COMPLETED" if pdf_creation_success else "FAILED",
                 "result": result_payload_content,
-                "error_message": None if pdf_creation_success else f"PDF generation {generation_status_msg_part}"
+                "error_message": None
+                if pdf_creation_success
+                else f"PDF generation {generation_status_msg_part}",
             }
-            
+
             return {
-                "message_type": MessageType.TASK_COMPLETE.value if pdf_creation_success else MessageType.TASK_FAIL.value,
-                "payload": response_payload
+                "message_type": MessageType.TASK_COMPLETE.value
+                if pdf_creation_success
+                else MessageType.TASK_FAIL.value,
+                "payload": response_payload,
             }
         else:
-            self.logger.warning(f"ReportBuilderLogic received unhandled message type: {message_type.value}")
+            self.logger.warning(
+                f"ReportBuilderLogic received unhandled message type: {message_type.value}"
+            )
             return None
 
     async def shutdown(self):
@@ -1236,13 +1442,10 @@ a {{ color: #2561b1; text-decoration: none; }}
         report_type = task_payload.get("report_type", "prior_authorization_summary")
         report_data = task_payload.get("report_data", {})
         workflow_id = task_payload.get("workflow_id", f"WF_{str(uuid.uuid4())[:8]}")
-        
+
         self.logger.info(f"Direct task processing for report type: {report_type}")
-        
+
         if report_type == "prior_authorization_summary":
             return self._build_pa_summary_report(report_data, workflow_id)
         else:
-            return {
-                "status": "error",
-                "message": f"Unsupported report type: {report_type}"
-            }
+            return {"status": "error", "message": f"Unsupported report type: {report_type}"}

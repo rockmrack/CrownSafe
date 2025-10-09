@@ -5,7 +5,7 @@ import json
 import uuid
 import time
 
-r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
 workflow_id = str(uuid.uuid4())
 print(f"🚀 Testing by sending directly to Planner with workflow ID: {workflow_id}")
@@ -17,7 +17,7 @@ plan_msg = {
         "sender_id": "planner_agent_01",
         "target_id": "router_agent_01",
         "correlation_id": workflow_id,
-        "timestamp": "2025-01-01T00:00:00Z"
+        "timestamp": "2025-01-01T00:00:00Z",
     },
     "payload": {
         "plan": {
@@ -28,11 +28,11 @@ plan_msg = {
                     "agent_capability_required": "TEST_CAPABILITY",
                     "task_description": "Test task",
                     "inputs": {},
-                    "dependencies": []
+                    "dependencies": [],
                 }
-            ]
+            ],
         }
-    }
+    },
 }
 
 # Send directly to Router
@@ -49,9 +49,10 @@ if r.exists(workflow_key):
     data = json.loads(r.get(workflow_key))
     print(f"   Status: {data.get('status')}")
     print(f"   workflow_id field: {data.get('workflow_id')}")
-    
+
     # Now check via API
     import requests
+
     resp = requests.get(f"http://localhost:8000/api/v1/status/{workflow_id}")
     if resp.status_code == 200:
         print(f"✅ API can retrieve it!")

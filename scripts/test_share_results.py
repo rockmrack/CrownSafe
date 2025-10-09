@@ -9,30 +9,31 @@ import json
 from datetime import datetime, timedelta
 
 # Add parent directory to path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 from db.models.scan_history import ScanHistory
 from db.models.share_token import ShareToken
 
+
 def test_share_results():
     """Test the share results functionality"""
-    
+
     print("Testing Share Results Functionality...")
-    print("="*60)
-    
+    print("=" * 60)
+
     # Create test database session
     engine = create_engine("sqlite:///test_share_results.db")
-    
+
     # Create only the tables we need
     metadata = MetaData()
     ScanHistory.__table__.create(engine, checkfirst=True)
     ShareToken.__table__.create(engine, checkfirst=True)
-    
+
     SessionLocal = sessionmaker(bind=engine)
     db = SessionLocal()
-    
+
     try:
         # Create a test scan result
         print("\n1. Creating test scan result...")
@@ -48,12 +49,12 @@ def test_share_results():
             verdict="No Recalls Found",
             risk_level="low",
             recalls_found=0,
-            agencies_checked="39+ agencies"
+            agencies_checked="39+ agencies",
         )
         db.add(scan)
         db.commit()
         print(f"✅ Created scan: {scan.scan_id}")
-        
+
         # Test 1: Create a basic share link
         print("\n2. Creating basic share link...")
         token1 = ShareToken.generate_token()
@@ -69,16 +70,16 @@ def test_share_results():
                 "product_name": scan.product_name,
                 "brand": scan.brand,
                 "verdict": scan.verdict,
-                "risk_level": scan.risk_level
-            }
+                "risk_level": scan.risk_level,
+            },
         )
         db.add(share1)
         db.commit()
-        
+
         print(f"✅ Share link created: {token1[:10]}...")
         print(f"   Expires: {share1.expires_at}")
         print(f"   URL: https://babyshield.cureviax.ai/share/{token1}")
-        
+
         # Test 2: Create a limited-view share link
         print("\n3. Creating limited-view share link...")
         token2 = ShareToken.generate_token()
@@ -92,21 +93,22 @@ def test_share_results():
             content_snapshot={
                 "scan_id": scan.scan_id,
                 "product_name": scan.product_name,
-                "verdict": scan.verdict
-            }
+                "verdict": scan.verdict,
+            },
         )
         db.add(share2)
         db.commit()
-        
+
         print(f"✅ Limited share created: {token2[:10]}...")
         print(f"   Max views: 3")
         print(f"   Downloads: Disabled")
-        
+
         # Test 3: Create a password-protected share
         print("\n4. Creating password-protected share...")
         from passlib.context import CryptContext
+
         pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-        
+
         token3 = ShareToken.generate_token()
         password = "SecurePass123"
         share3 = ShareToken(
@@ -121,64 +123,66 @@ def test_share_results():
                 "scan_id": scan.scan_id,
                 "product_name": scan.product_name,
                 "verdict": scan.verdict,
-                "risk_level": scan.risk_level
-            }
+                "risk_level": scan.risk_level,
+            },
         )
         db.add(share3)
         db.commit()
-        
+
         print(f"✅ Password-protected share created: {token3[:10]}...")
         print(f"   Password: {password}")
         print(f"   Expires in: 48 hours")
-        
+
         # Test 4: Validate share tokens
         print("\n5. Testing share token validation...")
-        
+
         # Test valid token
         assert share1.is_valid(), "Share 1 should be valid"
         print("✅ Share 1 is valid")
-        
+
         # Test view counting
         share2.increment_view()
         share2.increment_view()
         db.commit()
         print(f"✅ Share 2 view count: {share2.view_count}/3")
-        
+
         # Test max views
         share2.increment_view()
         db.commit()
         assert share2.view_count == 3, "View count should be 3"
         assert not share2.is_valid(), "Share should be invalid after max views"
         print("✅ Share 2 correctly invalidated after max views")
-        
+
         # Test password verification
         assert pwd_context.verify(password, share3.password_hash), "Password should verify"
         print("✅ Password verification works")
-        
+
         # Test 5: Revoke a share
         print("\n6. Testing share revocation...")
         share1.is_active = False
         share1.revoked_at = datetime.utcnow()
         db.commit()
-        
+
         assert not share1.is_valid(), "Revoked share should be invalid"
         print("✅ Share successfully revoked")
-        
+
         # Test 6: Query user's shares
         print("\n7. Testing user share listing...")
-        user_shares = db.query(ShareToken).filter(
-            ShareToken.created_by == 1
-        ).all()
-        
+        user_shares = db.query(ShareToken).filter(ShareToken.created_by == 1).all()
+
         print(f"✅ Found {len(user_shares)} shares for user 1")
         for share in user_shares:
             status = "Active" if share.is_active else "Revoked"
-            views = f"{share.view_count}/{share.max_views}" if share.max_views else f"{share.view_count}/∞"
+            views = (
+                f"{share.view_count}/{share.max_views}"
+                if share.max_views
+                else f"{share.view_count}/∞"
+            )
             print(f"   - {share.token[:10]}... | {status} | Views: {views}")
-        
+
         # Test 7: Share types
         print("\n8. Testing different content types...")
-        
+
         # Create a report share
         token4 = ShareToken.generate_token()
         share4 = ShareToken(
@@ -192,17 +196,17 @@ def test_share_results():
                 "report_type": "90_day_summary",
                 "total_scans": 50,
                 "recalls_found": 2,
-                "safety_score": 85.5
-            }
+                "safety_score": 85.5,
+            },
         )
         db.add(share4)
         db.commit()
-        
+
         print(f"✅ Report share created: {token4[:10]}...")
         print(f"   Type: 90-day summary report")
         print(f"   Expires in: 7 days")
-        
-        print("\n" + "="*60)
+
+        print("\n" + "=" * 60)
         print("✅ All tests passed!")
         print("\n📤 Share Results Features:")
         print("  1. ✅ Secure token generation")
@@ -218,8 +222,8 @@ def test_share_results():
         print("  • QR code generation")
         print("  • Email sharing")
         print("  • Social media preview")
-        print("="*60)
-        
+        print("=" * 60)
+
     finally:
         db.close()
         # Clean up test database

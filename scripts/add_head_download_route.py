@@ -1,8 +1,9 @@
 import os, pathlib, re
+
 p = pathlib.Path("api/baby_features_endpoints.py")
 s = p.read_text(encoding="utf-8")
 
-if "@router.head(\"/api/v1/baby/reports/download/{report_id}\")" in s:
+if '@router.head("/api/v1/baby/reports/download/{report_id}")' in s:
     print("HEAD route already present")
 else:
     # ensure imports
@@ -12,11 +13,14 @@ else:
         if "\nfrom sqlalchemy import " in s:
             s = s.replace("\nfrom sqlalchemy import ", "\nfrom sqlalchemy import text, ")
         else:
-            s = s.replace("\nimport sqlalchemy as sa", "\nimport sqlalchemy as sa\nfrom sqlalchemy import text")
+            s = s.replace(
+                "\nimport sqlalchemy as sa",
+                "\nimport sqlalchemy as sa\nfrom sqlalchemy import text",
+            )
     if "import os" not in s:
         s = "import os\n" + s
 
-    head_func = '''
+    head_func = """
 @router.head("/api/v1/baby/reports/download/{report_id}")
 async def head_download_report(
     report_id: str,
@@ -54,7 +58,7 @@ async def head_download_report(
         "Referrer-Policy": "no-referrer",
     }
     return Response(status_code=200, headers=headers)
-'''
+"""
     s += "\n" + head_func
     p.write_text(s, encoding="utf-8")
     print("Added explicit HEAD handler")

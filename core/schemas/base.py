@@ -6,21 +6,23 @@ Provides consistent Pydantic configuration across all models
 from pydantic import BaseModel, ConfigDict
 from typing import Any, Dict, Optional
 
+
 class BaseSchema(BaseModel):
     """
     Base schema class with consistent configuration for all BabyShield models.
-    
+
     Key features:
     - protected_namespaces=() allows fields like 'model_number' without warnings
     - extra="forbid" prevents unexpected fields
     - populate_by_name=True allows field aliases
     """
+
     model_config = ConfigDict(
         protected_namespaces=(),  # allows fields like `model_number` without warnings
-        extra="forbid",           # prevent unexpected fields
-        populate_by_name=True,    # allows field aliases
-        validate_assignment=True, # validate on assignment
-        use_enum_values=True,     # use enum values in serialization
+        extra="forbid",  # prevent unexpected fields
+        populate_by_name=True,  # allows field aliases
+        validate_assignment=True,  # validate on assignment
+        use_enum_values=True,  # use enum values in serialization
     )
 
 
@@ -29,18 +31,15 @@ class AppModel(BaseSchema):
     Application model base class.
     Inherits from BaseSchema with additional app-specific configuration.
     """
+
     model_config = ConfigDict(
         protected_namespaces=(),  # allows fields like `model_number` without warnings
-        extra="forbid",           # prevent unexpected fields
-        populate_by_name=True,    # allows field aliases
-        validate_assignment=True, # validate on assignment
-        use_enum_values=True,     # use enum values in serialization
+        extra="forbid",  # prevent unexpected fields
+        populate_by_name=True,  # allows field aliases
+        validate_assignment=True,  # validate on assignment
+        use_enum_values=True,  # use enum values in serialization
         # App-specific config
-        json_schema_extra={
-            "example": {
-                "message": "This is an example response"
-            }
-        }
+        json_schema_extra={"example": {"message": "This is an example response"}},
     )
 
 
@@ -48,11 +47,12 @@ class APIResponse(BaseSchema):
     """
     Standard API response wrapper.
     """
+
     ok: bool = True
     message: Optional[str] = None
     data: Optional[Any] = None
     error: Optional[Dict[str, Any]] = None
-    
+
     model_config = ConfigDict(
         protected_namespaces=(),
         extra="forbid",
@@ -61,9 +61,9 @@ class APIResponse(BaseSchema):
             "example": {
                 "ok": True,
                 "message": "Operation successful",
-                "data": {"result": "example"}
+                "data": {"result": "example"},
             }
-        }
+        },
     )
 
 
@@ -71,10 +71,11 @@ class ErrorResponse(BaseSchema):
     """
     Standard error response format.
     """
+
     ok: bool = False
     error: Dict[str, Any]
     message: Optional[str] = None
-    
+
     model_config = ConfigDict(
         protected_namespaces=(),
         extra="forbid",
@@ -82,11 +83,8 @@ class ErrorResponse(BaseSchema):
         json_schema_extra={
             "example": {
                 "ok": False,
-                "error": {
-                    "code": "VALIDATION_ERROR",
-                    "message": "Invalid input data"
-                },
-                "message": "Request validation failed"
+                "error": {"code": "VALIDATION_ERROR", "message": "Invalid input data"},
+                "message": "Request validation failed",
             }
-        }
+        },
     )

@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 from agents.chat.chat_agent.agent_logic import ChatAgentLogic, ExplanationResponse, EvidenceItem
 
+
 class MockLLMClient:
     def chat_json(self, **kwargs):
         # Mock response with jurisdiction and evidence
@@ -13,9 +14,10 @@ class MockLLMClient:
             "jurisdiction": {"code": "EU", "label": "EU Safety Gate"},
             "evidence": [
                 {"type": "regulation", "source": "EU Safety Gate", "id": "REG-2024-001"},
-                {"type": "guideline", "source": "EFSA", "url": "https://efsa.europa.eu/guidelines"}
-            ]
+                {"type": "guideline", "source": "EFSA", "url": "https://efsa.europa.eu/guidelines"},
+            ],
         }
+
 
 def test_explanation_response_with_jurisdiction_and_evidence():
     """Test that ExplanationResponse can handle jurisdiction and evidence fields"""
@@ -29,13 +31,13 @@ def test_explanation_response_with_jurisdiction_and_evidence():
         "jurisdiction": {"code": "EU", "label": "EU Safety Gate"},
         "evidence": [
             {"type": "regulation", "source": "EU Safety Gate", "id": "REG-001"},
-            {"type": "guideline", "source": "EFSA"}
-        ]
+            {"type": "guideline", "source": "EFSA"},
+        ],
     }
-    
+
     # Should validate successfully
     response = ExplanationResponse(**data)
-    
+
     assert response.summary == "Product is safe for use."
     assert response.jurisdiction == {"code": "EU", "label": "EU Safety Gate"}
     assert len(response.evidence) == 2
@@ -43,17 +45,15 @@ def test_explanation_response_with_jurisdiction_and_evidence():
     assert response.evidence[0].source == "EU Safety Gate"
     assert response.evidence[0].id == "REG-001"
 
+
 def test_explanation_response_without_optional_fields():
     """Test that ExplanationResponse works without optional fields (backwards compatibility)"""
     # Minimal data (only required fields)
-    data = {
-        "summary": "Product is safe for use.",
-        "disclaimer": "Not medical advice."
-    }
-    
+    data = {"summary": "Product is safe for use.", "disclaimer": "Not medical advice."}
+
     # Should validate successfully
     response = ExplanationResponse(**data)
-    
+
     assert response.summary == "Product is safe for use."
     assert response.disclaimer == "Not medical advice."
     assert response.jurisdiction is None
@@ -61,6 +61,7 @@ def test_explanation_response_without_optional_fields():
     assert response.reasons == []
     assert response.checks == []
     assert response.flags == []
+
 
 def test_evidence_item_validation():
     """Test EvidenceItem validation"""
@@ -70,7 +71,7 @@ def test_evidence_item_validation():
     assert evidence.type == "regulation"
     assert evidence.id == "REG-001"
     assert evidence.url is None
-    
+
     # Minimal evidence item (only required field)
     minimal = EvidenceItem(source="CPSC")
     assert minimal.source == "CPSC"
@@ -78,19 +79,20 @@ def test_evidence_item_validation():
     assert minimal.id is None
     assert minimal.url is None
 
+
 def test_chat_agent_with_jurisdiction_context():
     """Test that ChatAgentLogic can handle jurisdiction context"""
     agent = ChatAgentLogic(llm=MockLLMClient())
-    
+
     # Scan data with jurisdiction context
     scan_data = {
         "product_name": "Baby Formula",
         "jurisdiction": {"code": "EU", "label": "EU Safety Gate"},
-        "scan_id": "test-123"
+        "scan_id": "test-123",
     }
-    
+
     result = agent.synthesize_result(scan_data)
-    
+
     # Should include jurisdiction and evidence from mock
     assert "jurisdiction" in result
     assert result["jurisdiction"]["code"] == "EU"

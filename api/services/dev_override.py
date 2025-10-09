@@ -8,11 +8,11 @@ import os
 def dev_entitled(user_id: int, feature: str) -> bool:
     """
     Check if user/feature combination is entitled via dev override.
-    
+
     Args:
         user_id: User ID to check
         feature: Feature name to check
-        
+
     Returns:
         True if entitled via dev override, False otherwise
     """

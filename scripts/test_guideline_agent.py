@@ -16,6 +16,7 @@ sys.path.insert(0, str(current_file.parent))
 # Now try to import - with better error handling
 try:
     from agents.guideline_agent.agent_logic import GuidelineAgentLogic
+
     print(f"✅ Successfully imported GuidelineAgentLogic from {project_root}")
 except ImportError as e:
     print(f"❌ Import Error: {e}")
@@ -23,27 +24,28 @@ except ImportError as e:
     print(f"Python path: {sys.path}")
     print("\nDirectory structure:")
     for root, dirs, files in os.walk(project_root / "agents"):
-        level = root.replace(str(project_root), '').count(os.sep)
-        indent = ' ' * 2 * level
+        level = root.replace(str(project_root), "").count(os.sep)
+        indent = " " * 2 * level
         print(f"{indent}{os.path.basename(root)}/")
-        subindent = ' ' * 2 * (level + 1)
+        subindent = " " * 2 * (level + 1)
         for file in files:
-            if file.endswith('.py'):
+            if file.endswith(".py"):
                 print(f"{subindent}{file}")
     sys.exit(1)
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 def print_section(title: str):
     """Print a formatted section header"""
     print(f"\n{'='*60}")
     print(f" {title}")
     print(f"{'='*60}\n")
+
 
 def print_result(result: dict, indent: int = 2):
     """Pretty print a result dictionary"""
@@ -68,40 +70,41 @@ def print_result(result: dict, indent: int = 2):
             else:
                 print(f"{indent_str}{key}: {value}")
 
+
 async def test_guideline_agent():
     """Test the GuidelineAgent functionality"""
-    
+
     print_section("TESTING GUIDELINE AGENT")
-    
+
     # Initialize the agent logic
     agent_id = "test_guideline_agent_01"
-    
+
     try:
         logic = GuidelineAgentLogic(agent_id=agent_id)
         print(f"✅ Successfully initialized GuidelineAgentLogic")
     except Exception as e:
         print(f"❌ Failed to initialize GuidelineAgentLogic: {e}")
         return
-    
+
     # Test 1: Ingest AHA Heart Failure Guideline
     print_section("Test 1: Guideline Ingestion")
-    
+
     ingestion_task = {
         "task_name": "ingest_guideline",
         "guideline_id": "AHA_HF_2022",
         "task_id": "test_task_001",
-        "workflow_id": "test_workflow_001"
+        "workflow_id": "test_workflow_001",
     }
-    
+
     print("Ingesting AHA Heart Failure 2022 Guideline...")
     print(f"Task data: {json.dumps(ingestion_task, indent=2)}")
-    
+
     try:
         result = logic.process_task(ingestion_task)
         print("\nIngestion Result:")
         print_result(result)
-        
-        if result['status'] != 'COMPLETED':
+
+        if result["status"] != "COMPLETED":
             print("\n❌ INGESTION FAILED!")
             return
         else:
@@ -110,64 +113,67 @@ async def test_guideline_agent():
         print(f"\n❌ Error during ingestion: {e}")
         logger.error("Ingestion error", exc_info=True)
         return
-    
+
     # Test 2: Query for SGLT2 inhibitors in heart failure
     print_section("Test 2: Query for SGLT2 Inhibitors")
-    
+
     query_task = {
         "task_name": "query_guidelines",
         "drug_name": "empagliflozin",
         "condition": "heart failure",
         "task_id": "test_task_002",
-        "workflow_id": "test_workflow_001"
+        "workflow_id": "test_workflow_001",
     }
-    
+
     print("Querying for empagliflozin in heart failure...")
     print(f"Task data: {json.dumps(query_task, indent=2)}")
-    
+
     try:
         result = logic.process_task(query_task)
         print("\nQuery Result:")
         print_result(result)
-        
-        if result['status'] == 'COMPLETED' and result.get('results'):
+
+        if result["status"] == "COMPLETED" and result.get("results"):
             print(f"\n✅ Found {result['total_matches']} relevant sections")
-            
+
             # Show top results
             print("\nTop Matching Sections:")
-            for i, match in enumerate(result['results'][:3]):
+            for i, match in enumerate(result["results"][:3]):
                 print(f"\n--- Match {i+1} (Relevance: {match.get('relevance_score', 0):.2f}) ---")
                 print(f"Guideline: {match.get('guideline_name', 'Unknown')}")
                 print(f"Text preview: {match['text'][:300]}...")
-                
+
             # Show PA criteria if found
-            if result.get('pa_criteria'):
+            if result.get("pa_criteria"):
                 print("\n--- Extracted PA Criteria ---")
-                criteria = result['pa_criteria']
-                
-                if criteria.get('recommendations'):
+                criteria = result["pa_criteria"]
+
+                if criteria.get("recommendations"):
                     print("\nRecommendations:")
-                    for rec in criteria['recommendations']:
+                    for rec in criteria["recommendations"]:
                         print(f"  • {rec['text']}")
-                        print(f"    Source: {rec['source']} (relevance: {rec.get('relevance', 0):.2f})")
-                
-                if criteria.get('prerequisites'):
+                        print(
+                            f"    Source: {rec['source']} (relevance: {rec.get('relevance', 0):.2f})"
+                        )
+
+                if criteria.get("prerequisites"):
                     print("\nPrerequisites:")
-                    for prereq in criteria['prerequisites']:
+                    for prereq in criteria["prerequisites"]:
                         print(f"  • {prereq['text']}")
-                        
-                if criteria.get('contraindications'):
+
+                if criteria.get("contraindications"):
                     print("\nContraindications:")
-                    for contra in criteria['contraindications']:
+                    for contra in criteria["contraindications"]:
                         print(f"  • {contra['text']}")
         else:
             print("\n❌ QUERY FAILED or returned no results!")
     except Exception as e:
         print(f"\n❌ Error during query: {e}")
         logger.error("Query error", exc_info=True)
-    
+
     print_section("TEST SUMMARY")
     print("Basic tests completed. Check results above for any failures.")
+
 
 async def main():
     """Run all tests"""
@@ -177,15 +183,16 @@ async def main():
         if not data_dir.exists():
             print(f"Creating data directory: {data_dir}")
             data_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Main functionality tests
         await test_guideline_agent()
-        
+
     except KeyboardInterrupt:
         print("\n\nTests interrupted by user")
     except Exception as e:
         print(f"\n\n❌ Test failed with error: {e}")
         logger.error("Test failed", exc_info=True)
+
 
 if __name__ == "__main__":
     print("Starting GuidelineAgent tests...")
@@ -193,5 +200,5 @@ if __name__ == "__main__":
     print(f"Script location: {__file__}")
     print("Note: First run will download ~5MB PDF, subsequent runs will use cached data")
     print("-" * 60)
-    
+
     asyncio.run(main())

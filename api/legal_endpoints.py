@@ -16,15 +16,14 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(
-    prefix="/legal",
-    tags=["Legal & Privacy"]
-)
+router = APIRouter(prefix="/legal", tags=["Legal & Privacy"])
 
 # ========================= MODELS =========================
 
+
 class LegalDocument(BaseModel):
     """Legal document metadata"""
+
     id: str
     title: str
     version: str
@@ -37,6 +36,7 @@ class LegalDocument(BaseModel):
 
 class PrivacySettings(BaseModel):
     """User privacy settings"""
+
     user_id: str
     crashlytics_enabled: bool = False
     analytics_enabled: bool = False
@@ -47,6 +47,7 @@ class PrivacySettings(BaseModel):
 
 class DataDeletionRequest(BaseModel):
     """Data deletion request"""
+
     user_id: str
     reason: Optional[str] = None
     confirm: bool = Field(..., description="Must be true to confirm deletion")
@@ -54,6 +55,7 @@ class DataDeletionRequest(BaseModel):
 
 class ConsentUpdate(BaseModel):
     """Consent update request"""
+
     user_id: str
     consent_type: str = Field(..., description="crashlytics, analytics, etc")
     granted: bool
@@ -62,6 +64,7 @@ class ConsentUpdate(BaseModel):
 
 class LegalAgreement(BaseModel):
     """Legal agreement acceptance"""
+
     user_id: str
     document_id: str
     version: str
@@ -82,36 +85,36 @@ LEGAL_DOCUMENTS = {
         "title": "Privacy Policy",
         "version": "1.0.0",
         "effective_date": "2024-01-01",
-        "last_updated": "2024-01-01"
+        "last_updated": "2024-01-01",
     },
     "terms": {
         "file": "TERMS_OF_SERVICE.md",
         "title": "Terms of Service",
         "version": "1.0.0",
         "effective_date": "2024-01-01",
-        "last_updated": "2024-01-01"
+        "last_updated": "2024-01-01",
     },
     "dpa": {
         "file": "DPA_CHECKLIST.md",
         "title": "Data Processing Agreement",
         "version": "1.0.0",
         "effective_date": "2024-01-01",
-        "last_updated": "2024-01-01"
+        "last_updated": "2024-01-01",
     },
     "cookies": {
         "file": "COOKIE_POLICY.md",
         "title": "Cookie Policy",
         "version": "1.0.0",
         "effective_date": "2024-01-01",
-        "last_updated": "2024-01-01"
+        "last_updated": "2024-01-01",
     },
     "data-deletion": {
         "file": "DATA_DELETION_POLICY.md",
         "title": "Data Deletion Policy",
         "version": "1.0.0",
         "effective_date": "2024-01-01",
-        "last_updated": "2024-01-01"
-    }
+        "last_updated": "2024-01-01",
+    },
 }
 
 
@@ -122,10 +125,10 @@ def get_document_content(doc_id: str, format: str = "markdown") -> tuple[str, st
     """
     if doc_id not in LEGAL_DOCUMENTS:
         raise HTTPException(status_code=404, detail=f"Document '{doc_id}' not found")
-    
+
     doc_info = LEGAL_DOCUMENTS[doc_id]
     file_path = LEGAL_DOCS_PATH / doc_info["file"]
-    
+
     # Check if file exists, otherwise use template
     if not file_path.exists():
         # Return template content
@@ -133,14 +136,11 @@ def get_document_content(doc_id: str, format: str = "markdown") -> tuple[str, st
     else:
         with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
-    
+
     # Format conversion
     if format == "html":
         # Convert markdown to HTML
-        html_content = markdown.markdown(
-            content,
-            extensions=['extra', 'codehilite', 'toc']
-        )
+        html_content = markdown.markdown(content, extensions=["extra", "codehilite", "toc"])
         # Wrap in basic HTML template
         html_template = f"""
         <!DOCTYPE html>
@@ -170,7 +170,7 @@ def get_document_content(doc_id: str, format: str = "markdown") -> tuple[str, st
         </html>
         """
         return html_template, "text/html"
-    
+
     elif format == "plain":
         # Convert to plain text (remove markdown formatting)
         plain_text = content
@@ -178,16 +178,17 @@ def get_document_content(doc_id: str, format: str = "markdown") -> tuple[str, st
         plain_text = plain_text.replace("#", "")
         # Remove markdown links
         import re
-        plain_text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', plain_text)
+
+        plain_text = re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", plain_text)
         return plain_text, "text/plain"
-    
+
     else:  # markdown
         return content, "text/markdown"
 
 
 def generate_template_content(doc_id: str, doc_info: dict) -> str:
     """Generate template content for missing documents"""
-    
+
     if doc_id == "privacy":
         return """# Privacy Policy
 
@@ -215,7 +216,7 @@ You may export your data in the app before deletion: `Settings → Account → E
 
 For the full privacy policy, please contact privacy@babyshield.app
 """
-    
+
     elif doc_id == "terms":
         return """# Terms of Service
 
@@ -230,7 +231,7 @@ BabyShield provides product recall information.
 ## Contact
 legal@babyshield.app
 """
-    
+
     else:
         return f"# {doc_info['title']}\n\nDocument content will be available soon."
 
@@ -242,60 +243,59 @@ def calculate_content_hash(content: str) -> str:
 
 # ========================= API ENDPOINTS =========================
 
+
 @router.get("/", response_model=List[LegalDocument])
-async def list_legal_documents(
-    language: Optional[str] = "en"
-):
+async def list_legal_documents(language: Optional[str] = "en"):
     """Get list of all legal documents with metadata"""
-    
+
     documents = []
     for doc_id, doc_info in LEGAL_DOCUMENTS.items():
         content, _ = get_document_content(doc_id)
-        
-        documents.append(LegalDocument(
-            id=doc_id,
-            title=doc_info["title"],
-            version=doc_info["version"],
-            effective_date=doc_info["effective_date"],
-            last_updated=doc_info["last_updated"],
-            language=language,
-            url=f"/legal/{doc_id}",
-            content_hash=calculate_content_hash(content)
-        ))
-    
+
+        documents.append(
+            LegalDocument(
+                id=doc_id,
+                title=doc_info["title"],
+                version=doc_info["version"],
+                effective_date=doc_info["effective_date"],
+                last_updated=doc_info["last_updated"],
+                language=language,
+                url=f"/legal/{doc_id}",
+                content_hash=calculate_content_hash(content),
+            )
+        )
+
     return documents
 
 
 @router.get("/{document_id}")
 async def get_legal_document(
-    document_id: str,
-    format: Optional[str] = "html",
-    language: Optional[str] = "en"
+    document_id: str, format: Optional[str] = "html", language: Optional[str] = "en"
 ):
     """
     Get a specific legal document
-    
+
     Formats: html, markdown, plain
     Documents: privacy, terms, dpa, cookies
     """
-    
+
     try:
         content, content_type = get_document_content(document_id, format)
-        
+
         # Add headers for caching
         headers = {
             "Cache-Control": "public, max-age=86400",  # Cache for 24 hours
             "X-Document-Version": LEGAL_DOCUMENTS.get(document_id, {}).get("version", "1.0.0"),
-            "X-Document-Language": language
+            "X-Document-Language": language,
         }
-        
+
         if format == "html":
             return HTMLResponse(content=content, headers=headers)
         elif format == "plain":
             return PlainTextResponse(content=content, headers=headers)
         else:
             return Response(content=content, media_type=content_type, headers=headers)
-            
+
     except HTTPException:
         raise
     except Exception as e:
@@ -304,11 +304,9 @@ async def get_legal_document(
 
 
 @router.get("/privacy/summary", response_model=Dict[str, Any])
-async def get_privacy_summary(
-    user_id: Optional[str] = Header(None, alias="X-User-ID")
-):
+async def get_privacy_summary(user_id: Optional[str] = Header(None, alias="X-User-ID")):
     """Get privacy policy summary and user's privacy settings"""
-    
+
     summary = {
         "ok": True,
         "summary": {
@@ -317,7 +315,7 @@ async def get_privacy_summary(
                 "Barcode scans",
                 "Search queries",
                 "Device information (anonymized)",
-                "Crash reports (opt-in only)"
+                "Crash reports (opt-in only)",
             ],
             "data_not_collected": [
                 "Email address",
@@ -325,52 +323,48 @@ async def get_privacy_summary(
                 "Physical address",
                 "Photos",
                 "Location",
-                "Contacts"
+                "Contacts",
             ],
             "third_parties": [
-                {
-                    "name": "AWS",
-                    "purpose": "Hosting",
-                    "dpa_signed": True
-                },
+                {"name": "AWS", "purpose": "Hosting", "dpa_signed": True},
                 {
                     "name": "Google Firebase",
                     "purpose": "Crash reporting (opt-in)",
-                    "dpa_signed": True
-                }
+                    "dpa_signed": True,
+                },
             ],
             "user_rights": [
                 "Access your data anytime",
                 "Delete all data permanently",
                 "Export data in JSON format",
                 "Opt-out of crash reporting",
-                "Control all privacy settings"
+                "Control all privacy settings",
             ],
             "retention_periods": {
                 "active_account": "Until deletion requested",
                 "inactive_account": "Anonymized after 2 years",
                 "crash_reports": "90 days",
-                "search_logs": "30 days (anonymized)"
-            }
+                "search_logs": "30 days (anonymized)",
+            },
         },
         "settings": {
             "crashlytics_enabled": False,  # Default OFF
             "analytics_enabled": False,
             "personalized_ads": False,
-            "data_sharing": False
+            "data_sharing": False,
         },
         "documents": {
             "privacy_policy": "/legal/privacy",
             "terms_of_service": "/legal/terms",
-            "data_deletion": "/api/v1/user/data/delete"
+            "data_deletion": "/api/v1/user/data/delete",
         },
         "contact": {
             "privacy_email": "privacy@babyshield.app",
             "dpo_email": "dpo@babyshield.app",
-            "response_time": "Within 30 days"
-        }
+            "response_time": "Within 30 days",
+        },
     }
-    
+
     # If user_id provided, get their specific settings
     if user_id:
         # In production, fetch from database
@@ -379,9 +373,9 @@ async def get_privacy_summary(
             "account_created": "2024-01-01",
             "last_privacy_review": "2024-01-01",
             "data_exports": 0,
-            "deletion_requested": False
+            "deletion_requested": False,
         }
-    
+
     return summary
 
 
@@ -389,27 +383,32 @@ async def get_privacy_summary(
 async def update_privacy_consent(
     consent: ConsentUpdate,
     user_id: Optional[str] = Header(None, alias="X-User-ID"),
-    request: Request = None
+    request: Request = None,
 ):
     """Update user's privacy consent settings"""
-    
+
     # Validate user
     if not user_id or user_id != consent.user_id:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    
+
     # Validate consent type
     valid_types = ["crashlytics", "analytics", "ads", "sharing", "notifications"]
     if consent.consent_type not in valid_types:
-        raise HTTPException(status_code=400, detail=f"Invalid consent type. Must be one of: {valid_types}")
-    
+        raise HTTPException(
+            status_code=400, detail=f"Invalid consent type. Must be one of: {valid_types}"
+        )
+
     # Log consent change
-    logger.info(f"Consent update", extra={
-        "user_id": user_id[:8] + "...",
-        "consent_type": consent.consent_type,
-        "granted": consent.granted,
-        "ip_address": request.client.host if request else None
-    })
-    
+    logger.info(
+        f"Consent update",
+        extra={
+            "user_id": user_id[:8] + "...",
+            "consent_type": consent.consent_type,
+            "granted": consent.granted,
+            "ip_address": request.client.host if request else None,
+        },
+    )
+
     # In production, save to database
     # For now, return confirmation
     return {
@@ -417,18 +416,16 @@ async def update_privacy_consent(
         "consent_type": consent.consent_type,
         "granted": consent.granted,
         "timestamp": consent.timestamp.isoformat(),
-        "message": f"Consent {'granted' if consent.granted else 'withdrawn'} for {consent.consent_type}"
+        "message": f"Consent {'granted' if consent.granted else 'withdrawn'} for {consent.consent_type}",
     }
 
 
 @router.post("/privacy/request-data")
-async def request_data_export(
-    user_id: str = Header(..., alias="X-User-ID")
-):
+async def request_data_export(user_id: str = Header(..., alias="X-User-ID")):
     """Request a copy of user's data (GDPR Article 15)"""
-    
+
     request_id = hashlib.sha256(f"{user_id}{datetime.now()}".encode()).hexdigest()[:12]
-    
+
     return {
         "ok": True,
         "request_id": request_id,
@@ -436,36 +433,31 @@ async def request_data_export(
         "message": "Your data export request has been received",
         "estimated_time": "Within 30 days",
         "delivery_method": "In-app download",
-        "format": "JSON"
+        "format": "JSON",
     }
 
 
 @router.post("/privacy/delete-data")
 async def request_data_deletion(
-    deletion: DataDeletionRequest,
-    user_id: str = Header(..., alias="X-User-ID")
+    deletion: DataDeletionRequest, user_id: str = Header(..., alias="X-User-ID")
 ):
     """Request deletion of user's data (GDPR Article 17)"""
-    
+
     # Validate user
     if user_id != deletion.user_id:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    
+
     # Require explicit confirmation
     if not deletion.confirm:
-        raise HTTPException(
-            status_code=400,
-            detail="Deletion must be explicitly confirmed"
-        )
-    
+        raise HTTPException(status_code=400, detail="Deletion must be explicitly confirmed")
+
     request_id = hashlib.sha256(f"{user_id}{datetime.now()}".encode()).hexdigest()[:12]
-    
-    logger.warning(f"Data deletion requested", extra={
-        "user_id": user_id[:8] + "...",
-        "request_id": request_id,
-        "reason": deletion.reason
-    })
-    
+
+    logger.warning(
+        f"Data deletion requested",
+        extra={"user_id": user_id[:8] + "...", "request_id": request_id, "reason": deletion.reason},
+    )
+
     return {
         "ok": True,
         "request_id": request_id,
@@ -473,14 +465,14 @@ async def request_data_deletion(
         "message": "Your account and all data will be permanently deleted",
         "deletion_date": (datetime.now() + timedelta(days=30)).date().isoformat(),
         "grace_period": "30 days",
-        "cancel_url": f"/legal/privacy/cancel-deletion/{request_id}"
+        "cancel_url": f"/legal/privacy/cancel-deletion/{request_id}",
     }
 
 
 @router.get("/compliance/status")
 async def get_compliance_status():
     """Get current compliance status and certifications"""
-    
+
     return {
         "ok": True,
         "compliance": {
@@ -490,56 +482,53 @@ async def get_compliance_status():
                 "dpo_email": "dpo@babyshield.app",
                 "privacy_by_design": True,
                 "data_minimization": True,
-                "encryption": True
+                "encryption": True,
             },
             "ccpa": {
                 "compliant": True,
                 "do_not_sell": True,
                 "opt_out_available": True,
-                "deletion_rights": True
+                "deletion_rights": True,
             },
             "coppa": {
                 "compliant": True,
                 "under_13_collection": False,
-                "parental_consent": "Not applicable"
+                "parental_consent": "Not applicable",
             },
             "app_store": {
                 "apple_privacy_labels": True,
                 "google_data_safety": True,
-                "transparency_report": True
-            }
+                "transparency_report": True,
+            },
         },
         "certifications": {
             "soc2": "In progress",
             "iso27001": "Planned",
-            "privacy_shield": "Not applicable"
+            "privacy_shield": "Not applicable",
         },
         "audits": {
             "last_audit": "2023-12-01",
             "next_audit": "2024-06-01",
-            "audit_firm": "[AUDIT FIRM NAME]"
+            "audit_firm": "[AUDIT FIRM NAME]",
         },
         "data_protection": {
             "encryption_at_rest": "AES-256",
             "encryption_in_transit": "TLS 1.3",
             "key_management": "AWS KMS",
             "backup_encryption": True,
-            "mfa_required": True
-        }
+            "mfa_required": True,
+        },
     }
 
 
 @router.get("/agreements/{user_id}")
-async def get_user_agreements(
-    user_id: str,
-    requesting_user: str = Header(..., alias="X-User-ID")
-):
+async def get_user_agreements(user_id: str, requesting_user: str = Header(..., alias="X-User-ID")):
     """Get user's legal agreement history"""
-    
+
     # Users can only view their own agreements
     if user_id != requesting_user:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    
+
     # In production, fetch from database
     # For now, return sample data
     return {
@@ -550,17 +539,17 @@ async def get_user_agreements(
                 "document": "privacy",
                 "version": "1.0.0",
                 "accepted": True,
-                "timestamp": "2024-01-01T00:00:00Z"
+                "timestamp": "2024-01-01T00:00:00Z",
             },
             {
                 "document": "terms",
-                "version": "1.0.0", 
+                "version": "1.0.0",
                 "accepted": True,
-                "timestamp": "2024-01-01T00:00:00Z"
-            }
+                "timestamp": "2024-01-01T00:00:00Z",
+            },
         ],
         "pending_updates": [],
-        "requires_acceptance": False
+        "requires_acceptance": False,
     }
 
 
@@ -568,44 +557,46 @@ async def get_user_agreements(
 async def accept_legal_agreement(
     agreement: LegalAgreement,
     user_id: str = Header(..., alias="X-User-ID"),
-    request: Request = None
+    request: Request = None,
 ):
     """Accept a legal agreement"""
-    
+
     # Validate user
     if user_id != agreement.user_id:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    
+
     # Validate document exists
     if agreement.document_id not in LEGAL_DOCUMENTS:
         raise HTTPException(status_code=404, detail="Document not found")
-    
+
     # Log acceptance
-    logger.info(f"Legal agreement accepted", extra={
-        "user_id": user_id[:8] + "...",
-        "document": agreement.document_id,
-        "version": agreement.version,
-        "ip_address": request.client.host if request else None
-    })
-    
+    logger.info(
+        f"Legal agreement accepted",
+        extra={
+            "user_id": user_id[:8] + "...",
+            "document": agreement.document_id,
+            "version": agreement.version,
+            "ip_address": request.client.host if request else None,
+        },
+    )
+
     return {
         "ok": True,
         "document": agreement.document_id,
         "version": agreement.version,
         "accepted": True,
         "timestamp": agreement.timestamp.isoformat(),
-        "message": "Agreement accepted successfully"
+        "message": "Agreement accepted successfully",
     }
 
 
 # ========================= COOKIE POLICY (WEB ONLY) =========================
 
+
 @router.get("/cookies/preferences")
-async def get_cookie_preferences(
-    session_id: Optional[str] = Header(None, alias="X-Session-ID")
-):
+async def get_cookie_preferences(session_id: Optional[str] = Header(None, alias="X-Session-ID")):
     """Get cookie preferences (web only)"""
-    
+
     return {
         "ok": True,
         "cookies_used": {
@@ -613,56 +604,58 @@ async def get_cookie_preferences(
                 "enabled": True,
                 "required": True,
                 "purpose": "Security and authentication",
-                "cookies": ["session_id", "csrf_token"]
+                "cookies": ["session_id", "csrf_token"],
             },
             "functional": {
                 "enabled": False,
                 "required": False,
                 "purpose": "User preferences",
-                "cookies": ["language", "theme"]
+                "cookies": ["language", "theme"],
             },
             "analytics": {
                 "enabled": False,
                 "required": False,
                 "purpose": "Usage analytics",
-                "cookies": []
+                "cookies": [],
             },
             "marketing": {
                 "enabled": False,
                 "required": False,
                 "purpose": "Marketing",
-                "cookies": []
-            }
+                "cookies": [],
+            },
         },
-        "mobile_app_note": "The BabyShield mobile app does not use cookies"
+        "mobile_app_note": "The BabyShield mobile app does not use cookies",
     }
 
 
 @router.get("/data-deletion")
 async def get_data_deletion_policy():
     """Get data deletion policy and instructions"""
-    return JSONResponse(content={
-        "title": "Data Deletion Policy",
-        "last_updated": "2025-09-20",
-        "policy": {
-            "right_to_deletion": "You have the right to request deletion of your personal data",
-            "what_we_delete": [
-                "User account information",
-                "Scan history and search queries", 
-                "Personal preferences and settings",
-                "Any stored product data associated with your account"
-            ],
-            "what_we_retain": [
-                "Anonymous usage statistics (no personal identifiers)",
-                "Aggregated safety data for public benefit",
-                "Legal compliance records (if required)"
-            ],
-            "how_to_request": {
-                "email": "privacy@babyshield.com",
-                "subject": "Data Deletion Request",
-                "include": "Your user ID and verification information"
+    return JSONResponse(
+        content={
+            "title": "Data Deletion Policy",
+            "last_updated": "2025-09-20",
+            "policy": {
+                "right_to_deletion": "You have the right to request deletion of your personal data",
+                "what_we_delete": [
+                    "User account information",
+                    "Scan history and search queries",
+                    "Personal preferences and settings",
+                    "Any stored product data associated with your account",
+                ],
+                "what_we_retain": [
+                    "Anonymous usage statistics (no personal identifiers)",
+                    "Aggregated safety data for public benefit",
+                    "Legal compliance records (if required)",
+                ],
+                "how_to_request": {
+                    "email": "privacy@babyshield.com",
+                    "subject": "Data Deletion Request",
+                    "include": "Your user ID and verification information",
+                },
+                "timeline": "Data deletion requests are processed within 30 days",
+                "verification": "We will verify your identity before processing the request",
             },
-            "timeline": "Data deletion requests are processed within 30 days",
-            "verification": "We will verify your identity before processing the request"
         }
-    })
+    )

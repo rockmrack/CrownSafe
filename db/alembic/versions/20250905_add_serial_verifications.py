@@ -32,14 +32,36 @@ def upgrade() -> None:
         sa.Column("trace_id", sa.String(length=64), nullable=True),
         sa.Column("verification_payload", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column("checked_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP")),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+        ),
     )
 
     op.create_index("ix_serial_verifications_gtin", "serial_verifications", ["gtin"], unique=False)
-    op.create_index("ix_serial_verifications_lot_number", "serial_verifications", ["lot_number"], unique=False)
-    op.create_index("ix_serial_verifications_serial_number", "serial_verifications", ["serial_number"], unique=False)
-    op.create_index("ix_serial_verifications_gtin_lot", "serial_verifications", ["gtin", "lot_number"], unique=False)
-    op.create_index("ix_serial_verifications_gtin_serial", "serial_verifications", ["gtin", "serial_number"], unique=False)
+    op.create_index(
+        "ix_serial_verifications_lot_number", "serial_verifications", ["lot_number"], unique=False
+    )
+    op.create_index(
+        "ix_serial_verifications_serial_number",
+        "serial_verifications",
+        ["serial_number"],
+        unique=False,
+    )
+    op.create_index(
+        "ix_serial_verifications_gtin_lot",
+        "serial_verifications",
+        ["gtin", "lot_number"],
+        unique=False,
+    )
+    op.create_index(
+        "ix_serial_verifications_gtin_serial",
+        "serial_verifications",
+        ["gtin", "serial_number"],
+        unique=False,
+    )
 
 
 def downgrade() -> None:
@@ -49,5 +71,3 @@ def downgrade() -> None:
     op.drop_index("ix_serial_verifications_lot_number", table_name="serial_verifications")
     op.drop_index("ix_serial_verifications_gtin", table_name="serial_verifications")
     op.drop_table("serial_verifications")
-
-

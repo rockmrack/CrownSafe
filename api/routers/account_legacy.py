@@ -3,6 +3,7 @@ from typing import Optional, Any
 
 router = APIRouter(prefix="/api/v1", tags=["account-legacy"])
 
+
 @router.post("/user/data/delete", include_in_schema=False)
 async def legacy_delete(request: Request, body: Optional[Any] = None):
     """

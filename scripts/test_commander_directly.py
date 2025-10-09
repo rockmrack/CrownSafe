@@ -5,7 +5,7 @@ import json
 import time
 import uuid
 
-r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
 # Clear Commander queue first
 r.delete("mcp:queue:commander_agent_01")
@@ -19,7 +19,7 @@ test_msg = {
         "sender_id": f"api_gateway_client_{workflow_id}",
         "target_id": "commander_agent_01",
         "correlation_id": workflow_id,
-        "timestamp": "2025-01-01T00:00:00Z"
+        "timestamp": "2025-01-01T00:00:00Z",
     },
     "payload": {
         "user_request": {
@@ -28,10 +28,10 @@ test_msg = {
             "parameters": {
                 "patient_id": "test-123",
                 "drug_name": "TestDrug",
-                "insurer_id": "TestIns"
-            }
+                "insurer_id": "TestIns",
+            },
         }
-    }
+    },
 }
 
 print(f"\nSending test to Commander with workflow ID: {workflow_id}")
@@ -49,10 +49,10 @@ if r.exists(workflow_key):
     print(f"workflow_id field: {data.get('workflow_id')}")
 else:
     print(f"❌ FAILED - Workflow not created")
-    
+
     # Check Commander queue
     queue_len = r.llen("mcp:queue:commander_agent_01")
     print(f"Commander queue: {queue_len} messages")
-    
+
     # Check Commander logs
     print("\nCHECK THE COMMANDER CONSOLE FOR ERRORS!")

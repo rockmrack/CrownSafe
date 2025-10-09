@@ -23,23 +23,20 @@ security_metrics = {
     "honeypot_hits": {},
     "geographic_blocks": {},
     "user_agent_blocks": {},
-    "last_updated": time.time()
+    "last_updated": time.time(),
 }
 
+
 def update_security_metrics(
-    threat_score: int,
-    attack_type: str,
-    client_ip: str,
-    user_agent: str,
-    blocked: bool = False
+    threat_score: int, attack_type: str, client_ip: str, user_agent: str, blocked: bool = False
 ):
     """Update security metrics for dashboard"""
     global security_metrics
-    
+
     security_metrics["total_requests"] += 1
     if blocked:
         security_metrics["blocked_requests"] += 1
-    
+
     # Threat score distribution
     if threat_score >= 100:
         security_metrics["threat_score_distribution"]["critical"] += 1
@@ -49,32 +46,43 @@ def update_security_metrics(
         security_metrics["threat_score_distribution"]["medium"] += 1
     else:
         security_metrics["threat_score_distribution"]["low"] += 1
-    
+
     # Attack types
-    security_metrics["attack_types"][attack_type] = security_metrics["attack_types"].get(attack_type, 0) + 1
-    
+    security_metrics["attack_types"][attack_type] = (
+        security_metrics["attack_types"].get(attack_type, 0) + 1
+    )
+
     # Top attacking IPs
-    security_metrics["top_attacking_ips"][client_ip] = security_metrics["top_attacking_ips"].get(client_ip, 0) + 1
-    
+    security_metrics["top_attacking_ips"][client_ip] = (
+        security_metrics["top_attacking_ips"].get(client_ip, 0) + 1
+    )
+
     # User agent tracking
     if blocked:
-        security_metrics["user_agent_blocks"][user_agent] = security_metrics["user_agent_blocks"].get(user_agent, 0) + 1
-    
+        security_metrics["user_agent_blocks"][user_agent] = (
+            security_metrics["user_agent_blocks"].get(user_agent, 0) + 1
+        )
+
     security_metrics["last_updated"] = time.time()
+
 
 @router.get("/security/dashboard")
 async def security_dashboard():
     """Real-time security dashboard (HTML)"""
-    
+
     # Calculate security statistics
     total_requests = security_metrics["total_requests"]
     blocked_requests = security_metrics["blocked_requests"]
     block_rate = (blocked_requests / max(total_requests, 1)) * 100
-    
+
     # Get top threats
-    top_ips = sorted(security_metrics["top_attacking_ips"].items(), key=lambda x: x[1], reverse=True)[:10]
-    top_attacks = sorted(security_metrics["attack_types"].items(), key=lambda x: x[1], reverse=True)[:10]
-    
+    top_ips = sorted(
+        security_metrics["top_attacking_ips"].items(), key=lambda x: x[1], reverse=True
+    )[:10]
+    top_attacks = sorted(
+        security_metrics["attack_types"].items(), key=lambda x: x[1], reverse=True
+    )[:10]
+
     dashboard_html = f"""
     <!DOCTYPE html>
     <html>
@@ -174,40 +182,52 @@ async def security_dashboard():
     </body>
     </html>
     """
-    
+
     return HTMLResponse(content=dashboard_html)
+
 
 @router.get("/security/metrics")
 async def security_metrics_api():
     """Security metrics API endpoint"""
-    return JSONResponse(content={
-        "status": "bulletproof",
-        "metrics": security_metrics,
-        "protection_level": "enterprise",
-        "last_updated": datetime.fromtimestamp(security_metrics["last_updated"]).isoformat(),
-        "threat_level": "low" if security_metrics["blocked_requests"] < 100 else "high"
-    })
+    return JSONResponse(
+        content={
+            "status": "bulletproof",
+            "metrics": security_metrics,
+            "protection_level": "enterprise",
+            "last_updated": datetime.fromtimestamp(security_metrics["last_updated"]).isoformat(),
+            "threat_level": "low" if security_metrics["blocked_requests"] < 100 else "high",
+        }
+    )
+
 
 @router.get("/security/threats/live")
 async def live_threats():
     """Live threat feed for real-time monitoring"""
-    return JSONResponse(content={
-        "active_threats": len(security_metrics["top_attacking_ips"]),
-        "block_rate": (security_metrics["blocked_requests"] / max(security_metrics["total_requests"], 1)) * 100,
-        "threat_level": "low",  # Would be calculated based on recent activity
-        "last_attack": datetime.fromtimestamp(security_metrics["last_updated"]).isoformat(),
-        "protection_status": "active"
-    })
+    return JSONResponse(
+        content={
+            "active_threats": len(security_metrics["top_attacking_ips"]),
+            "block_rate": (
+                security_metrics["blocked_requests"] / max(security_metrics["total_requests"], 1)
+            )
+            * 100,
+            "threat_level": "low",  # Would be calculated based on recent activity
+            "last_attack": datetime.fromtimestamp(security_metrics["last_updated"]).isoformat(),
+            "protection_status": "active",
+        }
+    )
+
 
 @router.post("/security/block-ip")
 async def manual_ip_block(request: Request, ip_address: str):
     """Manual IP blocking endpoint (admin only)"""
     # In production, this would require admin authentication
     logger.warning(f"Manual IP block requested: {ip_address}")
-    
+
     # Add to blocked IPs (in production, update WAF or security groups)
-    return JSONResponse(content={
-        "status": "success",
-        "message": f"IP {ip_address} added to block list",
-        "blocked_at": datetime.utcnow().isoformat()
-    })
+    return JSONResponse(
+        content={
+            "status": "success",
+            "message": f"IP {ip_address} added to block list",
+            "blocked_at": datetime.utcnow().isoformat(),
+        }
+    )

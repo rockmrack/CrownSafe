@@ -21,8 +21,10 @@ from utils.security.input_validator import (
 # ENUMS
 # ============================================================================
 
+
 class RiskLevel(str, Enum):
     """Product risk level"""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -32,6 +34,7 @@ class RiskLevel(str, Enum):
 
 class RecallStatus(str, Enum):
     """Recall status"""
+
     ACTIVE = "active"
     RESOLVED = "resolved"
     MONITORING = "monitoring"
@@ -40,6 +43,7 @@ class RecallStatus(str, Enum):
 
 class SubscriptionTier(str, Enum):
     """Subscription tier"""
+
     FREE = "free"
     BASIC = "basic"
     PREMIUM = "premium"
@@ -49,6 +53,7 @@ class SubscriptionTier(str, Enum):
 
 class NotificationChannel(str, Enum):
     """Notification delivery channel"""
+
     PUSH = "push"
     EMAIL = "email"
     SMS = "sms"
@@ -57,6 +62,7 @@ class NotificationChannel(str, Enum):
 
 class ScanType(str, Enum):
     """Type of barcode scan"""
+
     BARCODE = "barcode"
     QR_CODE = "qr_code"
     DATAMATRIX = "datamatrix"
@@ -68,11 +74,13 @@ class ScanType(str, Enum):
 # REQUEST MODELS
 # ============================================================================
 
+
 class UserIdRequest(BaseModel):
     """Base request with user ID"""
+
     user_id: int = Field(..., gt=0, description="User ID")
-    
-    @field_validator('user_id')
+
+    @field_validator("user_id")
     @classmethod
     def validate_user_id(cls, v):
         return InputValidator.validate_user_id(v)
@@ -80,21 +88,23 @@ class UserIdRequest(BaseModel):
 
 class PaginationRequest(BaseModel):
     """Standard pagination request"""
+
     limit: int = Field(20, ge=1, le=100, description="Items per page")
     offset: int = Field(0, ge=0, le=10000, description="Number of items to skip")
-    
+
     # Validation is now in Field constraints above
 
 
 class DateRangeRequest(BaseModel):
     """Date range filter"""
+
     date_from: Optional[date] = Field(None, description="Start date (YYYY-MM-DD)")
     date_to: Optional[date] = Field(None, description="End date (YYYY-MM-DD)")
-    
-    @field_validator('date_to')
+
+    @field_validator("date_to")
     @classmethod
     def validate_date_range(cls, v, info):
-        date_from = info.data.get('date_from')
+        date_from = info.data.get("date_from")
         if v and date_from:
             if v < date_from:
                 raise ValueError("date_to must be after date_from")
@@ -103,18 +113,19 @@ class DateRangeRequest(BaseModel):
 
 class BarcodeScanRequest(BaseModel):
     """Request to scan a barcode"""
+
     model_config = {"protected_namespaces": ()}
-    
+
     barcode: str = Field(..., min_length=1, max_length=50, description="Barcode data")
     user_id: int = Field(..., gt=0, description="User ID")
     barcode_type: Optional[ScanType] = Field(None, description="Type of barcode")
-    
-    @field_validator('barcode')
+
+    @field_validator("barcode")
     @classmethod
     def validate_barcode(cls, v):
         return InputValidator.validate_barcode(v)
-    
-    @field_validator('user_id')
+
+    @field_validator("user_id")
     @classmethod
     def validate_user_id(cls, v):
         return InputValidator.validate_user_id(v)
@@ -122,30 +133,31 @@ class BarcodeScanRequest(BaseModel):
 
 class ProductSearchRequest(BaseModel):
     """Request to search for products/recalls"""
+
     query: Optional[str] = Field(None, max_length=200, description="Search query")
     product_name: Optional[str] = Field(None, max_length=500, description="Product name")
     brand: Optional[str] = Field(None, max_length=200, description="Brand name")
     model_number: Optional[str] = Field(None, max_length=100, description="Model number")
     barcode: Optional[str] = Field(None, max_length=50, description="Barcode")
-    
+
     # Filters
     risk_level: Optional[RiskLevel] = Field(None, description="Risk level filter")
     agencies: Optional[List[str]] = Field(None, description="Agency filter")
     date_from: Optional[date] = Field(None, description="Start date")
     date_to: Optional[date] = Field(None, description="End date")
-    
+
     # Pagination
     limit: int = Field(20, ge=1, le=100)
     offset: int = Field(0, ge=0)
-    
-    @field_validator('query')
+
+    @field_validator("query")
     @classmethod
     def validate_query(cls, v):
         if v:
             return InputValidator.validate_search_query(v)
         return v
-    
-    @field_validator('barcode')
+
+    @field_validator("barcode")
     @classmethod
     def validate_barcode(cls, v):
         if v:
@@ -155,9 +167,10 @@ class ProductSearchRequest(BaseModel):
 
 class EmailRequest(BaseModel):
     """Request with email address"""
+
     email: EmailStr = Field(..., description="Email address")
-    
-    @field_validator('email')
+
+    @field_validator("email")
     @classmethod
     def validate_email(cls, v):
         return InputValidator.validate_email(v)
@@ -167,8 +180,10 @@ class EmailRequest(BaseModel):
 # RESPONSE MODELS
 # ============================================================================
 
+
 class ApiResponse(BaseModel):
     """Standard API response"""
+
     success: bool = Field(..., description="Whether request was successful")
     data: Optional[Any] = Field(None, description="Response data")
     error: Optional[str] = Field(None, description="Error message if failed")
@@ -179,6 +194,7 @@ class ApiResponse(BaseModel):
 
 class PaginatedResponse(BaseModel):
     """Paginated API response"""
+
     success: bool = True
     data: List[Any] = Field(default_factory=list, description="List of items")
     total: int = Field(..., description="Total number of items")
@@ -191,6 +207,7 @@ class PaginatedResponse(BaseModel):
 
 class UserResponse(BaseModel):
     """User data response"""
+
     id: int
     email: str
     created_at: datetime
@@ -201,8 +218,9 @@ class UserResponse(BaseModel):
 
 class ProductInfo(BaseModel):
     """Product information"""
+
     model_config = {"protected_namespaces": ()}
-    
+
     product_name: str
     brand: Optional[str] = None
     model_number: Optional[str] = None
@@ -214,6 +232,7 @@ class ProductInfo(BaseModel):
 
 class RecallInfo(BaseModel):
     """Recall information"""
+
     recall_id: str
     product_name: str
     brand: Optional[str] = None
@@ -230,25 +249,26 @@ class RecallInfo(BaseModel):
 
 class ScanResult(BaseModel):
     """Barcode scan result"""
+
     model_config = {"protected_namespaces": ()}
-    
+
     scan_id: str = Field(..., description="Unique scan ID")
     barcode: str
     scan_type: ScanType
     timestamp: datetime
-    
+
     # Extracted data
     product_info: Optional[ProductInfo] = None
-    
+
     # Recall check results
     recall_found: bool = False
     recall_count: int = 0
     recalls: List[RecallInfo] = Field(default_factory=list)
-    
+
     # Risk assessment
     overall_risk: RiskLevel = RiskLevel.UNKNOWN
     safety_score: Optional[float] = Field(None, ge=0, le=100, description="Safety score (0-100)")
-    
+
     # Additional metadata
     verification_status: Optional[str] = None
     trace_id: Optional[str] = None
@@ -256,6 +276,7 @@ class ScanResult(BaseModel):
 
 class NotificationResponse(BaseModel):
     """Notification data"""
+
     notification_id: str
     user_id: int
     title: str
@@ -268,6 +289,7 @@ class NotificationResponse(BaseModel):
 
 class SubscriptionResponse(BaseModel):
     """Subscription information"""
+
     user_id: int
     tier: SubscriptionTier
     is_active: bool
@@ -281,8 +303,10 @@ class SubscriptionResponse(BaseModel):
 # ANALYTICS & REPORTING
 # ============================================================================
 
+
 class AnalyticsData(BaseModel):
     """Analytics data point"""
+
     metric_name: str
     value: float
     timestamp: datetime
@@ -291,6 +315,7 @@ class AnalyticsData(BaseModel):
 
 class ReportMetadata(BaseModel):
     """Report metadata"""
+
     report_id: str
     report_type: str
     created_at: datetime
@@ -303,8 +328,10 @@ class ReportMetadata(BaseModel):
 # ERROR MODELS
 # ============================================================================
 
+
 class ErrorDetail(BaseModel):
     """Detailed error information"""
+
     code: str = Field(..., description="Error code")
     message: str = Field(..., description="Error message")
     field: Optional[str] = Field(None, description="Field that caused error")
@@ -313,6 +340,7 @@ class ErrorDetail(BaseModel):
 
 class ValidationError(BaseModel):
     """Validation error response"""
+
     success: bool = False
     error: str = "Validation failed"
     errors: List[ErrorDetail] = Field(default_factory=list)
@@ -323,8 +351,10 @@ class ValidationError(BaseModel):
 # HEALTH CHECK
 # ============================================================================
 
+
 class HealthCheckResponse(BaseModel):
     """Health check response"""
+
     status: str = "healthy"
     version: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
@@ -335,4 +365,3 @@ class HealthCheckResponse(BaseModel):
             "external_apis": "unknown",
         }
     )
-

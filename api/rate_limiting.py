@@ -20,15 +20,16 @@ class RateLimitConfig:
     """
     Configuration for rate limiting
     """
+
     # Default limits per endpoint category
     SEARCH_LIMIT = 60  # 60 requests per minute for search
     DETAIL_LIMIT = 120  # 120 requests per minute for detail views
     HEALTH_LIMIT = 300  # 300 requests per minute for health checks
     DEFAULT_LIMIT = 100  # Default for other endpoints
-    
+
     # Time window (seconds)
     WINDOW = 60
-    
+
     @classmethod
     def get_redis_url(cls) -> Optional[str]:
         """Get Redis URL from environment; do not default to localhost in prod."""
@@ -38,7 +39,7 @@ class RateLimitConfig:
 async def init_rate_limiter() -> bool:
     """
     Initialize FastAPI rate limiter with Redis
-    
+
     Returns:
         True if successful, False otherwise
     """
@@ -47,11 +48,7 @@ async def init_rate_limiter() -> bool:
         if not redis_url:
             logger.info("Rate limiter: disabled (no RATE_LIMIT_REDIS_URL/REDIS_URL)")
             return False
-        redis = Redis.from_url(
-            redis_url,
-            encoding="utf-8",
-            decode_responses=True
-        )
+        redis = Redis.from_url(redis_url, encoding="utf-8", decode_responses=True)
         await redis.ping()
         await FastAPILimiter.init(redis)
         logger.info(f"Rate limiter initialized with Redis at {redis_url}")
@@ -78,17 +75,17 @@ async def rate_limit_exceeded_handler(request: Request, exc) -> JSONResponse:
     Returns consistent error format
     """
     trace_id = getattr(request.state, "trace_id", None)
-    
+
     # Get retry after time (default 60 seconds)
     retry_after = 60
-    
+
     headers = {
         "Retry-After": str(retry_after),
-        "X-RateLimit-Limit": str(exc.limit) if hasattr(exc, 'limit') else "60",
+        "X-RateLimit-Limit": str(exc.limit) if hasattr(exc, "limit") else "60",
         "X-RateLimit-Window": "60",
-        "X-RateLimit-Retry-After": str(retry_after)
+        "X-RateLimit-Retry-After": str(retry_after),
     }
-    
+
     # Log the rate limit event
     logger.warning(
         "Rate limit exceeded",
@@ -96,38 +93,36 @@ async def rate_limit_exceeded_handler(request: Request, exc) -> JSONResponse:
             "traceId": trace_id,
             "path": request.url.path,
             "method": request.method,
-            "ip": request.client.host if request.client else None
-        }
+            "ip": request.client.host if request.client else None,
+        },
     )
-    
+
     return JSONResponse(
         content={
             "ok": False,
             "error": {
                 "code": "RATE_LIMITED",
                 "message": "Too many requests. Please slow down and try again later.",
-                "retry_after": retry_after
+                "retry_after": retry_after,
             },
-            "traceId": trace_id
+            "traceId": trace_id,
         },
         status_code=429,
-        headers=headers
+        headers=headers,
     )
 
 
 def get_rate_limiter(
-    times: int = 100,
-    seconds: int = 60,
-    key_func: Optional[callable] = None
+    times: int = 100, seconds: int = 60, key_func: Optional[callable] = None
 ) -> RateLimiter:
     """
     Factory function to create rate limiter dependencies
-    
+
     Args:
         times: Number of allowed requests
         seconds: Time window in seconds
         key_func: Optional custom key function
-    
+
     Returns:
         RateLimiter dependency
     """
@@ -139,36 +134,21 @@ class RateLimiters:
     """
     Pre-configured rate limiters for different endpoint types
     """
-    
+
     # Heavy operations - 60 req/min
-    search = RateLimiter(
-        times=RateLimitConfig.SEARCH_LIMIT,
-        seconds=RateLimitConfig.WINDOW
-    )
-    
+    search = RateLimiter(times=RateLimitConfig.SEARCH_LIMIT, seconds=RateLimitConfig.WINDOW)
+
     # Light operations - 120 req/min
-    detail = RateLimiter(
-        times=RateLimitConfig.DETAIL_LIMIT,
-        seconds=RateLimitConfig.WINDOW
-    )
-    
+    detail = RateLimiter(times=RateLimitConfig.DETAIL_LIMIT, seconds=RateLimitConfig.WINDOW)
+
     # Health checks - 300 req/min
-    health = RateLimiter(
-        times=RateLimitConfig.HEALTH_LIMIT,
-        seconds=RateLimitConfig.WINDOW
-    )
-    
+    health = RateLimiter(times=RateLimitConfig.HEALTH_LIMIT, seconds=RateLimitConfig.WINDOW)
+
     # Default - 100 req/min
-    default = RateLimiter(
-        times=RateLimitConfig.DEFAULT_LIMIT,
-        seconds=RateLimitConfig.WINDOW
-    )
-    
+    default = RateLimiter(times=RateLimitConfig.DEFAULT_LIMIT, seconds=RateLimitConfig.WINDOW)
+
     # Strict - 10 req/min (for sensitive operations)
-    strict = RateLimiter(
-        times=10,
-        seconds=RateLimitConfig.WINDOW
-    )
+    strict = RateLimiter(times=10, seconds=RateLimitConfig.WINDOW)
 
 
 @asynccontextmanager

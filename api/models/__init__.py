@@ -8,7 +8,7 @@ from .search_validation import (
     Str128,
     Str64,
     Str32,
-    Str16
+    Str16,
 )
 
 __all__ = [
@@ -16,6 +16,6 @@ __all__ = [
     "RecallDetailRequest",
     "Str128",
     "Str64",
-    "Str32", 
-    "Str16"
+    "Str32",
+    "Str16",
 ]

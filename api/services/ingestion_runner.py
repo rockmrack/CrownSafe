@@ -23,9 +23,7 @@ class IngestionRunner:
         self.db_session = db_session
         self.config = config or Config()
 
-    def start_run(
-        self, source: IngestionSource, run_name: Optional[str] = None
-    ) -> IngestionRun:
+    def start_run(self, source: IngestionSource, run_name: Optional[str] = None) -> IngestionRun:
         """
         Records the start of an ingestion run.
         """
@@ -53,9 +51,7 @@ class IngestionRunner:
         """
         Records the completion or failure of an ingestion run.
         """
-        logger.info(
-            f"Ending ingestion run {run.id} with status: {status.value}"
-        )
+        logger.info(f"Ending ingestion run {run.id} with status: {status.value}")
         run.finished_at = datetime.now(timezone.utc)
         run.status = status.value
         run.items_inserted = records_processed
@@ -68,7 +64,6 @@ class IngestionRunner:
         return run
 
 
-
 def main():
     """
     Example usage of the IngestionRunner.
@@ -78,13 +73,12 @@ def main():
         runner = IngestionRunner(db_session, config)
 
         # Start a run
-        run = runner.start_run(
-            source=IngestionSource.MANUAL_UPLOAD, run_name="Test Run"
-        )
+        run = runner.start_run(source=IngestionSource.MANUAL_UPLOAD, run_name="Test Run")
         logger.info(f"Started run: {run.id} at {run.started_at}")
 
         # Simulate work
         import time
+
         time.sleep(2)
         records_processed = 100
         errors = 5

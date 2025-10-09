@@ -9,12 +9,17 @@ os.environ.setdefault("CREATE_TABLES_ON_IMPORT", "true")
 
 client = TestClient(app)
 
+
 def auth_and_get_user_id():
     email = f"test+{uuid.uuid4().hex[:6]}@ex.com"
     pwd = "P@ssw0rd!"
-    r = client.post("/api/v1/auth/register", json={"email": email, "password": pwd, "confirm_password": pwd})
+    r = client.post(
+        "/api/v1/auth/register", json={"email": email, "password": pwd, "confirm_password": pwd}
+    )
     print("register_status", r.status_code)
-    r = client.post("/api/v1/auth/token", data={"username": email, "password": pwd, "grant_type": "password"})
+    r = client.post(
+        "/api/v1/auth/token", data={"username": email, "password": pwd, "grant_type": "password"}
+    )
     print("token_status", r.status_code)
     tok = r.json().get("access_token")
     h = {"Authorization": f"Bearer {tok}"}
@@ -22,6 +27,7 @@ def auth_and_get_user_id():
     print("me_status", me.status_code)
     uid = (me.json() or {}).get("id") or (me.json().get("data", {}) if me.ok else {}).get("id")
     return h, uid
+
 
 def extract_report(resp_json):
     # Handles both {"status":"success",...} and {"success":true,"data":{...}}
@@ -33,6 +39,7 @@ def extract_report(resp_json):
     if not dl and rid:
         dl = f"/api/v1/baby/reports/download/{rid}"
     return rid, dl
+
 
 def generate(h, uid, rtype):
     payloads = ({"type": rtype, "user_id": uid}, {"report_type": rtype, "user_id": uid})
@@ -47,19 +54,29 @@ def generate(h, uid, rtype):
         return None, None
     return extract_report(last.json())
 
+
 def head_and_get(h, url, label):
     # HEAD
     rh = client.head(url, headers=h)
     print(f"{label} HEAD_status", rh.status_code)
-    for k in ["Content-Type","Content-Disposition","Cache-Control","Content-Length","X-Content-Type-Options","X-Frame-Options","Referrer-Policy"]:
+    for k in [
+        "Content-Type",
+        "Content-Disposition",
+        "Cache-Control",
+        "Content-Length",
+        "X-Content-Type-Options",
+        "X-Frame-Options",
+        "Referrer-Policy",
+    ]:
         if k in rh.headers:
             print(f"{label} {k}: {rh.headers[k]}")
     # GET
     rg = client.get(url, headers=h)
     print(f"{label} GET_status", rg.status_code)
-    for k in ["Content-Type","Content-Disposition","Cache-Control","Content-Length"]:
+    for k in ["Content-Type", "Content-Disposition", "Cache-Control", "Content-Length"]:
         if k in rg.headers:
             print(f"{label} {k}: {rg.headers[k]}")
+
 
 def run():
     h, uid = auth_and_get_user_id()
@@ -68,6 +85,7 @@ def run():
         rid, url = generate(h, uid, rtype)
         if rid and url:
             head_and_get(h, url, rtype)
+
 
 if __name__ == "__main__":
     run()

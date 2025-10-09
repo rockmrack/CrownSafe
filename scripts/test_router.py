@@ -8,23 +8,28 @@ import json
 from unittest.mock import AsyncMock
 
 # --- FIX: Add project root to Python's path ---
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # ----------------------------------------------
 
 from agents.routing.router_agent.agent_logic import BabyShieldRouterLogic
+
 
 # --- Mock Agent Logic ---
 # We create a fake version of the RecallDataAgentLogic.
 # This is necessary because we don't have its real logic yet.
 class MockRecallDataAgentLogic:
     def __init__(self, *args, **kwargs):
-        self.process_task = AsyncMock(return_value={
-            "status": "COMPLETED",
-            "result": {"recalls_found": 1, "summary": "Found one recall."}
-        })
+        self.process_task = AsyncMock(
+            return_value={
+                "status": "COMPLETED",
+                "result": {"recalls_found": 1, "summary": "Found one recall."},
+            }
+        )
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
 
 def convert_sets_to_lists(obj):
     """
@@ -38,6 +43,7 @@ def convert_sets_to_lists(obj):
         return [convert_sets_to_lists(i) for i in obj]
     else:
         return obj
+
 
 async def main():
     """Main function to run the simplified Router test."""
@@ -53,9 +59,9 @@ async def main():
                 "task_description": "Check for recalls.",
                 "agent_capability_required": "query_recalls_by_product",
                 "inputs": {"product_name": "Test Product", "upc": "123"},
-                "dependencies": []
+                "dependencies": [],
             }
-        ]
+        ],
     }
     logger.info("Step 1: Created a simplified one-step plan.")
     print(json.dumps(simplified_plan, indent=2))
@@ -77,24 +83,27 @@ async def main():
     logger.info("Router execution finished.")
 
     # 4. --- Analyze the final result ---
-    print("\n" + "="*50)
+    print("\n" + "=" * 50)
     print("          ROUTER AGENT TEST RESULT")
-    print("="*50)
+    print("=" * 50)
     print(json.dumps(convert_sets_to_lists(router_result), indent=2))  # <-- Fix applied here
 
     if router_result.get("status") == "COMPLETED":
         final_result = router_result.get("final_result", {})
         if final_result.get("recalls_found") == 1:
-            print("\n" + "="*50)
+            print("\n" + "=" * 50)
             print("✅ TEST PASSED: The router successfully executed the one-step plan.")
         else:
-            print("\n" + "="*50)
+            print("\n" + "=" * 50)
             print("❌ TEST FAILED: The final result was not as expected.")
     else:
-        print("\n" + "="*50)
-        print(f"❌ TEST FAILED: The router did not complete the plan. Status: {router_result.get('status')}")
+        print("\n" + "=" * 50)
+        print(
+            f"❌ TEST FAILED: The router did not complete the plan. Status: {router_result.get('status')}"
+        )
 
     print("--- Test Complete ---")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

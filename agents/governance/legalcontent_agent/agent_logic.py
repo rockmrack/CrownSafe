@@ -14,29 +14,17 @@ logger = logging.getLogger(__name__)
 
 # Path to directory containing legal documents (data/legal)
 LEGAL_DOCS_PATH = os.path.abspath(
-    os.path.join(
-        os.path.dirname(__file__),
-        '..', '..', '..',
-        'data', 'legal'
-    )
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "legal")
 )
 
+
 class LegalContentAgentLogic:
-    def __init__(
-        self,
-        agent_id: str,
-        logger_instance: Optional[logging.Logger] = None
-    ):
+    def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
-        self.logger.info(
-            f"LegalContentAgentLogic initialized. Document path: {LEGAL_DOCS_PATH}"
-        )
+        self.logger.info(f"LegalContentAgentLogic initialized. Document path: {LEGAL_DOCS_PATH}")
 
-    async def get_document(
-        self,
-        document_name: str
-    ) -> Optional[str]:
+    async def get_document(self, document_name: str) -> Optional[str]:
         # Sanitize filename to prevent path traversal
         safe_name = os.path.basename(document_name)
         file_path = os.path.join(LEGAL_DOCS_PATH, safe_name)
@@ -49,48 +37,30 @@ class LegalContentAgentLogic:
         try:
             # Simulate a small I/O delay
             await asyncio.sleep(0.01)
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
             self.logger.info(f"Successfully read document: {safe_name}")
             return content
 
         except Exception as e:
-            self.logger.error(
-                f"Failed to read document {safe_name}: {e}",
-                exc_info=True
-            )
+            self.logger.error(f"Failed to read document {safe_name}: {e}", exc_info=True)
             return None
 
-    async def process_task(
-        self,
-        inputs: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
         self.logger.info(f"Received task with inputs: {inputs}")
 
-        document_name = inputs.get('document_name')
+        document_name = inputs.get("document_name")
         if not document_name:
-            return {
-                'status': 'FAILED',
-                'error': 'document_name is required.'
-            }
+            return {"status": "FAILED", "error": "document_name is required."}
 
         content = await self.get_document(document_name)
         if content is None:
-            return {
-                'status': 'FAILED',
-                'error': f"Could not retrieve document: {document_name}"
-            }
+            return {"status": "FAILED", "error": f"Could not retrieve document: {document_name}"}
 
         if not content.strip():
-            return {
-                'status': 'FAILED',
-                'error': f"Document {document_name} is empty."
-            }
+            return {"status": "FAILED", "error": f"Document {document_name} is empty."}
 
         return {
-            'status': 'COMPLETED',
-            'result': {
-                'document_name': document_name,
-                'content': content
-            }
+            "status": "COMPLETED",
+            "result": {"document_name": document_name, "content": content},
         }

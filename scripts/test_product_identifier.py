@@ -7,13 +7,15 @@ import logging
 import json
 
 # --- Add project root to Python's path ---
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
 from agents.product_identifier_agent.agent_logic import ProductIdentifierLogic
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # --- Test Configuration ---
 # We will use a known barcode for a common baby product.
@@ -21,6 +23,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 TEST_BARCODE = " 888462079525"
 EXPECTED_PRODUCT_NAME_FRAGMENT = "Apple Watch"
 # --------------------------
+
 
 async def main():
     """Main function to run the live ProductIdentifierAgent test."""
@@ -43,33 +46,38 @@ async def main():
         logger.info("Task processing finished.")
 
         # 4. Analyze and print the result.
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("          AGENT TEST RESULT")
-        print("="*50)
+        print("=" * 50)
         print(json.dumps(result, indent=2))
 
         # 5. Validate the result.
         if result.get("status") == "COMPLETED":
             product_name = result.get("result", {}).get("product_name", "")
             if EXPECTED_PRODUCT_NAME_FRAGMENT.lower() in product_name.lower():
-                print("\n" + "="*50)
+                print("\n" + "=" * 50)
                 print(f"✅✅✅ TEST PASSED: Successfully identified '{product_name}' from barcode.")
             else:
-                print("\n" + "="*50)
-                print(f"❌ TEST FAILED: The product name '{product_name}' did not contain the expected fragment '{EXPECTED_PRODUCT_NAME_FRAGMENT}'.")
+                print("\n" + "=" * 50)
+                print(
+                    f"❌ TEST FAILED: The product name '{product_name}' did not contain the expected fragment '{EXPECTED_PRODUCT_NAME_FRAGMENT}'."
+                )
         else:
-            print("\n" + "="*50)
-            print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")
+            print("\n" + "=" * 50)
+            print(
+                f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}"
+            )
 
     except ValueError as e:
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print(f"❌ TEST FAILED: A configuration error occurred. {e}")
         print("Please ensure you have added your UPCITEMDB_API_KEY to the .env file.")
     except Exception as e:
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print(f"❌ TEST FAILED: An unexpected error occurred: {e}")
 
     print("--- Test Complete ---")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

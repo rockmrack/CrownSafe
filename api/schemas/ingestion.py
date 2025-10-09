@@ -7,6 +7,7 @@ from enum import Enum
 
 class IngestionSource(str, Enum):
     """Data ingestion source types"""
+
     CPSC_RECALL = "cpsc_recall"
     CPSC_NEISS = "cpsc_neiss"
     CPSC_VIOLATION = "cpsc_violation"
@@ -19,6 +20,7 @@ class IngestionSource(str, Enum):
 
 class IngestionStatus(str, Enum):
     """Ingestion run status"""
+
     QUEUED = "queued"
     IN_PROGRESS = "in_progress"
     RUNNING = "running"
@@ -27,4 +29,3 @@ class IngestionStatus(str, Enum):
     FAILED = "failed"
     CANCELLED = "cancelled"
     PARTIAL = "partial"
-

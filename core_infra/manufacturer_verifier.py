@@ -111,5 +111,3 @@ def get_default_verifier() -> ManufacturerVerifier:
         return MockManufacturerVerifier()
     # Placeholder: return mock if no real connectors configured
     return MockManufacturerVerifier()
-
-

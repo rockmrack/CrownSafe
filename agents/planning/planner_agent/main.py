@@ -27,12 +27,14 @@ except ImportError as e:
 try:
     # Import from planner_agent_01 at project root
     from planner_agent_01.logic import MemoryAugmentedPlannerLogic as PlannerLogic
+
     print(f"Successfully imported MemoryAugmentedPlannerLogic from planner_agent_01")
 except ImportError as e:
     print(f"Failed to import from planner_agent_01: {e}")
     # Fallback: Try the local agent_logic.py if it has the right class
     try:
         from .agent_logic import MemoryAugmentedPlannerLogic as PlannerLogic
+
         print(f"Using local agent_logic.py")
     except ImportError as e2:
         print(f"CRITICAL_ERROR: Cannot import MemoryAugmentedPlannerLogic: {e2}")
@@ -40,21 +42,20 @@ except ImportError as e:
         print(f"Current directory: {os.getcwd()}")
         sys.exit(1)
 
+
 # Environment setup
 def setup_environment():
     """Setup environment variables with proper fallback"""
-    dotenv_paths = [
-        os.path.join(project_root_main, '.env'),
-        ".env"
-    ]
-    
+    dotenv_paths = [os.path.join(project_root_main, ".env"), ".env"]
+
     for dotenv_path in dotenv_paths:
         if os.path.exists(dotenv_path):
             load_dotenv(dotenv_path)
             return dotenv_path
-    
+
     load_dotenv()  # Final fallback
     return "default locations"
+
 
 env_source = setup_environment()
 
@@ -67,9 +68,7 @@ AGENT_VERSION = "1.3.0"  # Updated version for registration fix
 # Logging setup
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 logging.basicConfig(
-    level=LOG_LEVEL,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    force=True
+    level=LOG_LEVEL, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", force=True
 )
 
 logger = logging.getLogger(f"{AGENT_ID}.main")
@@ -80,9 +79,10 @@ mcp_client_instance: Optional[MCPClient] = None
 agent_logic_instance: Optional[PlannerLogic] = None
 shutdown_in_progress = False
 
+
 class PlannerAgentManager:
     """Main agent manager for PlannerAgent"""
-    
+
     def __init__(self):
         self.mcp_client: Optional[MCPClient] = None
         self.planner_logic: Optional[PlannerLogic] = None
@@ -116,49 +116,61 @@ class PlannerAgentManager:
 
             # Convert message to dict format expected by logic
             message_dict = message.model_dump()
-            
+
             # Process through logic - handle both async and sync versions
             try:
-                if hasattr(self.planner_logic, 'process_message') and asyncio.iscoroutinefunction(self.planner_logic.process_message):
-                    response_from_logic = await self.planner_logic.process_message(message_dict, self.mcp_client)
+                if hasattr(self.planner_logic, "process_message") and asyncio.iscoroutinefunction(
+                    self.planner_logic.process_message
+                ):
+                    response_from_logic = await self.planner_logic.process_message(
+                        message_dict, self.mcp_client
+                    )
                 else:
                     # Handle synchronous process_message or fallback to process_task
-                    if message_type == "TASK_ASSIGN" and hasattr(self.planner_logic, 'process_task'):
-                        task_data = message_dict.get('payload', {})
+                    if message_type == "TASK_ASSIGN" and hasattr(
+                        self.planner_logic, "process_task"
+                    ):
+                        task_data = message_dict.get("payload", {})
                         if asyncio.iscoroutinefunction(self.planner_logic.process_task):
                             task_result_payload = await self.planner_logic.process_task(task_data)
                         else:
                             task_result_payload = self.planner_logic.process_task(task_data)
-                        
+
                         # Convert task result to message format
                         if task_result_payload and isinstance(task_result_payload, dict):
                             if task_result_payload.get("status") == "COMPLETED":
                                 response_from_logic = {
                                     "message_type": "TASK_COMPLETE",
-                                    "payload": task_result_payload
+                                    "payload": task_result_payload,
                                 }
                                 logger.debug(f"Task completed successfully, sending TASK_COMPLETE")
                             else:
                                 response_from_logic = {
                                     "message_type": "TASK_FAIL",
-                                    "payload": task_result_payload 
+                                    "payload": task_result_payload,
                                 }
-                                logger.debug(f"Task failed with status: {task_result_payload.get('status')}, sending TASK_FAIL")
+                                logger.debug(
+                                    f"Task failed with status: {task_result_payload.get('status')}, sending TASK_FAIL"
+                                )
                         else:
-                            logger.error(f"Planner logic process_task returned invalid data: {task_result_payload}")
+                            logger.error(
+                                f"Planner logic process_task returned invalid data: {task_result_payload}"
+                            )
                             response_from_logic = {
                                 "message_type": "TASK_FAIL",
                                 "payload": {
                                     "status": "FAILED",
                                     "error": "Invalid response from planner logic",
                                     "agent_id": AGENT_ID,
-                                    "correlation_id": correlation_id
-                                }
+                                    "correlation_id": correlation_id,
+                                },
                             }
                     else:
                         # For other message types, try process_message sync
-                        if hasattr(self.planner_logic, 'process_message'):
-                            response_from_logic = self.planner_logic.process_message(message_dict, self.mcp_client)
+                        if hasattr(self.planner_logic, "process_message"):
+                            response_from_logic = self.planner_logic.process_message(
+                                message_dict, self.mcp_client
+                            )
                         else:
                             logger.warning(f"No handler for message type: {message_type}")
                             response_from_logic = None
@@ -172,8 +184,8 @@ class PlannerAgentManager:
                             "error": str(process_error),
                             "agent_id": AGENT_ID,
                             "correlation_id": correlation_id,
-                            "message": f"Exception in planner logic: {str(process_error)}"
-                        }
+                            "message": f"Exception in planner logic: {str(process_error)}",
+                        },
                     }
                 else:
                     response_from_logic = None
@@ -193,20 +205,24 @@ class PlannerAgentManager:
         header = message.mcp_header
         payload = message.payload
         correlation_id = header.correlation_id
-        
+
         logger.error(f"Received ERROR message (CorrID: {correlation_id})")
         logger.error(f"Error details: {payload}")
-        
+
         # Check if this is a registration error
         error_str = str(payload).lower()
-        if "registration" in error_str or "capabilities" in error_str or "discovery_register" in error_str:
+        if (
+            "registration" in error_str
+            or "capabilities" in error_str
+            or "discovery_register" in error_str
+        ):
             logger.critical("REGISTRATION FAILED - Server rejected our capabilities format!")
             logger.critical("Error payload: %s", payload)
             logger.critical("Shutting down due to registration failure...")
-            
+
             # Set shutdown event
             self.stop_event.set()
-            
+
             # Force exit with error code
             sys.exit(1)
         else:
@@ -240,15 +256,17 @@ class PlannerAgentManager:
                 return
 
             # Send response
-            logger.info(f"Sending {response_message_type} response to {target_agent_id} (CorrID: {correlation_id})")
-            
+            logger.info(
+                f"Sending {response_message_type} response to {target_agent_id} (CorrID: {correlation_id})"
+            )
+
             await self.mcp_client.send_message(
                 payload=response_payload,
                 message_type=response_message_type,
                 target_agent_id=target_agent_id,
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
-            
+
             logger.debug(f"Successfully sent {response_message_type} response")
 
         except Exception as e:
@@ -273,16 +291,16 @@ class PlannerAgentManager:
                     "agent_id": AGENT_ID,
                     "status": "FAILED",
                     "error_message": f"PlannerAgent failed to process {message_type}: {str(error)}",
-                    "message": f"Internal error in {AGENT_NAME}: {str(error)}"
+                    "message": f"Internal error in {AGENT_NAME}: {str(error)}",
                 }
 
                 await self.mcp_client.send_message(
                     payload=error_payload,
                     message_type="TASK_FAIL",
                     target_agent_id=sender_id,
-                    correlation_id=correlation_id
+                    correlation_id=correlation_id,
                 )
-                
+
                 logger.info(f"Sent TASK_FAIL response for error in {message_type}")
 
         except Exception as send_error:
@@ -292,26 +310,26 @@ class PlannerAgentManager:
         """FIXED: Get capabilities in the correct format - list of dictionaries"""
         # Check if logic has memory manager
         memory_augmented = False
-        if self.planner_logic and hasattr(self.planner_logic, 'memory_manager'):
+        if self.planner_logic and hasattr(self.planner_logic, "memory_manager"):
             memory_augmented = self.planner_logic.memory_manager is not None
-        
+
         # Return capabilities as a list of dictionaries
         capabilities = [
             {
                 "name": "planning",
                 "description": "Creates a step-by-step execution plan based on a high-level research goal",
                 "type": "planning",
-                "version": AGENT_VERSION
+                "version": AGENT_VERSION,
             },
             {
                 "name": "llm_plan_generation",
                 "description": "Generates research plans using LLM and memory-augmented intelligence",
                 "memory_augmented": memory_augmented,
                 "type": "llm_planning",
-                "version": "2.6"
-            }
+                "version": "2.6",
+            },
         ]
-        
+
         logger.info(f"Registering with capabilities (list format): {capabilities}")
         return capabilities
 
@@ -319,19 +337,16 @@ class PlannerAgentManager:
         """Initialize PlannerLogic and MCPClient"""
         try:
             # Initialize PlannerLogic (MemoryAugmentedPlannerLogic)
-            self.planner_logic = PlannerLogic(
-                agent_id=AGENT_ID,
-                logger_instance=logic_logger
-            )
-            
+            self.planner_logic = PlannerLogic(agent_id=AGENT_ID, logger_instance=logic_logger)
+
             # FIXED: Get capabilities in correct format
             capabilities = self._get_capabilities_list()
-            
+
             # Initialize MCPClient
             mcp_settings = MCPConfig()
             base_mcp_server_url = mcp_settings.DEFAULT_ROUTER_URL
             if "/ws/" in base_mcp_server_url:
-                base_mcp_server_url = base_mcp_server_url.split('/ws/')[0]
+                base_mcp_server_url = base_mcp_server_url.split("/ws/")[0]
 
             self.mcp_client = MCPClient(
                 agent_id=AGENT_ID,
@@ -339,14 +354,16 @@ class PlannerAgentManager:
                 agent_type=AGENT_TYPE,
                 mcp_server_url=base_mcp_server_url,
                 capabilities=capabilities,  # Now passing list of dicts
-                message_handler=self.handle_incoming_message
+                message_handler=self.handle_incoming_message,
             )
-            
+
             logger.info(f"PlannerAgent components initialized (Version: {AGENT_VERSION})")
-            logger.info(f"Memory augmentation available: {any(cap.get('memory_augmented', False) for cap in capabilities)}")
+            logger.info(
+                f"Memory augmentation available: {any(cap.get('memory_augmented', False) for cap in capabilities)}"
+            )
             logger.info(f"Environment loaded from: {env_source}")
             logger.info(f"MCP Server URL: {base_mcp_server_url}")
-            
+
             return True
 
         except Exception as e:
@@ -357,19 +374,19 @@ class PlannerAgentManager:
         """Setup signal handlers for graceful shutdown"""
         try:
             loop = asyncio.get_running_loop()
-            
+
             def signal_handler(signum):
                 signal_name = signal.Signals(signum).name
                 logger.info(f"Received shutdown signal: {signal_name}")
                 self.stop_event.set()
-            
+
             for sig in [signal.SIGINT, signal.SIGTERM]:
                 try:
                     loop.add_signal_handler(sig, lambda s=sig: signal_handler(s))
                     logger.debug(f"Added signal handler for {signal.Signals(sig).name}")
                 except (NotImplementedError, OSError) as e:
                     logger.warning(f"Cannot add signal handler for {signal.Signals(sig).name}: {e}")
-                    
+
         except RuntimeError as e:
             logger.warning(f"Could not setup signal handlers: {e}")
 
@@ -377,15 +394,15 @@ class PlannerAgentManager:
         """Connect to MCP server and register agent"""
         try:
             await self.mcp_client.connect()
-            
+
             if not self.mcp_client.is_connected:
                 logger.critical("Failed to connect to MCP server")
                 return False
-            
+
             await self.mcp_client.register_self()
             logger.info(f"{AGENT_ID} connected and registered successfully")
             return True
-            
+
         except MCPConnectionError as e:
             logger.critical(f"MCP Connection Error: {e}")
             return False
@@ -396,12 +413,12 @@ class PlannerAgentManager:
     async def run_main_loop(self):
         """Main agent event loop"""
         logger.info(f"{AGENT_ID} entering main event loop...")
-        
+
         try:
             # Wait for shutdown signal
             await self.stop_event.wait()
             logger.info("Shutdown signal received")
-            
+
         except Exception as e:
             logger.error(f"Error in main event loop: {e}", exc_info=True)
 
@@ -409,59 +426,60 @@ class PlannerAgentManager:
         """Graceful shutdown of all components"""
         if self.shutdown_complete:
             return
-            
+
         logger.info(f"Shutting down {AGENT_ID}...")
-        
+
         try:
             # Shutdown PlannerLogic first
-            if self.planner_logic and hasattr(self.planner_logic, 'shutdown'):
+            if self.planner_logic and hasattr(self.planner_logic, "shutdown"):
                 if asyncio.iscoroutinefunction(self.planner_logic.shutdown):
                     await self.planner_logic.shutdown()
                 else:
                     self.planner_logic.shutdown()
                 logger.debug("PlannerLogic shutdown complete")
-            
+
             # Disconnect MCP client
             if self.mcp_client and self.mcp_client.is_connected:
                 await self.mcp_client.disconnect()
                 logger.debug("MCP client disconnected")
-            
+
             self.shutdown_complete = True
             logger.info(f"{AGENT_ID} shutdown complete")
-            
+
         except Exception as e:
             logger.error(f"Error during shutdown: {e}", exc_info=True)
+
 
 async def main():
     """Main entry point"""
     agent_manager = PlannerAgentManager()
-    
+
     # Update global instances for backward compatibility
     global mcp_client_instance, agent_logic_instance
-    
+
     try:
         # Initialize components
         if not await agent_manager.initialize_components():
             logger.critical("Failed to initialize agent components")
             return 1
-        
+
         # Update global references
         mcp_client_instance = agent_manager.mcp_client
         agent_logic_instance = agent_manager.planner_logic
-        
+
         # Setup signal handlers
         agent_manager.setup_signal_handlers()
-        
+
         # Connect and register
         if not await agent_manager.connect_and_register():
             logger.critical("Failed to connect and register agent")
             return 1
-        
+
         # Run main loop
         await agent_manager.run_main_loop()
-        
+
         return 0
-        
+
     except KeyboardInterrupt:
         logger.info("Received keyboard interrupt")
         return 0
@@ -470,6 +488,7 @@ async def main():
         return 1
     finally:
         await agent_manager.shutdown()
+
 
 if __name__ == "__main__":
     try:

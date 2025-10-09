@@ -13,6 +13,7 @@ from core_infra.auth.auth_manager import create_user  # Should be your user crea
 
 logging.basicConfig(level=logging.INFO)
 
+
 def seed_users():
     print("\n--- Seeding Alpha Users and Roles ---")
     create_tables()  # Ensure tables exist
@@ -52,7 +53,9 @@ def seed_users():
 
     print("\n--- Seeding complete! ---")
 
+
 if __name__ == "__main__":
     from dotenv import load_dotenv
+
     load_dotenv()
     seed_users()

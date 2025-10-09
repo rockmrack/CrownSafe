@@ -13,54 +13,53 @@ from datetime import datetime
 BASE_URL = "http://localhost:8001"  # Local testing
 # BASE_URL = "https://babyshield.cureviax.ai"  # Production
 
+
 async def test_alternatives_endpoint():
     """Test the safe alternatives endpoint"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Testing Safe Alternatives Endpoint")
-    print("="*60)
-    
+    print("=" * 60)
+
     async with httpx.AsyncClient() as client:
         # Test with a recalled product
         request_data = {
             "product_name": "Generic Baby Formula",
             "product_category": "Infant Formula",
             "user_id": 1,
-            "max_alternatives": 5
+            "max_alternatives": 5,
         }
-        
+
         try:
-            response = await client.post(
-                f"{BASE_URL}/api/v1/baby/alternatives",
-                json=request_data
-            )
-            
+            response = await client.post(f"{BASE_URL}/api/v1/baby/alternatives", json=request_data)
+
             if response.status_code == 200:
                 data = response.json()
                 print(f"✅ Status: {data['status']}")
                 print(f"Original Product: {data['original_product']}")
                 print(f"Category: {data['category_detected']}")
                 print(f"Alternatives Found: {data['alternatives_found']}")
-                
-                if data['alternatives']:
+
+                if data["alternatives"]:
                     print("\n🔄 Safe Alternatives:")
-                    for alt in data['alternatives']:
+                    for alt in data["alternatives"]:
                         print(f"  • {alt['product_name']}")
                         print(f"    Safety Score: {alt['safety_score']}/100")
                         print(f"    Reason: {alt['reason']}")
-                        if alt.get('where_to_buy'):
+                        if alt.get("where_to_buy"):
                             print(f"    Available at: {', '.join(alt['where_to_buy'])}")
             else:
                 print(f"❌ Error: {response.status_code} - {response.text}")
-                
+
         except Exception as e:
             print(f"❌ Connection error: {e}")
 
+
 async def test_notification_endpoint():
     """Test push notification sending"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Testing Push Notifications")
-    print("="*60)
-    
+    print("=" * 60)
+
     async with httpx.AsyncClient() as client:
         request_data = {
             "user_id": 1,
@@ -68,59 +67,52 @@ async def test_notification_endpoint():
             "body": "A product you scanned has been recalled. Tap for details.",
             "notification_type": "recall_alert",
             "priority": "high",
-            "data": {
-                "recall_id": "TEST-001",
-                "product": "Test Product"
-            }
+            "data": {"recall_id": "TEST-001", "product": "Test Product"},
         }
-        
+
         try:
             response = await client.post(
-                f"{BASE_URL}/api/v1/baby/notifications/send",
-                json=request_data
+                f"{BASE_URL}/api/v1/baby/notifications/send", json=request_data
             )
-            
+
             if response.status_code == 200:
                 data = response.json()
                 print(f"✅ Status: {data['status']}")
                 print(f"Notification ID: {data['notification_id']}")
                 print(f"Sent: {data['sent_count']} devices")
                 print(f"Failed: {data['failed_count']} devices")
-                
-                if data.get('errors'):
+
+                if data.get("errors"):
                     print("\n⚠️ Errors:")
-                    for error in data['errors']:
+                    for error in data["errors"]:
                         print(f"  - {error}")
             else:
                 print(f"❌ Error: {response.status_code} - {response.text}")
-                
+
         except Exception as e:
             print(f"❌ Connection error: {e}")
 
+
 async def test_bulk_notification():
     """Test bulk notification sending"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Testing Bulk Notifications")
-    print("="*60)
-    
+    print("=" * 60)
+
     async with httpx.AsyncClient() as client:
         request_data = {
             "user_ids": [1, 2, 3],
             "title": "🛡️ Safety Update",
             "body": "New safety guidelines available for infant car seats",
             "notification_type": "safety_tip",
-            "product_info": {
-                "category": "Car Seats",
-                "update_type": "guidelines"
-            }
+            "product_info": {"category": "Car Seats", "update_type": "guidelines"},
         }
-        
+
         try:
             response = await client.post(
-                f"{BASE_URL}/api/v1/baby/notifications/bulk",
-                json=request_data
+                f"{BASE_URL}/api/v1/baby/notifications/bulk", json=request_data
             )
-            
+
             if response.status_code == 200:
                 data = response.json()
                 print(f"✅ Bulk notification sent")
@@ -129,16 +121,17 @@ async def test_bulk_notification():
                 print(f"Devices targeted: {data['devices_targeted']}")
             else:
                 print(f"❌ Error: {response.status_code} - {response.text}")
-                
+
         except Exception as e:
             print(f"❌ Connection error: {e}")
 
+
 async def test_report_generation():
     """Test safety report generation"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Testing Report Generation")
-    print("="*60)
-    
+    print("=" * 60)
+
     async with httpx.AsyncClient() as client:
         request_data = {
             "user_id": 1,
@@ -146,52 +139,52 @@ async def test_report_generation():
             "format": "pdf",
             "date_range": 30,
             "include_alternatives": True,
-            "include_guidelines": True
+            "include_guidelines": True,
         }
-        
+
         try:
             response = await client.post(
-                f"{BASE_URL}/api/v1/baby/reports/generate",
-                json=request_data
+                f"{BASE_URL}/api/v1/baby/reports/generate", json=request_data
             )
-            
+
             if response.status_code == 200:
                 data = response.json()
                 print(f"✅ Report generated successfully")
                 print(f"Report ID: {data['report_id']}")
                 print(f"Type: {data['report_type']}")
                 print(f"Format: {data['format']}")
-                if data.get('download_url'):
+                if data.get("download_url"):
                     print(f"Download: {data['download_url']}")
-                if data.get('file_size_kb'):
+                if data.get("file_size_kb"):
                     print(f"Size: {data['file_size_kb']} KB")
-                if data.get('pages'):
+                if data.get("pages"):
                     print(f"Pages: {data['pages']}")
-                    
+
                 # Test download
-                if data.get('report_id'):
+                if data.get("report_id"):
                     print("\n📥 Testing report download...")
                     download_response = await client.get(
                         f"{BASE_URL}/api/v1/baby/reports/download/{data['report_id']}",
-                        params={"user_id": 1}
+                        params={"user_id": 1},
                     )
                     if download_response.status_code == 200:
                         print("✅ Report download successful")
                     else:
                         print(f"❌ Download failed: {download_response.status_code}")
-                        
+
             else:
                 print(f"❌ Error: {response.status_code} - {response.text}")
-                
+
         except Exception as e:
             print(f"❌ Connection error: {e}")
 
+
 async def test_onboarding():
     """Test user onboarding/profile setup"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Testing User Onboarding")
-    print("="*60)
-    
+    print("=" * 60)
+
     async with httpx.AsyncClient() as client:
         request_data = {
             "user_id": 1,
@@ -201,176 +194,176 @@ async def test_onboarding():
             "notification_preferences": {
                 "recalls": True,
                 "safety_tips": True,
-                "community_alerts": False
-            }
+                "community_alerts": False,
+            },
         }
-        
+
         try:
             response = await client.post(
-                f"{BASE_URL}/api/v1/baby/onboarding/setup",
-                json=request_data
+                f"{BASE_URL}/api/v1/baby/onboarding/setup", json=request_data
             )
-            
+
             if response.status_code == 200:
                 data = response.json()
                 print(f"✅ Profile setup complete")
                 print(f"Recommended Categories: {', '.join(data['recommended_categories'])}")
-                
-                if data.get('safety_tips'):
+
+                if data.get("safety_tips"):
                     print("\n💡 Safety Tips:")
-                    for tip in data['safety_tips']:
+                    for tip in data["safety_tips"]:
                         print(f"  • {tip}")
-                        
-                if data.get('next_steps'):
+
+                if data.get("next_steps"):
                     print("\n📋 Next Steps:")
-                    for step in data['next_steps']:
+                    for step in data["next_steps"]:
                         print(f"  • {step}")
-                        
+
             else:
                 print(f"❌ Error: {response.status_code} - {response.text}")
-                
+
         except Exception as e:
             print(f"❌ Connection error: {e}")
 
+
 async def test_hazard_analysis():
     """Test product hazard analysis"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Testing Hazard Analysis")
-    print("="*60)
-    
+    print("=" * 60)
+
     async with httpx.AsyncClient() as client:
         request_data = {
             "product_name": "Small Parts Toy Set",
             "barcode": "123456789",
             "user_id": 1,
-            "child_age_months": 18
+            "child_age_months": 18,
         }
-        
+
         try:
             response = await client.post(
-                f"{BASE_URL}/api/v1/baby/hazards/analyze",
-                json=request_data
+                f"{BASE_URL}/api/v1/baby/hazards/analyze", json=request_data
             )
-            
+
             if response.status_code == 200:
                 data = response.json()
                 print(f"✅ Hazard Analysis Complete")
                 print(f"Product: {data['product']}")
-                print(f"Risk Level: {data['overall_risk_level']} {'🟢' if data['overall_risk_level'] == 'LOW' else '🔴' if data['overall_risk_level'] in ['HIGH', 'CRITICAL'] else '🟡'}")
+                print(
+                    f"Risk Level: {data['overall_risk_level']} {'🟢' if data['overall_risk_level'] == 'LOW' else '🔴' if data['overall_risk_level'] in ['HIGH', 'CRITICAL'] else '🟡'}"
+                )
                 print(f"Age Appropriate: {'Yes ✅' if data['age_appropriate'] else 'No ❌'}")
-                
-                if data['hazards_identified']:
+
+                if data["hazards_identified"]:
                     print("\n⚠️ Hazards Identified:")
-                    for hazard in data['hazards_identified']:
+                    for hazard in data["hazards_identified"]:
                         print(f"  • {hazard['type']}: {hazard['description']}")
                         print(f"    Severity: {hazard['severity']}")
-                        
-                if data['recommendations']:
+
+                if data["recommendations"]:
                     print("\n📋 Recommendations:")
-                    for rec in data['recommendations']:
+                    for rec in data["recommendations"]:
                         print(f"  • {rec}")
-                        
-                if data.get('safer_alternatives'):
+
+                if data.get("safer_alternatives"):
                     print("\n✅ Safer Alternatives:")
-                    for alt in data['safer_alternatives']:
+                    for alt in data["safer_alternatives"]:
                         print(f"  • {alt}")
-                        
+
             else:
                 print(f"❌ Error: {response.status_code} - {response.text}")
-                
+
         except Exception as e:
             print(f"❌ Connection error: {e}")
 
+
 async def test_community_alerts():
     """Test community alerts endpoint"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Testing Community Alerts")
-    print("="*60)
-    
+    print("=" * 60)
+
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(
-                f"{BASE_URL}/api/v1/baby/community/alerts",
-                params={"user_id": 1, "limit": 5}
+                f"{BASE_URL}/api/v1/baby/community/alerts", params={"user_id": 1, "limit": 5}
             )
-            
+
             if response.status_code == 200:
                 data = response.json()
                 print(f"✅ Community Alerts Retrieved")
                 print(f"Total Alerts: {data['alerts_count']}")
                 print(f"Sources Monitored: {', '.join(data['sources_monitored'])}")
-                
-                if data['alerts']:
+
+                if data["alerts"]:
                     print("\n🌍 Recent Community Alerts:")
-                    for alert in data['alerts']:
+                    for alert in data["alerts"]:
                         print(f"\n  📢 {alert['title']}")
                         print(f"     Product: {alert['product']}")
                         print(f"     Reported by: {alert['reported_by']}")
                         print(f"     Severity: {alert['severity']}")
                         print(f"     Source: {alert['source']}")
                         print(f"     Verified: {'✅' if alert['verified'] else '❓'}")
-                        
+
             else:
                 print(f"❌ Error: {response.status_code} - {response.text}")
-                
+
         except Exception as e:
             print(f"❌ Connection error: {e}")
 
+
 async def test_integrated_safety_check():
     """Test safety check with alternatives integration"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Testing Integrated Safety Check (with Alternatives)")
-    print("="*60)
-    
+    print("=" * 60)
+
     async with httpx.AsyncClient() as client:
         request_data = {
             "user_id": 1,
             "barcode": "041220787346",  # Fisher-Price product (likely to have recalls)
-            "model_number": "FP-123"
+            "model_number": "FP-123",
         }
-        
+
         try:
-            response = await client.post(
-                f"{BASE_URL}/api/v1/safety-check",
-                json=request_data
-            )
-            
+            response = await client.post(f"{BASE_URL}/api/v1/safety-check", json=request_data)
+
             if response.status_code == 200:
                 data = response.json()
                 print(f"✅ Safety Check Complete")
                 print(f"Status: {data['status']}")
-                
-                if data.get('data'):
-                    result = data['data']
-                    if result.get('recalls_found'):
+
+                if data.get("data"):
+                    result = data["data"]
+                    if result.get("recalls_found"):
                         print(f"⚠️ Recalls Found: {result['recalls_found']}")
-                    
-                    if result.get('risk_level'):
+
+                    if result.get("risk_level"):
                         print(f"Risk Level: {result['risk_level']}")
-                    
-                    if result.get('alternatives_suggested'):
+
+                    if result.get("alternatives_suggested"):
                         print(f"\n✅ Alternatives Suggested: {result['alternatives_suggested']}")
-                        
-                    if data.get('alternatives'):
+
+                    if data.get("alternatives"):
                         print("\n🔄 Safe Alternatives:")
-                        for alt in data['alternatives']:
+                        for alt in data["alternatives"]:
                             print(f"  • {alt['product_name']}: {alt['reason']}")
-                            
-                    if result.get('summary'):
+
+                    if result.get("summary"):
                         print(f"\n📄 Summary:\n{result['summary']}")
-                        
+
             else:
                 print(f"❌ Error: {response.status_code} - {response.text}")
-                
+
         except Exception as e:
             print(f"❌ Connection error: {e}")
+
 
 async def main():
     """Run all tests"""
     print("\n" + "🍼 BABYSHIELD CORE FEATURES API TEST SUITE 🍼".center(60, "="))
     print(f"Testing against: {BASE_URL}")
     print(f"Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    
+
     # Test individual features
     await test_alternatives_endpoint()
     await test_notification_endpoint()
@@ -379,11 +372,11 @@ async def main():
     await test_onboarding()
     await test_hazard_analysis()
     await test_community_alerts()
-    
+
     # Test integration with main safety check
     await test_integrated_safety_check()
-    
-    print("\n" + "="*60)
+
+    print("\n" + "=" * 60)
     print("✅ All tests completed!")
     print(f"Finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("\n📝 Summary of Features Tested:")
@@ -394,7 +387,8 @@ async def main():
     print("  • Hazard Analysis - Age-specific risk assessment")
     print("  • Community Alerts - Crowdsourced safety warnings")
     print("  • Integrated Safety Check - All features working together")
-    print("="*60)
+    print("=" * 60)
+
 
 if __name__ == "__main__":
     # For local testing, make sure the API is running:

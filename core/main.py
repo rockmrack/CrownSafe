@@ -22,5 +22,5 @@ print("BabyShield API loaded from main.py redirect")
 if __name__ == "__main__":
     print("Registered routes:")
     for route in app.routes:
-        if hasattr(route, 'path'):
+        if hasattr(route, "path"):
             print(f"  {route.path}")

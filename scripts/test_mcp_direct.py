@@ -8,16 +8,17 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 async def test_http_endpoints():
     """Test if MCP Router has any HTTP endpoints"""
     print("\n🔍 Testing MCP Router HTTP endpoints...\n")
-    
+
     base_url = "http://127.0.0.1:8001"
-    
+
     async with aiohttp.ClientSession() as session:
         # Try different endpoints
         endpoints = ["/", "/health", "/status", "/ws"]
-        
+
         for endpoint in endpoints:
             try:
                 async with session.get(f"{base_url}{endpoint}") as response:
@@ -25,25 +26,23 @@ async def test_http_endpoints():
             except Exception as e:
                 print(f"{endpoint}: Error - {e}")
 
+
 async def test_websocket_with_headers():
     """Test WebSocket with different headers"""
     print("\n🔍 Testing WebSocket with headers...\n")
-    
+
     import websockets
-    
+
     # Try with different origins and headers
-    headers = {
-        "Origin": "http://localhost:8000",
-        "User-Agent": "RossNet-Client/1.0"
-    }
-    
+    headers = {"Origin": "http://localhost:8000", "User-Agent": "RossNet-Client/1.0"}
+
     try:
         uri = "ws://127.0.0.1:8001"
         async with websockets.connect(uri, extra_headers=headers) as websocket:
             print("✅ Connected with headers!")
     except Exception as e:
         print(f"❌ Failed with headers: {e}")
-    
+
     # Try without any headers
     try:
         uri = "ws://127.0.0.1:8001"
@@ -51,6 +50,7 @@ async def test_websocket_with_headers():
             print("✅ Connected without headers!")
     except Exception as e:
         print(f"❌ Failed without headers: {e}")
+
 
 async def check_mcp_router_logs():
     """Instructions to check MCP Router logs"""
@@ -65,6 +65,7 @@ async def check_mcp_router_logs():
     print("- MCP Router might require specific agent IDs")
     print("- WebSocket subprotocols might be required")
     print("- Origin headers might be validated")
+
 
 if __name__ == "__main__":
     asyncio.run(test_http_endpoints())

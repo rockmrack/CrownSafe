@@ -7,18 +7,21 @@ import logging
 import json
 
 # --- Add project root to Python's path ---
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
 from agents.engagement.onboarding_agent.agent_logic import OnboardingAgentLogic
 from core_infra.database import Base, engine, SessionLocal, User, create_tables, drop_tables
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # --- Test Configuration ---
 TEST_USER_ID = 1
 # --------------------------
+
 
 async def main():
     """Main function to run the OnboardingAgent test."""
@@ -41,10 +44,7 @@ async def main():
         logger.info("Agent logic initialized.")
 
         # 3. Define the task payload to set the user as pregnant.
-        task_inputs = {
-            "user_id": TEST_USER_ID,
-            "is_pregnant": True
-        }
+        task_inputs = {"user_id": TEST_USER_ID, "is_pregnant": True}
         logger.info(f"Created task with inputs: {task_inputs}")
 
         # 4. Process the task.
@@ -53,9 +53,9 @@ async def main():
         logger.info("Task processing finished.")
 
         # 5. Analyze and print the result.
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("          AGENT TEST RESULT")
-        print("="*50)
+        print("=" * 50)
         print(json.dumps(result, indent=2))
 
         # 6. Verify the database was updated correctly.
@@ -64,21 +64,29 @@ async def main():
             updated_user = db.query(User).filter(User.id == TEST_USER_ID).first()
             if updated_user and updated_user.is_pregnant is True:
                 db_was_updated = True
-                logger.info("Verification successful: User's is_pregnant status is now True in the database.")
+                logger.info(
+                    "Verification successful: User's is_pregnant status is now True in the database."
+                )
 
         # 7. Validate the final result.
         if result.get("status") == "COMPLETED" and db_was_updated:
-            print("\n" + "="*50)
-            print(f"✅✅✅ TEST PASSED: Agent successfully updated the user's profile in the database.")
+            print("\n" + "=" * 50)
+            print(
+                f"✅✅✅ TEST PASSED: Agent successfully updated the user's profile in the database."
+            )
         else:
-            print("\n" + "="*50)
+            print("\n" + "=" * 50)
             if not db_was_updated:
-                print(f"❌ TEST FAILED: The agent did not correctly update the user's is_pregnant status in the database.")
+                print(
+                    f"❌ TEST FAILED: The agent did not correctly update the user's is_pregnant status in the database."
+                )
             else:
-                print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")
+                print(
+                    f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}"
+                )
 
     except Exception as e:
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print(f"❌ TEST FAILED: An unexpected error occurred: {e}")
 
     finally:
@@ -87,6 +95,7 @@ async def main():
         logger.info("Database tables dropped.")
 
     print("--- Test Complete ---")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

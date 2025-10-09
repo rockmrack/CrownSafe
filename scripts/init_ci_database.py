@@ -8,21 +8,23 @@ import sqlite3
 import os
 from datetime import datetime
 
+
 def init_ci_database():
     """Initialize database with required tables for CI smoke tests"""
-    
+
     # Use the same database path as production
-    db_path = os.environ.get('DATABASE_URL', 'sqlite:///./babyshield.db')
-    if db_path.startswith('sqlite:///'):
-        db_path = db_path.replace('sqlite:///', '')
-    
+    db_path = os.environ.get("DATABASE_URL", "sqlite:///./babyshield.db")
+    if db_path.startswith("sqlite:///"):
+        db_path = db_path.replace("sqlite:///", "")
+
     print(f"Initializing database: {db_path}")
-    
+
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    
+
     # Create recalls_enhanced table (primary table used by search)
-    c.execute("""
+    c.execute(
+        """
     CREATE TABLE IF NOT EXISTS recalls_enhanced (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         recall_id TEXT,
@@ -63,10 +65,12 @@ def init_ci_database():
         search_keywords TEXT,
         agency_specific_data TEXT
     )
-    """)
-    
+    """
+    )
+
     # Create legacy recalls table (fallback)
-    c.execute("""
+    c.execute(
+        """
     CREATE TABLE IF NOT EXISTS recalls (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         recall_id TEXT,
@@ -85,10 +89,12 @@ def init_ci_database():
         remedy TEXT,
         url TEXT
     )
-    """)
-    
+    """
+    )
+
     # Create users table (for authentication)
-    c.execute("""
+    c.execute(
+        """
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         email TEXT UNIQUE NOT NULL,
@@ -97,10 +103,12 @@ def init_ci_database():
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
-    """)
-    
+    """
+    )
+
     # Create agencies table
-    c.execute("""
+    c.execute(
+        """
     CREATE TABLE IF NOT EXISTS agencies (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT UNIQUE NOT NULL,
@@ -109,32 +117,36 @@ def init_ci_database():
         api_endpoint TEXT,
         is_active BOOLEAN DEFAULT 1
     )
-    """)
-    
+    """
+    )
+
     # Insert test data for smoke tests
     # Check if recalls_enhanced has data
     count = c.execute("SELECT COUNT(*) FROM recalls_enhanced").fetchone()[0]
     if count == 0:
-        c.execute("""
+        c.execute(
+            """
         INSERT INTO recalls_enhanced 
         (recall_id, product_name, brand, manufacturer, hazard, recall_date, source_agency, url, country, description)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            "TEST-001", 
-            "Baby Pacifier", 
-            "SafeBaby", 
-            "SafeBaby Corp", 
-            "Choking hazard", 
-            datetime.now().isoformat(), 
-            "CPSC", 
-            "https://example.com/recall/test", 
-            "USA", 
-            "Test recall for CI smoke tests"
-        ))
+        """,
+            (
+                "TEST-001",
+                "Baby Pacifier",
+                "SafeBaby",
+                "SafeBaby Corp",
+                "Choking hazard",
+                datetime.now().isoformat(),
+                "CPSC",
+                "https://example.com/recall/test",
+                "USA",
+                "Test recall for CI smoke tests",
+            ),
+        )
         print("✅ Inserted test recall data")
     else:
         print("✅ recalls_enhanced table already has data")
-    
+
     # Check if agencies has data
     count = c.execute("SELECT COUNT(*) FROM agencies").fetchone()[0]
     if count == 0:
@@ -143,17 +155,21 @@ def init_ci_database():
             ("CPSC", "USA", "https://cpsc.gov", "https://api.cpsc.gov", 1),
             ("EU Safety Gate", "EU", "https://ec.europa.eu", "https://api.ec.europa.eu", 1),
         ]
-        c.executemany("""
+        c.executemany(
+            """
         INSERT INTO agencies (name, country, website, api_endpoint, is_active)
         VALUES (?, ?, ?, ?, ?)
-        """, agencies)
+        """,
+            agencies,
+        )
         print("✅ Inserted test agency data")
     else:
         print("✅ agencies table already has data")
-    
+
     conn.commit()
     conn.close()
     print("✅ Database initialization complete")
+
 
 if __name__ == "__main__":
     init_ci_database()

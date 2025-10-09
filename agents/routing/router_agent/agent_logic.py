@@ -9,21 +9,25 @@ from typing import Dict, Any, Optional
 AGENT_LOGIC_CLASSES = {}
 try:
     from agents.product_identifier_agent.agent_logic import ProductIdentifierLogic
+
     AGENT_LOGIC_CLASSES["identify_product"] = ProductIdentifierLogic
 except ImportError:
     ProductIdentifierLogic = None
 try:
     from agents.recall_data_agent.agent_logic import RecallDataAgentLogic
+
     AGENT_LOGIC_CLASSES["query_recalls_by_product"] = RecallDataAgentLogic
 except ImportError:
     RecallDataAgentLogic = None
 try:
     from agents.hazard_analysis_agent.agent_logic import HazardAnalysisLogic
+
     AGENT_LOGIC_CLASSES["analyze_hazards"] = HazardAnalysisLogic
 except ImportError:
     HazardAnalysisLogic = None
 try:
     from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
+
     AGENT_LOGIC_CLASSES["identify_product_from_image"] = VisualSearchAgentLogic
 except ImportError:
     VisualSearchAgentLogic = None
@@ -51,11 +55,14 @@ class BabyShieldRouterLogic:
                 self.agent_registry[capability] = LogicClass(agent_id=instance_id)
                 self.logger.info(f"Router registered legacy agent for capability: '{capability}'")
             else:
-                self.agent_registry[capability] = LogicClass(agent_id=instance_id, logger_instance=self.logger)
+                self.agent_registry[capability] = LogicClass(
+                    agent_id=instance_id, logger_instance=self.logger
+                )
                 self.logger.info(f"Router registered agent for capability: '{capability}'")
 
-        self.logger.info("BabyShieldRouterLogic initialized with %d available agents.",
-                         len(self.agent_registry))
+        self.logger.info(
+            "BabyShieldRouterLogic initialized with %d available agents.", len(self.agent_registry)
+        )
 
     def _substitute_dependency_placeholders(
         self, inputs: Dict[str, Any], workflow_state: Dict[str, Any]
@@ -83,7 +90,9 @@ class BabyShieldRouterLogic:
 
                 source = workflow_state["tasks"].get(step_id, {}).get("result")
                 if source is None:
-                    self.logger.error(f"Could not resolve placeholder '{value}': no result for step '{step_id}'")
+                    self.logger.error(
+                        f"Could not resolve placeholder '{value}': no result for step '{step_id}'"
+                    )
                     substituted[key] = None
                     continue
 
@@ -100,7 +109,9 @@ class BabyShieldRouterLogic:
                     substituted[key] = final
                     self.logger.info(f"Successfully resolved '{value}' → {final}")
                 else:
-                    self.logger.error(f"Could not resolve placeholder '{value}': path {path} missing in {source}")
+                    self.logger.error(
+                        f"Could not resolve placeholder '{value}': path {path} missing in {source}"
+                    )
                     substituted[key] = None
 
         return substituted
@@ -152,20 +163,31 @@ class BabyShieldRouterLogic:
                             agent_result = res.get("result")
                             if agent_result is None:
                                 agent_result = res.get("data", {})
-                            
+
                             ts.update({"status": "COMPLETED", "result": agent_result})
                             wf["completed_tasks"].add(sid)
                             self.logger.info(f"Task '{sid}' COMPLETED with result: {agent_result}")
-                            
+
                             # --- START OF NEW CONFIDENCE CHECK LOGIC ---
                             if sid == "step0_visual_search":
-                                confidence = agent_result.get("confidence", 0.0) if agent_result else 0.0
+                                confidence = (
+                                    agent_result.get("confidence", 0.0) if agent_result else 0.0
+                                )
                                 if confidence < 0.7:
-                                    self.logger.warning(f"Visual search confidence ({confidence}) is below threshold. Halting workflow.")
+                                    self.logger.warning(
+                                        f"Visual search confidence ({confidence}) is below threshold. Halting workflow."
+                                    )
                                     wf["status"] = "FAILED"
-                                    wf["error_message"] = f"Visual search confidence too low ({confidence:.2f}) to proceed with a safety check. Please provide a clearer image or use the barcode scanner."
+                                    wf[
+                                        "error_message"
+                                    ] = f"Visual search confidence too low ({confidence:.2f}) to proceed with a safety check. Please provide a clearer image or use the barcode scanner."
                                     # Mark this as a special failure
-                                    ts.update({"status": "FAILED", "error": f"Confidence too low: {confidence:.2f}"})
+                                    ts.update(
+                                        {
+                                            "status": "FAILED",
+                                            "error": f"Confidence too low: {confidence:.2f}",
+                                        }
+                                    )
                                     wf["failed_tasks"].add(sid)
                                     break
                             # --- END OF NEW CONFIDENCE CHECK LOGIC ---
@@ -191,10 +213,10 @@ class BabyShieldRouterLogic:
                 task_info = wf["tasks"].get(task_id, {})
                 task_error = task_info.get("error", "Unknown task error")
                 failed_task_details.append(f"Task '{task_id}': {task_error}")
-            
+
             error_summary = f"Workflow failed with {len(wf['failed_tasks'])} failed task(s): {'; '.join(failed_task_details)}"
             self.logger.error(error_summary)
-            
+
         elif wf["completed_tasks"] == set(t["step_id"] for t in plan["steps"]):
             wf["status"] = "COMPLETED"
             error_summary = None
@@ -205,16 +227,16 @@ class BabyShieldRouterLogic:
 
         self.logger.info(f"--- Workflow finished for: {wf_id} with status: {wf['status']} ---")
         last = plan["steps"][-1]["step_id"]
-        
+
         result = {
             "status": wf["status"],
             "workflow_id": wf_id,
             "final_result": wf["tasks"][last]["result"],
             "full_workflow_state": wf,
         }
-        
+
         # Include error details when workflow fails or stalls
         if error_summary:
             result["error"] = error_summary
-            
+
         return result

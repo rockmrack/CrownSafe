@@ -3,7 +3,7 @@
 import redis
 import json
 
-r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
 print("🔍 Finding what message format actually works...\n")
 
@@ -14,14 +14,14 @@ if workflows:
     for key in workflows[-5:]:  # Check last 5
         try:
             data = json.loads(r.get(key))
-            if data.get('original_requester_id') == 'commander_agent_01':
+            if data.get("original_requester_id") == "commander_agent_01":
                 print(f"✅ Found Commander-created workflow: {key}")
                 print(f"   Status: {data.get('status')}")
-                
+
                 # Check the original payload
-                if 'original_plan_payload' in data:
+                if "original_plan_payload" in data:
                     print("\n📋 Original plan payload structure:")
-                    plan = data['original_plan_payload']
+                    plan = data["original_plan_payload"]
                     print(json.dumps(plan, indent=2)[:500] + "...")
                     break
         except:
@@ -37,15 +37,15 @@ test_formats = [
     # Format 1: Direct user_request
     {
         "user_goal": "Test authorization",
-        "task_type": "prior_authorization", 
-        "parameters": {"patient_id": "p1", "drug_name": "d1", "insurer_id": "i1"}
+        "task_type": "prior_authorization",
+        "parameters": {"patient_id": "p1", "drug_name": "d1", "insurer_id": "i1"},
     },
     # Format 2: Wrapped in user_request
     {
         "user_request": {
             "user_goal": "Test authorization",
             "task_type": "prior_authorization",
-            "parameters": {"patient_id": "p1", "drug_name": "d1", "insurer_id": "i1"}
+            "parameters": {"patient_id": "p1", "drug_name": "d1", "insurer_id": "i1"},
         }
     },
     # Format 3: Different structure
@@ -53,9 +53,9 @@ test_formats = [
         "request": {
             "user_goal": "Test authorization",
             "task_type": "prior_authorization",
-            "parameters": {"patient_id": "p1", "drug_name": "d1", "insurer_id": "i1"}
+            "parameters": {"patient_id": "p1", "drug_name": "d1", "insurer_id": "i1"},
         }
-    }
+    },
 ]
 
 print("\n🧪 Which format does Commander accept?")

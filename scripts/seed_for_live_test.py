@@ -10,19 +10,31 @@ from datetime import date
 os.environ["DATABASE_URL"] = os.getenv("DATABASE_URL", "sqlite:///babyshield_test.db")
 os.environ["TEST_MODE"] = "true"
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 
-from core_infra.database import Base, engine, SessionLocal, User, RecallDB, create_tables, drop_tables, DATABASE_URL
+from core_infra.database import (
+    Base,
+    engine,
+    SessionLocal,
+    User,
+    RecallDB,
+    create_tables,
+    drop_tables,
+    DATABASE_URL,
+)
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+
 
 def seed_database():
     logger = logging.getLogger(__name__)
     logger.info("--- Seeding Database for Live HTTP Test ---")
     logger.info(f"Using database: {DATABASE_URL}")
     logger.info(f"Engine URL: {engine.url}")
-    
+
     # Don't drop tables in production! Only recreate if needed
     if os.getenv("RESET_DB", "false").lower() == "true":
         drop_tables()
@@ -40,11 +52,11 @@ def seed_database():
         else:
             # Create subscribed user
             subscriber = User(
-                id=1, 
-                email="live.test@example.com", 
-                is_subscribed=True, 
-                hashed_password="test", 
-                is_pregnant=False
+                id=1,
+                email="live.test@example.com",
+                is_subscribed=True,
+                hashed_password="test",
+                is_pregnant=False,
             )
             db.add(subscriber)
             logger.info("Added subscribed test user with ID: 1")
@@ -72,7 +84,7 @@ def seed_database():
                 description="Test recall for live API demo.",
                 hazard="Sample Hazard",
                 remedy="Do not use this product.",
-                url="http://example.com/recall"
+                url="http://example.com/recall",
             )
             db.add(test_recall)
             logger.info("Added a specific recall record for the test product.")
@@ -86,19 +98,22 @@ def seed_database():
         recall_count = db.query(RecallDB).count()
         logger.info(f"Total users in database: {user_count}")
         logger.info(f"Total recalls in database: {recall_count}")
-        
+
         # Specifically check for our test recall
         test_recall = db.query(RecallDB).filter_by(upc="037000488786").first()
         if test_recall:
-            logger.info(f"✅ Test recall found: ID={test_recall.recall_id}, UPC={test_recall.upc}, Product={test_recall.product_name}")
+            logger.info(
+                f"✅ Test recall found: ID={test_recall.recall_id}, UPC={test_recall.upc}, Product={test_recall.product_name}"
+            )
         else:
             logger.error("❌ Test recall NOT found in database!")
-            
+
         # List all recalls with UPC
         all_recalls = db.query(RecallDB).filter(RecallDB.upc.isnot(None)).all()
         logger.info(f"All recalls with UPC: {[(r.recall_id, r.upc) for r in all_recalls]}")
 
     logger.info("--- Database seeding complete. ---")
+
 
 if __name__ == "__main__":
     seed_database()

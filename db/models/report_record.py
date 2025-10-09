@@ -25,5 +25,3 @@ class ReportRecord(Base):
             "storage_path": self.storage_path,
             "created_at": self.created_at.isoformat() + "Z",
         }
-
-

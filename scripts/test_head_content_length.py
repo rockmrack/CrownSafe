@@ -58,14 +58,20 @@ from api.main_babyshield import app
 
 c = TestClient(app)
 
+
 def auth():
-    r = c.post("/api/v1/auth/register", json={
-        "email":"test+headlen@ex.com",
-        "password":"Passw0rd!",
-        "confirm_password":"Passw0rd!"
-    })
+    r = c.post(
+        "/api/v1/auth/register",
+        json={
+            "email": "test+headlen@ex.com",
+            "password": "Passw0rd!",
+            "confirm_password": "Passw0rd!",
+        },
+    )
     assert r.status_code == 200, r.text
-    r = c.post("/api/v1/auth/token", data={"username":"test+headlen@ex.com","password":"Passw0rd!"})
+    r = c.post(
+        "/api/v1/auth/token", data={"username": "test+headlen@ex.com", "password": "Passw0rd!"}
+    )
     assert r.status_code == 200, r.text
     tok = r.json().get("access_token") or r.json().get("token")
     headers = {"Authorization": f"Bearer {tok}"}
@@ -75,6 +81,7 @@ def auth():
     uid = user.get("id") or user.get("user_id") or user.get("user", {}).get("id")
     assert uid, f"Could not determine user id from {user}"
     return headers, uid
+
 
 def gen_and_check(headers, uid, report_type):
     payload = {"user_id": uid, "report_type": report_type, "format": "pdf"}
@@ -89,13 +96,14 @@ def gen_and_check(headers, uid, report_type):
     rg = c.get(url, headers=headers)
 
     head_len = int(rh.headers.get("Content-Length", "0") or 0)
-    get_len  = len(rg.content)
+    get_len = len(rg.content)
 
     print(report_type, "HEAD_status", rh.status_code, "HEAD_Content-Length", head_len)
     print(report_type, "GET_status", rg.status_code, "GET_Content-Length", get_len)
 
     assert rh.status_code == 200 and rg.status_code == 200
     assert head_len == get_len, f"{report_type}: mismatch HEAD {head_len} vs GET {get_len}"
+
 
 headers, uid = auth()
 gen_and_check(headers, uid, "product_safety")

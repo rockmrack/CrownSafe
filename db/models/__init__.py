@@ -10,4 +10,15 @@ from .scan_history import ScanHistory, SafetyReport
 from .share_token import ShareToken
 from .incident_report import IncidentReport, IncidentCluster, AgencyNotification
 
-__all__ = ["IngestionRun", "PrivacyRequest", "ReportRecord", "SerialVerification", "ScanHistory", "SafetyReport", "ShareToken", "IncidentReport", "IncidentCluster", "AgencyNotification"]
+__all__ = [
+    "IngestionRun",
+    "PrivacyRequest",
+    "ReportRecord",
+    "SerialVerification",
+    "ScanHistory",
+    "SafetyReport",
+    "ShareToken",
+    "IncidentReport",
+    "IncidentCluster",
+    "AgencyNotification",
+]

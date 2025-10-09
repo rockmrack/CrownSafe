@@ -18,25 +18,26 @@ from core_infra.tasks import check_for_new_recalls_and_alert
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
+
 def main():
     logger.info("--- Starting Test Scenario 4: Emergency Recall Notification ---")
 
     # --- Patch the async process_task methods that the task actually invokes ---
-    push_path    = "agents.engagement.push_notification_agent.agent_logic.PushNotificationAgentLogic.process_task"
+    push_path = "agents.engagement.push_notification_agent.agent_logic.PushNotificationAgentLogic.process_task"
     metrics_path = "agents.business.metrics_agent.agent_logic.MetricsAgentLogic.process_task"
 
-    with patch(push_path, new=AsyncMock(return_value={"status": "COMPLETED"})) as mock_push, \
-         patch(metrics_path, new=AsyncMock(return_value={"status": "COMPLETED"})) as mock_metrics:
-
+    with patch(push_path, new=AsyncMock(return_value={"status": "COMPLETED"})) as mock_push, patch(
+        metrics_path, new=AsyncMock(return_value={"status": "COMPLETED"})
+    ) as mock_metrics:
         # Execute the Celery task synchronously
         logger.info("Executing the Celery task directly (agents are mocked)...")
         result = check_for_new_recalls_and_alert.apply()
         logger.info("Task execution finished.")
 
         # Print out summary
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("          SCENARIO 4 TEST RESULT")
-        print("="*50)
+        print("=" * 50)
         print(f"Task Status: {'SUCCESS' if result.successful() else 'FAILED'}")
         print(f"Task Return Value: {result.get()}")
 
@@ -54,6 +55,7 @@ def main():
             print(f"Details: {e}")
 
     print("\n--- Test Complete ---")
+
 
 if __name__ == "__main__":
     main()

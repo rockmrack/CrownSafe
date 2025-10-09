@@ -20,17 +20,22 @@ def upgrade():
     op.create_table(
         "explain_feedback",
         sa.Column("id", sa.BigInteger(), primary_key=True, autoincrement=True),
-        sa.Column("created_at", sa.TIMESTAMP(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.TIMESTAMP(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.Column("user_id", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("scan_id", sa.String(length=64), nullable=False),
         sa.Column("trace_id", sa.String(length=64), nullable=True),
         sa.Column("helpful", sa.Boolean(), nullable=False),
-        sa.Column("reason", sa.String(length=256), nullable=True),         # optional category
-        sa.Column("comment", sa.Text(), nullable=True),                    # optional freeform
-        sa.Column("platform", sa.String(length=32), nullable=True),        # ios|android|web
+        sa.Column("reason", sa.String(length=256), nullable=True),  # optional category
+        sa.Column("comment", sa.Text(), nullable=True),  # optional freeform
+        sa.Column("platform", sa.String(length=32), nullable=True),  # ios|android|web
         sa.Column("app_version", sa.String(length=32), nullable=True),
         sa.Column("locale", sa.String(length=16), nullable=True),
-        sa.Column("jurisdiction_code", sa.String(length=8), nullable=True) # e.g. EU/US
+        sa.Column("jurisdiction_code", sa.String(length=8), nullable=True),  # e.g. EU/US
     )
     op.create_index("ix_explain_feedback_scan_id", "explain_feedback", ["scan_id"])
     op.create_index("ix_explain_feedback_created_at", "explain_feedback", ["created_at"])

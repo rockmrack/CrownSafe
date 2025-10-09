@@ -10,11 +10,12 @@ import time
 
 BASE_URL = "https://babyshield.cureviax.ai"
 
+
 def test_endpoint(name, method, path, data=None):
     """Test a single endpoint"""
     url = f"{BASE_URL}{path}"
     headers = {"Content-Type": "application/json"}
-    
+
     try:
         if method == "GET":
             resp = requests.get(url, headers=headers, timeout=10)
@@ -51,18 +52,20 @@ failed = 0
 
 for name, method, path in tests:
     status, response = test_endpoint(name, method, path)
-    
+
     if status == 200:
         print(f"✅ {name:20} - Status: {status}")
         passed += 1
-        
+
         # Show some response details
         if response and isinstance(response, dict):
             if "providers" in response:
                 providers = response.get("providers", [])
                 print(f"   Found {len(providers)} OAuth providers")
             elif "crashlytics_enabled" in response:
-                print(f"   Crashlytics: {response.get('crashlytics_enabled')} (should be False by default)")
+                print(
+                    f"   Crashlytics: {response.get('crashlytics_enabled')} (should be False by default)"
+                )
             elif "retry_policy" in response:
                 policy = response.get("retry_policy", {})
                 print(f"   Max retries: {policy.get('max_retries')}")
@@ -88,7 +91,7 @@ if passed == len(tests):
     print("1. Test OAuth with real Apple/Google tokens")
     print("2. Verify data export/delete in app")
     print("3. Confirm Crashlytics toggle works")
-    
+
 elif passed > 0:
     print(f"⚠️ PARTIAL SUCCESS: {passed}/{len(tests)} endpoints working")
     print("Some endpoints may still be updating. Wait 1 minute and retry.")
@@ -97,7 +100,7 @@ elif passed > 0:
     print("1. Check ECS task logs")
     print("2. Verify database migrations ran")
     print("3. Check environment variables")
-    
+
 else:
     print("❌ DEPLOYMENT NOT READY")
     print("Task 11 endpoints not accessible yet.")
@@ -119,12 +122,11 @@ print("OAUTH FLOW TEST")
 print("=" * 70)
 
 # Simulate OAuth login (will fail without real token, but tests endpoint)
-test_oauth_data = {
-    "provider": "apple",
-    "id_token": "test_token_invalid"
-}
+test_oauth_data = {"provider": "apple", "id_token": "test_token_invalid"}
 
-status, response = test_endpoint("OAuth Login Test", "POST", "/api/v1/auth/oauth/login", test_oauth_data)
+status, response = test_endpoint(
+    "OAuth Login Test", "POST", "/api/v1/auth/oauth/login", test_oauth_data
+)
 
 if status == 401:
     print("✅ OAuth endpoint responding correctly (401 for invalid token)")
@@ -145,7 +147,10 @@ print("=" * 70)
 criteria = [
     ("OAuth endpoints available", "/api/v1/auth/oauth/providers" in [p for _, _, p in tests]),
     ("Settings endpoints available", "/api/v1/settings/" in [p for _, _, p in tests]),
-    ("Crashlytics toggle available", "/api/v1/settings/crashlytics/status" in [p for _, _, p in tests]),
+    (
+        "Crashlytics toggle available",
+        "/api/v1/settings/crashlytics/status" in [p for _, _, p in tests],
+    ),
     ("Privacy compliance ready", "/api/v1/user/privacy/summary" in [p for _, _, p in tests]),
 ]
 

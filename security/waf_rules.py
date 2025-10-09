@@ -5,9 +5,10 @@ Enterprise-grade Web Application Firewall rules
 import json
 from typing import Dict, List, Any
 
+
 class WAFRulesGenerator:
     """Generate AWS WAF rules for bulletproof protection"""
-    
+
     @staticmethod
     def generate_rate_limiting_rules() -> List[Dict[str, Any]]:
         """Generate rate limiting rules"""
@@ -18,18 +19,18 @@ class WAFRulesGenerator:
                 "Statement": {
                     "RateBasedStatement": {
                         "Limit": 2000,  # 2000 requests per 5 minutes per IP
-                        "AggregateKeyType": "IP"
+                        "AggregateKeyType": "IP",
                     }
                 },
                 "Action": {"Block": {}},
                 "VisibilityConfig": {
                     "SampledRequestsEnabled": True,
                     "CloudWatchMetricsEnabled": True,
-                    "MetricName": "BabyShieldGlobalRateLimit"
-                }
+                    "MetricName": "BabyShieldGlobalRateLimit",
+                },
             },
             {
-                "Name": "BabyShield-APIRateLimit", 
+                "Name": "BabyShield-APIRateLimit",
                 "Priority": 2,
                 "Statement": {
                     "RateBasedStatement": {
@@ -40,20 +41,20 @@ class WAFRulesGenerator:
                                 "SearchString": "/api/",
                                 "FieldToMatch": {"UriPath": {}},
                                 "TextTransformations": [{"Priority": 0, "Type": "LOWERCASE"}],
-                                "PositionalConstraint": "STARTS_WITH"
+                                "PositionalConstraint": "STARTS_WITH",
                             }
-                        }
+                        },
                     }
                 },
                 "Action": {"Block": {}},
                 "VisibilityConfig": {
                     "SampledRequestsEnabled": True,
                     "CloudWatchMetricsEnabled": True,
-                    "MetricName": "BabyShieldAPIRateLimit"
-                }
-            }
+                    "MetricName": "BabyShieldAPIRateLimit",
+                },
+            },
         ]
-    
+
     @staticmethod
     def generate_attack_prevention_rules() -> List[Dict[str, Any]]:
         """Generate rules to prevent common attacks"""
@@ -71,9 +72,9 @@ class WAFRulesGenerator:
                                     "FieldToMatch": {"AllQueryArguments": {}},
                                     "TextTransformations": [
                                         {"Priority": 0, "Type": "URL_DECODE"},
-                                        {"Priority": 1, "Type": "LOWERCASE"}
+                                        {"Priority": 1, "Type": "LOWERCASE"},
                                     ],
-                                    "PositionalConstraint": "CONTAINS"
+                                    "PositionalConstraint": "CONTAINS",
                                 }
                             },
                             {
@@ -82,11 +83,11 @@ class WAFRulesGenerator:
                                     "FieldToMatch": {"Body": {}},
                                     "TextTransformations": [
                                         {"Priority": 0, "Type": "URL_DECODE"},
-                                        {"Priority": 1, "Type": "LOWERCASE"}
+                                        {"Priority": 1, "Type": "LOWERCASE"},
                                     ],
-                                    "PositionalConstraint": "CONTAINS"
+                                    "PositionalConstraint": "CONTAINS",
                                 }
-                            }
+                            },
                         ]
                     }
                 },
@@ -94,10 +95,9 @@ class WAFRulesGenerator:
                 "VisibilityConfig": {
                     "SampledRequestsEnabled": True,
                     "CloudWatchMetricsEnabled": True,
-                    "MetricName": "BabyShieldSQLInjection"
-                }
+                    "MetricName": "BabyShieldSQLInjection",
+                },
             },
-            
             # XSS Prevention
             {
                 "Name": "BabyShield-XSS",
@@ -112,9 +112,9 @@ class WAFRulesGenerator:
                                     "TextTransformations": [
                                         {"Priority": 0, "Type": "URL_DECODE"},
                                         {"Priority": 1, "Type": "HTML_ENTITY_DECODE"},
-                                        {"Priority": 2, "Type": "LOWERCASE"}
+                                        {"Priority": 2, "Type": "LOWERCASE"},
                                     ],
-                                    "PositionalConstraint": "CONTAINS"
+                                    "PositionalConstraint": "CONTAINS",
                                 }
                             },
                             {
@@ -123,11 +123,11 @@ class WAFRulesGenerator:
                                     "FieldToMatch": {"UriPath": {}},
                                     "TextTransformations": [
                                         {"Priority": 0, "Type": "URL_DECODE"},
-                                        {"Priority": 1, "Type": "LOWERCASE"}
+                                        {"Priority": 1, "Type": "LOWERCASE"},
                                     ],
-                                    "PositionalConstraint": "CONTAINS"
+                                    "PositionalConstraint": "CONTAINS",
                                 }
-                            }
+                            },
                         ]
                     }
                 },
@@ -135,10 +135,9 @@ class WAFRulesGenerator:
                 "VisibilityConfig": {
                     "SampledRequestsEnabled": True,
                     "CloudWatchMetricsEnabled": True,
-                    "MetricName": "BabyShieldXSS"
-                }
+                    "MetricName": "BabyShieldXSS",
+                },
             },
-            
             # Path Traversal Prevention
             {
                 "Name": "BabyShield-PathTraversal",
@@ -151,7 +150,7 @@ class WAFRulesGenerator:
                                     "SearchString": "../",
                                     "FieldToMatch": {"UriPath": {}},
                                     "TextTransformations": [{"Priority": 0, "Type": "URL_DECODE"}],
-                                    "PositionalConstraint": "CONTAINS"
+                                    "PositionalConstraint": "CONTAINS",
                                 }
                             },
                             {
@@ -159,9 +158,9 @@ class WAFRulesGenerator:
                                     "SearchString": "%2e%2e/",
                                     "FieldToMatch": {"UriPath": {}},
                                     "TextTransformations": [{"Priority": 0, "Type": "LOWERCASE"}],
-                                    "PositionalConstraint": "CONTAINS"
+                                    "PositionalConstraint": "CONTAINS",
                                 }
-                            }
+                            },
                         ]
                     }
                 },
@@ -169,11 +168,11 @@ class WAFRulesGenerator:
                 "VisibilityConfig": {
                     "SampledRequestsEnabled": True,
                     "CloudWatchMetricsEnabled": True,
-                    "MetricName": "BabyShieldPathTraversal"
-                }
-            }
+                    "MetricName": "BabyShieldPathTraversal",
+                },
+            },
         ]
-    
+
     @staticmethod
     def generate_geographic_rules() -> List[Dict[str, Any]]:
         """Generate geographic blocking rules"""
@@ -185,8 +184,21 @@ class WAFRulesGenerator:
                     "NotStatement": {
                         "Statement": {
                             "GeoMatchStatement": {
-                                "CountryCodes": ["US", "CA", "GB", "IE", "AU", "NZ"] + 
-                                              ["DE", "FR", "ES", "IT", "NL", "BE", "AT", "CH", "SE", "NO", "DK", "FI"]
+                                "CountryCodes": ["US", "CA", "GB", "IE", "AU", "NZ"]
+                                + [
+                                    "DE",
+                                    "FR",
+                                    "ES",
+                                    "IT",
+                                    "NL",
+                                    "BE",
+                                    "AT",
+                                    "CH",
+                                    "SE",
+                                    "NO",
+                                    "DK",
+                                    "FI",
+                                ]
                             }
                         }
                     }
@@ -195,11 +207,11 @@ class WAFRulesGenerator:
                 "VisibilityConfig": {
                     "SampledRequestsEnabled": True,
                     "CloudWatchMetricsEnabled": True,
-                    "MetricName": "BabyShieldGeoBlock"
-                }
+                    "MetricName": "BabyShieldGeoBlock",
+                },
             }
         ]
-    
+
     @staticmethod
     def generate_ip_reputation_rules() -> List[Dict[str, Any]]:
         """Generate IP reputation rules"""
@@ -210,47 +222,47 @@ class WAFRulesGenerator:
                 "Statement": {
                     "ManagedRuleGroupStatement": {
                         "VendorName": "AWS",
-                        "Name": "AWSManagedRulesAmazonIpReputationList"
+                        "Name": "AWSManagedRulesAmazonIpReputationList",
                     }
                 },
                 "Action": {"Block": {}},
                 "VisibilityConfig": {
                     "SampledRequestsEnabled": True,
                     "CloudWatchMetricsEnabled": True,
-                    "MetricName": "BabyShieldIPReputation"
+                    "MetricName": "BabyShieldIPReputation",
                 },
-                "OverrideAction": {"None": {}}
+                "OverrideAction": {"None": {}},
             },
             {
                 "Name": "BabyShield-KnownBadInputs",
                 "Priority": 4,
                 "Statement": {
                     "ManagedRuleGroupStatement": {
-                        "VendorName": "AWS", 
-                        "Name": "AWSManagedRulesKnownBadInputsRuleSet"
+                        "VendorName": "AWS",
+                        "Name": "AWSManagedRulesKnownBadInputsRuleSet",
                     }
                 },
                 "Action": {"Block": {}},
                 "VisibilityConfig": {
                     "SampledRequestsEnabled": True,
                     "CloudWatchMetricsEnabled": True,
-                    "MetricName": "BabyShieldKnownBadInputs"
+                    "MetricName": "BabyShieldKnownBadInputs",
                 },
-                "OverrideAction": {"None": {}}
-            }
+                "OverrideAction": {"None": {}},
+            },
         ]
 
 
 def generate_complete_waf_config() -> Dict[str, Any]:
     """Generate complete WAF configuration"""
     generator = WAFRulesGenerator()
-    
+
     all_rules = []
     all_rules.extend(generator.generate_rate_limiting_rules())
-    all_rules.extend(generator.generate_ip_reputation_rules()) 
+    all_rules.extend(generator.generate_ip_reputation_rules())
     all_rules.extend(generator.generate_geographic_rules())
     all_rules.extend(generator.generate_attack_prevention_rules())
-    
+
     return {
         "Name": "BabyShield-BulletproofWAF",
         "Scope": "REGIONAL",
@@ -260,8 +272,8 @@ def generate_complete_waf_config() -> Dict[str, Any]:
         "Tags": [
             {"Key": "Environment", "Value": "Production"},
             {"Key": "Application", "Value": "BabyShield"},
-            {"Key": "Security", "Value": "Bulletproof"}
-        ]
+            {"Key": "Security", "Value": "Bulletproof"},
+        ],
     }
 
 

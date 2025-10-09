@@ -11,17 +11,21 @@ from unittest.mock import patch
 # Color support
 try:
     from colorama import init, Fore, Style
+
     init(autoreset=True)
 except ImportError:
+
     class Fore:
         GREEN = ""
         RED = ""
+
     class Style:
         BRIGHT = ""
         RESET_ALL = ""
 
+
 # --- Add project root to Python's path ---
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
@@ -32,8 +36,7 @@ from agents.recall_data_agent.models import Recall
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -46,18 +49,21 @@ MOCK_CPSC_RECALL = Recall(
     hazard="Choking hazard",
     remedy="Stop using and return for a full refund",
     product_name="Happy Baby Super-Puffs",
-    url="http://cpsc.gov/recalls/001"
+    url="http://cpsc.gov/recalls/001",
 )
 # --------------------------
+
 
 # Mock connector classes
 class MockCPSCConnector:
     def fetch_recent_recalls(self) -> List[Recall]:
         return [MOCK_CPSC_RECALL]
 
+
 class EmptyConnector:
     def fetch_recent_recalls(self) -> List[Recall]:
         return []
+
 
 async def main():
     logger.info("--- Starting RecallDataAgent Live Database Test ---")
@@ -67,11 +73,13 @@ async def main():
     logger.info("In-memory tables created.")
 
     # 2. Patch connectors
-    with patch('agents.recall_data_agent.agent_logic.CPSCConnector', new=MockCPSCConnector), \
-         patch('agents.recall_data_agent.agent_logic.FDAConnector', new=EmptyConnector), \
-         patch('agents.recall_data_agent.agent_logic.EU_RAPEX_Connector', new=EmptyConnector), \
-         patch('agents.recall_data_agent.agent_logic.UK_OPSS_Connector', new=EmptyConnector), \
-         patch('agents.recall_data_agent.agent_logic.SG_CPSO_Connector', new=EmptyConnector):
+    with patch("agents.recall_data_agent.agent_logic.CPSCConnector", new=MockCPSCConnector), patch(
+        "agents.recall_data_agent.agent_logic.FDAConnector", new=EmptyConnector
+    ), patch("agents.recall_data_agent.agent_logic.EU_RAPEX_Connector", new=EmptyConnector), patch(
+        "agents.recall_data_agent.agent_logic.UK_OPSS_Connector", new=EmptyConnector
+    ), patch(
+        "agents.recall_data_agent.agent_logic.SG_CPSO_Connector", new=EmptyConnector
+    ):
         try:
             # 3. Initialize agent logic
             agent_logic = RecallDataAgentLogic(agent_id="test_rda_001", logger_instance=logger)
@@ -95,7 +103,9 @@ async def main():
             if read_result.get("status") == "COMPLETED":
                 recalls = read_result["result"]["recalls"]
                 if len(recalls) == 1 and recalls[0]["recall_id"] == MOCK_CPSC_RECALL.recall_id:
-                    print(Fore.GREEN + Style.BRIGHT + f"✔ READ succeeded: {recalls[0]['recall_id']}")
+                    print(
+                        Fore.GREEN + Style.BRIGHT + f"✔ READ succeeded: {recalls[0]['recall_id']}"
+                    )
                 else:
                     print(Fore.RED + Style.BRIGHT + "✖ READ mismatch.")
             else:
@@ -108,6 +118,6 @@ async def main():
 
     print("--- Test Complete ---")
 
+
 if __name__ == "__main__":
     asyncio.run(main())
-

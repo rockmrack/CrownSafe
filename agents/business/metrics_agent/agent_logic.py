@@ -17,17 +17,21 @@ logger = logging.getLogger(__name__)
 # --- Mixpanel Configuration ---
 TOKEN = os.getenv("MIXPANEL_PROJECT_TOKEN")
 
+
 class MetricsAgentLogic:
     """
     Handles the logic for tracking user events using Mixpanel.
     """
+
     def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
         if not TOKEN:
-            self.logger.critical("MIXPANEL_PROJECT_TOKEN not found in environment variables. The agent cannot function.")
+            self.logger.critical(
+                "MIXPANEL_PROJECT_TOKEN not found in environment variables. The agent cannot function."
+            )
             raise ValueError("MIXPANEL_PROJECT_TOKEN is not set.")
-        
+
         # Initialize the Mixpanel client
         self.mixpanel_client = Mixpanel(TOKEN)
         self.logger.info(f"MetricsAgentLogic initialized for agent {self.agent_id}.")
@@ -39,9 +43,7 @@ class MetricsAgentLogic:
         self.logger.info(f"Tracking event '{event_name}' for user: {user_id}")
         try:
             self.mixpanel_client.track(
-                distinct_id=user_id,
-                event_name=event_name,
-                properties=properties or {}
+                distinct_id=user_id, event_name=event_name, properties=properties or {}
             )
             self.logger.info(f"Successfully sent event '{event_name}' to Mixpanel.")
             return True
@@ -54,7 +56,7 @@ class MetricsAgentLogic:
         Main entry point for the agent.
         """
         self.logger.info(f"Received task with inputs: {inputs}")
-        
+
         user_id = inputs.get("user_id")
         event_name = inputs.get("event_name")
         properties = inputs.get("properties")

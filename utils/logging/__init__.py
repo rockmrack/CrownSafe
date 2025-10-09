@@ -1,4 +1,3 @@
 """Logging utilities for BabyShield Backend"""
 
-__all__ = ['middleware', 'structured_logger']
-
+__all__ = ["middleware", "structured_logger"]

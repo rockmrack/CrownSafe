@@ -21,15 +21,13 @@ logger = logging.getLogger(__name__)
 API_KEY = os.getenv("OPENAI_API_KEY")
 LLM_MODEL = "gpt-4o"  # Updated to the latest model
 
+
 class HazardAnalysisLogic:
     """
     Handles the logic for analyzing product hazards from recall data by calling an LLM.
     """
-    def __init__(
-        self,
-        agent_id: str,
-        logger_instance: Optional[logging.Logger] = None
-    ):
+
+    def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
         if not API_KEY:
@@ -39,11 +37,7 @@ class HazardAnalysisLogic:
             raise ValueError("OPENAI_API_KEY is not set.")
         self.logger.info(f"HazardAnalysisLogic initialized for agent {self.agent_id}.")
 
-    def _create_llm_prompt(
-        self,
-        recall_data: List[Dict[str, Any]],
-        product_name: str
-    ) -> str:
+    def _create_llm_prompt(self, recall_data: List[Dict[str, Any]], product_name: str) -> str:
         """Creates a system prompt for the LLM to summarize recall information."""
         recall_details = ""
         for i, recall in enumerate(recall_data):
@@ -92,12 +86,12 @@ Example of a perfect response:
                     messages=[
                         {
                             "role": "system",
-                            "content": "You are a helpful assistant that only responds with valid JSON."
+                            "content": "You are a helpful assistant that only responds with valid JSON.",
                         },
-                        {"role": "user", "content": prompt}
+                        {"role": "user", "content": prompt},
                     ],
                     temperature=0.2,
-                    response_format={"type": "json_object"}
+                    response_format={"type": "json_object"},
                 )
 
             raw = response.choices[0].message.content
@@ -127,11 +121,11 @@ Example of a perfect response:
         # Get product details - check for nested structure
         product_details = inputs.get("product_details", {}) or {}
         product_name = product_details.get("product_name", "the product")
-        
+
         # Also check if product_name is directly in inputs (fallback)
         if product_name == "the product" and inputs.get("product_name"):
             product_name = inputs.get("product_name")
-        
+
         # Get visual confidence score if present
         visual_confidence = inputs.get("visual_confidence")
 
@@ -142,8 +136,8 @@ Example of a perfect response:
                 "status": "COMPLETED",
                 "result": {  # CHANGED FROM "data" to "result"
                     "summary": "No recalls found for this product.",
-                    "risk_level": "None"  # CHANGED FROM None to "None" (string)
-                }
+                    "risk_level": "None",  # CHANGED FROM None to "None" (string)
+                },
             }
 
         try:
@@ -155,25 +149,20 @@ Example of a perfect response:
                 if visual_confidence and 0.7 <= visual_confidence < 0.95:
                     warning_text = f"⚠️ Warning: This product was identified from a photo with {int(visual_confidence * 100)}% confidence. Please verify the model number on the product to ensure this information is accurate for your specific item. "
                     analysis["summary"] = warning_text + analysis.get("summary", "")
-                    self.logger.info(f"Prepended medium-confidence warning to the final summary (confidence: {visual_confidence})")
+                    self.logger.info(
+                        f"Prepended medium-confidence warning to the final summary (confidence: {visual_confidence})"
+                    )
                 # --- END OF NEW CONDITIONAL WARNING LOGIC ---
                 return {
                     "status": "COMPLETED",
-                    "result": analysis  # CHANGED FROM "data" to "result"
+                    "result": analysis,  # CHANGED FROM "data" to "result"
                 }
             else:
                 self.logger.error("LLM response was invalid or malformed: %s", analysis)
-                return {
-                    "status": "FAILED",
-                    "error": "LLM response was invalid or malformed."
-                }
+                return {"status": "FAILED", "error": "LLM response was invalid or malformed."}
 
         except Exception as e:
             self.logger.error(
-                f"An unexpected error occurred during hazard analysis: {e}",
-                exc_info=True
+                f"An unexpected error occurred during hazard analysis: {e}", exc_info=True
             )
-            return {
-                "status": "FAILED",
-                "error": str(e)
-            }
+            return {"status": "FAILED", "error": str(e)}

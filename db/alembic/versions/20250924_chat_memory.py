@@ -15,35 +15,68 @@ down_revision = "20250905_add_serial_verifications"
 branch_labels = None
 depends_on = None
 
+
 def upgrade():
     op.create_table(
         "user_profile",
         sa.Column("user_id", postgresql.UUID(as_uuid=True), primary_key=True),
-        sa.Column("consent_personalization", sa.Boolean(), nullable=False, server_default=sa.text("false")),
+        sa.Column(
+            "consent_personalization", sa.Boolean(), nullable=False, server_default=sa.text("false")
+        ),
         sa.Column("memory_paused", sa.Boolean(), nullable=False, server_default=sa.text("false")),
-        sa.Column("allergies", postgresql.JSONB(astext_type=sa.Text()), nullable=False, server_default=sa.text("'[]'::jsonb")),
+        sa.Column(
+            "allergies",
+            postgresql.JSONB(astext_type=sa.Text()),
+            nullable=False,
+            server_default=sa.text("'[]'::jsonb"),
+        ),
         sa.Column("pregnancy_trimester", sa.SmallInteger(), nullable=True),
         sa.Column("pregnancy_due_date", sa.Date(), nullable=True),
         sa.Column("child_birthdate", sa.Date(), nullable=True),
         sa.Column("erase_requested_at", sa.TIMESTAMP(timezone=True), nullable=True),
-        sa.Column("created_at", sa.TIMESTAMP(timezone=True), server_default=sa.text("now()"), nullable=False),
-        sa.Column("updated_at", sa.TIMESTAMP(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.TIMESTAMP(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            sa.TIMESTAMP(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
     )
     op.create_table(
         "conversation",
         sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column("user_id", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("scan_id", sa.String(length=64), nullable=True),
-        sa.Column("started_at", sa.TIMESTAMP(timezone=True), server_default=sa.text("now()"), nullable=False),
-        sa.Column("last_activity_at", sa.TIMESTAMP(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "started_at",
+            sa.TIMESTAMP(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "last_activity_at",
+            sa.TIMESTAMP(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
     )
     op.create_index("ix_conversation_user_id", "conversation", ["user_id"])
     op.create_table(
         "conversation_message",
         sa.Column("id", sa.BigInteger(), primary_key=True, autoincrement=True),
         sa.Column("conversation_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("created_at", sa.TIMESTAMP(timezone=True), server_default=sa.text("now()"), nullable=False),
-        sa.Column("role", sa.String(length=16), nullable=False),   # 'user' | 'assistant'
+        sa.Column(
+            "created_at",
+            sa.TIMESTAMP(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column("role", sa.String(length=16), nullable=False),  # 'user' | 'assistant'
         sa.Column("intent", sa.String(length=64), nullable=True),
         sa.Column("trace_id", sa.String(length=64), nullable=True),
         sa.Column("content", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
@@ -52,7 +85,13 @@ def upgrade():
     op.create_index("ix_message_conversation_id", "conversation_message", ["conversation_id"])
     op.create_index("ix_message_role", "conversation_message", ["role"])
     op.create_index("ix_message_trace", "conversation_message", ["trace_id"])
-    op.create_index("ix_message_content_gin", "conversation_message", [sa.text("content")], postgresql_using="gin")
+    op.create_index(
+        "ix_message_content_gin",
+        "conversation_message",
+        [sa.text("content")],
+        postgresql_using="gin",
+    )
+
 
 def downgrade():
     op.drop_index("ix_message_content_gin", table_name="conversation_message")

@@ -5,14 +5,14 @@ from pydantic import BaseModel, Field, ValidationError
 
 
 class EvidenceItem(BaseModel):
-    type: Literal["recall","regulation","guideline","datasheet","label"] = "regulation"
+    type: Literal["recall", "regulation", "guideline", "datasheet", "label"] = "regulation"
     source: str  # e.g., "EU Safety Gate", "CPSC", "FDA"
     id: Optional[str] = None
     url: Optional[str] = None
 
 
 class EmergencyNotice(BaseModel):
-    level: Literal["red","amber"]
+    level: Literal["red", "amber"]
     reason: str
     cta: str  # e.g., "Open Emergency Guidance"
 
@@ -22,20 +22,34 @@ class ExplanationResponse(BaseModel):
     Structured output for the 'Explain This Result' feature.
     Keep this minimal for Phase 0; expand in Phase 1.
     """
+
     summary: str = Field(..., description="2–3 line plain-language explanation.")
-    reasons: List[str] = Field(default_factory=list, description="Bulleted reasons behind the verdict.")
-    checks: List[str] = Field(default_factory=list, description="Concrete checks for the user to perform.")
-    flags: List[str] = Field(default_factory=list, description="Machine-readable tags (e.g., 'soft_cheese','contains_peanuts').")
+    reasons: List[str] = Field(
+        default_factory=list, description="Bulleted reasons behind the verdict."
+    )
+    checks: List[str] = Field(
+        default_factory=list, description="Concrete checks for the user to perform."
+    )
+    flags: List[str] = Field(
+        default_factory=list,
+        description="Machine-readable tags (e.g., 'soft_cheese','contains_peanuts').",
+    )
     disclaimer: str = Field(..., description="Short non-diagnostic disclaimer.")
 
     # NEW (optional)
     jurisdiction: Optional[Dict[str, Optional[str]]] = Field(
         default=None,
-        description='Applied region context, e.g., {"code":"EU","label":"EU Safety Gate"}'
+        description='Applied region context, e.g., {"code":"EU","label":"EU Safety Gate"}',
     )
-    evidence: List[EvidenceItem] = Field(default_factory=list, description="Cited sources backing claims.")
-    suggested_questions: List[str] = Field(default_factory=list, description="Follow-up questions parents commonly ask.")
-    emergency: Optional[EmergencyNotice] = Field(default=None, description="Emergency notice for urgent situations.")
+    evidence: List[EvidenceItem] = Field(
+        default_factory=list, description="Cited sources backing claims."
+    )
+    suggested_questions: List[str] = Field(
+        default_factory=list, description="Follow-up questions parents commonly ask."
+    )
+    emergency: Optional[EmergencyNotice] = Field(
+        default=None, description="Emergency notice for urgent situations."
+    )
 
 
 Intent = Literal[
@@ -55,6 +69,7 @@ class LLMClient(Protocol):
     Your existing OpenAI client can adapt to this easily.
     Implementations should raise on non-2xx or parse failures.
     """
+
     def chat_json(
         self,
         *,
@@ -63,7 +78,8 @@ class LLMClient(Protocol):
         user: str,
         response_schema: Dict[str, Any],
         timeout: float = 8.0,
-    ) -> Dict[str, Any]: ...
+    ) -> Dict[str, Any]:
+        ...
 
 
 _PHASE0_SYSTEM_PROMPT = (
@@ -94,11 +110,8 @@ _EXPLANATION_JSON_SCHEMA: Dict[str, Any] = {
         "jurisdiction": {
             "type": "object",
             "additionalProperties": False,
-            "properties": {
-                "code": {"type": "string"},
-                "label": {"type": "string"}
-            },
-            "required": []
+            "properties": {"code": {"type": "string"}, "label": {"type": "string"}},
+            "required": [],
         },
         "evidence": {
             "type": "array",
@@ -106,13 +119,16 @@ _EXPLANATION_JSON_SCHEMA: Dict[str, Any] = {
                 "type": "object",
                 "additionalProperties": False,
                 "properties": {
-                    "type": {"type": "string", "enum": ["recall","regulation","guideline","datasheet","label"]},
+                    "type": {
+                        "type": "string",
+                        "enum": ["recall", "regulation", "guideline", "datasheet", "label"],
+                    },
                     "source": {"type": "string"},
                     "id": {"type": "string"},
-                    "url": {"type": "string"}
+                    "url": {"type": "string"},
                 },
-                "required": ["source"]
-            }
+                "required": ["source"],
+            },
         },
         "suggested_questions": {"type": "array", "items": {"type": "string"}},
         "emergency": {
@@ -121,9 +137,9 @@ _EXPLANATION_JSON_SCHEMA: Dict[str, Any] = {
             "properties": {
                 "level": {"type": "string", "enum": ["red", "amber"]},
                 "reason": {"type": "string"},
-                "cta": {"type": "string"}
+                "cta": {"type": "string"},
             },
-            "required": ["level", "reason", "cta"]
+            "required": ["level", "reason", "cta"],
         },
     },
     "required": ["summary", "disclaimer"],
@@ -191,7 +207,7 @@ class ChatAgentLogic:
             "- checks: what the parent should verify on the label/packaging.\n"
             "- flags: short machine tags (e.g., 'soft_cheese','contains_peanuts').\n"
             "- disclaimer: short non-diagnostic note.\n"
-            "- jurisdiction: if provided in context, include the region info (e.g., {\"code\":\"EU\",\"label\":\"EU Safety Gate\"}).\n"
+            '- jurisdiction: if provided in context, include the region info (e.g., {"code":"EU","label":"EU Safety Gate"}).\n'
             "- evidence: cite any regulatory sources, recalls, or guidelines that support your statements.\n"
         )
 

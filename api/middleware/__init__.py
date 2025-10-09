@@ -11,5 +11,5 @@ __all__ = [
     "CorrelationIdMiddleware",
     "AccessLogMiddleware",
     "SizeLimitMiddleware",
-    "UserAgentBlocker"
+    "UserAgentBlocker",
 ]

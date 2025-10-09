@@ -4,7 +4,7 @@ import redis
 import json
 import time
 
-r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
 print("🔍 Checking message flow...\n")
 
@@ -21,7 +21,7 @@ if cmd_len > 0:
         print("\nLatest Commander message:")
         print(f"  Type: {msg_data.get('mcp_header', {}).get('message_type')}")
         print(f"  Payload structure:")
-        payload = msg_data.get('payload', {})
+        payload = msg_data.get("payload", {})
         for key in payload.keys():
             print(f"    - {key}")
             if key == "user_request" and isinstance(payload[key], dict):

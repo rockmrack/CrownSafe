@@ -15,12 +15,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
 
+
 @app.get("/")
 async def root():
     return {"status": "ok", "service": "BabyShield API (Minimal)"}
+
 
 logger.info("Minimal API created")

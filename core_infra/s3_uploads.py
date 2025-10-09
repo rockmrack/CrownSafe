@@ -11,7 +11,9 @@ from typing import Dict, Optional
 
 # Bucket configuration
 BUCKET = os.getenv("S3_UPLOAD_BUCKET") or os.getenv("S3_BUCKET", "babyshield-images")
-CFG_REGION = os.getenv("S3_UPLOAD_BUCKET_REGION") or os.getenv("S3_BUCKET_REGION", "us-east-1")  # Fixed: S3 bucket is in us-east-1
+CFG_REGION = os.getenv("S3_UPLOAD_BUCKET_REGION") or os.getenv(
+    "S3_BUCKET_REGION", "us-east-1"
+)  # Fixed: S3 bucket is in us-east-1
 
 
 def _bucket_region() -> str:
@@ -76,7 +78,7 @@ def presign_post(key: str, user_id: int, job_id: str, content_type: str = "image
         url = f"https://{BUCKET}.s3.amazonaws.com"
     else:
         url = f"https://{BUCKET}.s3.{region}.amazonaws.com"
-    
+
     return {
         "url": url,
         "fields": fields,
@@ -84,7 +86,6 @@ def presign_post(key: str, user_id: int, job_id: str, content_type: str = "image
         "region": region,
         "bucket": BUCKET,
     }
-
 
 
 def presign_get(
@@ -99,11 +100,7 @@ def presign_get(
     """
     region = _bucket_region()
     s3 = boto3.client("s3", region_name=region, config=Config(signature_version="s3v4"))
-    ttl = (
-        int(os.getenv("PRESIGN_TTL_SECONDS", "600"))
-        if (expires is None)
-        else int(expires)
-    )
+    ttl = int(os.getenv("PRESIGN_TTL_SECONDS", "600")) if (expires is None) else int(expires)
     params = {"Bucket": BUCKET, "Key": key}
     if filename:
         params["ResponseContentType"] = content_type
@@ -130,4 +127,3 @@ def upload_file(file_path: str, key: str, content_type: str = "application/pdf")
         extra_args["SSEKMSKeyId"] = kms_key_id
     s3.upload_file(Filename=file_path, Bucket=BUCKET, Key=key, ExtraArgs=extra_args)
     return {"bucket": BUCKET, "key": key, "region": region}
-

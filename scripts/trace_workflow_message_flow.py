@@ -4,7 +4,7 @@ import redis
 import json
 import time
 
-r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
 workflow_id = "97da841b-d39b-4f85-9418-85dd007c4afb"  # From your test
 
@@ -16,7 +16,7 @@ for agent in ["commander_agent_01", "planner_agent_01", "router_agent_01"]:
     queue_key = f"mcp:queue:{agent}"
     queue_len = r.llen(queue_key)
     print(f"   {agent}: {queue_len} messages")
-    
+
     # Check if workflow ID is in any queued messages
     for i in range(min(queue_len, 5)):
         msg = r.lindex(queue_key, i)

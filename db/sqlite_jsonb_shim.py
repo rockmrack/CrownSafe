@@ -10,8 +10,10 @@ if DB_URL.startswith("sqlite"):
     try:
         from sqlalchemy.dialects.postgresql import JSONB
         from sqlalchemy import JSON
+
         # monkey-patch: whenever code asks for JSONB, give it JSON instead
         import sqlalchemy.dialects.postgresql as pg_dialect
+
         pg_dialect.JSONB = JSONB  # keep name for type checks
         JSONB.impl = JSON  # tell SQLA to render SQLite-friendly JSON
         JSONB.cache_ok = True

@@ -9,7 +9,7 @@ import logging
 
 class User:
     """Simple user model for authentication context."""
-    
+
     def __init__(self, id: UUID, email: Optional[str] = None):
         self.id = id
         self.email = email
@@ -22,10 +22,10 @@ current_user: Optional[User] = None
 def get_current_user() -> Optional[User]:
     """
     Get the current authenticated user.
-    
+
     In production, this would extract user info from JWT token or session.
     For now, returns None to indicate no authentication.
-    
+
     Returns:
         User object if authenticated, None otherwise
     """
@@ -38,7 +38,7 @@ def get_current_user() -> Optional[User]:
 def set_current_user(user: Optional[User]) -> None:
     """
     Set the current user context (for testing/development).
-    
+
     Args:
         user: User object to set as current user
     """
@@ -57,10 +57,10 @@ def clear_current_user() -> None:
 def require_auth() -> User:
     """
     Require authentication and return the current user.
-    
+
     Returns:
         Current user object
-        
+
     Raises:
         RuntimeError: If no user is authenticated
     """

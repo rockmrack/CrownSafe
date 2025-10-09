@@ -4,11 +4,7 @@ import requests
 import json
 
 url = "http://localhost:8000/api/v1/prior-auth/predict"
-data = {
-    "patient_id": "test-001",
-    "drug_name": "Metformin",
-    "insurer_id": "UHC"
-}
+data = {"patient_id": "test-001", "drug_name": "Metformin", "insurer_id": "UHC"}
 
 print("Sending request to API...")
 response = requests.post(url, json=data)

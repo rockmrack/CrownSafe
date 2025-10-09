@@ -7,10 +7,13 @@ import time
 
 from .agent_logic import ProductIdentifierLogic
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "product_identifier_agent_01"
+
 
 class ProductIdentifierAgent:
     """
@@ -19,6 +22,7 @@ class ProductIdentifierAgent:
     queue (like RabbitMQ or Kafka) and listen for 'TASK_ASSIGN' messages.
     For our monolithic app, the logic is called directly by the Router.
     """
+
     def __init__(self):
         self.agent_id = AGENT_ID
         self.logic = ProductIdentifierLogic(agent_id=self.agent_id)
@@ -39,6 +43,7 @@ class ProductIdentifierAgent:
         self.is_running = False
         logger.info(f"Stopping {self.agent_id}...")
 
+
 def main():
     """Main function to run the agent."""
     agent = ProductIdentifierAgent()
@@ -48,6 +53,7 @@ def main():
         logger.info("Shutdown signal received.")
     finally:
         agent.stop()
+
 
 if __name__ == "__main__":
     main()

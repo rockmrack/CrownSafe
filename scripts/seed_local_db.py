@@ -1,11 +1,13 @@
 import sqlite3, datetime
+
 db = "babyshield_test.db"
 
 conn = sqlite3.connect(db)
 c = conn.cursor()
 
 # 1) recalls_enhanced (columns simplified to TEXT for SQLite)
-c.execute("""
+c.execute(
+    """
 CREATE TABLE IF NOT EXISTS recalls_enhanced (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   recall_id TEXT,
@@ -45,32 +47,46 @@ CREATE TABLE IF NOT EXISTS recalls_enhanced (
   url TEXT,
   search_keywords TEXT,
   agency_specific_data TEXT
-)""")
+)"""
+)
 
 # 2) report_records (for metadata the API writes)
-c.execute("""
+c.execute(
+    """
 CREATE TABLE IF NOT EXISTS report_records (
   report_id TEXT PRIMARY KEY,
   user_id INTEGER,
   report_type TEXT,
   storage_path TEXT,
   created_at TEXT
-)""")
+)"""
+)
 
 # Seed one simple recall if table is empty
 row = c.execute("SELECT COUNT(1) FROM recalls_enhanced").fetchone()[0]
 if row == 0:
-    c.execute("""
+    c.execute(
+        """
       INSERT INTO recalls_enhanced
       (recall_id, product_name, brand, manufacturer, model_number, hazard, hazard_category,
        recall_date, source_agency, url, country, description)
       VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
-    """, (
-      "TEST-001", "Sample Baby Crib", "SafeCo", "SafeCo Ltd", "SC-100",
-      "Entrapment risk", "Injury",
-      datetime.date.today().isoformat(), "CPSC", "https://example.com/recall/test",
-      "USA", "Mock row for local report generation"
-    ))
+    """,
+        (
+            "TEST-001",
+            "Sample Baby Crib",
+            "SafeCo",
+            "SafeCo Ltd",
+            "SC-100",
+            "Entrapment risk",
+            "Injury",
+            datetime.date.today().isoformat(),
+            "CPSC",
+            "https://example.com/recall/test",
+            "USA",
+            "Mock row for local report generation",
+        ),
+    )
     print("Seeded recalls_enhanced with 1 row.")
 else:
     print("recalls_enhanced already has data; no seed inserted.")

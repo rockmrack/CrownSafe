@@ -11,11 +11,9 @@ from agents.recall_data_agent.connectors import FDAConnector, EURapexConnector
 # Load your .env (must contain FDA_API_KEY and OPENDATASOFT_API_KEY)
 load_dotenv()
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(name)s %(levelname)s │ %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s │ %(message)s")
 logger = logging.getLogger("live-test")
+
 
 async def main():
     logger.info("🔍 Starting LIVE Recall Connectors Test")
@@ -41,6 +39,7 @@ async def main():
         logger.error("‼︎ EU RAPEX live fetch failed", exc_info=True)
 
     logger.info("✅ LIVE test complete")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

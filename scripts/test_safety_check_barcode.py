@@ -2,6 +2,7 @@
 # Test Scenario 1: Basic Safety Check via Barcode
 
 import os
+
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 import sys
 import os
@@ -11,7 +12,7 @@ import json
 import datetime
 
 # --- Add project root to Python's path ---
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
@@ -19,12 +20,15 @@ from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
 from core_infra.database import Base, engine, SessionLocal, RecallDB
 
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # --- Test Configuration ---
 TEST_BARCODE = "381370037248"  # Johnson's Baby Shampoo UPC
 EXPECTED_PRODUCT_NAME_FRAGMENT = "Johnson"
 # --------------------------
+
 
 async def main():
     logger = logging.getLogger(__name__)
@@ -42,15 +46,19 @@ async def main():
             recall_date=datetime.date(2025, 7, 22),
             hazard_description="Contains a newly identified mild allergen.",
             hazard="Contains a newly identified mild allergen.",  # Added for recall agent
-            manufacturer_contact="support@jj.com"
+            manufacturer_contact="support@jj.com",
         )
         db.add(test_recall)
         db.commit()
-    logger.info("Database is set up with one test recall for 'Johnson and Johnson Baby Shampoo, 15 Ounce'.")
+    logger.info(
+        "Database is set up with one test recall for 'Johnson and Johnson Baby Shampoo, 15 Ounce'."
+    )
 
     try:
         # 2. Initialize the real Commander. It will initialize the real sub-agents.
-        commander = BabyShieldCommanderLogic(agent_id="scenario_1_commander", logger_instance=logger)
+        commander = BabyShieldCommanderLogic(
+            agent_id="scenario_1_commander", logger_instance=logger
+        )
         logger.info("Step 1: Live Commander and all sub-agents initialized.")
 
         # 3. Define the user request with our test barcode.
@@ -63,9 +71,9 @@ async def main():
         logger.info("Commander workflow finished.")
 
         # 5. Analyze the final result.
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("          SCENARIO 1 TEST RESULT")
-        print("="*50)
+        print("=" * 50)
         print(json.dumps(final_result, indent=2))
 
         # 6. Validate the final result.
@@ -73,13 +81,15 @@ async def main():
             risk_level = final_result["data"].get("risk_level")
             summary = final_result["data"].get("summary", "")
             if risk_level and "allergen" in summary.lower():
-                print("\n" + "="*50)
+                print("\n" + "=" * 50)
                 print("✅✅✅ TEST PASSED: Correctly identified product, recall, and hazard summary.")
             else:
-                print("\n" + "="*50)
-                print(f"❌ TEST FAILED: Unexpected analysis. risk_level='{risk_level}', summary='{summary}'")
+                print("\n" + "=" * 50)
+                print(
+                    f"❌ TEST FAILED: Unexpected analysis. risk_level='{risk_level}', summary='{summary}'"
+                )
         else:
-            print("\n" + "="*50)
+            print("\n" + "=" * 50)
             print(f"❌ TEST FAILED: Workflow status '{final_result.get('status')}'")
             print(f"Error: {final_result.get('error')}")
 
@@ -90,6 +100,7 @@ async def main():
         logger.info("Database tables dropped.")
 
     print("--- Test Complete ---")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

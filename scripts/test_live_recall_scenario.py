@@ -5,16 +5,16 @@ import logging
 from typing import Any, Dict
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 # --- Test Configuration ---
 API_URL = "http://localhost:8001/api/v1/safety-check"
-TEST_USER_ID  = 1
-TEST_BARCODE  = "850016249012"
+TEST_USER_ID = 1
+TEST_BARCODE = "850016249012"
 # --------------------------
+
 
 def validate_response(resp: Dict[str, Any]) -> bool:
     """
@@ -29,7 +29,7 @@ def validate_response(resp: Dict[str, Any]) -> bool:
 
     data = resp.get("data", {})
     summary = data.get("summary", "")
-    risk   = data.get("risk_level", "")
+    risk = data.get("risk_level", "")
 
     if not isinstance(summary, str) or not summary.strip():
         print("❌ TEST FAILED: summary is empty or missing.")
@@ -43,24 +43,22 @@ def validate_response(resp: Dict[str, Any]) -> bool:
     # All checks passed
     return True
 
+
 def main():
     logger.info("=== Starting Live End-to-End Recall Test ===")
 
-    payload = {
-        "user_id": TEST_USER_ID,
-        "barcode": TEST_BARCODE
-    }
+    payload = {"user_id": TEST_USER_ID, "barcode": TEST_BARCODE}
 
     try:
         logger.info(f"POST {API_URL} → {payload}")
         r = requests.post(API_URL, json=payload, timeout=30)
         r.raise_for_status()
     except requests.exceptions.RequestException as e:
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print(f"❌ TEST FAILED: Could not reach API at {API_URL}")
         print("Please ensure your service is running (e.g. `docker-compose up -d`).")
         print(f"Error: {e}")
-        print("="*60 + "\n")
+        print("=" * 60 + "\n")
         return
 
     try:
@@ -70,12 +68,12 @@ def main():
         print(r.text)
         return
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("          LIVE API TEST RESULT")
-    print("="*60)
+    print("=" * 60)
     print(json.dumps(result, indent=2))
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     if validate_response(result):
         print("✅✅✅ TEST PASSED: Received COMPLETED status with valid summary and risk level.")
     else:
@@ -83,6 +81,7 @@ def main():
         pass
 
     print("\n=== Test Complete ===")
+
 
 if __name__ == "__main__":
     main()

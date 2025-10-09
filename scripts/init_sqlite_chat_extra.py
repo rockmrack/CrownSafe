@@ -5,7 +5,8 @@ con = sqlite3.connect(DB)
 cur = con.cursor()
 
 # Keep it simple for local: no foreign keys; SQLite TEXT for JSON
-cur.executescript("""
+cur.executescript(
+    """
 PRAGMA foreign_keys=OFF;
 
 -- already made chat_* tables are fine; these are common extras used by explain-result
@@ -35,7 +36,8 @@ CREATE TABLE IF NOT EXISTS chat_explanations (
   disclaimer TEXT,
   created_at TEXT
 );
-""")
+"""
+)
 
 con.commit()
 con.close()

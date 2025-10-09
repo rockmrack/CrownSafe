@@ -14,61 +14,56 @@ class IngestionRun(Base):
     """
     Model for tracking data ingestion runs
     """
+
     __tablename__ = "ingestion_runs"
-    
+
     # Primary key
     id = Column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        server_default=func.gen_random_uuid(),
-        nullable=False
+        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid(), nullable=False
     )
-    
+
     # Core fields
     agency = Column(String(64), nullable=False, index=True)
     mode = Column(String(16), nullable=False)  # delta, full, incremental
-    status = Column(String(16), nullable=False, index=True)  # queued, running, success, failed, cancelled, partial
-    
+    status = Column(
+        String(16), nullable=False, index=True
+    )  # queued, running, success, failed, cancelled, partial
+
     # Timestamps
     started_at = Column(DateTime(timezone=True), nullable=True)
     finished_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(
-        DateTime(timezone=True),
-        server_default=func.current_timestamp(),
-        nullable=False
+        DateTime(timezone=True), server_default=func.current_timestamp(), nullable=False
     )
-    
+
     # Metrics
     items_inserted = Column(Integer, default=0, nullable=False)
     items_updated = Column(Integer, default=0, nullable=False)
     items_skipped = Column(Integer, default=0, nullable=False)
     items_failed = Column(Integer, default=0, nullable=False)
-    
+
     # Error tracking
     error_text = Column(Text, nullable=True)
-    
+
     # Audit fields
     initiated_by = Column(String(128), nullable=True)
     trace_id = Column(String(64), nullable=True)
-    
+
     # Flexible metadata storage
     metadata_json = Column(JSONB, nullable=True)
-    
+
     # Table constraints
     __table_args__ = (
-        CheckConstraint(
-            "mode IN ('delta', 'full', 'incremental')",
-            name="check_mode"
-        ),
+        CheckConstraint("mode IN ('delta', 'full', 'incremental')", name="check_mode"),
         CheckConstraint(
             "status IN ('queued', 'running', 'success', 'failed', 'cancelled', 'partial')",
-            name="check_status"
+            name="check_status",
         ),
     )
-    
+
     def __repr__(self):
         return f"<IngestionRun(id={self.id}, agency={self.agency}, status={self.status})>"
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
         return {
@@ -89,9 +84,9 @@ class IngestionRun(Base):
             "metadata": self.metadata_json,
             "duration_seconds": self.duration_seconds,
             "is_running": self.is_running,
-            "is_success": self.is_success
+            "is_success": self.is_success,
         }
-    
+
     @property
     def duration_seconds(self) -> Optional[float]:
         """Calculate run duration in seconds"""
@@ -99,42 +94,44 @@ class IngestionRun(Base):
             return (self.finished_at - self.started_at).total_seconds()
         elif self.started_at:
             # Still running
-            return (datetime.utcnow().replace(tzinfo=self.started_at.tzinfo) - self.started_at).total_seconds()
+            return (
+                datetime.utcnow().replace(tzinfo=self.started_at.tzinfo) - self.started_at
+            ).total_seconds()
         return None
-    
+
     @property
     def is_running(self) -> bool:
         """Check if ingestion is currently running"""
         return self.status == "running"
-    
+
     @property
     def is_success(self) -> bool:
         """Check if ingestion completed successfully"""
         return self.status in ("success", "partial")
-    
+
     @property
     def is_failed(self) -> bool:
         """Check if ingestion failed"""
         return self.status in ("failed", "cancelled")
-    
+
     @property
     def total_items_processed(self) -> int:
         """Total number of items processed"""
         return self.items_inserted + self.items_updated + self.items_skipped
-    
+
     def set_running(self, trace_id: Optional[str] = None):
         """Mark ingestion as running"""
         self.status = "running"
         self.started_at = datetime.utcnow().replace(tzinfo=timezone.utc)
         if trace_id:
             self.trace_id = trace_id
-    
+
     def set_success(
         self,
         items_inserted: int = 0,
         items_updated: int = 0,
         items_skipped: int = 0,
-        items_failed: int = 0
+        items_failed: int = 0,
     ):
         """Mark ingestion as successful"""
         self.status = "success" if items_failed == 0 else "partial"
@@ -143,13 +140,13 @@ class IngestionRun(Base):
         self.items_updated = items_updated
         self.items_skipped = items_skipped
         self.items_failed = items_failed
-    
+
     def set_failed(self, error: str):
         """Mark ingestion as failed"""
         self.status = "failed"
         self.finished_at = datetime.utcnow().replace(tzinfo=timezone.utc)
         self.error_text = error[:5000] if error else None  # Truncate to 5000 chars
-    
+
     def set_cancelled(self):
         """Mark ingestion as cancelled"""
         self.status = "cancelled"

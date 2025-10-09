@@ -4,7 +4,7 @@ import redis
 import json
 import time
 
-r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
 # Check queue is being processed
 queue_key = "mcp:queue:router_agent_01"
@@ -19,9 +19,9 @@ test_msg = {
         "sender_id": "test",
         "target_id": "router_agent_01",
         "correlation_id": "test123",
-        "timestamp": "2025-01-01T00:00:00Z"
+        "timestamp": "2025-01-01T00:00:00Z",
     },
-    "payload": {}
+    "payload": {},
 }
 
 r.lpush(queue_key, json.dumps(test_msg))

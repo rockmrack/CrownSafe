@@ -11,27 +11,35 @@ BASE = os.getenv("BABYSHIELD_BASE_URL", "https://babyshield.cureviax.ai")
 S = requests.Session()
 S.headers.update({"Content-Type": "application/json"})
 
+
 def expect(cond, msg):
     if not cond:
         print(f"❌ {msg}")
         sys.exit(1)
     print(f"✅ {msg}")
 
+
 def get_json(path):
     try:
         r = S.get(f"{BASE}{path}", timeout=15)
-        return r, (r.json() if r.headers.get("content-type", "").startswith("application/json") else None)
+        return r, (
+            r.json() if r.headers.get("content-type", "").startswith("application/json") else None
+        )
     except Exception as e:
         print(f"❌ Failed to GET {path}: {e}")
         return None, None
 
+
 def post_json(path, payload):
     try:
         r = S.post(f"{BASE}{path}", json=payload, timeout=30)
-        return r, (r.json() if r.headers.get("content-type", "").startswith("application/json") else None)
+        return r, (
+            r.json() if r.headers.get("content-type", "").startswith("application/json") else None
+        )
     except Exception as e:
         print(f"❌ Failed to POST {path}: {e}")
         return None, None
+
 
 print("=" * 80)
 print("🚀 BABYSHIELD API - APP STORE READINESS CHECK")
@@ -69,11 +77,7 @@ expect(r and r.status_code == 200, "OpenAPI JSON also at /openapi.json")
 # 3) Functional search (short query & product)
 print("\n🔍 3. Search Functionality")
 print("-" * 40)
-payload = {
-    "product": "pacifier",
-    "agencies": ["FDA"],
-    "limit": 3
-}
+payload = {"product": "pacifier", "agencies": ["FDA"], "limit": 3}
 r, j = post_json("/api/v1/search/advanced", payload)
 expect(r and r.status_code == 200, "advanced search basic POST works")
 expect(j and j.get("ok"), "search returns ok=true")
@@ -95,7 +99,7 @@ alias_payload = {
     "product_category": "drug",
     "agency": "FDA",
     "product": "bottle",
-    "limit": 2
+    "limit": 2,
 }
 r, j = post_json("/api/v1/search/advanced", alias_payload)
 expect(r and r.status_code == 200, "aliases accepted (severity/product_category/agency)")
@@ -106,7 +110,7 @@ alt_alias_payload = {
     "riskCategory": "baby food",
     "agencies": ["CPSC"],
     "query": "toy",
-    "limit": 2
+    "limit": 2,
 }
 r, j = post_json("/api/v1/search/advanced", alt_alias_payload)
 expect(r and r.status_code == 200, "alternative aliases accepted")
@@ -114,7 +118,9 @@ expect(r and r.status_code == 200, "alternative aliases accepted")
 # Bad request test
 bad_payload = {"foo": "bar"}
 r, j = post_json("/api/v1/search/advanced", bad_payload)
-expect(r and (r.status_code == 400 or (r.status_code == 422 and j)), "invalid params produce 400/422")
+expect(
+    r and (r.status_code == 400 or (r.status_code == 422 and j)), "invalid params produce 400/422"
+)
 expect(j and (j.get("error") or j.get("detail")), "error message present for bad request")
 
 # 5) Pagination & deterministic order
@@ -137,13 +143,13 @@ if cursor:
     # Test pagination with cursor
     r2, j2 = post_json("/api/v1/search/advanced", {"product": "doll", "nextCursor": cursor})
     expect(r2 and r2.status_code == 200, "pagination next page 200")
-    
+
     second_items = []
     if j2 and "data" in j2:
         second_items = j2["data"].get("items", [])
     elif j2:
         second_items = j2.get("items", [])
-    
+
     first_ids = {item.get("id") or item.get("recall_id") for item in first_items}
     second_ids = {item.get("id") or item.get("recall_id") for item in second_items}
     expect(not first_ids.intersection(second_ids), "no overlap between pages")
@@ -181,14 +187,18 @@ expect(r and r.status_code in (400, 422), "empty search term returns 4xx")
 print("\n🌐 8. CORS Support")
 print("-" * 40)
 try:
-    r = requests.options(f"{BASE}/api/v1/search/advanced", headers={
-        "Origin": "https://app.babyshield.ai",
-        "Access-Control-Request-Method": "POST",
-        "Access-Control-Request-Headers": "Content-Type"
-    }, timeout=15)
-    
+    r = requests.options(
+        f"{BASE}/api/v1/search/advanced",
+        headers={
+            "Origin": "https://app.babyshield.ai",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "Content-Type",
+        },
+        timeout=15,
+    )
+
     expect(r.status_code in (200, 204), "CORS preflight allowed")
-    
+
     # Check for CORS headers (case-insensitive)
     headers_lower = {k.lower(): v for k, v in r.headers.items()}
     expect("access-control-allow-origin" in headers_lower, "CORS allow-origin header present")
@@ -202,6 +212,7 @@ print("-" * 40)
 lat = []
 errors = []
 
+
 def worker():
     try:
         t0 = time.time()
@@ -213,6 +224,7 @@ def worker():
             errors.append(f"Status {r.status_code if r else 'None'}")
     except Exception as e:
         errors.append(str(e))
+
 
 threads = []
 print("   Running 20 concurrent requests...")
@@ -226,18 +238,18 @@ for th in threads:
 
 if lat:
     lat_sorted = sorted(lat)
-    p50 = lat_sorted[len(lat)//2]
-    p95 = lat_sorted[int(len(lat)*0.95)-1] if len(lat) > 1 else lat_sorted[0]
+    p50 = lat_sorted[len(lat) // 2]
+    p95 = lat_sorted[int(len(lat) * 0.95) - 1] if len(lat) > 1 else lat_sorted[0]
     p99 = lat_sorted[-1]
     avg = sum(lat) / len(lat)
-    
+
     print(f"   📊 Latency stats (ms):")
     print(f"      • Average: {avg:.0f} ms")
     print(f"      • P50: {p50:.0f} ms")
     print(f"      • P95: {p95:.0f} ms")
     print(f"      • P99: {p99:.0f} ms")
     print(f"      • Success rate: {len(lat)}/20 ({len(lat)*5}%)")
-    
+
     expect(p95 < 800, "p95 latency < 800ms under light load")
     expect(len(lat) >= 18, "at least 90% success rate")
 else:

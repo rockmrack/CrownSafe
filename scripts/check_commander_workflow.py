@@ -4,13 +4,13 @@ import redis
 import json
 
 # Connect to Redis
-r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
 print("🔍 Checking all workflow keys in Redis:\n")
 
 # List all keys
-all_keys = r.keys('*')
-workflow_keys = [k for k in all_keys if 'workflow' in k.lower()]
+all_keys = r.keys("*")
+workflow_keys = [k for k in all_keys if "workflow" in k.lower()]
 
 print(f"Found {len(workflow_keys)} workflow-related keys:\n")
 
@@ -28,11 +28,7 @@ for key in workflow_keys[:20]:  # Show first 20
 
 # Check specific patterns
 print("\n🔍 Checking specific patterns:")
-patterns = [
-    "rossnet:workflow:*",
-    "commander:*",
-    "*commander*workflow*"
-]
+patterns = ["rossnet:workflow:*", "commander:*", "*commander*workflow*"]
 
 for pattern in patterns:
     keys = r.keys(pattern)

@@ -18,25 +18,26 @@ try:
 
     class PlanStep(BaseModel):
         """Model for a single step in the BabyShield safety check plan."""
+
         step_id: str
         task_description: str
         agent_capability_required: str
-        target_agent_type: Optional[str] = None # Added to match your template
+        target_agent_type: Optional[str] = None  # Added to match your template
         inputs: Dict[str, Any]
         dependencies: List[str] = Field(default_factory=list)
         priority: str = "medium"
 
-        @field_validator('agent_capability_required')
+        @field_validator("agent_capability_required")
         @classmethod
         def validate_capability(cls, v):
             """Ensures that the plan only uses capabilities defined for BabyShield."""
             # UPDATED to match your template's capabilities
             valid_capabilities = [
-                'identify_product',
-                'identify_product_from_image',  # Phase 3: Visual search capability
-                'query_recalls_by_product',
-                'analyze_hazards',
-                'notify_user' # Kept for future use
+                "identify_product",
+                "identify_product_from_image",  # Phase 3: Visual search capability
+                "query_recalls_by_product",
+                "analyze_hazards",
+                "notify_user",  # Kept for future use
             ]
             if v not in valid_capabilities:
                 raise ValueError(f"Invalid capability: '{v}'. Must be one of {valid_capabilities}")
@@ -44,6 +45,7 @@ try:
 
     class BabyShieldPlan(BaseModel):
         """Model for the complete BabyShield safety check plan."""
+
         plan_id: str = Field(default_factory=lambda: f"bsp_{uuid.uuid4()}")
         workflow_goal: str
         # These fields are no longer needed at the top level as they are in the inputs
@@ -51,13 +53,16 @@ try:
         # product_identifier_value: str
         steps: List[PlanStep]
         template_name: str
-        created_timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+        created_timestamp: str = Field(
+            default_factory=lambda: datetime.now(timezone.utc).isoformat()
+        )
 
     PYDANTIC_AVAILABLE = True
 except ImportError:
     PYDANTIC_AVAILABLE = False
     BabyShieldPlan = None
     PlanStep = None
+
 
 def substitute_placeholders(obj: Any, params: Dict[str, Any]) -> Any:
     """
@@ -72,7 +77,7 @@ def substitute_placeholders(obj: Any, params: Dict[str, Any]) -> Any:
                 # If the whole string is just the placeholder, return the actual value
                 # This preserves None values instead of converting to string
                 return value
-                
+
         # Otherwise, do string substitution
         for key, value in params.items():
             placeholder = f"{{{{{key}}}}}"
@@ -88,6 +93,7 @@ def substitute_placeholders(obj: Any, params: Dict[str, Any]) -> Any:
     else:
         return obj
 
+
 class BabyShieldPlannerLogic:
     """
     Generates a static, step-by-step execution plan for the BabyShield
@@ -99,7 +105,9 @@ class BabyShieldPlannerLogic:
         self.agent_id = agent_id
         self.logger = logger_instance or logging.getLogger(__name__)
         if not PYDANTIC_AVAILABLE:
-            self.logger.critical("Pydantic is not installed. The Planner Agent cannot function without it.")
+            self.logger.critical(
+                "Pydantic is not installed. The Planner Agent cannot function without it."
+            )
             raise ImportError("Pydantic is required for the Planner Agent to operate.")
         self._load_plan_templates()
 
@@ -116,7 +124,7 @@ class BabyShieldPlannerLogic:
         # Assuming your file is named 'babyshield_safety_check_plan.json'
         for template_file in template_dir.glob("*.json"):
             try:
-                with open(template_file, 'r') as f:
+                with open(template_file, "r") as f:
                     template_data = json.load(f)
                     template_name = template_file.stem
                     self.plan_templates[template_name] = template_data
@@ -124,7 +132,9 @@ class BabyShieldPlannerLogic:
             except Exception as e:
                 self.logger.error(f"Failed to load template {template_file}: {e}")
 
-    def _generate_plan_from_template(self, template_name: str, task_payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _generate_plan_from_template(
+        self, template_name: str, task_payload: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Generates a structured plan by loading a JSON template and substituting placeholders.
         """
@@ -142,7 +152,7 @@ class BabyShieldPlannerLogic:
         params = {
             "barcode": task_payload.get("barcode"),
             "model_number": task_payload.get("model_number"),
-            "image_url": task_payload.get("image_url")
+            "image_url": task_payload.get("image_url"),
         }
 
         # Validate that at least one identifier was provided.
@@ -156,37 +166,47 @@ class BabyShieldPlannerLogic:
 
         # Filter out visual search step if no image URL is provided
         if not params["image_url"]:
-            plan_steps_template = [step for step in plan_steps_template if step.get("step_id") != "step0_visual_search"]
+            plan_steps_template = [
+                step for step in plan_steps_template if step.get("step_id") != "step0_visual_search"
+            ]
             self.logger.info("Filtered out visual search step (no image URL provided)")
-            
+
             # Update dependencies and inputs that reference the removed visual search step
             for step in plan_steps_template:
                 # Remove step0_visual_search from dependencies
                 if "dependencies" in step and "step0_visual_search" in step["dependencies"]:
-                    step["dependencies"] = [dep for dep in step["dependencies"] if dep != "step0_visual_search"]
-                
+                    step["dependencies"] = [
+                        dep for dep in step["dependencies"] if dep != "step0_visual_search"
+                    ]
+
                 # Update inputs that reference step0_visual_search
                 if "inputs" in step:
                     for key, value in step["inputs"].items():
                         if isinstance(value, str) and "step0_visual_search" in value:
                             # Replace step0_visual_search references with step1_identify_product
-                            step["inputs"][key] = value.replace("step0_visual_search", "step1_identify_product")
+                            step["inputs"][key] = value.replace(
+                                "step0_visual_search", "step1_identify_product"
+                            )
 
         # Substitute placeholders in the plan steps.
         substituted_steps = substitute_placeholders(plan_steps_template, params)
-        
+
         # Clean up any remaining empty curly braces that weren't substituted
         for step in substituted_steps:
             if "inputs" in step:
                 for key, value in step["inputs"].items():
                     if isinstance(value, str):
                         # Remove curly braces from values like "{850016249012}" to "850016249012"
-                        if value.startswith("{") and value.endswith("}") and not value.startswith("{{"):
+                        if (
+                            value.startswith("{")
+                            and value.endswith("}")
+                            and not value.startswith("{{")
+                        ):
                             step["inputs"][key] = value.strip("{}")
                         # Also handle empty placeholders
                         elif value in ["{}", ""]:
                             step["inputs"][key] = None
-        
+
         # NOTE: The inter-step placeholders like {{step_id.result.field}}
         # are NOT replaced here. That is the job of the ROUTER AGENT after a step completes.
         # This planner's only job is to set the initial inputs.
@@ -195,15 +215,19 @@ class BabyShieldPlannerLogic:
         final_plan_data = {
             "workflow_goal": task_payload.get("goal", "Perform BabyShield Product Safety Check"),
             "steps": substituted_steps,
-            "template_name": template_name
+            "template_name": template_name,
         }
 
         # Validate the final plan against our Pydantic model.
         try:
             # We use the template's plan_name as the workflow_goal if not provided
-            final_plan_data["workflow_goal"] = final_plan_data.get("workflow_goal") or template.get("plan_name")
+            final_plan_data["workflow_goal"] = final_plan_data.get("workflow_goal") or template.get(
+                "plan_name"
+            )
             validated_plan = BabyShieldPlan(**final_plan_data)
-            self.logger.info(f"Successfully generated and validated plan '{validated_plan.plan_id}' from template.")
+            self.logger.info(
+                f"Successfully generated and validated plan '{validated_plan.plan_id}' from template."
+            )
             return validated_plan.model_dump()
         except Exception as e:
             self.logger.error(f"Pydantic validation failed for the generated plan: {e}")
@@ -217,7 +241,7 @@ class BabyShieldPlannerLogic:
         self.logger.info(f"Planner agent received task: {task_data}")
         try:
             # The name of your file, without the .json extension
-            plan_template_name = "babyshield_safety_check_plan" 
+            plan_template_name = "babyshield_safety_check_plan"
 
             generated_plan = self._generate_plan_from_template(plan_template_name, task_data)
 
@@ -227,7 +251,7 @@ class BabyShieldPlannerLogic:
                 "message": f"Plan created successfully using template: '{plan_template_name}'.",
                 "agent_id": self.agent_id,
                 "processed_timestamp": datetime.now(timezone.utc).isoformat(),
-                "version": "3.1-BABYSHIELD"
+                "version": "3.1-BABYSHIELD",
             }
 
         except Exception as e:
@@ -239,5 +263,5 @@ class BabyShieldPlannerLogic:
                 "message": "Planning process failed.",
                 "agent_id": self.agent_id,
                 "processed_timestamp": datetime.now(timezone.utc).isoformat(),
-                "version": "3.1-BABYSHIELD"
+                "version": "3.1-BABYSHIELD",
             }

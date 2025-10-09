@@ -4,13 +4,15 @@ import logging
 from datetime import date
 
 # --- Add project root to Python's path ---
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
 from core_infra.database import SessionLocal, RecallDB, Base, engine
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 # --- Real Recall Data for the Yoto Mini Player ---
@@ -36,6 +38,7 @@ YOTO_MINI_RECALL = {
 }
 # ----------------------------------------------------
 
+
 def seed_database():
     """Connects to the database and inserts the test recall."""
     # Ensure tables exist
@@ -44,12 +47,10 @@ def seed_database():
     db = SessionLocal()
     try:
         logger.info("Connecting to the database to seed recall data...")
-        
+
         # Check if the recall already exists
         existing = (
-            db.query(RecallDB)
-            .filter(RecallDB.recall_id == YOTO_MINI_RECALL["recall_id"])
-            .first()
+            db.query(RecallDB).filter(RecallDB.recall_id == YOTO_MINI_RECALL["recall_id"]).first()
         )
         if existing:
             logger.warning(
@@ -61,9 +62,7 @@ def seed_database():
         db_recall = RecallDB(**YOTO_MINI_RECALL)
         db.add(db_recall)
         db.commit()
-        logger.info(
-            "✅ Successfully seeded the database with the Yoto Mini Player recall."
-        )
+        logger.info("✅ Successfully seeded the database with the Yoto Mini Player recall.")
 
     except Exception as e:
         logger.critical(
@@ -79,19 +78,15 @@ def clean_database():
     db = SessionLocal()
     try:
         logger.info("Connecting to the database to clean recall data...")
-        
+
         # Find and delete the recall
         record = (
-            db.query(RecallDB)
-            .filter(RecallDB.recall_id == YOTO_MINI_RECALL["recall_id"])
-            .first()
+            db.query(RecallDB).filter(RecallDB.recall_id == YOTO_MINI_RECALL["recall_id"]).first()
         )
         if record:
             db.delete(record)
             db.commit()
-            logger.info(
-                "✅ Successfully cleaned the Yoto Mini Player recall from the database."
-            )
+            logger.info("✅ Successfully cleaned the Yoto Mini Player recall from the database.")
         else:
             logger.warning("No test recall record found to clean.")
 
@@ -106,9 +101,9 @@ def clean_database():
 
 if __name__ == "__main__":
     # Usage: python scripts/seed_recall_db.py [--seed | --clean]
-    if len(sys.argv) > 1 and sys.argv[1] == '--seed':
+    if len(sys.argv) > 1 and sys.argv[1] == "--seed":
         seed_database()
-    elif len(sys.argv) > 1 and sys.argv[1] == '--clean':
+    elif len(sys.argv) > 1 and sys.argv[1] == "--clean":
         clean_database()
     else:
         print("Usage: python scripts/seed_recall_db.py [--seed | --clean]")

@@ -4,26 +4,27 @@ from core_infra.mcp_client_library.client import MCPClient
 from .agent_logic import PregnancyProductSafetyAgentLogic
 
 # Configure standard logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "pregnancy_product_safety_agent_01"
 MCP_SERVER_URL = "ws://127.0.0.1:8001"
 
+
 class PregnancyProductSafetyAgent:
     """
     The main agent class that connects pregnancy product safety logic to the MCP network.
     """
+
     def __init__(self):
         self.agent_id = AGENT_ID
         self.mcp_client = MCPClient(agent_id=self.agent_id, server_url=MCP_SERVER_URL)
         self.logic = PregnancyProductSafetyAgentLogic(agent_id=self.agent_id)
-        
+
         # Register the agent's capabilities with the MCP client
-        self.mcp_client.register_capability(
-            "check_pregnancy_safety",
-            self.handle_check_safety
-        )
+        self.mcp_client.register_capability("check_pregnancy_safety", self.handle_check_safety)
 
     async def handle_check_safety(self, task_payload: dict) -> dict:
         """
@@ -48,10 +49,12 @@ class PregnancyProductSafetyAgent:
         # The mcp_client.connect() method contains the main loop
         # that listens for tasks until the connection is closed.
 
+
 async def main():
     """The main entry point to create and run the agent."""
     agent = PregnancyProductSafetyAgent()
     await agent.run()
+
 
 if __name__ == "__main__":
     try:
