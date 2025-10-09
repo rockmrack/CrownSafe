@@ -2,6 +2,7 @@
 # core_infra/memory_optimizer.py
 # Memory optimization for 39-agency BabyShield system
 
+import asyncio
 import gc
 import logging
 import threading

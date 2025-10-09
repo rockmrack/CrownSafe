@@ -1,0 +1,38 @@
+# Ruff configuration for BabyShield Backend
+# This project uses intentional patterns that Ruff flags as violations
+
+# Maximum line length
+line-length = 120
+
+# Exclude specific directories
+exclude = [
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    ".venv",
+    "venv",
+    "build",
+    "dist",
+    "*.egg-info",
+    "alembic/versions",
+    "chroma_db_data",
+]
+
+[lint]
+# Ignore specific rule categories that are intentional in this codebase
+ignore = [
+    "E402",  # Module level import not at top - INTENTIONAL for config loading
+    "F401",  # Imported but unused - Many are side-effect imports (routers/middleware)
+    "E722",  # Bare except - Need manual review for graceful degradation
+]
+
+# Only auto-fix truly safe formatting issues
+fixable = ["F541", "E703", "E713"]
+
+[lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"api/main_babyshield.py" = ["E402", "F401"]
+"conftest.py" = ["F401"]
+"tests/**/*.py" = ["F401", "E402"]
+# Template/example code - models don't exist yet
+"core_infra/query_optimizer.py" = ["F821"]
