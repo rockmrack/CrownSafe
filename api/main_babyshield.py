@@ -1702,6 +1702,41 @@ def on_startup():
                 # Run migrations
                 command.upgrade(alembic_cfg, "head")
                 logger.info("[OK] Alembic migrations completed successfully.")
+                
+                # Enable pg_trgm extension for fuzzy search
+                try:
+                    from sqlalchemy import text
+                    from core_infra.database import SessionLocal as DBSession
+                    logger.info("[OK] Enabling pg_trgm extension for fuzzy search...")
+                    
+                    db_session = DBSession()
+                    try:
+                        # Enable extension
+                        db_session.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm;"))
+                        db_session.commit()
+                        logger.info("[OK] pg_trgm extension enabled successfully.")
+                        
+                        # Create indexes for better performance
+                        logger.info("[OK] Creating GIN indexes for fuzzy search...")
+                        indexes = [
+                            "CREATE INDEX IF NOT EXISTS idx_recalls_product_trgm ON recalls_enhanced USING gin (lower(product_name) gin_trgm_ops);",
+                            "CREATE INDEX IF NOT EXISTS idx_recalls_brand_trgm ON recalls_enhanced USING gin (lower(brand) gin_trgm_ops);",
+                            "CREATE INDEX IF NOT EXISTS idx_recalls_description_trgm ON recalls_enhanced USING gin (lower(description) gin_trgm_ops);",
+                            "CREATE INDEX IF NOT EXISTS idx_recalls_hazard_trgm ON recalls_enhanced USING gin (lower(hazard) gin_trgm_ops);"
+                        ]
+                        
+                        for index_sql in indexes:
+                            db_session.execute(text(index_sql))
+                        
+                        db_session.commit()
+                        logger.info("[OK] Fuzzy search indexes created successfully.")
+                        
+                    finally:
+                        db_session.close()
+                        
+                except Exception as trgm_error:
+                    logger.warning(f"[WARN] pg_trgm setup failed: {trgm_error}")
+                    logger.info("[INFO] Fuzzy search may not work correctly without pg_trgm extension.")
             else:
                 logger.info("[INFO] Skipping Alembic migrations for non-PostgreSQL database.")
                 
