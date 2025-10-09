@@ -135,7 +135,17 @@ class SearchService:
             # Check database dialect for compatibility
             dialect = self.db.bind.dialect.name
             
+            # Check if pg_trgm is available before using it
+            use_pg_trgm = False
             if dialect == "postgresql":
+                try:
+                    use_pg_trgm = self.check_pg_trgm_enabled()
+                    if not use_pg_trgm:
+                        logger.warning("[WARN] pg_trgm extension not enabled, falling back to LIKE search")
+                except Exception as e:
+                    logger.warning(f"[WARN] pg_trgm check failed: {e}, falling back to LIKE search")
+            
+            if dialect == "postgresql" and use_pg_trgm:
                 # Use pg_trgm similarity for fuzzy matching (PostgreSQL only)
                 similarity_expressions = [
                     f"similarity(lower({table}.product_name), :search_text)",
