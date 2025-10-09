@@ -1,0 +1,43 @@
+# BabyShield Backend Code Owners
+# These owners will be automatically requested for review when a PR touches these files
+
+# Default owners for everything in the repo
+* @BabyShield/backend-team
+
+# API endpoints
+/api/ @BabyShield/backend-team @BabyShield/api-team
+
+# Core infrastructure
+/core_infra/ @BabyShield/backend-team @BabyShield/infrastructure-team
+
+# Database and migrations
+/alembic/ @BabyShield/backend-team @BabyShield/database-team
+/core_infra/database.py @BabyShield/database-team
+
+# Agents
+/agents/ @BabyShield/backend-team @BabyShield/ai-team
+
+# Workers and background tasks
+/workers/ @BabyShield/backend-team
+
+# Tests
+/tests/ @BabyShield/backend-team @BabyShield/qa-team
+
+# CI/CD and workflows
+/.github/ @BabyShield/devops-team
+/Dockerfile* @BabyShield/devops-team
+/docker-compose.yml @BabyShield/devops-team
+
+# Configuration
+/config/ @BabyShield/backend-team @BabyShield/devops-team
+/.env.example @BabyShield/backend-team @BabyShield/devops-team
+
+# Security
+/SECURITY.md @BabyShield/security-team
+/api/auth_endpoints.py @BabyShield/security-team
+/tests/test_suite_4_security_validation.py @BabyShield/security-team
+
+# Documentation
+/docs/ @BabyShield/documentation-team
+/README.md @BabyShield/documentation-team
+/CONTRIBUTING.md @BabyShield/documentation-team
