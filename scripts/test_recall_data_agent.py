@@ -56,12 +56,12 @@ MOCK_CPSC_RECALL = Recall(
 
 # Mock connector classes
 class MockCPSCConnector:
-    def fetch_recent_recalls(self) -> List[Recall]:
+    async def fetch_recent_recalls(self) -> List[Recall]:
         return [MOCK_CPSC_RECALL]
 
 
 class EmptyConnector:
-    def fetch_recent_recalls(self) -> List[Recall]:
+    async def fetch_recent_recalls(self) -> List[Recall]:
         return []
 
 
@@ -72,21 +72,27 @@ async def main():
     Base.metadata.create_all(bind=engine)
     logger.info("In-memory tables created.")
 
-    # 2. Patch connectors
-    with patch("agents.recall_data_agent.agent_logic.CPSCConnector", new=MockCPSCConnector), patch(
-        "agents.recall_data_agent.agent_logic.FDAConnector", new=EmptyConnector
-    ), patch("agents.recall_data_agent.agent_logic.EU_RAPEX_Connector", new=EmptyConnector), patch(
-        "agents.recall_data_agent.agent_logic.UK_OPSS_Connector", new=EmptyConnector
+    # 2. Patch connectors in the connectors module
+    with patch(
+        "agents.recall_data_agent.connectors.CPSCConnector", new=MockCPSCConnector
     ), patch(
-        "agents.recall_data_agent.agent_logic.SG_CPSO_Connector", new=EmptyConnector
+        "agents.recall_data_agent.connectors.FDAConnector", new=EmptyConnector
+    ), patch(
+        "agents.recall_data_agent.connectors.EU_RAPEX_Connector", new=EmptyConnector
+    ), patch(
+        "agents.recall_data_agent.connectors.UK_OPSS_Connector", new=EmptyConnector
+    ), patch(
+        "agents.recall_data_agent.connectors.SG_CPSO_Connector", new=EmptyConnector
     ):
         try:
             # 3. Initialize agent logic
-            agent_logic = RecallDataAgentLogic(agent_id="test_rda_001", logger_instance=logger)
+            agent_logic = RecallDataAgentLogic(
+                agent_id="test_rda_001", logger_instance=logger
+            )
 
             # 4. Test WRITE
             logger.info("--- Testing WRITE (run_ingestion_cycle) ---")
-            write_result = agent_logic.run_ingestion_cycle()
+            write_result = await agent_logic.run_ingestion_cycle()
             print(json.dumps(write_result, indent=2))
             if write_result.get("total_upserted") == 1:
                 print(Fore.GREEN + Style.BRIGHT + "✔ WRITE succeeded.")
