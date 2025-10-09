@@ -12,8 +12,12 @@ import logging
 from contextlib import contextmanager
 import time
 
-# Import database models for query optimization
-from core_infra.database import User, Recall, Product
+# Import User model (exists in database.py)
+from core_infra.database import User
+
+# NOTE: The following models don't exist yet (Recall, Product)
+# The methods get_recalls_with_details() and search_products_optimized()
+# are example/template code for when these models are implemented.
 
 logger = logging.getLogger(__name__)
 

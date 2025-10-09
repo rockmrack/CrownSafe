@@ -34,3 +34,5 @@ fixable = ["F541", "E703", "E713"]
 "api/main_babyshield.py" = ["E402", "F401"]
 "conftest.py" = ["F401"]
 "tests/**/*.py" = ["F401", "E402"]
+# Template/example code - models don't exist yet
+"core_infra/query_optimizer.py" = ["F821"]
