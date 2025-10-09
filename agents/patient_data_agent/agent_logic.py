@@ -156,7 +156,9 @@ class PatientDataAgentLogic:
 
         # Log access for audit - FIXED: Include system user
         self._log_access(
-            "get_patient_record", patient_id, {"method": "direct_id", "user_id": "system"}
+            "get_patient_record",
+            patient_id,
+            {"method": "direct_id", "user_id": "system"},
         )
 
         with self.data_lock:
@@ -171,7 +173,10 @@ class PatientDataAgentLogic:
                 return {"status": "success", "record": asdict(record)}
         else:
             self.logger.warning(f"No record found for patient '{patient_id}'.")
-            return {"status": "not_found", "message": f"Patient record '{patient_id}' not found."}
+            return {
+                "status": "not_found",
+                "message": f"Patient record '{patient_id}' not found.",
+            }
 
     def _load_patient_data(self):
         """Loads the mock patient data from the local JSON file."""
@@ -468,7 +473,11 @@ class PatientDataAgentLogic:
             }
 
         if not updates:
-            return {"status": "FAILED", "error": "No updates provided", "agent_id": self.agent_id}
+            return {
+                "status": "FAILED",
+                "error": "No updates provided",
+                "agent_id": self.agent_id,
+            }
 
         # FIXED: Check permissions
         if not self._check_permissions("update_patient", requester_role):
@@ -894,7 +903,12 @@ class PatientDataAgentLogic:
                         errors.append("Age must be between 0 and 150")
 
                 if field == "gender" and isinstance(value, str):
-                    if value not in ["M", "F", "O", "U"]:  # Male, Female, Other, Unknown
+                    if value not in [
+                        "M",
+                        "F",
+                        "O",
+                        "U",
+                    ]:  # Male, Female, Other, Unknown
                         errors.append("Gender must be one of: M, F, O, U")
 
         return {"valid": len(errors) == 0, "errors": errors}

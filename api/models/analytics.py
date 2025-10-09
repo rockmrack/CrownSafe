@@ -9,7 +9,9 @@ class ExplainFeedback(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     created_at = Column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )
     user_id = Column(UUID(as_uuid=True), nullable=True)
     scan_id = Column(String(64), nullable=False)

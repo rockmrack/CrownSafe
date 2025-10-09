@@ -61,10 +61,15 @@ class SecurityLimitsTester:
                 self.test(False, "413 response is valid JSON")
 
         # Test with Content-Length header
-        headers = {"Content-Type": "application/json", "Content-Length": "500000"}  # 500KB
+        headers = {
+            "Content-Type": "application/json",
+            "Content-Length": "500000",
+        }  # 500KB
 
         response2 = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", data='{"product":"test"}', headers=headers
+            f"{self.base_url}/api/v1/search/advanced",
+            data='{"product":"test"}',
+            headers=headers,
         )
 
         self.test(
@@ -104,7 +109,8 @@ class SecurityLimitsTester:
             headers_lower = {k.lower(): v for k, v in response.headers.items()}
 
             self.test(
-                "access-control-allow-origin" in headers_lower, "CORS headers present in response"
+                "access-control-allow-origin" in headers_lower,
+                "CORS headers present in response",
             )
 
             if "access-control-allow-origin" in headers_lower:
@@ -126,7 +132,11 @@ class SecurityLimitsTester:
         print("\n📝 Test 3: CORS Denied Origins")
 
         # Test denied origin
-        evil_origins = ["https://evil.example.com", "http://localhost:1337", "https://attacker.com"]
+        evil_origins = [
+            "https://evil.example.com",
+            "http://localhost:1337",
+            "https://attacker.com",
+        ]
 
         for origin in evil_origins[:1]:  # Test first one
             response = self.session.options(
@@ -160,7 +170,8 @@ class SecurityLimitsTester:
         )
 
         self.test(
-            response.status_code in (400, 422), f"Oversized field returns {response.status_code}"
+            response.status_code in (400, 422),
+            f"Oversized field returns {response.status_code}",
         )
 
         if response.status_code in (400, 422):
@@ -170,7 +181,8 @@ class SecurityLimitsTester:
 
         # Test empty string (should be rejected)
         response2 = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json={"product": "   "}  # Only whitespace
+            f"{self.base_url}/api/v1/search/advanced",
+            json={"product": "   "},  # Only whitespace
         )
 
         self.test(
@@ -289,7 +301,12 @@ class SecurityLimitsTester:
         print("\n📝 Test 8: User-Agent Blocking")
 
         # Test malicious user agents
-        bad_agents = ["sqlmap/1.5", "nikto/2.1.5", "acunetix-scanner", "nmap scripting engine"]
+        bad_agents = [
+            "sqlmap/1.5",
+            "nikto/2.1.5",
+            "acunetix-scanner",
+            "nmap scripting engine",
+        ]
 
         for ua in bad_agents[:2]:  # Test first two
             response = self.session.get(
@@ -313,7 +330,8 @@ class SecurityLimitsTester:
 
         # Test normal user agent (should pass)
         response = self.session.get(
-            f"{self.base_url}/api/v1/healthz", headers={"User-Agent": "BabyShield/1.0 (iOS)"}
+            f"{self.base_url}/api/v1/healthz",
+            headers={"User-Agent": "BabyShield/1.0 (iOS)"},
         )
 
         self.test(response.status_code == 200, f"Normal UA allowed: {response.status_code}")

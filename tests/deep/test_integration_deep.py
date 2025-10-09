@@ -75,7 +75,10 @@ class TestIntegrationDeep:
         headers = {k.lower(): v for k, v in r.headers.items()}
         # If CORS is enabled, should have access-control headers
         if "access-control-allow-origin" in headers:
-            assert headers["access-control-allow-origin"] in ["*", "https://babyshield.app"]
+            assert headers["access-control-allow-origin"] in [
+                "*",
+                "https://babyshield.app",
+            ]
 
     def test_error_handling_integration(self):
         """Test that global error handlers work"""

@@ -121,7 +121,9 @@ class CPSCDataConnector:
         return records
 
     async def fetch_neiss_data(
-        self, start_date: Optional[datetime] = None, product_codes: Optional[List[int]] = None
+        self,
+        start_date: Optional[datetime] = None,
+        product_codes: Optional[List[int]] = None,
     ) -> List[SafetyDataRecord]:
         """
         Fetch NEISS injury data
@@ -197,7 +199,9 @@ class CPSCDataConnector:
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(
-                    news_api_url, params={"type": "blog"}, timeout=aiohttp.ClientTimeout(total=15)
+                    news_api_url,
+                    params={"type": "blog"},
+                    timeout=aiohttp.ClientTimeout(total=15),
                 ) as response:
                     if response.status == 200:
                         data = await response.json()

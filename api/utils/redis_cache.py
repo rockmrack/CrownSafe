@@ -37,7 +37,8 @@ class RedisSearchCache:
         if not self.redis and self.enabled:
             try:
                 redis_url = os.getenv(
-                    "REDIS_CACHE_URL", os.getenv("RATE_LIMIT_REDIS_URL", "redis://localhost:6379/0")
+                    "REDIS_CACHE_URL",
+                    os.getenv("RATE_LIMIT_REDIS_URL", "redis://localhost:6379/0"),
                 )
                 self.redis = Redis.from_url(redis_url, encoding="utf-8", decode_responses=True)
                 await self.redis.ping()

@@ -6,8 +6,16 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from agents.premium.allergy_sensitivity_agent.agent_logic import AllergySensitivityAgentLogic
-from core_infra.database import get_db_session, create_tables, User, Family, FamilyMember
+from agents.premium.allergy_sensitivity_agent.agent_logic import (
+    AllergySensitivityAgentLogic,
+)
+from core_infra.database import (
+    get_db_session,
+    create_tables,
+    User,
+    Family,
+    FamilyMember,
+)
 from core_infra.auth.auth_manager import create_user
 
 logging.basicConfig(level=logging.INFO)

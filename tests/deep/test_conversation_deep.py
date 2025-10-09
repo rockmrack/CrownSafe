@@ -28,7 +28,10 @@ class DummyLLM:
             "checks": ["Ingredient check", "Safety certification"],
             "flags": [],
             "disclaimer": "Not medical advice. Consult healthcare provider.",
-            "jurisdiction": {"code": "US", "label": "US Consumer Product Safety Commission"},
+            "jurisdiction": {
+                "code": "US",
+                "label": "US Consumer Product Safety Commission",
+            },
             "evidence": [{"source": "Test Source", "finding": "Test finding"}],
         }
 
@@ -69,7 +72,8 @@ class TestConversationDeep:
 
         client = TestClient(app)
         r = client.post(
-            "/api/v1/chat/conversation", json={"scan_id": "test-123", "user_id": "test-user"}
+            "/api/v1/chat/conversation",
+            json={"scan_id": "test-123", "user_id": "test-user"},
         )
         # Should return validation error (400 or 422 both acceptable)
         assert r.status_code in [400, 422]
@@ -83,7 +87,11 @@ class TestConversationDeep:
         long_message = "Is this safe? " * 1000  # 15000 characters
         r = client.post(
             "/api/v1/chat/conversation",
-            json={"scan_id": "test-123", "message": long_message, "user_id": "test-user"},
+            json={
+                "scan_id": "test-123",
+                "message": long_message,
+                "user_id": "test-user",
+            },
         )
         # Should either accept or reject gracefully, not crash
         assert r.status_code in [200, 400, 413]
@@ -97,7 +105,11 @@ class TestConversationDeep:
         special_message = "Is this safe? 🍼👶 <script>alert('test')</script> ' OR '1'='1"
         r = client.post(
             "/api/v1/chat/conversation",
-            json={"scan_id": "test-123", "message": special_message, "user_id": "test-user"},
+            json={
+                "scan_id": "test-123",
+                "message": special_message,
+                "user_id": "test-user",
+            },
         )
         assert r.status_code == 200
         body = r.json()
@@ -112,7 +124,11 @@ class TestConversationDeep:
         unicode_message = "这个产品安全吗？ Это безопасно? هل هذا آمن؟"
         r = client.post(
             "/api/v1/chat/conversation",
-            json={"scan_id": "test-123", "message": unicode_message, "user_id": "test-user"},
+            json={
+                "scan_id": "test-123",
+                "message": unicode_message,
+                "user_id": "test-user",
+            },
         )
         assert r.status_code == 200
         body = r.json()
@@ -126,7 +142,11 @@ class TestConversationDeep:
         client = TestClient(app)
         r = client.post(
             "/api/v1/chat/conversation",
-            json={"scan_id": "test-123", "message": "Is this safe?", "user_id": "test-user"},
+            json={
+                "scan_id": "test-123",
+                "message": "Is this safe?",
+                "user_id": "test-user",
+            },
         )
         assert r.status_code == 200
         body = r.json()
@@ -150,7 +170,12 @@ class TestConversationDeep:
             lambda db, sid: _fake_scan(
                 recalls_found=2,
                 recalls=[
-                    {"id": "R001", "agency": "CPSC", "date": "2024-01-15", "hazard": "Choking"},
+                    {
+                        "id": "R001",
+                        "agency": "CPSC",
+                        "date": "2024-01-15",
+                        "hazard": "Choking",
+                    },
                     {
                         "id": "R002",
                         "agency": "FDA",
@@ -229,7 +254,11 @@ class TestConversationDeep:
         client = TestClient(app)
         r = client.post(
             "/api/v1/chat/conversation",
-            json={"scan_id": "test-123", "message": "Is this safe?", "user_id": "test-user"},
+            json={
+                "scan_id": "test-123",
+                "message": "Is this safe?",
+                "user_id": "test-user",
+            },
         )
 
         # Check diagnostic headers
@@ -247,7 +276,11 @@ class TestConversationDeep:
         client = TestClient(app)
         r = client.post(
             "/api/v1/chat/conversation",
-            json={"scan_id": "test-123", "message": "Is this safe?", "user_id": "test-user"},
+            json={
+                "scan_id": "test-123",
+                "message": "Is this safe?",
+                "user_id": "test-user",
+            },
         )
 
         trace_id = r.headers.get("X-Trace-Id")
@@ -315,7 +348,11 @@ class TestConversationDeep:
         client = TestClient(app)
         r = client.post(
             "/api/v1/chat/conversation",
-            json={"scan_id": "test-123", "message": "Is this safe?", "user_id": "test-user"},
+            json={
+                "scan_id": "test-123",
+                "message": "Is this safe?",
+                "user_id": "test-user",
+            },
         )
 
         assert "application/json" in r.headers.get("content-type", "")
@@ -326,7 +363,11 @@ class TestConversationDeep:
         monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
 
         client = TestClient(app)
-        request_data = {"scan_id": "test-123", "message": "Is this safe?", "user_id": "test-user"}
+        request_data = {
+            "scan_id": "test-123",
+            "message": "Is this safe?",
+            "user_id": "test-user",
+        }
 
         r1 = client.post("/api/v1/chat/conversation", json=request_data)
         r2 = client.post("/api/v1/chat/conversation", json=request_data)

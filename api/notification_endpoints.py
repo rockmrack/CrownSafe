@@ -8,7 +8,17 @@ from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from sqlalchemy.orm import Session
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, JSON, ForeignKey, Text, desc
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+    Boolean,
+    JSON,
+    ForeignKey,
+    Text,
+    desc,
+)
 from sqlalchemy.orm import relationship
 
 from core_infra.database import get_db, Base
@@ -173,7 +183,11 @@ def get_firebase_app():
 
 
 async def send_push_notification(
-    token: str, title: str, body: str, data: Optional[Dict] = None, platform: str = "android"
+    token: str,
+    title: str,
+    body: str,
+    data: Optional[Dict] = None,
+    platform: str = "android",
 ) -> bool:
     """Send push notification via Firebase"""
     try:
@@ -429,7 +443,9 @@ async def send_test_notification_dev(request: dict):
 
 @router.delete("/device/{token}", response_model=ApiResponse)
 async def unregister_device(
-    token: str, current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
+    token: str,
+    current_user=Depends(get_current_active_user),
+    db: Session = Depends(get_db),
 ):
     """Unregister a device from push notifications"""
     try:
@@ -592,7 +608,8 @@ async def mark_all_notifications_read(
     """Mark all notifications as read"""
     try:
         db.query(NotificationHistory).filter(
-            NotificationHistory.user_id == current_user.id, NotificationHistory.read_at.is_(None)
+            NotificationHistory.user_id == current_user.id,
+            NotificationHistory.read_at.is_(None),
         ).update({"read_at": datetime.utcnow(), "status": "read"})
         db.commit()
 
@@ -629,7 +646,12 @@ async def update_notification_preferences(
 
         db.commit()
 
-        return ok({"message": "Preferences updated successfully", "devices_updated": len(devices)})
+        return ok(
+            {
+                "message": "Preferences updated successfully",
+                "devices_updated": len(devices),
+            }
+        )
 
     except Exception as e:
         logger.error(f"Error updating preferences: {e}", exc_info=True)

@@ -18,7 +18,13 @@ logger = logging.getLogger(__name__)
 # REQUIRED_PAYLOAD_FIELDS is not used by MCPMessage directly anymore in this version
 # It can be kept for reference or used by application logic if needed.
 REQUIRED_PAYLOAD_FIELDS = {
-    "DISCOVERY_REGISTER": {"agent_id", "agent_name", "agent_type", "capabilities", "status"},
+    "DISCOVERY_REGISTER": {
+        "agent_id",
+        "agent_name",
+        "agent_type",
+        "capabilities",
+        "status",
+    },
     "DISCOVERY_QUERY": {"requester_agent_id", "query_by_capability_list"},
     "DISCOVERY_RESPONSE": {"query", "results", "status"},
     "DISCOVERY_ACK": {"status", "agent_id"},

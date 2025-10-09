@@ -10,7 +10,11 @@ print("🚀 Full Workflow Test\n")
 print("1️⃣ Submitting workflow...")
 response = requests.post(
     "http://localhost:8000/api/v1/prior-auth/predict",
-    json={"patient_id": "test-patient-123", "drug_name": "Metformin", "insurer_id": "BlueCross"},
+    json={
+        "patient_id": "test-patient-123",
+        "drug_name": "Metformin",
+        "insurer_id": "BlueCross",
+    },
 )
 
 if response.status_code != 202:

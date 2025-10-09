@@ -53,7 +53,12 @@ test("API Documentation", "GET", "/docs")
 # CORE SAFETY FEATURES
 print("\n📋 SAFETY FEATURES")
 print("-" * 50)
-test("Safety Check", "POST", "/api/v1/safety-check", {"barcode": "123456789012", "user_id": 1})
+test(
+    "Safety Check",
+    "POST",
+    "/api/v1/safety-check",
+    {"barcode": "123456789012", "user_id": 1},
+)
 test(
     "Mobile Scan",
     "POST",
@@ -68,13 +73,23 @@ test(
     "Pregnancy Safety Check",
     "POST",
     "/api/v1/premium/pregnancy/check",
-    {"user_id": 1, "product": "Prenatal Vitamins", "trimester": 2, "barcode": "123456789"},
+    {
+        "user_id": 1,
+        "product": "Prenatal Vitamins",
+        "trimester": 2,
+        "barcode": "123456789",
+    },
 )
 test(
     "Allergy Check",
     "POST",
     "/api/v1/premium/allergy/check",
-    {"user_id": 1, "product": "Baby Food", "barcode": "123", "allergies": ["peanuts", "milk"]},
+    {
+        "user_id": 1,
+        "product": "Baby Food",
+        "barcode": "123",
+        "allergies": ["peanuts", "milk"],
+    },
 )
 test("Get Family Members", "GET", "/api/v1/premium/family/members", params={"user_id": 1})
 
@@ -101,7 +116,12 @@ test(
     "Push Notification",
     "POST",
     "/api/v1/baby/notifications/send",
-    {"user_id": 1, "title": "Safety Alert", "body": "Product recall alert", "token": "test-token"},
+    {
+        "user_id": 1,
+        "title": "Safety Alert",
+        "body": "Product recall alert",
+        "token": "test-token",
+    },
 )
 test(
     "Community Alerts",

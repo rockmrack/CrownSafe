@@ -138,7 +138,11 @@ class TestFixtureUsage:
     @pytest.fixture
     def sample_data(self):
         """Provide sample data for tests"""
-        return {"users": ["alice", "bob", "charlie"], "scores": [95, 87, 92], "active": True}
+        return {
+            "users": ["alice", "bob", "charlie"],
+            "scores": [95, 87, 92],
+            "active": True,
+        }
 
     def test_with_fixture(self, sample_data):
         """Test using a fixture"""
@@ -171,7 +175,8 @@ def test_future_feature():
 
 # Conditional skip example
 @pytest.mark.skipif(
-    not pytest.importorskip("pandas", reason="pandas not installed"), reason="Requires pandas"
+    not pytest.importorskip("pandas", reason="pandas not installed"),
+    reason="Requires pandas",
 )
 def test_pandas_operations():
     """Test that requires pandas (skipped if not installed)"""

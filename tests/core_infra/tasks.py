@@ -6,7 +6,9 @@ from .celery_app import celery_app
 
 # --- START OF FIX ---
 # Corrected the import path to match your directory structure: agents/engagement/push_notification_agent
-from agents.engagement.push_notification_agent.agent_logic import PushNotificationAgentLogic
+from agents.engagement.push_notification_agent.agent_logic import (
+    PushNotificationAgentLogic,
+)
 
 # --- END OF FIX ---
 

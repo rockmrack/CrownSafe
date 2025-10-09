@@ -11,7 +11,11 @@ from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 
 from core_infra.database import get_db_session, User
-from core_infra.subscription_models import Subscription, SubscriptionStatus, SubscriptionPlan
+from core_infra.subscription_models import (
+    Subscription,
+    SubscriptionStatus,
+    SubscriptionPlan,
+)
 
 logger = logging.getLogger(__name__)
 

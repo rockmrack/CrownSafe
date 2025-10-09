@@ -43,7 +43,11 @@ except Exception as e:
 
 # Logging imports (Issue #32) - import after config to allow graceful degradation
 try:
-    from utils.logging.structured_logger import setup_logging, log_performance, log_error
+    from utils.logging.structured_logger import (
+        setup_logging,
+        log_performance,
+        log_error,
+    )
     from utils.logging.middleware import LoggingMiddleware
 
     # Only use structured logging if config is available
@@ -72,7 +76,12 @@ except Exception as e:
 
 # Prometheus metrics (Issue #32)
 try:
-    from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+    from prometheus_client import (
+        Counter,
+        Histogram,
+        generate_latest,
+        CONTENT_TYPE_LATEST,
+    )
 
     REQUEST_COUNT = Counter("http_requests_total", "Total HTTP requests", ["method", "endpoint"])
     REQUEST_DURATION = Histogram("http_request_duration_seconds", "HTTP request duration")
@@ -201,7 +210,10 @@ except ImportError:
         raise
 
 try:
-    from core_infra.connection_pool_optimizer import optimized_recall_search, connection_optimizer
+    from core_infra.connection_pool_optimizer import (
+        optimized_recall_search,
+        connection_optimizer,
+    )
 except ImportError:
 
     def optimized_recall_search(*args, **kwargs):
@@ -212,7 +224,10 @@ except ImportError:
         raise
 
 try:
-    from core_infra.smart_cache_warmer import warm_cache_now, start_background_cache_warming
+    from core_infra.smart_cache_warmer import (
+        warm_cache_now,
+        start_background_cache_warming,
+    )
 except ImportError:
 
     def warm_cache_now(*args, **kwargs):
@@ -265,10 +280,14 @@ class SafetyCheckRequest(AppModel):
     user_id: int = Field(..., example=1)
     barcode: Optional[str] = Field(None, example="041220787346")
     model_number: Optional[str] = Field(
-        None, example="ABC-123", description="Product model number for precise recall matching"
+        None,
+        example="ABC-123",
+        description="Product model number for precise recall matching",
     )
     product_name: Optional[str] = Field(
-        None, example="Baby Monitor Pro", description="Product name for text-based search"
+        None,
+        example="Baby Monitor Pro",
+        description="Product name for text-based search",
     )
     image_url: Optional[str] = Field(None, example="https://example.com/img.jpg")
     # Premium feature flags
@@ -336,7 +355,16 @@ class AdvancedSearchRequest(BaseModel):
     )
     product_category: Optional[str] = Field(None, description="Product category")
     riskCategory: Optional[
-        Literal["drug", "device", "food", "cosmetic", "supplement", "toy", "baby_product", "other"]
+        Literal[
+            "drug",
+            "device",
+            "food",
+            "cosmetic",
+            "supplement",
+            "toy",
+            "baby_product",
+            "other",
+        ]
     ] = Field(None, description="Risk category (alias for product_category)")
 
     # Pagination
@@ -497,7 +525,11 @@ def custom_openapi():
         "type": "object",
         "properties": {
             "message": {"type": "string", "description": "Error message"},
-            "status": {"type": "integer", "nullable": True, "description": "HTTP status code"},
+            "status": {
+                "type": "integer",
+                "nullable": True,
+                "description": "HTTP status code",
+            },
             "detail": {
                 "anyOf": [{"type": "string"}, {"type": "object"}, {"type": "array"}],
                 "nullable": True,
@@ -1771,7 +1803,10 @@ async def json_decode_exception_handler(request, exc):
         status_code=400,
         content={
             "success": False,
-            "error": {"code": "BAD_REQUEST", "message": "Invalid JSON format in request body"},
+            "error": {
+                "code": "BAD_REQUEST",
+                "message": "Invalid JSON format in request body",
+            },
             "traceId": trace_id,
         },
     )
@@ -1817,7 +1852,10 @@ async def http_exception_handler(request, exc):
         status_code=exc.status_code,
         content={
             "success": False,
-            "error": {"code": error_code, "message": exc.detail or f"HTTP {exc.status_code} error"},
+            "error": {
+                "code": error_code,
+                "message": exc.detail or f"HTTP {exc.status_code} error",
+            },
             "traceId": trace_id,
         },
     )
@@ -2166,7 +2204,11 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
     if not req.user_id or req.user_id <= 0:
         return JSONResponse(
             status_code=400,
-            content={"status": "FAILED", "data": None, "error": "Valid user_id is required"},
+            content={
+                "status": "FAILED",
+                "data": None,
+                "error": "Valid user_id is required",
+            },
         )
 
     # 4a) DEV override bypass - check dev entitlement first
@@ -2194,7 +2236,9 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
 
             # Create a new visual agent instance directly (don't rely on global)
             try:
-                from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
+                from agents.visual.visual_search_agent.agent_logic import (
+                    VisualSearchAgentLogic,
+                )
 
                 temp_visual_agent = VisualSearchAgentLogic("temp_visual_001")
                 visual_result = await temp_visual_agent.identify_product_from_image(req.image_url)
@@ -2247,7 +2291,8 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
             if commander_agent is None:
                 logger.error("Commander agent not initialized")
                 raise HTTPException(
-                    status_code=503, detail="Safety check service temporarily unavailable"
+                    status_code=503,
+                    detail="Safety check service temporarily unavailable",
                 )
 
             result = await commander_agent.start_safety_check_workflow(
@@ -2533,7 +2578,8 @@ async def suggest_product_from_image(request: Dict[str, Any]):
     # Validate that at least one image input is provided
     if not any([image_url, image_id, image_base64]):
         raise HTTPException(
-            status_code=400, detail="One of image_url, image_id, or image_base64 is required."
+            status_code=400,
+            detail="One of image_url, image_id, or image_base64 is required.",
         )
 
     # Check if visual search agent is available
@@ -2604,7 +2650,11 @@ def create_user(req: UserCreateRequest):
             raise HTTPException(status_code=400, detail="User with this email already exists")
 
         # Create new user
-        u = User(email=req.email, hashed_password="defaulthash", is_subscribed=req.is_subscribed)
+        u = User(
+            email=req.email,
+            hashed_password="defaulthash",
+            is_subscribed=req.is_subscribed,
+        )
         db.add(u)
         db.commit()
         db.refresh(u)
@@ -2659,7 +2709,10 @@ async def autocomplete_products(
         with get_db_session() as db:
             # Build query with domain filtering
             query = db.query(
-                RecallDB.product_name, RecallDB.brand, RecallDB.category, RecallDB.description
+                RecallDB.product_name,
+                RecallDB.brand,
+                RecallDB.category,
+                RecallDB.description,
             ).filter(RecallDB.product_name.isnot(None), RecallDB.product_name != "")
 
             # Apply domain filtering
@@ -2784,7 +2837,11 @@ async def autocomplete_brands(
         logger = logging.getLogger(__name__)
         from core_infra.database import RecallDB
         from core_infra.cache_manager import get_cached, set_cached
-        from utils.autocomplete_utils import normalize_query, canonicalize_brand, clean_product_name
+        from utils.autocomplete_utils import (
+            normalize_query,
+            canonicalize_brand,
+            clean_product_name,
+        )
 
         # Normalize query for consistent matching
         q_norm = normalize_query(q)
@@ -2794,7 +2851,12 @@ async def autocomplete_brands(
         cached_brands = get_cached("autocomplete", cache_key)
         if cached_brands:
             return JSONResponse(
-                content={"query": q, "brands": cached_brands, "cached": True, "agencies": 39},
+                content={
+                    "query": q,
+                    "brands": cached_brands,
+                    "cached": True,
+                    "agencies": 39,
+                },
                 headers={"Content-Type": "application/json; charset=utf-8"},
             )
 
@@ -2830,7 +2892,11 @@ async def autocomplete_brands(
                     canonical_brand = canonicalize_brand(clean_brand)
 
                     scored_brands.append(
-                        {"text": canonical_brand, "original": clean_brand, "score": score}
+                        {
+                            "text": canonical_brand,
+                            "original": clean_brand,
+                            "score": score,
+                        }
                     )
 
             # Sort by score and remove duplicates
@@ -2920,7 +2986,10 @@ async def advanced_search(request: Request):
                 status_code=400,
                 content={
                     "ok": False,
-                    "error": {"code": "BAD_REQUEST", "message": "Request body is required"},
+                    "error": {
+                        "code": "BAD_REQUEST",
+                        "message": "Request body is required",
+                    },
                     "traceId": trace_id,
                 },
             )
@@ -2953,7 +3022,10 @@ async def advanced_search(request: Request):
             status_code=400,
             content={
                 "ok": False,
-                "error": {"code": "BAD_REQUEST", "message": "Invalid JSON in request body"},
+                "error": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid JSON in request body",
+                },
                 "traceId": trace_id,
             },
         )
@@ -3067,7 +3139,8 @@ async def advanced_search(request: Request):
                     content={
                         "ok": False,
                         "error": search_result.get(
-                            "error", {"code": "SEARCH_ERROR", "message": "Search failed"}
+                            "error",
+                            {"code": "SEARCH_ERROR", "message": "Search failed"},
                         ),
                         "traceId": trace_id,
                     },
@@ -3090,7 +3163,10 @@ async def advanced_search(request: Request):
             status_code=500,
             content={
                 "ok": False,
-                "error": {"code": "INTERNAL_ERROR", "message": "Search operation failed"},
+                "error": {
+                    "code": "INTERNAL_ERROR",
+                    "message": "Search operation failed",
+                },
                 "traceId": trace_id,
             },
         )
@@ -3136,7 +3212,11 @@ async def bulk_search(req: BulkSearchRequest):
     }
 
 
-@app.get("/api/v1/analytics/recalls", response_model=RecallAnalyticsResponse, tags=["analytics"])
+@app.get(
+    "/api/v1/analytics/recalls",
+    response_model=RecallAnalyticsResponse,
+    tags=["analytics"],
+)
 async def recall_analytics():
     """
     Get comprehensive analytics across all 39 international agencies
@@ -3371,7 +3451,11 @@ async def system_health():
 
     except Exception as e:
         logger.error(f"System health check failed: {e}")
-        return {"status": "error", "timestamp": datetime.now().isoformat(), "error": str(e)}
+        return {
+            "status": "error",
+            "timestamp": datetime.now().isoformat(),
+            "error": str(e),
+        }
 
 
 # --- NOTIFICATION SYSTEM ---
@@ -3397,7 +3481,9 @@ class NotificationResponse(BaseModel):
 
 
 @app.post(
-    "/api/v1/notifications/setup", response_model=NotificationResponse, tags=["notifications"]
+    "/api/v1/notifications/setup",
+    response_model=NotificationResponse,
+    tags=["notifications"],
 )
 async def setup_notifications(req: NotificationRequest):
     """

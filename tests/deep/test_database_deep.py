@@ -162,7 +162,8 @@ class TestDatabaseDeep:
         try:
             # Parameterized query (prevents SQL injection)
             result = db.execute(
-                text("SELECT :name as name, :value as value"), {"name": "test", "value": 42}
+                text("SELECT :name as name, :value as value"),
+                {"name": "test", "value": 42},
             )
             row = result.first()
             assert row[0] == "test"

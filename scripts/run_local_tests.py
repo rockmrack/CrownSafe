@@ -91,7 +91,10 @@ async def run_test(script_name, description):
     try:
         # Run the test script
         result = subprocess.run(
-            [sys.executable, str(script_path)], capture_output=True, text=True, timeout=60
+            [sys.executable, str(script_path)],
+            capture_output=True,
+            text=True,
+            timeout=60,
         )
 
         # Print output
@@ -139,8 +142,14 @@ async def main():
             "test_baby_features_api.py",
             "Baby Safety Features (Alternatives, Notifications, Reports)",
         ),
-        ("test_advanced_features_api.py", "Advanced Features (Web Research, Guidelines, Visual)"),
-        ("test_compliance_endpoints.py", "Legal Compliance (COPPA, GDPR, Children's Code)"),
+        (
+            "test_advanced_features_api.py",
+            "Advanced Features (Web Research, Guidelines, Visual)",
+        ),
+        (
+            "test_compliance_endpoints.py",
+            "Legal Compliance (COPPA, GDPR, Children's Code)",
+        ),
     ]
 
     # Run each test

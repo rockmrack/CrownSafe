@@ -140,7 +140,13 @@ class TestChatWithRealData:
     @patch("api.routers.chat.log_message")
     @patch("api.routers.chat.run_tool_for_intent")
     def test_conversation_with_real_scan_data(
-        self, mock_tool, mock_log, mock_profile, mock_conv, mock_chat_agent_class, mock_get_db
+        self,
+        mock_tool,
+        mock_log,
+        mock_profile,
+        mock_conv,
+        mock_chat_agent_class,
+        mock_get_db,
     ):
         """Test /conversation endpoint with real scan data from database"""
         # Setup mock database session

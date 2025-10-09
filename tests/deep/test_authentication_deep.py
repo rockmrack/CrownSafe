@@ -46,7 +46,10 @@ class TestAuthenticationDeep:
         client = TestClient(app)
         r = client.options(
             "/healthz",
-            headers={"Origin": "https://babyshield.app", "Access-Control-Request-Method": "GET"},
+            headers={
+                "Origin": "https://babyshield.app",
+                "Access-Control-Request-Method": "GET",
+            },
         )
         # Should handle OPTIONS request
         assert r.status_code in [200, 204, 405]
@@ -84,7 +87,10 @@ class TestAuthenticationDeep:
         client = TestClient(app)
         r = client.options(
             "/api/v1/chat/conversation",
-            headers={"Origin": "https://babyshield.app", "Access-Control-Request-Method": "POST"},
+            headers={
+                "Origin": "https://babyshield.app",
+                "Access-Control-Request-Method": "POST",
+            },
         )
         # Should return 200 or 204 for preflight
         assert r.status_code in [200, 204, 405]
@@ -189,7 +195,11 @@ class TestAuthenticationDeep:
         large_message = "A" * 100000  # 100KB message
         r = client.post(
             "/api/v1/chat/conversation",
-            json={"scan_id": "test-123", "message": large_message, "user_id": "test-user"},
+            json={
+                "scan_id": "test-123",
+                "message": large_message,
+                "user_id": "test-user",
+            },
         )
 
         # Should either accept or reject, but not crash

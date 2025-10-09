@@ -25,7 +25,9 @@ except ImportError as e:
 
 # Import agent logic with better error handling
 try:
-    from agents.reporting.report_builder_agent.agent_logic import ReportBuilderAgentLogic
+    from agents.reporting.report_builder_agent.agent_logic import (
+        ReportBuilderAgentLogic,
+    )
 except ImportError:
     try:
         from .agent_logic import ReportBuilderAgentLogic
@@ -67,7 +69,9 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
 # Logging setup
 logging.basicConfig(
-    level=LOG_LEVEL, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", force=True
+    level=LOG_LEVEL,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    force=True,
 )
 
 logger = logging.getLogger(f"{AGENT_ID}.main")
@@ -351,7 +355,8 @@ class ReportBuilderAgentManager:
 
         except Exception as e:
             logger.critical(
-                f"Failed to initialize ReportBuilderAgent components: {e}", exc_info=True
+                f"Failed to initialize ReportBuilderAgent components: {e}",
+                exc_info=True,
             )
             return False
 

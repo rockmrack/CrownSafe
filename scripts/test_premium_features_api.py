@@ -142,7 +142,9 @@ async def test_family_members_endpoint():
 
         try:
             response = await client.post(
-                f"{BASE_URL}/api/v1/premium/family/members", params={"user_id": 1}, json=new_member
+                f"{BASE_URL}/api/v1/premium/family/members",
+                params={"user_id": 1},
+                json=new_member,
             )
 
             if response.status_code == 200:

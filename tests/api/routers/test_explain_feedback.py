@@ -119,13 +119,21 @@ class TestExplainFeedbackEndpoint:
         assert response.status_code == 422
 
         # Test reason too long
-        payload = {"scan_id": "valid_scan", "helpful": True, "reason": "x" * 257}  # Max is 256
+        payload = {
+            "scan_id": "valid_scan",
+            "helpful": True,
+            "reason": "x" * 257,
+        }  # Max is 256
 
         response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
         assert response.status_code == 422
 
         # Test comment too long
-        payload = {"scan_id": "valid_scan", "helpful": True, "comment": "x" * 501}  # Max is 500
+        payload = {
+            "scan_id": "valid_scan",
+            "helpful": True,
+            "comment": "x" * 501,
+        }  # Max is 500
 
         response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
         assert response.status_code == 422
@@ -145,7 +153,11 @@ class TestExplainFeedbackEndpoint:
             response = self.client.post(
                 "/api/v1/analytics/explain-feedback",
                 json=payload,
-                headers={"X-Platform": "android", "X-App-Version": "2.1.0", "X-Locale": "es-ES"},
+                headers={
+                    "X-Platform": "android",
+                    "X-App-Version": "2.1.0",
+                    "X-Locale": "es-ES",
+                },
             )
 
             assert response.status_code == 200
@@ -260,7 +272,11 @@ class TestExplainFeedbackEndpoint:
             mock_get_db.return_value = mock_db
             mock_create.return_value = 55555
 
-            payload = {"scan_id": "metrics_test_scan", "helpful": True, "reason": "very_clear"}
+            payload = {
+                "scan_id": "metrics_test_scan",
+                "helpful": True,
+                "reason": "very_clear",
+            }
 
             response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
 
@@ -280,7 +296,8 @@ class TestExplainFeedbackEndpoint:
 
             # Mock ImportError for metrics
             with patch(
-                "api.routers.analytics.inc_explain_feedback", side_effect=ImportError("No metrics")
+                "api.routers.analytics.inc_explain_feedback",
+                side_effect=ImportError("No metrics"),
             ):
                 payload = {"scan_id": "no_metrics_scan", "helpful": False}
 
@@ -313,7 +330,10 @@ class TestExplainFeedbackValidation:
 
     def test_scan_id_empty_string(self):
         """Test that scan_id cannot be empty string"""
-        payload = {"scan_id": "", "helpful": True}  # Empty string should fail min_length=1
+        payload = {
+            "scan_id": "",
+            "helpful": True,
+        }  # Empty string should fail min_length=1
 
         response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
         assert response.status_code == 422

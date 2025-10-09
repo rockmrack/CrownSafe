@@ -94,7 +94,10 @@ def fix_template_file():
                         "task_description": "Retrieve insurer coverage policy.",
                         "agent_capability_required": "get_policy_for_drug",
                         "target_agent_type": "PolicyAnalysisAgent",
-                        "inputs": {"drug_name": "{drug_name}", "insurer_id": "{insurer_id}"},
+                        "inputs": {
+                            "drug_name": "{drug_name}",
+                            "insurer_id": "{insurer_id}",
+                        },
                         "dependencies": [],
                         "priority": "high",
                     },
@@ -228,7 +231,10 @@ def test_memory_augmented_planning(logic: MemoryAugmentedPlannerLogic):
             "expected_drug": "Empagliflozin",
             "expected_disease": "Heart Failure",
             "expected_drug_class": "SGLT2 Inhibitor",
-            "expected_strategy": ["focused", "update"],  # Could be either based on memory
+            "expected_strategy": [
+                "focused",
+                "update",
+            ],  # Could be either based on memory
         },
         {
             "goal": "Investigate metformin safety profile in type 2 diabetes patients",

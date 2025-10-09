@@ -72,7 +72,10 @@ print("TESTING CORE SAFETY FEATURES")
 print("=" * 80)
 
 test_endpoint(
-    "Safety Check", "POST", "/api/v1/safety-check", {"barcode": "123456789012", "user_id": 1}
+    "Safety Check",
+    "POST",
+    "/api/v1/safety-check",
+    {"barcode": "123456789012", "user_id": 1},
 )
 
 test_endpoint(
@@ -97,14 +100,24 @@ test_endpoint(
     "Pregnancy Safety Check",
     "POST",
     "/api/v1/premium/pregnancy/check",
-    {"user_id": 1, "product": "Prenatal Vitamins", "trimester": 2, "barcode": "123456789"},
+    {
+        "user_id": 1,
+        "product": "Prenatal Vitamins",
+        "trimester": 2,
+        "barcode": "123456789",
+    },
 )
 
 test_endpoint(
     "Allergy Check",
     "POST",
     "/api/v1/premium/allergy/check",
-    {"user_id": 1, "product": "Baby Food", "barcode": "123", "allergies": ["peanuts", "milk"]},
+    {
+        "user_id": 1,
+        "product": "Baby Food",
+        "barcode": "123",
+        "allergies": ["peanuts", "milk"],
+    },
 )
 
 test_endpoint("Get Family Members", "GET", "/api/v1/premium/family/members", params={"user_id": 1})
@@ -138,7 +151,12 @@ test_endpoint(
     "Push Notification",
     "POST",
     "/api/v1/baby/notifications/send",
-    {"user_id": 1, "title": "Safety Alert", "body": "Product recall", "token": "test-token"},
+    {
+        "user_id": 1,
+        "title": "Safety Alert",
+        "body": "Product recall",
+        "token": "test-token",
+    },
 )
 
 test_endpoint(
@@ -149,7 +167,10 @@ test_endpoint(
 )
 
 test_endpoint(
-    "Community Alerts", "GET", "/api/v1/baby/community/alerts", params={"topic": "baby safety"}
+    "Community Alerts",
+    "GET",
+    "/api/v1/baby/community/alerts",
+    params={"topic": "baby safety"},
 )
 
 test_endpoint(
@@ -238,11 +259,17 @@ print("TESTING ADDITIONAL FEATURES")
 print("=" * 80)
 
 test_endpoint(
-    "Product Ingredients", "GET", "/api/v1/product/ingredients", params={"barcode": "123456789"}
+    "Product Ingredients",
+    "GET",
+    "/api/v1/product/ingredients",
+    params={"barcode": "123456789"},
 )
 
 test_endpoint(
-    "Recall Details", "GET", "/api/v1/recalls/details", params={"recall_id": "REC-2024-001"}
+    "Recall Details",
+    "GET",
+    "/api/v1/recalls/details",
+    params={"recall_id": "REC-2024-001"},
 )
 
 test_endpoint(

@@ -19,7 +19,9 @@ from api.services.evidence import recalls_to_evidence, label_to_evidence
 from api.services.alternatives_provider import get_alternatives
 
 # Import your existing agents
-from agents.premium.pregnancy_product_safety_agent.main import PregnancyProductSafetyAgent
+from agents.premium.pregnancy_product_safety_agent.main import (
+    PregnancyProductSafetyAgent,
+)
 from agents.premium.allergy_sensitivity_agent.main import AllergySensitivityAgent
 
 
@@ -51,7 +53,8 @@ def pregnancy_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
                 RiskItem(
                     code=f"ingredient_{ingredient.lower().replace(' ', '_')}",
                     reason=details.get(
-                        "reason", f"Contains {ingredient} which may pose pregnancy risks"
+                        "reason",
+                        f"Contains {ingredient} which may pose pregnancy risks",
                     ),
                     severity=details.get("severity", "moderate"),
                 )
@@ -139,12 +142,18 @@ def _check_pregnancy_safety_from_scan(
                 "reason": "High caffeine intake should be limited during pregnancy",
                 "severity": "low",
             },
-            "raw_milk": {"reason": "Raw milk may contain harmful bacteria", "severity": "high"},
+            "raw_milk": {
+                "reason": "Raw milk may contain harmful bacteria",
+                "severity": "high",
+            },
             "unpasteurized": {
                 "reason": "Unpasteurized products may contain listeria",
                 "severity": "moderate",
             },
-            "mercury": {"reason": "Mercury can harm fetal development", "severity": "high"},
+            "mercury": {
+                "reason": "Mercury can harm fetal development",
+                "severity": "high",
+            },
             "high_sodium": {
                 "reason": "Excessive sodium can contribute to pregnancy complications",
                 "severity": "low",
@@ -192,13 +201,24 @@ def _check_allergy_from_scan(scan: Dict[str, Any], profile_allergies: list) -> D
             for ingredient in ingredients:
                 if allergen in ingredient or ingredient in allergen:
                     allergen_matches.append(
-                        {"allergen": allergen, "present": True, "evidence": "ingredient_list"}
+                        {
+                            "allergen": allergen,
+                            "present": True,
+                            "evidence": "ingredient_list",
+                        }
                     )
 
         # Common allergen aliases
         allergen_aliases = {
             "peanut": ["peanuts", "groundnut", "arachis"],
-            "tree_nut": ["almond", "walnut", "cashew", "pecan", "hazelnut", "brazil_nut"],
+            "tree_nut": [
+                "almond",
+                "walnut",
+                "cashew",
+                "pecan",
+                "hazelnut",
+                "brazil_nut",
+            ],
             "dairy": ["milk", "lactose", "casein", "whey"],
             "egg": ["eggs", "albumin", "ovalbumin"],
             "soy": ["soya", "soybean", "lecithin"],
@@ -234,7 +254,11 @@ def _check_allergy_from_scan(scan: Dict[str, Any], profile_allergies: list) -> D
             allergen_names = [m["allergen"] for m in unique_matches]
             summary = f"Detected allergens: {', '.join(allergen_names)}"
 
-        return {"status": "success", "allergen_matches": unique_matches, "summary": summary}
+        return {
+            "status": "success",
+            "allergen_matches": unique_matches,
+            "summary": summary,
+        }
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -413,7 +437,9 @@ def age_check_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
             reasons.append("Age recommendation based on product category.")
 
     out = AgeCheckOut(
-        age_ok=(min_age is not None and min_age <= 0), min_age_months=min_age, reasons=reasons
+        age_ok=(min_age is not None and min_age <= 0),
+        min_age_months=min_age,
+        reasons=reasons,
     )
 
     return out.model_dump()

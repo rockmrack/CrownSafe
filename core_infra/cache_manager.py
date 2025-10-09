@@ -148,7 +148,9 @@ class BabyShieldCacheManager:
             }
 
             self.redis_client.setex(
-                cache_key, ttl, json.dumps(cache_data, cls=CustomJsonEncoder, separators=(",", ":"))
+                cache_key,
+                ttl,
+                json.dumps(cache_data, cls=CustomJsonEncoder, separators=(",", ":")),
             )
 
             logger.debug(f"💾 Cache SET: {cache_key[:50]}... (TTL: {ttl}s)")

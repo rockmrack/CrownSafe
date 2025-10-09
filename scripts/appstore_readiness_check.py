@@ -58,7 +58,10 @@ expect(r and r.status_code == 200, "/api/v1/healthz returns 200")
 expect(r and "X-API-Version" in r.headers, "X-API-Version header present")
 expect(r and r.headers.get("Strict-Transport-Security"), "HSTS header present")
 expect(r and r.headers.get("X-Content-Type-Options") == "nosniff", "nosniff header present")
-expect(r and r.headers.get("X-Frame-Options") in {"DENY", "SAMEORIGIN"}, "X-Frame-Options present")
+expect(
+    r and r.headers.get("X-Frame-Options") in {"DENY", "SAMEORIGIN"},
+    "X-Frame-Options present",
+)
 
 # 2) Docs available
 print("\n📚 2. API Documentation")
@@ -119,7 +122,8 @@ expect(r and r.status_code == 200, "alternative aliases accepted")
 bad_payload = {"foo": "bar"}
 r, j = post_json("/api/v1/search/advanced", bad_payload)
 expect(
-    r and (r.status_code == 400 or (r.status_code == 422 and j)), "invalid params produce 400/422"
+    r and (r.status_code == 400 or (r.status_code == 422 and j)),
+    "invalid params produce 400/422",
 )
 expect(j and (j.get("error") or j.get("detail")), "error message present for bad request")
 
@@ -201,8 +205,14 @@ try:
 
     # Check for CORS headers (case-insensitive)
     headers_lower = {k.lower(): v for k, v in r.headers.items()}
-    expect("access-control-allow-origin" in headers_lower, "CORS allow-origin header present")
-    expect("access-control-allow-methods" in headers_lower, "CORS allow-methods header present")
+    expect(
+        "access-control-allow-origin" in headers_lower,
+        "CORS allow-origin header present",
+    )
+    expect(
+        "access-control-allow-methods" in headers_lower,
+        "CORS allow-methods header present",
+    )
 except Exception as e:
     print(f"   ⚠️ CORS test failed: {e}")
 

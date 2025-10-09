@@ -125,6 +125,10 @@ def add_security_headers(app):
     allowed_origins = (
         os.getenv("ALLOWED_ORIGINS", "").split(",")
         if os.getenv("ALLOWED_ORIGINS")
-        else ["https://app.babyshield.com", "http://localhost:3000", "http://localhost:5173"]
+        else [
+            "https://app.babyshield.com",
+            "http://localhost:3000",
+            "http://localhost:5173",
+        ]
     )
     app.add_middleware(CORSSecurityMiddleware, allowed_origins=allowed_origins)

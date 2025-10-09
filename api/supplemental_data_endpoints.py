@@ -271,11 +271,17 @@ async def test_cosmetic_simple():
     Simple test to create a CosmeticDataResponse directly
     """
     try:
-        from api.models.supplemental_models import CosmeticDataResponse, CosmeticIngredient
+        from api.models.supplemental_models import (
+            CosmeticDataResponse,
+            CosmeticIngredient,
+        )
 
         # Test creating a simple cosmetic ingredient
         ingredient = CosmeticIngredient(
-            name="glycerin", functions=["emollient"], restrictions=[], safety_assessment="safe"
+            name="glycerin",
+            functions=["emollient"],
+            restrictions=[],
+            safety_assessment="safe",
         )
 
         # Test creating a cosmetic data response

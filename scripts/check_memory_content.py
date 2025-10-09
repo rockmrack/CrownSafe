@@ -293,7 +293,10 @@ class MemoryValidationSuite:
             start_time = time.time()
 
             evidence = await self.memory.get_evidence_for_entities(
-                drug_name="Canagliflozin", disease_name="Heart Failure", min_quality=1, n_results=5
+                drug_name="Canagliflozin",
+                disease_name="Heart Failure",
+                min_quality=1,
+                n_results=5,
             )
 
             entity_time = time.time() - start_time

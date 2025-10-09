@@ -21,7 +21,12 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Global counters
-STATS = {"discoveries": 0, "task_assigns": 0, "task_completes": 0, "messages_to_commander": 0}
+STATS = {
+    "discoveries": 0,
+    "task_assigns": 0,
+    "task_completes": 0,
+    "messages_to_commander": 0,
+}
 
 
 class InstrumentedMockClient:
@@ -90,7 +95,11 @@ async def test_router_success():
                 "agent_capability_required": "ml_prediction",
                 "task_description": "Predict approval",
                 "inputs": {},
-                "dependencies": ["step1_patient_data", "step2_guidelines", "step3_policy"],
+                "dependencies": [
+                    "step1_patient_data",
+                    "step2_guidelines",
+                    "step3_policy",
+                ],
             },
         ],
     }
@@ -188,7 +197,10 @@ async def test_router_success():
                 "payload": {
                     "workflow_id": workflow_id,
                     "task_id": "step4_predict",
-                    "result": {"status": "success", "data": "APPROVED - 85% confidence"},
+                    "result": {
+                        "status": "success",
+                        "data": "APPROVED - 85% confidence",
+                    },
                 },
             }
         )

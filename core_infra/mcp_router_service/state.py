@@ -8,7 +8,8 @@ try:
     from .config import logger
 except ImportError:
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
     logger = logging.getLogger("mcp_router_service.state")
     logger.warning("Could not import logger from .config, using fallback basicConfig.")

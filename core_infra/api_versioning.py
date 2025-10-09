@@ -45,7 +45,11 @@ class APIVersion:
         return f"v{self.major}.{self.minor}.{self.patch}"
 
     def __lt__(self, other):
-        return (self.major, self.minor, self.patch) < (other.major, other.minor, other.patch)
+        return (self.major, self.minor, self.patch) < (
+            other.major,
+            other.minor,
+            other.patch,
+        )
 
 
 class VersionedAPI:
@@ -130,7 +134,8 @@ def versioned_endpoint(versions: list = None, deprecated_in: str = None, removed
             # Check if removed
             if removed_in and version >= removed_in:
                 raise HTTPException(
-                    status_code=410, detail=f"Endpoint removed in API {removed_in}"  # Gone
+                    status_code=410,
+                    detail=f"Endpoint removed in API {removed_in}",  # Gone
                 )
 
             # Add deprecation warning
@@ -336,7 +341,11 @@ class VersionMigration:
         if from_version == "v1" and to_version == "v2":
             guide["changes"] = [
                 {"type": "field_rename", "old": "user_name", "new": "username"},
-                {"type": "endpoint_change", "old": "/api/v1/get_user", "new": "/api/v2/users/{id}"},
+                {
+                    "type": "endpoint_change",
+                    "old": "/api/v1/get_user",
+                    "new": "/api/v2/users/{id}",
+                },
                 {
                     "type": "response_format",
                     "description": "Error responses now include error codes",

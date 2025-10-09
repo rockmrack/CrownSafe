@@ -17,7 +17,9 @@ class PushNotificationAgent:
     async def handle_send_alert(self, task_payload: dict) -> dict:
         # ... (Payload validation) ...
         return self.logic.send_instant_alert(
-            task_payload.get("user_profile"), task_payload.get("title"), task_payload.get("message")
+            task_payload.get("user_profile"),
+            task_payload.get("title"),
+            task_payload.get("message"),
         )
 
     async def handle_schedule_milestones(self, task_payload: dict) -> dict:

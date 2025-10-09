@@ -163,7 +163,8 @@ async def redis_exception_handler(request: Request, exc: redis.exceptions.RedisE
 async def validation_exception_handler(request: Request, exc: ValueError):
     """Handle validation exceptions"""
     logger.warning(
-        f"Validation error: {str(exc)}", extra={"path": request.url.path, "method": request.method}
+        f"Validation error: {str(exc)}",
+        extra={"path": request.url.path, "method": request.method},
     )
 
     return JSONResponse(

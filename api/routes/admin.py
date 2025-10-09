@@ -34,7 +34,11 @@ router = APIRouter(
 def create_response(data: Any, request: Request, status_code: int = 200) -> JSONResponse:
     """Create standard JSON response with trace ID"""
     return JSONResponse(
-        content={"ok": True, "data": data, "traceId": getattr(request.state, "trace_id", None)},
+        content={
+            "ok": True,
+            "data": data,
+            "traceId": getattr(request.state, "trace_id", None),
+        },
         status_code=status_code,
     )
 
@@ -71,7 +75,9 @@ async def trigger_ingestion(
 
     if mode not in ("delta", "full", "incremental"):
         raise APIError(
-            status_code=400, code="INVALID_MODE", message="Mode must be delta, full, or incremental"
+            status_code=400,
+            code="INVALID_MODE",
+            message="Mode must be delta, full, or incremental",
         )
 
     # Start ingestion
@@ -111,7 +117,9 @@ async def trigger_ingestion(
     except Exception as e:
         logger.error(f"Failed to start ingestion: {e}")
         raise APIError(
-            status_code=500, code="INGESTION_START_FAILED", message="Failed to start ingestion job"
+            status_code=500,
+            code="INGESTION_START_FAILED",
+            message="Failed to start ingestion job",
         )
 
 
@@ -164,7 +172,9 @@ async def list_ingestion_runs(
     except Exception as e:
         logger.error(f"Failed to list runs: {e}")
         raise APIError(
-            status_code=500, code="LIST_RUNS_FAILED", message="Failed to retrieve ingestion runs"
+            status_code=500,
+            code="LIST_RUNS_FAILED",
+            message="Failed to retrieve ingestion runs",
         )
 
 
@@ -193,7 +203,9 @@ async def get_ingestion_run(run_id: str, request: Request, db: Session = Depends
     except Exception as e:
         logger.error(f"Failed to get run {run_id}: {e}")
         raise APIError(
-            status_code=500, code="GET_RUN_FAILED", message="Failed to retrieve ingestion run"
+            status_code=500,
+            code="GET_RUN_FAILED",
+            message="Failed to retrieve ingestion run",
         )
 
 
@@ -235,7 +247,9 @@ async def cancel_ingestion_run(
             return create_response({"runId": run_id, "status": "cancelled"}, request)
         else:
             raise APIError(
-                status_code=500, code="CANCEL_FAILED", message="Failed to cancel ingestion"
+                status_code=500,
+                code="CANCEL_FAILED",
+                message="Failed to cancel ingestion",
             )
 
     except APIError:
@@ -446,7 +460,9 @@ async def admin_statistics(request: Request, db: Session = Depends(get_db)):
     except Exception as e:
         logger.error(f"Stats retrieval failed: {e}")
         raise APIError(
-            status_code=500, code="STATS_FAILED", message="Failed to retrieve statistics"
+            status_code=500,
+            code="STATS_FAILED",
+            message="Failed to retrieve statistics",
         )
 
 

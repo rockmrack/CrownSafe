@@ -11,10 +11,14 @@ c = TestClient(app)
 # auth
 email = f"test+{uuid.uuid4().hex[:6]}@ex.com"
 pwd = "P@ssw0rd!"
-r = c.post("/api/v1/auth/register", json={"email": email, "password": pwd, "confirm_password": pwd})
+r = c.post(
+    "/api/v1/auth/register",
+    json={"email": email, "password": pwd, "confirm_password": pwd},
+)
 print("register_status", r.status_code)
 tok = c.post(
-    "/api/v1/auth/token", data={"username": email, "password": pwd, "grant_type": "password"}
+    "/api/v1/auth/token",
+    data={"username": email, "password": pwd, "grant_type": "password"},
 ).json()["access_token"]
 h = {"Authorization": f"Bearer {tok}"}
 me = c.get("/api/v1/auth/me", headers=h).json()

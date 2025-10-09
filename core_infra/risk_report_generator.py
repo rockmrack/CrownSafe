@@ -305,7 +305,10 @@ class RiskReportGenerator:
             ["Brand:", data["product"]["brand"] or "Unknown"],
             ["Manufacturer:", data["product"]["manufacturer"] or "Unknown"],
             ["Model Number:", data["product"]["model"] or "N/A"],
-            ["GTIN/UPC:", f"{data['product']['gtin'] or data['product']['upc'] or 'N/A'}"],
+            [
+                "GTIN/UPC:",
+                f"{data['product']['gtin'] or data['product']['upc'] or 'N/A'}",
+            ],
             ["Category:", data["product"]["category"] or "Unknown"],
         ]
         product_table = Table(product_data, colWidths=[2 * inch, 5 * inch])
@@ -702,7 +705,9 @@ class RiskReportGenerator:
 
             # Generate presigned URL (24 hour expiry)
             url = self.s3_client.generate_presigned_url(
-                "get_object", Params={"Bucket": self.bucket_name, "Key": key}, ExpiresIn=86400
+                "get_object",
+                Params={"Bucket": self.bucket_name, "Key": key},
+                ExpiresIn=86400,
             )
 
             logger.info(f"Report uploaded to S3: {key}")

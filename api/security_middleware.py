@@ -244,7 +244,8 @@ class RequestValidationMiddleware(BaseHTTPMiddleware):
         if self._contains_malicious_pattern(str(request.url)):
             logger.warning(f"Malicious URL pattern detected: {request.url}")
             return JSONResponse(
-                status_code=status.HTTP_400_BAD_REQUEST, content={"error": "Invalid request"}
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"error": "Invalid request"},
             )
 
         # Check headers for malicious patterns
@@ -316,7 +317,10 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
                 logger.warning(f"Invalid API key attempt for path: {request.url.path}")
                 return JSONResponse(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    content={"error": "Unauthorized", "message": "Invalid or missing API key"},
+                    content={
+                        "error": "Unauthorized",
+                        "message": "Invalid or missing API key",
+                    },
                     headers={"WWW-Authenticate": "ApiKey"},
                 )
 
@@ -389,7 +393,8 @@ class HMACMiddleware(BaseHTTPMiddleware):
             if not self._validate_hmac(body, signature, timestamp):
                 logger.warning(f"Invalid HMAC signature for path: {request.url.path}")
                 return JSONResponse(
-                    status_code=status.HTTP_401_UNAUTHORIZED, content={"error": "Invalid signature"}
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    content={"error": "Invalid signature"},
                 )
 
         response = await call_next(request)

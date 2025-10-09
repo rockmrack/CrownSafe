@@ -434,9 +434,17 @@ class DrugBankAgentLogic:
             "drug_class_lookup": ["class_lookup", "get_drug_class"],
             "drugbank_query": ["query_drugbank", "drugbank_search"],
             "get_drug_info": ["drug_info", "drug_information", "get_drug"],
-            "check_drug_interactions": ["interactions", "drug_interactions", "interaction_check"],
+            "check_drug_interactions": [
+                "interactions",
+                "drug_interactions",
+                "interaction_check",
+            ],
             "search_drugs": ["drug_search", "search", "find_drugs"],
-            "get_pa_criteria": ["pa_criteria", "prior_auth_criteria", "prior_authorization"],
+            "get_pa_criteria": [
+                "pa_criteria",
+                "prior_auth_criteria",
+                "prior_authorization",
+            ],
             "check_drug_safety": ["drug_safety_check", "safety_check", "check_safety"],
         }
 
@@ -498,7 +506,11 @@ class DrugBankAgentLogic:
         drug_name = task_data.get("drug_name", "").strip()
 
         if not drug_name:
-            return {"status": "FAILED", "error": "No drug name provided", "agent_id": self.agent_id}
+            return {
+                "status": "FAILED",
+                "error": "No drug name provided",
+                "agent_id": self.agent_id,
+            }
 
         # Normalize drug name
         drug_name = self._normalize_drug_name(drug_name)
@@ -548,7 +560,11 @@ class DrugBankAgentLogic:
         drug_name = task_data.get("drug_name", "").strip()
 
         if not drug_name:
-            return {"status": "FAILED", "error": "No drug name provided", "agent_id": self.agent_id}
+            return {
+                "status": "FAILED",
+                "error": "No drug name provided",
+                "agent_id": self.agent_id,
+            }
 
         # Normalize drug name
         drug_name = self._normalize_drug_name(drug_name)
@@ -599,7 +615,11 @@ class DrugBankAgentLogic:
         drug_name = task_data.get("drug_name", "").strip()
 
         if not drug_name:
-            return {"status": "FAILED", "error": "No drug name provided", "agent_id": self.agent_id}
+            return {
+                "status": "FAILED",
+                "error": "No drug name provided",
+                "agent_id": self.agent_id,
+            }
 
         # P2: Normalize drug name
         drug_name = self._normalize_drug_name(drug_name)
@@ -953,7 +973,11 @@ class DrugBankAgentLogic:
         indication = task_data.get("indication", "").strip()
 
         if not drug_name:
-            return {"status": "FAILED", "error": "No drug name provided", "agent_id": self.agent_id}
+            return {
+                "status": "FAILED",
+                "error": "No drug name provided",
+                "agent_id": self.agent_id,
+            }
 
         # P2: Normalize drug name
         drug_name = self._normalize_drug_name(drug_name)

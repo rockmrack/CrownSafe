@@ -57,7 +57,8 @@ class S3BackupExporter:
         self.bucket_name = os.environ.get("BACKUP_BUCKET", "babyshield-backup-exports")
         self.kms_key_id = os.environ.get("BACKUP_KMS_KEY", "alias/babyshield-s3-backup")
         self.iam_role_arn = os.environ.get(
-            "EXPORT_IAM_ROLE", f"arn:aws:iam::{self._get_account_id()}:role/rds-s3-export-role"
+            "EXPORT_IAM_ROLE",
+            f"arn:aws:iam::{self._get_account_id()}:role/rds-s3-export-role",
         )
 
     def _get_account_id(self) -> str:
@@ -123,7 +124,9 @@ class S3BackupExporter:
 
         try:
             response = self.rds.describe_db_snapshots(
-                DBInstanceIdentifier=db_instance, SnapshotType="automated", MaxRecords=10
+                DBInstanceIdentifier=db_instance,
+                SnapshotType="automated",
+                MaxRecords=10,
             )
 
             if not response["DBSnapshots"]:
@@ -131,7 +134,9 @@ class S3BackupExporter:
 
             # Sort by creation time
             snapshots = sorted(
-                response["DBSnapshots"], key=lambda x: x["SnapshotCreateTime"], reverse=True
+                response["DBSnapshots"],
+                key=lambda x: x["SnapshotCreateTime"],
+                reverse=True,
             )
 
             return snapshots[0]

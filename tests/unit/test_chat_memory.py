@@ -176,7 +176,10 @@ class TestChatMemoryModels:
         assert retrieved.role == "user"
         assert retrieved.intent == "product_inquiry"
         assert retrieved.trace_id == "trace-789"
-        assert retrieved.content == {"text": "What is this product?", "type": "question"}
+        assert retrieved.content == {
+            "text": "What is this product?",
+            "type": "question",
+        }
         assert retrieved.created_at is not None
 
     def test_conversation_message_defaults(self, db_session):
@@ -250,7 +253,9 @@ class TestChatMemoryModels:
 
         # Create messages
         message1 = ConversationMessage(
-            conversation_id="conv-relationship", role="user", content={"text": "First message"}
+            conversation_id="conv-relationship",
+            role="user",
+            content={"text": "First message"},
         )
         message2 = ConversationMessage(
             conversation_id="conv-relationship",
@@ -291,7 +296,9 @@ class TestChatMemoryModels:
             conversation_id="conv-cascade", role="user", content={"text": "Message 1"}
         )
         message2 = ConversationMessage(
-            conversation_id="conv-cascade", role="assistant", content={"text": "Message 2"}
+            conversation_id="conv-cascade",
+            role="assistant",
+            content={"text": "Message 2"},
         )
 
         db_session.add(message1)
@@ -321,7 +328,9 @@ class TestChatMemoryModels:
     def test_user_profile_erase_request(self, db_session):
         """Test UserProfile erase request functionality"""
         user_profile = UserProfile(
-            user_id="test-erase-user", consent_personalization=True, allergies=["peanuts"]
+            user_id="test-erase-user",
+            consent_personalization=True,
+            allergies=["peanuts"],
         )
 
         db_session.add(user_profile)
@@ -390,7 +399,12 @@ class TestChatMemoryModels:
         db_session.add(conversation)
         db_session.commit()
 
-        intents = ["product_inquiry", "safety_check", "recall_search", "general_question"]
+        intents = [
+            "product_inquiry",
+            "safety_check",
+            "recall_search",
+            "general_question",
+        ]
 
         for intent in intents:
             message = ConversationMessage(
@@ -509,7 +523,9 @@ class TestChatMemoryModels:
         messages = []
         for i in range(5):
             message = ConversationMessage(
-                conversation_id="conv-auto-id", role="user", content={"text": f"Message {i}"}
+                conversation_id="conv-auto-id",
+                role="user",
+                content={"text": f"Message {i}"},
             )
             db_session.add(message)
             messages.append(message)

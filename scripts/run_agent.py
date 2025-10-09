@@ -81,7 +81,8 @@ async def start_agent(module_path: str):
     except ImportError as e:
         # This is where the Langchain import error would likely be caught now
         logger.critical(
-            f"Failed to import agent module {module_path} or its dependencies: {e}", exc_info=True
+            f"Failed to import agent module {module_path} or its dependencies: {e}",
+            exc_info=True,
         )
         logger.critical(
             "Ensure the module path is correct and all dependencies (like langchain-openai) are installed in the venv."
@@ -90,7 +91,8 @@ async def start_agent(module_path: str):
         logger.critical(f"Error accessing main() function in {module_path}: {e}", exc_info=True)
     except Exception as e:
         logger.critical(
-            f"An unexpected error occurred while running agent {module_path}: {e}", exc_info=True
+            f"An unexpected error occurred while running agent {module_path}: {e}",
+            exc_info=True,
         )
 
 

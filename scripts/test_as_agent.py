@@ -24,7 +24,9 @@ async def test_agent_connection():
 
         # Try to send a test message
         await mcp_client.send_message(
-            payload={"test": "message"}, message_type="TEST", target_agent_id="test_target"
+            payload={"test": "message"},
+            message_type="TEST",
+            target_agent_id="test_target",
         )
         print("✅ Sent test message!")
 

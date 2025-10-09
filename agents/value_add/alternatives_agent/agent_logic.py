@@ -71,7 +71,10 @@ class AlternativesAgentLogic:
 
             return {
                 "status": "COMPLETED",
-                "result": {"alternatives_found": len(alternatives), "alternatives": alternatives},
+                "result": {
+                    "alternatives_found": len(alternatives),
+                    "alternatives": alternatives,
+                },
             }
         except Exception as e:
             self.logger.error(f"An error occurred while finding alternatives: {e}", exc_info=True)

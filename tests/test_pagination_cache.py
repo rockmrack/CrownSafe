@@ -163,20 +163,28 @@ class PaginationCacheTester:
             return True
 
         # Test 1: Completely invalid cursor
-        invalid_payload = {"product": "test", "limit": 2, "nextCursor": "INVALID_CURSOR_STRING"}
+        invalid_payload = {
+            "product": "test",
+            "limit": 2,
+            "nextCursor": "INVALID_CURSOR_STRING",
+        }
 
         response = self.session.post(
             f"{self.base_url}/api/v1/search/advanced", json=invalid_payload
         )
 
         self.test(
-            response.status_code in [400, 422], f"Invalid cursor returns {response.status_code}"
+            response.status_code in [400, 422],
+            f"Invalid cursor returns {response.status_code}",
         )
 
         if response.status_code in [400, 422]:
             error_data = response.json()
             error_code = error_data.get("error", {}).get("code")
-            self.test(error_code == "INVALID_CURSOR", f"Error code is INVALID_CURSOR: {error_code}")
+            self.test(
+                error_code == "INVALID_CURSOR",
+                f"Error code is INVALID_CURSOR: {error_code}",
+            )
 
         # Test 2: Tampered cursor (modify signature)
         if "." in valid_cursor:
@@ -185,7 +193,11 @@ class PaginationCacheTester:
                 # Flip a bit in the signature
                 tampered = parts[0] + ".TAMPERED"
 
-                tampered_payload = {"product": "test", "limit": 2, "nextCursor": tampered}
+                tampered_payload = {
+                    "product": "test",
+                    "limit": 2,
+                    "nextCursor": tampered,
+                }
 
                 response = self.session.post(
                     f"{self.base_url}/api/v1/search/advanced", json=tampered_payload
@@ -264,7 +276,8 @@ class PaginationCacheTester:
 
         # First, get a valid recall ID
         search_response = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json={"product": "toy", "limit": 1}
+            f"{self.base_url}/api/v1/search/advanced",
+            json={"product": "toy", "limit": 1},
         )
 
         if search_response.status_code != 200:
@@ -332,7 +345,8 @@ class PaginationCacheTester:
 
         # Test search endpoint
         response = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json={"product": "test", "limit": 1}
+            f"{self.base_url}/api/v1/search/advanced",
+            json={"product": "test", "limit": 1},
         )
 
         if response.status_code == 200:

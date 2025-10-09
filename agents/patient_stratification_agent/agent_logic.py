@@ -143,8 +143,14 @@ class AnalysisContext:
         self.drug_info = self.drug_info or {}
         self.policy_info = self.policy_info or {}
         self.guideline_results = self.guideline_results or []
-        self.interaction_check = self.interaction_check or {"interactions": [], "status": "PENDING"}
-        self.criteria_check = self.criteria_check or {"meets_criteria": False, "reason": "No data"}
+        self.interaction_check = self.interaction_check or {
+            "interactions": [],
+            "status": "PENDING",
+        }
+        self.criteria_check = self.criteria_check or {
+            "meets_criteria": False,
+            "reason": "No data",
+        }
         self.drug_safety = self.drug_safety or {}
 
 
@@ -167,9 +173,18 @@ class MockPatientDataAgentLogic:
                 "record": {
                     "patient_id": patient_id,
                     "age": 52,
-                    "diagnoses_icd10": ["E11.9", "I10", "E78.5"],  # T2DM, HTN, Hyperlipidemia
+                    "diagnoses_icd10": [
+                        "E11.9",
+                        "I10",
+                        "E78.5",
+                    ],  # T2DM, HTN, Hyperlipidemia
                     "medication_history": ["Metformin", "Lisinopril", "Atorvastatin"],
-                    "labs": {"HbA1c": "9.2%", "eGFR": "85", "LDL": "145", "BP": "148/92"},
+                    "labs": {
+                        "HbA1c": "9.2%",
+                        "eGFR": "85",
+                        "LDL": "145",
+                        "BP": "148/92",
+                    },
                     "provider_type": "Endocrinologist",
                     "notes": "Patient has tried metformin at maximum dose for 6 months with insufficient glycemic control. HbA1c remains elevated despite lifestyle modifications and medication adherence.",
                     "allergies": [],
@@ -199,7 +214,10 @@ class MockPatientDataAgentLogic:
                 "record": {
                     "patient_id": patient_id,
                     "age": 65,
-                    "diagnoses_icd10": ["K21.0", "K92.1"],  # GERD and GI bleeding, not diabetes
+                    "diagnoses_icd10": [
+                        "K21.0",
+                        "K92.1",
+                    ],  # GERD and GI bleeding, not diabetes
                     "medication_history": ["Omeprazole", "Famotidine"],
                     "labs": {"Hemoglobin": "10.2", "Ferritin": "45"},
                     "provider_type": "Gastroenterologist",
@@ -243,7 +261,11 @@ class MockGuidelineAgentLogic:
 
         # FIXED: Handle both old and new task names
         task_name = task.get("task_name", "").lower()
-        if task_name not in ["query_guidelines", "get_guideline_info", "guideline_query"]:
+        if task_name not in [
+            "query_guidelines",
+            "get_guideline_info",
+            "guideline_query",
+        ]:
             # Log warning but continue
             logger.warning(f"Unexpected guideline task name: {task_name}")
 
@@ -307,7 +329,10 @@ class MockPolicyAnalysisAgentLogic:
                         "eGFR ≥ 20 mL/min/1.73m²",
                         "Not for use in Type 1 Diabetes or diabetic ketoacidosis",
                     ],
-                    "quantity_limits": {"max_units_per_fill": 30, "max_fills_per_month": 1},
+                    "quantity_limits": {
+                        "max_units_per_fill": 30,
+                        "max_fills_per_month": 1,
+                    },
                     "alternatives": [
                         {
                             "drug": "Metformin",
@@ -843,7 +868,11 @@ class PatientStratificationAgentLogic:
             try:
                 module = __import__(module_path, fromlist=[class_name])
                 agent_class = getattr(module, class_name)
-                setattr(self, attr_name, agent_class(agent_id=f"{self.agent_id}_{attr_name}"))
+                setattr(
+                    self,
+                    attr_name,
+                    agent_class(agent_id=f"{self.agent_id}_{attr_name}"),
+                )
                 self.logger.info(f"Successfully initialized {class_name}")
             except (ImportError, AttributeError) as e:
                 self.logger.warning(f"Using mock {class_name} due to: {e}")
@@ -907,7 +936,11 @@ class PatientStratificationAgentLogic:
                 cached_result["cache_age_seconds"] = int(
                     time.time() - cached_result.get("cached_at", time.time())
                 )
-                return {"status": "success", "prediction": cached_result, "source": "cache"}
+                return {
+                    "status": "success",
+                    "prediction": cached_result,
+                    "source": "cache",
+                }
 
             with self._metrics_lock:
                 self.metrics["cache_misses"] += 1
@@ -1078,7 +1111,11 @@ class PatientStratificationAgentLogic:
                     results[name] = {}
 
         # Get drug interactions if we have medications
-        interaction_check = {"interactions": [], "status": "COMPLETED", "highest_severity": "none"}
+        interaction_check = {
+            "interactions": [],
+            "status": "COMPLETED",
+            "highest_severity": "none",
+        }
         patient_data = results.get("patient", {})
 
         if patient_data and isinstance(patient_data, dict):
@@ -1151,9 +1188,11 @@ class PatientStratificationAgentLogic:
             for unmet in context.criteria_check.get("unmet_criteria", []):
                 if isinstance(unmet, dict):
                     severity = unmet.get("severity", "moderate")
-                    weight_modifier = {"critical": 0.2, "moderate": 0.15, "minor": 0.1}.get(
-                        severity, 0.15
-                    )
+                    weight_modifier = {
+                        "critical": 0.2,
+                        "moderate": 0.15,
+                        "minor": 0.1,
+                    }.get(severity, 0.15)
 
                     # FIXED: Handle quantity limit criteria
                     criterion_type = unmet.get("type", unmet.get("criterion", "").lower())
@@ -1572,7 +1611,11 @@ class PatientStratificationAgentLogic:
         """Retrieve clinical guidelines"""
         try:
             # FIXED: Try multiple task names for compatibility
-            for task_name in ["get_guideline_info", "query_guidelines", "guideline_query"]:
+            for task_name in [
+                "get_guideline_info",
+                "query_guidelines",
+                "guideline_query",
+            ]:
                 result = self.guideline_logic.process_task(
                     {
                         "task_name": task_name,
@@ -1623,7 +1666,10 @@ class PatientStratificationAgentLogic:
             return {"interactions": [], "highest_severity": "none", "status": "ERROR"}
 
     def _analyze_guideline_support(
-        self, drug_name: str, patient_record: Dict[str, Any], guidelines: List[Dict[str, Any]]
+        self,
+        drug_name: str,
+        patient_record: Dict[str, Any],
+        guidelines: List[Dict[str, Any]],
     ) -> List[EvidenceItem]:
         """Analyze guideline support with NLP-style keyword matching"""
         evidence_items = []
@@ -1755,7 +1801,12 @@ class PatientStratificationAgentLogic:
         med_history = patient_record.get("medication_history", [])
         if med_history:
             # Check for prerequisite medications
-            prerequisite_meds = {"metformin", "lisinopril", "atorvastatin", "simvastatin"}
+            prerequisite_meds = {
+                "metformin",
+                "lisinopril",
+                "atorvastatin",
+                "simvastatin",
+            }
             tried_prerequisites = sum(
                 1
                 for med in med_history
@@ -2161,7 +2212,10 @@ Based on the evidence, provide a PA decision as JSON:
         }
 
     def _generate_recommendations(
-        self, decision: DecisionType, evidence_items: List[EvidenceItem], context: AnalysisContext
+        self,
+        decision: DecisionType,
+        evidence_items: List[EvidenceItem],
+        context: AnalysisContext,
     ) -> List[str]:
         """Generate specific, actionable recommendations based on decision"""
         recommendations = []
@@ -2335,7 +2389,10 @@ Based on the evidence, provide a PA decision as JSON:
         }
 
     def _create_error_response(
-        self, error_message: str, audit_trail: List[Dict], traceback_str: Optional[str] = None
+        self,
+        error_message: str,
+        audit_trail: List[Dict],
+        traceback_str: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Create comprehensive error response"""
         response = {

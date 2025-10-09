@@ -149,12 +149,14 @@ class EnhancedMemoryManager(MemoryManager):
             # FIXED: Use self.chroma_client instead of self.client
             # Temporal patterns collection
             self.temporal_collection = self.chroma_client.get_or_create_collection(
-                name=f"{self.collection_name}_temporal", metadata={"hnsw:space": "cosine"}
+                name=f"{self.collection_name}_temporal",
+                metadata={"hnsw:space": "cosine"},
             )
 
             # Contradictions collection
             self.contradictions_collection = self.chroma_client.get_or_create_collection(
-                name=f"{self.collection_name}_contradictions", metadata={"hnsw:space": "cosine"}
+                name=f"{self.collection_name}_contradictions",
+                metadata={"hnsw:space": "cosine"},
             )
 
             # Research gaps collection
@@ -164,7 +166,8 @@ class EnhancedMemoryManager(MemoryManager):
 
             # Cross-workflow insights collection
             self.insights_collection = self.chroma_client.get_or_create_collection(
-                name=f"{self.collection_name}_insights", metadata={"hnsw:space": "cosine"}
+                name=f"{self.collection_name}_insights",
+                metadata={"hnsw:space": "cosine"},
             )
 
             self.logger.info("Enhanced collections initialized successfully")
@@ -210,7 +213,10 @@ class EnhancedMemoryManager(MemoryManager):
             )
         else:
             # Fallback for invalid input
-            standard_result = {"status": "error", "message": "Invalid workflow data format"}
+            standard_result = {
+                "status": "error",
+                "message": "Invalid workflow data format",
+            }
 
         # Then perform enhanced analysis
         enhanced_results = {
@@ -319,7 +325,11 @@ class EnhancedMemoryManager(MemoryManager):
         """Analyze temporal patterns in research data"""
         self.logger.info("Starting temporal pattern analysis")
 
-        temporal_results = {"patterns_detected": [], "trend_analysis": {}, "temporal_insights": []}
+        temporal_results = {
+            "patterns_detected": [],
+            "trend_analysis": {},
+            "temporal_insights": [],
+        }
 
         try:
             current_time = datetime.now()
@@ -733,7 +743,11 @@ class EnhancedMemoryManager(MemoryManager):
         """Identify gaps in current research"""
         self.logger.info("Starting research gap identification")
 
-        gap_results = {"gaps_identified": [], "priority_areas": [], "research_suggestions": []}
+        gap_results = {
+            "gaps_identified": [],
+            "priority_areas": [],
+            "research_suggestions": [],
+        }
 
         try:
             for drug in entities.get("drugs", []):
@@ -828,7 +842,13 @@ class EnhancedMemoryManager(MemoryManager):
 
                 if any(
                     term in doc_lower
-                    for term in ["population", "demographic", "subgroup", "elderly", "pediatric"]
+                    for term in [
+                        "population",
+                        "demographic",
+                        "subgroup",
+                        "elderly",
+                        "pediatric",
+                    ]
                 ):
                     content_analysis["population_studies"] += 1
 
@@ -910,7 +930,9 @@ class EnhancedMemoryManager(MemoryManager):
         try:
             # Sort gaps by priority score
             sorted_gaps = sorted(
-                self.research_gaps.values(), key=lambda x: x.priority_score, reverse=True
+                self.research_gaps.values(),
+                key=lambda x: x.priority_score,
+                reverse=True,
             )
 
             # Group by gap type
@@ -1069,7 +1091,9 @@ class EnhancedMemoryManager(MemoryManager):
         try:
             for drug in drugs:
                 results = self.collection.query(
-                    query_texts=[f"{drug} outcomes efficacy"], n_results=10, include=["documents"]
+                    query_texts=[f"{drug} outcomes efficacy"],
+                    n_results=10,
+                    include=["documents"],
                 )
 
                 if results["documents"] and results["documents"][0]:
@@ -1150,7 +1174,9 @@ class EnhancedMemoryManager(MemoryManager):
             for drug in entities.get("drugs", []):
                 # Check if drug is used for heart failure
                 results = self.collection.query(
-                    query_texts=[f"{drug} heart failure"], n_results=5, include=["documents"]
+                    query_texts=[f"{drug} heart failure"],
+                    n_results=5,
+                    include=["documents"],
                 )
 
                 if results["documents"] and results["documents"][0]:
@@ -1359,7 +1385,9 @@ class EnhancedMemoryManager(MemoryManager):
 
             # STEP 3: Generate specific recommendations based on strategy
             specific_recommendations = await self._generate_strategy_specific_recommendations(
-                strategy_analysis["strategy"], primary_drug, existing_evidence_results
+                strategy_analysis["strategy"],
+                primary_drug,
+                existing_evidence_results,
             )
 
             recommendations.update(specific_recommendations)
@@ -1463,7 +1491,11 @@ class EnhancedMemoryManager(MemoryManager):
         try:
             # Define multiple search strategies with different queries
             search_strategies = [
-                {"name": "direct_drug_search", "query": f"{primary_drug}", "weight": 1.0},
+                {
+                    "name": "direct_drug_search",
+                    "query": f"{primary_drug}",
+                    "weight": 1.0,
+                },
                 {
                     "name": "drug_class_search",
                     "query": f"{drug_class} {primary_disease}"
@@ -1612,7 +1644,10 @@ class EnhancedMemoryManager(MemoryManager):
             return evidence_results
 
     def _determine_research_strategy(
-        self, evidence_results: Dict[str, Any], primary_drug: str, drug_class: Optional[str] = None
+        self,
+        evidence_results: Dict[str, Any],
+        primary_drug: str,
+        drug_class: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Determine the appropriate research strategy based on existing evidence analysis

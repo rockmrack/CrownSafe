@@ -30,7 +30,8 @@ def upgrade():
         # Add severity column if it doesn't exist
         if "severity" not in existing_columns:
             op.add_column(
-                "recalls_enhanced", sa.Column("severity", sa.String(length=50), nullable=True)
+                "recalls_enhanced",
+                sa.Column("severity", sa.String(length=50), nullable=True),
             )
             # Set default value for existing rows
             op.execute("UPDATE recalls_enhanced SET severity = 'medium' WHERE severity IS NULL")
@@ -38,7 +39,8 @@ def upgrade():
         # Add risk_category column if it doesn't exist
         if "risk_category" not in existing_columns:
             op.add_column(
-                "recalls_enhanced", sa.Column("risk_category", sa.String(length=100), nullable=True)
+                "recalls_enhanced",
+                sa.Column("risk_category", sa.String(length=100), nullable=True),
             )
             # Set default value for existing rows
             op.execute(

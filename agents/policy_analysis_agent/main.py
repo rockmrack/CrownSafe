@@ -60,7 +60,10 @@ class PolicyAnalysisAgent:
             {
                 "name": "get_alternatives",
                 "description": "Get covered alternatives for a specific drug",
-                "parameters": {"drug_name": "string (required)", "insurer": "string (optional)"},
+                "parameters": {
+                    "drug_name": "string (required)",
+                    "insurer": "string (optional)",
+                },
             },
             {
                 "name": "compare_policies",

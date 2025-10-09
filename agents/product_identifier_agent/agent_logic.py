@@ -133,7 +133,10 @@ class ProductIdentifierLogic:
 
         # Require barcode for now
         if not barcode:
-            return {"status": "FAILED", "error": "Barcode is required for product identification."}
+            return {
+                "status": "FAILED",
+                "error": "Barcode is required for product identification.",
+            }
 
         # Test with known working mock data for specific barcodes
         test_barcodes = {

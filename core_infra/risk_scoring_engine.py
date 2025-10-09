@@ -130,24 +130,28 @@ class RiskScoringEngine:
         components = RiskScoreComponents()
 
         # 1. Calculate Severity Score (35%)
-        components.severity_score, components.severity_details = self._calculate_severity_score(
-            product, incidents
-        )
+        (
+            components.severity_score,
+            components.severity_details,
+        ) = self._calculate_severity_score(product, incidents)
 
         # 2. Calculate Recency Score (20%)
-        components.recency_score, components.recency_details = self._calculate_recency_score(
-            product, incidents, db
-        )
+        (
+            components.recency_score,
+            components.recency_details,
+        ) = self._calculate_recency_score(product, incidents, db)
 
         # 3. Calculate Volume Score (15%)
-        components.volume_score, components.volume_details = self._calculate_volume_score(
-            product, db
-        )
+        (
+            components.volume_score,
+            components.volume_details,
+        ) = self._calculate_volume_score(product, db)
 
         # 4. Calculate Violation Score (15%)
-        components.violation_score, components.violation_details = self._calculate_violation_score(
-            product, incidents, db
-        )
+        (
+            components.violation_score,
+            components.violation_details,
+        ) = self._calculate_violation_score(product, incidents, db)
 
         # 5. Calculate Compliance Score (15%)
         if company_profile:

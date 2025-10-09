@@ -12,7 +12,12 @@ import logging
 import hashlib
 import json
 
-from api.utils import verify_cursor, create_search_cursor, hash_filters, validate_cursor_filters
+from api.utils import (
+    verify_cursor,
+    create_search_cursor,
+    hash_filters,
+    validate_cursor_filters,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -393,7 +398,10 @@ class SearchServiceV2:
                 )
 
                 next_cursor_token = create_search_cursor(
-                    filters_hash=filters_hash, as_of=as_of, limit=limit, after_tuple=after_tuple
+                    filters_hash=filters_hash,
+                    as_of=as_of,
+                    limit=limit,
+                    after_tuple=after_tuple,
                 )
 
             return {

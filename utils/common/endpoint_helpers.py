@@ -87,7 +87,11 @@ def error_response(
 
 
 def paginated_response(
-    items: List[Any], total: int, limit: int, offset: int, next_cursor: Optional[str] = None
+    items: List[Any],
+    total: int,
+    limit: int,
+    offset: int,
+    next_cursor: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Create a standardized paginated response
@@ -194,7 +198,8 @@ def validate_pagination(limit: int, offset: int, max_limit: int = 100) -> tuple[
     # Prevent extremely large offsets (DoS protection)
     if offset > 10000:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Offset too large (max 10000)"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Offset too large (max 10000)",
         )
 
     return limit, offset
@@ -261,7 +266,8 @@ def handle_db_error(e: Exception, operation: str = "database operation") -> HTTP
         return HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Resource already exists")
     elif "foreign key" in error_msg:
         return HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid reference to related resource"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid reference to related resource",
         )
     elif "not found" in error_msg:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found")
@@ -289,7 +295,8 @@ def require_feature_flag(flag_name: str, user: User = None) -> None:
 
     if flag_name not in enabled_flags:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail=f"Feature '{flag_name}' is not enabled"
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Feature '{flag_name}' is not enabled",
         )
 
 

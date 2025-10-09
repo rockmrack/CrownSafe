@@ -187,7 +187,11 @@ class TestPerformanceDeep:
         for i in range(50):
             r = client.get("/healthz")
             # Should either succeed or fail gracefully
-            assert r.status_code in [200, 429, 503]  # OK, Rate Limited, or Service Unavailable
+            assert r.status_code in [
+                200,
+                429,
+                503,
+            ]  # OK, Rate Limited, or Service Unavailable
 
     def test_response_size_optimization(self):
         """Test that responses are reasonably sized"""

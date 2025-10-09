@@ -102,7 +102,11 @@ TRANSLATIONS = {
     "nav.scan": {"en-US": "Scan", "es-ES": "Escanear", "es-MX": "Escanear"},
     "nav.search": {"en-US": "Search", "es-ES": "Buscar", "es-MX": "Buscar"},
     "nav.alerts": {"en-US": "Alerts", "es-ES": "Alertas", "es-MX": "Alertas"},
-    "nav.settings": {"en-US": "Settings", "es-ES": "Configuración", "es-MX": "Configuración"},
+    "nav.settings": {
+        "en-US": "Settings",
+        "es-ES": "Configuración",
+        "es-MX": "Configuración",
+    },
     # Barcode Scanner
     "scanner.permission.title": {
         "en-US": "Enable Camera for Barcode Scanning",
@@ -136,7 +140,11 @@ TRANSLATIONS = {
         "es-ES": "No se encontraron resultados",
         "es-MX": "No se encontraron resultados",
     },
-    "search.loading": {"en-US": "Loading...", "es-ES": "Cargando...", "es-MX": "Cargando..."},
+    "search.loading": {
+        "en-US": "Loading...",
+        "es-ES": "Cargando...",
+        "es-MX": "Cargando...",
+    },
     # Recall Status Messages
     "recall.found": {
         "en-US": "⚠️ Recall Found!",
@@ -195,7 +203,11 @@ TRANSLATIONS = {
         "es-ES": "Notificaciones",
         "es-MX": "Notificaciones",
     },
-    "settings.privacy": {"en-US": "Privacy", "es-ES": "Privacidad", "es-MX": "Privacidad"},
+    "settings.privacy": {
+        "en-US": "Privacy",
+        "es-ES": "Privacidad",
+        "es-MX": "Privacidad",
+    },
     "settings.about": {"en-US": "About", "es-ES": "Acerca de", "es-MX": "Acerca de"},
     "settings.help": {"en-US": "Help", "es-ES": "Ayuda", "es-MX": "Ayuda"},
     # Accessibility Labels
@@ -209,9 +221,17 @@ TRANSLATIONS = {
         "es-ES": "Botón de búsqueda",
         "es-MX": "Botón de búsqueda",
     },
-    "a11y.back_button": {"en-US": "Go back", "es-ES": "Volver atrás", "es-MX": "Volver atrás"},
+    "a11y.back_button": {
+        "en-US": "Go back",
+        "es-ES": "Volver atrás",
+        "es-MX": "Volver atrás",
+    },
     "a11y.close_button": {"en-US": "Close", "es-ES": "Cerrar", "es-MX": "Cerrar"},
-    "a11y.menu_button": {"en-US": "Open menu", "es-ES": "Abrir menú", "es-MX": "Abrir menú"},
+    "a11y.menu_button": {
+        "en-US": "Open menu",
+        "es-ES": "Abrir menú",
+        "es-MX": "Abrir menú",
+    },
     # Error Messages
     "error.network": {
         "en-US": "Network error. Please check your connection.",

@@ -154,17 +154,42 @@ class BarcodeScanner:
         """Initialize GS1 Application Identifier patterns"""
         return {
             "01": {"name": "GTIN", "length": 14, "type": "numeric"},
-            "10": {"name": "BATCH_LOT", "length": "variable", "max": 20, "type": "alphanumeric"},
+            "10": {
+                "name": "BATCH_LOT",
+                "length": "variable",
+                "max": 20,
+                "type": "alphanumeric",
+            },
             "11": {"name": "PRODUCTION_DATE", "length": 6, "type": "date"},
             "15": {"name": "BEST_BEFORE", "length": 6, "type": "date"},
             "17": {"name": "EXPIRY", "length": 6, "type": "date"},
-            "21": {"name": "SERIAL", "length": "variable", "max": 20, "type": "alphanumeric"},
-            "30": {"name": "VAR_COUNT", "length": "variable", "max": 8, "type": "numeric"},
+            "21": {
+                "name": "SERIAL",
+                "length": "variable",
+                "max": 20,
+                "type": "alphanumeric",
+            },
+            "30": {
+                "name": "VAR_COUNT",
+                "length": "variable",
+                "max": 8,
+                "type": "numeric",
+            },
             "310": {"name": "NET_WEIGHT_KG", "length": 6, "type": "decimal"},
             "37": {"name": "COUNT", "length": "variable", "max": 8, "type": "numeric"},
             "3932": {"name": "PRICE", "length": "variable", "type": "decimal"},
-            "91": {"name": "INTERNAL_1", "length": "variable", "max": 90, "type": "alphanumeric"},
-            "92": {"name": "INTERNAL_2", "length": "variable", "max": 90, "type": "alphanumeric"},
+            "91": {
+                "name": "INTERNAL_1",
+                "length": "variable",
+                "max": 90,
+                "type": "alphanumeric",
+            },
+            "92": {
+                "name": "INTERNAL_2",
+                "length": "variable",
+                "max": 90,
+                "type": "alphanumeric",
+            },
         }
 
     async def scan_image(self, image_data: bytes) -> List[ScanResult]:

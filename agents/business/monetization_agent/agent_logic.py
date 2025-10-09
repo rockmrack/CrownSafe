@@ -38,7 +38,10 @@ class MonetizationAgentLogic:
                     return {"status": "error", "message": "User not found."}
                 # Already linked to Stripe
                 if getattr(user, "stripe_customer_id", None):
-                    return {"status": "success", "stripe_customer_id": user.stripe_customer_id}
+                    return {
+                        "status": "success",
+                        "stripe_customer_id": user.stripe_customer_id,
+                    }
 
                 # Create customer on Stripe
                 customer = stripe.Customer.create(
@@ -51,7 +54,10 @@ class MonetizationAgentLogic:
                 return {"status": "success", "stripe_customer_id": customer.id}
         except Exception as e:
             self.logger.error(f"Stripe customer creation failed: {e}", exc_info=True)
-            return {"status": "error", "message": f"Stripe customer creation failed: {e}"}
+            return {
+                "status": "error",
+                "message": f"Stripe customer creation failed: {e}",
+            }
 
     def create_subscription_checkout_session(self, user_id: int, tier: str) -> Dict[str, Any]:
         """
@@ -64,7 +70,10 @@ class MonetizationAgentLogic:
         # Extend with more tiers if needed
 
         if not price_id:
-            return {"status": "error", "message": f"Invalid or missing subscription tier: {tier}"}
+            return {
+                "status": "error",
+                "message": f"Invalid or missing subscription tier: {tier}",
+            }
 
         try:
             with get_db_session() as db:
@@ -95,7 +104,10 @@ class MonetizationAgentLogic:
 
         except Exception as e:
             self.logger.error(f"Failed to create Stripe checkout session: {e}", exc_info=True)
-            return {"status": "error", "message": f"Checkout session creation failed: {e}"}
+            return {
+                "status": "error",
+                "message": f"Checkout session creation failed: {e}",
+            }
 
     def get_user_subscription_status(self, user_id: int) -> Dict[str, Any]:
         """
@@ -128,7 +140,10 @@ class MonetizationAgentLogic:
             return {"status": "success", "tier": "free", "is_active": False}
         except Exception as e:
             self.logger.error(f"Failed to get Stripe subscription status: {e}", exc_info=True)
-            return {"status": "error", "message": f"Failed to check subscription status: {e}"}
+            return {
+                "status": "error",
+                "message": f"Failed to check subscription status: {e}",
+            }
 
     def cancel_user_subscription(self, user_id: int) -> Dict[str, Any]:
         """

@@ -244,7 +244,8 @@ class DrugClassPatternTester:
                                 "gaps", enhanced_analytics.get("research_gaps", 0)
                             )
                             insights = enhanced_analytics.get(
-                                "insights", enhanced_analytics.get("cross_workflow_insights", 0)
+                                "insights",
+                                enhanced_analytics.get("cross_workflow_insights", 0),
                             )
                         else:
                             # If it's not a dict, try to get counts from the object
@@ -426,7 +427,8 @@ class DrugClassPatternTester:
                         strategy = recommendations.get(
                             "research_strategy",
                             recommendations.get(
-                                "strategy", recommendations.get("recommended_strategy", "unknown")
+                                "strategy",
+                                recommendations.get("recommended_strategy", "unknown"),
                             ),
                         )
 
@@ -438,7 +440,8 @@ class DrugClassPatternTester:
                         priorities = recommendations.get(
                             "priority_areas",
                             recommendations.get(
-                                "priorities", recommendations.get("priority_research", [])
+                                "priorities",
+                                recommendations.get("priority_research", []),
                             ),
                         )
 
@@ -580,7 +583,12 @@ class DrugClassPatternTester:
 
         try:
             # Quick query for each known SGLT2 drug with correct names
-            known_sglt2s = ["Canagliflozin", "Empagliflozin", "Sotagliflozin", "Dapagliflozin"]
+            known_sglt2s = [
+                "Canagliflozin",
+                "Empagliflozin",
+                "Sotagliflozin",
+                "Dapagliflozin",
+            ]
 
             for drug in known_sglt2s:
                 results = self.memory.collection.query(
@@ -759,7 +767,11 @@ class DrugClassPatternTester:
 
             if not results or not results["metadatas"] or not results["metadatas"][0]:
                 self.print_error("No class-level evidence found")
-                return {"success": False, "multi_drug_count": 0, "comparative_examples": []}
+                return {
+                    "success": False,
+                    "multi_drug_count": 0,
+                    "comparative_examples": [],
+                }
 
             metadatas = results["metadatas"][0]
             self.print_success(f"Found {len(metadatas)} potential class-level documents")
@@ -917,7 +929,12 @@ class DrugClassPatternTester:
             sglt2_stats = {
                 "total_sglt2_docs": 0,
                 "by_drug": {},
-                "by_source": {"pubmed": 0, "clinical_trials": 0, "drug_safety": 0, "unknown": 0},
+                "by_source": {
+                    "pubmed": 0,
+                    "clinical_trials": 0,
+                    "drug_safety": 0,
+                    "unknown": 0,
+                },
                 "multi_drug_docs": 0,
                 "high_quality_docs": 0,
                 "unique_workflows": set(),
@@ -1079,7 +1096,9 @@ class DrugClassPatternTester:
             if sglt2_stats["drug_combinations"]:
                 self.print_info(f"\n  Top drug combinations:")
                 for combo, count in sorted(
-                    sglt2_stats["drug_combinations"].items(), key=lambda x: x[1], reverse=True
+                    sglt2_stats["drug_combinations"].items(),
+                    key=lambda x: x[1],
+                    reverse=True,
                 )[:5]:
                     # Clean up combo display
                     clean_combo = []
@@ -1163,7 +1182,8 @@ class DrugClassPatternTester:
 
         # Use the higher count between specific SGLT2 evidence and general cross-workflow count
         effective_evidence_count = max(
-            sglt2_evidence_count, cross_workflow_count if cross_workflow_count > 0 else 0
+            sglt2_evidence_count,
+            cross_workflow_count if cross_workflow_count > 0 else 0,
         )
 
         self.print_success(
@@ -1180,7 +1200,8 @@ class DrugClassPatternTester:
 
         # Check 3: Research strategy intelligence - ISSUE IDENTIFIED
         predicted_strategy = ertugliflozin_sim.get(
-            "research_strategy", ertugliflozin_sim.get("predicted_strategy", "comprehensive")
+            "research_strategy",
+            ertugliflozin_sim.get("predicted_strategy", "comprehensive"),
         )
         sglt2_related = ertugliflozin_sim.get("sglt2_related", 0)
         total_existing_evidence = ertugliflozin_sim.get("total_existing_evidence", 0)

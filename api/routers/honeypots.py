@@ -62,7 +62,10 @@ def create_convincing_response(honeypot_type: str) -> JSONResponse:
                 "password": "fake_password_123",
                 "database": "babyshield_honeypot",
             },
-            "api_keys": {"openai": "sk-fake_key_for_honeypot", "aws": "AKIA_FAKE_KEY_FOR_HONEYPOT"},
+            "api_keys": {
+                "openai": "sk-fake_key_for_honeypot",
+                "aws": "AKIA_FAKE_KEY_FOR_HONEYPOT",
+            },
         },
         "backup_file": {
             "backup_info": {
@@ -73,7 +76,11 @@ def create_convincing_response(honeypot_type: str) -> JSONResponse:
             }
         },
         "git_config": {
-            "core": {"repositoryformatversion": "0", "filemode": "true", "bare": "false"},
+            "core": {
+                "repositoryformatversion": "0",
+                "filemode": "true",
+                "bare": "false",
+            },
             "remote": {
                 "origin": {
                     "url": "https://github.com/babyshield/honeypot-repo.git",
@@ -98,7 +105,11 @@ def create_convincing_response(honeypot_type: str) -> JSONResponse:
 
 
 @router.get("/admin/login.php", operation_id="admin_login_honeypot_get", include_in_schema=False)
-@router.post("/admin/login.php", operation_id="admin_login_honeypot_post", include_in_schema=False)
+@router.post(
+    "/admin/login.php",
+    operation_id="admin_login_honeypot_post",
+    include_in_schema=False,
+)
 async def admin_login_honeypot(request: Request):
     """Fake admin login panel to trap attackers"""
     record_honeypot_hit(request, "admin_login")

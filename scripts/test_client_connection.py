@@ -73,7 +73,11 @@ async def run_test_client():
                 await client.send_discovery_register(
                     agent_type="TEST_CLIENT",
                     capabilities=[
-                        {"name": "test_capability", "input_schema": {}, "output_schema": {}}
+                        {
+                            "name": "test_capability",
+                            "input_schema": {},
+                            "output_schema": {},
+                        }
                     ],
                 )
                 logger.info("DISCOVERY_REGISTER message sent.")

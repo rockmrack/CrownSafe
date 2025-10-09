@@ -46,7 +46,10 @@ class MockRecallDataAgentLogic:
     def __init__(self, *args, **kwargs):
         self.agent_id = "query_recalls_by_product"
         self.process_task = AsyncMock(
-            return_value={"status": "COMPLETED", "result": {"recalls_found": 0, "recalls": []}}
+            return_value={
+                "status": "COMPLETED",
+                "result": {"recalls_found": 0, "recalls": []},
+            }
         )
 
 
@@ -150,7 +153,9 @@ async def run_pregnancy_test():
 
     # Mock the planner to return our test plan
     with patch.object(
-        commander.planner, "process_task", return_value={"status": "COMPLETED", "plan": test_plan}
+        commander.planner,
+        "process_task",
+        return_value={"status": "COMPLETED", "plan": test_plan},
     ):
         # Define user request
         user_request = {"barcode": TEST_BARCODE_RISKY_PRODUCT, "user_id": TEST_USER_ID}

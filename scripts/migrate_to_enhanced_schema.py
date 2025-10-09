@@ -17,7 +17,17 @@ import os
 import sys
 import logging
 from datetime import datetime
-from sqlalchemy import create_engine, text, inspect, Column, Integer, String, Date, Text, JSON
+from sqlalchemy import (
+    create_engine,
+    text,
+    inspect,
+    Column,
+    Integer,
+    String,
+    Date,
+    Text,
+    JSON,
+)
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 

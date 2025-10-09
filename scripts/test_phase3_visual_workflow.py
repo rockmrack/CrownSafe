@@ -126,7 +126,10 @@ async def test_medium_confidence_visual_workflow():
                     warning_text = f"⚠️ Warning: This product was identified from a photo with {int(visual_confidence * 100)}% confidence. Please verify the model number on the product to ensure this information is accurate for your specific item. "
                     summary = warning_text + summary
 
-                return {"status": "COMPLETED", "result": {"summary": summary, "risk_level": "High"}}
+                return {
+                    "status": "COMPLETED",
+                    "result": {"summary": summary, "risk_level": "High"},
+                }
 
         # Replace agents in router
         if hasattr(commander.router, "agent_registry"):
@@ -197,7 +200,10 @@ async def test_low_confidence_visual_workflow():
                 {
                     "step_id": "step0_visual_search",
                     "agent_capability_required": "identify_product_from_image",
-                    "inputs": {"image_url": "https://example.com/unclear.jpg", "mode": "identify"},
+                    "inputs": {
+                        "image_url": "https://example.com/unclear.jpg",
+                        "mode": "identify",
+                    },
                     "dependencies": [],
                 },
                 {

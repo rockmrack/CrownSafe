@@ -315,7 +315,8 @@ async def test_monitoring():
                 # Cancel monitoring
                 print(f"\n🛑 Cancelling monitoring...")
                 cancel_response = await client.delete(
-                    f"{BASE_URL}/api/v1/advanced/monitor/{monitoring_id}", params={"user_id": 1}
+                    f"{BASE_URL}/api/v1/advanced/monitor/{monitoring_id}",
+                    params={"user_id": 1},
                 )
 
                 if cancel_response.status_code == 200:
@@ -341,7 +342,11 @@ async def test_integration():
         print("\n1️⃣ Researching product online...")
         research_response = await client.post(
             f"{BASE_URL}/api/v1/advanced/research",
-            json={"product_name": "Example Baby Product", "search_depth": "quick", "user_id": 1},
+            json={
+                "product_name": "Example Baby Product",
+                "search_depth": "quick",
+                "user_id": 1,
+            },
         )
 
         safety_score = 100
@@ -354,7 +359,11 @@ async def test_integration():
         print("\n2️⃣ Checking age appropriateness...")
         guidelines_response = await client.post(
             f"{BASE_URL}/api/v1/advanced/guidelines",
-            json={"product_name": "Example Baby Product", "child_age_months": 12, "user_id": 1},
+            json={
+                "product_name": "Example Baby Product",
+                "child_age_months": 12,
+                "user_id": 1,
+            },
         )
 
         age_appropriate = True

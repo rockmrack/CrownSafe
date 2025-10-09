@@ -111,16 +111,28 @@ def upgrade():
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(
-        op.f("ix_incident_reports_barcode"), "incident_reports", ["barcode"], unique=False
+        op.f("ix_incident_reports_barcode"),
+        "incident_reports",
+        ["barcode"],
+        unique=False,
     )
     op.create_index(
-        op.f("ix_incident_reports_brand_name"), "incident_reports", ["brand_name"], unique=False
+        op.f("ix_incident_reports_brand_name"),
+        "incident_reports",
+        ["brand_name"],
+        unique=False,
     )
     op.create_index(
-        op.f("ix_incident_reports_cluster_id"), "incident_reports", ["cluster_id"], unique=False
+        op.f("ix_incident_reports_cluster_id"),
+        "incident_reports",
+        ["cluster_id"],
+        unique=False,
     )
     op.create_index(
-        op.f("ix_incident_reports_created_at"), "incident_reports", ["created_at"], unique=False
+        op.f("ix_incident_reports_created_at"),
+        "incident_reports",
+        ["created_at"],
+        unique=False,
     )
     op.create_index(op.f("ix_incident_reports_id"), "incident_reports", ["id"], unique=False)
     op.create_index(
@@ -130,7 +142,10 @@ def upgrade():
         unique=False,
     )
     op.create_index(
-        op.f("ix_incident_reports_product_name"), "incident_reports", ["product_name"], unique=False
+        op.f("ix_incident_reports_product_name"),
+        "incident_reports",
+        ["product_name"],
+        unique=False,
     )
     op.create_index(
         op.f("ix_incident_reports_severity_level"),

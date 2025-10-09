@@ -13,7 +13,11 @@ from core_infra.database import get_db
 from core_infra.auth import get_current_active_user
 from api.schemas.common import ApiResponse, ok, fail
 from api.pydantic_base import AppModel
-from api.monitoring_scheduler import MonitoredProduct, MonitoringRun, ProductMonitoringScheduler
+from api.monitoring_scheduler import (
+    MonitoredProduct,
+    MonitoringRun,
+    ProductMonitoringScheduler,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -167,13 +171,18 @@ async def get_monitored_products(
 
 @router.delete("/products/{product_id}", response_model=ApiResponse)
 async def remove_product_from_monitoring(
-    product_id: int, current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
+    product_id: int,
+    current_user=Depends(get_current_active_user),
+    db: Session = Depends(get_db),
 ):
     """Remove a product from monitoring"""
     try:
         product = (
             db.query(MonitoredProduct)
-            .filter(MonitoredProduct.id == product_id, MonitoredProduct.user_id == current_user.id)
+            .filter(
+                MonitoredProduct.id == product_id,
+                MonitoredProduct.user_id == current_user.id,
+            )
             .first()
         )
 
@@ -203,7 +212,10 @@ async def update_check_frequency(
     try:
         product = (
             db.query(MonitoredProduct)
-            .filter(MonitoredProduct.id == product_id, MonitoredProduct.user_id == current_user.id)
+            .filter(
+                MonitoredProduct.id == product_id,
+                MonitoredProduct.user_id == current_user.id,
+            )
             .first()
         )
 
@@ -238,7 +250,10 @@ async def check_product_now(
     try:
         product = (
             db.query(MonitoredProduct)
-            .filter(MonitoredProduct.id == product_id, MonitoredProduct.user_id == current_user.id)
+            .filter(
+                MonitoredProduct.id == product_id,
+                MonitoredProduct.user_id == current_user.id,
+            )
             .first()
         )
 

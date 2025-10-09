@@ -302,7 +302,11 @@ class TestExampleFunctions:
     @pytest.mark.asyncio
     async def test_fetch_recalls_async(self):
         """Test fetch_recalls_async function"""
-        mock_results = [{"recalls": "cpsc_data"}, {"alerts": "fda_data"}, {"recalls": "nhtsa_data"}]
+        mock_results = [
+            {"recalls": "cpsc_data"},
+            {"alerts": "fda_data"},
+            {"recalls": "nhtsa_data"},
+        ]
 
         with patch("core_infra.async_helpers.fetch_multiple_apis") as mock_fetch:
             mock_fetch.return_value = mock_results

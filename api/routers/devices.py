@@ -10,7 +10,10 @@ try:
     from core_infra.auth import get_current_active_user
 except ImportError:
     # Fallback imports if structure is different
-    from api.deps import get_db as get_db_session, get_current_user as get_current_active_user
+    from api.deps import (
+        get_db as get_db_session,
+        get_current_user as get_current_active_user,
+    )
 
 logger = logging.getLogger(__name__)
 

@@ -192,7 +192,10 @@ class ConnectionPoolOptimizer:
                         else:
                             result = agent_instance.process_task(task_info["inputs"])
                     else:
-                        result = {"status": "FAILED", "error": "Agent has no process_task method"}
+                        result = {
+                            "status": "FAILED",
+                            "error": "Agent has no process_task method",
+                        }
 
                     return {
                         "agent_name": task_info["agent_name"],

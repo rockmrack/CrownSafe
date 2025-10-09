@@ -90,7 +90,11 @@ def create_response(data: dict, request: Request, status_code: int = 200) -> JSO
         JSON response
     """
     return JSONResponse(
-        content={"ok": True, "data": data, "traceId": getattr(request.state, "trace_id", None)},
+        content={
+            "ok": True,
+            "data": data,
+            "traceId": getattr(request.state, "trace_id", None),
+        },
         status_code=status_code,
     )
 
@@ -178,7 +182,9 @@ async def request_data_export(
     except Exception as e:
         logger.error(f"Failed to create export request: {e}")
         raise APIError(
-            status_code=500, code="EXPORT_REQUEST_FAILED", message="Failed to submit export request"
+            status_code=500,
+            code="EXPORT_REQUEST_FAILED",
+            message="Failed to submit export request",
         )
 
 
@@ -388,7 +394,9 @@ async def verify_privacy_request(token: str, request: Request, db: Session = Dep
     except Exception as e:
         logger.error(f"Failed to verify privacy request: {e}")
         raise APIError(
-            status_code=500, code="VERIFICATION_FAILED", message="Failed to verify request"
+            status_code=500,
+            code="VERIFICATION_FAILED",
+            message="Failed to verify request",
         )
 
 
@@ -407,7 +415,9 @@ async def check_request_status(request_id: str, request: Request, db: Session = 
             UUID(request_id)
         except ValueError:
             raise APIError(
-                status_code=400, code="INVALID_REQUEST_ID", message="Invalid request ID format"
+                status_code=400,
+                code="INVALID_REQUEST_ID",
+                message="Invalid request ID format",
             )
 
         # Find request
@@ -415,7 +425,9 @@ async def check_request_status(request_id: str, request: Request, db: Session = 
 
         if not privacy_request:
             raise APIError(
-                status_code=404, code="REQUEST_NOT_FOUND", message="Privacy request not found"
+                status_code=404,
+                code="REQUEST_NOT_FOUND",
+                message="Privacy request not found",
             )
 
         # Return status (without PII)
@@ -443,7 +455,9 @@ async def check_request_status(request_id: str, request: Request, db: Session = 
     except Exception as e:
         logger.error(f"Failed to check request status: {e}")
         raise APIError(
-            status_code=500, code="STATUS_CHECK_FAILED", message="Failed to check request status"
+            status_code=500,
+            code="STATUS_CHECK_FAILED",
+            message="Failed to check request status",
         )
 
 
@@ -472,7 +486,8 @@ async def request_processing_restriction(
     Request restriction of processing (GDPR Article 18)
     """
     return create_response(
-        format_dsar_response("restrict", "queued", body.jurisdiction or "other"), request
+        format_dsar_response("restrict", "queued", body.jurisdiction or "other"),
+        request,
     )
 
 

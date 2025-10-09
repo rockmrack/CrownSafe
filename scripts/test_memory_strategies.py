@@ -123,7 +123,8 @@ class MemoryStrategyTester:
                 return None
 
             latest_log = max(
-                planner_logs, key=lambda f: os.path.getmtime(os.path.join(self.logs_dir, f))
+                planner_logs,
+                key=lambda f: os.path.getmtime(os.path.join(self.logs_dir, f)),
             )
             log_path = os.path.join(self.logs_dir, latest_log)
 
@@ -170,7 +171,8 @@ class MemoryStrategyTester:
                 return None
 
             latest_log = max(
-                commander_logs, key=lambda f: os.path.getmtime(os.path.join(self.logs_dir, f))
+                commander_logs,
+                key=lambda f: os.path.getmtime(os.path.join(self.logs_dir, f)),
             )
             log_path = os.path.join(self.logs_dir, latest_log)
 

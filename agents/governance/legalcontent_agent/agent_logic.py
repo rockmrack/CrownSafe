@@ -55,7 +55,10 @@ class LegalContentAgentLogic:
 
         content = await self.get_document(document_name)
         if content is None:
-            return {"status": "FAILED", "error": f"Could not retrieve document: {document_name}"}
+            return {
+                "status": "FAILED",
+                "error": f"Could not retrieve document: {document_name}",
+            }
 
         if not content.strip():
             return {"status": "FAILED", "error": f"Document {document_name} is empty."}

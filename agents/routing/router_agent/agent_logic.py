@@ -61,7 +61,8 @@ class BabyShieldRouterLogic:
                 self.logger.info(f"Router registered agent for capability: '{capability}'")
 
         self.logger.info(
-            "BabyShieldRouterLogic initialized with %d available agents.", len(self.agent_registry)
+            "BabyShieldRouterLogic initialized with %d available agents.",
+            len(self.agent_registry),
         )
 
     def _substitute_dependency_placeholders(

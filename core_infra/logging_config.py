@@ -91,7 +91,9 @@ class ConsoleFormatter(logging.Formatter):
 
 
 def setup_logging(
-    log_level: str = None, log_format: str = "console", log_file: str = None  # "console" or "json"
+    log_level: str = None,
+    log_format: str = "console",
+    log_file: str = None,  # "console" or "json"
 ) -> None:
     """
     Setup logging configuration for the application
@@ -126,11 +128,19 @@ def setup_logging(
         "loggers": {
             # Application loggers
             "api": {"level": log_level, "handlers": ["console"], "propagate": False},
-            "core_infra": {"level": log_level, "handlers": ["console"], "propagate": False},
+            "core_infra": {
+                "level": log_level,
+                "handlers": ["console"],
+                "propagate": False,
+            },
             "agents": {"level": log_level, "handlers": ["console"], "propagate": False},
             # Third-party loggers (less verbose)
             "uvicorn": {"level": "INFO", "handlers": ["console"], "propagate": False},
-            "sqlalchemy": {"level": "WARNING", "handlers": ["console"], "propagate": False},
+            "sqlalchemy": {
+                "level": "WARNING",
+                "handlers": ["console"],
+                "propagate": False,
+            },
             "redis": {"level": "WARNING", "handlers": ["console"], "propagate": False},
         },
         "root": {"level": log_level, "handlers": ["console"]},

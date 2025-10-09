@@ -49,7 +49,9 @@ class Conversation(Base):
     started_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     last_activity_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     messages = relationship(
-        "ConversationMessage", back_populates="conversation", cascade="all, delete-orphan"
+        "ConversationMessage",
+        back_populates="conversation",
+        cascade="all, delete-orphan",
     )
 
 

@@ -49,7 +49,22 @@ http_request_duration_seconds = Histogram(
     "http_request_duration_seconds",
     "HTTP request latency",
     ["method", "endpoint"],
-    buckets=(0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0),
+    buckets=(
+        0.005,
+        0.01,
+        0.025,
+        0.05,
+        0.075,
+        0.1,
+        0.25,
+        0.5,
+        0.75,
+        1.0,
+        2.5,
+        5.0,
+        7.5,
+        10.0,
+    ),
     registry=REGISTRY,
 )
 
@@ -81,20 +96,32 @@ rate_limit_hits_total = Counter(
 )
 
 rate_limit_remaining = Gauge(
-    "rate_limit_remaining", "Remaining rate limit for user", ["endpoint", "user"], registry=REGISTRY
+    "rate_limit_remaining",
+    "Remaining rate limit for user",
+    ["endpoint", "user"],
+    registry=REGISTRY,
 )
 
 # Business metrics
 barcode_scans_total = Counter(
-    "barcode_scans_total", "Total number of barcode scans", ["type", "result"], registry=REGISTRY
+    "barcode_scans_total",
+    "Total number of barcode scans",
+    ["type", "result"],
+    registry=REGISTRY,
 )
 
 search_queries_total = Counter(
-    "search_queries_total", "Total number of search queries", ["type"], registry=REGISTRY
+    "search_queries_total",
+    "Total number of search queries",
+    ["type"],
+    registry=REGISTRY,
 )
 
 recalls_found_total = Counter(
-    "recalls_found_total", "Total number of recalls found", ["severity"], registry=REGISTRY
+    "recalls_found_total",
+    "Total number of recalls found",
+    ["severity"],
+    registry=REGISTRY,
 )
 
 # System metrics
@@ -107,11 +134,16 @@ system_cpu_usage = Gauge(
 )
 
 database_connections_active = Gauge(
-    "database_connections_active", "Number of active database connections", registry=REGISTRY
+    "database_connections_active",
+    "Number of active database connections",
+    registry=REGISTRY,
 )
 
 database_query_duration_seconds = Histogram(
-    "database_query_duration_seconds", "Database query duration", ["query_type"], registry=REGISTRY
+    "database_query_duration_seconds",
+    "Database query duration",
+    ["query_type"],
+    registry=REGISTRY,
 )
 
 # Cache metrics
@@ -120,7 +152,10 @@ cache_hits_total = Counter(
 )
 
 cache_misses_total = Counter(
-    "cache_misses_total", "Total number of cache misses", ["cache_type"], registry=REGISTRY
+    "cache_misses_total",
+    "Total number of cache misses",
+    ["cache_type"],
+    registry=REGISTRY,
 )
 
 cache_size = Gauge(
@@ -274,7 +309,11 @@ async def readiness_check():
     # Overall readiness
     ready = all(checks.values())
 
-    response = {"ready": ready, "checks": checks, "timestamp": datetime.now().isoformat()}
+    response = {
+        "ready": ready,
+        "checks": checks,
+        "timestamp": datetime.now().isoformat(),
+    }
 
     if errors:
         response["errors"] = errors

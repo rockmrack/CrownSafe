@@ -171,7 +171,10 @@ def list_recalls(
         # Note: product_category field not available in current schema
         # Filter by product_name or brand instead
         qry = qry.filter(
-            or_(RecallDB.product_name.ilike(f"%{category}%"), RecallDB.brand.ilike(f"%{category}%"))
+            or_(
+                RecallDB.product_name.ilike(f"%{category}%"),
+                RecallDB.brand.ilike(f"%{category}%"),
+            )
         )
 
     if hazard_category:
@@ -459,7 +462,12 @@ def get_recall_stats_dev():
         mock_stats = {
             "total_recalls": 150,
             "by_agency": {"CPSC": 75, "FDA": 45, "NHTSA": 20, "Other": 10},
-            "by_category": {"baby_products": 60, "toys": 40, "food": 30, "clothing": 20},
+            "by_category": {
+                "baby_products": 60,
+                "toys": 40,
+                "food": 30,
+                "clothing": 20,
+            },
             "by_hazard": {
                 "choking": 50,
                 "chemical": 30,

@@ -56,7 +56,10 @@ def upgrade():
     op.create_index(op.f("ix_scan_history_user_id"), "scan_history", ["user_id"], unique=False)
     op.create_index(op.f("ix_scan_history_scan_id"), "scan_history", ["scan_id"], unique=True)
     op.create_index(
-        op.f("ix_scan_history_scan_timestamp"), "scan_history", ["scan_timestamp"], unique=False
+        op.f("ix_scan_history_scan_timestamp"),
+        "scan_history",
+        ["scan_timestamp"],
+        unique=False,
     )
     op.create_index(op.f("ix_scan_history_barcode"), "scan_history", ["barcode"], unique=False)
 
@@ -87,7 +90,10 @@ def upgrade():
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(
-        op.f("ix_safety_reports_report_id"), "safety_reports", ["report_id"], unique=True
+        op.f("ix_safety_reports_report_id"),
+        "safety_reports",
+        ["report_id"],
+        unique=True,
     )
     op.create_index(op.f("ix_safety_reports_user_id"), "safety_reports", ["user_id"], unique=False)
 

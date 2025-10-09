@@ -11,7 +11,10 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from core_infra.database import get_db_session
-from core_infra.enhanced_barcode_service import enhanced_barcode_service, ExactScanResult
+from core_infra.enhanced_barcode_service import (
+    enhanced_barcode_service,
+    ExactScanResult,
+)
 from core_infra.barcode_validator import BarcodeType, ValidationResult
 from api.services.dev_override import dev_entitled
 
@@ -140,7 +143,9 @@ async def exact_barcode_scan(
 
 
 @enhanced_barcode_router.post("/validate", response_model=ValidationTestResponse)
-async def validate_barcode_format(request: ValidationTestRequest) -> ValidationTestResponse:
+async def validate_barcode_format(
+    request: ValidationTestRequest,
+) -> ValidationTestResponse:
     """
     A-5 Exact/Valid Scan: Validate barcode format and type
 

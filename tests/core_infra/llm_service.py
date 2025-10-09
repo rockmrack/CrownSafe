@@ -198,7 +198,12 @@ class LLMCache:
         self.lock = threading.Lock()
 
     def _generate_key(
-        self, provider: str, model: str, messages: List[Dict], temperature: float, max_tokens: int
+        self,
+        provider: str,
+        model: str,
+        messages: List[Dict],
+        temperature: float,
+        max_tokens: int,
     ) -> str:
         """Generate cache key from request parameters"""
         key_data = {
@@ -816,7 +821,8 @@ class LLMClient:
                 content = anthropic_response.content[0].text if anthropic_response.content else ""
                 self.choices = [self.Choice(content)]
                 self.usage = self.Usage(
-                    anthropic_response.usage.input_tokens, anthropic_response.usage.output_tokens
+                    anthropic_response.usage.input_tokens,
+                    anthropic_response.usage.output_tokens,
                 )
                 self.model = anthropic_response.model
                 self.id = anthropic_response.id

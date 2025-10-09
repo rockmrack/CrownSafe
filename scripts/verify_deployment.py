@@ -14,7 +14,12 @@ BASE_URL = "https://babyshield.cureviax.ai"
 ENDPOINTS_TO_TEST = [
     ("GET", "/api/v1/healthz", None, "Health Check"),
     ("GET", "/api/v1/version", None, "Version Info"),
-    ("POST", "/api/v1/search/advanced", {"product": "pacifier", "limit": 3}, "Search Advanced"),
+    (
+        "POST",
+        "/api/v1/search/advanced",
+        {"product": "pacifier", "limit": 3},
+        "Search Advanced",
+    ),
     ("GET", "/api/v1/user/privacy/summary", None, "Privacy Summary"),
     ("GET", "/docs", None, "OpenAPI Documentation"),
 ]

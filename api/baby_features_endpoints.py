@@ -36,7 +36,9 @@ from core_infra.auth import get_current_active_user
 from db.models.report_record import ReportRecord
 from core_infra.s3_uploads import upload_file, presign_get
 from agents.value_add.alternatives_agent.agent_logic import AlternativesAgentLogic
-from agents.engagement.push_notification_agent.agent_logic import PushNotificationAgentLogic
+from agents.engagement.push_notification_agent.agent_logic import (
+    PushNotificationAgentLogic,
+)
 from agents.reporting.report_builder_agent.agent_logic import ReportBuilderAgentLogic
 from agents.engagement.community_alert_agent.agent_logic import CommunityAlertAgentLogic
 from agents.engagement.onboarding_agent.agent_logic import OnboardingAgentLogic
@@ -335,7 +337,11 @@ async def get_safe_alternatives(request: AlternativesRequest, db: Session = Depe
                         reason=alt.get("reason", "Recommended safe alternative"),
                         safety_score=max(safety_score, 0),
                         price_range=alt.get("price_range", "$10-30"),
-                        where_to_buy=["Amazon", "Target", "Walmart"],  # Could be enhanced
+                        where_to_buy=[
+                            "Amazon",
+                            "Target",
+                            "Walmart",
+                        ],  # Could be enhanced
                         age_range=alt.get("age_range", "0-12 months"),
                     )
                 )
@@ -370,7 +376,9 @@ async def get_safe_alternatives(request: AlternativesRequest, db: Session = Depe
 
 @router.post("/notifications/send")
 async def send_push_notification(
-    request: NotificationRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+    request: NotificationRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ):
     """
     Send push notification to a user's devices.
@@ -509,7 +517,9 @@ async def send_bulk_notifications(
 
 @router.post("/reports/generate", response_model=ReportResponse)
 async def generate_safety_report(
-    request: ReportRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+    request: ReportRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ):
     """
     Generate a safety report for the user.
@@ -898,13 +908,25 @@ async def setup_user_profile(request: OnboardingRequest, db: Session = Depends(g
         recommended_categories = []
         if request.child_age_months is not None:
             if request.child_age_months < 6:
-                recommended_categories = ["Infant Formula", "Cribs & Sleepers", "Baby Monitors"]
+                recommended_categories = [
+                    "Infant Formula",
+                    "Cribs & Sleepers",
+                    "Baby Monitors",
+                ]
             elif request.child_age_months < 12:
                 recommended_categories = ["Baby Food", "High Chairs", "Baby Gates"]
             elif request.child_age_months < 24:
-                recommended_categories = ["Toddler Toys", "Training Cups", "Toddler Beds"]
+                recommended_categories = [
+                    "Toddler Toys",
+                    "Training Cups",
+                    "Toddler Beds",
+                ]
             else:
-                recommended_categories = ["Preschool Toys", "Booster Seats", "Art Supplies"]
+                recommended_categories = [
+                    "Preschool Toys",
+                    "Booster Seats",
+                    "Art Supplies",
+                ]
 
         return {
             "status": "success",

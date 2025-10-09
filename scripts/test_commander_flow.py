@@ -242,5 +242,6 @@ if __name__ == "__main__":
         pass
     except Exception as e_main:
         logger.critical(
-            f"Fatal error in test_commander_flow.py main execution: {e_main}", exc_info=True
+            f"Fatal error in test_commander_flow.py main execution: {e_main}",
+            exc_info=True,
         )

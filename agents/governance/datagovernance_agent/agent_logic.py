@@ -55,7 +55,10 @@ class DataGovernanceAgentLogic:
         if action == "delete_user_data":
             user_id = payload.get("user_id")
             if not user_id:
-                return {"status": "FAILED", "error": "user_id is required for data deletion."}
+                return {
+                    "status": "FAILED",
+                    "error": "user_id is required for data deletion.",
+                }
 
             success = await self.delete_user_data(user_id)
 
@@ -67,6 +70,9 @@ class DataGovernanceAgentLogic:
                     },
                 }
             else:
-                return {"status": "FAILED", "error": "Failed to process data deletion request."}
+                return {
+                    "status": "FAILED",
+                    "error": "Failed to process data deletion request.",
+                }
         else:
             return {"status": "FAILED", "error": f"Unknown action: {action}"}

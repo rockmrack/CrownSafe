@@ -435,7 +435,11 @@ async def scan_barcode(
         # Validate request has required barcode field
         if not request.barcode or not request.barcode.strip():
             logger.warning("Barcode scan request missing or empty barcode")
-            err = {"ok": False, "match_status": "error", "message": "Barcode is required"}
+            err = {
+                "ok": False,
+                "match_status": "error",
+                "message": "Barcode is required",
+            }
             payload = _normalize_scan_payload("", err, "error", cached=False)
             return BarcodeScanResponse.model_validate(payload)
 
@@ -451,7 +455,11 @@ async def scan_barcode(
         logger.error(f"Error initializing barcode scan: {str(e)}")
         # Return error response instead of raising 500
         barcode_value = getattr(request, "barcode", "") if hasattr(request, "barcode") else ""
-        err = {"ok": False, "match_status": "error", "message": "Failed to process barcode"}
+        err = {
+            "ok": False,
+            "match_status": "error",
+            "message": "Failed to process barcode",
+        }
         payload = _normalize_scan_payload(barcode_value, err, "error", cached=False)
         return BarcodeScanResponse.model_validate(payload)
 
@@ -634,7 +642,11 @@ async def scan_barcode(
     except Exception as response_error:
         logger.error(f"Error generating response: {str(response_error)}")
         # Return safe fallback response with normalized payload
-        err = {"ok": False, "match_status": "error", "message": "Unable to process barcode scan"}
+        err = {
+            "ok": False,
+            "match_status": "error",
+            "message": "Unable to process barcode scan",
+        }
         payload = _normalize_scan_payload(normalized_barcode, err, trace_id, cached=False)
         response = BarcodeScanResponse.model_validate(payload)
 

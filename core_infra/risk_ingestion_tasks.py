@@ -307,7 +307,10 @@ def recalculate_affected_products(days_back: int = 7):
                 historical = []
 
             historical.append(
-                {"date": datetime.utcnow().isoformat(), "score": risk_components.total_score}
+                {
+                    "date": datetime.utcnow().isoformat(),
+                    "score": risk_components.total_score,
+                }
             )
 
             # Keep last 90 days of history

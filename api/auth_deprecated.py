@@ -27,5 +27,6 @@ def password_reset_confirm_deprecated():
     Replaced by the new password reset flow
     """
     raise HTTPException(
-        status_code=410, detail="Deprecated endpoint. Use the new password reset flow instead."
+        status_code=410,
+        detail="Deprecated endpoint. Use the new password reset flow instead.",
     )

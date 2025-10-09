@@ -151,7 +151,9 @@ async def get_scan_history(
 
 @router.get("/scan-history/{job_id}", response_model=ApiResponse)
 async def get_scan_details(
-    job_id: str, current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
+    job_id: str,
+    current_user=Depends(get_current_active_user),
+    db: Session = Depends(get_db),
 ):
     """
     Get detailed information about a specific scan
@@ -223,7 +225,9 @@ async def get_scan_details(
 
 @router.delete("/scan-history/{job_id}", response_model=ApiResponse)
 async def delete_scan(
-    job_id: str, current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
+    job_id: str,
+    current_user=Depends(get_current_active_user),
+    db: Session = Depends(get_db),
 ):
     """
     Delete a scan from history
@@ -309,7 +313,11 @@ async def get_scan_statistics(
             "failed_scans": failed_scans,
             "success_rate": (completed_scans / total_scans * 100) if total_scans > 0 else 0,
             "average_confidence": round(avg_confidence, 2),
-            "activity": {"today": today_scans, "this_week": week_scans, "this_month": month_scans},
+            "activity": {
+                "today": today_scans,
+                "this_week": week_scans,
+                "this_month": month_scans,
+            },
             "products": {
                 "unique_products": len(unique_products),
                 "unique_brands": len(unique_brands),

@@ -304,7 +304,11 @@ class CacheableResponse:
         # Create full response
         response = JSONResponse(content)
         add_cache_headers(
-            response, etag=etag, last_modified=last_updated, max_age=max_age, private=False
+            response,
+            etag=etag,
+            last_modified=last_updated,
+            max_age=max_age,
+            private=False,
         )
 
         return response

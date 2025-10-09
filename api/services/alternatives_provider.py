@@ -175,7 +175,12 @@ def get_alternatives(scan: Dict[str, Any]) -> Dict[str, Any]:
     import os
 
     # Feature flag check
-    if not os.getenv("BS_ALTERNATIVES_ENABLED", "true").lower() in {"1", "true", "yes", "on"}:
+    if not os.getenv("BS_ALTERNATIVES_ENABLED", "true").lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }:
         return AlternativesOut(items=[]).model_dump()
 
     profile = scan.get("profile") or {}

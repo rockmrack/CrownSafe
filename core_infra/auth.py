@@ -80,7 +80,12 @@ def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta]
         expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
     to_encode.update(
-        {"exp": expire, "type": "access", "auth_time": int(time.time()), "jti": uuid.uuid4().hex}
+        {
+            "exp": expire,
+            "type": "access",
+            "auth_time": int(time.time()),
+            "jti": uuid.uuid4().hex,
+        }
     )
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -134,7 +139,8 @@ async def get_current_user(
                 import redis
 
                 r = redis.from_url(
-                    os.getenv("REDIS_URL", "redis://localhost:6379/0"), decode_responses=True
+                    os.getenv("REDIS_URL", "redis://localhost:6379/0"),
+                    decode_responses=True,
                 )
                 if r.get(f"jwt:block:{jti}"):
                     raise HTTPException(
@@ -165,7 +171,9 @@ async def get_current_user(
     return user
 
 
-async def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
+async def get_current_active_user(
+    current_user: User = Depends(get_current_user),
+) -> User:
     """Ensure the current user is active"""
     if not current_user:
         raise HTTPException(

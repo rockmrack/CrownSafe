@@ -1,5 +1,9 @@
 from unittest.mock import Mock
-from agents.chat.chat_agent.agent_logic import ChatAgentLogic, ExplanationResponse, EvidenceItem
+from agents.chat.chat_agent.agent_logic import (
+    ChatAgentLogic,
+    ExplanationResponse,
+    EvidenceItem,
+)
 
 
 class MockLLMClient:
@@ -7,14 +11,25 @@ class MockLLMClient:
         # Mock response with jurisdiction and evidence
         return {
             "summary": "This product appears safe based on our checks.",
-            "reasons": ["No recalls found in EU Safety Gate", "Meets EU safety standards"],
+            "reasons": [
+                "No recalls found in EU Safety Gate",
+                "Meets EU safety standards",
+            ],
             "checks": ["Verify CE marking on packaging", "Check expiration date"],
             "flags": ["eu_compliant"],
             "disclaimer": "Not medical advice. Consult healthcare provider for specific concerns.",
             "jurisdiction": {"code": "EU", "label": "EU Safety Gate"},
             "evidence": [
-                {"type": "regulation", "source": "EU Safety Gate", "id": "REG-2024-001"},
-                {"type": "guideline", "source": "EFSA", "url": "https://efsa.europa.eu/guidelines"},
+                {
+                    "type": "regulation",
+                    "source": "EU Safety Gate",
+                    "id": "REG-2024-001",
+                },
+                {
+                    "type": "guideline",
+                    "source": "EFSA",
+                    "url": "https://efsa.europa.eu/guidelines",
+                },
             ],
         }
 

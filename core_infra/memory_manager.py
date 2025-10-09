@@ -23,7 +23,11 @@ except ImportError:
     DOTENV_AVAILABLE = False
 
     def load_dotenv(
-        dotenv_path=None, verbose=False, override=False, interpolate=True, encoding="utf-8"
+        dotenv_path=None,
+        verbose=False,
+        override=False,
+        interpolate=True,
+        encoding="utf-8",
     ):
         pass
 
@@ -529,7 +533,9 @@ class MemoryManager:
         for i, doc_id in enumerate(ids_for_upsert):
             if doc_id in existing_metadatas:
                 merged_metadata = self._merge_metadata_for_existing_document(
-                    existing_metadatas[doc_id], metadatas_to_prepare[i], current_utc_timestamp
+                    existing_metadatas[doc_id],
+                    metadatas_to_prepare[i],
+                    current_utc_timestamp,
                 )
                 final_metadatas_for_upsert.append(merged_metadata)
             else:
@@ -554,7 +560,9 @@ class MemoryManager:
             )
 
             self.collection.upsert(
-                ids=ids_for_upsert, documents=docs_for_upsert, metadatas=final_metadatas_for_upsert
+                ids=ids_for_upsert,
+                documents=docs_for_upsert,
+                metadatas=final_metadatas_for_upsert,
             )
 
             total_count = self.collection.count()
@@ -573,7 +581,10 @@ class MemoryManager:
             return {"status": "error", "message": str(e)}
 
     def find_similar_documents(
-        self, query_text: str, n_results: int = 5, filter_metadata: Optional[Dict[str, Any]] = None
+        self,
+        query_text: str,
+        n_results: int = 5,
+        filter_metadata: Optional[Dict[str, Any]] = None,
     ) -> List[Dict[str, Any]]:
         """Find similar documents (synchronous version for compatibility)."""
         if not self.collection:
@@ -700,7 +711,10 @@ class MemoryManager:
             return {"error": str(e)}
 
     def dump_collection_sample(
-        self, document_type: Optional[str] = None, limit: int = 5, parse_json: bool = True
+        self,
+        document_type: Optional[str] = None,
+        limit: int = 5,
+        parse_json: bool = True,
     ) -> None:
         """Print a sample of documents for debugging."""
         if not self.collection:

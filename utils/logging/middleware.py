@@ -32,7 +32,10 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             # Log performance if slow
             if response_time > 1000:  # Log slow requests (>1s)
                 log_performance(
-                    "slow_request", response_time, url=str(request.url), method=request.method
+                    "slow_request",
+                    response_time,
+                    url=str(request.url),
+                    method=request.method,
                 )
 
             return response

@@ -2,7 +2,16 @@
 Share Token Model for secure result sharing
 """
 
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, ForeignKey, JSON
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+    Boolean,
+    Text,
+    ForeignKey,
+    JSON,
+)
 from datetime import datetime, timedelta
 from core_infra.database import Base
 import secrets

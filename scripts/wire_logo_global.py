@@ -53,7 +53,10 @@ import re
 
 if "_resolve_logo_src(" not in s:
     s = re.sub(
-        r"(class\s+ReportBuilderAgentLogic\s*\([^)]*\)\s*:\s*\n)", r"\1" + helper + "\n", s, count=1
+        r"(class\s+ReportBuilderAgentLogic\s*\([^)]*\)\s*:\s*\n)",
+        r"\1" + helper + "\n",
+        s,
+        count=1,
     )
 
 # Inject Jinja global after Environment(...) is created

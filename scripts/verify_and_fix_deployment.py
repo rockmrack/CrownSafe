@@ -51,7 +51,12 @@ def main():
         ("GET", "/api/v1/version", None, "Version Info"),
         ("GET", "/api/v1/agencies", None, "Agencies List"),
         ("GET", "/api/v1/user/privacy/summary", None, "Privacy Summary"),
-        ("POST", "/api/v1/search/advanced", {"product": "test", "limit": 1}, "Search API"),
+        (
+            "POST",
+            "/api/v1/search/advanced",
+            {"product": "test", "limit": 1},
+            "Search API",
+        ),
         ("GET", "/api/v1/recall/TEST123", None, "Recall Detail"),
     ]
 

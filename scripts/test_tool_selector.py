@@ -181,7 +181,10 @@ async def run_tool_selection():
     except MCPClientError as e:
         logger.error(f"MCP Client Error during tool selector test: {e}")
     except Exception as e:
-        logger.error(f"An unexpected error occurred in the tool selector test: {e}", exc_info=True)
+        logger.error(
+            f"An unexpected error occurred in the tool selector test: {e}",
+            exc_info=True,
+        )
     finally:
         logger.info("Controller disconnecting...")
         if client and client.is_connected:

@@ -30,7 +30,11 @@ def upgrade() -> None:
         sa.Column("source", sa.String(length=64), nullable=True),
         sa.Column("message", sa.Text(), nullable=True),
         sa.Column("trace_id", sa.String(length=64), nullable=True),
-        sa.Column("verification_payload", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+        sa.Column(
+            "verification_payload",
+            postgresql.JSONB(astext_type=sa.Text()),
+            nullable=True,
+        ),
         sa.Column("checked_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column(
             "created_at",
@@ -42,7 +46,10 @@ def upgrade() -> None:
 
     op.create_index("ix_serial_verifications_gtin", "serial_verifications", ["gtin"], unique=False)
     op.create_index(
-        "ix_serial_verifications_lot_number", "serial_verifications", ["lot_number"], unique=False
+        "ix_serial_verifications_lot_number",
+        "serial_verifications",
+        ["lot_number"],
+        unique=False,
     )
     op.create_index(
         "ix_serial_verifications_serial_number",

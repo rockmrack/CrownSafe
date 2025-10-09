@@ -29,9 +29,18 @@ AGENT_CAPABILITIES = [
         "name": "user_request_handling",
         "description": "Receives initial user requests and initiates workflows",
     },
-    {"name": "workflow_initiation", "description": "Starts the planning and execution process"},
-    {"name": "plan_delegation", "description": "Delegates plan generation to a planning agent"},
-    {"name": "execution_delegation", "description": "Delegates plan execution to a routing agent"},
+    {
+        "name": "workflow_initiation",
+        "description": "Starts the planning and execution process",
+    },
+    {
+        "name": "plan_delegation",
+        "description": "Delegates plan generation to a planning agent",
+    },
+    {
+        "name": "execution_delegation",
+        "description": "Delegates plan execution to a routing agent",
+    },
     {
         "name": "final_result_reception",
         "description": "Receives the final status/result of a completed workflow",

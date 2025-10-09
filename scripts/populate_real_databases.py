@@ -16,7 +16,11 @@ project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
 from core_infra.database import get_db_session
-from db.models.product_ingredients import ProductIngredient, IngredientSafety, ProductNutrition
+from db.models.product_ingredients import (
+    ProductIngredient,
+    IngredientSafety,
+    ProductNutrition,
+)
 
 
 # Comprehensive ingredient safety data based on medical sources
@@ -152,7 +156,11 @@ PRODUCT_DATABASE = {
         "baby_safe": True,
         "toddler_safe": True,
         "min_age_months": 4,
-        "nutritional_info": {"calories_per_serving": 60, "iron_mg": 7, "vitamin_c_mg": 15},
+        "nutritional_info": {
+            "calories_per_serving": 60,
+            "iron_mg": 7,
+            "vitamin_c_mg": 15,
+        },
     },
     "051000014079": {  # Gerber Banana Baby Food
         "product_name": "Gerber 1st Foods Banana",
@@ -355,7 +363,11 @@ def create_database_tables():
     from core_infra.database import engine, Base
 
     # Import models to register them
-    from db.models.product_ingredients import ProductIngredient, IngredientSafety, ProductNutrition
+    from db.models.product_ingredients import (
+        ProductIngredient,
+        IngredientSafety,
+        ProductNutrition,
+    )
 
     # Create tables
     Base.metadata.create_all(bind=engine)

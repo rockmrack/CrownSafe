@@ -11,7 +11,10 @@ print("🧪 Testing different message content to bypass Commander validation...\
 
 # Try different drug names and parameters that might pass validation
 test_cases = [
-    {"drug_name": "Canagliflozin", "disease": "Heart Failure"},  # From the working example
+    {
+        "drug_name": "Canagliflozin",
+        "disease": "Heart Failure",
+    },  # From the working example
     {"drug_name": "Empagliflozin", "disease": "Type 2 Diabetes"},  # SGLT2 inhibitor
     {"drug_name": "Ozempic", "disease": "Diabetes"},  # Popular drug
 ]

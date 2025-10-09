@@ -63,7 +63,10 @@ class AllergySensitivityAgentLogic:
         # 1. Get product ingredients
         product_info = self.ingredient_db.get(product_upc)
         if not product_info:
-            return {"status": "error", "message": "Product not found in ingredient database."}
+            return {
+                "status": "error",
+                "message": "Product not found in ingredient database.",
+            }
 
         product_ingredients = set(product_info.get("ingredients", []))
         product_name = product_info.get("product_name", "Unknown Product")
@@ -75,7 +78,10 @@ class AllergySensitivityAgentLogic:
             with get_db_session() as db:
                 user = db.query(User).filter(User.id == user_id).first()
                 if not user or not user.families:
-                    return {"status": "error", "message": "User or user's family not found."}
+                    return {
+                        "status": "error",
+                        "message": "User or user's family not found.",
+                    }
 
                 # For MVP, assume user belongs to one family
                 family = user.families[0]
@@ -147,7 +153,10 @@ class AllergySensitivityAgentLogic:
                 # 2. Get family members and their allergies
                 user = db.query(User).filter(User.id == user_id).first()
                 if not user or not user.families:
-                    return {"status": "error", "message": "User or user's family not found."}
+                    return {
+                        "status": "error",
+                        "message": "User or user's family not found.",
+                    }
 
                 # For MVP, assume user belongs to one family
                 family = user.families[0]

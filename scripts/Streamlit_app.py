@@ -57,7 +57,9 @@ except ImportError:
 
 # Configure page
 st.set_page_config(
-    page_title="CureViaX Builder Console", layout="wide", initial_sidebar_state="expanded"
+    page_title="CureViaX Builder Console",
+    layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 # CSS - Enhanced for better code display
@@ -345,7 +347,8 @@ class UnifiedMemoryManager:
 
                 # Add to conversation timeline with score as timestamp
                 self.redis_client.zadd(
-                    f"timeline:{self.session_id}", {message.id: message.timestamp.timestamp()}
+                    f"timeline:{self.session_id}",
+                    {message.id: message.timestamp.timestamp()},
                 )
 
                 # Update session info
@@ -453,7 +456,9 @@ class UnifiedMemoryManager:
         if self.collection and current_query:
             try:
                 results = self.collection.query(
-                    query_texts=[current_query], n_results=20, where={"session_id": self.session_id}
+                    query_texts=[current_query],
+                    n_results=20,
+                    where={"session_id": self.session_id},
                 )
 
                 if results and results["documents"] and results["documents"][0]:
@@ -589,10 +594,19 @@ class UnifiedMemoryManager:
                 content = msg.get("content", "").lower()
 
                 topic_keywords = {
-                    "multi-agent architecture": ["agent", "multi-agent", "orchestrator"],
+                    "multi-agent architecture": [
+                        "agent",
+                        "multi-agent",
+                        "orchestrator",
+                    ],
                     "memory implementation": ["memory", "redis", "chromadb", "vector"],
                     "API development": ["api", "endpoint", "fastapi", "rest"],
-                    "healthcare features": ["healthcare", "medical", "patient", "diagnosis"],
+                    "healthcare features": [
+                        "healthcare",
+                        "medical",
+                        "patient",
+                        "diagnosis",
+                    ],
                     "code implementation": ["implement", "code", "function", "class"],
                     "database design": ["database", "postgresql", "schema", "model"],
                     "security": ["security", "authentication", "encryption", "hipaa"],
@@ -605,13 +619,23 @@ class UnifiedMemoryManager:
 
                 if any(
                     word in content
-                    for word in ["decided", "will use", "architecture is", "implemented"]
+                    for word in [
+                        "decided",
+                        "will use",
+                        "architecture is",
+                        "implemented",
+                    ]
                 ):
                     sentences = content.split(".")
                     for sentence in sentences:
                         if len(sentence) > 20 and any(
                             word in sentence
-                            for word in ["decided", "will use", "architecture", "implemented"]
+                            for word in [
+                                "decided",
+                                "will use",
+                                "architecture",
+                                "implemented",
+                            ]
                         ):
                             key_decisions.append(sentence.strip())
 
@@ -796,7 +820,9 @@ class ConnectionManager:
             # Try different models
             try:
                 response = openai.ChatCompletion.create(
-                    model="gpt-4o", messages=[{"role": "user", "content": "test"}], max_tokens=10
+                    model="gpt-4o",
+                    messages=[{"role": "user", "content": "test"}],
+                    max_tokens=10,
                 )
                 self.status["gpt"] = True
                 return True
@@ -811,7 +837,9 @@ class ConnectionManager:
                     return True
                 except:
                     response = openai.ChatCompletion.create(
-                        model="gpt-4", messages=[{"role": "user", "content": "test"}], max_tokens=10
+                        model="gpt-4",
+                        messages=[{"role": "user", "content": "test"}],
+                        max_tokens=10,
                     )
                     self.status["gpt"] = True
                     return True
@@ -1033,10 +1061,16 @@ Project context:
                     )
                 except Exception as e:
                     if "model" in str(e).lower():
-                        for fallback_model in ["gpt-4-turbo-preview", "gpt-4", "gpt-4-0613"]:
+                        for fallback_model in [
+                            "gpt-4-turbo-preview",
+                            "gpt-4",
+                            "gpt-4-0613",
+                        ]:
                             try:
                                 response = openai.ChatCompletion.create(
-                                    model=fallback_model, messages=messages, temperature=0.7
+                                    model=fallback_model,
+                                    messages=messages,
+                                    temperature=0.7,
                                 )
                                 model_name = fallback_model
                                 break
@@ -1161,7 +1195,11 @@ def export_conversation_to_pdf(messages: List[Message]) -> bytes:
     styles = getSampleStyleSheet()
 
     title_style = ParagraphStyle(
-        "CustomTitle", parent=styles["Heading1"], fontSize=24, textColor="#667eea", spaceAfter=30
+        "CustomTitle",
+        parent=styles["Heading1"],
+        fontSize=24,
+        textColor="#667eea",
+        spaceAfter=30,
     )
     story.append(Paragraph("CureViaX Development Conversation", title_style))
     story.append(Spacer(1, 12))
@@ -1174,7 +1212,11 @@ def export_conversation_to_pdf(messages: List[Message]) -> bytes:
     for msg in messages:
         if msg.role == "user":
             role_style = ParagraphStyle(
-                "UserStyle", parent=styles["Normal"], textColor="#2196f3", fontSize=12, spaceAfter=6
+                "UserStyle",
+                parent=styles["Normal"],
+                textColor="#2196f3",
+                fontSize=12,
+                spaceAfter=6,
             )
             story.append(Paragraph(f"<b>You</b> - {msg.timestamp.strftime('%H:%M')}", role_style))
         else:
@@ -1187,11 +1229,18 @@ def export_conversation_to_pdf(messages: List[Message]) -> bytes:
             )
             model_name = msg.model or "Assistant"
             story.append(
-                Paragraph(f"<b>{model_name}</b> - {msg.timestamp.strftime('%H:%M')}", role_style)
+                Paragraph(
+                    f"<b>{model_name}</b> - {msg.timestamp.strftime('%H:%M')}",
+                    role_style,
+                )
             )
 
         content_style = ParagraphStyle(
-            "ContentStyle", parent=styles["Normal"], fontSize=11, spaceAfter=20, leftIndent=20
+            "ContentStyle",
+            parent=styles["Normal"],
+            fontSize=11,
+            spaceAfter=20,
+            leftIndent=20,
         )
         content = msg.content.replace("```", "\n[CODE]\n")
         story.append(Paragraph(content[:10000], content_style))
@@ -1303,7 +1352,11 @@ with st.sidebar:
     )
 
     # Show current model status
-    model_key_map = {ModelType.CLAUDE: "claude", ModelType.GEMINI: "gemini", ModelType.GPT: "gpt"}
+    model_key_map = {
+        ModelType.CLAUDE: "claude",
+        ModelType.GEMINI: "gemini",
+        ModelType.GPT: "gpt",
+    }
 
     current_model_key = model_key_map[st.session_state.current_model]
     if st.session_state.connection_manager.status.get(current_model_key, False):
@@ -1319,7 +1372,10 @@ with st.sidebar:
     # Claude
     with st.expander("Claude 4 Opus", expanded=False):
         claude_key = st.text_input(
-            "API Key", type="password", key="claude_key", help="Enter your Anthropic API key"
+            "API Key",
+            type="password",
+            key="claude_key",
+            help="Enter your Anthropic API key",
         )
         if st.button("Connect", key="connect_claude"):
             if st.session_state.connection_manager.connect_anthropic(claude_key):
@@ -1331,7 +1387,10 @@ with st.sidebar:
     # Gemini
     with st.expander("Gemini 1.5 Pro", expanded=False):
         gemini_key = st.text_input(
-            "API Key", type="password", key="gemini_key", help="Enter your Google AI API key"
+            "API Key",
+            type="password",
+            key="gemini_key",
+            help="Enter your Google AI API key",
         )
         if st.button("Connect", key="connect_gemini"):
             if st.session_state.connection_manager.connect_gemini(gemini_key):
@@ -1472,7 +1531,9 @@ with chat_container:
 # Input form
 with st.form("chat_form", clear_on_submit=True):
     user_input = st.text_area(
-        "Continue the conversation:", height=200, placeholder="Ask anything about CureViaX..."
+        "Continue the conversation:",
+        height=200,
+        placeholder="Ask anything about CureViaX...",
     )
 
     col1, col2 = st.columns([4, 1])

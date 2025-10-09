@@ -121,7 +121,13 @@ _EXPLANATION_JSON_SCHEMA: Dict[str, Any] = {
                 "properties": {
                     "type": {
                         "type": "string",
-                        "enum": ["recall", "regulation", "guideline", "datasheet", "label"],
+                        "enum": [
+                            "recall",
+                            "regulation",
+                            "guideline",
+                            "datasheet",
+                            "label",
+                        ],
                     },
                     "source": {"type": "string"},
                     "id": {"type": "string"},
@@ -237,11 +243,23 @@ class ChatAgentLogic:
         # Heuristics (fast path; keeps P50 < 5ms)
         kw = [
             ("pregnancy_risk", ["pregnan", "trimester", "breastfeed", "listeria"]),
-            ("allergy_question", ["allerg", "peanut", "nuts", "lactose", "gluten", "soy"]),
+            (
+                "allergy_question",
+                ["allerg", "peanut", "nuts", "lactose", "gluten", "soy"],
+            ),
             ("ingredient_info", ["ingredient", "made of", "contains", "what's in"]),
-            ("age_appropriateness", ["newborn", "months", "age", "years", "suitable for"]),
-            ("alternative_products", ["alternative", "safer option", "instead", "recommend"]),
-            ("recall_details", ["recall", "batch", "lot", "notice", "safety gate", "cpsc"]),
+            (
+                "age_appropriateness",
+                ["newborn", "months", "age", "years", "suitable for"],
+            ),
+            (
+                "alternative_products",
+                ["alternative", "safer option", "instead", "recommend"],
+            ),
+            (
+                "recall_details",
+                ["recall", "batch", "lot", "notice", "safety gate", "cpsc"],
+            ),
         ]
         for intent, keys in kw:
             if any(k in q for k in keys):

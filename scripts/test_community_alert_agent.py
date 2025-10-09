@@ -39,7 +39,10 @@ async def main():
         logger.info("Agent logic initialized.")
 
         # 3. Define the task payload.
-        task_inputs = {"html_content": mock_html, "product_name": "Happy Baby Super-Puffs"}
+        task_inputs = {
+            "html_content": mock_html,
+            "product_name": "Happy Baby Super-Puffs",
+        }
         logger.info(f"Created task with inputs.")
 
         # 4. Process the task.

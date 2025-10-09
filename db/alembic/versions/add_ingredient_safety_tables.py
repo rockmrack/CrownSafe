@@ -42,7 +42,9 @@ def upgrade():
     op.create_index("idx_product_ingredients_brand", "product_ingredients", ["brand"])
     op.create_index("idx_product_ingredients_category", "product_ingredients", ["category"])
     op.create_index(
-        "idx_product_safety", "product_ingredients", ["pregnancy_safe", "baby_safe", "toddler_safe"]
+        "idx_product_safety",
+        "product_ingredients",
+        ["pregnancy_safe", "baby_safe", "toddler_safe"],
     )
     op.create_index("idx_product_updated", "product_ingredients", ["last_updated"])
 
@@ -66,12 +68,17 @@ def upgrade():
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(
-        "idx_ingredient_safety_name", "ingredient_safety", ["ingredient_name"], unique=True
+        "idx_ingredient_safety_name",
+        "ingredient_safety",
+        ["ingredient_name"],
+        unique=True,
     )
     op.create_index("idx_ingredient_pregnancy_risk", "ingredient_safety", ["pregnancy_risk_level"])
     op.create_index("idx_ingredient_baby_risk", "ingredient_safety", ["baby_risk_level"])
     op.create_index(
-        "idx_ingredient_allergen", "ingredient_safety", ["common_allergen", "allergen_type"]
+        "idx_ingredient_allergen",
+        "ingredient_safety",
+        ["common_allergen", "allergen_type"],
     )
     op.create_index("idx_ingredient_updated", "ingredient_safety", ["last_updated"])
 

@@ -70,7 +70,8 @@ def auth():
     )
     assert r.status_code == 200, r.text
     r = c.post(
-        "/api/v1/auth/token", data={"username": "test+headlen@ex.com", "password": "Passw0rd!"}
+        "/api/v1/auth/token",
+        data={"username": "test+headlen@ex.com", "password": "Passw0rd!"},
     )
     assert r.status_code == 200, r.text
     tok = r.json().get("access_token") or r.json().get("token")

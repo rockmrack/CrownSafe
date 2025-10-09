@@ -191,7 +191,8 @@ class TestIntegrationAndPerformance:
         # Step 1: Register
         email = f"integration_test_{int(time.time())}@test.com"
         response = client.post(
-            "/api/v1/auth/register", json={"email": email, "password": "testpassword123"}
+            "/api/v1/auth/register",
+            json={"email": email, "password": "testpassword123"},
         )
         assert response.status_code in [200, 201, 400, 404, 422, 500]
 
@@ -199,7 +200,8 @@ class TestIntegrationAndPerformance:
         """Test complete user login flow"""
         # Attempt login
         response = client.post(
-            "/api/v1/auth/login", json={"email": "test@test.com", "password": "testpassword123"}
+            "/api/v1/auth/login",
+            json={"email": "test@test.com", "password": "testpassword123"},
         )
         assert response.status_code in [200, 400, 401, 404, 422, 500]
 
@@ -234,7 +236,8 @@ class TestIntegrationAndPerformance:
         """Test complete feedback submission flow"""
         # Submit feedback
         response = client.post(
-            "/api/v1/feedback", json={"message": "Test feedback from integration test", "rating": 5}
+            "/api/v1/feedback",
+            json={"message": "Test feedback from integration test", "rating": 5},
         )
         assert response.status_code in [200, 201, 401, 404, 422, 500]
 
@@ -401,7 +404,8 @@ class TestIntegrationAndPerformance:
         # 1. Register
         email = f"e2e_test_{int(time.time())}@test.com"
         response1 = client.post(
-            "/api/v1/auth/register", json={"email": email, "password": "testpassword123"}
+            "/api/v1/auth/register",
+            json={"email": email, "password": "testpassword123"},
         )
         assert response1.status_code in [200, 201, 400, 404, 422, 500]
 
@@ -522,7 +526,8 @@ class TestIntegrationAndPerformance:
 
         # 2. Login
         response2 = client.post(
-            "/api/v1/auth/login", json={"email": "test@test.com", "password": "testpassword123"}
+            "/api/v1/auth/login",
+            json={"email": "test@test.com", "password": "testpassword123"},
         )
         assert response2.status_code in [200, 400, 401, 404, 422, 500]
 
@@ -530,14 +535,18 @@ class TestIntegrationAndPerformance:
         """Test end-to-end data validation journey"""
         # 1. Invalid email
         response1 = client.post(
-            "/api/v1/auth/register", json={"email": "invalid-email", "password": "testpassword123"}
+            "/api/v1/auth/register",
+            json={"email": "invalid-email", "password": "testpassword123"},
         )
         assert response1.status_code in [400, 404, 422, 500]
 
         # 2. Valid email
         response2 = client.post(
             "/api/v1/auth/register",
-            json={"email": f"valid_{int(time.time())}@test.com", "password": "testpassword123"},
+            json={
+                "email": f"valid_{int(time.time())}@test.com",
+                "password": "testpassword123",
+            },
         )
         assert response2.status_code in [200, 201, 400, 404, 422, 500]
 

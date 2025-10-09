@@ -311,7 +311,10 @@ class EnhancedSafetyService:
                 )
 
             if report.chemical_data.exposure_guidelines:
-                for exposure_type, guideline in report.chemical_data.exposure_guidelines.items():
+                for (
+                    exposure_type,
+                    guideline,
+                ) in report.chemical_data.exposure_guidelines.items():
                     recommendations.append(
                         f"[PROTECTION] {exposure_type.title()} exposure: {guideline}"
                     )

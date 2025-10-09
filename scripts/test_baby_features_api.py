@@ -285,7 +285,8 @@ async def test_community_alerts():
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(
-                f"{BASE_URL}/api/v1/baby/community/alerts", params={"user_id": 1, "limit": 5}
+                f"{BASE_URL}/api/v1/baby/community/alerts",
+                params={"user_id": 1, "limit": 5},
             )
 
             if response.status_code == 200:

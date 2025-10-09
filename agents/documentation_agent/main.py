@@ -648,7 +648,10 @@ class DocumentationAgentManager:
 
                 if attempt < Config.MAX_RETRIES:
                     # Calculate exponential backoff delay
-                    delay = min(Config.RETRY_DELAY * (2 ** (attempt - 1)), Config.MAX_RETRY_DELAY)
+                    delay = min(
+                        Config.RETRY_DELAY * (2 ** (attempt - 1)),
+                        Config.MAX_RETRY_DELAY,
+                    )
                     logger.info(f"[WAITING] Retrying in {delay:.1f} seconds...")
 
                     try:
@@ -879,7 +882,8 @@ class DocumentationAgentManager:
 
         except Exception as e:
             logger.critical(
-                f"Failed to initialize DocumentationAgent components: {e}", exc_info=True
+                f"Failed to initialize DocumentationAgent components: {e}",
+                exc_info=True,
             )
             self.status = AgentStatus.ERROR
             return False

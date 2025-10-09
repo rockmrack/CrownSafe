@@ -47,7 +47,9 @@ class TestConversation(TestBase):
     started_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     last_activity_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     messages = relationship(
-        "TestConversationMessage", back_populates="conversation", cascade="all, delete-orphan"
+        "TestConversationMessage",
+        back_populates="conversation",
+        cascade="all, delete-orphan",
     )
 
 
@@ -181,7 +183,12 @@ def test_log_message(db_session):
     # Log a user message
     user_content = {"text": "Is this safe during pregnancy?"}
     log_message(
-        db_session, conv, role="user", content=user_content, intent=None, trace_id="trace-123"
+        db_session,
+        conv,
+        role="user",
+        content=user_content,
+        intent=None,
+        trace_id="trace-123",
     )
 
     # Log an assistant message

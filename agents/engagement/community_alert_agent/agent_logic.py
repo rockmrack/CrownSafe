@@ -64,7 +64,10 @@ class CommunityAlertAgentLogic:
         product_name = inputs.get("product_name")
 
         if not all([html_content, product_name]):
-            return {"status": "FAILED", "error": "html_content and product_name are required."}
+            return {
+                "status": "FAILED",
+                "error": "html_content and product_name are required.",
+            }
 
         try:
             analysis = await self.scrape_and_analyze(html_content, product_name)

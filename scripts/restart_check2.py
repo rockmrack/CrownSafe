@@ -8,7 +8,9 @@ print("Killing agents...")
 for agent in ["commander_agent", "planner_agent", "router_agent"]:
     try:
         subprocess.run(
-            f'taskkill /F /FI "WINDOWTITLE eq {agent}*"', shell=True, capture_output=True
+            f'taskkill /F /FI "WINDOWTITLE eq {agent}*"',
+            shell=True,
+            capture_output=True,
         )
     except:
         pass

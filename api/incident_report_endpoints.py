@@ -157,7 +157,10 @@ class IncidentAnalyzer:
 
     @classmethod
     def _find_or_create_cluster(
-        cls, incident: IncidentReport, similar_incidents: List[IncidentReport], db: Session
+        cls,
+        incident: IncidentReport,
+        similar_incidents: List[IncidentReport],
+        db: Session,
     ) -> Optional[IncidentCluster]:
         """Find existing cluster or create new one"""
 
@@ -352,7 +355,8 @@ def analyze_incident_background(incident_id: int):
 
     except Exception as e:
         logger.error(
-            f"Background incident analysis failed for incident {incident_id}: {e}", exc_info=True
+            f"Background incident analysis failed for incident {incident_id}: {e}",
+            exc_info=True,
         )
         db.rollback()
     finally:
@@ -471,7 +475,9 @@ async def submit_incident_report(
 
 @incident_router.post("/submit-json", response_model=ApiResponse)
 async def submit_incident_json(
-    request: IncidentSubmitRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+    request: IncidentSubmitRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ):
     """
     Submit a new incident report via JSON (tolerant of unknown barcodes)
@@ -566,7 +572,9 @@ async def submit_incident_json(
 # Add alias route for singular "incident" path
 @incident_router.post("/incident/submit", response_model=ApiResponse)
 async def submit_incident_json_alias(
-    request: IncidentSubmitRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+    request: IncidentSubmitRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ):
     """
     Alias for /submit-json endpoint using singular "incident" path
@@ -768,7 +776,12 @@ async def get_incident_statistics_dev(days: int = 30):
             "period_days": days,
             "total_incidents": 15 if days >= 7 else 0,
             "severity_breakdown": {"critical": 2, "high": 5, "medium": 6, "low": 2},
-            "type_breakdown": {"safety_concern": 8, "injury": 4, "malfunction": 2, "recall": 1},
+            "type_breakdown": {
+                "safety_concern": 8,
+                "injury": 4,
+                "malfunction": 2,
+                "recall": 1,
+            },
             "active_clusters": 2 if days >= 7 else 0,
             "agencies_notified": 1 if days >= 7 else 0,
         }

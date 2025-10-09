@@ -99,7 +99,10 @@ async def handle_discovery_message(message: Dict[str, Any], sender_id: str):
     # *** ROBUSTIFIED LOGGING FOR PAYLOAD ***
     if isinstance(payload, dict):
         temp_log_payload_dict = {}
-        for log_key, log_value in payload.items():  # Using very distinct loop variable names
+        for (
+            log_key,
+            log_value,
+        ) in payload.items():  # Using very distinct loop variable names
             if log_key == "capabilities" and isinstance(log_value, list):
                 temp_log_payload_dict[log_key] = f"<omitted_capabilities_len_{len(log_value)}>"
             else:
@@ -229,7 +232,10 @@ async def handle_registration(
         discovery_logger.warning(
             f"Registration failed for '{agent_id_from_payload}' (CorrID: {correlation_id}): Invalid 'capabilities' format (expected list)."
         )
-        error_payload = {"error_code": "E003", "error_message": "Capabilities must be a list"}
+        error_payload = {
+            "error_code": "E003",
+            "error_message": "Capabilities must be a list",
+        }
         return create_mcp_error_response(sender_id, correlation_id, "MCP_DISCOVERY", error_payload)
 
     registration_info = copy.deepcopy(payload)
@@ -402,7 +408,11 @@ async def handle_query(
             )
 
         return create_mcp_response(
-            sender_id, correlation_id, "MCP_DISCOVERY", "DISCOVERY_RESPONSE", response_payload
+            sender_id,
+            correlation_id,
+            "MCP_DISCOVERY",
+            "DISCOVERY_RESPONSE",
+            response_payload,
         )
 
     except ValueError as ve:

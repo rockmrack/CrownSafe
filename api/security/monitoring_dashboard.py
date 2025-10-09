@@ -28,7 +28,11 @@ security_metrics = {
 
 
 def update_security_metrics(
-    threat_score: int, attack_type: str, client_ip: str, user_agent: str, blocked: bool = False
+    threat_score: int,
+    attack_type: str,
+    client_ip: str,
+    user_agent: str,
+    blocked: bool = False,
 ):
     """Update security metrics for dashboard"""
     global security_metrics

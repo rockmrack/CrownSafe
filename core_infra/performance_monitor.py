@@ -76,7 +76,9 @@ class PerformanceMonitor:
         # Record as metric
         self.record_metric(
             PerformanceMetric(
-                name=f"timer.{name}", value=elapsed * 1000, unit="ms"  # Convert to milliseconds
+                name=f"timer.{name}",
+                value=elapsed * 1000,
+                unit="ms",  # Convert to milliseconds
             )
         )
 
@@ -289,7 +291,10 @@ def monitor_block(name: str):
 
         monitor.record_metric(
             PerformanceMetric(
-                name=f"block.{name}", value=elapsed, unit="ms", tags={"status": "success"}
+                name=f"block.{name}",
+                value=elapsed,
+                unit="ms",
+                tags={"status": "success"},
             )
         )
 
@@ -319,7 +324,10 @@ async def async_monitor_block(name: str):
 
         monitor.record_metric(
             PerformanceMetric(
-                name=f"block.{name}", value=elapsed, unit="ms", tags={"status": "success"}
+                name=f"block.{name}",
+                value=elapsed,
+                unit="ms",
+                tags={"status": "success"},
             )
         )
 
@@ -355,7 +363,9 @@ class DatabaseQueryMonitor:
                     if hasattr(result, "__len__"):
                         monitor.record_metric(
                             PerformanceMetric(
-                                name=f"db_result_size.{query_name}", value=len(result), unit="rows"
+                                name=f"db_result_size.{query_name}",
+                                value=len(result),
+                                unit="rows",
                             )
                         )
 

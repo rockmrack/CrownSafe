@@ -20,7 +20,11 @@ print("\n🚀 Sending fresh test...\n")
 # Send new request
 response = requests.post(
     "http://localhost:8000/api/v1/prior-auth/predict",
-    json={"patient_id": "fresh-test-123", "drug_name": "TestDrug", "insurer_id": "TestInsurer"},
+    json={
+        "patient_id": "fresh-test-123",
+        "drug_name": "TestDrug",
+        "insurer_id": "TestInsurer",
+    },
 )
 
 if response.status_code == 202:

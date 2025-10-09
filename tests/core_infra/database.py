@@ -16,7 +16,11 @@ from sqlalchemy import (
     inspect,
     ForeignKey,  # Added for relationships
 )
-from sqlalchemy.orm import sessionmaker, declarative_base, relationship  # Added relationship
+from sqlalchemy.orm import (
+    sessionmaker,
+    declarative_base,
+    relationship,
+)  # Added relationship
 from sqlalchemy.exc import IntegrityError
 from contextlib import contextmanager
 

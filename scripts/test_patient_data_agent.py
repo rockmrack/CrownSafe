@@ -44,7 +44,10 @@ def test_patient_data_agent():
 
     print("\n5. Testing patient search by medication...")
     result = logic.process_task(
-        {"task_name": "search_patients", "criteria": {"medication_history": "Metformin"}}
+        {
+            "task_name": "search_patients",
+            "criteria": {"medication_history": "Metformin"},
+        }
     )
     assert result["status"] == "COMPLETED"
     print(f"   -> SUCCESS: Found {result['result_count']} patients on Metformin.")

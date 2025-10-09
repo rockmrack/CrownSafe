@@ -19,7 +19,10 @@ class IngestionRun(Base):
 
     # Primary key
     id = Column(
-        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid(), nullable=False
+        UUID(as_uuid=True),
+        primary_key=True,
+        server_default=func.gen_random_uuid(),
+        nullable=False,
     )
 
     # Core fields

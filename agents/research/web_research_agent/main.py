@@ -54,7 +54,9 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
 # Logging setup
 logging.basicConfig(
-    level=LOG_LEVEL, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", force=True
+    level=LOG_LEVEL,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    force=True,
 )
 
 logger = logging.getLogger(f"{AGENT_ID}.main")

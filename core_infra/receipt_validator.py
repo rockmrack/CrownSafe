@@ -154,7 +154,8 @@ class GoogleReceiptValidator:
                 try:
                     key_data = json.loads(key_json)
                     credentials = service_account.Credentials.from_service_account_info(
-                        key_data, scopes=["https://www.googleapis.com/auth/androidpublisher"]
+                        key_data,
+                        scopes=["https://www.googleapis.com/auth/androidpublisher"],
                     )
                     return build("androidpublisher", "v3", credentials=credentials)
                 except Exception as e:
@@ -196,7 +197,11 @@ class GoogleReceiptValidator:
             purchase = (
                 self.service.purchases()
                 .subscriptions()
-                .get(packageName=self.package_name, subscriptionId=product_id, token=purchase_token)
+                .get(
+                    packageName=self.package_name,
+                    subscriptionId=product_id,
+                    token=purchase_token,
+                )
                 .execute()
             )
 
@@ -239,7 +244,11 @@ class ReceiptValidationService:
         self.google_validator = GoogleReceiptValidator()
 
     async def validate_and_activate(
-        self, user_id: int, provider: str, receipt_data: str, product_id: Optional[str] = None
+        self,
+        user_id: int,
+        provider: str,
+        receipt_data: str,
+        product_id: Optional[str] = None,
     ) -> Dict:
         """
         Validate receipt and activate subscription
@@ -260,7 +269,10 @@ class ReceiptValidationService:
                 provider_enum = PaymentProvider.APPLE
             elif provider.lower() == "google":
                 if not product_id:
-                    return {"success": False, "error": "Product ID required for Google receipts"}
+                    return {
+                        "success": False,
+                        "error": "Product ID required for Google receipts",
+                    }
                 is_valid, receipt_info = await self.google_validator.validate(
                     receipt_data, product_id
                 )

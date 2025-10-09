@@ -92,14 +92,22 @@ class SubmissionValidator:
 
                 if response.status_code == 200:
                     self.print_result(
-                        f"{name}: {endpoint}", True, f"Response time: {response_time:.0f}ms"
+                        f"{name}: {endpoint}",
+                        True,
+                        f"Response time: {response_time:.0f}ms",
                     )
                     results.append(
-                        {"endpoint": endpoint, "status": "pass", "response_time": response_time}
+                        {
+                            "endpoint": endpoint,
+                            "status": "pass",
+                            "response_time": response_time,
+                        }
                     )
                 else:
                     self.print_result(
-                        f"{name}: {endpoint}", False, f"Status code: {response.status_code}"
+                        f"{name}: {endpoint}",
+                        False,
+                        f"Status code: {response.status_code}",
                     )
                     all_passed = False
                     results.append(

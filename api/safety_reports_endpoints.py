@@ -28,7 +28,8 @@ class SafetyReportRequest(BaseModel):
 
     user_id: int = Field(..., description="User ID")
     report_type: str = Field(
-        "90_day", description="Type of report (90_day, 30_day, weekly, quarterly_nursery)"
+        "90_day",
+        description="Type of report (90_day, 30_day, weekly, quarterly_nursery)",
     )
     include_details: bool = Field(True, description="Include detailed product information")
     generate_pdf: bool = Field(True, description="Generate PDF version")
@@ -106,7 +107,9 @@ class SafetyReportResponse(BaseModel):
 
 @safety_reports_router.post("/generate", response_model=ApiResponse)
 async def generate_safety_report(
-    request: SafetyReportRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+    request: SafetyReportRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ):
     """
     Generate a comprehensive safety report for a user
@@ -152,7 +155,8 @@ async def generate_90_day_report_dev(request: SafetyReportRequest) -> ApiRespons
 
         if not dev_entitled(request.user_id, REQUIRED_FEATURE):
             raise HTTPException(
-                status_code=402, detail="Subscription required for 90-day report generation"
+                status_code=402,
+                detail="Subscription required for 90-day report generation",
             )
 
         # Mock report generation
@@ -181,7 +185,9 @@ async def generate_90_day_report_dev(request: SafetyReportRequest) -> ApiRespons
 
 @safety_reports_router.post("/generate-90-day", response_model=ApiResponse)
 async def generate_90_day_report(
-    request: SafetyReportRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+    request: SafetyReportRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ) -> ApiResponse:
     """
     Generate a comprehensive 90-day safety summary report
@@ -405,7 +411,11 @@ async def generate_90_day_report(
 
 @safety_reports_router.get("/my-reports-dev", response_model=ApiResponse)
 async def get_user_reports_dev(
-    user_id: int, page: int = 1, limit: int = 10, sort: str = "created_at", order: str = "desc"
+    user_id: int,
+    page: int = 1,
+    limit: int = 10,
+    sort: str = "created_at",
+    order: str = "desc",
 ) -> ApiResponse:
     """
     Dev override version of my-reports endpoint for testing
@@ -544,7 +554,9 @@ async def get_report_details_dev(report_id: str, user_id: int) -> ApiResponse:
             raise HTTPException(status_code=404, detail="Report not found or access denied")
 
         return ApiResponse(
-            success=True, data=mock_report, message="Report details retrieved successfully"
+            success=True,
+            data=mock_report,
+            message="Report details retrieved successfully",
         )
 
     except HTTPException:
@@ -644,7 +656,9 @@ async def track_scan(scan_data: Dict[str, Any], db: Session = Depends(get_db)) -
 
 
 @safety_reports_router.post("/generate-quarterly-nursery-dev", response_model=ApiResponse)
-async def generate_quarterly_nursery_report_dev(request: SafetyReportRequest) -> ApiResponse:
+async def generate_quarterly_nursery_report_dev(
+    request: SafetyReportRequest,
+) -> ApiResponse:
     """
     Dev override version of quarterly nursery report generation for testing
     """
@@ -682,13 +696,16 @@ async def generate_quarterly_nursery_report_dev(request: SafetyReportRequest) ->
     except Exception as e:
         logger.error(f"Error generating quarterly nursery report: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to generate quarterly nursery report: {str(e)}"
+            status_code=500,
+            detail=f"Failed to generate quarterly nursery report: {str(e)}",
         )
 
 
 @safety_reports_router.post("/generate-quarterly-nursery", response_model=ApiResponse)
 async def generate_quarterly_nursery_report(
-    request: SafetyReportRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+    request: SafetyReportRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ) -> ApiResponse:
     """
     Generate a comprehensive quarterly nursery safety audit report
@@ -729,7 +746,14 @@ async def generate_quarterly_nursery_report(
                 "recalls": 0,
             },
             "Feeding": {
-                "keywords": ["bottle", "formula", "food", "sippy", "breast pump", "sterilizer"],
+                "keywords": [
+                    "bottle",
+                    "formula",
+                    "food",
+                    "sippy",
+                    "breast pump",
+                    "sterilizer",
+                ],
                 "products": [],
                 "high_risk": 0,
                 "recalls": 0,
@@ -741,13 +765,26 @@ async def generate_quarterly_nursery_report(
                 "recalls": 0,
             },
             "Clothing & Textiles": {
-                "keywords": ["clothes", "onesie", "blanket", "swaddle", "sheet", "pajama"],
+                "keywords": [
+                    "clothes",
+                    "onesie",
+                    "blanket",
+                    "swaddle",
+                    "sheet",
+                    "pajama",
+                ],
                 "products": [],
                 "high_risk": 0,
                 "recalls": 0,
             },
             "Furniture": {
-                "keywords": ["dresser", "changing table", "shelf", "storage", "wardrobe"],
+                "keywords": [
+                    "dresser",
+                    "changing table",
+                    "shelf",
+                    "storage",
+                    "wardrobe",
+                ],
                 "products": [],
                 "high_risk": 0,
                 "recalls": 0,
@@ -759,7 +796,14 @@ async def generate_quarterly_nursery_report(
                 "recalls": 0,
             },
             "Health & Hygiene": {
-                "keywords": ["diaper", "wipe", "thermometer", "medicine", "cream", "lotion"],
+                "keywords": [
+                    "diaper",
+                    "wipe",
+                    "thermometer",
+                    "medicine",
+                    "cream",
+                    "lotion",
+                ],
                 "products": [],
                 "high_risk": 0,
                 "recalls": 0,

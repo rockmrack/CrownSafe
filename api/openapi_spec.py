@@ -45,7 +45,10 @@ def custom_openapi(app: FastAPI):
         ],
         tags=[
             {"name": "agencies", "description": "Agency information endpoints"},
-            {"name": "search", "description": "Recall search endpoints for individual agencies"},
+            {
+                "name": "search",
+                "description": "Recall search endpoints for individual agencies",
+            },
             {"name": "system", "description": "System health and monitoring endpoints"},
         ],
     )

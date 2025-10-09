@@ -84,7 +84,8 @@ async def test_parental_consent():
 
         try:
             response = await client.post(
-                f"{BASE_URL}/api/v1/compliance/coppa/parental-consent", json=request_data
+                f"{BASE_URL}/api/v1/compliance/coppa/parental-consent",
+                json=request_data,
             )
 
             if response.status_code == 200:
@@ -135,7 +136,8 @@ async def test_childrens_code():
 
             try:
                 response = await client.post(
-                    f"{BASE_URL}/api/v1/compliance/childrens-code/assess", json=request_data
+                    f"{BASE_URL}/api/v1/compliance/childrens-code/assess",
+                    json=request_data,
                 )
 
                 if response.status_code == 200:

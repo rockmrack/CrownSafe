@@ -15,7 +15,11 @@ import httpx
 
 from core_infra.database import get_db, User, RecallDB, SessionLocal
 from db.models.scan_history import ScanHistory
-from api.notification_endpoints import send_push_notification, NotificationHistory, DeviceToken
+from api.notification_endpoints import (
+    send_push_notification,
+    NotificationHistory,
+    DeviceToken,
+)
 from api.monitoring_scheduler import MonitoredProduct
 
 # from core_infra.celery_app import celery_app  # Commented out - not available in dev environment
@@ -182,7 +186,11 @@ async def get_alert_history_dev(user_id: int):
 
         return {
             "success": True,
-            "data": {"alerts": mock_alerts, "total_count": len(mock_alerts), "user_id": user_id},
+            "data": {
+                "alerts": mock_alerts,
+                "total_count": len(mock_alerts),
+                "user_id": user_id,
+            },
         }
 
     except Exception as e:
@@ -385,7 +393,11 @@ class RecallAlertService:
             success_count = 0
             for device in devices:
                 success = await send_push_notification(
-                    token=device.token, title=title, body=body, data=data, platform=device.platform
+                    token=device.token,
+                    title=title,
+                    body=body,
+                    data=data,
+                    platform=device.platform,
                 )
                 if success:
                     success_count += 1
@@ -619,7 +631,8 @@ async def get_alert_history(user_id: int, limit: int = 50, db: Session = Depends
         alerts = (
             db.query(NotificationHistory)
             .filter(
-                NotificationHistory.user_id == user_id, NotificationHistory.type == "recall_alert"
+                NotificationHistory.user_id == user_id,
+                NotificationHistory.type == "recall_alert",
             )
             .order_by(NotificationHistory.sent_at.desc())
             .limit(limit)

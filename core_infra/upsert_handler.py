@@ -350,7 +350,11 @@ class EnhancedUpsertHandler(UpsertHandler):
 
     @staticmethod
     def upsert_with_history(
-        db: Session, table: str, data: Dict[str, Any], unique_key: str, track_changes: bool = True
+        db: Session,
+        table: str,
+        data: Dict[str, Any],
+        unique_key: str,
+        track_changes: bool = True,
     ) -> bool:
         """
         UPSERT with optional change history tracking

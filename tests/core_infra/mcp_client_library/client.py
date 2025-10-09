@@ -22,7 +22,13 @@ from websockets.exceptions import (
 from typing import Callable, Dict, Any, Optional, List, TYPE_CHECKING
 import uuid
 from datetime import datetime, timezone
-from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type, RetryCallState
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_fixed,
+    retry_if_exception_type,
+    RetryCallState,
+)
 
 from .models import MCPMessage, MCPHeader
 from .exceptions import MCPConnectionError, MCPError
@@ -135,7 +141,8 @@ class MCPClient:
             return False
         except Exception as e:
             self.logger.error(
-                f"Unexpected error checking WebSocket state for {self.agent_id}: {e}", exc_info=True
+                f"Unexpected error checking WebSocket state for {self.agent_id}: {e}",
+                exc_info=True,
             )
             return False
 
@@ -243,14 +250,16 @@ class MCPClient:
                 ) from e
             elif isinstance(e, WebSocketException):
                 self.logger.error(
-                    f"WebSocket connection failed for {self.agent_id}: {e}", exc_info=True
+                    f"WebSocket connection failed for {self.agent_id}: {e}",
+                    exc_info=True,
                 )
                 raise MCPConnectionError(f"WebSocket connection failed: {e}") from e
         except Exception as e:
             self._is_connected = False
             self.websocket = None
             self.logger.critical(
-                f"Critical unexpected error during connect for {self.agent_id}: {e}", exc_info=True
+                f"Critical unexpected error during connect for {self.agent_id}: {e}",
+                exc_info=True,
             )
             raise MCPConnectionError(f"Critical unexpected connection error: {e}") from e
 
@@ -362,11 +371,14 @@ class MCPClient:
         }
         try:
             await self.send_message(
-                payload=payload, message_type="DISCOVERY_REGISTER", target_service="MCP_DISCOVERY"
+                payload=payload,
+                message_type="DISCOVERY_REGISTER",
+                target_service="MCP_DISCOVERY",
             )
         except Exception as e:
             self.logger.error(
-                f"Failed to send registration message for {self.agent_id}: {e}", exc_info=True
+                f"Failed to send registration message for {self.agent_id}: {e}",
+                exc_info=True,
             )
 
     async def query_discovery(self, capabilities_to_query: List[str]) -> Optional[str]:
@@ -499,7 +511,8 @@ class MCPClient:
                 break
             except Exception as e:
                 self.logger.error(
-                    f"Receive loop ({self.agent_id}): Unexpected outer error: {e}", exc_info=True
+                    f"Receive loop ({self.agent_id}): Unexpected outer error: {e}",
+                    exc_info=True,
                 )
                 self._is_connected = False
                 break
@@ -548,7 +561,8 @@ class MCPClient:
                 break
             except Exception as e:
                 self.logger.error(
-                    f"Heartbeat ({self.agent_id}): Unexpected PING send error: {e}", exc_info=True
+                    f"Heartbeat ({self.agent_id}): Unexpected PING send error: {e}",
+                    exc_info=True,
                 )
                 break
         self.logger.info(f"Heartbeat task ended for {self.agent_id}.")

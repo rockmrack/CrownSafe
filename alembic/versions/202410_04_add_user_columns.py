@@ -30,7 +30,8 @@ def upgrade():
         # Add hashed_password column if it doesn't exist
         if "hashed_password" not in existing_columns:
             op.add_column(
-                "users", sa.Column("hashed_password", sa.Text(), nullable=False, server_default="")
+                "users",
+                sa.Column("hashed_password", sa.Text(), nullable=False, server_default=""),
             )
             # Remove the server_default so future inserts must provide a value
             op.alter_column("users", "hashed_password", server_default=None)
@@ -39,7 +40,10 @@ def upgrade():
             op.add_column(
                 "users",
                 sa.Column(
-                    "is_pregnant", sa.Boolean(), nullable=False, server_default=sa.text("false")
+                    "is_pregnant",
+                    sa.Boolean(),
+                    nullable=False,
+                    server_default=sa.text("false"),
                 ),
             )
 
@@ -48,7 +52,10 @@ def upgrade():
             op.add_column(
                 "users",
                 sa.Column(
-                    "is_active", sa.Boolean(), nullable=False, server_default=sa.text("true")
+                    "is_active",
+                    sa.Boolean(),
+                    nullable=False,
+                    server_default=sa.text("true"),
                 ),
             )
 

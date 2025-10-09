@@ -15,7 +15,8 @@ except ImportError:
 
     # Default to DEBUG for more visibility during development/testing
     logging.basicConfig(
-        level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        level=logging.DEBUG,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
     logger = logging.getLogger("mcp_router_service.utils")
 

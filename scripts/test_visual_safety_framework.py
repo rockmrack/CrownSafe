@@ -43,7 +43,10 @@ async def test_phase1_liability_mitigation():
         # Mock the router to return a completed but empty result
         class MockRouter:
             async def execute_plan(self, plan):
-                return {"status": "COMPLETED", "final_result": {}}  # Empty result (no risk_level)
+                return {
+                    "status": "COMPLETED",
+                    "final_result": {},
+                }  # Empty result (no risk_level)
 
         # Replace router with mock
         commander.router = MockRouter()

@@ -191,7 +191,9 @@ class MonitoringResponse(BaseModel):
 
 @router.post("/research", response_model=WebResearchResponse)
 async def research_product_safety(
-    request: WebResearchRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+    request: WebResearchRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ):
     """
     Research product safety across the web in real-time.
@@ -526,7 +528,11 @@ async def get_product_guidelines(request: GuidelinesRequest, db: Session = Depen
                     "Baby gym/play mat",
                 ]
             elif request.child_age_months < 12:
-                recommended_alternatives = ["Large soft blocks", "Teething toys", "Board books"]
+                recommended_alternatives = [
+                    "Large soft blocks",
+                    "Teething toys",
+                    "Board books",
+                ]
             else:
                 recommended_alternatives = [
                     "Large piece puzzles",
@@ -631,15 +637,22 @@ async def recognize_product_from_image(
 
             s3_client = boto3.client("s3", region_name=os.getenv("S3_BUCKET_REGION", "us-east-1"))
             s3_client.put_object(
-                Bucket=job.s3_bucket, Key=s3_key, Body=image_data, ContentType=image.content_type
+                Bucket=job.s3_bucket,
+                Key=s3_key,
+                Body=image_data,
+                ContentType=image.content_type,
             )
 
             # Use visual search agent directly for immediate results
-            from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
+            from agents.visual.visual_search_agent.agent_logic import (
+                VisualSearchAgentLogic,
+            )
 
             # Generate presigned URL for the uploaded image
             presigned_url = s3_client.generate_presigned_url(
-                "get_object", Params={"Bucket": job.s3_bucket, "Key": s3_key}, ExpiresIn=3600
+                "get_object",
+                Params={"Bucket": job.s3_bucket, "Key": s3_key},
+                ExpiresIn=3600,
             )
 
             visual_agent = VisualSearchAgentLogic("visual_recognition_001")
@@ -665,7 +678,8 @@ async def recognize_product_from_image(
                     """
                     )
                     recall_result = db.execute(
-                        recall_query, {"product_name": f"%{product_data['product_name']}%"}
+                        recall_query,
+                        {"product_name": f"%{product_data['product_name']}%"},
                     ).fetchone()
 
                     if recall_result:
@@ -785,7 +799,9 @@ async def recognize_product_from_image(
 
 @router.post("/monitor/setup", response_model=MonitoringResponse)
 async def setup_product_monitoring(
-    request: MonitoringRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+    request: MonitoringRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ):
     """
     Set up continuous monitoring for a product.
@@ -829,7 +845,8 @@ async def setup_product_monitoring(
         # In production, would store monitoring config in database
         # and schedule background task
         background_tasks.add_task(
-            logger.info, f"Monitoring scheduled for {request.product_name} - ID: {monitoring_id}"
+            logger.info,
+            f"Monitoring scheduled for {request.product_name} - ID: {monitoring_id}",
         )
 
         return MonitoringResponse(

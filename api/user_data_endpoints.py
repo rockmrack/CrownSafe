@@ -3,7 +3,15 @@ User Data Export and Deletion Endpoints
 GDPR/CCPA compliant data handling
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Header, BackgroundTasks
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    status,
+    Request,
+    Header,
+    BackgroundTasks,
+)
 from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy.orm import Session
 from typing import Optional, Dict, Any
@@ -221,7 +229,8 @@ async def export_user_data(
 
     except Exception as e:
         logger.error(
-            f"Data export failed: {e}", extra={"request_id": request_id, "trace_id": trace_id}
+            f"Data export failed: {e}",
+            extra={"request_id": request_id, "trace_id": trace_id},
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -316,7 +325,8 @@ async def delete_user_data_endpoint(
         raise
     except Exception as e:
         logger.error(
-            f"Data deletion failed: {e}", extra={"request_id": request_id, "trace_id": trace_id}
+            f"Data deletion failed: {e}",
+            extra={"request_id": request_id, "trace_id": trace_id},
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

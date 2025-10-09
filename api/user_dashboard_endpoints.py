@@ -277,7 +277,10 @@ async def get_safety_insights(
         # Check monitoring coverage
         total_scans = (
             db.query(ImageJob)
-            .filter(ImageJob.user_id == current_user.id, ImageJob.status == JobStatus.COMPLETED)
+            .filter(
+                ImageJob.user_id == current_user.id,
+                ImageJob.status == JobStatus.COMPLETED,
+            )
             .count()
         )
 

@@ -287,7 +287,9 @@ async def main():
     )
     parser.add_argument("--full-refresh", action="store_true", help="Full refresh of all data")
     parser.add_argument(
-        "--migrate-only", action="store_true", help="Only run migration, don't ingest data"
+        "--migrate-only",
+        action="store_true",
+        help="Only run migration, don't ingest data",
     )
 
     args = parser.parse_args()

@@ -170,7 +170,10 @@ class VisualSearchAgentLogic:
 
             if not suggestions_json or suggestions_json.strip() == "":
                 self.logger.warning("OpenAI returned empty suggestions response")
-                return {"status": "FAILED", "error": "OpenAI returned empty suggestions response"}
+                return {
+                    "status": "FAILED",
+                    "error": "OpenAI returned empty suggestions response",
+                }
 
             try:
                 # Clean up markdown formatting that OpenAI sometimes adds
@@ -331,10 +334,18 @@ class VisualSearchAgentLogic:
                 # Validate required fields
                 if not isinstance(best_guess, dict):
                     self.logger.error("OpenAI response is not a dictionary")
-                    return {"status": "FAILED", "error": "Invalid response format from OpenAI"}
+                    return {
+                        "status": "FAILED",
+                        "error": "Invalid response format from OpenAI",
+                    }
 
                 # Ensure all required fields exist
-                required_fields = ["product_name", "brand", "model_number", "confidence"]
+                required_fields = [
+                    "product_name",
+                    "brand",
+                    "model_number",
+                    "confidence",
+                ]
                 for field in required_fields:
                     if field not in best_guess:
                         self.logger.warning(
@@ -388,7 +399,10 @@ class VisualSearchAgentLogic:
                     "error_type": "api_key_missing",
                 }
 
-            return {"status": "FAILED", "error": "Failed to identify product from image."}
+            return {
+                "status": "FAILED",
+                "error": "Failed to identify product from image.",
+            }
 
     async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
         """Main entry point for the agent."""

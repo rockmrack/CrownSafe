@@ -6,7 +6,9 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from agents.governance.coppa_compliance_agent.agent_logic import COPPA_ComplianceAgentLogic
+from agents.governance.coppa_compliance_agent.agent_logic import (
+    COPPA_ComplianceAgentLogic,
+)
 
 logging.basicConfig(level=logging.INFO)
 

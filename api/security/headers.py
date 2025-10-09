@@ -205,4 +205,8 @@ def apply_security_headers(response: Response) -> Response:
 
 
 # Export
-__all__ = ["SecurityHeadersMiddleware", "get_security_headers_dict", "apply_security_headers"]
+__all__ = [
+    "SecurityHeadersMiddleware",
+    "get_security_headers_dict",
+    "apply_security_headers",
+]

@@ -35,7 +35,11 @@ def get_allowed_origins() -> List[str]:
         ]
 
     # Add localhost for development if in dev mode
-    if os.getenv("ENVIRONMENT", "production").lower() in ("development", "dev", "local"):
+    if os.getenv("ENVIRONMENT", "production").lower() in (
+        "development",
+        "dev",
+        "local",
+    ):
         origins.extend(
             [
                 "http://localhost:3000",
@@ -208,4 +212,9 @@ def create_cors_middleware(app: FastAPI):
 
 
 # Export main function
-__all__ = ["add_strict_cors", "get_allowed_origins", "CORSConfig", "create_cors_middleware"]
+__all__ = [
+    "add_strict_cors",
+    "get_allowed_origins",
+    "CORSConfig",
+    "create_cors_middleware",
+]

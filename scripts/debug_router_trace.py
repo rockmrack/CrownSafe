@@ -190,7 +190,11 @@ async def debug_router():
                 "payload": {
                     "status": "success",
                     "results": [
-                        {"agent_id": "worker_cap1", "capabilities": ["cap1"], "status": "active"}
+                        {
+                            "agent_id": "worker_cap1",
+                            "capabilities": ["cap1"],
+                            "status": "active",
+                        }
                     ],
                 },
             }
@@ -288,7 +292,8 @@ async def simple_trace_test():
 if __name__ == "__main__":
     # Configure logging to see router internals
     logging.basicConfig(
-        level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        level=logging.DEBUG,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
     logger = logging.getLogger(__name__)
 

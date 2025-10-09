@@ -73,7 +73,10 @@ class PregnancyProductSafetyAgentLogic:
         # 1. Get product ingredients
         product_info = self.ingredient_db.get(product_upc)
         if not product_info:
-            return {"status": "error", "message": "Product not found in ingredient database."}
+            return {
+                "status": "error",
+                "message": "Product not found in ingredient database.",
+            }
 
         product_ingredients = set(product_info.get("ingredients", []))
         product_name = product_info.get("product_name", "Unknown Product")
@@ -113,7 +116,10 @@ class PregnancyProductSafetyAgentLogic:
                 db.query(ProductIngredient).filter(ProductIngredient.upc == product_upc).first()
             )
             if not product:
-                return {"status": "error", "message": "Product not found in ingredient database."}
+                return {
+                    "status": "error",
+                    "message": "Product not found in ingredient database.",
+                }
 
             # Check if product is already marked as pregnancy unsafe
             if product.pregnancy_safe is False:

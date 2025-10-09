@@ -236,7 +236,13 @@ class RecycleBin:
         count = (
             self.session.query(model)
             .filter(model.is_deleted)
-            .update({model.is_deleted: False, model.deleted_at: None, model.deleted_by: None})
+            .update(
+                {
+                    model.is_deleted: False,
+                    model.deleted_at: None,
+                    model.deleted_by: None,
+                }
+            )
         )
 
         self.session.commit()

@@ -297,7 +297,10 @@ async def test_stratification_agent():
         logic.decision_cache.clear()
 
         result = await logic.predict_approval_likelihood(
-            patient_id="patient-001", drug_name="Empagliflozin", insurer_id="UHC", urgency="urgent"
+            patient_id="patient-001",
+            drug_name="Empagliflozin",
+            insurer_id="UHC",
+            urgency="urgent",
         )
 
         if result["status"] == "success":

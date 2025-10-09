@@ -12,7 +12,14 @@ sys.path.insert(0, project_root)
 # -----------------------------------------
 
 from agents.governance.datagovernance_agent.agent_logic import DataGovernanceAgentLogic
-from core_infra.database import Base, engine, SessionLocal, User, create_tables, drop_tables
+from core_infra.database import (
+    Base,
+    engine,
+    SessionLocal,
+    User,
+    create_tables,
+    drop_tables,
+)
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -45,7 +52,10 @@ async def main():
         logger.info("Agent logic initialized.")
 
         # 3. Define the task payload.
-        task_inputs = {"action": "delete_user_data", "payload": {"user_id": TEST_USER_ID_TO_DELETE}}
+        task_inputs = {
+            "action": "delete_user_data",
+            "payload": {"user_id": TEST_USER_ID_TO_DELETE},
+        }
         logger.info(f"Created task with inputs: {task_inputs}")
 
         # 4. Process the task.

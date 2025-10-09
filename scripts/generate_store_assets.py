@@ -151,7 +151,9 @@ DESIGN GUIDELINES:
 
                 if not path.exists():
                     self.create_placeholder_image(
-                        path, specs["size"], f"Android {device.title()} - {name.title()} Screen"
+                        path,
+                        specs["size"],
+                        f"Android {device.title()} - {name.title()} Screen",
                     )
                     self.report["created"].append(str(path))
                     print(f"  ✓ Created: {filename}")

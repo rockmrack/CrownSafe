@@ -281,7 +281,8 @@ class TestSecurityAndValidation:
     def test_login_with_valid_credentials_format(self):
         """Test login endpoint accepts valid format"""
         response = client.post(
-            "/api/v1/auth/login", json={"email": "test@test.com", "password": "testpassword123"}
+            "/api/v1/auth/login",
+            json={"email": "test@test.com", "password": "testpassword123"},
         )
         assert response.status_code in [200, 400, 401, 404, 422, 500]
 
@@ -299,7 +300,10 @@ class TestSecurityAndValidation:
         """Test register with valid data format"""
         response = client.post(
             "/api/v1/auth/register",
-            json={"email": f"test{os.urandom(4).hex()}@test.com", "password": "testpassword123"},
+            json={
+                "email": f"test{os.urandom(4).hex()}@test.com",
+                "password": "testpassword123",
+            },
         )
         assert response.status_code in [200, 201, 400, 404, 422, 500]
 
@@ -313,7 +317,8 @@ class TestSecurityAndValidation:
     def test_register_with_invalid_email_format(self):
         """Test register with invalid email format"""
         response = client.post(
-            "/api/v1/auth/register", json={"email": "not-an-email", "password": "testpassword123"}
+            "/api/v1/auth/register",
+            json={"email": "not-an-email", "password": "testpassword123"},
         )
         assert response.status_code in [400, 404, 422, 500]
 
@@ -515,7 +520,8 @@ class TestSecurityAndValidation:
     def test_sql_injection_in_body(self):
         """Test SQL injection in request body"""
         response = client.post(
-            "/api/v1/feedback", json={"message": "'; DROP TABLE feedback; --", "rating": 5}
+            "/api/v1/feedback",
+            json={"message": "'; DROP TABLE feedback; --", "rating": 5},
         )
         assert response.status_code in [200, 201, 401, 404, 422, 500]
 

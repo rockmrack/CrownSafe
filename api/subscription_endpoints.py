@@ -286,7 +286,8 @@ async def cancel_subscription(request: Request, current_user: User = Depends(get
 
         if not result["success"]:
             raise HTTPException(
-                status_code=400, detail=result.get("error", "Failed to cancel subscription")
+                status_code=400,
+                detail=result.get("error", "Failed to cancel subscription"),
             )
 
         return result
@@ -540,7 +541,9 @@ async def get_subscription_plans(
                         enabled=True,
                     ),
                     PlanFeature(
-                        name="basic.scan", description="Standard barcode scanning", enabled=True
+                        name="basic.scan",
+                        description="Standard barcode scanning",
+                        enabled=True,
                     ),
                 ],
                 popular=False,
@@ -573,7 +576,9 @@ async def get_subscription_plans(
                         enabled=True,
                     ),
                     PlanFeature(
-                        name="enhanced.scan", description="Enhanced barcode scanning", enabled=True
+                        name="enhanced.scan",
+                        description="Enhanced barcode scanning",
+                        enabled=True,
                     ),
                 ],
                 popular=True,
@@ -606,7 +611,9 @@ async def get_subscription_plans(
                         enabled=True,
                     ),
                     PlanFeature(
-                        name="enhanced.scan", description="Enhanced barcode scanning", enabled=True
+                        name="enhanced.scan",
+                        description="Enhanced barcode scanning",
+                        enabled=True,
                     ),
                     PlanFeature(
                         name="family.profiles",

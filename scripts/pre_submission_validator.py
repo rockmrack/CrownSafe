@@ -134,7 +134,13 @@ class SubmissionValidator:
         google_meta = self.base_path / "docs/store/google/listing.json"
         self.validate_json_file(
             google_meta,
-            ["packageName", "title", "shortDescription", "privacyPolicyUrl", "contactEmail"],
+            [
+                "packageName",
+                "title",
+                "shortDescription",
+                "privacyPolicyUrl",
+                "contactEmail",
+            ],
         )
 
         # Privacy labels

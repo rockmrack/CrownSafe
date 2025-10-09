@@ -90,4 +90,9 @@ def guideline_to_evidence(
     Returns:
         Evidence dictionary
     """
-    return {"type": "guideline", "source": organization, "id": guideline_name, "url": url}
+    return {
+        "type": "guideline",
+        "source": organization,
+        "id": guideline_name,
+        "url": url,
+    }

@@ -145,13 +145,19 @@ print("ACCEPTANCE CRITERIA")
 print("=" * 70)
 
 criteria = [
-    ("OAuth endpoints available", "/api/v1/auth/oauth/providers" in [p for _, _, p in tests]),
+    (
+        "OAuth endpoints available",
+        "/api/v1/auth/oauth/providers" in [p for _, _, p in tests],
+    ),
     ("Settings endpoints available", "/api/v1/settings/" in [p for _, _, p in tests]),
     (
         "Crashlytics toggle available",
         "/api/v1/settings/crashlytics/status" in [p for _, _, p in tests],
     ),
-    ("Privacy compliance ready", "/api/v1/user/privacy/summary" in [p for _, _, p in tests]),
+    (
+        "Privacy compliance ready",
+        "/api/v1/user/privacy/summary" in [p for _, _, p in tests],
+    ),
 ]
 
 all_met = True

@@ -57,7 +57,9 @@ class BabyShieldCommanderLogic:
     """
 
     def __init__(
-        self, agent_id: str = "commander_001", logger_instance: Optional[logging.Logger] = None
+        self,
+        agent_id: str = "commander_001",
+        logger_instance: Optional[logging.Logger] = None,
     ):
         """
         Initializes the Commander and the orchestration agents it controls.
@@ -196,7 +198,8 @@ class BabyShieldCommanderLogic:
 
         except Exception as e:
             self.logger.error(
-                f"An unexpected exception occurred in the Commander workflow: {e}", exc_info=True
+                f"An unexpected exception occurred in the Commander workflow: {e}",
+                exc_info=True,
             )
             return {
                 "status": "FAILED",

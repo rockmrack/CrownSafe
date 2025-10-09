@@ -76,7 +76,8 @@ async def lifespan(app: FastAPI):
         logger.info("Lifespan: Startup tasks completed.")
     except Exception as startup_e:
         logger.critical(
-            f"Lifespan: CRITICAL ERROR during startup initialization: {startup_e}", exc_info=True
+            f"Lifespan: CRITICAL ERROR during startup initialization: {startup_e}",
+            exc_info=True,
         )
 
     yield
@@ -96,7 +97,8 @@ async def lifespan(app: FastAPI):
         logger.info("Lifespan: Resource cleanup during shutdown completed.")
     except Exception as shutdown_e:
         logger.error(
-            f"Lifespan: Error during shutdown resource cleanup: {shutdown_e}", exc_info=True
+            f"Lifespan: Error during shutdown resource cleanup: {shutdown_e}",
+            exc_info=True,
         )
     logger.info("MCP Router Service shutdown complete.")
 

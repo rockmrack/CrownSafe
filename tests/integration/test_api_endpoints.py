@@ -242,7 +242,9 @@ class TestErrorHandling:
 @pytest.fixture
 def client():
     """FastAPI test client"""
-    from api.main import app  # Update this path to the actual location of your FastAPI app instance
+    from api.main import (
+        app,
+    )  # Update this path to the actual location of your FastAPI app instance
 
     return TestClient(app)
 

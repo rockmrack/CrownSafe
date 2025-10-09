@@ -120,7 +120,11 @@ class SizeLimitMiddleware(BaseHTTPMiddleware):
             if total_size > self.max_bytes * 0.8:  # 80% of limit
                 logger.info(
                     f"Large request: {total_size} bytes ({total_size / self.max_bytes * 100:.1f}% of limit)",
-                    extra={"traceId": trace_id, "path": request.url.path, "size": total_size},
+                    extra={
+                        "traceId": trace_id,
+                        "path": request.url.path,
+                        "size": total_size,
+                    },
                 )
 
         except Exception as e:
@@ -131,7 +135,10 @@ class SizeLimitMiddleware(BaseHTTPMiddleware):
             return JSONResponse(
                 content={
                     "ok": False,
-                    "error": {"code": "BAD_REQUEST", "message": "Error reading request body"},
+                    "error": {
+                        "code": "BAD_REQUEST",
+                        "message": "Error reading request body",
+                    },
                     "traceId": trace_id,
                 },
                 status_code=400,

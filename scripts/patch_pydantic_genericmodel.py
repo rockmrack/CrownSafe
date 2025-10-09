@@ -10,7 +10,9 @@ for p in paths:
 
     s2 = s
     s2 = re.sub(
-        r"from\s+pydantic\.generics\s+import\s+GenericModel", "from pydantic import BaseModel", s2
+        r"from\s+pydantic\.generics\s+import\s+GenericModel",
+        "from pydantic import BaseModel",
+        s2,
     )
     s2 = re.sub(r"\bGenericModel\b", "BaseModel", s2)
 

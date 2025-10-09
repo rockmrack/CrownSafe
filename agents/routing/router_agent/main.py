@@ -63,13 +63,22 @@ AGENT_VERSION = "1.2.1"  # Incremented for TypeError fix
 
 AGENT_CAPABILITIES = [
     {"name": "routing", "description": "Routes sub-tasks based on a plan"},
-    {"name": "dependency_management", "description": "Manages task dependencies within a workflow"},
+    {
+        "name": "dependency_management",
+        "description": "Manages task dependencies within a workflow",
+    },
     {
         "name": "workflow_orchestration",
         "description": "Coordinates the execution flow between agents",
     },
-    {"name": "task_delegation", "description": "Delegates tasks to specialized worker agents"},
-    {"name": "result_aggregation", "description": "Aggregates results from multiple worker agents"},
+    {
+        "name": "task_delegation",
+        "description": "Delegates tasks to specialized worker agents",
+    },
+    {
+        "name": "result_aggregation",
+        "description": "Aggregates results from multiple worker agents",
+    },
 ]
 
 # Configuration from environment
@@ -196,7 +205,11 @@ class RouterAgentManager:
                     try:
                         loop.add_signal_handler(sig, lambda s=sig: signal_handler_callback(s))
                         logger.debug(f"Added signal handler for {signal.Signals(sig).name}")
-                    except (NotImplementedError, OSError, ValueError) as e:  # Added ValueError
+                    except (
+                        NotImplementedError,
+                        OSError,
+                        ValueError,
+                    ) as e:  # Added ValueError
                         logger.warning(
                             f"Cannot add signal handler for {signal.Signals(sig).name} on this system: {e}. Use Ctrl+C if available."
                         )
@@ -301,7 +314,8 @@ async def main_async_runner():  # Renamed to avoid conflict with module-level ma
         return 0  # Normal exit for Ctrl+C
     except Exception as e:
         logger.critical(
-            f"Unexpected critical error in {AGENT_NAME} main_async_runner: {e}", exc_info=True
+            f"Unexpected critical error in {AGENT_NAME} main_async_runner: {e}",
+            exc_info=True,
         )
         return 1
     finally:

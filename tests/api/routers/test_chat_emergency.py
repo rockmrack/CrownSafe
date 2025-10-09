@@ -173,7 +173,10 @@ class TestEmergencyEndToEnd:
         # Test emergency phrase
         response = client.post(
             "/api/v1/chat/conversation",
-            json={"scan_id": "test_scan_123", "user_query": "My baby swallowed a battery"},
+            json={
+                "scan_id": "test_scan_123",
+                "user_query": "My baby swallowed a battery",
+            },
         )
 
         assert response.status_code == 200
@@ -215,7 +218,8 @@ class TestEmergencyEndToEnd:
         client = TestClient(app)
 
         response = client.post(
-            "/api/v1/chat/conversation", json={"scan_id": "test_scan_123", "user_query": "hmmm"}
+            "/api/v1/chat/conversation",
+            json={"scan_id": "test_scan_123", "user_query": "hmmm"},
         )
 
         assert response.status_code == 200

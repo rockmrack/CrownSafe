@@ -144,7 +144,10 @@ class PatientStratificationAgent:
             elif "validate" in task_name:
                 result = await self._handle_validate_request(payload)
             else:
-                result = {"status": "error", "message": f"Unknown task type: {task_name}"}
+                result = {
+                    "status": "error",
+                    "message": f"Unknown task type: {task_name}",
+                }
 
             # Send response based on result status
             if result.get("status") == "success":
@@ -226,7 +229,10 @@ class PatientStratificationAgent:
         decision_id = payload.get("decision_id")
 
         if not decision_id:
-            return {"status": "error", "message": "Missing required parameter: decision_id"}
+            return {
+                "status": "error",
+                "message": "Missing required parameter: decision_id",
+            }
 
         # This would retrieve stored decision details
         return {
@@ -309,7 +315,10 @@ class PatientStratificationAgent:
             info = {
                 "average_processing_time_ms": self.logic.metrics.get("average_processing_time", 0),
                 "cache_hit_rate": self.logic.metrics["cache_hits"]
-                / max(self.logic.metrics["cache_hits"] + self.logic.metrics["cache_misses"], 1),
+                / max(
+                    self.logic.metrics["cache_hits"] + self.logic.metrics["cache_misses"],
+                    1,
+                ),
                 "total_llm_tokens": self.logic.metrics["total_llm_tokens"],
                 "decisions_by_type": self._count_decisions_by_type(),
             }

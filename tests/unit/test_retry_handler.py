@@ -73,7 +73,9 @@ class TestRetryConfig:
     def test_calculate_delay_exponential(self):
         """Test exponential backoff delay calculation"""
         config = RetryConfig(
-            strategy=RetryStrategy.EXPONENTIAL_BACKOFF, initial_delay=1.0, exponential_base=2.0
+            strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
+            initial_delay=1.0,
+            exponential_base=2.0,
         )
 
         assert config.calculate_delay(1) == 1.0
@@ -325,7 +327,10 @@ class TestRetryHandler:
 
         handler = RetryHandler(
             RetryConfig(
-                max_attempts=2, on_retry=on_retry, on_failure=on_failure, on_success=on_success
+                max_attempts=2,
+                on_retry=on_retry,
+                on_failure=on_failure,
+                on_success=on_success,
             )
         )
 

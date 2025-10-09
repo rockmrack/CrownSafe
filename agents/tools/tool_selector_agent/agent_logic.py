@@ -65,7 +65,9 @@ class ToolSelectorLogic:
             # TODO: Implement LLM call to extract capabilities from description
             # For now, fail if capabilities aren't provided directly
             return self._create_failure_response(
-                correlation_id, original_requester_id, "Missing 'required_capabilities' in payload."
+                correlation_id,
+                original_requester_id,
+                "Missing 'required_capabilities' in payload.",
             )
 
         if not isinstance(required_capabilities, list) or not required_capabilities:
@@ -108,7 +110,9 @@ class ToolSelectorLogic:
             self.pending_selections[correlation_id]["status"] = "FAILED"
             # Need to send TASK_FAIL back to original requester
             failure_payload = self._create_failure_response(
-                correlation_id, original_requester_id, f"Failed to initiate discovery: {e}"
+                correlation_id,
+                original_requester_id,
+                f"Failed to initiate discovery: {e}",
             )
             # Cleanup state?
             if correlation_id in self.pending_selections:
@@ -205,7 +209,8 @@ class ToolSelectorLogic:
                 )
             except Exception as e:
                 self.logger.error(
-                    f"Failed to send selection response for {target_request_id}: {e}", exc_info=True
+                    f"Failed to send selection response for {target_request_id}: {e}",
+                    exc_info=True,
                 )
 
         # Cleanup completed/failed request state

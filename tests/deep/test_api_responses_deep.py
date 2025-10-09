@@ -92,7 +92,12 @@ class TestAPIResponsesDeep:
         headers = {k.lower(): v for k, v in r.headers.items()}
         # Check if cache control is set (optional)
         if "cache-control" in headers:
-            assert headers["cache-control"] in ["no-cache", "no-store", "public", "private"]
+            assert headers["cache-control"] in [
+                "no-cache",
+                "no-store",
+                "public",
+                "private",
+            ]
 
     def test_compression_support(self):
         """Test if response compression is supported"""
@@ -110,7 +115,10 @@ class TestAPIResponsesDeep:
         client = TestClient(app)
         r = client.options(
             "/api/v1/chat/conversation",
-            headers={"Origin": "https://example.com", "Access-Control-Request-Method": "POST"},
+            headers={
+                "Origin": "https://example.com",
+                "Access-Control-Request-Method": "POST",
+            },
         )
 
         headers = {k.lower(): v for k, v in r.headers.items()}

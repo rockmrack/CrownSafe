@@ -183,12 +183,26 @@ class TestAPIEndpoints:
     def test_barcode_with_invalid_format(self):
         """Test barcode with invalid format"""
         response = client.post("/api/v1/barcode/scan", json={"barcode": "invalid"})
-        assert response.status_code in [200, 400, 401, 404, 422, 500]  # 200 = no results found
+        assert response.status_code in [
+            200,
+            400,
+            401,
+            404,
+            422,
+            500,
+        ]  # 200 = no results found
 
     def test_barcode_with_empty_code(self):
         """Test barcode with empty code"""
         response = client.post("/api/v1/barcode/scan", json={"barcode": ""})
-        assert response.status_code in [200, 400, 401, 404, 422, 500]  # 200 = no results found
+        assert response.status_code in [
+            200,
+            400,
+            401,
+            404,
+            422,
+            500,
+        ]  # 200 = no results found
 
     def test_barcode_with_upc_format(self):
         """Test barcode with UPC format"""
@@ -227,14 +241,16 @@ class TestAPIEndpoints:
     def test_register_endpoint_exists(self):
         """Test register endpoint exists"""
         response = client.post(
-            "/api/v1/auth/register", json={"email": "test@test.com", "password": "testpassword123"}
+            "/api/v1/auth/register",
+            json={"email": "test@test.com", "password": "testpassword123"},
         )
         assert response.status_code in [200, 201, 400, 404, 422, 500]
 
     def test_login_endpoint_exists(self):
         """Test login endpoint exists"""
         response = client.post(
-            "/api/v1/auth/login", json={"email": "test@test.com", "password": "testpassword123"}
+            "/api/v1/auth/login",
+            json={"email": "test@test.com", "password": "testpassword123"},
         )
         assert response.status_code in [200, 400, 401, 404, 422, 500]
 
@@ -246,7 +262,8 @@ class TestAPIEndpoints:
     def test_register_with_invalid_email(self):
         """Test register with invalid email"""
         response = client.post(
-            "/api/v1/auth/register", json={"email": "invalid-email", "password": "testpassword123"}
+            "/api/v1/auth/register",
+            json={"email": "invalid-email", "password": "testpassword123"},
         )
         assert response.status_code in [400, 404, 422, 500]
 
@@ -278,7 +295,14 @@ class TestAPIEndpoints:
             "/api/v1/auth/password-reset/confirm",
             json={"token": "test-token", "new_password": "newpassword123"},
         )
-        assert response.status_code in [200, 400, 404, 410, 422, 500]  # 410 = Gone/expired
+        assert response.status_code in [
+            200,
+            400,
+            404,
+            410,
+            422,
+            500,
+        ]  # 410 = Gone/expired
 
     def test_token_refresh_endpoint(self):
         """Test token refresh endpoint"""
@@ -428,7 +452,8 @@ class TestAPIEndpoints:
     def test_feedback_with_category(self):
         """Test feedback with category"""
         response = client.post(
-            "/api/v1/feedback", json={"message": "Test feedback", "rating": 5, "category": "bug"}
+            "/api/v1/feedback",
+            json={"message": "Test feedback", "rating": 5, "category": "bug"},
         )
         assert response.status_code in [200, 201, 401, 404, 422, 500]
 
@@ -503,7 +528,9 @@ class TestAPIEndpoints:
     def test_invalid_json_body(self):
         """Test invalid JSON body handling"""
         response = client.post(
-            "/api/v1/feedback", data="invalid json", headers={"Content-Type": "application/json"}
+            "/api/v1/feedback",
+            data="invalid json",
+            headers={"Content-Type": "application/json"},
         )
         assert response.status_code in [400, 404, 422, 500]  # 404 if endpoint not found
 
@@ -525,14 +552,25 @@ class TestAPIEndpoints:
     def test_cors_headers_present(self):
         """Test CORS headers are present"""
         response = client.options("/api/v1/recalls")
-        assert response.status_code in [200, 204, 404, 405]  # 204 = No Content (OPTIONS success)
+        assert response.status_code in [
+            200,
+            204,
+            404,
+            405,
+        ]  # 204 = No Content (OPTIONS success)
 
     def test_content_type_validation(self):
         """Test content type validation"""
         response = client.post(
             "/api/v1/feedback", data="test", headers={"Content-Type": "text/plain"}
         )
-        assert response.status_code in [400, 404, 415, 422, 500]  # 404 if endpoint not found
+        assert response.status_code in [
+            400,
+            404,
+            415,
+            422,
+            500,
+        ]  # 404 if endpoint not found
 
     def test_rate_limit_headers(self):
         """Test rate limit headers presence"""

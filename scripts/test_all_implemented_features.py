@@ -89,7 +89,11 @@ async def test_core_features():
         try:
             response = await client.post(
                 f"{BASE_URL}/api/v1/search/advanced",
-                json={"product": "baby bottle", "agencies": ["FDA", "CPSC"], "limit": 5},
+                json={
+                    "product": "baby bottle",
+                    "agencies": ["FDA", "CPSC"],
+                    "limit": 5,
+                },
             )
             log_result("Advanced Search", response.status_code == 200)
             if response.status_code == 200:
@@ -232,7 +236,8 @@ async def test_advanced_features():
         # 2. Age-Appropriate Guidelines
         try:
             response = await client.post(
-                f"{BASE_URL}/api/v1/advanced/guidelines", json={"product": "Toy", "age_months": 6}
+                f"{BASE_URL}/api/v1/advanced/guidelines",
+                json={"product": "Toy", "age_months": 6},
             )
             if response.status_code == 404:
                 print("  ⚠️ Guidelines endpoint not available in simplified API")
@@ -266,7 +271,8 @@ async def test_compliance_features():
         # 1. COPPA Age Verification
         try:
             response = await client.post(
-                f"{BASE_URL}/api/v1/compliance/coppa/verify-age", json={"birthdate": "2010-01-01"}
+                f"{BASE_URL}/api/v1/compliance/coppa/verify-age",
+                json={"birthdate": "2010-01-01"},
             )
             log_result("COPPA Age Verification", response.status_code == 200)
             if response.status_code == 200:
@@ -299,7 +305,11 @@ async def test_compliance_features():
         try:
             response = await client.post(
                 f"{BASE_URL}/api/v1/compliance/gdpr/data-request",
-                json={"user_id": 1, "request_type": "access", "email": "user@example.com"},
+                json={
+                    "user_id": 1,
+                    "request_type": "access",
+                    "email": "user@example.com",
+                },
             )
             if response.status_code == 404:
                 print("  ⚠️ GDPR endpoint not available in simplified API")

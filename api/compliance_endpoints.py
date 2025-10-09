@@ -257,7 +257,14 @@ async def verify_user_age(request: AgeVerificationRequest, db: Session = Depends
 
         # Determine compliance requirements
         coppa_applies = age < 13 and request.country == "US"
-        gdpr_child = age < 16 and request.country in ["GB", "EU", "DE", "FR", "IT", "ES"]
+        gdpr_child = age < 16 and request.country in [
+            "GB",
+            "EU",
+            "DE",
+            "FR",
+            "IT",
+            "ES",
+        ]
         requires_consent = coppa_applies or (gdpr_child and age < 13)
 
         # Generate verification token if consent needed
@@ -387,8 +394,16 @@ async def get_consent_status(user_id: int, db: Session = Depends(get_db)):
             "expires_at": datetime.now() + timedelta(days=335),
             "verification_method": "credit_card",
             "restrictions": [],
-            "allowed_features": ["barcode_scanning", "recall_checking", "safety_reports"],
-            "blocked_features": ["social_sharing", "location_tracking", "behavioral_analytics"],
+            "allowed_features": [
+                "barcode_scanning",
+                "recall_checking",
+                "safety_reports",
+            ],
+            "blocked_features": [
+                "social_sharing",
+                "location_tracking",
+                "behavioral_analytics",
+            ],
         }
 
     except Exception as e:
@@ -519,7 +534,9 @@ async def assess_childrens_code_compliance(
 
 @router.post("/gdpr/data-request", response_model=DataRequestResponse)
 async def submit_data_request(
-    request: DataRequestModel, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+    request: DataRequestModel,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ):
     """
     Submit GDPR data request (access, deletion, portability, etc.).
@@ -586,7 +603,9 @@ async def submit_data_request(
 
 @router.get("/gdpr/request-status/{request_id}")
 async def get_request_status(
-    request_id: str, user_id: int = Query(..., description="User ID"), db: Session = Depends(get_db)
+    request_id: str,
+    user_id: int = Query(..., description="User ID"),
+    db: Session = Depends(get_db),
 ):
     """
     Check status of a GDPR data request.
@@ -625,14 +644,26 @@ async def set_retention_policy(request: DataRetentionPolicyRequest, db: Session 
 
         # Create retention policies
         policies = {
-            DataCategory.PERSONAL: {"retention_days": 365, "auto_delete": True, "anonymize": False},
-            DataCategory.SENSITIVE: {"retention_days": 90, "auto_delete": True, "anonymize": False},
+            DataCategory.PERSONAL: {
+                "retention_days": 365,
+                "auto_delete": True,
+                "anonymize": False,
+            },
+            DataCategory.SENSITIVE: {
+                "retention_days": 90,
+                "auto_delete": True,
+                "anonymize": False,
+            },
             DataCategory.HEALTH: {
                 "retention_days": 730,  # 2 years for health data
                 "auto_delete": False,
                 "anonymize": True,
             },
-            DataCategory.LOCATION: {"retention_days": 30, "auto_delete": True, "anonymize": False},
+            DataCategory.LOCATION: {
+                "retention_days": 30,
+                "auto_delete": True,
+                "anonymize": False,
+            },
             DataCategory.BEHAVIORAL: {
                 "retention_days": 180,
                 "auto_delete": True,

@@ -14,11 +14,13 @@ def auth_and_get_user_id():
     email = f"test+{uuid.uuid4().hex[:6]}@ex.com"
     pwd = "P@ssw0rd!"
     r = client.post(
-        "/api/v1/auth/register", json={"email": email, "password": pwd, "confirm_password": pwd}
+        "/api/v1/auth/register",
+        json={"email": email, "password": pwd, "confirm_password": pwd},
     )
     print("register_status", r.status_code)
     r = client.post(
-        "/api/v1/auth/token", data={"username": email, "password": pwd, "grant_type": "password"}
+        "/api/v1/auth/token",
+        data={"username": email, "password": pwd, "grant_type": "password"},
     )
     print("token_status", r.status_code)
     tok = r.json().get("access_token")

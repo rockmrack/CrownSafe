@@ -8,7 +8,11 @@ from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
 from datetime import datetime
 
-from core_infra.barcode_validator import barcode_validator, BarcodeValidationResult, BarcodeType
+from core_infra.barcode_validator import (
+    barcode_validator,
+    BarcodeValidationResult,
+    BarcodeType,
+)
 from core_infra.database import get_db_session
 
 try:
@@ -193,7 +197,10 @@ class EnhancedBarcodeService:
         # For GS1-128, search in structured data fields
         if barcode_type == BarcodeType.GS1_128:
             conditions.extend(
-                [RecallDB.gtin == normalized_barcode, RecallDB.serial_number == normalized_barcode]
+                [
+                    RecallDB.gtin == normalized_barcode,
+                    RecallDB.serial_number == normalized_barcode,
+                ]
             )
 
         # Combine with OR logic

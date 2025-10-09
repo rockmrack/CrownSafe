@@ -17,12 +17,17 @@ def upgrade():
         sa.Column("report_type", sa.String(64), nullable=False),
         sa.Column("storage_path", sa.String(1024), nullable=True),
         sa.Column(
-            "created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.func.now(),
+            nullable=False,
         ),
     )
     op.create_index("ix_report_records_user_created", "report_records", ["user_id", "created_at"])
     op.create_index(
-        "ix_report_records_type_created", "report_records", ["report_type", "created_at"]
+        "ix_report_records_type_created",
+        "report_records",
+        ["report_type", "created_at"],
     )
 
 

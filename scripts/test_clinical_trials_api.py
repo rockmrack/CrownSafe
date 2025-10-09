@@ -20,7 +20,11 @@ def test_clinical_trials_api():
         },
         {
             "name": "Condition only (Type 2 Diabetes) - query.cond",
-            "params": {"query.cond": "Type 2 Diabetes", "pageSize": "3", "format": "json"},
+            "params": {
+                "query.cond": "Type 2 Diabetes",
+                "pageSize": "3",
+                "format": "json",
+            },
         },
         {
             "name": "Drug + Condition - query.intr AND query.cond",
@@ -33,7 +37,11 @@ def test_clinical_trials_api():
         },
         {
             "name": "General term - query.term (Metformin diabetes)",
-            "params": {"query.term": "Metformin diabetes", "pageSize": "3", "format": "json"},
+            "params": {
+                "query.term": "Metformin diabetes",
+                "pageSize": "3",
+                "format": "json",
+            },
         },
         {
             "name": 'General term - query.term (Metformin AND "Type 2 Diabetes")',  # Simulates one possible agent query

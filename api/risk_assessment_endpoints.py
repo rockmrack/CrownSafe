@@ -9,7 +9,15 @@ import os
 import logging
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
-from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks, File, UploadFile
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    Depends,
+    Query,
+    BackgroundTasks,
+    File,
+    UploadFile,
+)
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -151,7 +159,9 @@ async def risk_assessment_root_post():
 
 @risk_router.post("/assess", response_model=RiskAssessmentResponse)
 async def assess_product_risk(
-    request: RiskAssessmentRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+    request: RiskAssessmentRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ):
     """
     Perform comprehensive risk assessment for a product
@@ -505,7 +515,9 @@ async def get_report(
 
 @risk_router.post("/ingest")
 async def trigger_data_ingestion(
-    request: DataIngestionRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+    request: DataIngestionRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ):
     """
     Trigger data ingestion from safety sources
@@ -774,7 +786,10 @@ async def refresh_product_data(product_id: str, barcode: Optional[str] = None):
 
 
 async def ingest_from_source(
-    source: str, job_id: str, start_date: Optional[datetime], end_date: Optional[datetime]
+    source: str,
+    job_id: str,
+    start_date: Optional[datetime],
+    end_date: Optional[datetime],
 ):
     """
     Background task to ingest data from a specific source

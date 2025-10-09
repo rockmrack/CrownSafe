@@ -44,8 +44,18 @@ test("Root", "GET", "/")
 test("Docs", "GET", "/docs")
 
 # Safety
-test("Safety Check", "POST", "/api/v1/safety-check", {"barcode": "123456789012", "user_id": 1})
-test("Mobile Scan", "POST", "/api/v1/mobile/scan", {"user_id": 1, "barcode": "123456789012"})
+test(
+    "Safety Check",
+    "POST",
+    "/api/v1/safety-check",
+    {"barcode": "123456789012", "user_id": 1},
+)
+test(
+    "Mobile Scan",
+    "POST",
+    "/api/v1/mobile/scan",
+    {"user_id": 1, "barcode": "123456789012"},
+)
 
 # Premium
 test(
@@ -76,14 +86,24 @@ else:
     failed += 1
 
 # Baby Features
-test("Alternatives", "POST", "/api/v1/baby/alternatives", {"user_id": 1, "product": "Lotion"})
+test(
+    "Alternatives",
+    "POST",
+    "/api/v1/baby/alternatives",
+    {"user_id": 1, "product": "Lotion"},
+)
 test(
     "Notification",
     "POST",
     "/api/v1/baby/notifications/send",
     {"user_id": 1, "title": "Alert", "body": "Test", "token": "test"},
 )
-test("Community", "GET", "/api/v1/baby/community/alerts", params={"user_id": 1, "topic": "safety"})
+test(
+    "Community",
+    "GET",
+    "/api/v1/baby/community/alerts",
+    params={"user_id": 1, "topic": "safety"},
+)
 test(
     "Hazard",
     "POST",
@@ -92,7 +112,12 @@ test(
 )
 
 # Advanced
-test("Research", "POST", "/api/v1/advanced/research", {"user_id": 1, "product_name": "Monitor"})
+test(
+    "Research",
+    "POST",
+    "/api/v1/advanced/research",
+    {"user_id": 1, "product_name": "Monitor"},
+)
 test(
     "Guidelines",
     "POST",

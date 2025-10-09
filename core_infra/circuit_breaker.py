@@ -9,7 +9,12 @@ from functools import wraps
 import logging
 import time
 import asyncio
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_exponential,
+    retry_if_exception_type,
+)
 import redis
 
 logger = logging.getLogger(__name__)
@@ -22,7 +27,12 @@ BREAKER_CONFIGS = {
         "exclude": [KeyError, ValueError],  # Don't count these as failures
         "name": "DatabaseBreaker",
     },
-    "redis": {"fail_max": 10, "reset_timeout": 30, "exclude": [KeyError], "name": "RedisBreaker"},
+    "redis": {
+        "fail_max": 10,
+        "reset_timeout": 30,
+        "exclude": [KeyError],
+        "name": "RedisBreaker",
+    },
     "external_api": {
         "fail_max": 3,
         "reset_timeout": 120,
@@ -41,7 +51,12 @@ BREAKER_CONFIGS = {
         "exclude": [],
         "name": "GoogleVisionBreaker",
     },
-    "s3_storage": {"fail_max": 5, "reset_timeout": 60, "exclude": [], "name": "S3StorageBreaker"},
+    "s3_storage": {
+        "fail_max": 5,
+        "reset_timeout": 60,
+        "exclude": [],
+        "name": "S3StorageBreaker",
+    },
 }
 
 # Create circuit breakers
@@ -226,7 +241,11 @@ def reset_circuit(service_name: str) -> bool:
 async def database_fallback(*args, **kwargs):
     """Fallback when database is unavailable"""
     logger.warning("Database circuit open, using fallback")
-    return {"error": "Database temporarily unavailable", "fallback": True, "retry_after": 60}
+    return {
+        "error": "Database temporarily unavailable",
+        "fallback": True,
+        "retry_after": 60,
+    }
 
 
 async def redis_fallback(*args, **kwargs):

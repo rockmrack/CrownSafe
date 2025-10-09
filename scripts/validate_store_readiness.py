@@ -18,7 +18,13 @@ CRITICAL_ENDPOINTS = [
     ("GET", "/api/v1/healthz", None, "Health Check", True),
     ("GET", "/api/v1/version", None, "Version Info", False),
     # Core functionality
-    ("POST", "/api/v1/search/advanced", {"product": "test", "limit": 1}, "Search API", True),
+    (
+        "POST",
+        "/api/v1/search/advanced",
+        {"product": "test", "limit": 1},
+        "Search API",
+        True,
+    ),
     ("GET", "/api/v1/agencies", None, "Agencies List", False),
     # Privacy compliance
     ("GET", "/api/v1/user/privacy/summary", None, "Privacy Summary", True),
@@ -34,7 +40,10 @@ CRITICAL_ENDPOINTS = [
 def test_endpoint(method: str, path: str, data: dict, name: str) -> Tuple[bool, str, int]:
     """Test a single endpoint and return status"""
     url = f"{BASE_URL}{path}"
-    headers = {"Content-Type": "application/json", "User-Agent": "BabyShield-Readiness-Check/1.0"}
+    headers = {
+        "Content-Type": "application/json",
+        "User-Agent": "BabyShield-Readiness-Check/1.0",
+    }
 
     try:
         if method == "GET":
@@ -112,7 +121,9 @@ def main():
     print("\n📋 Checking API Response Format...")
     try:
         response = requests.post(
-            f"{BASE_URL}/api/v1/search/advanced", json={"product": "test", "limit": 1}, timeout=10
+            f"{BASE_URL}/api/v1/search/advanced",
+            json={"product": "test", "limit": 1},
+            timeout=10,
         )
         if response.status_code == 200:
             data = response.json()

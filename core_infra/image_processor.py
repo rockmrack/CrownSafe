@@ -227,7 +227,10 @@ class ImageAnalysisService:
         }
 
     async def analyze_image(
-        self, image_data: bytes, providers: List[Provider] = None, extract_all: bool = True
+        self,
+        image_data: bytes,
+        providers: List[Provider] = None,
+        extract_all: bool = True,
     ) -> ExtractionResult:
         """
         Analyze image with specified providers

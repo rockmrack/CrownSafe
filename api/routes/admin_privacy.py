@@ -68,7 +68,11 @@ class PrivacyRequestFilter(BaseModel):
 def create_response(data: dict, request: Request, status_code: int = 200) -> JSONResponse:
     """Create standard JSON response with trace ID"""
     return JSONResponse(
-        content={"ok": True, "data": data, "traceId": getattr(request.state, "trace_id", None)},
+        content={
+            "ok": True,
+            "data": data,
+            "traceId": getattr(request.state, "trace_id", None),
+        },
         status_code=status_code,
     )
 
@@ -199,7 +203,9 @@ async def get_privacy_request_details(
             UUID(request_id)
         except ValueError:
             raise APIError(
-                status_code=400, code="INVALID_REQUEST_ID", message="Invalid request ID format"
+                status_code=400,
+                code="INVALID_REQUEST_ID",
+                message="Invalid request ID format",
             )
 
         # Query request
@@ -207,7 +213,9 @@ async def get_privacy_request_details(
 
         if not privacy_request:
             raise APIError(
-                status_code=404, code="REQUEST_NOT_FOUND", message="Privacy request not found"
+                status_code=404,
+                code="REQUEST_NOT_FOUND",
+                message="Privacy request not found",
             )
 
         # Format response
@@ -230,7 +238,9 @@ async def get_privacy_request_details(
     except Exception as e:
         logger.error(f"Failed to get privacy request {request_id}: {e}")
         raise APIError(
-            status_code=500, code="GET_REQUEST_FAILED", message="Failed to retrieve privacy request"
+            status_code=500,
+            code="GET_REQUEST_FAILED",
+            message="Failed to retrieve privacy request",
         )
 
 
@@ -254,7 +264,9 @@ async def update_privacy_request_status(
             UUID(request_id)
         except ValueError:
             raise APIError(
-                status_code=400, code="INVALID_REQUEST_ID", message="Invalid request ID format"
+                status_code=400,
+                code="INVALID_REQUEST_ID",
+                message="Invalid request ID format",
             )
 
         # Get request
@@ -262,7 +274,9 @@ async def update_privacy_request_status(
 
         if not privacy_request:
             raise APIError(
-                status_code=404, code="REQUEST_NOT_FOUND", message="Privacy request not found"
+                status_code=404,
+                code="REQUEST_NOT_FOUND",
+                message="Privacy request not found",
             )
 
         # Validate status transition
@@ -404,7 +418,10 @@ async def privacy_request_statistics(
         avg_processing_time = (
             db.query(
                 func.avg(
-                    func.extract("epoch", PrivacyRequest.completed_at - PrivacyRequest.submitted_at)
+                    func.extract(
+                        "epoch",
+                        PrivacyRequest.completed_at - PrivacyRequest.submitted_at,
+                    )
                 )
             )
             .filter(
@@ -433,7 +450,11 @@ async def privacy_request_statistics(
 
         # Format statistics
         stats = {
-            "period": {"days": days, "from": since_date.isoformat(), "to": now.isoformat()},
+            "period": {
+                "days": days,
+                "from": since_date.isoformat(),
+                "to": now.isoformat(),
+            },
             "overview": {
                 "total_requests": total_requests,
                 "pending": db.query(func.count(PrivacyRequest.id))
@@ -502,7 +523,9 @@ async def process_privacy_request(
             UUID(request_id)
         except ValueError:
             raise APIError(
-                status_code=400, code="INVALID_REQUEST_ID", message="Invalid request ID format"
+                status_code=400,
+                code="INVALID_REQUEST_ID",
+                message="Invalid request ID format",
             )
 
         # Get request
@@ -510,7 +533,9 @@ async def process_privacy_request(
 
         if not privacy_request:
             raise APIError(
-                status_code=404, code="REQUEST_NOT_FOUND", message="Privacy request not found"
+                status_code=404,
+                code="REQUEST_NOT_FOUND",
+                message="Privacy request not found",
             )
 
         if privacy_request.status not in ["queued", "verifying"]:
@@ -594,7 +619,10 @@ async def get_export_template(request: Request, admin: str = Depends(require_adm
                     "status": "resolved",
                 }
             ],
-            "api_usage": {"total_requests": 150, "last_request": "2024-12-01T00:00:00Z"},
+            "api_usage": {
+                "total_requests": 150,
+                "last_request": "2024-12-01T00:00:00Z",
+            },
         }
 
         template = exporter.create_export_package(sample_data)
@@ -611,7 +639,9 @@ async def get_export_template(request: Request, admin: str = Depends(require_adm
     except Exception as e:
         logger.error(f"Failed to get export template: {e}")
         raise APIError(
-            status_code=500, code="TEMPLATE_FAILED", message="Failed to retrieve export template"
+            status_code=500,
+            code="TEMPLATE_FAILED",
+            message="Failed to retrieve export template",
         )
 
 

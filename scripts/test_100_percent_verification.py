@@ -66,7 +66,10 @@ def main():
     print("\n🔍 CORE SAFETY FEATURES")
     print("-" * 40)
     run_test(
-        "Safety Check", "POST", "/api/v1/safety-check", {"barcode": "123456789012", "user_id": 1}
+        "Safety Check",
+        "POST",
+        "/api/v1/safety-check",
+        {"barcode": "123456789012", "user_id": 1},
     )
     run_test(
         "Mobile Scan",
@@ -81,15 +84,30 @@ def main():
         "Pregnancy Safety",
         "POST",
         "/api/v1/premium/pregnancy/check",
-        {"user_id": 1, "product": "Test Product", "trimester": 2, "barcode": "123456789"},
+        {
+            "user_id": 1,
+            "product": "Test Product",
+            "trimester": 2,
+            "barcode": "123456789",
+        },
     )
     run_test(
         "Allergy Check",
         "POST",
         "/api/v1/premium/allergy/check",
-        {"user_id": 1, "product": "Baby Food", "barcode": "123", "allergies": ["peanuts"]},
+        {
+            "user_id": 1,
+            "product": "Baby Food",
+            "barcode": "123",
+            "allergies": ["peanuts"],
+        },
     )
-    run_test("Get Family Members", "GET", "/api/v1/premium/family/members", params={"user_id": 1})
+    run_test(
+        "Get Family Members",
+        "GET",
+        "/api/v1/premium/family/members",
+        params={"user_id": 1},
+    )
     run_test(
         "Add Family Member",
         "POST",
@@ -111,7 +129,12 @@ def main():
         "Push Notification",
         "POST",
         "/api/v1/baby/notifications/send",
-        {"user_id": 1, "title": "Test Alert", "body": "Test message", "token": "test-token"},
+        {
+            "user_id": 1,
+            "title": "Test Alert",
+            "body": "Test message",
+            "token": "test-token",
+        },
     )
     run_test(
         "Community Alerts",
@@ -132,7 +155,11 @@ def main():
         "Web Research",
         "POST",
         "/api/v1/advanced/research",
-        {"user_id": 1, "product_name": "Baby Monitor", "research_depth": "comprehensive"},
+        {
+            "user_id": 1,
+            "product_name": "Baby Monitor",
+            "research_depth": "comprehensive",
+        },
     )
     run_test(
         "Age Guidelines",
@@ -150,7 +177,11 @@ def main():
         "COPPA Age Verify",
         "POST",
         "/api/v1/compliance/coppa/verify-age",
-        {"email": "parent@example.com", "birthdate": "1990-01-01", "parent_consent": True},
+        {
+            "email": "parent@example.com",
+            "birthdate": "1990-01-01",
+            "parent_consent": True,
+        },
     )
     run_test(
         "Children's Code",

@@ -36,7 +36,10 @@ def upgrade():
         unique=False,
     )
     op.create_index(
-        op.f("ix_account_deletion_audit_jti"), "account_deletion_audit", ["jti"], unique=False
+        op.f("ix_account_deletion_audit_jti"),
+        "account_deletion_audit",
+        ["jti"],
+        unique=False,
     )
 
 

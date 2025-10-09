@@ -159,7 +159,11 @@ class OpenAILLMClient:
             "jurisdiction": {"code": "US", "label": "US FDA/CPSC"},
             "evidence": [
                 {"type": "regulation", "source": "FDA", "id": "baby_formula_regs"},
-                {"type": "regulation", "source": "CPSC", "id": "infant_product_monitoring"},
+                {
+                    "type": "regulation",
+                    "source": "CPSC",
+                    "id": "infant_product_monitoring",
+                },
             ],
             "suggested_questions": [
                 "Is this safe for newborns?",

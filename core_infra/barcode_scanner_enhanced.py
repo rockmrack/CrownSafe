@@ -228,9 +228,12 @@ class EnhancedBarcodeScanner:
         # Try barcode detection (if available in OpenCV version)
         if self.barcode_detector:
             try:
-                retval, decoded_info, decoded_type, points = self.barcode_detector.detectAndDecode(
-                    gray
-                )
+                (
+                    retval,
+                    decoded_info,
+                    decoded_type,
+                    points,
+                ) = self.barcode_detector.detectAndDecode(gray)
                 if retval:
                     for i, data in enumerate(decoded_info):
                         if data:

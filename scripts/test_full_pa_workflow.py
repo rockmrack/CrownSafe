@@ -63,7 +63,11 @@ def check_endpoint(
         if response.status_code == expected_status:
             return True, response_data, None
         else:
-            return False, response_data, f"Expected {expected_status}, got {response.status_code}"
+            return (
+                False,
+                response_data,
+                f"Expected {expected_status}, got {response.status_code}",
+            )
 
     except requests.exceptions.ConnectionError:
         return False, None, "Connection refused - is the API running?"
@@ -152,7 +156,11 @@ def diagnose_api():
     # Test various endpoints
     endpoints_to_check = [
         ("GET", "/api/v1/", 404),  # Might not exist
-        ("POST", "/api/v1/prior-auth/predict", 422),  # Should fail with validation error
+        (
+            "POST",
+            "/api/v1/prior-auth/predict",
+            422,
+        ),  # Should fail with validation error
         ("GET", "/api/v1/status/test-id", 404),  # Non-existent workflow
     ]
 

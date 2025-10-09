@@ -35,7 +35,8 @@ REDIS_RETRY_DELAY = float(os.getenv("REDIS_RETRY_DELAY", 0.5))  # seconds
 logger = logging.getLogger(__name__)
 if not logger.hasHandlers():
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
 # --- Connection Pool ---
@@ -92,7 +93,11 @@ async def create_redis_pool(force_new=False) -> ConnectionPool:
                     else:
                         logger.warning("Redis ping returned false, retrying...")
 
-            except (redis.ConnectionError, redis.RedisError, ConnectionRefusedError) as e:
+            except (
+                redis.ConnectionError,
+                redis.RedisError,
+                ConnectionRefusedError,
+            ) as e:
                 logger.warning(f"Redis connection attempt {attempt+1} failed: {e}")
                 if attempt < REDIS_RETRY_ATTEMPTS - 1:
                     logger.info(f"Retrying in {REDIS_RETRY_DELAY} seconds...")

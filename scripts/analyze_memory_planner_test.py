@@ -368,7 +368,10 @@ class MemoryPlannerAnalyzer:
         return selected.path
 
     def analyze_planner_logs(
-        self, workflow_id: str = None, drug_name: str = None, planner_log_path: str = None
+        self,
+        workflow_id: str = None,
+        drug_name: str = None,
+        planner_log_path: str = None,
     ) -> Dict[str, Any]:
         """Analyze planner logs for memory-augmented behavior"""
         print("\n=== ANALYZING PLANNER LOGS ===")
@@ -719,7 +722,11 @@ class MemoryPlannerAnalyzer:
             "total_duration": None,
             "steps_executed": [],
             "api_calls_made": {"pubmed": 0, "clinical_trials": 0, "fda": 0},
-            "data_retrieved": {"pubmed_articles": 0, "clinical_trials": 0, "adverse_events": 0},
+            "data_retrieved": {
+                "pubmed_articles": 0,
+                "clinical_trials": 0,
+                "adverse_events": 0,
+            },
             "pdf_generated": False,
             "memory_stored": False,
         }
@@ -1106,7 +1113,13 @@ class MemoryPlannerAnalyzer:
         elif drug_name and (
             "sglt2" in drug_name.lower()
             or drug_name.lower()
-            in ["canagliflozin", "dapagliflozin", "empagliflozin", "ertugliflozin", "sotagliflozin"]
+            in [
+                "canagliflozin",
+                "dapagliflozin",
+                "empagliflozin",
+                "ertugliflozin",
+                "sotagliflozin",
+            ]
         ):
             total_docs = memory_util.get("strategy_validation", {}).get("class_documents", 0)
             if total_docs > 30 and strategy == "comprehensive":
@@ -1159,7 +1172,11 @@ class MemoryPlannerAnalyzer:
                 recommendations.append(
                     "Next: Test Dapagliflozin (3rd SGLT2) - should trigger 'update' strategy"
                 )
-            elif drug_name.lower() in ["dapagliflozin", "ertugliflozin", "sotagliflozin"]:
+            elif drug_name.lower() in [
+                "dapagliflozin",
+                "ertugliflozin",
+                "sotagliflozin",
+            ]:
                 recommendations.append(
                     "Next: Test a different drug class (e.g., Lisinopril) - should trigger 'comprehensive' strategy"
                 )

@@ -33,7 +33,10 @@ class ComprehensiveTestRunner:
 
         try:
             result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=600  # 10 minute timeout per category
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=600,  # 10 minute timeout per category
             )
 
             self.results["test_categories"][category] = {
@@ -51,11 +54,17 @@ class ComprehensiveTestRunner:
 
         except subprocess.TimeoutExpired:
             print(f"⚠️  TIMEOUT: {category} took longer than 10 minutes")
-            self.results["test_categories"][category] = {"status": "timeout", "returncode": -1}
+            self.results["test_categories"][category] = {
+                "status": "timeout",
+                "returncode": -1,
+            }
             return False
         except Exception as e:
             print(f"❌ ERROR running {category}: {e}")
-            self.results["test_categories"][category] = {"status": "error", "error": str(e)}
+            self.results["test_categories"][category] = {
+                "status": "error",
+                "error": str(e),
+            }
             return False
 
     def run_all_tests(self):
@@ -65,7 +74,14 @@ class ComprehensiveTestRunner:
             # 1. Unit Tests (All test files)
             {
                 "category": "1. Unit Tests - All Files",
-                "command": ["pytest", "tests/", "-v", "--tb=short", "-x", "--maxfail=50"],
+                "command": [
+                    "pytest",
+                    "tests/",
+                    "-v",
+                    "--tb=short",
+                    "-x",
+                    "--maxfail=50",
+                ],
             },
             # 2. Unit Tests with Coverage
             {
@@ -107,7 +123,14 @@ class ComprehensiveTestRunner:
             # 8. Chat/Conversation Tests
             {
                 "category": "8. Chat/Conversation Tests",
-                "command": ["pytest", "tests/", "-k", "chat or conversation", "-v", "--tb=short"],
+                "command": [
+                    "pytest",
+                    "tests/",
+                    "-k",
+                    "chat or conversation",
+                    "-v",
+                    "--tb=short",
+                ],
             },
             # 9. Agent Tests
             {
@@ -117,7 +140,12 @@ class ComprehensiveTestRunner:
             # 10. Performance Tests
             {
                 "category": "10. Performance Tests",
-                "command": ["pytest", "tests/deep/test_performance_deep.py", "-v", "--tb=short"],
+                "command": [
+                    "pytest",
+                    "tests/deep/test_performance_deep.py",
+                    "-v",
+                    "--tb=short",
+                ],
             },
             # 11. Smoke Tests
             {
@@ -142,12 +170,24 @@ class ComprehensiveTestRunner:
             # 15. Error Handler Tests
             {
                 "category": "15. Error Handler Tests",
-                "command": ["pytest", "tests/test_error_handlers.py", "-v", "--tb=short"],
+                "command": [
+                    "pytest",
+                    "tests/test_error_handlers.py",
+                    "-v",
+                    "--tb=short",
+                ],
             },
             # 16. Barcode Scanner Tests
             {
                 "category": "16. Barcode Scanner Tests",
-                "command": ["pytest", "tests/unit/", "-k", "barcode", "-v", "--tb=short"],
+                "command": [
+                    "pytest",
+                    "tests/unit/",
+                    "-k",
+                    "barcode",
+                    "-v",
+                    "--tb=short",
+                ],
             },
             # 17. Parallel Test Execution (Fast)
             {
@@ -157,7 +197,14 @@ class ComprehensiveTestRunner:
             # 18. Strict Mode (Warnings as Errors)
             {
                 "category": "18. Strict Mode Tests",
-                "command": ["pytest", "tests/unit/", "-v", "--strict-markers", "-W", "error"],
+                "command": [
+                    "pytest",
+                    "tests/unit/",
+                    "-v",
+                    "--strict-markers",
+                    "-W",
+                    "error",
+                ],
             },
             # 19. Doctest (Code Examples)
             {

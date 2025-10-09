@@ -11,7 +11,12 @@ import tempfile
 logger = logging.getLogger(__name__)
 
 # P0: Capability constants for discovery registration
-CAPABILITIES = ["query_guidelines", "retrieve_guidelines", "ingest_guidelines", "search_guidelines"]
+CAPABILITIES = [
+    "query_guidelines",
+    "retrieve_guidelines",
+    "ingest_guidelines",
+    "search_guidelines",
+]
 
 
 class GuidelineAgentLogic:
@@ -490,7 +495,11 @@ class GuidelineAgentLogic:
         return chunks
 
     def _smart_chunk_text(
-        self, text: str, page_boundaries: List[int], chunk_size: int = 500, overlap: int = 100
+        self,
+        text: str,
+        page_boundaries: List[int],
+        chunk_size: int = 500,
+        overlap: int = 100,
     ) -> List[Dict[str, Any]]:
         """Create overlapping chunks with smart boundaries"""
         chunks = []
@@ -710,7 +719,14 @@ class GuidelineAgentLogic:
             # Look for dosing guidance
             if any(
                 keyword in text
-                for keyword in ["dose", "dosing", "mg", "daily", "twice daily", "once daily"]
+                for keyword in [
+                    "dose",
+                    "dosing",
+                    "mg",
+                    "daily",
+                    "twice daily",
+                    "once daily",
+                ]
             ):
                 if not drug_name or drug_name.lower() in text:
                     criteria["dosing_guidance"].append(

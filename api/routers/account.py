@@ -80,7 +80,8 @@ def _blocklist_access_token(raw_token: str):
         if jti and exp:
             ttl = max(1, exp - int(time.time()))
             r = redis.from_url(
-                os.getenv("REDIS_URL", "redis://localhost:6379/0"), decode_responses=True
+                os.getenv("REDIS_URL", "redis://localhost:6379/0"),
+                decode_responses=True,
             )
             r.setex(f"jwt:block:{jti}", ttl, "1")
             logger.info(f"Blocklisted token with JTI: {jti[:8]}...")
@@ -196,13 +197,15 @@ def delete_account(
         auth_time = int(payload.get("auth_time", 0))
         if int(time.time()) - auth_time > 300:  # 5 minutes = 300 seconds
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Re-authentication required"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Re-authentication required",
             )
         jti = payload.get("jti")
     except Exception as e:
         logger.error(f"Failed to validate auth time: {e}")
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Re-authentication required"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Re-authentication required",
         )
 
     # Rate limiting: 3 attempts per day
@@ -229,7 +232,11 @@ def delete_account(
             success = delete_user_data(str(user_id), db)
             if not success:
                 _audit(
-                    db, user_id, jti, "failed", meta={"error": "delete_user_data returned False"}
+                    db,
+                    user_id,
+                    jti,
+                    "failed",
+                    meta={"error": "delete_user_data returned False"},
                 )
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -263,7 +270,8 @@ def delete_account(
             _audit(db, user_id, jti, "failed", meta={"error": str(e)[:200]})
             db.rollback()
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete account"
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to delete account",
             )
 
     # Clean up related data (check table existence first)

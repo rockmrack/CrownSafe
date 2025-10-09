@@ -187,7 +187,10 @@ class AsyncWorkflowOptimizer:
                         return {"status": "FAILED", "error": "Planning failed"}
                 except Exception as plan_error:
                     self.logger.error(f"Planner error with image_url: {plan_error}", exc_info=True)
-                    return {"status": "FAILED", "error": f"Planner error: {str(plan_error)}"}
+                    return {
+                        "status": "FAILED",
+                        "error": f"Planner error: {str(plan_error)}",
+                    }
 
             # Step 2: Execute with optimization
             execution_result = await router.execute_plan(plan_result.get("plan"))

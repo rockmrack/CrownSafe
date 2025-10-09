@@ -180,7 +180,8 @@ async def main_agent_loop():
     for sig_name_enum in (signal.SIGINT, signal.SIGTERM):
         try:
             loop.add_signal_handler(
-                sig_name_enum, lambda s=sig_name_enum.name: signal_handler_func_wrapper(s)
+                sig_name_enum,
+                lambda s=sig_name_enum.name: signal_handler_func_wrapper(s),
             )
         except Exception as e:
             logger_for_main.warning(f"Cannot add signal handler for {sig_name_enum.name}: {e}.")

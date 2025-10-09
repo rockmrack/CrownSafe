@@ -331,7 +331,10 @@ AGENCIES = [
         website="https://www.mpi.govt.nz",
     ),
     Agency(
-        code="MEDSAFE", name="Medsafe", country="New Zealand", website="https://www.medsafe.govt.nz"
+        code="MEDSAFE",
+        name="Medsafe",
+        country="New Zealand",
+        website="https://www.medsafe.govt.nz",
     ),
     # South America (4 agencies)
     # Brazil (3 agencies)

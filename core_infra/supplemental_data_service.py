@@ -96,7 +96,9 @@ class USDAClient:
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(
-                    f"{self.base_url}/food/{fdc_id}", params={"api_key": self.api_key}, timeout=10.0
+                    f"{self.base_url}/food/{fdc_id}",
+                    params={"api_key": self.api_key},
+                    timeout=10.0,
                 )
                 response.raise_for_status()
                 return response.json()
@@ -306,7 +308,10 @@ class SupplementalDataService:
         chemical_data.cas_number = "mock-cas-number"
         chemical_data.safety_limits = {"OSHA_PEL": "10 mg/m3", "ACGIH_TLV": "5 mg/m3"}
         chemical_data.health_effects = ["respiratory irritation", "skin sensitization"]
-        chemical_data.exposure_guidelines = {"inhalation": "avoid", "skin": "use protection"}
+        chemical_data.exposure_guidelines = {
+            "inhalation": "avoid",
+            "skin": "use protection",
+        }
         chemical_data.source = "OSHA/ATSDR"
         chemical_data.safety_score = 0.7  # Mock score
 

@@ -132,7 +132,11 @@ class PolicyAnalysisAgentLogic:
 
         # Map variations to canonical names
         task_mappings = {
-            "get_policy_for_drug": ["policy_for_drug", "drug_policy", "retrieve_policy"],
+            "get_policy_for_drug": [
+                "policy_for_drug",
+                "drug_policy",
+                "retrieve_policy",
+            ],
             "check_coverage_criteria": [
                 "coverage_check",
                 "criteria_check",
@@ -144,7 +148,10 @@ class PolicyAnalysisAgentLogic:
             "policy_lookup": ["lookup_policy", "find_policy"],
             "retrieve_insurer_policy": ["insurer_policy", "get_insurer_policy"],
             "compare_policies": ["policy_comparison", "compare_coverage"],
-            "compare_drug_policies": ["drug_policy_comparison", "compare_drug_coverage"],
+            "compare_drug_policies": [
+                "drug_policy_comparison",
+                "compare_drug_coverage",
+            ],
         }
 
         # Check if normalized name matches any mapping
@@ -359,7 +366,10 @@ class PolicyAnalysisAgentLogic:
                             "required": False,
                         },
                     ],
-                    "quantity_limits": {"max_units_per_fill": 30, "max_fills_per_month": 1},
+                    "quantity_limits": {
+                        "max_units_per_fill": 30,
+                        "max_fills_per_month": 1,
+                    },
                     "alternatives": [
                         {"drug": "Metformin", "status": "Preferred", "tier": 1},
                         {"drug": "Glipizide", "status": "Preferred", "tier": 2},
@@ -394,7 +404,10 @@ class PolicyAnalysisAgentLogic:
                             "required": True,
                         },
                     ],
-                    "quantity_limits": {"max_units_per_fill": 4, "max_fills_per_month": 1},
+                    "quantity_limits": {
+                        "max_units_per_fill": 4,
+                        "max_fills_per_month": 1,
+                    },
                 },
                 "Sotagliflozin": {
                     "status": "Not on Formulary",
@@ -403,8 +416,16 @@ class PolicyAnalysisAgentLogic:
                     "monthly_cost": None,
                     "criteria": [],
                     "alternatives": [
-                        {"drug": "Empagliflozin", "status": "Covered with PA", "tier": 3},
-                        {"drug": "Dapagliflozin", "status": "Covered with PA", "tier": 3},
+                        {
+                            "drug": "Empagliflozin",
+                            "status": "Covered with PA",
+                            "tier": 3,
+                        },
+                        {
+                            "drug": "Dapagliflozin",
+                            "status": "Covered with PA",
+                            "tier": 3,
+                        },
                     ],
                 },
                 "Metformin": {
@@ -413,7 +434,10 @@ class PolicyAnalysisAgentLogic:
                     "tier": 1,
                     "monthly_cost": 4.00,
                     "criteria": [],
-                    "quantity_limits": {"max_units_per_fill": 180, "max_fills_per_month": 1},
+                    "quantity_limits": {
+                        "max_units_per_fill": 180,
+                        "max_fills_per_month": 1,
+                    },
                 },
             },
             "general_rules": {
@@ -582,7 +606,11 @@ class PolicyAnalysisAgentLogic:
         insurer = task_data.get("insurer", list(self.policies.keys())[0] if self.policies else None)
 
         if not drug_name:
-            return {"status": "FAILED", "error": "No drug name provided", "agent_id": self.agent_id}
+            return {
+                "status": "FAILED",
+                "error": "No drug name provided",
+                "agent_id": self.agent_id,
+            }
 
         try:
             # Get drug policy
@@ -647,7 +675,11 @@ class PolicyAnalysisAgentLogic:
         insurer = task_data.get("insurer", list(self.policies.keys())[0] if self.policies else None)
 
         if not drug_name:
-            return {"status": "FAILED", "error": "No drug name provided", "agent_id": self.agent_id}
+            return {
+                "status": "FAILED",
+                "error": "No drug name provided",
+                "agent_id": self.agent_id,
+            }
 
         try:
             alternatives = self._get_drug_alternatives(drug_name, insurer)
@@ -673,7 +705,11 @@ class PolicyAnalysisAgentLogic:
         insurers = task_data.get("insurers", list(self.policies.keys()))
 
         if not drug_name:
-            return {"status": "FAILED", "error": "No drug name provided", "agent_id": self.agent_id}
+            return {
+                "status": "FAILED",
+                "error": "No drug name provided",
+                "agent_id": self.agent_id,
+            }
 
         try:
             comparison = self._compare_drug_policies(drug_name, insurers)
@@ -733,7 +769,10 @@ class PolicyAnalysisAgentLogic:
                 )
             elif criterion_type == "age_limit":
                 structured_criteria["age_restrictions"].append(
-                    {"min_age": criterion.get("min_age"), "max_age": criterion.get("max_age")}
+                    {
+                        "min_age": criterion.get("min_age"),
+                        "max_age": criterion.get("max_age"),
+                    }
                 )
 
         # Add quantity limits if present
@@ -871,7 +910,8 @@ class PolicyAnalysisAgentLogic:
         # Add general recommendations
         if not criteria_met:
             recommendations.insert(
-                0, f"Prior authorization denied: {len(required_unmet)} required criteria not met"
+                0,
+                f"Prior authorization denied: {len(required_unmet)} required criteria not met",
             )
         else:
             recommendations.insert(0, "Prior authorization approved: All required criteria met")

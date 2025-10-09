@@ -159,7 +159,8 @@ def process_image(self, job_id: str) -> Dict[str, Any]:
 
         # Step 6: Combine and save results
         save_extraction.run(
-            job_id, {"barcodes": barcode_result, "ocr": ocr_result, "labels": labels_result}
+            job_id,
+            {"barcodes": barcode_result, "ocr": ocr_result, "labels": labels_result},
         )
 
         # Step 7: Determine if HITL review needed
@@ -283,7 +284,10 @@ def normalize_image(job_id: str, image_data: bytes) -> bytes:
     # Upload normalized version to S3
     normalized_key = f"processed/{job_id}_normalized.jpg"
     s3_client.put_object(
-        Bucket=S3_BUCKET, Key=normalized_key, Body=output.getvalue(), ContentType="image/jpeg"
+        Bucket=S3_BUCKET,
+        Key=normalized_key,
+        Body=output.getvalue(),
+        ContentType="image/jpeg",
     )
 
     return output.getvalue()

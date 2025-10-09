@@ -335,7 +335,11 @@ def privacy_audit_log(func):
             duration = (datetime.now(timezone.utc) - start_time).total_seconds()
             logger.info(
                 f"Privacy operation completed: {operation}",
-                extra={"operation": operation, "duration_seconds": duration, "status": "success"},
+                extra={
+                    "operation": operation,
+                    "duration_seconds": duration,
+                    "status": "success",
+                },
             )
 
             return result

@@ -33,14 +33,23 @@ def upgrade():
 
     # Create indexes for better query performance
     op.create_index(
-        op.f("ix_safety_articles_article_id"), "safety_articles", ["article_id"], unique=True
+        op.f("ix_safety_articles_article_id"),
+        "safety_articles",
+        ["article_id"],
+        unique=True,
     )
     op.create_index(op.f("ix_safety_articles_id"), "safety_articles", ["id"], unique=False)
     op.create_index(
-        op.f("ix_safety_articles_is_featured"), "safety_articles", ["is_featured"], unique=False
+        op.f("ix_safety_articles_is_featured"),
+        "safety_articles",
+        ["is_featured"],
+        unique=False,
     )
     op.create_index(
-        op.f("ix_safety_articles_source_agency"), "safety_articles", ["source_agency"], unique=False
+        op.f("ix_safety_articles_source_agency"),
+        "safety_articles",
+        ["source_agency"],
+        unique=False,
     )
 
 

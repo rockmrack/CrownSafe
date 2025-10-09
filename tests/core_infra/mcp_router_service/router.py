@@ -284,7 +284,10 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
                 sender_id="MCP_ROUTER",
                 target_agent_id=agent_id,  # Send back to the sender
                 correlation_id=None,  # No correlation_id if message is unparseable
-                payload={"error_code": "E002", "error_message": "Invalid JSON format received."},
+                payload={
+                    "error_code": "E002",
+                    "error_message": "Invalid JSON format received.",
+                },
             )
             if err_resp_unparseable:
                 await websocket.send_json(err_resp_unparseable)

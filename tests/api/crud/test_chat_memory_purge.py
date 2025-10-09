@@ -45,7 +45,9 @@ class ConversationModel(TestBase):
     started_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     last_activity_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     messages = relationship(
-        "ConversationMessageModel", back_populates="conversation", cascade="all, delete-orphan"
+        "ConversationMessageModel",
+        back_populates="conversation",
+        cascade="all, delete-orphan",
     )
 
 
@@ -102,13 +104,17 @@ def test_purge_conversations_for_user_with_conversations(db_session):
         conversation_id=conv1.id, role="user", content=json.dumps({"text": "Hello"})
     )
     msg2 = ConversationMessageModel(
-        conversation_id=conv1.id, role="assistant", content=json.dumps({"summary": "Hi there"})
+        conversation_id=conv1.id,
+        role="assistant",
+        content=json.dumps({"summary": "Hi there"}),
     )
     msg3 = ConversationMessageModel(
         conversation_id=conv2.id, role="user", content=json.dumps({"text": "Question"})
     )
     msg4 = ConversationMessageModel(
-        conversation_id=conv3.id, role="user", content=json.dumps({"text": "Other user"})
+        conversation_id=conv3.id,
+        role="user",
+        content=json.dumps({"text": "Other user"}),
     )
 
     db_session.add_all([msg1, msg2, msg3, msg4])

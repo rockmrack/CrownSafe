@@ -146,7 +146,9 @@ def upgrade() -> None:
 
     # Composite index for common search pattern (agency + date)
     op.create_index(
-        "idx_recalls_enhanced_agency_date", "recalls_enhanced", ["source_agency", "recall_date"]
+        "idx_recalls_enhanced_agency_date",
+        "recalls_enhanced",
+        ["source_agency", "recall_date"],
     )
 
     # Full-text search index for product search (PostgreSQL specific)

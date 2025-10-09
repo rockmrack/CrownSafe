@@ -221,12 +221,14 @@ def enhance_recall_detail_endpoint(app: FastAPI):
             # Check conditional requests
             if check_if_none_match(request, etag):
                 return create_not_modified_response(
-                    etag=etag, cache_control="public, max-age=300, stale-while-revalidate=30"
+                    etag=etag,
+                    cache_control="public, max-age=300, stale-while-revalidate=30",
                 )
 
             if check_if_modified_since(request, last_updated):
                 return create_not_modified_response(
-                    etag=etag, cache_control="public, max-age=300, stale-while-revalidate=30"
+                    etag=etag,
+                    cache_control="public, max-age=300, stale-while-revalidate=30",
                 )
 
             # Build response data

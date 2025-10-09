@@ -69,7 +69,8 @@ TAGLINE = "Intelligent Biomedical Research, Verified by AI"
 CONTACT_EMAIL = "support@cureviax.com"
 COMPANY_URL = "https://www.cureviax.com"
 REPORTS_OUTPUT_DIR = os.path.join(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")), "generated_reports"
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")),
+    "generated_reports",
 )
 LOGO_PATH = "C:/Users/rossd/Downloads/RossNetAgents/branding/cureviax_logo.png"
 
@@ -164,7 +165,10 @@ def generate_adverse_event_chart(top_reactions, output_dir, basename):
 def generate_qr_code(data: str, output_dir: str, basename: str) -> Optional[str]:
     try:
         qr = qrcode.QRCode(
-            version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=3, border=2
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=3,
+            border=2,
         )
         qr.add_data(data)
         qr.make(fit=True)
@@ -327,7 +331,11 @@ def format_adverse_events(safety_data, chart_path=None):
 
 
 def format_references(pubmed_data, trials_data):
-    refs = ['<a name="references"></a>', "<h1>References</h1>", '<ul style="font-size:9.5pt;">']
+    refs = [
+        '<a name="references"></a>',
+        "<h1>References</h1>",
+        '<ul style="font-size:9.5pt;">',
+    ]
     if pubmed_data and isinstance(pubmed_data, dict):
         for a in pubmed_data.get("articles", []):
             pmid = a.get("pmid", "N/A")
@@ -378,7 +386,10 @@ def format_metadata(agent_id, version, dt_str, workflow_id, pdf_path, pubmed, tr
 
 class ReportBuilderAgentLogic:
     def __init__(
-        self, agent_id: str, version: str, logger_instance: Optional[logging.Logger] = None
+        self,
+        agent_id: str,
+        version: str,
+        logger_instance: Optional[logging.Logger] = None,
     ):
         self.agent_id = agent_id
         self.version = version
@@ -487,7 +498,9 @@ class ReportBuilderAgentLogic:
                 c.setTitle("BabyShield Report")
                 c.drawString(72, 800, "BabyShield Report")
                 c.drawString(
-                    72, 784, "Note: HTML renderer not available; using PDF fallback content."
+                    72,
+                    784,
+                    "Note: HTML renderer not available; using PDF fallback content.",
                 )
                 c.showPage()
                 c.save()
@@ -864,7 +877,13 @@ class ReportBuilderAgentLogic:
             data_sources_checked = (
                 list(all_agencies)
                 if all_agencies
-                else ["CPSC", "FDA", "EU Safety Gate", "Health Canada", "ACCC (Australia)"]
+                else [
+                    "CPSC",
+                    "FDA",
+                    "EU Safety Gate",
+                    "Health Canada",
+                    "ACCC (Australia)",
+                ]
             )
 
             context = {
@@ -1214,7 +1233,10 @@ a {{ color: #2561b1; text-decoration: none; }}
                 dependency_results = task_parameters.get("dependency_results", {})
                 if dependency_results:
                     # Look for the result from step6_predict_approval_likelihood
-                    for key in ["step6_predict_approval_likelihood", "step7_generate_report"]:
+                    for key in [
+                        "step6_predict_approval_likelihood",
+                        "step7_generate_report",
+                    ]:
                         if key in dependency_results:
                             dep_result = dependency_results[key]
                             if isinstance(dep_result, dict):
@@ -1279,7 +1301,12 @@ a {{ color: #2561b1; text-decoration: none; }}
             # Enhanced extraction with multiple fallback strategies
             # Try to get pubmed data
             pubmed_articles_data = None
-            for key in ["step1_pubmed_search", "pubmed_articles", "pubmed", "literature"]:
+            for key in [
+                "step1_pubmed_search",
+                "pubmed_articles",
+                "pubmed",
+                "literature",
+            ]:
                 if key in dependency_results:
                     pubmed_articles_data = self._extract_data_from_dependency_result(
                         dependency_results[key], "pubmed"
@@ -1290,7 +1317,12 @@ a {{ color: #2561b1; text-decoration: none; }}
 
             # Try to get clinical trials data
             clinical_trials_data = None
-            for key in ["step2a_find_trials", "clinical_trials", "trials", "clinical_trials_info"]:
+            for key in [
+                "step2a_find_trials",
+                "clinical_trials",
+                "trials",
+                "clinical_trials_info",
+            ]:
                 if key in dependency_results:
                     clinical_trials_data = self._extract_data_from_dependency_result(
                         dependency_results[key], "trials"
@@ -1301,7 +1333,12 @@ a {{ color: #2561b1; text-decoration: none; }}
 
             # Try to get drug safety data
             drug_safety_data_from_deps = None
-            for key in ["step2b_check_drug_safety", "drug_safety", "safety_data", "adverse_events"]:
+            for key in [
+                "step2b_check_drug_safety",
+                "drug_safety",
+                "safety_data",
+                "adverse_events",
+            ]:
                 if key in dependency_results:
                     drug_safety_data_from_deps = self._extract_data_from_dependency_result(
                         dependency_results[key], "safety"
@@ -1336,7 +1373,9 @@ a {{ color: #2561b1; text-decoration: none; }}
                 top_reactions = drug_safety_data_from_deps.get("top_adverse_reactions", [])
                 if top_reactions:
                     chart_path = generate_adverse_event_chart(
-                        top_reactions, REPORTS_OUTPUT_DIR, f"chart_{task_id}_{uuid.uuid4().hex[:6]}"
+                        top_reactions,
+                        REPORTS_OUTPUT_DIR,
+                        f"chart_{task_id}_{uuid.uuid4().hex[:6]}",
                     )
 
             # Generate filename
@@ -1448,4 +1487,7 @@ a {{ color: #2561b1; text-decoration: none; }}
         if report_type == "prior_authorization_summary":
             return self._build_pa_summary_report(report_data, workflow_id)
         else:
-            return {"status": "error", "message": f"Unsupported report type: {report_type}"}
+            return {
+                "status": "error",
+                "message": f"Unsupported report type: {report_type}",
+            }

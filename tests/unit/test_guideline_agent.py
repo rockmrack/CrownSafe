@@ -62,7 +62,9 @@ class TestGuidelineAgentLogic:
                             pass
 
                     return type(
-                        "MockModule", (), {"EnhancedMemoryManager": MockEnhancedMemoryManager}
+                        "MockModule",
+                        (),
+                        {"EnhancedMemoryManager": MockEnhancedMemoryManager},
                     )()
                 else:
                     raise ImportError("No module named 'enhanced_memory_manager'")
@@ -294,7 +296,10 @@ class TestGuidelineAgentLogic:
             "payload": {
                 "task_id": "task_123",
                 "workflow_id": "workflow_456",
-                "parameters": {"task_type": "ingest_guidelines", "guideline_id": "AHA_HF_2022"},
+                "parameters": {
+                    "task_type": "ingest_guidelines",
+                    "guideline_id": "AHA_HF_2022",
+                },
             },
         }
 

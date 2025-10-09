@@ -53,7 +53,9 @@ class SecureAdvancedSearchRequest(BaseModel):
 
     # Agency filter (bounded list)
     agencies: Optional[AgencyList] = Field(
-        None, description="Filter by agencies (1-10 items)", examples=[["FDA", "CPSC", "NHTSA"]]
+        None,
+        description="Filter by agencies (1-10 items)",
+        examples=[["FDA", "CPSC", "NHTSA"]],
     )
 
     # Enum fields with strict values
@@ -62,7 +64,16 @@ class SecureAdvancedSearchRequest(BaseModel):
     )
 
     riskCategory: Optional[
-        Literal["drug", "device", "food", "cosmetic", "supplement", "toy", "baby_product", "other"]
+        Literal[
+            "drug",
+            "device",
+            "food",
+            "cosmetic",
+            "supplement",
+            "toy",
+            "baby_product",
+            "other",
+        ]
     ] = Field(None, description="Risk category filter", examples=["toy"])
 
     # Date range (validated)

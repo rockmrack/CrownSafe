@@ -107,7 +107,8 @@ class ShareRequest(BaseModel):
     """Request model for creating a share link"""
 
     content_type: str = Field(
-        ..., description="Type of content (scan_result, report, safety_summary, nursery_quarterly)"
+        ...,
+        description="Type of content (scan_result, report, safety_summary, nursery_quarterly)",
     )
     content_id: Union[str, int] = Field(
         ..., description="ID of the content to share (numeric ID or UUID)"
@@ -244,11 +245,14 @@ async def create_share_link(request: ShareRequest, db: Session = Depends(get_db)
 
             # Try to find the S3 object
             s3_key = _guess_s3_key(
-                request.user_id, request.content_id, request.content_type or "safety_summary"
+                request.user_id,
+                request.content_id,
+                request.content_type or "safety_summary",
             )
             if not s3_key:
                 raise HTTPException(
-                    status_code=404, detail=f"Report not found for UUID: {request.content_id}"
+                    status_code=404,
+                    detail=f"Report not found for UUID: {request.content_id}",
                 )
 
             # Create share token for S3-based content
@@ -289,7 +293,8 @@ async def create_share_link(request: ShareRequest, db: Session = Depends(get_db)
             # Get scan history (numeric ID only)
             if not isinstance(request.content_id, (int, str)) or _is_uuid(str(request.content_id)):
                 raise HTTPException(
-                    status_code=400, detail="Scan results require numeric scan_id, not UUID"
+                    status_code=400,
+                    detail="Scan results require numeric scan_id, not UUID",
                 )
 
             scan = (
@@ -504,7 +509,11 @@ async def view_share_link_dev(token: str) -> ApiResponse:
 
         return ApiResponse(
             success=True,
-            data={"content": mock_content, "allow_download": True, "views_remaining": None},
+            data={
+                "content": mock_content,
+                "allow_download": True,
+                "views_remaining": None,
+            },
             message="Share content retrieved successfully (dev override)",
         )
 
@@ -697,7 +706,8 @@ async def revoke_share_link_dev(
         share_data["revoked_at"] = datetime.utcnow()
 
         return ApiResponse(
-            success=True, data={"message": "Share link revoked successfully (dev override)"}
+            success=True,
+            data={"message": "Share link revoked successfully (dev override)"},
         )
 
     except HTTPException:

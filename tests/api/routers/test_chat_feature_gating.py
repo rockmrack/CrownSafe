@@ -15,7 +15,10 @@ class TestChatFeatureGating:
         with patch("core.feature_flags.FEATURE_CHAT_ENABLED", False):
             response = self.client.post(
                 "/api/v1/chat/conversation",
-                json={"scan_id": "test-scan-123", "user_query": "Is this safe for pregnancy?"},
+                json={
+                    "scan_id": "test-scan-123",
+                    "user_query": "Is this safe for pregnancy?",
+                },
             )
 
             assert response.status_code == 403
@@ -34,7 +37,10 @@ class TestChatFeatureGating:
         ):
             response = self.client.post(
                 "/api/v1/chat/conversation",
-                json={"scan_id": "test-scan-123", "user_query": "Is this safe for pregnancy?"},
+                json={
+                    "scan_id": "test-scan-123",
+                    "user_query": "Is this safe for pregnancy?",
+                },
             )
 
             assert response.status_code == 403
@@ -81,7 +87,10 @@ class TestChatFeatureGating:
 
             response = self.client.post(
                 "/api/v1/chat/conversation",
-                json={"scan_id": "test-scan-123", "user_query": "Is this safe for pregnancy?"},
+                json={
+                    "scan_id": "test-scan-123",
+                    "user_query": "Is this safe for pregnancy?",
+                },
             )
 
             # Should succeed

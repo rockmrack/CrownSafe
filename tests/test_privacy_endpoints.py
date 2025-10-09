@@ -74,7 +74,10 @@ class PrivacyEndpointTester:
             },
         )
 
-        self.test(response.status_code == 200, f"Export request returns {response.status_code}")
+        self.test(
+            response.status_code == 200,
+            f"Export request returns {response.status_code}",
+        )
 
         if response.status_code == 200:
             data = response.json()
@@ -83,12 +86,17 @@ class PrivacyEndpointTester:
 
             if "data" in data:
                 result = data["data"]
-                self.test("sla_days" in result, f"SLA days specified: {result.get('sla_days')}")
                 self.test(
-                    "request_id" in result, f"Request ID provided: {result.get('request_id')}"
+                    "sla_days" in result,
+                    f"SLA days specified: {result.get('sla_days')}",
                 )
                 self.test(
-                    result.get("status") == "queued", f"Status is queued: {result.get('status')}"
+                    "request_id" in result,
+                    f"Request ID provided: {result.get('request_id')}",
+                )
+                self.test(
+                    result.get("status") == "queued",
+                    f"Status is queued: {result.get('status')}",
                 )
 
                 # Save request ID for later tests
@@ -107,16 +115,23 @@ class PrivacyEndpointTester:
             json={"email": test_email, "jurisdiction": "ccpa", "source": "web"},
         )
 
-        self.test(response.status_code == 200, f"Delete request returns {response.status_code}")
+        self.test(
+            response.status_code == 200,
+            f"Delete request returns {response.status_code}",
+        )
 
         if response.status_code == 200:
             data = response.json()
             self.test(data.get("ok"), "Response has ok=true")
 
             result = data.get("data", {})
-            self.test("message" in result, f"Message provided: {result.get('message', '')[:50]}...")
             self.test(
-                result.get("sla_days") in [30, 45], f"Valid SLA days: {result.get('sla_days')}"
+                "message" in result,
+                f"Message provided: {result.get('message', '')[:50]}...",
+            )
+            self.test(
+                result.get("sla_days") in [30, 45],
+                f"Valid SLA days: {result.get('sla_days')}",
             )
 
         return response.status_code == 200
@@ -127,7 +142,10 @@ class PrivacyEndpointTester:
 
         response = self.session.get(f"{self.base_url}/api/v1/user/privacy/summary")
 
-        self.test(response.status_code == 200, f"Privacy summary returns {response.status_code}")
+        self.test(
+            response.status_code == 200,
+            f"Privacy summary returns {response.status_code}",
+        )
 
         if response.status_code == 200:
             data = response.json()
@@ -145,10 +163,12 @@ class PrivacyEndpointTester:
             if "links" in summary:
                 links = summary["links"]
                 self.test(
-                    "privacy_policy" in links, f"Privacy policy link: {links.get('privacy_policy')}"
+                    "privacy_policy" in links,
+                    f"Privacy policy link: {links.get('privacy_policy')}",
                 )
                 self.test(
-                    "data_deletion" in links, f"Data deletion link: {links.get('data_deletion')}"
+                    "data_deletion" in links,
+                    f"Data deletion link: {links.get('data_deletion')}",
                 )
 
         return response.status_code == 200
@@ -179,14 +199,20 @@ class PrivacyEndpointTester:
             data = response.json()
             items = data.get("data", {}).get("items", [])
 
-            self.test(isinstance(items, list), f"Returns list of requests ({len(items)} items)")
+            self.test(
+                isinstance(items, list),
+                f"Returns list of requests ({len(items)} items)",
+            )
 
             if items:
                 first = items[0]
                 self.test("id" in first, "Request has ID")
                 self.test("kind" in first, f"Request has kind: {first.get('kind')}")
                 self.test("status" in first, f"Request has status: {first.get('status')}")
-                self.test("email_masked" in first, f"Email is masked: {first.get('email_masked')}")
+                self.test(
+                    "email_masked" in first,
+                    f"Email is masked: {first.get('email_masked')}",
+                )
 
         return response.status_code == 200
 
@@ -218,7 +244,8 @@ class PrivacyEndpointTester:
 
         if response.status_code != 503:  # Skip if admin not configured
             self.test(
-                response.status_code in (400, 422), f"Invalid status returns {response.status_code}"
+                response.status_code in (400, 422),
+                f"Invalid status returns {response.status_code}",
             )
 
         # Try to update with valid status
@@ -238,7 +265,8 @@ class PrivacyEndpointTester:
             data = response.json()
             result = data.get("data", {})
             self.test(
-                result.get("status") == "verifying", f"Status updated to: {result.get('status')}"
+                result.get("status") == "verifying",
+                f"Status updated to: {result.get('status')}",
             )
 
         return response.status_code == 200
@@ -264,7 +292,10 @@ class PrivacyEndpointTester:
                 f"{self.base_url}/api/v1/user/privacy/status/{self.export_request_id}"
             )
 
-            self.test(response.status_code == 200, f"Status check returns {response.status_code}")
+            self.test(
+                response.status_code == 200,
+                f"Status check returns {response.status_code}",
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -273,7 +304,10 @@ class PrivacyEndpointTester:
                 self.test("status" in status, f"Current status: {status.get('status')}")
                 self.test("submitted_at" in status, "Submission time provided")
                 self.test("sla_days" in status, f"SLA days: {status.get('sla_days')}")
-                self.test("days_elapsed" in status, f"Days elapsed: {status.get('days_elapsed')}")
+                self.test(
+                    "days_elapsed" in status,
+                    f"Days elapsed: {status.get('days_elapsed')}",
+                )
         else:
             print("   ⚠️ No request ID available")
             return False
@@ -294,7 +328,13 @@ class PrivacyEndpointTester:
         """Test 9: Invalid email validation"""
         print("\n📝 Test 9: Email Validation")
 
-        invalid_emails = ["notanemail", "@example.com", "user@", "user @example.com", ""]
+        invalid_emails = [
+            "notanemail",
+            "@example.com",
+            "user@",
+            "user @example.com",
+            "",
+        ]
 
         all_ok = True
         for email in invalid_emails:
@@ -326,7 +366,8 @@ class PrivacyEndpointTester:
             f"X-Content-Type-Options: {headers.get('X-Content-Type-Options')}",
         )
         self.test(
-            "X-Frame-Options" in headers, f"X-Frame-Options: {headers.get('X-Frame-Options')}"
+            "X-Frame-Options" in headers,
+            f"X-Frame-Options: {headers.get('X-Frame-Options')}",
         )
 
         # Check for trace ID
@@ -352,7 +393,8 @@ class PrivacyEndpointTester:
             response = self.session.post(f"{self.base_url}{endpoint}", json={"email": test_email})
 
             self.test(
-                response.status_code == 200, f"Right to {right} returns {response.status_code}"
+                response.status_code == 200,
+                f"Right to {right} returns {response.status_code}",
             )
 
             if response.status_code != 200:
@@ -375,7 +417,8 @@ class PrivacyEndpointTester:
             return True
 
         self.test(
-            response.status_code == 200, f"Statistics endpoint returns {response.status_code}"
+            response.status_code == 200,
+            f"Statistics endpoint returns {response.status_code}",
         )
 
         if response.status_code == 200:

@@ -518,7 +518,10 @@ class DocumentationAgentLogic:
             confidence_score = prediction_data.get("confidence_score")
             if confidence_score is not None:
                 md_parts.extend(
-                    [f"**Assessment Confidence:** {self._format_confidence(confidence_score)}", ""]
+                    [
+                        f"**Assessment Confidence:** {self._format_confidence(confidence_score)}",
+                        "",
+                    ]
                 )
 
             # Add supporting evidence
@@ -629,7 +632,9 @@ class DocumentationAgentLogic:
             self.logger.info(f"Generated Letter of Medical Necessity at: {md_filepath}")
 
             return DocumentGenerationResult(
-                success=True, markdown_content=markdown_content, html_path=str(md_filepath)
+                success=True,
+                markdown_content=markdown_content,
+                html_path=str(md_filepath),
             )
 
         except Exception as e:

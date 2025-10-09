@@ -18,7 +18,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # Import models
-from db.models.incident_report import IncidentReport, IncidentCluster, IncidentType, SeverityLevel
+from db.models.incident_report import (
+    IncidentReport,
+    IncidentCluster,
+    IncidentType,
+    SeverityLevel,
+)
 
 # Test configuration
 BASE_URL = "http://localhost:8000"

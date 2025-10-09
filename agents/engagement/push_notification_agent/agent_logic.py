@@ -50,7 +50,11 @@ class PushNotificationAgentLogic:
         self.logger.info(f"PushNotificationAgentLogic initialized for agent {self.agent_id}.")
 
     def send_notification(
-        self, device_token: str, title: str, body: str, data: Optional[Dict[str, str]] = None
+        self,
+        device_token: str,
+        title: str,
+        body: str,
+        data: Optional[Dict[str, str]] = None,
     ) -> Dict[str, Any]:
         """
         Sends a single push notification to a device using Firebase Admin SDK.
@@ -91,7 +95,10 @@ class PushNotificationAgentLogic:
         data = inputs.get("data", {})
 
         if not all([device_token, title, body]):
-            return {"status": "FAILED", "error": "Missing one of: device_token, title, body"}
+            return {
+                "status": "FAILED",
+                "error": "Missing one of: device_token, title, body",
+            }
 
         loop = asyncio.get_running_loop()
         result = await loop.run_in_executor(

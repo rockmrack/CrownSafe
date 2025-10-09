@@ -395,7 +395,8 @@ async def update_privacy_consent(
     valid_types = ["crashlytics", "analytics", "ads", "sharing", "notifications"]
     if consent.consent_type not in valid_types:
         raise HTTPException(
-            status_code=400, detail=f"Invalid consent type. Must be one of: {valid_types}"
+            status_code=400,
+            detail=f"Invalid consent type. Must be one of: {valid_types}",
         )
 
     # Log consent change
@@ -455,7 +456,11 @@ async def request_data_deletion(
 
     logger.warning(
         f"Data deletion requested",
-        extra={"user_id": user_id[:8] + "...", "request_id": request_id, "reason": deletion.reason},
+        extra={
+            "user_id": user_id[:8] + "...",
+            "request_id": request_id,
+            "reason": deletion.reason,
+        },
     )
 
     return {

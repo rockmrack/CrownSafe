@@ -36,4 +36,7 @@ def run_tool_for_intent(intent: str, db: Session, scan_data: Dict[str, Any]) -> 
         }
 
     else:
-        return {"message": "General safety information available", "status": "completed"}
+        return {
+            "message": "General safety information available",
+            "status": "completed",
+        }

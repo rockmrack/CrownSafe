@@ -9,7 +9,9 @@ project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
 from core_infra.database import get_db_session, create_tables, Role, User
-from core_infra.auth.auth_manager import create_user  # Should be your user creation utility
+from core_infra.auth.auth_manager import (
+    create_user,
+)  # Should be your user creation utility
 
 logging.basicConfig(level=logging.INFO)
 

@@ -47,14 +47,19 @@ def upgrade():
         sa.Column("initiated_by", sa.String(128), nullable=True),
         sa.Column("trace_id", sa.String(64), nullable=True),
         sa.Column(
-            "created_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP")
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("CURRENT_TIMESTAMP"),
         ),  # Added
         sa.Column("metadata_json", postgresql.JSONB, nullable=True),  # Added for extra data
     )
 
     # Create indexes for efficient querying
     op.create_index(
-        "ix_ingestion_runs_agency_started", "ingestion_runs", ["agency", "started_at"], unique=False
+        "ix_ingestion_runs_agency_started",
+        "ingestion_runs",
+        ["agency", "started_at"],
+        unique=False,
     )
 
     op.create_index("ix_ingestion_runs_status", "ingestion_runs", ["status"], unique=False)

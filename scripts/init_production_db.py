@@ -42,7 +42,9 @@ def init_production_database():
 
         # Call search endpoint which should trigger table creation
         response = requests.post(
-            f"{base_url}/api/v1/search/advanced", json={"query": "test", "limit": 1}, timeout=10
+            f"{base_url}/api/v1/search/advanced",
+            json={"query": "test", "limit": 1},
+            timeout=10,
         )
 
         if response.status_code == 200:

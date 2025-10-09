@@ -159,10 +159,14 @@ Example of a perfect response:
                 }
             else:
                 self.logger.error("LLM response was invalid or malformed: %s", analysis)
-                return {"status": "FAILED", "error": "LLM response was invalid or malformed."}
+                return {
+                    "status": "FAILED",
+                    "error": "LLM response was invalid or malformed.",
+                }
 
         except Exception as e:
             self.logger.error(
-                f"An unexpected error occurred during hazard analysis: {e}", exc_info=True
+                f"An unexpected error occurred during hazard analysis: {e}",
+                exc_info=True,
             )
             return {"status": "FAILED", "error": str(e)}

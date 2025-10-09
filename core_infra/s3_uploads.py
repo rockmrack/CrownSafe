@@ -110,7 +110,13 @@ def presign_get(
         Params=params,
         ExpiresIn=ttl,
     )
-    return {"url": url, "bucket": BUCKET, "region": region, "key": key, "expires_in": ttl}
+    return {
+        "url": url,
+        "bucket": BUCKET,
+        "region": region,
+        "key": key,
+        "expires_in": ttl,
+    }
 
 
 def upload_file(file_path: str, key: str, content_type: str = "application/pdf") -> Dict:

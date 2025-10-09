@@ -21,9 +21,17 @@ def upgrade():
         "user_profile",
         sa.Column("user_id", postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column(
-            "consent_personalization", sa.Boolean(), nullable=False, server_default=sa.text("false")
+            "consent_personalization",
+            sa.Boolean(),
+            nullable=False,
+            server_default=sa.text("false"),
         ),
-        sa.Column("memory_paused", sa.Boolean(), nullable=False, server_default=sa.text("false")),
+        sa.Column(
+            "memory_paused",
+            sa.Boolean(),
+            nullable=False,
+            server_default=sa.text("false"),
+        ),
         sa.Column(
             "allergies",
             postgresql.JSONB(astext_type=sa.Text()),

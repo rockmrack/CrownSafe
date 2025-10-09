@@ -48,7 +48,9 @@ class RestoreTester:
 
         try:
             response = self.rds.describe_db_snapshots(
-                DBInstanceIdentifier=self.source_db, SnapshotType="automated", MaxRecords=10
+                DBInstanceIdentifier=self.source_db,
+                SnapshotType="automated",
+                MaxRecords=10,
             )
 
             if not response["DBSnapshots"]:
@@ -57,7 +59,9 @@ class RestoreTester:
 
             # Sort by creation time and get the latest
             snapshots = sorted(
-                response["DBSnapshots"], key=lambda x: x["SnapshotCreateTime"], reverse=True
+                response["DBSnapshots"],
+                key=lambda x: x["SnapshotCreateTime"],
+                reverse=True,
             )
 
             latest = snapshots[0]
@@ -190,7 +194,12 @@ class RestoreTester:
             validation_results["tables_exist"] = len(tables) == 4
 
             # 2. Get row counts for critical tables
-            for table in ["users", "recalls_enhanced", "subscriptions", "family_members"]:
+            for table in [
+                "users",
+                "recalls_enhanced",
+                "subscriptions",
+                "family_members",
+            ]:
                 cursor.execute(f"SELECT COUNT(*) FROM {table}")
                 count = cursor.fetchone()[0]
                 validation_results["row_counts"][table] = count

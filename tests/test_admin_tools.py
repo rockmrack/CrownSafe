@@ -54,9 +54,13 @@ class AdminToolsTester:
 
         # Test with invalid key
         response = self.session.get(
-            f"{self.base_url}/api/v1/admin/freshness", headers={"X-Admin-Key": "invalid-key"}
+            f"{self.base_url}/api/v1/admin/freshness",
+            headers={"X-Admin-Key": "invalid-key"},
         )
-        self.test(response.status_code in (401, 403), f"Invalid key returns {response.status_code}")
+        self.test(
+            response.status_code in (401, 403),
+            f"Invalid key returns {response.status_code}",
+        )
 
         return True
 
@@ -72,7 +76,10 @@ class AdminToolsTester:
             print("   ⚠️ Admin not configured, skipping")
             return True
 
-        self.test(response.status_code == 200, f"Freshness endpoint returns {response.status_code}")
+        self.test(
+            response.status_code == 200,
+            f"Freshness endpoint returns {response.status_code}",
+        )
 
         if response.status_code == 200:
             data = response.json()
@@ -85,7 +92,8 @@ class AdminToolsTester:
 
                 summary = data["data"].get("summary", {})
                 self.test(
-                    "totalRecalls" in summary, f"Total recalls: {summary.get('totalRecalls', 0)}"
+                    "totalRecalls" in summary,
+                    f"Total recalls: {summary.get('totalRecalls', 0)}",
                 )
 
         return response.status_code == 200
@@ -133,7 +141,10 @@ class AdminToolsTester:
             print("   ⚠️ Admin not configured, skipping")
             return True
 
-        self.test(response.status_code == 400, f"Invalid agency returns {response.status_code}")
+        self.test(
+            response.status_code == 400,
+            f"Invalid agency returns {response.status_code}",
+        )
 
         if response.status_code == 400:
             data = response.json()
@@ -158,7 +169,10 @@ class AdminToolsTester:
             json={"mode": "delta"},
         )
 
-        self.test(response.status_code == 400, f"Missing agency returns {response.status_code}")
+        self.test(
+            response.status_code == 400,
+            f"Missing agency returns {response.status_code}",
+        )
 
         return True
 
@@ -169,7 +183,8 @@ class AdminToolsTester:
         # Test with invalid UUID
         invalid_id = "not-a-uuid"
         response = self.session.get(
-            f"{self.base_url}/api/v1/admin/runs/{invalid_id}", headers=self.admin_headers
+            f"{self.base_url}/api/v1/admin/runs/{invalid_id}",
+            headers=self.admin_headers,
         )
 
         if response.status_code == 503:
@@ -184,7 +199,10 @@ class AdminToolsTester:
             f"{self.base_url}/api/v1/admin/runs/{fake_id}", headers=self.admin_headers
         )
 
-        self.test(response.status_code == 404, f"Non-existent run returns {response.status_code}")
+        self.test(
+            response.status_code == 404,
+            f"Non-existent run returns {response.status_code}",
+        )
 
         return True
 
@@ -200,7 +218,10 @@ class AdminToolsTester:
             print("   ⚠️ Admin not configured, skipping")
             return True
 
-        self.test(response.status_code == 200, f"Stats endpoint returns {response.status_code}")
+        self.test(
+            response.status_code == 200,
+            f"Stats endpoint returns {response.status_code}",
+        )
 
         if response.status_code == 200:
             data = response.json()
@@ -211,7 +232,10 @@ class AdminToolsTester:
 
             if "database" in stats:
                 db_stats = stats["database"]
-                self.test("recalls" in db_stats, f"Recalls count: {db_stats.get('recalls', 0)}")
+                self.test(
+                    "recalls" in db_stats,
+                    f"Recalls count: {db_stats.get('recalls', 0)}",
+                )
 
         return response.status_code == 200
 
@@ -221,7 +245,10 @@ class AdminToolsTester:
 
         response = self.session.get(f"{self.base_url}/admin/")
 
-        self.test(response.status_code == 200, f"Admin dashboard returns {response.status_code}")
+        self.test(
+            response.status_code == 200,
+            f"Admin dashboard returns {response.status_code}",
+        )
 
         if response.status_code == 200:
             content = response.text

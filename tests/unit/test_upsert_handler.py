@@ -86,8 +86,16 @@ class TestUpsertHandler:
         mock_session.execute.return_value = mock_result
 
         recalls = [
-            {"recall_id": "RECALL-001", "product_name": "Product 1", "brand": "Brand 1"},
-            {"recall_id": "RECALL-002", "product_name": "Product 2", "brand": "Brand 2"},
+            {
+                "recall_id": "RECALL-001",
+                "product_name": "Product 1",
+                "brand": "Brand 1",
+            },
+            {
+                "recall_id": "RECALL-002",
+                "product_name": "Product 2",
+                "brand": "Brand 2",
+            },
         ]
 
         result = UpsertHandler.bulk_upsert_recalls(mock_session, recalls, batch_size=10)

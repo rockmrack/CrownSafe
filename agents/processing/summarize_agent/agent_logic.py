@@ -14,7 +14,9 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain.chains.summarize import load_summarize_chain  # For summarization
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_core.documents import Document  # For creating Document objects for Langchain chains
+from langchain_core.documents import (
+    Document,
+)  # For creating Document objects for Langchain chains
 
 # Load environment variables from .env file at the project root
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))

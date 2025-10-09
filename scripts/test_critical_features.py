@@ -63,12 +63,18 @@ def test_scan_history(token: str):
 
     # Test get scan history
     response = client.get("/api/v1/user/scan-history", headers=headers)
-    print_test("GET /scan-history", response.status_code == 200, f"Status: {response.status_code}")
+    print_test(
+        "GET /scan-history",
+        response.status_code == 200,
+        f"Status: {response.status_code}",
+    )
 
     # Test scan statistics
     response = client.get("/api/v1/user/scan-statistics", headers=headers)
     print_test(
-        "GET /scan-statistics", response.status_code == 200, f"Status: {response.status_code}"
+        "GET /scan-statistics",
+        response.status_code == 200,
+        f"Status: {response.status_code}",
     )
 
 
@@ -119,7 +125,9 @@ def test_notifications(token: str):
     # Get notification history
     response = client.get("/api/v1/notifications/history", headers=headers)
     print_test(
-        "GET /notifications/history", response.status_code == 200, f"Status: {response.status_code}"
+        "GET /notifications/history",
+        response.status_code == 200,
+        f"Status: {response.status_code}",
     )
 
     # Update preferences
@@ -165,13 +173,17 @@ def test_monitoring(token: str):
     # Get monitored products
     response = client.get("/api/v1/monitoring/products", headers=headers)
     print_test(
-        "GET /monitoring/products", response.status_code == 200, f"Status: {response.status_code}"
+        "GET /monitoring/products",
+        response.status_code == 200,
+        f"Status: {response.status_code}",
     )
 
     # Get monitoring status
     response = client.get("/api/v1/monitoring/status", headers=headers)
     print_test(
-        "GET /monitoring/status", response.status_code == 200, f"Status: {response.status_code}"
+        "GET /monitoring/status",
+        response.status_code == 200,
+        f"Status: {response.status_code}",
     )
 
 
@@ -183,13 +195,17 @@ def test_dashboard(token: str):
     # Get dashboard overview
     response = client.get("/api/v1/dashboard/overview", headers=headers)
     print_test(
-        "GET /dashboard/overview", response.status_code == 200, f"Status: {response.status_code}"
+        "GET /dashboard/overview",
+        response.status_code == 200,
+        f"Status: {response.status_code}",
     )
 
     # Get activity timeline
     response = client.get("/api/v1/dashboard/activity?days=7", headers=headers)
     print_test(
-        "GET /dashboard/activity", response.status_code == 200, f"Status: {response.status_code}"
+        "GET /dashboard/activity",
+        response.status_code == 200,
+        f"Status: {response.status_code}",
     )
 
     # Get product categories
@@ -223,7 +239,9 @@ def test_analytics():
 
     response = client.get("/api/v1/analytics/counts")
     print_test(
-        "GET /analytics/counts", response.status_code == 200, f"Status: {response.status_code}"
+        "GET /analytics/counts",
+        response.status_code == 200,
+        f"Status: {response.status_code}",
     )
 
     if response.status_code == 200:

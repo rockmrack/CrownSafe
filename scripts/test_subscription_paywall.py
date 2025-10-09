@@ -13,7 +13,14 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
-from core_infra.database import Base, engine, SessionLocal, User, create_tables, drop_tables
+from core_infra.database import (
+    Base,
+    engine,
+    SessionLocal,
+    User,
+    create_tables,
+    drop_tables,
+)
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -51,7 +58,10 @@ async def main():
         async with httpx.AsyncClient() as client:
             # --- Test 1: Non-Subscriber (Should be Blocked) ---
             logger.info("--- Testing Non-Subscriber (expect 403 Forbidden) ---")
-            non_subscriber_payload = {"barcode": TEST_BARCODE, "user_id": NON_SUBSCRIBER_ID}
+            non_subscriber_payload = {
+                "barcode": TEST_BARCODE,
+                "user_id": NON_SUBSCRIBER_ID,
+            }
             response_non_subscriber = await client.post(
                 f"{API_BASE_URL}/api/v1/safety-check", json=non_subscriber_payload
             )

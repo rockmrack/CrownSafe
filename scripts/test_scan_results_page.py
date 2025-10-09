@@ -40,7 +40,11 @@ def test_scan_results_page():
         "scan_type": "barcode",
     }
 
-    barcode_info_safe = {"barcode": "014292998228", "format": "ean13", "confidence": 99.0}
+    barcode_info_safe = {
+        "barcode": "014292998228",
+        "format": "ean13",
+        "confidence": 99.0,
+    }
 
     result_safe = create_scan_results(scan_data_safe, None, barcode_info_safe)
 

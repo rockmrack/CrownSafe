@@ -58,7 +58,10 @@ class DrugSafetyQueryResult:
 
 class DrugSafetyAgentLogic:
     def __init__(
-        self, agent_id: str, version: str, logger_instance: Optional[logging.Logger] = None
+        self,
+        agent_id: str,
+        version: str,
+        logger_instance: Optional[logging.Logger] = None,
     ):
         self.agent_id = agent_id
         self.version = version
@@ -140,7 +143,12 @@ class DrugSafetyAgentLogic:
             )
         validated_drug_name = drug_name.strip()
         if len(validated_drug_name) > 500:
-            return False, "drug_name too long.", validated_drug_name, validated_max_reactions
+            return (
+                False,
+                "drug_name too long.",
+                validated_drug_name,
+                validated_max_reactions,
+            )
         try:
             validated_max_reactions = int(max_reactions) if max_reactions is not None else 5
             if not 1 <= validated_max_reactions <= 20:
@@ -151,7 +159,12 @@ class DrugSafetyAgentLogic:
                     validated_max_reactions,
                 )
         except (ValueError, TypeError):
-            return False, f"max_reactions not int.", validated_drug_name, validated_max_reactions
+            return (
+                False,
+                f"max_reactions not int.",
+                validated_drug_name,
+                validated_max_reactions,
+            )
         return True, None, validated_drug_name, validated_max_reactions
 
     # <<< --- V2.0.1: Corrected _make_sync_openfda_request --- >>>
@@ -338,7 +351,10 @@ class DrugSafetyAgentLogic:
                 )
                 reaction_count_field = "patient.reaction.reactionmeddrapt.exact"
                 # Parameters for the reaction count query
-                reaction_api_params = {"count": reaction_count_field, "limit": str(max_reactions)}
+                reaction_api_params = {
+                    "count": reaction_count_field,
+                    "limit": str(max_reactions),
+                }
 
                 await self._rate_limit()
                 # <<< --- V2.0.1: CORRECTED ARGUMENT PASSING --- >>>
@@ -462,7 +478,10 @@ class DrugSafetyAgentLogic:
                 self.logger.error(f"Invalid params for task {task_id}: {param_err_msg}")
                 return {
                     "message_type": MessageType.TASK_FAIL.value,
-                    "payload": {**response_payload_base, "error_message": param_err_msg},
+                    "payload": {
+                        **response_payload_base,
+                        "error_message": param_err_msg,
+                    },
                 }
             self.logger.info(
                 f"Performing openFDA search for task {task_id} with drug: '{validated_drug_name}', max_reactions: {validated_max_reactions}"
@@ -476,7 +495,10 @@ class DrugSafetyAgentLogic:
                 )
                 return {
                     "message_type": MessageType.TASK_FAIL.value,
-                    "payload": {**response_payload_base, "error_message": query_result_obj.error},
+                    "payload": {
+                        **response_payload_base,
+                        "error_message": query_result_obj.error,
+                    },
                 }
             result_data_dict = asdict(query_result_obj)
             final_payload = {
@@ -487,7 +509,10 @@ class DrugSafetyAgentLogic:
             self.logger.info(
                 f"openFDA search completed for task {task_id}: {query_result_obj.total_reports} total reports, {len(query_result_obj.top_adverse_reactions)} top reactions retrieved."
             )
-            return {"message_type": MessageType.TASK_COMPLETE.value, "payload": final_payload}
+            return {
+                "message_type": MessageType.TASK_COMPLETE.value,
+                "payload": final_payload,
+            }
         except Exception as e:
             error_msg = f"Unexpected error in _handle_task_assign: {type(e).__name__} - {str(e)}"
             self.logger.error(error_msg, exc_info=True)

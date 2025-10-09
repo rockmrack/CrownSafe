@@ -30,11 +30,11 @@ agency_cache = TTLCache(maxsize=50, ttl=3600)
 def generate_cache_key(*args, **kwargs) -> str:
     """
     Generate a cache key from function arguments.
-    
+
     Args:
         *args: Positional arguments
         **kwargs: Keyword arguments
-        
+
     Returns:
         MD5 hash of serialized arguments
     """
@@ -59,19 +59,20 @@ def generate_cache_key(*args, **kwargs) -> str:
 def cached_query(cache: TTLCache, key_func: Callable = None):
     """
     Decorator to cache query results.
-    
+
     Args:
         cache: The TTL cache to use
         key_func: Optional custom key generation function
-        
+
     Returns:
         Decorated function with caching
-        
+
     Example:
         @cached_query(recall_cache)
         def get_recalls_by_barcode(barcode: str, db: Session):
             return db.query(RecallDB).filter(...).all()
     """
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -80,32 +81,33 @@ def cached_query(cache: TTLCache, key_func: Callable = None):
                 cache_key = key_func(*args, **kwargs)
             else:
                 cache_key = generate_cache_key(*args, **kwargs)
-            
+
             # Check cache
             if cache_key in cache:
                 logger.debug(f"Cache HIT for {func.__name__} (key={cache_key[:8]}...)")
                 return cache[cache_key]
-            
+
             # Cache miss - execute function
             logger.debug(f"Cache MISS for {func.__name__} (key={cache_key[:8]}...)")
             result = func(*args, **kwargs)
-            
+
             # Store in cache
             cache[cache_key] = result
-            
+
             return result
-        
+
         return wrapper
+
     return decorator
 
 
 def get_cache_stats(cache: TTLCache) -> dict:
     """
     Get statistics about a cache.
-    
+
     Args:
         cache: The TTL cache to inspect
-        
+
     Returns:
         Dict with cache statistics
     """
@@ -120,7 +122,7 @@ def get_cache_stats(cache: TTLCache) -> dict:
 def clear_cache(cache: TTLCache):
     """
     Clear all entries from a cache.
-    
+
     Args:
         cache: The TTL cache to clear
     """
@@ -141,6 +143,7 @@ def clear_all_caches():
 
 
 # Convenience functions for common queries
+
 
 def cache_recall_query(func: Callable) -> Callable:
     """Decorator for caching recall queries (5 min TTL)."""
@@ -164,15 +167,17 @@ def cache_agency_query(func: Callable) -> Callable:
 
 # Example usage functions
 
+
 @cache_recall_query
 def get_recalls_by_barcode_cached(barcode: str, db):
     """
     Get recalls by barcode with caching.
-    
+
     Example of how to use the caching decorator.
     Replace with actual implementation in your code.
     """
     from core_infra.database import RecallDB
+
     return db.query(RecallDB).filter(RecallDB.upc == barcode).all()
 
 
@@ -180,7 +185,7 @@ def get_recalls_by_barcode_cached(barcode: str, db):
 def get_product_safety_score_cached(product_id: int, db):
     """
     Get product safety score with caching.
-    
+
     Example of how to cache expensive safety calculations.
     """
     # Your actual safety score calculation here
@@ -189,10 +194,11 @@ def get_product_safety_score_cached(product_id: int, db):
 
 # Health check endpoint helper
 
+
 def get_all_cache_stats() -> dict:
     """
     Get statistics for all caches.
-    
+
     Returns:
         Dict with stats for each cache
     """

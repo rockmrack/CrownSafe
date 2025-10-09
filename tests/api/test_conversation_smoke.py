@@ -105,7 +105,11 @@ def test_conversation_recall_details(monkeypatch):
     client = TestClient(app)
     r = client.post(
         "/api/v1/chat/conversation",
-        json={"scan_id": "abc", "message": "Tell me about the recall", "user_id": "test-user-123"},
+        json={
+            "scan_id": "abc",
+            "message": "Tell me about the recall",
+            "user_id": "test-user-123",
+        },
     )
     assert r.status_code == 200
     body = r.json()
@@ -186,7 +190,11 @@ def test_conversation_unclear_intent(monkeypatch):
     client = TestClient(app)
     r = client.post(
         "/api/v1/chat/conversation",
-        json={"scan_id": "abc", "message": "Random unclear question", "user_id": "test-user-123"},
+        json={
+            "scan_id": "abc",
+            "message": "Random unclear question",
+            "user_id": "test-user-123",
+        },
     )
     assert r.status_code == 200
     body = r.json()

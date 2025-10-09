@@ -103,7 +103,11 @@ class AuditLogger:
             # Also log to standard logger
             self.logger.info(
                 f"AUDIT: {action} {entity_type} {entity_id}",
-                extra={"user_id": user_id, "request_id": request_id, "changes": changes},
+                extra={
+                    "user_id": user_id,
+                    "request_id": request_id,
+                    "changes": changes,
+                },
             )
 
         except Exception as e:
@@ -157,10 +161,20 @@ class AuditLogger:
 
     def log_view(self, entity_type: str, entity_id: Any, metadata: Dict = None):
         """Log data access/viewing"""
-        self.log(action="VIEW", entity_type=entity_type, entity_id=entity_id, metadata=metadata)
+        self.log(
+            action="VIEW",
+            entity_type=entity_type,
+            entity_id=entity_id,
+            metadata=metadata,
+        )
 
     def log_api_call(
-        self, endpoint: str, method: str, status_code: int, user_id: int = None, error: str = None
+        self,
+        endpoint: str,
+        method: str,
+        status_code: int,
+        user_id: int = None,
+        error: str = None,
     ):
         """Log API calls"""
         self.log(

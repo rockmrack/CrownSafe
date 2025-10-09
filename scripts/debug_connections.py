@@ -73,8 +73,14 @@ async def test_workflow_submission():
         async with websockets.connect(uri) as websocket:
             # Register as a test client
             register_msg = {
-                "mcp_header": {"message_type": "REGISTER", "sender_id": "test_api_client"},
-                "payload": {"agent_id": "test_api_client", "capabilities": ["api_gateway"]},
+                "mcp_header": {
+                    "message_type": "REGISTER",
+                    "sender_id": "test_api_client",
+                },
+                "payload": {
+                    "agent_id": "test_api_client",
+                    "capabilities": ["api_gateway"],
+                },
             }
 
             await websocket.send(json.dumps(register_msg))

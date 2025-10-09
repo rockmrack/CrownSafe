@@ -30,7 +30,11 @@ MD_FILES = [
 ]
 
 BASE = os.getenv("BABYSHIELD_BASE_URL", "https://babyshield.cureviax.ai")
-REQUIRED_200 = [f"{BASE}/legal/privacy", f"{BASE}/legal/terms", f"{BASE}/legal/data-deletion"]
+REQUIRED_200 = [
+    f"{BASE}/legal/privacy",
+    f"{BASE}/legal/terms",
+    f"{BASE}/legal/data-deletion",
+]
 
 
 def ok(cond, msg):

@@ -111,7 +111,11 @@ def check_recall_database(scan_result: ScanResult, db: Session) -> RecallCheckRe
 
     # Start with no match
     recall_check = RecallCheckResult(
-        recall_found=False, recall_count=0, match_type="no_match", confidence=0.0, recalls=[]
+        recall_found=False,
+        recall_count=0,
+        match_type="no_match",
+        confidence=0.0,
+        recalls=[],
     )
 
     if not scan_result.success:
@@ -536,7 +540,9 @@ async def scan_datamatrix(
 
         if not dm_results:
             return ApiResponse(
-                success=False, data={"message": "No DataMatrix codes found in image"}, message=None
+                success=False,
+                data={"message": "No DataMatrix codes found in image"},
+                message=None,
             )
 
         # Check against database

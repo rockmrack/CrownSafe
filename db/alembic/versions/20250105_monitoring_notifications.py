@@ -66,7 +66,10 @@ def upgrade():
         sa.Column("dismissed_at", sa.DateTime(), nullable=True),
         sa.Column("platform", sa.String(20), nullable=True),
         sa.Column(
-            "device_token_id", sa.Integer(), sa.ForeignKey("device_tokens.id"), nullable=True
+            "device_token_id",
+            sa.Integer(),
+            sa.ForeignKey("device_tokens.id"),
+            nullable=True,
         ),
         sa.Column("status", sa.String(20), default="sent"),
         sa.Column("error_message", sa.Text(), nullable=True),

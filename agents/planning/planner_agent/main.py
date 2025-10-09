@@ -68,7 +68,9 @@ AGENT_VERSION = "1.3.0"  # Updated version for registration fix
 # Logging setup
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 logging.basicConfig(
-    level=LOG_LEVEL, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", force=True
+    level=LOG_LEVEL,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    force=True,
 )
 
 logger = logging.getLogger(f"{AGENT_ID}.main")

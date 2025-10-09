@@ -44,7 +44,10 @@ class TestSQLInjection:
         """
         response = client.post(
             "/api/v1/auth/register",
-            json={"email": "test'; DROP TABLE users;--@example.com", "password": "SecurePass123!"},
+            json={
+                "email": "test'; DROP TABLE users;--@example.com",
+                "password": "SecurePass123!",
+            },
         )
         assert response.status_code in [400, 422]
 
@@ -143,7 +146,8 @@ class TestAuthentication:
 
         # Next attempt should be blocked
         response = client.post(
-            "/api/v1/auth/token", json={"username": "test@example.com", "password": "WrongPassword"}
+            "/api/v1/auth/token",
+            json={"username": "test@example.com", "password": "WrongPassword"},
         )
         assert response.status_code in [429, 403]
 

@@ -153,7 +153,13 @@ def init_ci_database():
         agencies = [
             ("FDA", "USA", "https://fda.gov", "https://api.fda.gov", 1),
             ("CPSC", "USA", "https://cpsc.gov", "https://api.cpsc.gov", 1),
-            ("EU Safety Gate", "EU", "https://ec.europa.eu", "https://api.ec.europa.eu", 1),
+            (
+                "EU Safety Gate",
+                "EU",
+                "https://ec.europa.eu",
+                "https://api.ec.europa.eu",
+                1,
+            ),
         ]
         c.executemany(
             """

@@ -109,7 +109,11 @@ class TestAlternativesProvider:
         assert "cpsc-approved" in bassinet["tags"]
 
     def test_small_parts_toy_alternatives(self):
-        scan_data = {"category": "toy", "flags": ["small_parts", "choking_hazard"], "profile": {}}
+        scan_data = {
+            "category": "toy",
+            "flags": ["small_parts", "choking_hazard"],
+            "profile": {},
+        }
 
         result = get_alternatives(scan_data)
 
@@ -162,7 +166,11 @@ class TestAlternativesProvider:
         assert "omega-3" in low_mercury["tags"]
 
     def test_raw_dairy_alternatives(self):
-        scan_data = {"category": "dairy", "ingredients": ["raw milk", "cultures"], "profile": {}}
+        scan_data = {
+            "category": "dairy",
+            "ingredients": ["raw milk", "cultures"],
+            "profile": {},
+        }
 
         result = get_alternatives(scan_data)
 
@@ -177,7 +185,11 @@ class TestAlternativesProvider:
         assert "pasteurized" in pasteurized["tags"]
 
     def test_no_alternatives_when_no_rules_match(self):
-        scan_data = {"category": "general", "ingredients": ["water", "salt"], "profile": {}}
+        scan_data = {
+            "category": "general",
+            "ingredients": ["water", "salt"],
+            "profile": {},
+        }
 
         result = get_alternatives(scan_data)
 
@@ -188,8 +200,14 @@ class TestAlternativesProvider:
         # Create a scan that would trigger multiple rules
         scan_data = {
             "category": "cheese",  # triggers cheese rules (2 items)
-            "flags": ["soft_cheese", "small_parts"],  # triggers toy rules (2 more items)
-            "ingredients": ["peanuts", "raw milk"],  # triggers peanut + dairy rules (3 more items)
+            "flags": [
+                "soft_cheese",
+                "small_parts",
+            ],  # triggers toy rules (2 more items)
+            "ingredients": [
+                "peanuts",
+                "raw milk",
+            ],  # triggers peanut + dairy rules (3 more items)
             "profile": {"allergies": ["peanut", "tree_nut"]},  # triggers more allergy rules
         }
 

@@ -11,7 +11,16 @@ import hashlib
 import uuid
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
-from fastapi import APIRouter, HTTPException, UploadFile, File, Depends, Body, Query, Request
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    UploadFile,
+    File,
+    Depends,
+    Body,
+    Query,
+    Request,
+)
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, validator
 from sqlalchemy.orm import Session
@@ -118,7 +127,9 @@ class ReviewAction(BaseModel):
     """Review action for HITL"""
 
     action: str = Field(
-        ..., pattern="^(approve|reject)$", description="Action to take: 'approve' or 'reject'"
+        ...,
+        pattern="^(approve|reject)$",
+        description="Action to take: 'approve' or 'reject'",
     )
     notes: Optional[str] = Field(None, description="Optional review notes")
     corrected_product: Optional[str] = None
@@ -130,7 +141,8 @@ class ReviewAction(BaseModel):
 # Endpoints
 @visual_router.post("/upload", response_model=ApiResponse)
 async def request_image_upload(
-    user_id: int = Query(..., description="User ID"), db: Session = Depends(get_db_session)
+    user_id: int = Query(..., description="User ID"),
+    db: Session = Depends(get_db_session),
 ) -> ApiResponse:
     """
     Request presigned URL for image upload
@@ -150,7 +162,11 @@ async def request_image_upload(
 
         # Create job record
         job = ImageJob(
-            id=job_id, user_id=user_id, s3_bucket=S3_BUCKET, s3_key=s3_key, status=JobStatus.QUEUED
+            id=job_id,
+            user_id=user_id,
+            s3_bucket=S3_BUCKET,
+            s3_key=s3_key,
+            status=JobStatus.QUEUED,
         )
         db.add(job)
         db.commit()
@@ -186,7 +202,8 @@ async def analyze_image(
         # Validate input - require at least one image source
         if not any([request.job_id, request.image_url, request.image_base64]):
             raise HTTPException(
-                status_code=400, detail="One of job_id, image_url, or image_base64 is required"
+                status_code=400,
+                detail="One of job_id, image_url, or image_base64 is required",
             )
 
         # Handle direct image input by creating a job
@@ -219,7 +236,10 @@ async def analyze_image(
 
             if not request.skip_mfv and extraction:
                 # Check confidence level
-                if job.confidence_level in [ConfidenceLevel.LOW, ConfidenceLevel.MEDIUM]:
+                if job.confidence_level in [
+                    ConfidenceLevel.LOW,
+                    ConfidenceLevel.MEDIUM,
+                ]:
                     mfv_required = True
                     mfv_message = "Please confirm the product details"
 
@@ -280,7 +300,9 @@ async def analyze_image(
                 safety_message="Awaiting image upload. Please upload to the provided presigned URL.",
             )
             return ApiResponse(
-                success=True, data=queued_payload.dict(), message="Image not uploaded yet; queued"
+                success=True,
+                data=queued_payload.dict(),
+                message="Image not uploaded yet; queued",
             )
 
         # Start processing when the object is available
@@ -504,7 +526,11 @@ async def claim_review(
         if not review.audit_log:
             review.audit_log = []
         review.audit_log.append(
-            {"action": "claimed", "by": reviewer_email, "at": datetime.utcnow().isoformat()}
+            {
+                "action": "claimed",
+                "by": reviewer_email,
+                "at": datetime.utcnow().isoformat(),
+            }
         )
 
         db.commit()
@@ -729,7 +755,8 @@ async def visual_search(request: ImageAnalysisRequest, db: Session = Depends(get
                     """
                     )
                     result_count = db.execute(
-                        recall_query, {"product_name": f"%{product_data['product_name']}%"}
+                        recall_query,
+                        {"product_name": f"%{product_data['product_name']}%"},
                     ).fetchone()
 
                     if result_count and result_count[0] > 0:
@@ -756,7 +783,10 @@ async def visual_search(request: ImageAnalysisRequest, db: Session = Depends(get
                 "brand": product_data.get("brand", "Unknown"),
                 "model_number": product_data.get("model_number", "Unknown"),
                 "safety_status": "no_recalls_found" if not recall_found else "recalls_found",
-                "recall_check": {"has_recalls": recall_found, "recall_count": recall_count},
+                "recall_check": {
+                    "has_recalls": recall_found,
+                    "recall_count": recall_count,
+                },
             },
         )
 

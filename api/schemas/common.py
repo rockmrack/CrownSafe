@@ -21,7 +21,10 @@ def fail(
     status: int = 400,
     extra: Optional[Dict[str, Any]] = None,
 ):
-    payload: Dict[str, Any] = {"success": False, "error": {"code": code, "message": message}}
+    payload: Dict[str, Any] = {
+        "success": False,
+        "error": {"code": code, "message": message},
+    }
     if extra:
         payload["error"].update(extra)
     raise HTTPException(status_code=status, detail=payload)

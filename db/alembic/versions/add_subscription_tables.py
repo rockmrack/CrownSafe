@@ -22,15 +22,28 @@ def upgrade():
         "subscriptions",
         sa.Column("id", sa.String(length=36), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("plan", sa.Enum("MONTHLY", "ANNUAL", name="subscriptionplan"), nullable=False),
+        sa.Column(
+            "plan",
+            sa.Enum("MONTHLY", "ANNUAL", name="subscriptionplan"),
+            nullable=False,
+        ),
         sa.Column(
             "status",
             sa.Enum(
-                "ACTIVE", "EXPIRED", "CANCELLED", "PENDING", "FAILED", name="subscriptionstatus"
+                "ACTIVE",
+                "EXPIRED",
+                "CANCELLED",
+                "PENDING",
+                "FAILED",
+                name="subscriptionstatus",
             ),
             nullable=False,
         ),
-        sa.Column("provider", sa.Enum("APPLE", "GOOGLE", name="paymentprovider"), nullable=False),
+        sa.Column(
+            "provider",
+            sa.Enum("APPLE", "GOOGLE", name="paymentprovider"),
+            nullable=False,
+        ),
         sa.Column("product_id", sa.String(length=100), nullable=False),
         sa.Column("started_at", sa.DateTime(), nullable=False),
         sa.Column("expires_at", sa.DateTime(), nullable=False),
@@ -64,7 +77,11 @@ def upgrade():
         sa.Column("id", sa.String(length=36), nullable=False),
         sa.Column("subscription_id", sa.String(length=36), nullable=True),
         sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("provider", sa.Enum("APPLE", "GOOGLE", name="paymentprovider"), nullable=False),
+        sa.Column(
+            "provider",
+            sa.Enum("APPLE", "GOOGLE", name="paymentprovider"),
+            nullable=False,
+        ),
         sa.Column("product_id", sa.String(length=100), nullable=False),
         sa.Column("receipt_hash", sa.String(length=64), nullable=True),
         sa.Column("transaction_id", sa.String(length=200), nullable=True),
@@ -86,7 +103,10 @@ def upgrade():
     # Create indexes for receipt_validations
     op.create_index("idx_receipt_hash", "receipt_validations", ["receipt_hash"], unique=False)
     op.create_index(
-        "idx_user_validations", "receipt_validations", ["user_id", "validated_at"], unique=False
+        "idx_user_validations",
+        "receipt_validations",
+        ["user_id", "validated_at"],
+        unique=False,
     )
 
     # Add is_admin column to users table if it doesn't exist

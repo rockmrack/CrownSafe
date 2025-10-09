@@ -382,7 +382,9 @@ class TestImportsAndConfiguration:
     def test_import_command_agent(self):
         """Test command agent import"""
         try:
-            from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
+            from agents.command.commander_agent.agent_logic import (
+                BabyShieldCommanderLogic,
+            )
 
             assert BabyShieldCommanderLogic is not None
         except ImportError:
@@ -494,7 +496,11 @@ class TestImportsAndConfiguration:
         """Test requirements.txt exists"""
         req_path = os.path.join(os.path.dirname(__file__), "..", "requirements.txt")
         req_config_path = os.path.join(
-            os.path.dirname(__file__), "..", "config", "requirements", "requirements.txt"
+            os.path.dirname(__file__),
+            "..",
+            "config",
+            "requirements",
+            "requirements.txt",
         )
         assert os.path.exists(req_path) or os.path.exists(req_config_path)
 

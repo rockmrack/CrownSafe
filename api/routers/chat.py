@@ -252,7 +252,15 @@ class SuperSmartLLMClient:
 
     def _detect_language(self, query: str) -> str:
         """Simple language detection"""
-        spanish_indicators = ["hola", "bebÃ©", "leche", "alergia", "ayuda", "por favor", "gracias"]
+        spanish_indicators = [
+            "hola",
+            "bebÃ©",
+            "leche",
+            "alergia",
+            "ayuda",
+            "por favor",
+            "gracias",
+        ]
         french_indicators = [
             "bonjour",
             "bÃ©bÃ©",
@@ -289,7 +297,13 @@ class SuperSmartLLMClient:
 
     def _assess_confidence_need(self, query: str) -> str:
         """Assess how much confidence/reassurance is needed"""
-        high_confidence_words = ["is it safe", "can i", "should i", "worried", "concerned"]
+        high_confidence_words = [
+            "is it safe",
+            "can i",
+            "should i",
+            "worried",
+            "concerned",
+        ]
         if any(phrase in query.lower() for phrase in high_confidence_words):
             return "high"
         return "normal"
@@ -389,7 +403,11 @@ class SuperSmartLLMClient:
             "jurisdiction": {"code": "US", "label": "FDA Guidelines"},
             "evidence": [
                 {"type": "guideline", "source": "FDA", "id": "allergen_labeling"},
-                {"type": "research", "source": "AAP", "id": "early_allergen_introduction"},
+                {
+                    "type": "research",
+                    "source": "AAP",
+                    "id": "early_allergen_introduction",
+                },
             ],
             "suggested_questions": [
                 "What are signs of allergic reaction?",
@@ -534,12 +552,20 @@ class SuperSmartLLMClient:
                 "4-6 months: 4-5 times per day",
                 "6-12 months: 3-4 bottles plus solid foods",
             ],
-            "flags": ["schedule_guidance", "routine_establishment", "flexibility_needed"],
+            "flags": [
+                "schedule_guidance",
+                "routine_establishment",
+                "flexibility_needed",
+            ],
             "disclaimer": "Every baby is unique. Adjust schedule as needed.",
             "jurisdiction": {"code": "US", "label": "Pediatric Standards"},
             "evidence": [
                 {"type": "guideline", "source": "AAP", "id": "feeding_schedules"},
-                {"type": "research", "source": "Sleep Foundation", "id": "infant_routines"},
+                {
+                    "type": "research",
+                    "source": "Sleep Foundation",
+                    "id": "infant_routines",
+                },
             ],
             "suggested_questions": [
                 "How to establish routine?",
@@ -589,7 +615,10 @@ class SuperSmartLLMClient:
         # Based on topic category
         topic = context.get("topic_category", "general")
         topic_suggestions = {
-            "allergen": ["How to introduce allergens safely?", "Signs of allergic reaction?"],
+            "allergen": [
+                "How to introduce allergens safely?",
+                "Signs of allergic reaction?",
+            ],
             "preparation": ["Storage guidelines?", "Water temperature?"],
             "age_appropriateness": ["Next feeding milestone?", "Portion sizes?"],
             "safety": ["Common hazards to avoid?", "Emergency contacts?"],
@@ -611,7 +640,11 @@ class SuperSmartLLMClient:
         return list(dict.fromkeys(suggestions))[:4]
 
     def _update_conversation_memory(
-        self, conversation_id: str, query: str, response: Dict[str, Any], context: Dict[str, Any]
+        self,
+        conversation_id: str,
+        query: str,
+        response: Dict[str, Any],
+        context: Dict[str, Any],
     ):
         """Update conversation memory for better context"""
         if conversation_id not in self.conversation_memory:
@@ -819,7 +852,10 @@ async def chat_explain_result(
         if not scan_id or not user_query:
             return JSONResponse(
                 status_code=400,
-                content={"success": False, "error": "scan_id and user_query are required"},
+                content={
+                    "success": False,
+                    "error": "scan_id and user_query are required",
+                },
             )
 
         # Check for emergency
@@ -889,7 +925,8 @@ async def chat_conversation(request: Request, chat_request: ChatRequest) -> JSON
         # Validate required fields
         if not chat_request.message:
             return JSONResponse(
-                status_code=400, content={"success": False, "error": "message is required"}
+                status_code=400,
+                content={"success": False, "error": "message is required"},
             )
 
         # Feature flag check
@@ -968,13 +1005,20 @@ async def chat_flags(request: Request) -> JSONResponse:
     try:
         trace_id = getattr(request.state, "trace_id", str(uuid4()))
 
-        enabled = os.getenv("BS_FEATURE_CHAT_ENABLED", "false").lower() in ("true", "1", "yes")
+        enabled = os.getenv("BS_FEATURE_CHAT_ENABLED", "false").lower() in (
+            "true",
+            "1",
+            "yes",
+        )
         rollout_pct = float(os.getenv("BS_FEATURE_CHAT_ROLLOUT_PCT", "0"))
 
         return JSONResponse(
             {
                 "success": True,
-                "data": {"chat_enabled_global": enabled, "chat_rollout_pct": rollout_pct},
+                "data": {
+                    "chat_enabled_global": enabled,
+                    "chat_rollout_pct": rollout_pct,
+                },
                 "traceId": trace_id,
             }
         )
@@ -1009,7 +1053,10 @@ async def chat_demo(request: Request, user_query: str) -> JSONResponse:
                     "data": {
                         "summary": "Demo response: I can help you understand product safety information.",
                         "reasons": ["This is a demo endpoint showing chat functionality"],
-                        "checks": ["Always check product labels", "Verify expiration dates"],
+                        "checks": [
+                            "Always check product labels",
+                            "Verify expiration dates",
+                        ],
                         "flags": ["demo_mode"],
                     },
                     "traceId": trace_id,
@@ -1026,7 +1073,10 @@ async def chat_demo(request: Request, user_query: str) -> JSONResponse:
             status_code=500,
             content={
                 "success": False,
-                "error": {"code": "INTERNAL_ERROR", "message": "An internal error occurred"},
+                "error": {
+                    "code": "INTERNAL_ERROR",
+                    "message": "An internal error occurred",
+                },
                 "traceId": getattr(request.state, "trace_id", "unknown"),
             },
         )

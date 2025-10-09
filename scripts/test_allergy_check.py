@@ -34,7 +34,12 @@ class MockProductIdentifierLogic:
                 "result": {
                     "product_name": "Organic Baby Food with Milk",
                     "upc": TEST_BARCODE_ALLERGEN_PRODUCT,
-                    "ingredients": ["Organic Apples", "Water", "Whole Milk Powder", "Vitamin C"],
+                    "ingredients": [
+                        "Organic Apples",
+                        "Water",
+                        "Whole Milk Powder",
+                        "Vitamin C",
+                    ],
                 },
             }
         )
@@ -43,7 +48,10 @@ class MockProductIdentifierLogic:
 class MockRecallDataAgentLogic:
     def __init__(self, *args, **kwargs):
         self.process_task = AsyncMock(
-            return_value={"status": "COMPLETED", "result": {"recalls_found": 0, "recalls": []}}
+            return_value={
+                "status": "COMPLETED",
+                "result": {"recalls_found": 0, "recalls": []},
+            }
         )
 
 
@@ -121,7 +129,9 @@ async def main():
     # 4.6 Run the workflow
     user_request = {"barcode": TEST_BARCODE_ALLERGEN_PRODUCT, "user_id": TEST_USER_ID}
     with patch.object(
-        commander.planner, "process_task", return_value={"status": "COMPLETED", "plan": test_plan}
+        commander.planner,
+        "process_task",
+        return_value={"status": "COMPLETED", "plan": test_plan},
     ):
         result = await commander.start_safety_check_workflow(user_request)
 

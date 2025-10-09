@@ -101,12 +101,14 @@ class AppleOAuth(OAuthProvider):
         except jwt.DecodeError as e:
             logger.error(f"Failed to decode Apple token: {e}")
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Apple ID token"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid Apple ID token",
             )
         except Exception as e:
             logger.error(f"Apple token verification failed: {e}")
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Apple authentication failed"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Apple authentication failed",
             )
 
 
@@ -129,7 +131,8 @@ class GoogleOAuth(OAuthProvider):
 
                 if response.status_code != 200:
                     raise HTTPException(
-                        status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Google ID token"
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Invalid Google ID token",
                     )
 
                 token_info = response.json()
@@ -137,7 +140,8 @@ class GoogleOAuth(OAuthProvider):
                 # Verify issuer
                 if token_info.get("iss") not in ["accounts.google.com", GOOGLE_ISSUER]:
                     raise HTTPException(
-                        status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token issuer"
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Invalid token issuer",
                     )
 
                 # In production, also verify:
@@ -164,7 +168,8 @@ class GoogleOAuth(OAuthProvider):
         except Exception as e:
             logger.error(f"Google token verification failed: {e}")
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Google authentication failed"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Google authentication failed",
             )
 
 
@@ -208,7 +213,8 @@ async def oauth_login(
 
         if not token_info.get("sub"):
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token: missing subject"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token: missing subject",
             )
 
         # Create stable user identifier (hash of provider + subject)
@@ -301,7 +307,8 @@ async def oauth_login(
             extra={"provider": login_data.provider, "trace_id": trace_id},
         )
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Authentication failed"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Authentication failed",
         )
 
 
@@ -321,13 +328,18 @@ async def oauth_logout(
     trace_id = f"logout_{uuid.uuid4().hex[:8]}"
 
     logger.info(
-        f"OAuth logout", extra={"user_id": user_id, "device_id": device_id, "trace_id": trace_id}
+        f"OAuth logout",
+        extra={"user_id": user_id, "device_id": device_id, "trace_id": trace_id},
     )
 
     # In production, add token to blacklist here
 
     return JSONResponse(
-        content={"ok": True, "message": "Logged out successfully", "trace_id": trace_id},
+        content={
+            "ok": True,
+            "message": "Logged out successfully",
+            "trace_id": trace_id,
+        },
         status_code=200,
     )
 
@@ -362,7 +374,8 @@ async def revoke_token(request: Request, token: str, token_type: str = "access_t
     except Exception as e:
         logger.error(f"Token revocation failed: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to revoke token"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to revoke token",
         )
 
 

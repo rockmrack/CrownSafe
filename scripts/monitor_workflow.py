@@ -57,7 +57,11 @@ async def trace_workflow_creation():
     print("📤 Submitting new workflow...")
     response = requests.post(
         "http://localhost:8000/api/v1/prior-auth/predict",
-        json={"patient_id": "trace-test-001", "drug_name": "TestDrug", "insurer_id": "TEST"},
+        json={
+            "patient_id": "trace-test-001",
+            "drug_name": "TestDrug",
+            "insurer_id": "TEST",
+        },
     )
 
     if response.status_code == 202:

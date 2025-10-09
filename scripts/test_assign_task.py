@@ -163,7 +163,8 @@ async def run_task_assignment():
         logger.error(f"MCP Client Error during task assignment test: {e}")
     except Exception as e:
         logger.error(
-            f"An unexpected error occurred in the task assignment test: {e}", exc_info=True
+            f"An unexpected error occurred in the task assignment test: {e}",
+            exc_info=True,
         )
     finally:
         logger.info("Controller disconnecting...")

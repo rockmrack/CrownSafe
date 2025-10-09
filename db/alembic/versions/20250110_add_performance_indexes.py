@@ -38,10 +38,14 @@ def upgrade():
 
     # Add composite indexes for common query patterns
     op.create_index(
-        "idx_recalls_enhanced_agency_date", "recalls_enhanced", ["source_agency", "recall_date"]
+        "idx_recalls_enhanced_agency_date",
+        "recalls_enhanced",
+        ["source_agency", "recall_date"],
     )
     op.create_index(
-        "idx_recalls_enhanced_brand_model", "recalls_enhanced", ["brand", "model_number"]
+        "idx_recalls_enhanced_brand_model",
+        "recalls_enhanced",
+        ["brand", "model_number"],
     )
     op.create_index("idx_recalls_enhanced_upc_serial", "recalls_enhanced", ["upc", "serial_number"])
 

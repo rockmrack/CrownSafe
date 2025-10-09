@@ -12,7 +12,9 @@ except ImportError:
 
 if PROM:
     CHAT_REQ = Counter(
-        "bs_chat_requests_total", "Chat requests", ["endpoint", "intent", "ok", "circuit"]
+        "bs_chat_requests_total",
+        "Chat requests",
+        ["endpoint", "intent", "ok", "circuit"],
     )
     CHAT_LAT = Histogram(
         "bs_chat_total_latency_ms",
@@ -26,7 +28,9 @@ if PROM:
         buckets=(10, 50, 100, 200, 400, 800, 1600),
     )
     SYN_LAT = Histogram(
-        "bs_chat_synth_latency_ms", "Synth latency (ms)", buckets=(50, 100, 200, 400, 800, 1600)
+        "bs_chat_synth_latency_ms",
+        "Synth latency (ms)",
+        buckets=(50, 100, 200, 400, 800, 1600),
     )
     CHAT_FALLBACK = Counter(
         "bs_chat_fallback_total", "LLM/template fallback used", ["endpoint", "reason"]

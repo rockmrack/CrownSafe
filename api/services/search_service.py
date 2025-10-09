@@ -219,7 +219,10 @@ class SearchService:
         else:
             # SQLite doesn't support NULLS LAST, use COALESCE
             order_by.extend(
-                [f"COALESCE({table}.recall_date, '1900-01-01') DESC", f"{table}.recall_id ASC"]
+                [
+                    f"COALESCE({table}.recall_date, '1900-01-01') DESC",
+                    f"{table}.recall_id ASC",
+                ]
             )
 
         # Handle cursor-based pagination

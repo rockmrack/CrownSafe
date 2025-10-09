@@ -28,7 +28,10 @@ logger = logging.getLogger(__name__)
 
 
 def test_api_endpoint_with_model_number(
-    user_id: int, barcode: str, model_number: Optional[str], api_url: str = "http://localhost:8001"
+    user_id: int,
+    barcode: str,
+    model_number: Optional[str],
+    api_url: str = "http://localhost:8001",
 ) -> Dict[str, Any]:
     """
     Test the /api/v1/safety-check endpoint with model number parameter.
@@ -60,11 +63,19 @@ def test_api_endpoint_with_model_number(
         if response.status_code == 200:
             result = response.json()
             logger.info(f"Response JSON: {result}")
-            return {"success": True, "status_code": response.status_code, "response": result}
+            return {
+                "success": True,
+                "status_code": response.status_code,
+                "response": result,
+            }
         else:
             logger.error(f"API returned non-200 status: {response.status_code}")
             logger.error(f"Response text: {response.text}")
-            return {"success": False, "status_code": response.status_code, "error": response.text}
+            return {
+                "success": False,
+                "status_code": response.status_code,
+                "error": response.text,
+            }
 
     except requests.exceptions.RequestException as e:
         logger.error(f"Request failed: {e}")
@@ -109,7 +120,11 @@ async def test_direct_database_search(model_number: str) -> Dict[str, Any]:
                         f"  - {recall.recall_id}: {recall.product_name} (Model: {recall.model_number})"
                     )
 
-                return {"success": True, "recalls_found": len(recalls), "recalls": recall_data}
+                return {
+                    "success": True,
+                    "recalls_found": len(recalls),
+                    "recalls": recall_data,
+                }
             else:
                 # Check if we have any model numbers in the database at all
                 sample_models = (
@@ -188,7 +203,10 @@ def run_comprehensive_test_suite(user_id: int, barcode: str, model_number: Optio
         test_results["database_search"] = asyncio.run(test_direct_database_search(model_number))
     else:
         logger.info("⚠️  No model number provided, skipping database search test")
-        test_results["database_search"] = {"success": False, "reason": "No model number provided"}
+        test_results["database_search"] = {
+            "success": False,
+            "reason": "No model number provided",
+        }
 
     # Test 2: RecallDataAgent direct test
     if model_number:
@@ -196,7 +214,10 @@ def run_comprehensive_test_suite(user_id: int, barcode: str, model_number: Optio
         test_results["agent_direct"] = asyncio.run(test_recall_data_agent_directly(model_number))
     else:
         logger.info("⚠️  No model number provided, skipping agent direct test")
-        test_results["agent_direct"] = {"success": False, "reason": "No model number provided"}
+        test_results["agent_direct"] = {
+            "success": False,
+            "reason": "No model number provided",
+        }
 
     # Test 3: API endpoint with model number
     logger.info("\n🌐 Test 3: API Endpoint with Model Number")

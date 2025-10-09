@@ -253,7 +253,8 @@ class SecureRequestValidator:
         # Check URL length
         if len(str(request.url)) > cls.MAX_URL_LENGTH:
             raise HTTPException(
-                status_code=status.HTTP_414_REQUEST_URI_TOO_LONG, detail="Request URL too long"
+                status_code=status.HTTP_414_REQUEST_URI_TOO_LONG,
+                detail="Request URL too long",
             )
 
         # Check Content-Length header
@@ -267,7 +268,8 @@ class SecureRequestValidator:
                     )
             except ValueError:
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Content-Length header"
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid Content-Length header",
                 )
 
         # Check for suspicious headers

@@ -20,7 +20,11 @@ from sqlalchemy import (
     inspect,
     ForeignKey,  # Added for relationships
 )
-from sqlalchemy.orm import sessionmaker, declarative_base, relationship  # Added relationship
+from sqlalchemy.orm import (
+    sessionmaker,
+    declarative_base,
+    relationship,
+)  # Added relationship
 from sqlalchemy.exc import IntegrityError
 from contextlib import contextmanager
 
@@ -283,7 +287,11 @@ def create_tables():
     # Import all models to ensure they're registered with Base
     try:
         # Import models that use the main Base
-        from api.models.chat_memory import UserProfile, Conversation, ConversationMessage
+        from api.models.chat_memory import (
+            UserProfile,
+            Conversation,
+            ConversationMessage,
+        )
         from api.monitoring_scheduler import MonitoredProduct, MonitoringRun
         from db.models.privacy_request import PrivacyRequest
         from db.models.scan_history import ScanHistory

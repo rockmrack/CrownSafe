@@ -69,7 +69,11 @@ def test_drugbank_agent():
     print("\n4. Testing PA criteria extraction...")
     # Test PA criteria extraction
     result = logic.process_task(
-        {"task_name": "pa_criteria", "drug_name": "empagliflozin", "indication": "heart failure"}
+        {
+            "task_name": "pa_criteria",
+            "drug_name": "empagliflozin",
+            "indication": "heart failure",
+        }
     )
 
     if result["status"] == "COMPLETED":

@@ -36,7 +36,8 @@ s2 = re.sub(
 # If there was no explicit HEAD route, inject one that delegates
 if s2 == s:
     insert_after = re.search(
-        r'@router\.get\("/reports/download/\{report_id\}"\)[\s\S]*?\ndef\s+(\w+)\([\s\S]*?\n\)', s
+        r'@router\.get\("/reports/download/\{report_id\}"\)[\s\S]*?\ndef\s+(\w+)\([\s\S]*?\n\)',
+        s,
     )
     if insert_after:
         pos = insert_after.end()

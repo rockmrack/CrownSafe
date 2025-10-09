@@ -52,7 +52,10 @@ class DrugBankAgent:
             {
                 "name": "pa_criteria",
                 "description": "Extract prior authorization relevant criteria for a specific drug and indication",
-                "parameters": {"drug_name": "string (required)", "indication": "string (optional)"},
+                "parameters": {
+                    "drug_name": "string (required)",
+                    "indication": "string (optional)",
+                },
             },
         ]
 

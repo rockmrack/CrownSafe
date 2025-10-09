@@ -119,7 +119,9 @@ def add_rate_limited_routes(app: FastAPI):
 
     # Example: Add rate limiting to search endpoint
     @app.post(
-        "/api/v1/search/advanced", dependencies=[Depends(RateLimiters.search)], tags=["search"]
+        "/api/v1/search/advanced",
+        dependencies=[Depends(RateLimiters.search)],
+        tags=["search"],
     )
     async def search_advanced_rate_limited():
         # This is a wrapper - actual implementation should be in the route
@@ -127,7 +129,9 @@ def add_rate_limited_routes(app: FastAPI):
 
     # Example: Add rate limiting to recall detail
     @app.get(
-        "/api/v1/recall/{recall_id}", dependencies=[Depends(RateLimiters.detail)], tags=["recalls"]
+        "/api/v1/recall/{recall_id}",
+        dependencies=[Depends(RateLimiters.detail)],
+        tags=["recalls"],
     )
     async def get_recall_rate_limited(recall_id: str):
         # This is a wrapper - actual implementation should be in the route

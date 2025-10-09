@@ -55,7 +55,9 @@ async def require_admin(
     if not ADMIN_API_KEY:
         logger.error("Admin API key not configured", extra={"traceId": trace_id})
         raise APIError(
-            status_code=503, code="ADMIN_NOT_CONFIGURED", message="Admin API is not configured"
+            status_code=503,
+            code="ADMIN_NOT_CONFIGURED",
+            message="Admin API is not configured",
         )
 
     # Check if key provided
@@ -69,7 +71,9 @@ async def require_admin(
             },
         )
         raise APIError(
-            status_code=401, code="UNAUTHORIZED", message="Admin authentication required"
+            status_code=401,
+            code="UNAUTHORIZED",
+            message="Admin authentication required",
         )
 
     # Validate key (constant time comparison)
@@ -87,7 +91,9 @@ async def require_admin(
                 },
             )
             raise APIError(
-                status_code=401, code="UNAUTHORIZED", message="Invalid admin credentials"
+                status_code=401,
+                code="UNAUTHORIZED",
+                message="Invalid admin credentials",
             )
 
         # Valid secondary key

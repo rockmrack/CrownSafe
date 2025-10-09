@@ -169,7 +169,9 @@ async def send_reset_email(email: str, token: str, user_name: Optional[str] = No
 
 @router.post("/password-reset/request", response_model=ApiResponse)
 async def request_password_reset(
-    request: PasswordResetRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+    request: PasswordResetRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ):
     """
     Request a password reset email

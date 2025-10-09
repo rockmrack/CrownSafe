@@ -22,7 +22,8 @@ def upgrade():
 
     # Add provider_id column (hashed provider + subject)
     op.add_column(
-        "users", sa.Column("provider_id", sa.String(255), nullable=True, unique=True, index=True)
+        "users",
+        sa.Column("provider_id", sa.String(255), nullable=True, unique=True, index=True),
     )
 
     # Add provider_type column (apple, google, email)
@@ -33,7 +34,8 @@ def upgrade():
 
     # Add created_at timestamp
     op.add_column(
-        "users", sa.Column("created_at", sa.DateTime, nullable=True, default=datetime.utcnow)
+        "users",
+        sa.Column("created_at", sa.DateTime, nullable=True, default=datetime.utcnow),
     )
 
     # Make email nullable for OAuth users (they might not provide email)

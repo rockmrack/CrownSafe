@@ -31,7 +31,10 @@ def setup_privacy_compliance(app: FastAPI):
     app.include_router(
         privacy.router,
         tags=["privacy"],
-        responses={401: {"description": "Unauthorized"}, 429: {"description": "Too many requests"}},
+        responses={
+            401: {"description": "Unauthorized"},
+            429: {"description": "Too many requests"},
+        },
     )
 
     # Include admin privacy management

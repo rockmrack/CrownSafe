@@ -407,7 +407,10 @@ class TestEnhancedBarcodeScanner:
         with patch("core_infra.barcode_scanner_enhanced.PYZBAR_AVAILABLE", True):
             with patch("core_infra.barcode_scanner_enhanced.OPENCV_AVAILABLE", True):
                 with patch("core_infra.barcode_scanner_enhanced.QRCODE_AVAILABLE", True):
-                    with patch("core_infra.barcode_scanner_enhanced.BARCODE_GEN_AVAILABLE", True):
+                    with patch(
+                        "core_infra.barcode_scanner_enhanced.BARCODE_GEN_AVAILABLE",
+                        True,
+                    ):
                         scanner.qr_detector = Mock()
                         scanner.barcode_detector = Mock()
 

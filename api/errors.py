@@ -70,7 +70,8 @@ async def json_error_response(
     )
 
     return JSONResponse(
-        content=create_error_payload(code, message, trace_id, **extra), status_code=status_code
+        content=create_error_payload(code, message, trace_id, **extra),
+        status_code=status_code,
     )
 
 
@@ -166,7 +167,11 @@ async def handle_http_exception(request: Request, exc: StarletteHTTPException) -
         # Pass through any extra fields
         extra = {k: v for k, v in exc.detail.items() if k != "message"}
         return await json_error_response(
-            status_code=exc.status_code, code=code, message=message, request=request, **extra
+            status_code=exc.status_code,
+            code=code,
+            message=message,
+            request=request,
+            **extra,
         )
     else:
         message = f"HTTP {exc.status_code} error"
@@ -218,7 +223,11 @@ class APIError(HTTPException):
     """
 
     def __init__(
-        self, status_code: int, code: str, message: str, details: Optional[Dict[str, Any]] = None
+        self,
+        status_code: int,
+        code: str,
+        message: str,
+        details: Optional[Dict[str, Any]] = None,
     ):
         detail = {"message": message}
         if details:

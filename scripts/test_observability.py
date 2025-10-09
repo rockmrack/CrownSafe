@@ -148,7 +148,8 @@ class ObservabilityTester:
         # Test readiness endpoint
         response = self.session.get(f"{self.base_url}/api/v1/readyz")
         self.test(
-            response.status_code in [200, 503], f"Readiness endpoint returns {response.status_code}"
+            response.status_code in [200, 503],
+            f"Readiness endpoint returns {response.status_code}",
         )
         if response.status_code in [200, 503]:
             data = response.json()
@@ -167,7 +168,10 @@ class ObservabilityTester:
         print("\n📊 Testing Metrics...")
 
         response = self.session.get(f"{self.base_url}/metrics")
-        self.test(response.status_code == 200, f"Metrics endpoint returns {response.status_code}")
+        self.test(
+            response.status_code == 200,
+            f"Metrics endpoint returns {response.status_code}",
+        )
 
         if response.status_code == 200:
             content = response.text
@@ -176,7 +180,8 @@ class ObservabilityTester:
                 "Metrics contain HTTP request metrics",
             )
             self.test(
-                "# TYPE" in content and "# HELP" in content, "Metrics are in Prometheus format"
+                "# TYPE" in content and "# HELP" in content,
+                "Metrics are in Prometheus format",
             )
 
         return all(self.results[-3:]) if len(self.results) >= 3 else False
@@ -190,7 +195,8 @@ class ObservabilityTester:
         hit_limit = False
         for i in range(10):
             response = self.session.post(
-                f"{self.base_url}/api/v1/search/advanced", json={"product": "test", "limit": 1}
+                f"{self.base_url}/api/v1/search/advanced",
+                json={"product": "test", "limit": 1},
             )
 
             if response.status_code == 429:
@@ -201,7 +207,8 @@ class ObservabilityTester:
                     "Rate limit error has correct code",
                 )
                 self.test(
-                    "Retry-After" in response.headers, "Rate limit response has Retry-After header"
+                    "Retry-After" in response.headers,
+                    "Rate limit response has Retry-After header",
                 )
                 break
 

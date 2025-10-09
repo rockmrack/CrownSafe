@@ -230,7 +230,10 @@ class PatientDataAgent:
                     "last_sync": datetime.now(timezone.utc).isoformat(),
                 }
             else:
-                response_payload = {"status": "error", "message": f"Unknown sync type: {sync_type}"}
+                response_payload = {
+                    "status": "error",
+                    "message": f"Unknown sync type: {sync_type}",
+                }
 
             await self.mcp_client.send_message(
                 payload=response_payload,

@@ -67,7 +67,10 @@ class SearchResult:
 
 class WebResearchLogic:
     def __init__(
-        self, agent_id: str, version: str, logger_instance: Optional[logging.Logger] = None
+        self,
+        agent_id: str,
+        version: str,
+        logger_instance: Optional[logging.Logger] = None,
     ):
         self.agent_id = agent_id
         self.version = version
@@ -210,7 +213,12 @@ class WebResearchLogic:
         try:
             max_results_int = int(max_results) if max_results is not None else 3
         except (ValueError, TypeError):
-            return False, f"max_results must be int, got: {type(max_results).__name__}", "", 0
+            return (
+                False,
+                f"max_results must be int, got: {type(max_results).__name__}",
+                "",
+                0,
+            )
         if not 1 <= max_results_int <= 50:
             return False, "max_results must be between 1 and 50", "", 0
 
@@ -359,7 +367,8 @@ class WebResearchLogic:
             self.logger.error(str(last_exception))
             if attempt < self.max_retries:
                 if not isinstance(
-                    last_exception, (ConnectionError, TimeoutError, ConnectionRefusedError)
+                    last_exception,
+                    (ConnectionError, TimeoutError, ConnectionRefusedError),
                 ):
                     self.logger.error(f"Non-retryable error for {description}. Failing early.")
                     raise last_exception
@@ -456,7 +465,9 @@ class WebResearchLogic:
         try:
             if self.pubmed_use_mock:
                 return self._create_mock_data(
-                    constructed_api_query_term, max_results, original_input_query_for_result
+                    constructed_api_query_term,
+                    max_results,
+                    original_input_query_for_result,
                 )
 
             self.logger.info(
@@ -506,7 +517,9 @@ class WebResearchLogic:
                     "retmode": "xml",
                 }
                 fetch_response_xml_str = await self._make_ncbi_request(
-                    self.base_url_efetch, efetch_params, f"EFetch for {len(ids_to_fetch)} IDs"
+                    self.base_url_efetch,
+                    efetch_params,
+                    f"EFetch for {len(ids_to_fetch)} IDs",
                 )
                 fetch_xml_root = ET.fromstring(fetch_response_xml_str)
                 articles_data = [
@@ -631,7 +644,10 @@ class WebResearchLogic:
                 self.logger.error(f"Invalid search parameters for task {task_id}: {param_err_msg}")
                 return {
                     "message_type": MessageType.TASK_FAIL.value,
-                    "payload": {**response_payload_base, "error_message": param_err_msg},
+                    "payload": {
+                        **response_payload_base,
+                        "error_message": param_err_msg,
+                    },
                 }
 
             # Store the original high-level query if it was different from the constructed one
@@ -668,7 +684,10 @@ class WebResearchLogic:
                 )
                 return {
                     "message_type": MessageType.TASK_FAIL.value,
-                    "payload": {**response_payload_base, "error_message": search_result_obj.error},
+                    "payload": {
+                        **response_payload_base,
+                        "error_message": search_result_obj.error,
+                    },
                 }
 
             result_data_dict = asdict(search_result_obj)  # Convert SearchResult dataclass to dict
@@ -681,7 +700,10 @@ class WebResearchLogic:
             self.logger.info(
                 f"PubMed search completed for task {task_id}: {len(search_result_obj.articles)} articles found (ESearch total: {search_result_obj.total_found_by_esearch})."
             )
-            return {"message_type": MessageType.TASK_COMPLETE.value, "payload": final_payload}
+            return {
+                "message_type": MessageType.TASK_COMPLETE.value,
+                "payload": final_payload,
+            }
 
         except Exception as e:
             error_msg = f"Unexpected error in _handle_task_assign for task {task_id}: {type(e).__name__} - {str(e)}"

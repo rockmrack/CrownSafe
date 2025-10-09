@@ -192,4 +192,9 @@ class SecurityDefaults:
 
 
 # Export
-__all__ = ["setup_security", "get_security_config", "validate_security_config", "SecurityDefaults"]
+__all__ = [
+    "setup_security",
+    "get_security_config",
+    "validate_security_config",
+    "SecurityDefaults",
+]

@@ -323,7 +323,11 @@ This is an automated notification from BabyShield Support System
 
 
 async def send_auto_reply(
-    user_email: str, user_name: str, ticket_number: int, priority: Priority, subject: str
+    user_email: str,
+    user_name: str,
+    ticket_number: int,
+    priority: Priority,
+    subject: str,
 ) -> bool:
     """Send automatic reply to user"""
 

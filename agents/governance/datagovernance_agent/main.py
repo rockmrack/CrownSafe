@@ -29,7 +29,10 @@ class DataGovernanceAgent:
         data_payload = task_payload.get("data_payload")
         required_fields = task_payload.get("required_fields")
         if not data_payload or not required_fields:
-            return {"status": "error", "message": "Missing 'data_payload' or 'required_fields'."}
+            return {
+                "status": "error",
+                "message": "Missing 'data_payload' or 'required_fields'.",
+            }
         return self.logic.check_data_minimization(data_payload, required_fields)
 
     async def handle_determine_residency(self, task_payload: dict) -> dict:

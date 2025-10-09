@@ -101,7 +101,12 @@ class TransactionManager:
         Check if error is retryable
         """
         error_str = str(error).lower()
-        retryable_errors = ["deadlock", "lock timeout", "connection lost", "connection reset"]
+        retryable_errors = [
+            "deadlock",
+            "lock timeout",
+            "connection lost",
+            "connection reset",
+        ]
         return any(err in error_str for err in retryable_errors)
 
 

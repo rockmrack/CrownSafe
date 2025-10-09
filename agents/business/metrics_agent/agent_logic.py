@@ -72,6 +72,9 @@ class MetricsAgentLogic:
         )
 
         if success:
-            return {"status": "COMPLETED", "result": {"message": "Event tracked successfully."}}
+            return {
+                "status": "COMPLETED",
+                "result": {"message": "Event tracked successfully."},
+            }
         else:
             return {"status": "FAILED", "error": "Failed to track Mixpanel event."}

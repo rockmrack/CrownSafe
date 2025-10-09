@@ -7,12 +7,26 @@ import asyncio
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, JSON, ForeignKey, Text, and_
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+    Boolean,
+    JSON,
+    ForeignKey,
+    Text,
+    and_,
+)
 from sqlalchemy.orm import relationship
 
 from core_infra.database import get_db_session, Base, RecallDB
 from core_infra.visual_agent_models import ImageExtraction, ImageJob
-from api.notification_endpoints import NotificationHistory, send_push_notification, DeviceToken
+from api.notification_endpoints import (
+    NotificationHistory,
+    send_push_notification,
+    DeviceToken,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -326,7 +340,8 @@ class ProductMonitoringScheduler:
                 due_products = (
                     db.query(MonitoredProduct)
                     .filter(
-                        MonitoredProduct.is_active, MonitoredProduct.next_check <= datetime.utcnow()
+                        MonitoredProduct.is_active,
+                        MonitoredProduct.next_check <= datetime.utcnow(),
                     )
                     .limit(1000)
                     .all()

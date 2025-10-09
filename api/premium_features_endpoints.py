@@ -18,7 +18,9 @@ from api.schemas.common import ok, fail
 from agents.premium.pregnancy_product_safety_agent.agent_logic import (
     PregnancyProductSafetyAgentLogic,
 )
-from agents.premium.allergy_sensitivity_agent.agent_logic import AllergySensitivityAgentLogic
+from agents.premium.allergy_sensitivity_agent.agent_logic import (
+    AllergySensitivityAgentLogic,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +141,10 @@ async def check_pregnancy_safety(
         if payload.user_id and payload.user_id != user_id:
             raise HTTPException(
                 status_code=403,
-                detail={"success": False, "error": {"message": "Mismatched user_id vs token"}},
+                detail={
+                    "success": False,
+                    "error": {"message": "Mismatched user_id vs token"},
+                },
             )
         logger.info(f"Pregnancy safety check for user {user_id}, trimester {payload.trimester}")
 
@@ -147,7 +152,8 @@ async def check_pregnancy_safety(
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
             raise HTTPException(
-                status_code=404, detail={"success": False, "error": {"message": "User not found"}}
+                status_code=404,
+                detail={"success": False, "error": {"message": "User not found"}},
             )
 
         # Use barcode as product identifier (UPC)
@@ -227,7 +233,10 @@ async def check_product_allergies(
         if payload.user_id and payload.user_id != user_id:
             raise HTTPException(
                 status_code=403,
-                detail={"success": False, "error": {"message": "Mismatched user_id vs token"}},
+                detail={
+                    "success": False,
+                    "error": {"message": "Mismatched user_id vs token"},
+                },
             )
         logger.info(f"Allergy check for user {user_id} family")
 
@@ -235,7 +244,8 @@ async def check_product_allergies(
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
             raise HTTPException(
-                status_code=404, detail={"success": False, "error": {"message": "User not found"}}
+                status_code=404,
+                detail={"success": False, "error": {"message": "User not found"}},
             )
 
         # Use barcode as product identifier
@@ -439,7 +449,9 @@ async def update_family_member(
 
 @router.delete("/family/members/{member_id}")
 async def delete_family_member(
-    member_id: int, user_id: int = Query(..., description="User ID"), db: Session = Depends(get_db)
+    member_id: int,
+    user_id: int = Query(..., description="User ID"),
+    db: Session = Depends(get_db),
 ):
     """
     Remove a family member from the user's family.
@@ -465,7 +477,10 @@ async def delete_family_member(
         db.delete(family_member)
         db.commit()
 
-        return {"status": "success", "message": f"Family member {family_member.name} removed"}
+        return {
+            "status": "success",
+            "message": f"Family member {family_member.name} removed",
+        }
 
     except HTTPException:
         raise
@@ -491,7 +506,8 @@ async def check_pregnancy_safety_dev(payload: PregnancyCheckRequest, db: Session
 
         if not dev_entitled(payload.user_id or 0, REQUIRED_FEATURE):
             raise HTTPException(
-                status_code=402, detail="Subscription required for pregnancy safety check"
+                status_code=402,
+                detail="Subscription required for pregnancy safety check",
             )
 
         logger.info(f"Pregnancy safety check for user {payload.user_id}")
@@ -593,7 +609,8 @@ async def comprehensive_safety_check(
                 raise HTTPException(status_code=404, detail="User not found")
             if not getattr(user, "is_subscribed", False):
                 raise HTTPException(
-                    status_code=402, detail="Subscription required for comprehensive safety check"
+                    status_code=402,
+                    detail="Subscription required for comprehensive safety check",
                 )
         else:
             logger.info(f"DEV OVERRIDE: Bypassing subscription check for user {request.user_id}")

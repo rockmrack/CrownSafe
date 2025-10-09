@@ -3,7 +3,14 @@ Query optimization utilities for BabyShield
 Prevents N+1 queries and improves database performance
 """
 
-from sqlalchemy.orm import Query, Session, joinedload, selectinload, subqueryload, contains_eager
+from sqlalchemy.orm import (
+    Query,
+    Session,
+    joinedload,
+    selectinload,
+    subqueryload,
+    contains_eager,
+)
 from sqlalchemy.sql import func
 from sqlalchemy import and_, or_
 from typing import List, Dict, Any, Optional, Type
@@ -211,7 +218,11 @@ class OptimizedQueries:
         """
         return (
             db.query(User)
-            .options(joinedload("family_members"), joinedload("allergies"), joinedload("recalls"))
+            .options(
+                joinedload("family_members"),
+                joinedload("allergies"),
+                joinedload("recalls"),
+            )
             .filter(User.id == user_id)
             .first()
         )
@@ -237,7 +248,10 @@ class OptimizedQueries:
         return (
             db.query(Product)
             .filter(
-                or_(Product.name.ilike(f"%{search_term}%"), Product.brand.ilike(f"%{search_term}%"))
+                or_(
+                    Product.name.ilike(f"%{search_term}%"),
+                    Product.brand.ilike(f"%{search_term}%"),
+                )
             )
             .options(joinedload("risk_profile"), selectinload("recalls"))
             .limit(limit)
@@ -318,7 +332,11 @@ def optimize_recall_search(db: Session, barcode: str):
     # Optimized (1 query):
     recalls = (
         db.query(Recall)
-        .options(joinedload("manufacturer"), selectinload("incidents"), selectinload("images"))
+        .options(
+            joinedload("manufacturer"),
+            selectinload("incidents"),
+            selectinload("images"),
+        )
         .filter(Recall.barcode == barcode)
         .all()
     )

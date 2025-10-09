@@ -55,9 +55,15 @@ class SerialVerification(Base):
 
 
 # Helpful composite indexes
-Index("ix_serial_verifications_gtin_lot", SerialVerification.gtin, SerialVerification.lot_number)
 Index(
-    "ix_serial_verifications_gtin_serial", SerialVerification.gtin, SerialVerification.serial_number
+    "ix_serial_verifications_gtin_lot",
+    SerialVerification.gtin,
+    SerialVerification.lot_number,
+)
+Index(
+    "ix_serial_verifications_gtin_serial",
+    SerialVerification.gtin,
+    SerialVerification.serial_number,
 )
 
 

@@ -64,7 +64,10 @@ class TrialsQueryResult:
 
 class ClinicalTrialsAgentLogic:
     def __init__(
-        self, agent_id: str, version: str, logger_instance: Optional[logging.Logger] = None
+        self,
+        agent_id: str,
+        version: str,
+        logger_instance: Optional[logging.Logger] = None,
     ):
         self.agent_id = agent_id
         self.version = version
@@ -150,7 +153,12 @@ class ClinicalTrialsAgentLogic:
         try:
             validated_max_trials = int(max_trials) if max_trials is not None else 5
             if not 1 <= validated_max_trials <= 100:
-                return False, "max_trials must be 1-100.", validated_max_trials, query_params
+                return (
+                    False,
+                    "max_trials must be 1-100.",
+                    validated_max_trials,
+                    query_params,
+                )
         except (ValueError, TypeError):
             return False, f"max_trials not int.", validated_max_trials, query_params
         drug_name_s = drug_name.strip() if drug_name and isinstance(drug_name, str) else None
@@ -176,7 +184,12 @@ class ClinicalTrialsAgentLogic:
         elif disease_name_s:
             query_params["query.cond"] = disease_name_s
         else:
-            return False, "No valid search param provided.", validated_max_trials, query_params
+            return (
+                False,
+                "No valid search param provided.",
+                validated_max_trials,
+                query_params,
+            )
         return True, None, validated_max_trials, query_params
 
     def _make_sync_api_request(
@@ -184,7 +197,11 @@ class ClinicalTrialsAgentLogic:
     ) -> Dict[str, Any]:
         """Synchronous API request using the 'requests' library."""
         studies_endpoint = f"{self.api_base_url}/studies"
-        api_params = {**query_params, "pageSize": str(max_trials_validated), "format": "json"}
+        api_params = {
+            **query_params,
+            "pageSize": str(max_trials_validated),
+            "format": "json",
+        }
         log_url = f"{studies_endpoint}?{urlencode(api_params)}"  # For logging
 
         last_exception: Optional[Exception] = None
@@ -530,7 +547,10 @@ class ClinicalTrialsAgentLogic:
                 self.logger.error(f"Invalid params for task {task_id}: {param_err_msg}")
                 return {
                     "message_type": MessageType.TASK_FAIL.value,
-                    "payload": {**response_payload_base, "error_message": param_err_msg},
+                    "payload": {
+                        **response_payload_base,
+                        "error_message": param_err_msg,
+                    },
                 }
             self.logger.info(
                 f"Performing ClinicalTrials search for task {task_id} with params: {query_params_dict}, max_trials: {validated_max_trials}"
@@ -546,7 +566,10 @@ class ClinicalTrialsAgentLogic:
                 )
                 return {
                     "message_type": MessageType.TASK_FAIL.value,
-                    "payload": {**response_payload_base, "error_message": query_result_obj.error},
+                    "payload": {
+                        **response_payload_base,
+                        "error_message": query_result_obj.error,
+                    },
                 }
             result_data_dict = asdict(query_result_obj)
             final_payload = {
@@ -557,7 +580,10 @@ class ClinicalTrialsAgentLogic:
             self.logger.info(
                 f"ClinicalTrials search completed for task {task_id}: {len(query_result_obj.trials_data)} trials processed."
             )
-            return {"message_type": MessageType.TASK_COMPLETE.value, "payload": final_payload}
+            return {
+                "message_type": MessageType.TASK_COMPLETE.value,
+                "payload": final_payload,
+            }
         except Exception as e:
             error_msg = f"Unexpected error in _handle_task_assign: {type(e).__name__} - {str(e)}"
             self.logger.error(error_msg, exc_info=True)

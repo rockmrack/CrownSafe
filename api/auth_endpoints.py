@@ -77,7 +77,10 @@ async def register(request: Request, user_data: UserRegister, db: Session = Depe
     # Create new user
     hashed_password = get_password_hash(user_data.password)
     new_user = User(
-        email=user_data.email, hashed_password=hashed_password, is_active=True, is_subscribed=False
+        email=user_data.email,
+        hashed_password=hashed_password,
+        is_active=True,
+        is_subscribed=False,
     )
 
     try:
@@ -97,7 +100,8 @@ async def register(request: Request, user_data: UserRegister, db: Session = Depe
         db.rollback()
         logger.error(f"Error registering user: {str(e)}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating user account"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error creating user account",
         )
 
 
@@ -158,14 +162,16 @@ async def login(
     except (UnknownHashError, ValueError) as e:
         logger.warning("Password verify failed: %s", e)
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
         )
     except HTTPException:
         raise
     except Exception:
         logger.exception("Unhandled error in auth/token")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
         )
 
 
@@ -183,7 +189,8 @@ async def refresh_token(request: Request, db: Session = Depends(get_db)):
             raise HTTPException(status_code=400, detail="refresh_token is required in request body")
     except Exception as e:
         raise HTTPException(
-            status_code=400, detail='Invalid JSON body. Expected: {"refresh_token": "<token>"}'
+            status_code=400,
+            detail='Invalid JSON body. Expected: {"refresh_token": "<token>"}',
         )
 
     # Decode refresh token
@@ -204,7 +211,8 @@ async def refresh_token(request: Request, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user or not user.is_active:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found or inactive"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found or inactive",
         )
 
     # Create new tokens
@@ -212,12 +220,16 @@ async def refresh_token(request: Request, db: Session = Depends(get_db)):
     new_refresh_token = create_refresh_token(data={"sub": str(user.id)})
 
     return Token(
-        access_token=new_access_token, refresh_token=new_refresh_token, token_type="bearer"
+        access_token=new_access_token,
+        refresh_token=new_refresh_token,
+        token_type="bearer",
     )
 
 
 @router.get("/me", response_model=UserResponse)
-async def get_current_user_profile(current_user: User = Depends(get_current_active_user)):
+async def get_current_user_profile(
+    current_user: User = Depends(get_current_active_user),
+):
     """
     Get current user profile
     Requires authentication
@@ -264,7 +276,8 @@ async def update_profile(
         db.rollback()
         logger.error(f"Error updating profile: {str(e)}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error updating profile"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error updating profile",
         )
 
 
@@ -315,7 +328,11 @@ async def verify_token(
 
             # Mark email as verified (in real implementation)
             # For now, just return success
-            return {"valid": True, "message": "Email verified successfully", "email": email}
+            return {
+                "valid": True,
+                "message": "Email verified successfully",
+                "email": email,
+            }
 
         except Exception as e:
             raise HTTPException(status_code=400, detail="Invalid or expired verification code")

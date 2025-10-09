@@ -54,7 +54,9 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
 # Logging setup
 logging.basicConfig(
-    level=LOG_LEVEL, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", force=True
+    level=LOG_LEVEL,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    force=True,
 )
 
 logger = logging.getLogger(f"{AGENT_ID}.main")
@@ -231,7 +233,8 @@ class ClinicalTrialsAgentManager:
 
         except Exception as e:
             logger.critical(
-                f"Failed to initialize ClinicalTrialsAgent components: {e}", exc_info=True
+                f"Failed to initialize ClinicalTrialsAgent components: {e}",
+                exc_info=True,
             )
             return False
 
