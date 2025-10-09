@@ -12,6 +12,9 @@ import logging
 from contextlib import contextmanager
 import time
 
+# Import database models for query optimization
+from core_infra.database import User, Recall, Product
+
 logger = logging.getLogger(__name__)
 
 class QueryOptimizer:
