@@ -4,6 +4,16 @@ from datetime import date, datetime
 from sqlalchemy import create_engine, Column, String, Boolean, Date, DateTime, ForeignKey, BigInteger, SmallInteger, Text
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 
+# Import the functions being tested
+from api.crud.chat_memory import (
+    upsert_profile,
+    get_or_create_conversation,
+    log_message
+)
+
+# Import models for type checking
+from api.models.chat_memory import ConversationMessage
+
 # Create test-specific models for SQLite compatibility
 TestBase = declarative_base()
 
