@@ -1,0 +1,10 @@
+﻿{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "Lint", "type": "shell", "command": "ruff check .", "problemMatcher": "$eslint-stylish" },
+    { "label": "Format", "type": "shell", "command": "ruff format ."},
+    { "label": "Test", "type": "shell", "command": "pytest -q"},
+    { "label": "Coverage", "type": "shell", "command": "pytest --maxfail=1 --disable-warnings -q --cov=./ --cov-report=term-missing"},
+    { "label": "Run (FastAPI)", "type": "shell", "command": "uvicorn api.main_babyshield:app --host 0.0.0.0 --port 8001 --reload"}
+  ]
+}
