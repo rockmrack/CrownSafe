@@ -17,9 +17,7 @@ from agents.patient_stratification_agent.agent_logic import (
 )
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # Try to import nest_asyncio for event loop handling
@@ -107,16 +105,14 @@ async def test_stratification_agent():
             normalized_decision = normalize_decision(prediction["decision"])
 
             print(f"\n✅ Prediction completed in {elapsed_time:.0f}ms")
-            print(f"\n📊 DECISION SUMMARY:")
+            print("\n📊 DECISION SUMMARY:")
             print(f"   • Decision: {normalized_decision}")
             print(f"   • Approval Likelihood: {prediction['approval_likelihood']}%")
-            print(
-                f"   • Confidence: {prediction['confidence_score']:.2f} ({prediction['confidence_level']})"
-            )
+            print(f"   • Confidence: {prediction['confidence_score']:.2f} ({prediction['confidence_level']})")
             print(f"   • Processing Time: {prediction['processing_time_ms']}ms")
             print(f"   • LLM Tokens Used: {prediction['llm_tokens_used']}")
 
-            print(f"\n📝 CLINICAL RATIONALE:")
+            print("\n📝 CLINICAL RATIONALE:")
             print(f"   {prediction['clinical_rationale']}")
 
             print(
@@ -138,19 +134,19 @@ async def test_stratification_agent():
                     )
 
             if prediction["recommendations"]:
-                print(f"\n💡 RECOMMENDATIONS:")
+                print("\n💡 RECOMMENDATIONS:")
                 for rec in prediction["recommendations"]:
                     print(f"   • {rec}")
 
             # Validate expected outcome
-            assert (
-                normalized_decision == DecisionType.APPROVE.value
-            ), f"Expected {DecisionType.APPROVE.value}, got {normalized_decision}"
-            assert (
-                prediction["approval_likelihood"] > 70
-            ), f"Expected high likelihood, got {prediction['approval_likelihood']}%"
+            assert normalized_decision == DecisionType.APPROVE.value, (
+                f"Expected {DecisionType.APPROVE.value}, got {normalized_decision}"
+            )
+            assert prediction["approval_likelihood"] > 70, (
+                f"Expected high likelihood, got {prediction['approval_likelihood']}%"
+            )
 
-            print(f"\n✅ Test 1 PASSED - Patient correctly identified for APPROVAL")
+            print("\n✅ Test 1 PASSED - Patient correctly identified for APPROVAL")
 
         else:
             print(f"\n❌ FAILED: {result.get('message', 'Unknown error')}")
@@ -180,14 +176,12 @@ async def test_stratification_agent():
             normalized_decision = normalize_decision(prediction["decision"])
 
             print(f"\n✅ Prediction completed in {elapsed_time:.0f}ms")
-            print(f"\n📊 DECISION SUMMARY:")
+            print("\n📊 DECISION SUMMARY:")
             print(f"   • Decision: {normalized_decision}")
             print(f"   • Approval Likelihood: {prediction['approval_likelihood']}%")
-            print(
-                f"   • Confidence: {prediction['confidence_score']:.2f} ({prediction['confidence_level']})"
-            )
+            print(f"   • Confidence: {prediction['confidence_score']:.2f} ({prediction['confidence_level']})")
 
-            print(f"\n📝 CLINICAL RATIONALE:")
+            print("\n📝 CLINICAL RATIONALE:")
             print(f"   {prediction['clinical_rationale']}")
 
             if prediction.get("identified_gaps"):
@@ -196,21 +190,21 @@ async def test_stratification_agent():
                     print(f"   • {gap}")
 
             if prediction.get("alternative_options"):
-                print(f"\n💊 ALTERNATIVE OPTIONS:")
+                print("\n💊 ALTERNATIVE OPTIONS:")
                 for alt in prediction["alternative_options"]:
                     print(
                         f"   • {alt['drug_name']} - {alt.get('coverage_status', 'Unknown')} (Tier {alt.get('tier', 'N/A')})"
                     )
 
             # Validate expected outcome
-            assert (
-                normalized_decision == DecisionType.DENY.value
-            ), f"Expected {DecisionType.DENY.value}, got {normalized_decision}"
-            assert (
-                prediction["approval_likelihood"] < 30
-            ), f"Expected low likelihood, got {prediction['approval_likelihood']}%"
+            assert normalized_decision == DecisionType.DENY.value, (
+                f"Expected {DecisionType.DENY.value}, got {normalized_decision}"
+            )
+            assert prediction["approval_likelihood"] < 30, (
+                f"Expected low likelihood, got {prediction['approval_likelihood']}%"
+            )
 
-            print(f"\n✅ Test 2 PASSED - Patient correctly identified for DENIAL")
+            print("\n✅ Test 2 PASSED - Patient correctly identified for DENIAL")
 
         else:
             print(f"\n❌ FAILED: {result.get('message', 'Unknown error')}")
@@ -234,7 +228,7 @@ async def test_stratification_agent():
             # Normalize the decision for comparison
             normalized_decision = normalize_decision(prediction["decision"])
 
-            print(f"\n✅ Prediction completed")
+            print("\n✅ Prediction completed")
             print(f"   • Decision: {normalized_decision}")
             print(f"   • Approval Likelihood: {prediction['approval_likelihood']}%")
 
@@ -244,7 +238,7 @@ async def test_stratification_agent():
                 DecisionType.PEND.value,
             ], f"Expected DENY or PEND, got {normalized_decision}"
 
-            print(f"\n✅ Test 3 PASSED - Correctly handled non-qualifying diagnosis")
+            print("\n✅ Test 3 PASSED - Correctly handled non-qualifying diagnosis")
 
         else:
             print(f"\n❌ FAILED: {result.get('message', 'Unknown error')}")
@@ -262,7 +256,7 @@ async def test_stratification_agent():
 
     # First call - should be slow
     start_time = time.time()
-    result1 = await logic.predict_approval_likelihood("patient-001", "Empagliflozin", "UHC")
+    _ = await logic.predict_approval_likelihood("patient-001", "Empagliflozin", "UHC")
     first_call_time = (time.time() - start_time) * 1000
 
     # Second call - should be fast (cached)
@@ -278,14 +272,12 @@ async def test_stratification_agent():
         speed_improvement = first_call_time / second_call_time
         print(f"   • Speed improvement: {speed_improvement:.1f}x faster")
     else:
-        print(f"   • Speed improvement: Instant (0ms)")
+        print("   • Speed improvement: Instant (0ms)")
 
     assert result2.get("source") == "cache", "Second call should be from cache"
-    assert (
-        second_call_time < first_call_time / 2 or second_call_time == 0
-    ), "Cached call should be significantly faster"
+    assert second_call_time < first_call_time / 2 or second_call_time == 0, "Cached call should be significantly faster"
 
-    print(f"\n✅ Test 4 PASSED - Caching working correctly")
+    print("\n✅ Test 4 PASSED - Caching working correctly")
 
     # Test 5: Test urgency handling
     print("\n" + "-" * 60)
@@ -304,7 +296,7 @@ async def test_stratification_agent():
         )
 
         if result["status"] == "success":
-            print(f"\n✅ URGENT request processed successfully")
+            print("\n✅ URGENT request processed successfully")
             print(f"   • Processing time: {result['prediction']['processing_time_ms']}ms")
 
             # Check if urgency was considered in evidence
@@ -312,14 +304,13 @@ async def test_stratification_agent():
             urgency_evidence = [
                 e
                 for e in evidence_items
-                if "urgency" in e.get("type", "").lower()
-                or "urgent" in e.get("content", "").lower()
+                if "urgency" in e.get("type", "").lower() or "urgent" in e.get("content", "").lower()
             ]
 
             if urgency_evidence:
-                print(f"   • Urgency was considered in the analysis")
+                print("   • Urgency was considered in the analysis")
 
-            print(f"\n✅ Test 5 PASSED - Urgency handling working")
+            print("\n✅ Test 5 PASSED - Urgency handling working")
 
     except Exception as e:
         print(f"\n❌ Test 5 failed with exception: {e}")
@@ -341,7 +332,7 @@ async def test_stratification_agent():
         cache_hit_rate = metrics["cache_hits"] / total_cache_attempts
         print(f"   • Cache Hit Rate: {cache_hit_rate:.0%}")
     else:
-        print(f"   • Cache Hit Rate: No cache attempts")
+        print("   • Cache Hit Rate: No cache attempts")
 
     print(f"   • Total LLM Tokens: {metrics['total_llm_tokens']:,}")
 
@@ -356,7 +347,7 @@ async def test_stratification_agent():
         print(f"   • P99 Latency: {metrics['p99_latency']:.0f}ms")
 
     # Test evidence weight distribution
-    print(f"\n📊 EVIDENCE WEIGHT DISTRIBUTION:")
+    print("\n📊 EVIDENCE WEIGHT DISTRIBUTION:")
     for evidence_type, weight in logic.evidence_weights.items():
         print(f"   • {evidence_type}: {weight:.0%}")
 
@@ -392,7 +383,7 @@ async def test_error_handling():
 
     # Should still complete but with limited data
     assert result["status"] in ["success", "error"]
-    print(f"   ✅ Handled missing patient gracefully")
+    print("   ✅ Handled missing patient gracefully")
 
     # Test with invalid drug
     print("\n📋 Testing with invalid drug name...")
@@ -401,7 +392,7 @@ async def test_error_handling():
     )
 
     assert result["status"] in ["success", "error"]
-    print(f"   ✅ Handled invalid drug gracefully")
+    print("   ✅ Handled invalid drug gracefully")
 
     print("\n✅ Error handling tests completed")
 

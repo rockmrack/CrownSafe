@@ -1,4 +1,7 @@
-import sqlite3, os, json, datetime
+import sqlite3
+import os
+import json
+import datetime
 
 DB = os.path.abspath("dev.db")
 con = sqlite3.connect(DB)

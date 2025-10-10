@@ -2,6 +2,7 @@
 Deep Performance Tests
 Testing response times, throughput, and resource usage
 """
+
 import pytest
 from fastapi.testclient import TestClient
 from api.main_babyshield import app
@@ -117,7 +118,7 @@ class TestPerformanceDeep:
         client = TestClient(app)
 
         start = time.time()
-        r = client.get("/api/v1/nonexistent")
+        _ = client.get("/api/v1/nonexistent")  # r (response checked via timing only)
         duration = time.time() - start
 
         # Error responses should be even faster than success
@@ -207,10 +208,10 @@ class TestPerformanceDeep:
         """Test JSON parsing performance"""
         client = TestClient(app)
 
-        start = time.time()
+        _ = time.time()  # start (overall timing not needed)
         r = client.get("/healthz")
         parse_start = time.time()
-        data = r.json()
+        _ = r.json()  # data (only parse timing matters)
         parse_duration = time.time() - parse_start
 
         # JSON parsing should be nearly instant

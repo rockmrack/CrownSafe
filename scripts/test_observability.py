@@ -304,7 +304,7 @@ def test_rate_limit_stress(base_url: str = BASE_URL):
         # Small delay to not overwhelm
         time.sleep(0.05)
 
-    print(f"   ⚠️ Made 65 requests without hitting rate limit")
+    print("   ⚠️ Made 65 requests without hitting rate limit")
     print(f"   Status codes: {set(statuses)}")
     return False
 

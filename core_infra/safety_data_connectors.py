@@ -132,8 +132,8 @@ class CPSCDataConnector:
         logger.info("Fetching NEISS injury data...")
         records = []
 
-        # NEISS product codes for baby products (examples)
-        baby_product_codes = product_codes or [
+        # NEISS product codes for baby products (examples) - Reserved for future queries
+        _ = product_codes or [
             1543,  # Baby carriers
             1545,  # Baby gates
             1528,  # Cribs
@@ -148,9 +148,7 @@ class CPSCDataConnector:
 
         return records
 
-    async def fetch_violations(
-        self, company_name: Optional[str] = None, limit: int = 1000
-    ) -> List[SafetyDataRecord]:
+    async def fetch_violations(self, company_name: Optional[str] = None, limit: int = 1000) -> List[SafetyDataRecord]:
         """
         Fetch violation data from CPSC
         """
@@ -231,9 +229,7 @@ class CPSCDataConnector:
                                 }
                             )
 
-                        logger.info(
-                            f"Successfully fetched {len(articles)} safety articles from CPSC."
-                        )
+                        logger.info(f"Successfully fetched {len(articles)} safety articles from CPSC.")
                     else:
                         logger.error(f"CPSC News API returned status {response.status}")
 
@@ -338,15 +334,13 @@ class EUSafetyGateConnector:
         data = {
             "id": entry.id,
             "product": entry.title,
-            "date": datetime(*entry.published_parsed[:6])
-            if hasattr(entry, "published_parsed")
-            else None,
+            "date": datetime(*entry.published_parsed[:6]) if hasattr(entry, "published_parsed") else None,
             "risk_description": entry.summary if hasattr(entry, "summary") else None,
         }
 
-        # Parse additional fields from content
+        # Parse additional fields from content (reserved for future HTML parsing)
         if hasattr(entry, "content"):
-            content = entry.content[0].value if entry.content else ""
+            _ = entry.content[0].value if entry.content else ""  # content
             # Extract risk type, measures, etc. from content
             # This would require parsing the HTML/XML content
 
@@ -389,7 +383,7 @@ class CommercialDatabaseConnector:
     async def _lookup_upcitemdb(self, barcode: str) -> Optional[Dict]:
         """Look up in UPCitemdb"""
         async with aiohttp.ClientSession() as session:
-            url = f"https://api.upcitemdb.com/prod/v1/lookup"
+            url = "https://api.upcitemdb.com/prod/v1/lookup"
             params = {"upc": barcode}
             headers = {"user_key": self.api_keys.get("upcitemdb", "")}
 

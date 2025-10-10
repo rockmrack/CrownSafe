@@ -48,7 +48,7 @@ time.sleep(5)
 # Check if workflow was created
 workflow_key = f"rossnet:workflow:{workflow_id}"
 if r.exists(workflow_key):
-    print(f"✅ SUCCESS! Router created workflow!")
+    print("✅ SUCCESS! Router created workflow!")
     data = json.loads(r.get(workflow_key))
     print(f"   Status: {data.get('status')}")
     print(f"   workflow_id field: {data.get('workflow_id')}")
@@ -58,7 +58,7 @@ if r.exists(workflow_key):
     else:
         print("   ❌ workflow_id is NOT set correctly")
 else:
-    print(f"❌ Workflow not created")
+    print("❌ Workflow not created")
 
     # Check if message is still in queue
     queue_len = r.llen("mcp:queue:router_agent_01")

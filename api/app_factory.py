@@ -33,8 +33,8 @@ def create_app(
     Returns:
         Configured FastAPI application
     """
-    # Determine if we're in production
-    is_production = environment == "production"
+    # Determine if we're in production (reserved for future environment-specific config)
+    _ = environment == "production"
 
     # Create FastAPI app
     app = FastAPI(
@@ -68,9 +68,7 @@ def _configure_logging(app: FastAPI, environment: str) -> None:
     """Configure application logging"""
     log_level = "INFO" if environment == "production" else "DEBUG"
 
-    logging.basicConfig(
-        level=log_level, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
+    logging.basicConfig(level=log_level, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
     # Suppress noisy loggers
     logging.getLogger("urllib3").setLevel(logging.WARNING)
@@ -209,7 +207,7 @@ def configure_startup_events(app: FastAPI) -> None:
             from core_infra.database import engine
 
             # Test database connection
-            with engine.connect() as conn:
+            with engine.connect() as _:
                 logger.info("✅ Database connection established")
         except Exception as e:
             logger.error(f"❌ Database connection failed: {e}")

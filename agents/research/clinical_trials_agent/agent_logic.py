@@ -160,7 +160,7 @@ class ClinicalTrialsAgentLogic:
                     query_params,
                 )
         except (ValueError, TypeError):
-            return False, f"max_trials not int.", validated_max_trials, query_params
+            return False, "max_trials not int.", validated_max_trials, query_params
         drug_name_s = drug_name.strip() if drug_name and isinstance(drug_name, str) else None
         disease_name_s = (
             disease_name.strip() if disease_name and isinstance(disease_name, str) else None

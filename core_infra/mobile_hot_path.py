@@ -90,9 +90,7 @@ class MobileHotPath:
                     "safe": False,
                     "level": "DANGER",
                     "summary": f"⚠️ RECALL: {first_recall.get('product_name', 'Product')[:50]}...",
-                    "details": first_recall.get("hazard_description", "Safety concern identified")[
-                        :100
-                    ],
+                    "details": first_recall.get("hazard_description", "Safety concern identified")[:100],
                     "agencies": 39,
                     "recall_count": len(recalls),
                 }
@@ -135,9 +133,7 @@ class MobileHotPath:
                     for key in oldest_keys:
                         del self.hot_cache[key]
 
-            self.logger.info(
-                f"📱 Mobile check for {barcode}: {elapsed_ms}ms, Safe: {safety_response['safe']}"
-            )
+            self.logger.info(f"📱 Mobile check for {barcode}: {elapsed_ms}ms, Safe: {safety_response['safe']}")
 
             return safety_response
 
@@ -186,14 +182,12 @@ class MobileHotPath:
                 for row in popular_query:
                     product_name = row[0]
                     upc = row[1]
-                    model_number = row[2]
+                    _ = row[2]  # model_number (reserved for future model-based lookups)
 
                     try:
                         # Pre-compute safety check for this product
                         if upc:
-                            result = await self.ultra_fast_barcode_check(
-                                upc, user_id=1
-                            )  # Use default user
+                            _ = await self.ultra_fast_barcode_check(upc, user_id=1)  # result (Use default user)
                             precomputed += 1
 
                         # Limit to prevent overload

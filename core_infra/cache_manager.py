@@ -89,7 +89,7 @@ class BabyShieldCacheManager:
             if os.environ.get("DISABLE_REDIS_WARNING", "false").lower() != "true":
                 logger.warning(f"⚠️ Redis unavailable: {e}. Disabling cache.")
             else:
-                logger.debug(f"Redis not configured. Cache disabled.")
+                logger.debug("Redis not configured. Cache disabled.")
             self.cache_enabled = False
             self.redis_client = None
 

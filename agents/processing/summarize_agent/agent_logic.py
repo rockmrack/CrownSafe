@@ -27,7 +27,7 @@ else:
     if os.path.exists(".env"):  # Fallback
         load_dotenv(".env")
     else:
-        print(f"WARNING (SummarizeLogic): .env file not found. OPENAI_API_KEY might be missing.")
+        print("WARNING (SummarizeLogic): .env file not found. OPENAI_API_KEY might be missing.")
 
 
 class SummarizeAgentLogic:
@@ -43,12 +43,8 @@ class SummarizeAgentLogic:
             self.logger.error("OPENAI_API_KEY not found. Real summarization will fail.")
         else:
             try:
-                self.llm = ChatOpenAI(
-                    model_name="gpt-3.5-turbo", temperature=0.0, api_key=openai_api_key
-                )
-                self.logger.info(
-                    "ChatOpenAI LLM initialized successfully (gpt-3.5-turbo) for SummarizeAgent."
-                )
+                self.llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.0, api_key=openai_api_key)
+                self.logger.info("ChatOpenAI LLM initialized successfully (gpt-3.5-turbo) for SummarizeAgent.")
 
                 # Using Langchain's load_summarize_chain (map_reduce is good for multiple documents)
                 # You can also try "stuff" or "refine" chain types.
@@ -86,22 +82,16 @@ class SummarizeAgentLogic:
             return "Error: Summarization service not available."
 
         try:
-            self.logger.info(
-                f"Generating summary for text content (length: {len(text_content)} chars) using LLM."
-            )
+            self.logger.info(f"Generating summary for text content (length: {len(text_content)} chars) using LLM.")
 
             # Split the text into manageable documents for the map_reduce chain
             text_splitter = RecursiveCharacterTextSplitter(
                 chunk_size=10000, chunk_overlap=200
             )  # Adjust chunk_size as needed
-            docs = [
-                Document(page_content=chunk) for chunk in text_splitter.split_text(text_content)
-            ]
+            docs = [Document(page_content=chunk) for chunk in text_splitter.split_text(text_content)]
 
             if not docs:
-                self.logger.warning(
-                    "Text content resulted in no documents after splitting. Returning empty summary."
-                )
+                self.logger.warning("Text content resulted in no documents after splitting. Returning empty summary.")
                 return "No content provided to summarize."
 
             self.logger.debug(f"Split text into {len(docs)} documents for summarization.")
@@ -121,9 +111,7 @@ class SummarizeAgentLogic:
             self.logger.error(f"Error during LLM summarization: {e}", exc_info=True)
             return f"Error during summarization: {str(e)}"
 
-    async def process_message(
-        self, message_data: Dict[str, Any], client: Any
-    ) -> Optional[Dict[str, Any]]:
+    async def process_message(self, message_data: Dict[str, Any], client: Any) -> Optional[Dict[str, Any]]:
         header = message_data.get("mcp_header", {})
         payload = message_data.get("payload", {})
         message_type = header.get("message_type", "UNKNOWN")
@@ -133,16 +121,12 @@ class SummarizeAgentLogic:
 
         if message_type == "TASK_ASSIGN":
             incoming_task_corr_id = header.get("correlation_id")
-            original_router_id = header.get("sender_id")
+            _ = header.get("sender_id")  # original_router_id (reserved for future routing logic)
 
             task_parameters = payload.get("parameters", {})
-            input_data_for_summary = task_parameters.get(
-                "text_to_summarize"
-            )  # This comes from RouterAgent
+            input_data_for_summary = task_parameters.get("text_to_summarize")  # This comes from RouterAgent
 
-            self.logger.info(
-                f"Received TASK_ASSIGN for summarization. Input data type: {type(input_data_for_summary)}"
-            )
+            self.logger.info(f"Received TASK_ASSIGN for summarization. Input data type: {type(input_data_for_summary)}")
 
             if not input_data_for_summary:
                 self.logger.error("No 'text_to_summarize' provided in parameters.")
@@ -160,9 +144,7 @@ class SummarizeAgentLogic:
             # Prepare the text content for summarization
             text_content_to_process = ""
             if isinstance(input_data_for_summary, dict) and "articles" in input_data_for_summary:
-                self.logger.info(
-                    f"Extracting text from {len(input_data_for_summary.get('articles',[]))} articles."
-                )
+                self.logger.info(f"Extracting text from {len(input_data_for_summary.get('articles', []))} articles.")
                 full_text_parts = []
                 for article in input_data_for_summary.get("articles", []):
                     title = article.get("title", "")
@@ -172,9 +154,7 @@ class SummarizeAgentLogic:
             elif isinstance(input_data_for_summary, str):
                 text_content_to_process = input_data_for_summary
             else:
-                self.logger.error(
-                    f"Unsupported type for 'text_to_summarize': {type(input_data_for_summary)}"
-                )
+                self.logger.error(f"Unsupported type for 'text_to_summarize': {type(input_data_for_summary)}")
                 return {
                     "message_type": "TASK_FAIL",
                     "payload": {
@@ -187,9 +167,7 @@ class SummarizeAgentLogic:
                 }
 
             if not text_content_to_process.strip():
-                self.logger.warning(
-                    "Extracted text_content_to_process is empty. Returning 'no content' message."
-                )
+                self.logger.warning("Extracted text_content_to_process is empty. Returning 'no content' message.")
                 summary_text = "No content provided to summarize after extraction."
             else:
                 summary_text = await self._generate_summary_with_llm(text_content_to_process)

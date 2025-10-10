@@ -23,7 +23,7 @@ print("Redis cleared")
 
 # 3. Start commander agent in a new window so we can see output
 print("Starting commander agent in new window...")
-subprocess.Popen(f"start cmd /k python commander_agent/main.py", shell=True)
+subprocess.Popen("start cmd /k python commander_agent/main.py", shell=True)
 
 print("\nCommander should be running in a new window.")
 print("Check what it's printing there.")

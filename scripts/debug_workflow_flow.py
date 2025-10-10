@@ -39,7 +39,7 @@ def monitor_redis_for_workflow(workflow_id, duration=30):
                         print(f"   Status: {data.get('status', 'N/A')}")
                         print(f"   Type: {data.get('message_type', 'N/A')}")
                     except:
-                        print(f"   (Could not parse value)")
+                        print("   (Could not parse value)")
 
         # Also check specific expected keys
         expected_keys = [
@@ -110,7 +110,7 @@ def check_agent_queues():
                 msg_type = msg_data.get("mcp_header", {}).get("message_type", "Unknown")
                 print(f"   First message type: {msg_type}")
             except:
-                print(f"   (Could not parse message)")
+                print("   (Could not parse message)")
 
 
 if __name__ == "__main__":

@@ -60,7 +60,7 @@ async def test_flow():
                 data = json.loads(r.get(key))
                 if data.get("controller_correlation_id") == workflow_id:
                     print(f"\n⚠️  Found workflow at DIFFERENT key: {key}")
-                    print(f"   This means Commander/Planner changed the workflow ID!")
+                    print("   This means Commander/Planner changed the workflow ID!")
                     print(f"   Original: {workflow_id}")
                     print(f"   Actual: {key.split(':')[-1]}")
                     return False

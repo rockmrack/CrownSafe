@@ -91,9 +91,9 @@ class COPPA_ComplianceAgentLogic:
         plan = [
             f"DELETE user record from PostgreSQL 'users' table where user_id = '{user_id}'.",
             f"DELETE all entries from PostgreSQL 'audit_trail' table associated with user_id = '{user_id}'.",
-            f"SCRUB user's product scan history from ChromaDB.",
-            f"REMOVE user from any push notification subscription lists.",
-            f"CONFIRM deletion and send confirmation email to parent.",
+            "SCRUB user's product scan history from ChromaDB.",
+            "REMOVE user from any push notification subscription lists.",
+            "CONFIRM deletion and send confirmation email to parent.",
         ]
 
         return {"status": "success", "deletion_plan": plan}

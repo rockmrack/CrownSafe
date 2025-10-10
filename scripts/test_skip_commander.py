@@ -45,7 +45,7 @@ time.sleep(3)
 # Check if workflow was created
 workflow_key = f"rossnet:workflow:{workflow_id}"
 if r.exists(workflow_key):
-    print(f"✅ SUCCESS! Router created workflow!")
+    print("✅ SUCCESS! Router created workflow!")
     data = json.loads(r.get(workflow_key))
     print(f"   Status: {data.get('status')}")
     print(f"   workflow_id field: {data.get('workflow_id')}")
@@ -55,8 +55,8 @@ if r.exists(workflow_key):
 
     resp = requests.get(f"http://localhost:8000/api/v1/status/{workflow_id}")
     if resp.status_code == 200:
-        print(f"✅ API can retrieve it!")
+        print("✅ API can retrieve it!")
     else:
         print(f"❌ API returns: {resp.status_code}")
 else:
-    print(f"❌ Workflow not created")
+    print("❌ Workflow not created")

@@ -2,6 +2,7 @@
 Enhanced Security Middleware for BabyShield
 Bulletproof protection against all known attack vectors
 """
+
 import re
 import time
 import hashlib
@@ -156,7 +157,7 @@ class BulletproofSecurityMiddleware:
 
     async def __call__(self, request: Request, call_next):
         """Main security processing pipeline"""
-        start_time = time.time()
+        _ = time.time()  # start_time (reserved for timing metrics)
         client_ip = self._get_client_ip(request)
 
         try:
@@ -315,9 +316,7 @@ class BulletproofSecurityMiddleware:
         # Auto-block after 3 honeypot hits
         if self.honeypot_hits[client_ip] >= 3:
             self.blocked_ips.add(client_ip)
-            logger.error(
-                f"Auto-blocked IP {client_ip} after {self.honeypot_hits[client_ip]} honeypot hits"
-            )
+            logger.error(f"Auto-blocked IP {client_ip} after {self.honeypot_hits[client_ip]} honeypot hits")
 
     def _create_honeypot_response(self):
         """Return convincing honeypot response to waste attacker time"""
@@ -359,9 +358,7 @@ class BulletproofSecurityMiddleware:
             # Auto-block IPs with too many failed requests
             if self.suspicious_patterns[client_ip] >= 50:
                 self.blocked_ips.add(client_ip)
-                logger.error(
-                    f"Auto-blocked IP {client_ip} after {self.suspicious_patterns[client_ip]} failed requests"
-                )
+                logger.error(f"Auto-blocked IP {client_ip} after {self.suspicious_patterns[client_ip]} failed requests")
 
 
 # Global middleware instance

@@ -59,7 +59,7 @@ async def test_high_confidence_visual_workflow():
             "model_number": None,
         }
 
-        logger.info(f"Testing with high-confidence image: confidence=0.96")
+        logger.info("Testing with high-confidence image: confidence=0.96")
 
         result = await commander.start_safety_check_workflow(test_request)
 
@@ -144,7 +144,7 @@ async def test_medium_confidence_visual_workflow():
             "model_number": None,
         }
 
-        logger.info(f"Testing with medium-confidence image: confidence=0.82")
+        logger.info("Testing with medium-confidence image: confidence=0.82")
 
         result = await commander.start_safety_check_workflow(test_request)
 
@@ -215,7 +215,7 @@ async def test_low_confidence_visual_workflow():
             ],
         }
 
-        logger.info(f"Testing with low-confidence image: confidence=0.45")
+        logger.info("Testing with low-confidence image: confidence=0.45")
 
         result = await router.execute_plan(test_plan)
 

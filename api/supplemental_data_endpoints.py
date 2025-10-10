@@ -51,7 +51,7 @@ async def get_enhanced_safety_report(
             include_chemical_data=request.include_chemical_data,
         )
 
-        processing_time = int((time.time() - start_time) * 1000)
+        _ = int((time.time() - start_time) * 1000)  # processing_time (reserved for future logging)
 
         return ok(data=report)
 
@@ -86,7 +86,7 @@ async def get_food_data(
             include_chemical_data=False,
         )
 
-        processing_time = int((time.time() - start_time) * 1000)
+        _ = int((time.time() - start_time) * 1000)  # processing_time (reserved for future logging)
 
         return ok(data=report)
 
@@ -128,7 +128,7 @@ async def get_cosmetic_data(
         )
 
         logger.info(f"Generated report: {report}")
-        processing_time = int((time.time() - start_time) * 1000)
+        _ = int((time.time() - start_time) * 1000)  # processing_time (reserved for future logging)
 
         return ok(data=report)
 
@@ -163,7 +163,7 @@ async def get_chemical_data(
             include_chemical_data=True,
         )
 
-        processing_time = int((time.time() - start_time) * 1000)
+        _ = int((time.time() - start_time) * 1000)  # processing_time (reserved for future logging)
 
         return ok(data=report)
 
@@ -181,16 +181,12 @@ async def get_available_data_sources():
         sources = {
             "food": {
                 "usda_fooddata_central": {
-                    "enabled": bool(
-                        enhanced_safety_service.supplemental_service.usda_client.enabled
-                    ),
+                    "enabled": bool(enhanced_safety_service.supplemental_service.usda_client.enabled),
                     "description": "USDA FoodData Central - Nutritional and ingredient data",
                     "api_required": True,
                 },
                 "edamam": {
-                    "enabled": bool(
-                        enhanced_safety_service.supplemental_service.edamam_client.enabled
-                    ),
+                    "enabled": bool(enhanced_safety_service.supplemental_service.edamam_client.enabled),
                     "description": "Edamam Food Database - Nutritional analysis",
                     "api_required": True,
                 },

@@ -54,7 +54,7 @@ for i, test in enumerate(test_cases):
 
     # Check
     if r.exists(f"rossnet:workflow:{workflow_id}"):
-        print(f"   ✅ SUCCESS! Workflow created\n")
+        print("   ✅ SUCCESS! Workflow created\n")
         break
     else:
         # Check if still in queue

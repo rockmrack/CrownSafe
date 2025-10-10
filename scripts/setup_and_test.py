@@ -21,11 +21,11 @@ def run_command(cmd, description):
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
 
     if result.returncode == 0:
-        print(f"✅ Success")
+        print("✅ Success")
         if result.stdout:
             print(result.stdout)
     else:
-        print(f"❌ Failed")
+        print("❌ Failed")
         if result.stderr:
             print(f"Error: {result.stderr}")
         if result.stdout:
@@ -49,7 +49,7 @@ def main():
     # Step 1: Remove old database
     if os.path.exists(db_path):
         os.remove(db_path)
-        print(f"🗑️  Removed old database")
+        print("🗑️  Removed old database")
 
     # Step 2: Seed the database
     if not run_command("python scripts/seed_for_live_test.py", "Seeding database with test data"):

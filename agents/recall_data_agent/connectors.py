@@ -151,7 +151,7 @@ class FDAConnector:
                                         recall_reason=item.get("reason_for_recall"),
                                         recall_class=item.get("classification"),
                                         country=item.get("country"),
-                                        url=f"https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts",
+                                        url="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts",
                                         source_agency=f"FDA-{category}",
                                         risk_category=category.lower(),
                                     )
@@ -210,7 +210,7 @@ class NHTSAConnector:
                                         hazard=item.get("Consequence"),
                                         recall_reason=item.get("Summary"),
                                         remedy=item.get("Remedy"),
-                                        url=f"https://www.nhtsa.gov/recalls",
+                                        url="https://www.nhtsa.gov/recalls",
                                         source_agency="NHTSA",
                                         country="US",
                                         risk_category="vehicle",

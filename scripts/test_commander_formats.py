@@ -101,8 +101,8 @@ for i, test_format in enumerate(formats_to_test):
 
     # Check if workflow was created
     if r.exists(f"rossnet:workflow:{workflow_id}"):
-        print(f"   ✅ SUCCESS! This format works!\n")
-        print(f"   Winning payload structure:")
+        print("   ✅ SUCCESS! This format works!\n")
+        print("   Winning payload structure:")
         print(json.dumps(test_format["payload"], indent=4))
         break
     else:

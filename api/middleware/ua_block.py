@@ -135,7 +135,7 @@ class UserAgentBlocker(BaseHTTPMiddleware):
         for blocked_pattern in self.blocked_regex:
             if blocked_pattern.search(user_agent):
                 logger.warning(
-                    f"Request blocked: Suspicious user agent",
+                    "Request blocked: Suspicious user agent",
                     extra={
                         "traceId": trace_id,
                         "path": request.url.path,
@@ -149,7 +149,7 @@ class UserAgentBlocker(BaseHTTPMiddleware):
         # Check for additional suspicious patterns
         if self._is_suspicious_ua(user_agent):
             logger.warning(
-                f"Request blocked: Suspicious UA characteristics",
+                "Request blocked: Suspicious UA characteristics",
                 extra={
                     "traceId": trace_id,
                     "path": request.url.path,

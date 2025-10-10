@@ -109,7 +109,7 @@ async def get_settings(
     settings = get_user_settings(identifier)
 
     logger.info(
-        f"Settings retrieved",
+        "Settings retrieved",
         extra={
             "identifier": identifier[:8] if len(identifier) > 8 else identifier,
             "crashlytics": settings.crashlytics_enabled,
@@ -145,7 +145,7 @@ async def update_settings(
     settings = update_user_settings(identifier, updates_dict)
 
     logger.info(
-        f"Settings updated",
+        "Settings updated",
         extra={
             "identifier": identifier[:8] if len(identifier) > 8 else identifier,
             "updates": updates_dict,
@@ -186,7 +186,7 @@ async def toggle_crashlytics(
 
         # Log the change
         logger.info(
-            f"Crashlytics toggled",
+            "Crashlytics toggled",
             extra={
                 "identifier": identifier[:8] if len(identifier) > 8 else identifier,
                 "enabled": toggle_request.enabled,
@@ -267,7 +267,7 @@ async def reset_settings(
     settings_store[identifier] = AppSettings()
 
     logger.info(
-        f"Settings reset to defaults",
+        "Settings reset to defaults",
         extra={
             "identifier": identifier[:8] if len(identifier) > 8 else identifier,
             "trace_id": trace_id,

@@ -485,7 +485,7 @@ class DocumentationAgentLogic:
 
             # Build professional letter
             md_parts = [
-                f"# Letter of Medical Necessity",
+                "# Letter of Medical Necessity",
                 "",
                 f"**Date:** {datetime.now().strftime('%B %d, %Y')}",
                 "",
@@ -507,9 +507,9 @@ class DocumentationAgentLogic:
                 "",
                 "## Clinical Assessment",
                 "",
-                f"Based on comprehensive clinical review and current evidence-based guidelines, the following assessment has been made:",
+                "Based on comprehensive clinical review and current evidence-based guidelines, the following assessment has been made:",
                 "",
-                f"**Clinical Rationale:**",
+                "**Clinical Rationale:**",
                 f"> {self._safe_unicode_str(prediction_data.get('clinical_rationale', 'Clinical rationale not provided'))}",
                 "",
             ]
@@ -590,7 +590,7 @@ class DocumentationAgentLogic:
                         f"**Known Allergies:** {', '.join([self._safe_unicode_str(a) for a in original_request['allergies']])}"
                     )
                 if original_request.get("contraindications"):
-                    md_parts.append(f"**Contraindications Reviewed:** Yes")
+                    md_parts.append("**Contraindications Reviewed:** Yes")
                 md_parts.append("")
 
             # Add closing

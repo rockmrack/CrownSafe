@@ -43,9 +43,9 @@ for agent_id, name in agents.items():
     final_len = r.llen(queue_key)
 
     if final_len <= initial_len:
-        print(f"   ✅ Processing messages")
+        print("   ✅ Processing messages")
     else:
-        print(f"   ❌ NOT processing messages!")
+        print("   ❌ NOT processing messages!")
     print()
 
 # Check processes

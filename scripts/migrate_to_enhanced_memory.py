@@ -255,7 +255,7 @@ def migrate_memory_system():
         # More lenient success criteria
         if feature_count >= 2 and collection_count >= 2:  # At least some functionality should work
             logger.info("Migration completed successfully!")
-            logger.info(f"EnhancedMemoryManager V2.0 is ready")
+            logger.info("EnhancedMemoryManager V2.0 is ready")
             logger.info(f"  - Collections: {success_count}/5")
             logger.info(f"  - Features: {feature_count}/4")
             logger.info(f"  - Enhanced Collections: {collection_count}/4")
@@ -410,7 +410,7 @@ def simple_enhanced_test():
         # Try enhanced analytics if available
         if hasattr(enhanced_memory, "get_enhanced_analytics"):
             try:
-                enhanced_analytics = enhanced_memory.get_enhanced_analytics()
+                _ = enhanced_memory.get_enhanced_analytics()  # enhanced_analytics
                 logger.info("Enhanced analytics: SUCCESS")
             except Exception as e:
                 logger.warning(f"Enhanced analytics failed: {e}")
@@ -440,9 +440,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     if not IMPORTS_SUCCESS:
-        print(
-            "ERROR: Cannot import required modules. Please check file structure and dependencies."
-        )
+        print("ERROR: Cannot import required modules. Please check file structure and dependencies.")
         sys.exit(1)
 
     # Run simple test first

@@ -131,7 +131,7 @@ def main():
     print(f"Working endpoints: {working}/{total}")
 
     if critical_failures:
-        print(f"\n[CRITICAL] The following critical endpoints are failing:")
+        print("\n[CRITICAL] The following critical endpoints are failing:")
         for path in critical_failures:
             print(f"  - {path}")
 

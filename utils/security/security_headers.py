@@ -86,7 +86,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
         response = await call_next(request)
 
-        logger.info(f"🔍 Response received, adding security headers...")
+        logger.info("🔍 Response received, adding security headers...")
 
         # 1. Content-Security-Policy (CSP)
         if self.enable_csp:

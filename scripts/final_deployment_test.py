@@ -98,7 +98,7 @@ unique_name = f"TestBaby_{random.randint(10000,99999)}"
 test(
     "Add Family Member",
     "POST",
-    f"/api/v1/premium/family/members",
+    "/api/v1/premium/family/members",
     {"name": unique_name, "relationship": "child"},
     params={"user_id": 1},
 )
@@ -195,7 +195,7 @@ print(f"❌ FAILED: {len(failed)}/{total} tests")
 print(f"📈 SUCCESS RATE: {success_rate:.1f}%")
 
 if failed:
-    print(f"\n⚠️ Failed Tests:")
+    print("\n⚠️ Failed Tests:")
     for test in failed:
         print(f"  • {test}")
 

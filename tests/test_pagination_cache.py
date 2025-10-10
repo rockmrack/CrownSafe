@@ -355,7 +355,7 @@ class PaginationCacheTester:
                 "private" in cache_control or "public" in cache_control,
                 f"Search has cache directive: {cache_control}",
             )
-            self.test("max-age=" in cache_control, f"Search has max-age directive")
+            self.test("max-age=" in cache_control, "Search has max-age directive")
 
         # Test health endpoint (should not be cached)
         health_response = self.session.get(f"{self.base_url}/api/v1/healthz")

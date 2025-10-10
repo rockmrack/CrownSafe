@@ -25,7 +25,7 @@ async def main():
         logger.info(f"   → Retrieved {len(fda_recs)} FDA recalls")
         print("\nFDA live sample:")
         print(json.dumps([json.loads(r.model_dump_json()) for r in fda_recs[:5]], indent=2))
-    except Exception as e:
+    except Exception:
         logger.error("‼︎ FDA live fetch failed", exc_info=True)
 
     # --- EU RAPEX (Opendatasoft) ---
@@ -35,7 +35,7 @@ async def main():
         logger.info(f"   → Retrieved {len(rapex_recs)} EU RAPEX recalls")
         print("\nEU RAPEX live sample:")
         print(json.dumps([json.loads(r.model_dump_json()) for r in rapex_recs[:5]], indent=2))
-    except Exception as e:
+    except Exception:
         logger.error("‼︎ EU RAPEX live fetch failed", exc_info=True)
 
     logger.info("✅ LIVE test complete")

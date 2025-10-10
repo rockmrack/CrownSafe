@@ -175,7 +175,7 @@ def get_alternatives(scan: Dict[str, Any]) -> Dict[str, Any]:
     import os
 
     # Feature flag check
-    if not os.getenv("BS_ALTERNATIVES_ENABLED", "true").lower() in {
+    if os.getenv("BS_ALTERNATIVES_ENABLED", "true").lower() not in {
         "1",
         "true",
         "yes",

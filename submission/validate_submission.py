@@ -38,9 +38,9 @@ class SubmissionValidator:
 
     def print_header(self, title: str):
         """Print section header"""
-        print(f"\n{Colors.BOLD}{'='*70}{Colors.ENDC}")
+        print(f"\n{Colors.BOLD}{'=' * 70}{Colors.ENDC}")
         print(f"{Colors.BOLD}{title}{Colors.ENDC}")
-        print(f"{Colors.BOLD}{'='*70}{Colors.ENDC}\n")
+        print(f"{Colors.BOLD}{'=' * 70}{Colors.ENDC}\n")
 
     def print_result(self, test: str, passed: bool, details: str = ""):
         """Print test result"""
@@ -289,9 +289,7 @@ class SubmissionValidator:
                     for screenshot in screenshots[:3]:  # Check first 3
                         size_mb = screenshot.stat().st_size / (1024 * 1024)
                         if size_mb > 10:
-                            self.warnings.append(
-                                f"Large screenshot: {screenshot.name} ({size_mb:.1f}MB)"
-                            )
+                            self.warnings.append(f"Large screenshot: {screenshot.name} ({size_mb:.1f}MB)")
             else:
                 self.print_result(f"{platform} screenshots", False, "Directory not found")
                 all_valid = False
@@ -344,9 +342,9 @@ class SubmissionValidator:
                     with open(path, "rb") as f:
                         header = f.read(8)
                         if header[:8] == b"\x89PNG\r\n\x1a\n":
-                            format_ok = True
+                            _ = True  # format_ok
                         else:
-                            format_ok = False
+                            _ = False  # format_ok
                             self.warnings.append(f"{name} may not be a valid PNG")
                 except:
                     pass
@@ -534,24 +532,24 @@ class SubmissionValidator:
         # Also create markdown report
         md_path = Path("submission/validation_report.md")
         with open(md_path, "w", encoding="utf-8") as f:
-            f.write(f"# Submission Validation Report\n\n")
+            f.write("# Submission Validation Report\n\n")
             f.write(f"**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             f.write(f"**API URL:** {self.api_url}\n\n")
 
-            f.write(f"## Summary\n\n")
+            f.write("## Summary\n\n")
             f.write(f"- Total Tests: {report['summary']['total_tests']}\n")
             f.write(f"- Passed: {report['summary']['passed']}\n")
             f.write(f"- Warnings: {report['summary']['warnings']}\n")
             f.write(f"- Errors: {report['summary']['errors']}\n\n")
 
             if self.warnings:
-                f.write(f"## ⚠️ Warnings\n\n")
+                f.write("## ⚠️ Warnings\n\n")
                 for warning in self.warnings:
                     f.write(f"- {warning}\n")
                 f.write("\n")
 
             if self.errors:
-                f.write(f"## ❌ Errors\n\n")
+                f.write("## ❌ Errors\n\n")
                 for error in self.errors:
                     f.write(f"- {error}\n")
                 f.write("\n")
@@ -561,9 +559,9 @@ class SubmissionValidator:
     def run_all_validations(self) -> bool:
         """Run all validation checks"""
 
-        print(f"{Colors.BOLD}{'='*70}{Colors.ENDC}")
+        print(f"{Colors.BOLD}{'=' * 70}{Colors.ENDC}")
         print(f"{Colors.BOLD}🚀 APP STORE SUBMISSION PREFLIGHT VALIDATION{Colors.ENDC}")
-        print(f"{Colors.BOLD}{'='*70}{Colors.ENDC}")
+        print(f"{Colors.BOLD}{'=' * 70}{Colors.ENDC}")
         print(f"\nTime: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"API: {self.api_url}\n")
 
@@ -610,7 +608,7 @@ class SubmissionValidator:
                 print(f"   - {error}")
 
         # Determine readiness
-        print(f"\n{Colors.BOLD}{'='*70}{Colors.ENDC}")
+        print(f"\n{Colors.BOLD}{'=' * 70}{Colors.ENDC}")
 
         if passed == total and len(self.errors) == 0:
             print(f"{Colors.GREEN}{Colors.BOLD}✅ READY FOR SUBMISSION{Colors.ENDC}")

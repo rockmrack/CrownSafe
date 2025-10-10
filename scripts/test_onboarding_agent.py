@@ -79,13 +79,13 @@ async def main():
         if result.get("status") == "COMPLETED" and db_was_updated:
             print("\n" + "=" * 50)
             print(
-                f"✅✅✅ TEST PASSED: Agent successfully updated the user's profile in the database."
+                "✅✅✅ TEST PASSED: Agent successfully updated the user's profile in the database."
             )
         else:
             print("\n" + "=" * 50)
             if not db_was_updated:
                 print(
-                    f"❌ TEST FAILED: The agent did not correctly update the user's is_pregnant status in the database."
+                    "❌ TEST FAILED: The agent did not correctly update the user's is_pregnant status in the database."
                 )
             else:
                 print(

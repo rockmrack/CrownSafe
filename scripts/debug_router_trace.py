@@ -152,7 +152,7 @@ async def debug_router():
     original_send_response = router._send_response_to_agent
 
     async def debug_send_response(*args, **kwargs):
-        print(f"\n🎯 _send_response_to_agent CALLED!")
+        print("\n🎯 _send_response_to_agent CALLED!")
         print(f"   Args: {args}")
         print(f"   Kwargs: {kwargs}")
         result = await original_send_response(*args, **kwargs)

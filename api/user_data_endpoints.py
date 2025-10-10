@@ -179,7 +179,7 @@ async def export_user_data(
 
         # Log the export request
         logger.info(
-            f"Data export requested",
+            "Data export requested",
             extra={
                 "request_id": request_id,
                 "user_id": user_id[:8] if user_id else None,
@@ -283,7 +283,7 @@ async def delete_user_data_endpoint(
 
         # Log the deletion request
         logger.info(
-            f"Data deletion requested",
+            "Data deletion requested",
             extra={
                 "request_id": request_id,
                 "user_id": user_id[:8] if user_id else None,
@@ -392,7 +392,8 @@ async def download_export(
 
         if (format or "").lower() == "csv":
             # Very simple CSV export of top-level keys for demo purposes
-            import io, csv
+            import io
+            import csv
 
             buf = io.StringIO()
             writer = csv.writer(buf)

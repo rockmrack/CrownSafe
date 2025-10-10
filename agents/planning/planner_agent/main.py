@@ -28,14 +28,14 @@ try:
     # Import from planner_agent_01 at project root
     from planner_agent_01.logic import MemoryAugmentedPlannerLogic as PlannerLogic
 
-    print(f"Successfully imported MemoryAugmentedPlannerLogic from planner_agent_01")
+    print("Successfully imported MemoryAugmentedPlannerLogic from planner_agent_01")
 except ImportError as e:
     print(f"Failed to import from planner_agent_01: {e}")
     # Fallback: Try the local agent_logic.py if it has the right class
     try:
         from .agent_logic import MemoryAugmentedPlannerLogic as PlannerLogic
 
-        print(f"Using local agent_logic.py")
+        print("Using local agent_logic.py")
     except ImportError as e2:
         print(f"CRITICAL_ERROR: Cannot import MemoryAugmentedPlannerLogic: {e2}")
         print(f"Project root: {project_root_main}")
@@ -145,7 +145,7 @@ class PlannerAgentManager:
                                     "message_type": "TASK_COMPLETE",
                                     "payload": task_result_payload,
                                 }
-                                logger.debug(f"Task completed successfully, sending TASK_COMPLETE")
+                                logger.debug("Task completed successfully, sending TASK_COMPLETE")
                             else:
                                 response_from_logic = {
                                     "message_type": "TASK_FAIL",

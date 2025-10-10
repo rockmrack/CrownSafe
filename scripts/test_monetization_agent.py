@@ -86,10 +86,10 @@ async def main():
             checkout_url = result.get("checkout_url", "")
             if "https://checkout.stripe.com" in checkout_url:
                 print("\n" + "=" * 50)
-                print(f"✅✅✅ TEST PASSED: Successfully created a mock checkout session.")
+                print("✅✅✅ TEST PASSED: Successfully created a mock checkout session.")
             else:
                 print("\n" + "=" * 50)
-                print(f"❌ TEST FAILED: The checkout URL was not in the expected format.")
+                print("❌ TEST FAILED: The checkout URL was not in the expected format.")
         else:
             print("\n" + "=" * 50)
             print(

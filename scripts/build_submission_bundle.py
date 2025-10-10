@@ -134,7 +134,7 @@ def main():
         }
 
         z.writestr("manifest.json", json.dumps(manifest, indent=2))
-        print(f"\n📋 Added manifest.json")
+        print("\n📋 Added manifest.json")
 
     print("\n" + "=" * 60)
     print(f"📦 Built: {zpath}")

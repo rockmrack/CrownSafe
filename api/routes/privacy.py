@@ -163,7 +163,7 @@ async def request_data_export(
         db.refresh(privacy_request)
 
         logger.info(
-            f"Data export request created",
+            "Data export request created",
             extra={
                 "request_id": str(privacy_request.id),
                 "jurisdiction": body.jurisdiction,
@@ -252,7 +252,7 @@ async def request_data_deletion(
         db.refresh(privacy_request)
 
         logger.info(
-            f"Data deletion request created",
+            "Data deletion request created",
             extra={
                 "request_id": str(privacy_request.id),
                 "jurisdiction": body.jurisdiction,
@@ -371,7 +371,7 @@ async def verify_privacy_request(token: str, request: Request, db: Session = Dep
         db.commit()
 
         logger.info(
-            f"Privacy request verified",
+            "Privacy request verified",
             extra={
                 "request_id": str(privacy_request.id),
                 "kind": privacy_request.kind,

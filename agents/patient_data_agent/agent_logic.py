@@ -92,9 +92,7 @@ class PatientDataAgentLogic:
             self.logger.warning(f"Could not initialize EnhancedMemoryManager: {e}")
 
         # Patient data path
-        self.patient_data_path = (
-            Path(__file__).parent.parent.parent / "data" / "mock_patient_records.json"
-        )
+        self.patient_data_path = Path(__file__).parent.parent.parent / "data" / "mock_patient_records.json"
 
         # Load patient data
         self.patient_records = {}
@@ -207,9 +205,7 @@ class PatientDataAgentLogic:
                     self.logger.warning(f"Could not cache patient records: {e}")
 
         except FileNotFoundError:
-            self.logger.error(
-                f"CRITICAL: Mock patient data file not found at {self.patient_data_path}."
-            )
+            self.logger.error(f"CRITICAL: Mock patient data file not found at {self.patient_data_path}.")
             self._create_default_patient_data()
         except json.JSONDecodeError as e:
             self.logger.error(f"CRITICAL: Could not parse JSON from {self.patient_data_path}: {e}")
@@ -355,9 +351,7 @@ class PatientDataAgentLogic:
 
             if result["status"] == "success":
                 # Apply privacy filters based on role
-                filtered_record = self._apply_privacy_filters(
-                    result["record"], requester_id, requester_role
-                )
+                filtered_record = self._apply_privacy_filters(result["record"], requester_id, requester_role)
 
                 return {
                     "status": "COMPLETED",
@@ -381,7 +375,7 @@ class PatientDataAgentLogic:
     def _handle_patient_search(self, task_data: Dict[str, Any]) -> Dict[str, Any]:
         """Handle patient search by various criteria"""
         search_criteria = task_data.get("criteria", {})
-        max_results = task_data.get("max_results", 10)
+        _ = task_data.get("max_results", 10)  # max_results (reserved for pagination)
         requester_id = task_data.get("requester_id", "unknown")
         requester_role = task_data.get("requester_role", "nurse")
         page = task_data.get("page", 1)  # ADDED: Pagination
@@ -543,7 +537,7 @@ class PatientDataAgentLogic:
         action_type = task_data.get("action_type")
         start_time = task_data.get("start_time")
         end_time = task_data.get("end_time")
-        requester_id = task_data.get("requester_id", "unknown")
+        _ = task_data.get("requester_id", "unknown")  # requester_id (reserved for future access control)
         requester_role = task_data.get("requester_role", "nurse")
         redact_user_ids = task_data.get("redact_user_ids", False)  # ADDED
 
@@ -660,9 +654,7 @@ class PatientDataAgentLogic:
                         patient_data = copy.deepcopy(self.patient_records[patient_id])
 
                         # Apply privacy filters
-                        patient_data = self._apply_privacy_filters(
-                            patient_data, requester_id, requester_role
-                        )
+                        patient_data = self._apply_privacy_filters(patient_data, requester_id, requester_role)
 
                         export_data["patients"][patient_id] = patient_data
 
@@ -670,9 +662,7 @@ class PatientDataAgentLogic:
                             audit_entries = self._filter_audit_log(patient_id=patient_id)
                             # FIXED: Redact user IDs in audit log
                             if redact_audit_users:
-                                audit_entries = [
-                                    {**entry, "user_id": "REDACTED"} for entry in audit_entries
-                                ]
+                                audit_entries = [{**entry, "user_id": "REDACTED"} for entry in audit_entries]
                             export_data["patients"][patient_id]["audit_log"] = audit_entries
 
             # Format export based on requested format
@@ -709,9 +699,7 @@ class PatientDataAgentLogic:
                         "agent_id": self.agent_id,
                     }
 
-                validation_result = self._validate_patient_record(
-                    self.patient_records[patient_id], validation_type
-                )
+                validation_result = self._validate_patient_record(self.patient_records[patient_id], validation_type)
 
                 return {
                     "status": "COMPLETED",
@@ -773,11 +761,11 @@ class PatientDataAgentLogic:
 
     def _matches_criteria(self, record: Dict[str, Any], criteria: Dict[str, Any]) -> bool:
         """Check if patient record matches search criteria"""
-        for field, value in criteria.items():
-            if field not in self.searchable_fields:
+        for field_name, value in criteria.items():
+            if field_name not in self.searchable_fields:
                 continue
 
-            record_value = record.get(field)
+            record_value = record.get(field_name)
 
             if field == "diagnoses_icd10":
                 # FIXED: Case-insensitive list matching
@@ -824,13 +812,13 @@ class PatientDataAgentLogic:
         score = 0.0
         max_score = len(criteria)
 
-        for field, value in criteria.items():
-            if field in record:
-                if record[field] == value:
+        for field_name, value in criteria.items():
+            if field_name in record:
+                if record[field_name] == value:
                     score += 1.0
-                elif isinstance(record[field], list) and value in record[field]:
+                elif isinstance(record[field_name], list) and value in record[field_name]:
                     score += 0.8
-                elif isinstance(record[field], str) and str(value).lower() in record[field].lower():
+                elif isinstance(record[field_name], str) and str(value).lower() in record[field_name].lower():
                     score += 0.5
 
         return score / max_score if max_score > 0 else 0.0
@@ -840,24 +828,24 @@ class PatientDataAgentLogic:
         record = copy.deepcopy(self.patient_records[patient_id])
 
         # Apply each update
-        for field, value in updates.items():
-            if field in ["diagnoses_icd10", "medication_history"]:
+        for field_name, value in updates.items():
+            if field_name in ["diagnoses_icd10", "medication_history"]:
                 # For list fields, append if not already present
-                if field not in record:
-                    record[field] = []
+                if field_name not in record:
+                    record[field_name] = []
                 if isinstance(value, list):
-                    record[field].extend([v for v in value if v not in record[field]])
+                    record[field_name].extend([v for v in value if v not in record[field_name]])
                 else:
-                    if value not in record[field]:
-                        record[field].append(value)
-            elif field == "labs":
+                    if value not in record[field_name]:
+                        record[field_name].append(value)
+            elif field_name == "labs":
                 # For lab values, update or add
-                if field not in record:
-                    record[field] = {}
-                record[field].update(value)
+                if field_name not in record:
+                    record[field_name] = {}
+                record[field_name].update(value)
             else:
                 # Simple field update
-                record[field] = value
+                record[field_name] = value
 
         # Update last_updated timestamp
         record["last_updated"] = datetime.now(timezone.utc).isoformat()
@@ -876,33 +864,31 @@ class PatientDataAgentLogic:
 
         # Check for protected fields
         protected_fields = ["patient_id", "created_at", "access_log", "last_updated"]
-        for field in protected_fields:
-            if field in updates:
-                errors.append(f"Cannot update protected field: {field}")
+        for protected_field in protected_fields:
+            if protected_field in updates:
+                errors.append(f"Cannot update protected field: {protected_field}")
 
         # FIXED: Check for unknown fields
-        for field in updates:
-            if field not in self.ALLOWED_MUTABLE_FIELDS:
-                errors.append(f"Unknown/immutable field: {field}")
+        for field_name in updates:
+            if field_name not in self.ALLOWED_MUTABLE_FIELDS:
+                errors.append(f"Unknown/immutable field: {field_name}")
 
         # FIXED: Validate data types for all fields
-        for field, value in updates.items():
-            if field in self.FIELD_TYPES:
-                expected_types = self.FIELD_TYPES[field]
+        for update_field, value in updates.items():
+            if update_field in self.FIELD_TYPES:
+                expected_types = self.FIELD_TYPES[update_field]
                 if not isinstance(expected_types, tuple):
                     expected_types = (expected_types,)
 
                 if not isinstance(value, expected_types):
-                    errors.append(
-                        f"Field '{field}' must be of type {expected_types}, got {type(value)}"
-                    )
+                    errors.append(f"Field '{update_field}' must be of type {expected_types}, got {type(value)}")
 
                 # Additional specific validations
-                if field == "age" and isinstance(value, int):
+                if update_field == "age" and isinstance(value, int):
                     if value < 0 or value > 150:
                         errors.append("Age must be between 0 and 150")
 
-                if field == "gender" and isinstance(value, str):
+                if update_field == "gender" and isinstance(value, str):
                     if value not in [
                         "M",
                         "F",
@@ -913,17 +899,15 @@ class PatientDataAgentLogic:
 
         return {"valid": len(errors) == 0, "errors": errors}
 
-    def _validate_patient_record(
-        self, record: Dict[str, Any], validation_type: str
-    ) -> Dict[str, Any]:
+    def _validate_patient_record(self, record: Dict[str, Any], validation_type: str) -> Dict[str, Any]:
         """Validate a patient record"""
         issues = []
 
         # Required fields validation
         required_fields = ["patient_id", "name"]
-        for field in required_fields:
-            if field not in record or not record[field]:
-                issues.append(f"Missing required field: {field}")
+        for required_field in required_fields:
+            if required_field not in record or not record[required_field]:
+                issues.append(f"Missing required field: {required_field}")
 
         if validation_type == "complete":
             # Additional validation for complete check
@@ -1002,9 +986,7 @@ class PatientDataAgentLogic:
             if patient_id in self.patient_records:
                 consent_field = f"{consent_type}_consent"
                 self.patient_records[patient_id][consent_field] = value
-                self.patient_records[patient_id]["consent_updated"] = datetime.now(
-                    timezone.utc
-                ).isoformat()
+                self.patient_records[patient_id]["consent_updated"] = datetime.now(timezone.utc).isoformat()
                 self._save_patient_records_throttled()
                 return True
         return False

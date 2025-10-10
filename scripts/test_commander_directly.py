@@ -43,12 +43,12 @@ time.sleep(5)
 # Check if workflow was created
 workflow_key = f"rossnet:workflow:{workflow_id}"
 if r.exists(workflow_key):
-    print(f"✅ SUCCESS! Workflow created!")
+    print("✅ SUCCESS! Workflow created!")
     data = json.loads(r.get(workflow_key))
     print(f"Status: {data.get('status')}")
     print(f"workflow_id field: {data.get('workflow_id')}")
 else:
-    print(f"❌ FAILED - Workflow not created")
+    print("❌ FAILED - Workflow not created")
 
     # Check Commander queue
     queue_len = r.llen("mcp:queue:commander_agent_01")

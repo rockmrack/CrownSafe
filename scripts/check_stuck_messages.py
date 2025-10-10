@@ -24,7 +24,7 @@ for agent in agents:
             sender = msg_data.get("mcp_header", {}).get("sender_id", "Unknown")
             corr_id = msg_data.get("mcp_header", {}).get("correlation_id", "")
 
-            print(f"   First message:")
+            print("   First message:")
             print(f"     Type: {msg_type}")
             print(f"     From: {sender}")
             print(

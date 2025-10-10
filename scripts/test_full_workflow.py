@@ -66,7 +66,7 @@ while attempt < max_attempts:
             all_workflows = r.keys("*workflow*")
             print(f"  🔍 Total workflows in Redis: {len(all_workflows)}")
             if workflow_id in str(all_workflows):
-                print(f"  ⚠️  Workflow ID found in some key")
+                print("  ⚠️  Workflow ID found in some key")
 
         continue
 
@@ -75,7 +75,7 @@ while attempt < max_attempts:
         print(f"  ✅ Status: {status_data['status']}")
 
         if status_data["status"] in ["COMPLETED", "FAILED"]:
-            print(f"\n3️⃣ Final Result:")
+            print("\n3️⃣ Final Result:")
             print(json.dumps(status_data, indent=2))
 
             if status_data["status"] == "COMPLETED":

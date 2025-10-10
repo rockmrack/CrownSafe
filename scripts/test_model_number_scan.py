@@ -268,7 +268,7 @@ def main():
 
     args = parser.parse_args()
 
-    logger.info(f"Model Number Scanning Test")
+    logger.info("Model Number Scanning Test")
     logger.info(f"User ID: {args.user_id}")
     logger.info(f"Barcode: {args.barcode}")
     logger.info(f"Model Number: {args.model_number}")

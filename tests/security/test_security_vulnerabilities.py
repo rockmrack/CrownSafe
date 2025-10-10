@@ -275,7 +275,7 @@ class TestSecurityHeaders:
         When: Response is sent
         Then: Strict-Transport-Security header is present
         """
-        response = client.get("/healthz")
+        _ = client.get("/healthz")  # response (HSTS check disabled for testing)
         # In production, HSTS should be present
         # assert "Strict-Transport-Security" in response.headers
         pass

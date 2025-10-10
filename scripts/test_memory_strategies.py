@@ -62,11 +62,11 @@ class MemoryStrategyTester:
 
     async def run_test_scenario(self, scenario: Dict[str, Any]) -> Dict[str, Any]:
         """Run a single test scenario"""
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"TEST: {scenario['name']}")
         print(f"Query: {scenario['query'][:100]}...")
         print(f"Expected Strategy: {scenario['expected_strategy']}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         start_time = time.time()
         result = {
@@ -83,7 +83,7 @@ class MemoryStrategyTester:
         try:
             # Run the workflow
             print("\nStarting workflow...")
-            workflow_result = await run_commander_flow(scenario["query"])
+            _ = await run_commander_flow(scenario["query"])  # workflow_result
 
             # Allow time for completion
             await asyncio.sleep(10)
@@ -95,7 +95,7 @@ class MemoryStrategyTester:
             result["success"] = True
             result["workflow_id"] = self._extract_workflow_id()
 
-            print(f"\n✓ Test completed")
+            print("\n✓ Test completed")
             print(f"  Expected: {scenario['expected_strategy']}")
             print(f"  Actual: {strategy_found}")
             print(f"  Match: {'✓' if result['strategy_match'] else '✗'}")
@@ -115,9 +115,7 @@ class MemoryStrategyTester:
         try:
             # Find latest planner log
             planner_logs = [
-                f
-                for f in os.listdir(self.logs_dir)
-                if f.startswith("planner_agent_") and f.endswith(".log")
+                f for f in os.listdir(self.logs_dir) if f.startswith("planner_agent_") and f.endswith(".log")
             ]
             if not planner_logs:
                 return None
@@ -163,9 +161,7 @@ class MemoryStrategyTester:
         """Extract workflow ID from commander logs"""
         try:
             commander_logs = [
-                f
-                for f in os.listdir(self.logs_dir)
-                if f.startswith("commander_agent_") and f.endswith(".log")
+                f for f in os.listdir(self.logs_dir) if f.startswith("commander_agent_") and f.endswith(".log")
             ]
             if not commander_logs:
                 return None
@@ -222,8 +218,8 @@ class MemoryStrategyTester:
         strategy_matches = sum(1 for r in self.results if r["strategy_match"])
 
         print(f"\nTotal Tests: {total_tests}")
-        print(f"Successful: {successful_tests} ({successful_tests/total_tests*100:.1f}%)")
-        print(f"Strategy Matches: {strategy_matches} ({strategy_matches/total_tests*100:.1f}%)")
+        print(f"Successful: {successful_tests} ({successful_tests / total_tests * 100:.1f}%)")
+        print(f"Strategy Matches: {strategy_matches} ({strategy_matches / total_tests * 100:.1f}%)")
 
         print("\nDetailed Results:")
         print("-" * 60)
@@ -305,9 +301,7 @@ async def main():
         custom_scenario = {
             "name": "Custom_Test",
             "query": custom_query,
-            "expected_strategy": input(
-                "Expected strategy (comprehensive/focused/update): "
-            ).strip(),
+            "expected_strategy": input("Expected strategy (comprehensive/focused/update): ").strip(),
             "rationale": "Custom test scenario",
         }
         await tester.run_all_tests([custom_scenario])

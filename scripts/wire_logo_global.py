@@ -1,11 +1,12 @@
-import os, base64, re, sys
+import os
+import base64
+import re
+import sys
 from pathlib import Path
 
 # Find the file that defines ReportBuilderAgentLogic
 root = Path(".")
-candidates = list(root.rglob("**/*report_builder_agent*/*.py")) + list(
-    root.rglob("**/report_builder_agent*.py")
-)
+candidates = list(root.rglob("**/*report_builder_agent*/*.py")) + list(root.rglob("**/report_builder_agent*.py"))
 target = None
 for p in candidates:
     t = p.read_text(encoding="utf-8", errors="ignore")
@@ -20,11 +21,7 @@ s = target.read_text(encoding="utf-8")
 
 # Ensure imports
 if "import base64" not in s:
-    s = (
-        s.replace("import os", "import os, base64")
-        if "import os" in s
-        else "import os, base64\n" + s
-    )
+    s = s.replace("import os", "import os, base64") if "import os" in s else "import os, base64\n" + s
 
 # Helper method
 helper = r"""
@@ -49,8 +46,6 @@ helper = r"""
 """
 
 # Insert helper into the class if missing
-import re
-
 if "_resolve_logo_src(" not in s:
     s = re.sub(
         r"(class\s+ReportBuilderAgentLogic\s*\([^)]*\)\s*:\s*\n)",

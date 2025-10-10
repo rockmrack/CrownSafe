@@ -87,7 +87,7 @@ class BabyShieldCommanderLogic:
         Returns:
             A dictionary with the final result of the workflow.
         """
-        self.logger.info(f"--- New Safety Check Workflow Started ---")
+        self.logger.info("--- New Safety Check Workflow Started ---")
         self.logger.info(f"User Request: {user_request}")
 
         try:

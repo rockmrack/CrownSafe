@@ -29,7 +29,7 @@ if response.status_code == 202:
             status_data = status_response.json()
             print(f"   Status: {status_data['status']}")
             if status_data["status"] in ["COMPLETED", "FAILED"]:
-                print(f"\n📊 Final result:")
+                print("\n📊 Final result:")
                 print(json.dumps(status_data, indent=2))
                 break
 else:

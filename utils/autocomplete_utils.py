@@ -15,7 +15,6 @@ BRAND_ALIASES = {
     "pg": "Procter & Gamble",
     "gerber": "Gerber",
     "nestle": "Nestlé",
-    "nestle": "Nestlé",
     "johnson & johnson": "Johnson & Johnson",
     "j&j": "Johnson & Johnson",
     "j and j": "Johnson & Johnson",

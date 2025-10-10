@@ -149,7 +149,7 @@ async def list_privacy_requests(
             items.append(item)
 
         logger.info(
-            f"Admin listed privacy requests",
+            "Admin listed privacy requests",
             extra={
                 "admin": admin,
                 "filters": {
@@ -222,7 +222,7 @@ async def get_privacy_request_details(
         data = privacy_request.to_dict(include_pii=show_pii)
 
         logger.info(
-            f"Admin viewed privacy request",
+            "Admin viewed privacy request",
             extra={
                 "admin": admin,
                 "request_id": request_id,
@@ -335,7 +335,7 @@ async def update_privacy_request_status(
         db.refresh(privacy_request)
 
         logger.info(
-            f"Admin updated privacy request status",
+            "Admin updated privacy request status",
             extra={
                 "admin": admin,
                 "request_id": request_id,
@@ -485,7 +485,7 @@ async def privacy_request_statistics(
         }
 
         logger.info(
-            f"Admin viewed privacy statistics",
+            "Admin viewed privacy statistics",
             extra={
                 "admin": admin,
                 "days": days,
@@ -565,7 +565,7 @@ async def process_privacy_request(
         # This would typically be done via Celery task or similar
 
         logger.info(
-            f"Admin triggered privacy request processing",
+            "Admin triggered privacy request processing",
             extra={
                 "admin": admin,
                 "request_id": request_id,

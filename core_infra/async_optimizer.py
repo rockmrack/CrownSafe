@@ -31,10 +31,7 @@ class AsyncWorkflowOptimizer:
 
         try:
             # Run all queries in parallel
-            tasks = [
-                asyncio.get_event_loop().run_in_executor(self.thread_pool, query)
-                for query in queries
-            ]
+            tasks = [asyncio.get_event_loop().run_in_executor(self.thread_pool, query) for query in queries]
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
             # Filter out exceptions and log them
@@ -106,26 +103,22 @@ class AsyncWorkflowOptimizer:
             # Extract request parameters
             barcode = user_request.get("barcode")
             model_number = user_request.get("model_number")
-            image_url = user_request.get("image_url")
+            _ = user_request.get("image_url")  # image_url (reserved for visual search)
 
             # ⚡ OPTIMIZATION 1: Parallel database pre-checks
             if barcode or model_number:
-                pre_check_queries = []
+                _ = []  # pre_check_queries (reserved for future parallel queries)
 
                 # 🚀 USE OPTIMIZED CONNECTION POOL for instant database checks
                 from core_infra.connection_pool_optimizer import optimized_recall_search
 
                 # Single optimized query instead of multiple separate queries
-                pre_results = await optimized_recall_search(
-                    upc=barcode, model_number=model_number, product_name=None
-                )
+                pre_results = await optimized_recall_search(upc=barcode, model_number=model_number, product_name=None)
 
                 # If we found direct matches, return immediately (MASSIVE speedup!)
                 if pre_results:
                     elapsed = time.time() - start_time
-                    self.logger.info(
-                        f"⚡ INSTANT MATCH found in {elapsed:.3f}s - skipping full workflow!"
-                    )
+                    self.logger.info(f"⚡ INSTANT MATCH found in {elapsed:.3f}s - skipping full workflow!")
 
                     first_result = pre_results[0]
                     return {
@@ -210,9 +203,7 @@ class AsyncWorkflowOptimizer:
 
             # If execution failed, provide a fallback response
             if execution_result.get("status") != "COMPLETED":
-                self.logger.warning(
-                    f"Optimized workflow execution failed, providing fallback response"
-                )
+                self.logger.warning("Optimized workflow execution failed, providing fallback response")
                 return {
                     "status": "COMPLETED",
                     "data": {

@@ -119,7 +119,7 @@ async def test_api_endpoint():
                     # Show first article
                     if articles:
                         first = articles[0]
-                        print(f"\n  First Article:")
+                        print("\n  First Article:")
                         print(f"    Title: {first['title']}")
                         print(f"    Agency: {first['source_agency']}")
                         print(f"    Summary: {first['summary'][:100]}...")

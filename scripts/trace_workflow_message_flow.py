@@ -24,7 +24,7 @@ for agent in ["commander_agent_01", "planner_agent_01", "router_agent_01"]:
             print(f"   ✅ Found workflow in {agent} queue!")
 
 # 2. Check for any Redis keys with this workflow ID
-print(f"\n🔍 Searching for workflow ID in Redis:")
+print("\n🔍 Searching for workflow ID in Redis:")
 all_keys = r.keys("*")
 found_keys = []
 
@@ -54,7 +54,7 @@ for key in workflow_keys[-3:]:
         pass
 
 # 4. Monitor for new workflows
-print(f"\n⏳ Monitoring for new workflows (10 seconds)...")
+print("\n⏳ Monitoring for new workflows (10 seconds)...")
 initial_count = len(workflow_keys)
 
 for i in range(10):
@@ -65,4 +65,4 @@ for i in range(10):
         for new_key in new_keys:
             print(f"   ✅ NEW workflow created: {new_key}")
             if workflow_id in new_key:
-                print(f"      This is our workflow!")
+                print("      This is our workflow!")

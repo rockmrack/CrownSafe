@@ -181,7 +181,7 @@ def setup_test_user():
             user.hashed_password = "testhash"
             user.is_pregnant = True
             user.is_premium = True
-            print(f"Updated existing test user (ID=)")
+            print("Updated existing test user (ID=)")
         else:
             user = User(
                 id=TEST_USER_ID,

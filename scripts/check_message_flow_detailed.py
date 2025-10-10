@@ -20,7 +20,7 @@ if cmd_len > 0:
         msg_data = json.loads(msg)
         print("\nLatest Commander message:")
         print(f"  Type: {msg_data.get('mcp_header', {}).get('message_type')}")
-        print(f"  Payload structure:")
+        print("  Payload structure:")
         payload = msg_data.get("payload", {})
         for key in payload.keys():
             print(f"    - {key}")

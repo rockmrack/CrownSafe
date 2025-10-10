@@ -43,7 +43,7 @@ async def main():
             "html_content": mock_html,
             "product_name": "Happy Baby Super-Puffs",
         }
-        logger.info(f"Created task with inputs.")
+        logger.info("Created task with inputs.")
 
         # 4. Process the task.
         logger.info("Calling agent_logic.process_task...")

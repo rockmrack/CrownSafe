@@ -29,14 +29,14 @@ class TestIntegrationAndPerformance:
     def test_healthz_response_time(self):
         """Test healthz endpoint response time"""
         start = time.time()
-        response = client.get("/healthz")
+        _ = client.get("/healthz")
         duration = time.time() - start
         assert duration < 1.0  # Should respond in under 1 second
 
     def test_api_response_time_recalls(self):
         """Test recalls endpoint response time"""
         start = time.time()
-        response = client.get("/api/v1/recalls")
+        _ = client.get("/api/v1/recalls")
         duration = time.time() - start
         assert duration < 5.0  # Should respond in under 5 seconds
 
@@ -75,7 +75,7 @@ class TestIntegrationAndPerformance:
 
         data = {"key": "value", "list": [1, 2, 3], "nested": {"a": "b"}}
         start = time.time()
-        json_str = json.dumps(data)
+        _ = json.dumps(data)
         duration = time.time() - start
         assert duration < 0.001  # Less than 1ms
 
@@ -85,7 +85,7 @@ class TestIntegrationAndPerformance:
 
         json_str = '{"key": "value", "list": [1, 2, 3], "nested": {"a": "b"}}'
         start = time.time()
-        data = json.loads(json_str)
+        _ = json.loads(json_str)
         duration = time.time() - start
         assert duration < 0.001  # Less than 1ms
 
@@ -96,7 +96,7 @@ class TestIntegrationAndPerformance:
         try:
             start = time.time()
             with get_db_session() as session:
-                recalls = session.query(RecallDB).limit(10).all()
+                _ = session.query(RecallDB).limit(10).all()
             duration = time.time() - start
             assert duration < 2.0  # Less than 2 seconds
         except Exception:
@@ -105,7 +105,7 @@ class TestIntegrationAndPerformance:
     def test_api_pagination_performance(self):
         """Test API pagination performance"""
         start = time.time()
-        response = client.get("/api/v1/recalls?page=1&page_size=10")
+        _ = client.get("/api/v1/recalls?page=1&page_size=10")
         duration = time.time() - start
         assert duration < 3.0  # Less than 3 seconds
 
@@ -117,49 +117,49 @@ class TestIntegrationAndPerformance:
     def test_openapi_schema_generation_time(self):
         """Test OpenAPI schema generation time"""
         start = time.time()
-        response = client.get("/openapi.json")
+        _ = client.get("/openapi.json")
         duration = time.time() - start
         assert duration < 2.0  # Less than 2 seconds
 
     def test_docs_page_load_time(self):
         """Test /docs page load time"""
         start = time.time()
-        response = client.get("/docs")
+        _ = client.get("/docs")
         duration = time.time() - start
         assert duration < 2.0  # Less than 2 seconds
 
     def test_redoc_page_load_time(self):
         """Test /redoc page load time"""
         start = time.time()
-        response = client.get("/redoc")
+        _ = client.get("/redoc")
         duration = time.time() - start
         assert duration < 2.0  # Less than 2 seconds
 
     def test_error_response_time(self):
         """Test error response time"""
         start = time.time()
-        response = client.get("/nonexistent-endpoint")
+        _ = client.get("/nonexistent-endpoint")
         duration = time.time() - start
         assert duration < 1.0  # Errors should be fast
 
     def test_validation_error_time(self):
         """Test validation error response time"""
         start = time.time()
-        response = client.post("/api/v1/feedback", json={})
+        _ = client.post("/api/v1/feedback", json={})
         duration = time.time() - start
         assert duration < 1.0  # Validation should be fast
 
     def test_authentication_check_time(self):
         """Test authentication check time"""
         start = time.time()
-        response = client.get("/api/v1/auth/profile")
+        _ = client.get("/api/v1/auth/profile")
         duration = time.time() - start
         assert duration < 1.0  # Auth check should be fast
 
     def test_cors_preflight_time(self):
         """Test CORS preflight response time"""
         start = time.time()
-        response = client.options("/api/v1/recalls")
+        _ = client.options("/api/v1/recalls")
         duration = time.time() - start
         assert duration < 0.5  # OPTIONS should be very fast
 
@@ -167,7 +167,7 @@ class TestIntegrationAndPerformance:
         """Test rate limit check time"""
         start = time.time()
         for _ in range(5):
-            response = client.get("/healthz")
+            _ = client.get("/healthz")
         duration = time.time() - start
         assert duration < 5.0  # 5 requests should take less than 5 seconds
 
@@ -208,9 +208,7 @@ class TestIntegrationAndPerformance:
     def test_password_reset_flow(self):
         """Test complete password reset flow"""
         # Step 1: Request reset
-        response1 = client.post(
-            "/api/v1/auth/password-reset/request", json={"email": "test@test.com"}
-        )
+        response1 = client.post("/api/v1/auth/password-reset/request", json={"email": "test@test.com"})
         assert response1.status_code in [200, 400, 404, 422, 500]
 
         # Step 2: Confirm reset (with invalid token for testing)
@@ -410,9 +408,7 @@ class TestIntegrationAndPerformance:
         assert response1.status_code in [200, 201, 400, 404, 422, 500]
 
         # 2. Login
-        response2 = client.post(
-            "/api/v1/auth/login", json={"email": email, "password": "testpassword123"}
-        )
+        response2 = client.post("/api/v1/auth/login", json={"email": email, "password": "testpassword123"})
         assert response2.status_code in [200, 400, 401, 404, 422, 500]
 
     def test_e2e_recall_search_journey(self):
@@ -606,7 +602,7 @@ class TestIntegrationAndPerformance:
         try:
             for _ in range(10):
                 with get_db_session() as session:
-                    recalls = session.query(RecallDB).limit(10).all()
+                    _ = session.query(RecallDB).limit(10).all()
         except Exception:
             pytest.skip("Database not available")
 
@@ -634,7 +630,7 @@ class TestIntegrationAndPerformance:
         from datetime import datetime
 
         for _ in range(100):
-            email = f"test{_ }@test.com"
+            email = f"test{_}@test.com"
             assert "@" in email
             assert "." in email
 

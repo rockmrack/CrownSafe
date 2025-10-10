@@ -69,10 +69,10 @@ async def main():
             message = result.get("result", {}).get("message")
             if "Event tracked successfully" in message:
                 print("\n" + "=" * 50)
-                print(f"✅✅✅ TEST PASSED: Successfully simulated tracking a Mixpanel event.")
+                print("✅✅✅ TEST PASSED: Successfully simulated tracking a Mixpanel event.")
             else:
                 print("\n" + "=" * 50)
-                print(f"❌ TEST FAILED: The result message was not as expected.")
+                print("❌ TEST FAILED: The result message was not as expected.")
         else:
             print("\n" + "=" * 50)
             print(

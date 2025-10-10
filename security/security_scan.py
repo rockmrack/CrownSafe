@@ -529,7 +529,7 @@ class SecurityScanner:
         with open(report_path, "w") as f:
             json.dump(report, f, indent=2, default=str)
 
-        print(f"\n📄 Report saved to: security/security_scan_report.json")
+        print("\n📄 Report saved to: security/security_scan_report.json")
 
         return report
 

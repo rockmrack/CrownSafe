@@ -62,9 +62,7 @@ class QueryOptimizer:
         return query
 
     @staticmethod
-    def batch_load(
-        db: Session, model: Type, ids: List[int], batch_size: int = 100
-    ) -> Dict[int, Any]:
+    def batch_load(db: Session, model: Type, ids: List[int], batch_size: int = 100) -> Dict[int, Any]:
         """
         Load multiple records in batches instead of one by one
 
@@ -150,22 +148,22 @@ class QueryOptimizer:
         db.commit()
 
 
-def optimize_query(func):
+def optimize_query(query_func):
     """
     Decorator to automatically optimize queries
     """
 
-    @wraps(func)
+    @wraps(query_func)
     def wrapper(*args, **kwargs):
         start = time.time()
 
         # Call function
-        result = func(*args, **kwargs)
+        result = query_func(*args, **kwargs)
 
         # Log slow queries
         duration = time.time() - start
         if duration > 1.0:  # Log queries taking more than 1 second
-            logger.warning(f"Slow query in {func.__name__}: {duration:.2f}s")
+            logger.warning(f"Slow query in {query_func.__name__}: {duration:.2f}s")
 
         return result
 
@@ -232,12 +230,7 @@ class OptimizedQueries:
         """
         Get recalls with all details efficiently
         """
-        return (
-            db.query(Recall)
-            .options(selectinload("images"), selectinload("incidents"))
-            .limit(limit)
-            .all()
-        )
+        return db.query(Recall).options(selectinload("images"), selectinload("incidents")).limit(limit).all()
 
     @staticmethod
     def search_products_optimized(db: Session, search_term: str, limit: int = 50):

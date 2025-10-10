@@ -269,7 +269,7 @@ class UnifiedMemoryManager:
                             st.session_state.persistent_session_id = str(uuid.uuid4())
                     else:
                         st.session_state.persistent_session_id = str(uuid.uuid4())
-                except Exception as e:
+                except Exception:
                     st.session_state.persistent_session_id = str(uuid.uuid4())
             else:
                 st.session_state.persistent_session_id = str(uuid.uuid4())
@@ -356,9 +356,7 @@ class UnifiedMemoryManager:
                     f"session:{self.session_id}",
                     mapping={
                         "last_activity": str(datetime.now().timestamp()),
-                        "message_count": str(
-                            self.redis_client.zcard(f"timeline:{self.session_id}")
-                        ),
+                        "message_count": str(self.redis_client.zcard(f"timeline:{self.session_id}")),
                     },
                 )
 
@@ -423,7 +421,9 @@ class UnifiedMemoryManager:
             try:
                 # Get message IDs from timeline
                 message_ids = self.redis_client.zrevrange(
-                    f"timeline:{self.session_id}", 0, 99  # Get last 100 messages
+                    f"timeline:{self.session_id}",
+                    0,
+                    99,  # Get last 100 messages
                 )
 
                 # Retrieve each message
@@ -487,8 +487,7 @@ class UnifiedMemoryManager:
         sorted_messages = sorted(
             message_dict.values(),
             key=lambda x: (
-                x.get("relevance_score", 0) * 10
-                + (datetime.now() - x["timestamp"]).total_seconds() / -3600
+                x.get("relevance_score", 0) * 10 + (datetime.now() - x["timestamp"]).total_seconds() / -3600
             ),
             reverse=True,
         )
@@ -577,7 +576,7 @@ class UnifiedMemoryManager:
 
                 topic_str = ", ".join(topics) if topics else "general development"
                 return f"CureViaX Development Session: {message_count} messages. Topics: {topic_str}. Building an advanced healthcare AI platform with persistent memory and multi-model support."
-        except Exception as e:
+        except Exception:
             return "Building CureViaX: An advanced healthcare AI platform."
 
     def _update_conversation_summary(self):
@@ -642,7 +641,7 @@ class UnifiedMemoryManager:
             message_count = self.redis_client.zcard(f"timeline:{self.session_id}")
 
             summary_parts = [
-                f"CureViaX Development Session",
+                "CureViaX Development Session",
                 f"Total Exchanges: {message_count}",
                 f"Active Topics: {', '.join(topics) if topics else 'general development'}",
                 "",
@@ -660,7 +659,7 @@ class UnifiedMemoryManager:
             summary = "\n".join(summary_parts)
 
             self.redis_client.set(f"summary:{self.session_id}", summary, ex=86400 * 90)  # 90 days
-        except Exception as e:
+        except Exception:
             pass
 
     def load_conversation_history(self) -> List[Message]:
@@ -689,12 +688,8 @@ class UnifiedMemoryManager:
                         id=msg_data.get("id", msg_id),
                         role=msg_data.get("role", "user"),
                         content=msg_data.get("content", ""),
-                        model=msg_data.get("model")
-                        if msg_data.get("role") == "assistant"
-                        else None,
-                        timestamp=datetime.fromisoformat(
-                            msg_data.get("timestamp", datetime.now().isoformat())
-                        ),
+                        model=msg_data.get("model") if msg_data.get("role") == "assistant" else None,
+                        timestamp=datetime.fromisoformat(msg_data.get("timestamp", datetime.now().isoformat())),
                         tokens=int(msg_data.get("tokens", 0)),
                         attachments=attachments,
                     )
@@ -791,7 +786,7 @@ class ConnectionManager:
             genai.configure(api_key=api_key.strip())
 
             model = genai.GenerativeModel("gemini-1.5-pro-latest")
-            response = model.generate_content("test")
+            _ = model.generate_content("test")
 
             self.gemini_client = genai
             self.status["gemini"] = True
@@ -800,7 +795,7 @@ class ConnectionManager:
         except Exception as e:
             try:
                 model = genai.GenerativeModel("gemini-1.5-pro")
-                response = model.generate_content("test")
+                _ = model.generate_content("test")
                 self.gemini_client = genai
                 self.status["gemini"] = True
                 return True
@@ -819,7 +814,7 @@ class ConnectionManager:
 
             # Try different models
             try:
-                response = openai.ChatCompletion.create(
+                _ = openai.ChatCompletion.create(
                     model="gpt-4o",
                     messages=[{"role": "user", "content": "test"}],
                     max_tokens=10,
@@ -828,7 +823,7 @@ class ConnectionManager:
                 return True
             except:
                 try:
-                    response = openai.ChatCompletion.create(
+                    _ = openai.ChatCompletion.create(
                         model="gpt-4-turbo-preview",
                         messages=[{"role": "user", "content": "test"}],
                         max_tokens=10,
@@ -836,7 +831,7 @@ class ConnectionManager:
                     self.status["gpt"] = True
                     return True
                 except:
-                    response = openai.ChatCompletion.create(
+                    _ = openai.ChatCompletion.create(
                         model="gpt-4",
                         messages=[{"role": "user", "content": "test"}],
                         max_tokens=10,
@@ -925,9 +920,7 @@ Reference our previous discussions and maintain continuity.""",
                     messages=[
                         {
                             "role": "user",
-                            "content": context
-                            if attempt == 0
-                            else self._request_completion(full_response, "Claude"),
+                            "content": context if attempt == 0 else self._request_completion(full_response, "Claude"),
                         }
                     ],
                 )
@@ -1047,18 +1040,14 @@ Project context:
                     },
                     {
                         "role": "user",
-                        "content": context
-                        if attempt == 0
-                        else self._request_completion(full_response, "GPT"),
+                        "content": context if attempt == 0 else self._request_completion(full_response, "GPT"),
                     },
                 ]
 
                 # Try different model names
                 model_name = "gpt-4o"
                 try:
-                    response = openai.ChatCompletion.create(
-                        model=model_name, messages=messages, temperature=0.7
-                    )
+                    response = openai.ChatCompletion.create(model=model_name, messages=messages, temperature=0.7)
                 except Exception as e:
                     if "model" in str(e).lower():
                         for fallback_model in [
@@ -1123,7 +1112,7 @@ def display_message_with_code(content: str, container):
                 with col1:
                     st.markdown(f"**📄 Code Block {code_block_counter} ({language.upper()})**")
                 with col2:
-                    if st.button(f"📋 Copy", key=f"copy_{code_block_counter}_{hash(code_content)}"):
+                    if st.button("📋 Copy", key=f"copy_{code_block_counter}_{hash(code_content)}"):
                         st.code(code_content, language=language)
                         st.success("Code ready to copy!")
 
@@ -1204,9 +1193,7 @@ def export_conversation_to_pdf(messages: List[Message]) -> bytes:
     story.append(Paragraph("CureViaX Development Conversation", title_style))
     story.append(Spacer(1, 12))
 
-    story.append(
-        Paragraph(f"Exported: {datetime.now().strftime('%Y-%m-%d %H:%M')}", styles["Normal"])
-    )
+    story.append(Paragraph(f"Exported: {datetime.now().strftime('%Y-%m-%d %H:%M')}", styles["Normal"]))
     story.append(Spacer(1, 12))
 
     for msg in messages:
@@ -1279,9 +1266,7 @@ if "messages_loaded" not in st.session_state:
 # Load conversation history on first run
 if not st.session_state.messages_loaded and st.session_state.connection_manager.memory_manager:
     with st.spinner("Loading conversation history..."):
-        loaded_messages = (
-            st.session_state.connection_manager.memory_manager.load_conversation_history()
-        )
+        loaded_messages = st.session_state.connection_manager.memory_manager.load_conversation_history()
         if loaded_messages:
             st.session_state.messages = loaded_messages
             st.success(f"Loaded {len(loaded_messages)} messages from memory")
@@ -1401,9 +1386,7 @@ with st.sidebar:
 
     # GPT
     with st.expander("GPT-4", expanded=False):
-        gpt_key = st.text_input(
-            "API Key", type="password", key="gpt_key", help="Enter your OpenAI API key"
-        )
+        gpt_key = st.text_input("API Key", type="password", key="gpt_key", help="Enter your OpenAI API key")
         if st.button("Connect", key="connect_gpt"):
             if st.session_state.connection_manager.connect_openai(gpt_key):
                 st.success("Connected!")
@@ -1421,9 +1404,7 @@ with st.sidebar:
             if st.session_state.connection_manager.connect_redis(redis_host, redis_port):
                 st.success("Connected!")
                 if st.session_state.connection_manager.memory_manager:
-                    loaded_messages = (
-                        st.session_state.connection_manager.memory_manager.load_conversation_history()
-                    )
+                    loaded_messages = st.session_state.connection_manager.memory_manager.load_conversation_history()
                     if loaded_messages:
                         st.session_state.messages = loaded_messages
                 st.rerun()
@@ -1461,10 +1442,7 @@ st.title("CureViaX Builder Console")
 # Header
 memory_status = (
     "Memory Active"
-    if (
-        st.session_state.connection_manager.status["redis"]
-        or st.session_state.connection_manager.status["chromadb"]
-    )
+    if (st.session_state.connection_manager.status["redis"] or st.session_state.connection_manager.status["chromadb"])
     else "Memory Inactive"
 )
 
@@ -1565,25 +1543,17 @@ if submit and user_input:
     # Execute on selected model
     with st.spinner(f"🤖 {st.session_state.current_model.value} is thinking..."):
         if st.session_state.current_model == ModelType.CLAUDE:
-            response = asyncio.run(
-                st.session_state.executor.execute_claude(user_input, attachments_to_send)
-            )
+            response = asyncio.run(st.session_state.executor.execute_claude(user_input, attachments_to_send))
             model_name = "Claude"
         elif st.session_state.current_model == ModelType.GEMINI:
-            response = asyncio.run(
-                st.session_state.executor.execute_gemini(user_input, attachments_to_send)
-            )
+            response = asyncio.run(st.session_state.executor.execute_gemini(user_input, attachments_to_send))
             model_name = "Gemini"
         else:
-            response = asyncio.run(
-                st.session_state.executor.execute_gpt(user_input, attachments_to_send)
-            )
+            response = asyncio.run(st.session_state.executor.execute_gpt(user_input, attachments_to_send))
             model_name = "GPT"
 
         # Add assistant message
-        assistant_message = Message(
-            id=str(uuid.uuid4()), role="assistant", content=response, model=model_name
-        )
+        assistant_message = Message(id=str(uuid.uuid4()), role="assistant", content=response, model=model_name)
         st.session_state.messages.append(assistant_message)
 
         # Store in memory
@@ -1628,20 +1598,10 @@ with col1:
             )
 
 with col2:
-    status_text = (
-        "Memory: Active"
-        if st.session_state.connection_manager.memory_manager
-        else "Memory: Inactive"
-    )
-    if (
-        st.session_state.connection_manager.memory_manager
-        and st.session_state.connection_manager.status["redis"]
-    ):
+    status_text = "Memory: Active" if st.session_state.connection_manager.memory_manager else "Memory: Inactive"
+    if st.session_state.connection_manager.memory_manager and st.session_state.connection_manager.status["redis"]:
         status_text += " (Redis)"
-    if (
-        st.session_state.connection_manager.memory_manager
-        and st.session_state.connection_manager.status["chromadb"]
-    ):
+    if st.session_state.connection_manager.memory_manager and st.session_state.connection_manager.status["chromadb"]:
         status_text += " (ChromaDB)"
     st.info(status_text)
 
@@ -1692,10 +1652,8 @@ if st.session_state.get("debug_mode", False):
         if st.session_state.connection_manager.redis_client:
             try:
                 session_id = st.session_state.connection_manager.memory_manager.session_id
-                message_count = st.session_state.connection_manager.redis_client.zcard(
-                    f"timeline:{session_id}"
-                )
-                st.write(f"\n**Redis Stats:**")
+                message_count = st.session_state.connection_manager.redis_client.zcard(f"timeline:{session_id}")
+                st.write("\n**Redis Stats:**")
                 st.write(f"- Messages in timeline: {message_count}")
                 st.write(f"- Session key: session:{session_id}")
             except:

@@ -65,7 +65,7 @@ async def main():
             else:
                 print("\n" + "=" * 50)
                 print(
-                    f"❌ TEST FAILED: The agent returned empty or very short content for the document."
+                    "❌ TEST FAILED: The agent returned empty or very short content for the document."
                 )
         else:
             print("\n" + "=" * 50)

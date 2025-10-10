@@ -153,8 +153,8 @@ def test_90_day_report():
     # Create test database session
     engine = create_engine("sqlite:///test_safety_reports.db")
 
-    # Create only the tables we need for this test
-    metadata = MetaData()
+    # Create only the tables we need for this test (metadata for table creation)
+    _ = MetaData()
     ScanHistory.__table__.create(engine, checkfirst=True)
     SafetyReport.__table__.create(engine, checkfirst=True)
 
@@ -164,7 +164,7 @@ def test_90_day_report():
     try:
         # Create test data
         user_id = 1
-        scans_created = create_test_scan_history(db, user_id)
+        _ = create_test_scan_history(db, user_id)  # scans_created
 
         # Test report generation
         print("\nGenerating 90-day report...")
@@ -236,10 +236,8 @@ def test_90_day_report():
             if scan.risk_level:
                 product_groups[key]["risk_levels"].append(scan.risk_level)
 
-        print(f"\n📦 Top Scanned Products:")
-        sorted_products = sorted(
-            product_groups.items(), key=lambda x: len(x[1]["scans"]), reverse=True
-        )
+        print("\n📦 Top Scanned Products:")
+        sorted_products = sorted(product_groups.items(), key=lambda x: len(x[1]["scans"]), reverse=True)
         for i, (key, group) in enumerate(sorted_products[:5], 1):
             scan_count = len(group["scans"])
             risk = (
@@ -281,9 +279,7 @@ def test_90_day_report():
         print(f"✅ Report saved with ID: {report.report_id}")
 
         # Verify report retrieval
-        saved_report = (
-            db.query(SafetyReport).filter(SafetyReport.report_id == report.report_id).first()
-        )
+        saved_report = db.query(SafetyReport).filter(SafetyReport.report_id == report.report_id).first()
 
         assert saved_report is not None, "Report should be saved"
         assert saved_report.total_scans == total_scans, "Total scans should match"

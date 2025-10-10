@@ -52,7 +52,7 @@ async def main():
             else:
                 print("\n" + "=" * 50)
                 print(
-                    f"❌ TEST FAILED: The agent did not find any alternatives for a known category."
+                    "❌ TEST FAILED: The agent did not find any alternatives for a known category."
                 )
         else:
             print("\n" + "=" * 50)

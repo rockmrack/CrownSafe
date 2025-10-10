@@ -172,7 +172,7 @@ async def main():
         status = "✅ PASSED" if success else "❌ FAILED"
         print(f"{status} - {test_name}")
 
-    print(f"\n📈 Statistics:")
+    print("\n📈 Statistics:")
     print(f"  Total Tests: {total_tests}")
     print(f"  Passed: {passed_tests}")
     print(f"  Failed: {failed_tests}")

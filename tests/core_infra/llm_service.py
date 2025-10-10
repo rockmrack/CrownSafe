@@ -276,7 +276,7 @@ class MockLLMProvider:
         message_lower = message_text.lower()
 
         # Debug logging
-        logger.debug(f"MockLLMProvider analyzing message for patient detection...")
+        logger.debug("MockLLMProvider analyzing message for patient detection...")
 
         # Detect patient IDs with multiple patterns
         is_patient_001 = any(

@@ -63,16 +63,12 @@ async def register(request: Request, user_data: UserRegister, db: Session = Depe
     """
     # Validate passwords match
     if user_data.password != user_data.confirm_password:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Passwords do not match"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Passwords do not match")
 
     # Check if user exists
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
 
     # Create new user
     hashed_password = get_password_hash(user_data.password)
@@ -187,7 +183,7 @@ async def refresh_token(request: Request, db: Session = Depends(get_db)):
 
         if not refresh_token:
             raise HTTPException(status_code=400, detail="refresh_token is required in request body")
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=400,
             detail='Invalid JSON body. Expected: {"refresh_token": "<token>"}',
@@ -197,15 +193,11 @@ async def refresh_token(request: Request, db: Session = Depends(get_db)):
     payload = decode_token(refresh_token)
 
     if not payload or payload.get("type") != "refresh":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token"
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
 
     user_id = payload.get("sub")
     if not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token"
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
 
     # Get user
     user = db.query(User).filter(User.id == user_id).first()
@@ -334,7 +326,7 @@ async def verify_token(
                 "email": email,
             }
 
-        except Exception as e:
+        except Exception:
             raise HTTPException(status_code=400, detail="Invalid or expired verification code")
     else:
         # Token verification flow (requires auth)

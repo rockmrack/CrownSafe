@@ -47,14 +47,14 @@ async def test_router_directly():
     print(f"\n📤 Sending test plan to Router queue: {router_queue}")
     r.lpush(router_queue, json.dumps(test_plan))
 
-    print(f"⏳ Waiting for Router to process...")
+    print("⏳ Waiting for Router to process...")
 
     # Monitor for workflow creation
     for i in range(10):
         time.sleep(1)
         workflow_key = f"rossnet:workflow:{workflow_id}"
         if r.exists(workflow_key):
-            print(f"✅ Workflow created in Redis!")
+            print("✅ Workflow created in Redis!")
             data = json.loads(r.get(workflow_key))
             print(f"   Status: {data.get('status')}")
             print(f"   workflow_id field: {data.get('workflow_id', 'MISSING')}")

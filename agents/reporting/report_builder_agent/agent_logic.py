@@ -5,7 +5,8 @@ import logging
 import json
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timezone
-import os, base64
+import os
+import base64
 import uuid
 from enum import Enum
 from dataclasses import asdict
@@ -90,9 +91,7 @@ if not os.path.exists(REPORTS_OUTPUT_DIR):
             exc_info=True,
         )
         REPORTS_OUTPUT_DIR = os.path.abspath(os.path.dirname(__file__))
-        logger_rb_logic_default.warning(
-            f"Falling back to report output directory: {REPORTS_OUTPUT_DIR}"
-        )
+        logger_rb_logic_default.warning(f"Falling back to report output directory: {REPORTS_OUTPUT_DIR}")
 
 # Create templates directory if it doesn't exist
 if not TEMPLATES_DIR.exists():
@@ -147,7 +146,7 @@ def generate_adverse_event_chart(top_reactions, output_dir, basename):
         labels = [r.get("term") or r.get("reaction") or "Unknown" for r in top_reactions][:10]
         counts = [int(r.get("count", 0)) for r in top_reactions][:10]
         fig, ax = plt.subplots(figsize=(6, 3))
-        bars = ax.bar(labels, counts, color="#3071B8", alpha=0.85)
+        _ = ax.bar(labels, counts, color="#3071B8", alpha=0.85)  # bars (reserved for future styling)
         ax.set_title("Top Adverse Reactions (openFDA)", fontsize=13, weight="bold")
         ax.set_xlabel("Reaction")
         ax.set_ylabel("Number of Reports")
@@ -234,7 +233,7 @@ def format_methods():
     <li><b>PubMed:</b> AI-driven literature search for the specified drug/disease.</li>
     <li><b>ClinicalTrials.gov:</b> Filtered for condition/intervention.</li>
     <li><b>openFDA:</b> Top adverse event reports for the drug.</li>
-    <li>All data as of: <b>{datetime.now(timezone.utc).strftime('%Y-%m-%d')}</b></li>
+    <li>All data as of: <b>{datetime.now(timezone.utc).strftime("%Y-%m-%d")}</b></li>
     </ul>
     """
 
@@ -258,9 +257,7 @@ def format_pubmed_articles(pubmed_data):
             a = art if isinstance(art, dict) else asdict(art)
             pmid = a.get("pmid", "N/A")
             pmid_html = (
-                f'<a href="https://pubmed.ncbi.nlm.nih.gov/{pmid}/">{pmid}</a>'
-                if pmid and pmid != "N/A"
-                else pmid
+                f'<a href="https://pubmed.ncbi.nlm.nih.gov/{pmid}/">{pmid}</a>' if pmid and pmid != "N/A" else pmid
             )
             title = escape_html(a.get("title", "N/A"))
             authors = ", ".join(a.get("authors", [])) if a.get("authors") else "N/A"
@@ -293,11 +290,7 @@ def format_clinical_trials(trials_data):
         for t in trials:
             tr = t if isinstance(t, dict) else asdict(t)
             nct = tr.get("nct_id", "N/A")
-            nct_html = (
-                f'<a href="{tr.get("url", "#")}" target="_blank">{nct}</a>'
-                if nct and nct != "N/A"
-                else nct
-            )
+            nct_html = f'<a href="{tr.get("url", "#")}" target="_blank">{nct}</a>' if nct and nct != "N/A" else nct
             title = escape_html(tr.get("title", "N/A"))
             status = escape_html(tr.get("status", "N/A"))
             condition = escape_html(tr.get("condition", "N/A"))
@@ -312,9 +305,7 @@ def format_clinical_trials(trials_data):
 def format_adverse_events(safety_data, chart_path=None):
     out = ['<a name="adverse_events"></a>', "<h1>4. Drug Safety Profile</h1>"]
     if chart_path and os.path.exists(chart_path):
-        out.append(
-            html_img_tag(chart_path, width=360, style="margin-bottom:22px; margin-top:12px;")
-        )
+        out.append(html_img_tag(chart_path, width=360, style="margin-bottom:22px; margin-top:12px;"))
     top_reactions = safety_data.get("top_adverse_reactions", []) if safety_data else []
     if not top_reactions:
         out.append("<p>No adverse event data available.</p>")
@@ -350,9 +341,7 @@ def format_references(pubmed_data, trials_data):
             title = escape_html(t.get("title", "N/A"))
             url = t.get("url", "#")
             if nct and nct != "N/A":
-                refs.append(
-                    f'<li>ClinicalTrials.gov: <a href="{url}">{title} (NCT: {nct})</a></li>'
-                )
+                refs.append(f'<li>ClinicalTrials.gov: <a href="{url}">{title} (NCT: {nct})</a></li>')
     refs.append("</ul>")
     return "\n".join(refs)
 
@@ -394,9 +383,7 @@ class ReportBuilderAgentLogic:
         self.agent_id = agent_id
         self.version = version
         self.logger = logger_instance if logger_instance else logger_rb_logic_default
-        self.logger.info(
-            f"ReportBuilderAgentLogic initialized. Agent ID: {self.agent_id}, Version: {self.version}."
-        )
+        self.logger.info(f"ReportBuilderAgentLogic initialized. Agent ID: {self.agent_id}, Version: {self.version}.")
         self.logger.info(f"Reports directory ready: {REPORTS_OUTPUT_DIR}")
         self.logger.info(f"Templates directory: {TEMPLATES_DIR}")
 
@@ -471,9 +458,7 @@ class ReportBuilderAgentLogic:
             # 2) xhtml2pdf (default path)
             if XHTML2PDF_AVAILABLE and pisa is not None and not os.path.exists(pdf_filepath):
                 with open(pdf_filepath, "wb") as pdf_file_handle:
-                    pdf_context = pisa.CreatePDF(
-                        html_content, dest=pdf_file_handle, encoding="utf-8"
-                    )
+                    pdf_context = pisa.CreatePDF(html_content, dest=pdf_file_handle, encoding="utf-8")
                     if pdf_context.err:
                         self.logger.error(f"pisa.CreatePDF error: {pdf_context.err}")
                         # Remove incomplete file if any
@@ -489,9 +474,7 @@ class ReportBuilderAgentLogic:
                     from reportlab.pdfgen import canvas
                     from reportlab.lib.pagesizes import A4
                 except Exception as imp_err:
-                    self.logger.error(
-                        f"PDF fallback unavailable (reportlab import failed): {imp_err}"
-                    )
+                    self.logger.error(f"PDF fallback unavailable (reportlab import failed): {imp_err}")
                     return False
                 tmp_path = pdf_filepath + ".tmp"
                 c = canvas.Canvas(tmp_path, pagesize=A4)
@@ -590,16 +573,16 @@ class ReportBuilderAgentLogic:
             }
 
         except FileNotFoundError as e:
-            error_msg = f"Template file not found: {e}. Please ensure pa_summary_template.html exists in {TEMPLATES_DIR}"
+            error_msg = (
+                f"Template file not found: {e}. Please ensure pa_summary_template.html exists in {TEMPLATES_DIR}"
+            )
             self.logger.error(error_msg)
             return {"status": "error", "message": error_msg}
         except Exception as e:
             self.logger.error(f"Failed to build PA summary report: {e}", exc_info=True)
             return {"status": "error", "message": str(e)}
 
-    def _compute_composite_risk(
-        self, recalls: List[dict], community: dict, hazards: dict
-    ) -> Dict[str, Any]:
+    def _compute_composite_risk(self, recalls: List[dict], community: dict, hazards: dict) -> Dict[str, Any]:
         """Compute a simple deterministic composite risk score and level."""
         score = 0
         level = "LOW"
@@ -652,9 +635,7 @@ class ReportBuilderAgentLogic:
             hazards = data.get("hazards", {}) or {}
 
             # Compute composite risk
-            risk = self._compute_composite_risk(
-                recalls=recalls, community=community, hazards=hazards
-            )
+            risk = self._compute_composite_risk(recalls=recalls, community=community, hazards=hazards)
 
             # Final assessment text (deterministic)
             final_assessment = {
@@ -667,7 +648,9 @@ class ReportBuilderAgentLogic:
             # Executive summary
             if recalls:
                 hazard_summary = (recalls[0].get("hazard") or "safety issue").strip()
-                exec_summary = f"Active recall(s) detected. Primary issue: {hazard_summary}. Discontinue use until resolved."
+                exec_summary = (
+                    f"Active recall(s) detected. Primary issue: {hazard_summary}. Discontinue use until resolved."
+                )
             else:
                 exec_summary = "No official recalls detected. No community spikes observed. Continue normal use with standard safety precautions."
 
@@ -676,11 +659,7 @@ class ReportBuilderAgentLogic:
             report_id = workflow_id or uuid.uuid4().hex[:8]
             # QR code links to live web version for easy sharing with partners/pediatricians
             live_report_url = f"{COMPANY_URL}/reports/view/{report_id}"
-            qr_path = (
-                generate_qr_code(live_report_url, REPORTS_OUTPUT_DIR, basename)
-                if QRCODE_AVAILABLE
-                else None
-            )
+            qr_path = generate_qr_code(live_report_url, REPORTS_OUTPUT_DIR, basename) if QRCODE_AVAILABLE else None
 
             # Determine which data sources were checked
             data_sources_checked = []
@@ -719,9 +698,7 @@ class ReportBuilderAgentLogic:
                 "product": {
                     "product_name": product.get("product_name"),
                     "brand": product.get("brand"),
-                    "upc_gtin": product.get("upc_gtin")
-                    or product.get("upc")
-                    or product.get("gtin"),
+                    "upc_gtin": product.get("upc_gtin") or product.get("upc") or product.get("gtin"),
                     "model_number": product.get("model_number"),
                     "lot_or_serial": product.get("lot_or_serial")
                     or product.get("lot_number")
@@ -793,9 +770,7 @@ class ReportBuilderAgentLogic:
             self.logger.error(f"Failed to build product safety report: {e}", exc_info=True)
             return {"status": "error", "message": str(e)}
 
-    def _build_nursery_quarterly_report(
-        self, data: dict, workflow_id: Optional[str] = None
-    ) -> dict:
+    def _build_nursery_quarterly_report(self, data: dict, workflow_id: Optional[str] = None) -> dict:
         """
         Build Nursery Quarterly Report over multiple products.
         Expects data: { products: [ {product, recalls, personalized, community, manufacturer, hazards}, ... ] }
@@ -838,9 +813,7 @@ class ReportBuilderAgentLogic:
                         "product": {
                             "product_name": product.get("product_name"),
                             "brand": product.get("brand"),
-                            "upc_gtin": product.get("upc_gtin")
-                            or product.get("upc")
-                            or product.get("gtin"),
+                            "upc_gtin": product.get("upc_gtin") or product.get("upc") or product.get("gtin"),
                             "model_number": product.get("model_number"),
                             "lot_or_serial": product.get("lot_or_serial")
                             or product.get("lot_number")
@@ -952,18 +925,12 @@ class ReportBuilderAgentLogic:
         recalls = []
         if RecallModel and db is not None:
             try:
-                recalls = (
-                    db.query(RecallModel).order_by(RecallModel.recall_date.desc()).limit(15).all()
-                )
+                recalls = db.query(RecallModel).order_by(RecallModel.recall_date.desc()).limit(15).all()
             except Exception as e:
                 self.logger.error(f"Failed to fetch recalls for summary: {e}")
                 recalls = []
 
-        hazards = [
-            (getattr(r, "hazard_category", None) or getattr(r, "hazard", None))
-            for r in recalls
-            if r
-        ]
+        hazards = [(getattr(r, "hazard_category", None) or getattr(r, "hazard", None)) for r in recalls if r]
         brands = [getattr(r, "brand", None) for r in recalls if r]
 
         def top(xs, k):
@@ -1013,9 +980,7 @@ class ReportBuilderAgentLogic:
             # Keep the existing logic for building the old research reports
             return self._build_default_research_report(report_data)
 
-    def _extract_data_from_dependency_result(
-        self, dep_result: Any, expected_key: str
-    ) -> Dict[str, Any]:
+    def _extract_data_from_dependency_result(self, dep_result: Any, expected_key: str) -> Dict[str, Any]:
         """
         Enhanced extraction logic that handles various formats of dependency results.
         This is more flexible and can handle nested structures.
@@ -1027,11 +992,7 @@ class ReportBuilderAgentLogic:
         # If it's already a dict, check various possible structures
         if isinstance(dep_result, dict):
             # Direct format (the data we want is at the top level)
-            if (
-                "articles" in dep_result
-                or "trials_data" in dep_result
-                or "top_adverse_reactions" in dep_result
-            ):
+            if "articles" in dep_result or "trials_data" in dep_result or "top_adverse_reactions" in dep_result:
                 return dep_result
 
             # Nested in 'result' key
@@ -1057,9 +1018,7 @@ class ReportBuilderAgentLogic:
             return dep_result
 
         # If it's not a dict, log warning and return empty
-        self.logger.warning(
-            f"Dependency result for {expected_key} is not a dict: {type(dep_result)}"
-        )
+        self.logger.warning(f"Dependency result for {expected_key} is not a dict: {type(dep_result)}")
         return {}
 
     def _compose_html_report(
@@ -1173,14 +1132,10 @@ a {{ color: #2561b1; text-decoration: none; }}
     Page <pdf:pagenumber /> of <pdf:pagecount /> &nbsp;|&nbsp; Workflow ID: {workflow_id} &nbsp;|&nbsp; CureViaX Confidential
 </div>
 </body></html>
-""".format(
-            workflow_id=escape_html(workflow_id)
-        )
+""".format(workflow_id=escape_html(workflow_id))
         return html
 
-    async def process_message(
-        self, message_data: Dict[str, Any], client: Any
-    ) -> Optional[Dict[str, Any]]:
+    async def process_message(self, message_data: Dict[str, Any], client: Any) -> Optional[Dict[str, Any]]:
         header = message_data.get("mcp_header", {})
         payload = message_data.get("payload", {})
         message_type_str = header.get("message_type", "UNKNOWN")
@@ -1191,9 +1146,7 @@ a {{ color: #2561b1; text-decoration: none; }}
         try:
             message_type = MessageType(message_type_str)
         except ValueError:
-            self.logger.warning(
-                f"Unknown msg type '{message_type_str}' from {sender_id}. Ignoring."
-            )
+            self.logger.warning(f"Unknown msg type '{message_type_str}' from {sender_id}. Ignoring.")
             return None
 
         if message_type == MessageType.PONG:
@@ -1205,9 +1158,7 @@ a {{ color: #2561b1; text-decoration: none; }}
             self.logger.info(f"Processing TASK_ASSIGN from {sender_id} for task {task_id}")
 
             task_parameters = payload.get("parameters", {})
-            workflow_id = (
-                payload.get("workflow_id") or correlation_id or f"WF_{str(uuid.uuid4())[:8]}"
-            )
+            workflow_id = payload.get("workflow_id") or correlation_id or f"WF_{str(uuid.uuid4())[:8]}"
 
             # Check if this is a prior authorization report request
             report_type = task_parameters.get("report_type", "default_research")
@@ -1224,9 +1175,7 @@ a {{ color: #2561b1; text-decoration: none; }}
                         report_data = json.loads(report_data)
                         self.logger.info("Successfully parsed report_data from string")
                     except json.JSONDecodeError:
-                        self.logger.error(
-                            f"Failed to parse report_data as JSON: {report_data[:100]}..."
-                        )
+                        self.logger.error(f"Failed to parse report_data as JSON: {report_data[:100]}...")
                         report_data = {"error": "Failed to parse prediction data"}
 
                 # Check dependency results for actual data from step6
@@ -1260,9 +1209,7 @@ a {{ color: #2561b1; text-decoration: none; }}
                     "agent_id": self.agent_id,
                     "status": "COMPLETED" if result.get("status") == "success" else "FAILED",
                     "result": result,
-                    "error_message": result.get("message")
-                    if result.get("status") != "success"
-                    else None,
+                    "error_message": result.get("message") if result.get("status") != "success" else None,
                 }
 
                 return {
@@ -1275,18 +1222,14 @@ a {{ color: #2561b1; text-decoration: none; }}
             # Otherwise, handle the existing research report logic
             dependency_results = task_parameters.get("dependency_results", {})
             if not isinstance(dependency_results, dict):
-                self.logger.warning(f"dependency_results not dict. Using empty.")
+                self.logger.warning("dependency_results not dict. Using empty.")
                 dependency_results = {}
 
             # Log the structure we received for debugging
-            self.logger.debug(
-                f"Received dependency_results keys: {list(dependency_results.keys())}"
-            )
+            self.logger.debug(f"Received dependency_results keys: {list(dependency_results.keys())}")
             for key, value in dependency_results.items():
                 if isinstance(value, dict):
-                    self.logger.debug(
-                        f"  {key} has keys: {list(value.keys())[:5]}..."
-                    )  # First 5 keys
+                    self.logger.debug(f"  {key} has keys: {list(value.keys())[:5]}...")  # First 5 keys
 
             # Extract parameters with fallbacks
             original_goal = (
@@ -1308,9 +1251,7 @@ a {{ color: #2561b1; text-decoration: none; }}
                 "literature",
             ]:
                 if key in dependency_results:
-                    pubmed_articles_data = self._extract_data_from_dependency_result(
-                        dependency_results[key], "pubmed"
-                    )
+                    pubmed_articles_data = self._extract_data_from_dependency_result(dependency_results[key], "pubmed")
                     if pubmed_articles_data:
                         self.logger.info(f"Found pubmed data under key: {key}")
                         break
@@ -1324,9 +1265,7 @@ a {{ color: #2561b1; text-decoration: none; }}
                 "clinical_trials_info",
             ]:
                 if key in dependency_results:
-                    clinical_trials_data = self._extract_data_from_dependency_result(
-                        dependency_results[key], "trials"
-                    )
+                    clinical_trials_data = self._extract_data_from_dependency_result(dependency_results[key], "trials")
                     if clinical_trials_data:
                         self.logger.info(f"Found trials data under key: {key}")
                         break
@@ -1356,16 +1295,10 @@ a {{ color: #2561b1; text-decoration: none; }}
                 drug_safety_data_from_deps = task_parameters["safety_data"]
 
             # Log what we found
-            self.logger.info(f"Data extraction results:")
-            self.logger.info(
-                f"  - PubMed articles: {'Found' if pubmed_articles_data else 'Not found'}"
-            )
-            self.logger.info(
-                f"  - Clinical trials: {'Found' if clinical_trials_data else 'Not found'}"
-            )
-            self.logger.info(
-                f"  - Drug safety: {'Found' if drug_safety_data_from_deps else 'Not found'}"
-            )
+            self.logger.info("Data extraction results:")
+            self.logger.info(f"  - PubMed articles: {'Found' if pubmed_articles_data else 'Not found'}")
+            self.logger.info(f"  - Clinical trials: {'Found' if clinical_trials_data else 'Not found'}")
+            self.logger.info(f"  - Drug safety: {'Found' if drug_safety_data_from_deps else 'Not found'}")
 
             # Generate chart if we have safety data
             chart_path = None
@@ -1392,9 +1325,7 @@ a {{ color: #2561b1; text-decoration: none; }}
 
             # Generate QR code
             qr_data = f"{COMPANY_URL}/view/{pdf_filename}"
-            qr_path = generate_qr_code(
-                qr_data, REPORTS_OUTPUT_DIR, f"qr_{task_id}_{uuid.uuid4().hex[:6]}"
-            )
+            qr_path = generate_qr_code(qr_data, REPORTS_OUTPUT_DIR, f"qr_{task_id}_{uuid.uuid4().hex[:6]}")
 
             # Prepare context with all extracted data
             context = {
@@ -1409,9 +1340,7 @@ a {{ color: #2561b1; text-decoration: none; }}
 
             # Generate HTML report
             try:
-                html = self._compose_html_report(
-                    context, LOGO_PATH, chart_path, qr_path, pdf_filepath
-                )
+                html = self._compose_html_report(context, LOGO_PATH, chart_path, qr_path, pdf_filepath)
 
                 # Convert to PDF
                 pdf_creation_success = self._convert_html_to_pdf(html, pdf_filepath)
@@ -1440,9 +1369,7 @@ a {{ color: #2561b1; text-decoration: none; }}
                     "clinical_trials_count": len(clinical_trials_data.get("trials_data", []))
                     if clinical_trials_data
                     else 0,
-                    "adverse_events_count": len(
-                        drug_safety_data_from_deps.get("top_adverse_reactions", [])
-                    )
+                    "adverse_events_count": len(drug_safety_data_from_deps.get("top_adverse_reactions", []))
                     if drug_safety_data_from_deps
                     else 0,
                 },
@@ -1454,9 +1381,7 @@ a {{ color: #2561b1; text-decoration: none; }}
                 "agent_id": self.agent_id,
                 "status": "COMPLETED" if pdf_creation_success else "FAILED",
                 "result": result_payload_content,
-                "error_message": None
-                if pdf_creation_success
-                else f"PDF generation {generation_status_msg_part}",
+                "error_message": None if pdf_creation_success else f"PDF generation {generation_status_msg_part}",
             }
 
             return {
@@ -1466,9 +1391,7 @@ a {{ color: #2561b1; text-decoration: none; }}
                 "payload": response_payload,
             }
         else:
-            self.logger.warning(
-                f"ReportBuilderLogic received unhandled message type: {message_type.value}"
-            )
+            self.logger.warning(f"ReportBuilderLogic received unhandled message type: {message_type.value}")
             return None
 
     async def shutdown(self):

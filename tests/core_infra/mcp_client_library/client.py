@@ -342,7 +342,7 @@ class MCPClient:
             await self.websocket.send(message_json)  # type: ignore
 
             if message_type == "PING":
-                self.logger.debug(f"Sent PING successfully.")
+                self.logger.debug("Sent PING successfully.")
             else:
                 self.logger.info(
                     f"Sent message Type='{message.mcp_header.message_type}', Target='{target_agent_id or target_service}', CorrID='{message.mcp_header.correlation_id}' from {self.agent_id}"

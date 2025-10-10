@@ -81,7 +81,7 @@ async def test_guideline_agent():
 
     try:
         logic = GuidelineAgentLogic(agent_id=agent_id)
-        print(f"✅ Successfully initialized GuidelineAgentLogic")
+        print("✅ Successfully initialized GuidelineAgentLogic")
     except Exception as e:
         print(f"❌ Failed to initialize GuidelineAgentLogic: {e}")
         return

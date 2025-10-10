@@ -1,4 +1,5 @@
-import sqlite3, datetime
+import sqlite3
+import datetime
 
 db = "babyshield_test.db"
 

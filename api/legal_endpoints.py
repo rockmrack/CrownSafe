@@ -401,7 +401,7 @@ async def update_privacy_consent(
 
     # Log consent change
     logger.info(
-        f"Consent update",
+        "Consent update",
         extra={
             "user_id": user_id[:8] + "...",
             "consent_type": consent.consent_type,
@@ -455,7 +455,7 @@ async def request_data_deletion(
     request_id = hashlib.sha256(f"{user_id}{datetime.now()}".encode()).hexdigest()[:12]
 
     logger.warning(
-        f"Data deletion requested",
+        "Data deletion requested",
         extra={
             "user_id": user_id[:8] + "...",
             "request_id": request_id,
@@ -576,7 +576,7 @@ async def accept_legal_agreement(
 
     # Log acceptance
     logger.info(
-        f"Legal agreement accepted",
+        "Legal agreement accepted",
         extra={
             "user_id": user_id[:8] + "...",
             "document": agreement.document_id,

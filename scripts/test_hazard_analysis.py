@@ -61,13 +61,13 @@ async def main():
             analysis = result.get("result", {})
             if "summary" in analysis and "risk_level" in analysis:
                 print("\n" + "=" * 50)
-                print(f"✅✅✅ TEST PASSED: Successfully received a valid analysis from the LLM.")
+                print("✅✅✅ TEST PASSED: Successfully received a valid analysis from the LLM.")
                 print(f"Risk Level: {analysis['risk_level']}")
                 print(f"Summary: {analysis['summary']}")
             else:
                 print("\n" + "=" * 50)
                 print(
-                    f"❌ TEST FAILED: The LLM response was missing required keys ('summary', 'risk_level')."
+                    "❌ TEST FAILED: The LLM response was missing required keys ('summary', 'risk_level')."
                 )
         else:
             print("\n" + "=" * 50)

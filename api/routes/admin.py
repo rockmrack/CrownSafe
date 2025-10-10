@@ -98,7 +98,7 @@ async def trigger_ingestion(
             )
 
         logger.info(
-            f"Ingestion triggered",
+            "Ingestion triggered",
             extra={
                 "traceId": getattr(request.state, "trace_id", None),
                 "run_id": run_id,

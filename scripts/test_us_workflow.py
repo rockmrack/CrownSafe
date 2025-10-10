@@ -31,7 +31,7 @@ def run_us_mvp_test():
         },
     }
 
-    print(f"\nStep 1: Sending Safety Check request to the API Gateway...")
+    print("\nStep 1: Sending Safety Check request to the API Gateway...")
     print(f"Payload: {json.dumps(request_payload, indent=2)}")
 
     # 2. Make the initial POST request to trigger the workflow
@@ -50,7 +50,7 @@ def run_us_mvp_test():
 
     except requests.exceptions.RequestException as e:
         print(f"   -> FAILED: Could not connect to the API Gateway at {API_BASE_URL}.")
-        print(f"      Is the Docker stack running? Use 'docker-compose up --build -d'.")
+        print("      Is the Docker stack running? Use 'docker-compose up --build -d'.")
         print(f"      Error: {e}")
         return
 
@@ -86,7 +86,7 @@ def run_us_mvp_test():
             time.sleep(poll_interval)
 
         except requests.exceptions.RequestException as e:
-            print(f"   -> FAILED: Could not poll the status endpoint.")
+            print("   -> FAILED: Could not poll the status endpoint.")
             print(f"      Error: {e}")
             return
 

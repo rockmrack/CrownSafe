@@ -183,7 +183,7 @@ class EnhancedSafetyService:
                     safety_score=cosmetic_data.safety_score,
                     source=cosmetic_data.source,
                 )
-                logger.info(f"Created CosmeticDataResponse successfully")
+                logger.info("Created CosmeticDataResponse successfully")
                 return response
             except Exception as e:
                 logger.error(f"Error creating CosmeticDataResponse: {e}", exc_info=True)

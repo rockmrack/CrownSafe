@@ -215,7 +215,7 @@ class SecureAdvancedSearchRequest(BaseModel):
         # Don't allow future dates beyond next year
         max_date = date.today().replace(year=date.today().year + 1)
         if v > max_date:
-            raise ValueError(f"Date cannot be more than 1 year in future")
+            raise ValueError("Date cannot be more than 1 year in future")
 
         return v
 

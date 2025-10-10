@@ -149,7 +149,7 @@ async def test_childrens_code():
                     )
 
                     if data.get("prohibited_features"):
-                        print(f"  ⛔ Prohibited Features:")
+                        print("  ⛔ Prohibited Features:")
                         for feature in data["prohibited_features"]:
                             print(f"    • {feature}")
 
@@ -159,7 +159,7 @@ async def test_childrens_code():
                             print(f"    • {safeguard}")
 
                     if data.get("privacy_settings"):
-                        print(f"  🔒 Privacy Settings:")
+                        print("  🔒 Privacy Settings:")
                         for key, value in list(data["privacy_settings"].items())[:3]:
                             print(f"    • {key}: {value}")
                 else:
@@ -260,7 +260,7 @@ async def test_legal_documents():
                     )
 
                     if data.get("summary_points"):
-                        print(f"  📝 Key Points:")
+                        print("  📝 Key Points:")
                         for point in data["summary_points"][:2]:
                             print(f"    • {point}")
 
@@ -286,7 +286,7 @@ async def test_privacy_dashboard():
 
             if response.status_code == 200:
                 data = response.json()
-                print(f"✅ Privacy Dashboard Retrieved")
+                print("✅ Privacy Dashboard Retrieved")
 
                 # Compliance status
                 if data.get("compliance_status"):
@@ -298,20 +298,20 @@ async def test_privacy_dashboard():
                 # Age verification
                 if data.get("age_verification"):
                     age_data = data["age_verification"]
-                    print(f"\n👤 Age Verification:")
+                    print("\n👤 Age Verification:")
                     print(f"  Verified: {'✅' if age_data['verified'] else '❌'}")
                     print(f"  Age Group: {age_data.get('age_group', 'Unknown')}")
                     print(f"  Parental Consent: {'✅' if age_data.get('parental_consent') else '❌'}")
 
                 # Privacy settings
                 if data.get("privacy_settings"):
-                    print(f"\n🔒 Privacy Settings:")
+                    print("\n🔒 Privacy Settings:")
                     for setting, value in list(data["privacy_settings"].items())[:4]:
                         print(f"  • {setting}: {value}")
 
                 # Available rights
                 if data.get("rights_available"):
-                    print(f"\n⚖️ Your Rights:")
+                    print("\n⚖️ Your Rights:")
                     for right in data["rights_available"][:3]:
                         print(f"  • {right}")
 

@@ -90,7 +90,7 @@ async def main():
                     "\n✅✅✅ NHTSA Connector Test PASSED: Successfully parsed the mock JSON response."
                 )
             else:
-                print(f"\n❌❌❌ NHTSA Connector Test FAILED: Incorrect data parsing.")
+                print("\n❌❌❌ NHTSA Connector Test FAILED: Incorrect data parsing.")
                 print(f"Expected ID: NHTSA-25V123456, Got: {first_recall.recall_id}")
                 print(f"Expected Agency: NHTSA, Got: {first_recall.source_agency}")
         else:

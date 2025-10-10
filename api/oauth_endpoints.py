@@ -242,7 +242,7 @@ async def oauth_login(
             is_new_user = True
 
             logger.info(
-                f"New OAuth user created",
+                "New OAuth user created",
                 extra={
                     "provider": login_data.provider,
                     "user_id": str(user.id),
@@ -255,7 +255,7 @@ async def oauth_login(
             db.commit()
 
             logger.info(
-                f"OAuth user login",
+                "OAuth user login",
                 extra={
                     "provider": login_data.provider,
                     "user_id": str(user.id),
@@ -279,7 +279,7 @@ async def oauth_login(
         # Log device info if provided
         if login_data.device_id or login_data.app_version:
             logger.info(
-                f"OAuth login device info",
+                "OAuth login device info",
                 extra={
                     "user_id": str(user.id),
                     "device_id": login_data.device_id,
@@ -328,7 +328,7 @@ async def oauth_logout(
     trace_id = f"logout_{uuid.uuid4().hex[:8]}"
 
     logger.info(
-        f"OAuth logout",
+        "OAuth logout",
         extra={"user_id": user_id, "device_id": device_id, "trace_id": trace_id},
     )
 
@@ -360,7 +360,7 @@ async def revoke_token(request: Request, token: str, token_type: str = "access_t
         # 2. Add to blacklist with expiration
         # 3. Log the revocation
 
-        logger.info(f"Token revoked", extra={"token_type": token_type, "trace_id": trace_id})
+        logger.info("Token revoked", extra={"token_type": token_type, "trace_id": trace_id})
 
         return JSONResponse(
             content={

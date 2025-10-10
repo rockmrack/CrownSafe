@@ -60,7 +60,7 @@ class ConfigManager:
 
         try:
             config = get_config(environment)
-            print(f"? Configuration loaded successfully")
+            print("? Configuration loaded successfully")
 
             # Basic validation
             if not config.SECRET_KEY or len(config.SECRET_KEY) < 32:
@@ -78,7 +78,7 @@ class ConfigManager:
                 if not config.DATABASE_URL.startswith(("postgresql://", "mysql://")):
                     print("??  WARNING: Not using production database")
 
-            print(f"📋 Configuration summary:")
+            print("📋 Configuration summary:")
             print(f"   Environment: {environment}")
             print(f"   Debug: {config.DEBUG}")
             print(f"   Database: {config.DATABASE_URL[:20]}...")
@@ -114,7 +114,7 @@ class ConfigManager:
             for key, value in secrets_dict.items():
                 content = content.replace(f"your-{key.lower().replace('_', '-')}", value)
 
-            print(f"🔐 Generated secure secrets for production:")
+            print("🔐 Generated secure secrets for production:")
             for key in secrets_dict:
                 print(f"   {key}: ********")
 
@@ -144,7 +144,7 @@ class ConfigManager:
                 missing.append(package_name)
 
         if missing:
-            print(f"\n?? Install missing packages:")
+            print("\n?? Install missing packages:")
             print(f"pip install {' '.join(missing)}")
             return False
 

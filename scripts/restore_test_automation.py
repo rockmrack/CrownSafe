@@ -82,7 +82,7 @@ class RestoreTester:
         try:
             logger.info(f"Creating test instance: {test_instance_id}")
 
-            response = self.rds.restore_db_instance_from_db_snapshot(
+            _ = self.rds.restore_db_instance_from_db_snapshot(
                 DBInstanceIdentifier=test_instance_id,
                 DBSnapshotIdentifier=snapshot_id,
                 DBInstanceClass="db.t3.small",  # Use smaller instance for testing
@@ -310,15 +310,15 @@ Test Details:
 - Duration: {result.duration_minutes:.1f} minutes
 
 Validation Results:
-- Tables Verified: {result.validation_results.get('tables_exist', False)}
-- Total Records: {sum(result.validation_results.get('row_counts', {}).values())}
-- Data Integrity: {result.validation_results.get('data_integrity', False)}
-- Recent Data: {result.validation_results.get('recent_data', False)}
-- Indexes Present: {result.validation_results.get('indexes_present', False)}
-- Constraints Valid: {result.validation_results.get('constraints_valid', False)}
+- Tables Verified: {result.validation_results.get("tables_exist", False)}
+- Total Records: {sum(result.validation_results.get("row_counts", {}).values())}
+- Data Integrity: {result.validation_results.get("data_integrity", False)}
+- Recent Data: {result.validation_results.get("recent_data", False)}
+- Indexes Present: {result.validation_results.get("indexes_present", False)}
+- Constraints Valid: {result.validation_results.get("constraints_valid", False)}
 
 Row Counts:
-{json.dumps(result.validation_results.get('row_counts', {}), indent=2)}
+{json.dumps(result.validation_results.get("row_counts", {}), indent=2)}
 
 The test instance has been deleted.
 """

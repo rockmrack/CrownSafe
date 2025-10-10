@@ -37,9 +37,9 @@ if response.status_code == 202:
     # Check if it was created
     workflow_key = f"rossnet:workflow:{workflow_id}"
     if r.exists(workflow_key):
-        print(f"✅ Workflow created in Redis!")
+        print("✅ Workflow created in Redis!")
     else:
-        print(f"❌ Workflow NOT found in Redis")
+        print("❌ Workflow NOT found in Redis")
 
         # Check Commander queue
         cmd_len = r.llen("mcp:queue:commander_agent_01")

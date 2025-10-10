@@ -21,8 +21,8 @@ print()
 
 try:
     print("🔌 Connecting to production database...")
-    print(f"   Host: babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com")
-    print(f"   Database: postgres")
+    print("   Host: babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com")
+    print("   Database: postgres")
     print()
 
     # Parse connection string

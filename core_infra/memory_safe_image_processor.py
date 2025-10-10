@@ -284,7 +284,7 @@ class ImageMemoryManager:
             for i, path in enumerate(image_paths):
                 # Check memory before processing
                 if self.should_cleanup():
-                    logger.info(f"Memory limit reached, cleaning up...")
+                    logger.info("Memory limit reached, cleaning up...")
                     processor.cleanup()
                     gc.collect()
 

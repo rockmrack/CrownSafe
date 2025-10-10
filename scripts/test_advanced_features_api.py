@@ -283,7 +283,7 @@ async def test_monitoring():
 
             if response.status_code == 200:
                 data = response.json()
-                print(f"✅ Monitoring Setup Complete")
+                print("✅ Monitoring Setup Complete")
                 print(f"  ID: {data['monitoring_id']}")
                 print(f"  Product: {data['product_monitored']}")
                 print(f"  Duration: {data['duration_days']} days")
@@ -293,7 +293,7 @@ async def test_monitoring():
 
                 # Check status
                 monitoring_id = data["monitoring_id"]
-                print(f"\n📊 Checking monitoring status...")
+                print("\n📊 Checking monitoring status...")
 
                 status_response = await client.get(
                     f"{BASE_URL}/api/v1/advanced/monitor/{monitoring_id}/status",
@@ -313,7 +313,7 @@ async def test_monitoring():
                             print(f"    {alert_emoji} {finding['source']}: {finding['summary']}")
 
                 # Cancel monitoring
-                print(f"\n🛑 Cancelling monitoring...")
+                print("\n🛑 Cancelling monitoring...")
                 cancel_response = await client.delete(
                     f"{BASE_URL}/api/v1/advanced/monitor/{monitoring_id}",
                     params={"user_id": 1},

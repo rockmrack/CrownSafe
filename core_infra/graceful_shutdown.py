@@ -292,7 +292,7 @@ def setup_celery_graceful_shutdown(celery_app):
             if not active or all(not tasks for tasks in active.values()):
                 break
 
-            logger.info(f"Waiting for Celery tasks to complete...")
+            logger.info("Waiting for Celery tasks to complete...")
             time.sleep(1)
 
     @worker_shutdown.connect

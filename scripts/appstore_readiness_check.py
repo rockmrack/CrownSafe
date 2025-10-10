@@ -4,7 +4,14 @@ App Store Readiness Check for BabyShield API
 Validates API stability, predictability, and documentation for App Store/Play review
 """
 
-import os, sys, json, time, re, threading, queue, statistics
+import os
+import sys
+import json
+import time
+import re
+import threading
+import queue
+import statistics
 import requests
 
 BASE = os.getenv("BABYSHIELD_BASE_URL", "https://babyshield.cureviax.ai")
@@ -22,9 +29,7 @@ def expect(cond, msg):
 def get_json(path):
     try:
         r = S.get(f"{BASE}{path}", timeout=15)
-        return r, (
-            r.json() if r.headers.get("content-type", "").startswith("application/json") else None
-        )
+        return r, (r.json() if r.headers.get("content-type", "").startswith("application/json") else None)
     except Exception as e:
         print(f"❌ Failed to GET {path}: {e}")
         return None, None
@@ -33,9 +38,7 @@ def get_json(path):
 def post_json(path, payload):
     try:
         r = S.post(f"{BASE}{path}", json=payload, timeout=30)
-        return r, (
-            r.json() if r.headers.get("content-type", "").startswith("application/json") else None
-        )
+        return r, (r.json() if r.headers.get("content-type", "").startswith("application/json") else None)
     except Exception as e:
         print(f"❌ Failed to POST {path}: {e}")
         return None, None
@@ -253,12 +256,12 @@ if lat:
     p99 = lat_sorted[-1]
     avg = sum(lat) / len(lat)
 
-    print(f"   📊 Latency stats (ms):")
+    print("   📊 Latency stats (ms):")
     print(f"      • Average: {avg:.0f} ms")
     print(f"      • P50: {p50:.0f} ms")
     print(f"      • P95: {p95:.0f} ms")
     print(f"      • P99: {p99:.0f} ms")
-    print(f"      • Success rate: {len(lat)}/20 ({len(lat)*5}%)")
+    print(f"      • Success rate: {len(lat)}/20 ({len(lat) * 5}%)")
 
     expect(p95 < 800, "p95 latency < 800ms under light load")
     expect(len(lat) >= 18, "at least 90% success rate")

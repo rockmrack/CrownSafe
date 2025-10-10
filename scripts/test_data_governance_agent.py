@@ -80,12 +80,12 @@ async def main():
         # 7. Validate the final result.
         if result.get("status") == "COMPLETED" and user_was_deleted:
             print("\n" + "=" * 50)
-            print(f"✅✅✅ TEST PASSED: Agent successfully deleted the user's data from the database.")
+            print("✅✅✅ TEST PASSED: Agent successfully deleted the user's data from the database.")
         else:
             print("\n" + "=" * 50)
             if not user_was_deleted:
                 print(
-                    f"❌ TEST FAILED: The agent did not correctly delete the user from the database."
+                    "❌ TEST FAILED: The agent did not correctly delete the user from the database."
                 )
             else:
                 print(

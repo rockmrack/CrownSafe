@@ -115,7 +115,7 @@ async def test_bulk_notification():
 
             if response.status_code == 200:
                 data = response.json()
-                print(f"✅ Bulk notification sent")
+                print("✅ Bulk notification sent")
                 print(f"Total sent: {data['sent_count']}")
                 print(f"Total failed: {data['failed_count']}")
                 print(f"Devices targeted: {data['devices_targeted']}")
@@ -149,7 +149,7 @@ async def test_report_generation():
 
             if response.status_code == 200:
                 data = response.json()
-                print(f"✅ Report generated successfully")
+                print("✅ Report generated successfully")
                 print(f"Report ID: {data['report_id']}")
                 print(f"Type: {data['report_type']}")
                 print(f"Format: {data['format']}")
@@ -205,7 +205,7 @@ async def test_onboarding():
 
             if response.status_code == 200:
                 data = response.json()
-                print(f"✅ Profile setup complete")
+                print("✅ Profile setup complete")
                 print(f"Recommended Categories: {', '.join(data['recommended_categories'])}")
 
                 if data.get("safety_tips"):
@@ -246,7 +246,7 @@ async def test_hazard_analysis():
 
             if response.status_code == 200:
                 data = response.json()
-                print(f"✅ Hazard Analysis Complete")
+                print("✅ Hazard Analysis Complete")
                 print(f"Product: {data['product']}")
                 print(
                     f"Risk Level: {data['overall_risk_level']} {'🟢' if data['overall_risk_level'] == 'LOW' else '🔴' if data['overall_risk_level'] in ['HIGH', 'CRITICAL'] else '🟡'}"
@@ -291,7 +291,7 @@ async def test_community_alerts():
 
             if response.status_code == 200:
                 data = response.json()
-                print(f"✅ Community Alerts Retrieved")
+                print("✅ Community Alerts Retrieved")
                 print(f"Total Alerts: {data['alerts_count']}")
                 print(f"Sources Monitored: {', '.join(data['sources_monitored'])}")
 
@@ -330,7 +330,7 @@ async def test_integrated_safety_check():
 
             if response.status_code == 200:
                 data = response.json()
-                print(f"✅ Safety Check Complete")
+                print("✅ Safety Check Complete")
                 print(f"Status: {data['status']}")
 
                 if data.get("data"):

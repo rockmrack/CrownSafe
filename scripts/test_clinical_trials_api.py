@@ -95,7 +95,7 @@ def test_clinical_trials_api():
                 total_count = data.get("totalCount", 0)
                 studies = data.get("studies", [])
 
-                print(f"SUCCESS!")  # Changed from emoji
+                print("SUCCESS!")  # Changed from emoji
                 print(f"Total studies found: {total_count}")
                 print(f"Studies returned: {len(studies)}")
 
@@ -123,14 +123,14 @@ def test_clinical_trials_api():
                             f"  Interventions: {[i.get('name') for i in interventions if isinstance(i, dict)]}"
                         )
                     else:
-                        print(f"  Interventions: N/A or empty list")
+                        print("  Interventions: N/A or empty list")
 
             else:
-                print(f"FAILED!")  # Changed from emoji
+                print("FAILED!")  # Changed from emoji
                 print(f"Response Text (first 500 chars): {response.text[:500]}...")
 
         except requests.exceptions.Timeout:
-            print(f"ERROR: Request timed out after 30 seconds.")  # Changed from emoji
+            print("ERROR: Request timed out after 30 seconds.")  # Changed from emoji
         except requests.exceptions.ConnectionError as ce:
             print(f"ERROR: Connection Error: {ce}")  # Changed from emoji
         except Exception as e:

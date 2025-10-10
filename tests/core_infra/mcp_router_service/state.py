@@ -74,7 +74,7 @@ def remove_connection(agent_id: str) -> bool:
 def get_connection(agent_id: str) -> Optional[Any]:
     """Retrieves a WebSocket connection by agent_id."""
     if not isinstance(agent_id, str) or not agent_id:
-        logger.error(f"State Error: get_connection called with invalid agent_id.")
+        logger.error("State Error: get_connection called with invalid agent_id.")
         return None
     logger.debug(f"State: Getting connection for agent '{agent_id}'.")
     return active_connections.get(agent_id)

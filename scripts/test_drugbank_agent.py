@@ -86,7 +86,7 @@ def test_drugbank_agent():
 
         recommendations = pa_criteria.get("pa_recommendations", [])
         if recommendations:
-            print(f"  PA Recommendations:")
+            print("  PA Recommendations:")
             for rec in recommendations:
                 print(f"    - {rec}")
     else:
@@ -111,7 +111,7 @@ def test_drugbank_agent():
     )
 
     if result["status"] in ["COMPLETED", "PARTIAL"]:
-        print(f"✓ Multi-drug interaction check completed")
+        print("✓ Multi-drug interaction check completed")
         print(f"  Checked drugs: {', '.join(result.get('checked_drugs', []))}")
         if result.get("missing_drugs"):
             print(f"  Missing drugs: {', '.join(result.get('missing_drugs', []))}")

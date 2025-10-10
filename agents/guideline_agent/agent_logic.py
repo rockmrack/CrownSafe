@@ -121,9 +121,7 @@ class GuidelineAgentLogic:
                     self.memory_manager.collection = client.create_collection(
                         name=collection_name, metadata={"hnsw:space": "cosine"}
                     )
-                    self.logger.info(
-                        f"Collection '{collection_name}' recreated successfully with correct dimensions"
-                    )
+                    self.logger.info(f"Collection '{collection_name}' recreated successfully with correct dimensions")
                 else:
                     # Some other error, re-raise
                     raise
@@ -401,9 +399,7 @@ class GuidelineAgentLogic:
 
                 browser.close()
 
-                self.logger.info(
-                    f"Successfully downloaded PDF via Playwright ({len(pdf_content)} bytes)"
-                )
+                self.logger.info(f"Successfully downloaded PDF via Playwright ({len(pdf_content)} bytes)")
                 return pdf_content
 
         except Exception as e:
@@ -417,15 +413,11 @@ class GuidelineAgentLogic:
         try:
             response = requests.get(
                 url,
-                headers={
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-                },
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
                 timeout=30,
             )
             response.raise_for_status()
-            self.logger.info(
-                f"Successfully downloaded PDF via requests ({len(response.content)} bytes)"
-            )
+            self.logger.info(f"Successfully downloaded PDF via requests ({len(response.content)} bytes)")
             return response.content
         except Exception as e:
             self.logger.error(f"Requests download failed: {e}")
@@ -574,9 +566,7 @@ class GuidelineAgentLogic:
             return False
 
         try:
-            results = self.memory_manager.collection.get(
-                where={"guideline_id": guideline_id}, limit=1
-            )
+            results = self.memory_manager.collection.get(where={"guideline_id": guideline_id}, limit=1)
             return bool(results and results["ids"])
         except:
             return False
@@ -705,10 +695,7 @@ class GuidelineAgentLogic:
                 )
 
             # Look for contraindications
-            if any(
-                keyword in text
-                for keyword in ["contraindicated", "should not", "avoid", "do not use"]
-            ):
+            if any(keyword in text for keyword in ["contraindicated", "should not", "avoid", "do not use"]):
                 criteria["contraindications"].append(
                     {
                         "text": self._extract_sentence(original_text, drug_name),
@@ -737,10 +724,7 @@ class GuidelineAgentLogic:
                     )
 
             # Look for monitoring requirements
-            if any(
-                keyword in text
-                for keyword in ["monitor", "monitoring", "assess", "follow-up", "check"]
-            ):
+            if any(keyword in text for keyword in ["monitor", "monitoring", "assess", "follow-up", "check"]):
                 criteria["monitoring_requirements"].append(
                     {
                         "text": self._extract_sentence(original_text, "monitor"),
@@ -803,7 +787,7 @@ class GuidelineAgentLogic:
 
             # Try a simple search
             test_query = "metformin"
-            results = self._search_guidelines(test_query, n_results=1)
+            _ = self._search_guidelines(test_query, n_results=1)
 
             # We're healthy if we can search (even if no results)
             return True

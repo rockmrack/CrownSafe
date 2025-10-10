@@ -197,7 +197,7 @@ class S3BackupExporter:
             )
 
             if task.status == ExportStatus.COMPLETE:
-                logger.info(f"Export completed successfully!")
+                logger.info("Export completed successfully!")
                 logger.info(f"Location: {task.s3_location}")
                 logger.info(f"Size: {task.total_size_gb:.2f} GB")
                 self._record_export_success(task)

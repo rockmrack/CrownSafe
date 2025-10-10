@@ -38,7 +38,7 @@ async def test_websocket_with_headers():
 
     try:
         uri = "ws://127.0.0.1:8001"
-        async with websockets.connect(uri, extra_headers=headers) as websocket:
+        async with websockets.connect(uri, extra_headers=headers) as _:
             print("✅ Connected with headers!")
     except Exception as e:
         print(f"❌ Failed with headers: {e}")
@@ -46,7 +46,7 @@ async def test_websocket_with_headers():
     # Try without any headers
     try:
         uri = "ws://127.0.0.1:8001"
-        async with websockets.connect(uri) as websocket:
+        async with websockets.connect(uri) as _:
             print("✅ Connected without headers!")
     except Exception as e:
         print(f"❌ Failed without headers: {e}")

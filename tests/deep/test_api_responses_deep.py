@@ -2,6 +2,7 @@
 Deep API Response Tests
 Comprehensive testing of API response formats, headers, and error handling
 """
+
 import pytest
 from fastapi.testclient import TestClient
 from api.main_babyshield import app
@@ -260,8 +261,8 @@ class TestAPIResponsesDeep:
         custom_id = "test-request-123"
         r = client.get("/healthz", headers={"X-Request-ID": custom_id})
 
-        # Check if it's in response headers
-        headers = {k.lower(): v for k, v in r.headers.items()}
+        # Check if it's in response headers (headers for inspection)
+        _ = {k.lower(): v for k, v in r.headers.items()}
         # May be in X-Request-ID or X-Trace-Id (TestClient may not capture all middleware)
         # At least verify the request succeeds
         assert r.status_code == 200

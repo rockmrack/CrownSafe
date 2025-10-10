@@ -47,7 +47,7 @@ async def test_safety_check():
 
             if response.status_code == 200:
                 data = response.json()
-                print(f"✅ Safety check completed")
+                print("✅ Safety check completed")
                 print(f"  Safety Level: {data.get('safety_level', 'Unknown')}")
                 print(f"  Summary: {data.get('summary', 'No summary')[:100]}...")
             else:
@@ -77,7 +77,7 @@ async def test_search_advanced():
 
             if response.status_code == 200:
                 data = response.json()
-                print(f"✅ Advanced search completed")
+                print("✅ Advanced search completed")
                 print(f"  Total Results: {data.get('total', 0)}")
                 print(f"  Agencies: {data.get('agencies', 0)}")
                 if data.get("recalls"):
@@ -105,7 +105,7 @@ async def test_mobile_scan():
 
             if response.status_code in [200, 404]:  # 404 is ok for non-existent barcode
                 data = response.json()
-                print(f"✅ Mobile scan completed")
+                print("✅ Mobile scan completed")
                 print(f"  Status: {data.get('status', 'Unknown')}")
                 print(f"  Safety Level: {data.get('safety_level', 'Unknown')}")
                 if data.get("summary"):
@@ -136,11 +136,11 @@ async def test_user_endpoints():
 
             if response.status_code in [200, 201]:
                 data = response.json()
-                print(f"✅ User creation successful")
+                print("✅ User creation successful")
                 print(f"  User ID: {data.get('id', 'Unknown')}")
                 print(f"  Email: {data.get('email', 'Unknown')}")
             elif response.status_code == 400:
-                print(f"⚠️ User might already exist")
+                print("⚠️ User might already exist")
             else:
                 print(f"❌ User creation failed: {response.status_code}")
                 print(f"  Error: {response.text[:200]}")
@@ -160,7 +160,7 @@ async def test_system_stats():
 
             if response.status_code == 200:
                 data = response.json()
-                print(f"✅ System stats retrieved")
+                print("✅ System stats retrieved")
                 print(f"  Database: {data.get('database', {}).get('status', 'Unknown')}")
                 print(f"  Total Recalls: {data.get('database', {}).get('total_recalls', 0)}")
                 print(f"  API Version: {data.get('api_version', 'Unknown')}")

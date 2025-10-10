@@ -108,7 +108,7 @@ class WorkflowMonitor:
 
 
 async def run_test():
-    logger.info(f"Starting Enhanced MCP Commander Flow Test Script...")
+    logger.info("Starting Enhanced MCP Commander Flow Test Script...")
     logger.info(f"Goal: {USER_RESEARCH_GOAL_STRING}")
 
     client: Optional[MCPClient] = None

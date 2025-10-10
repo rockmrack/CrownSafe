@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 from __future__ import annotations
-import argparse, json, sys, time, os
+import argparse
+import json
+import sys
+import time
+import os
 from typing import Any, Dict, List, Tuple
 
 # --- Import your agent logic ---
@@ -41,10 +45,7 @@ def get_llm_client(dummy: bool = False):
                 if (
                     "peanut" in ingredients
                     or "peanuts" in ingredients
-                    or (
-                        "profile" in scan_data
-                        and "peanut" in (scan_data.get("profile") or {}).get("allergies", [])
-                    )
+                    or ("profile" in scan_data and "peanut" in (scan_data.get("profile") or {}).get("allergies", []))
                 ):
                     reasons.append("Contains or may contain peanuts; consider allergy risk.")
                     if "contains_peanuts" not in out_flags:
@@ -59,15 +60,14 @@ def get_llm_client(dummy: bool = False):
                     checks.append("Verify batch/lot and expiry on the label.")
                 checks = list(dict.fromkeys(checks))
                 return {
-                    "summary": f"Here's what we found about {scan_data.get('product_name','this product')}.",
+                    "summary": f"Here's what we found about {scan_data.get('product_name', 'this product')}.",
                     "reasons": reasons[:6],
                     "checks": checks[:6],
                     "flags": out_flags[:10],
                     "disclaimer": "Not medical advice. For urgent issues, use Emergency Guidance.",
                     "jurisdiction": scan_data.get("jurisdiction"),
                     "evidence": [
-                        {"type": "recall", "source": r.get("agency", "")}
-                        for r in scan_data.get("recalls", [])
+                        {"type": "recall", "source": r.get("agency", "")} for r in scan_data.get("recalls", [])
                     ][:4],
                 }
 
@@ -77,7 +77,7 @@ def get_llm_client(dummy: bool = False):
             from infra.openai_client import OpenAILLMClient  # your adapter
 
             return OpenAILLMClient()
-        except Exception as e:
+        except Exception:
             print("Falling back to dummy LLM (no infra.openai_client).", file=sys.stderr)
             return get_llm_client(dummy=True)
 
@@ -129,10 +129,7 @@ def check_case(resp: Dict[str, Any], expect: Dict[str, Any]) -> Tuple[bool, List
             ok, errors = False, errors + [f"missing reason contains: {s}"]
     any_reasons = expect.get("must_reasons_any", [])
     if any_reasons:
-        if not any(
-            any(x in r.lower() for x in [s.lower() for s in any_reasons])
-            for r in resp.get("reasons", [])
-        ):
+        if not any(any(x in r.lower() for x in [s.lower() for s in any_reasons]) for r in resp.get("reasons", [])):
             ok, errors = False, errors + [f"missing any-of reasons: {any_reasons}"]
 
     # Evidence presence when recalls exist

@@ -44,7 +44,7 @@ def setup_pagination_cache(app: FastAPI):
     # Add startup/shutdown for cache
     @app.on_event("startup")
     async def init_cache():
-        cache = await get_cache()
+        _ = await get_cache()  # cache (initializes connection)
         logger.info("Redis search cache initialized")
 
     @app.on_event("shutdown")
@@ -63,9 +63,7 @@ def create_search_endpoint_v2(app: FastAPI):
     """
 
     @app.post("/api/v2/search/advanced")
-    async def search_advanced_v2(
-        request: Request, payload: Dict[str, Any], db: Session = Depends(get_db)
-    ):
+    async def search_advanced_v2(request: Request, payload: Dict[str, Any], db: Session = Depends(get_db)):
         """
         Enhanced search with cursor pagination and HTTP caching
 
@@ -120,16 +118,12 @@ def create_search_endpoint_v2(app: FastAPI):
 
             if cached_result:
                 # Generate ETag for cached result
-                result_ids = [
-                    item["id"] for item in cached_result.get("data", {}).get("items", [])
-                ][:5]
+                result_ids = [item["id"] for item in cached_result.get("data", {}).get("items", [])][:5]
                 etag = make_search_etag(filters_hash, as_of_str, result_ids)
 
                 # Check If-None-Match
                 if check_if_none_match(request, etag):
-                    return create_not_modified_response(
-                        etag=etag, cache_control="private, max-age=60"
-                    )
+                    return create_not_modified_response(etag=etag, cache_control="private, max-age=60")
 
                 # Return cached result with headers
                 response = JSONResponse(cached_result)
@@ -205,9 +199,7 @@ def enhance_recall_detail_endpoint(app: FastAPI):
         """
         try:
             # Query database
-            recall = (
-                db.query(EnhancedRecallDB).filter(EnhancedRecallDB.recall_id == recall_id).first()
-            )
+            recall = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.recall_id == recall_id).first()
 
             if not recall:
                 raise HTTPException(status_code=404, detail="Recall not found")
@@ -250,9 +242,7 @@ def enhance_recall_detail_endpoint(app: FastAPI):
                     "sourceAgency": recall.source_agency,
                     "url": recall.url,
                     "imageUrl": recall.image_url,
-                    "affectedCountries": recall.regions_affected or [recall.country]
-                    if recall.country
-                    else [],
+                    "affectedCountries": recall.regions_affected or [recall.country] if recall.country else [],
                     "status": recall.status,
                 },
                 "traceId": getattr(request.state, "trace_id", None),
@@ -355,9 +345,7 @@ class PaginationConfig:
         if len(cls.CURSOR_SIGNING_KEY) < 32:
             logger.warning("Cursor signing key should be at least 32 bytes")
 
-        logger.info(
-            f"Pagination config: TTL={cls.CURSOR_TTL_HOURS}h, Cache={cls.SEARCH_CACHE_TTL}s"
-        )
+        logger.info(f"Pagination config: TTL={cls.CURSOR_TTL_HOURS}h, Cache={cls.SEARCH_CACHE_TTL}s")
 
 
 # Validate config on import

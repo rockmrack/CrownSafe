@@ -20,7 +20,7 @@ ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY")
 if not ENCRYPTION_KEY:
     # Generate a key for development (DO NOT USE IN PRODUCTION)
     ENCRYPTION_KEY = Fernet.generate_key().decode()
-    print(f"⚠️ Generated development encryption key. Set ENCRYPTION_KEY env var for production!")
+    print("⚠️ Generated development encryption key. Set ENCRYPTION_KEY env var for production!")
 
 
 class EncryptionManager:

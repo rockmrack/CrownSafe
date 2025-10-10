@@ -34,16 +34,11 @@ def clean_encoding(text: Optional[str]) -> Optional[str]:
             "â€œ": '"',  # Left double quotation mark
             "â€": '"',  # Right double quotation mark
             "â€™": "'",  # Right single quotation mark
-            "â€œ": '"',  # Left double quotation mark
-            "â€": '"',  # Right double quotation mark
             "â€¢": "•",  # Bullet point
-            'â€"': "–",  # En dash
-            'â€"': "—",  # Em dash
+            'â€"': "—",  # Em dash (keeping the longer one)
             "â€¦": "…",  # Horizontal ellipsis
             "â€¹": "‹",  # Single left-pointing angle quotation mark
             "â€º": "›",  # Single right-pointing angle quotation mark
-            "â€": '"',  # Right double quotation mark
-            "â€œ": '"',  # Left double quotation mark
         }
 
         for mojibake, correct in fixes.items():
@@ -127,12 +122,8 @@ def list_recalls(
         description="Sort order: recent (newest first) or oldest",
     ),
     limit: int = Query(20, ge=1, le=100, description="Number of results per page"),
-    offset: Optional[int] = Query(
-        None, ge=0, description="Number of results to skip (offset pagination)"
-    ),
-    cursor: Optional[str] = Query(
-        None, description="Cursor for pagination (cursor-based pagination)"
-    ),
+    offset: Optional[int] = Query(None, ge=0, description="Number of results to skip (offset pagination)"),
+    cursor: Optional[str] = Query(None, description="Cursor for pagination (cursor-based pagination)"),
     db: Session = Depends(get_db),
 ):
     """
@@ -291,12 +282,8 @@ def search_recalls_dev(
     date_to: Optional[date] = Query(None, description="Filter recalls to this date"),
     sort: str = Query("recent", pattern="^(recent|oldest)$", description="Sort order"),
     limit: int = Query(20, ge=1, le=100, description="Number of results per page"),
-    offset: Optional[int] = Query(
-        None, ge=0, description="Number of results to skip (offset pagination)"
-    ),
-    cursor: Optional[str] = Query(
-        None, description="Cursor for pagination (cursor-based pagination)"
-    ),
+    offset: Optional[int] = Query(None, ge=0, description="Number of results to skip (offset pagination)"),
+    cursor: Optional[str] = Query(None, description="Cursor for pagination (cursor-based pagination)"),
 ):
     """
     DEV OVERRIDE: Search recalls without database dependencies
@@ -368,31 +355,21 @@ def search_recalls_dev(
 
         if q:
             filtered_recalls = [
-                r
-                for r in filtered_recalls
-                if q.lower() in r["product_name"].lower() or q.lower() in r["brand"].lower()
+                r for r in filtered_recalls if q.lower() in r["product_name"].lower() or q.lower() in r["brand"].lower()
             ]
 
         if agency:
             filtered_recalls = [r for r in filtered_recalls if agency.upper() in r["agency"]]
 
         if category:
-            filtered_recalls = [
-                r for r in filtered_recalls if category.lower() in r["category"].lower()
-            ]
+            filtered_recalls = [r for r in filtered_recalls if category.lower() in r["category"].lower()]
 
         if hazard_category:
-            filtered_recalls = [
-                r
-                for r in filtered_recalls
-                if hazard_category.lower() in r["hazard_category"].lower()
-            ]
+            filtered_recalls = [r for r in filtered_recalls if hazard_category.lower() in r["hazard_category"].lower()]
 
         # Apply sorting
         if sort == "recent":
-            filtered_recalls = sorted(
-                filtered_recalls, key=lambda x: x["recall_date"], reverse=True
-            )
+            filtered_recalls = sorted(filtered_recalls, key=lambda x: x["recall_date"], reverse=True)
         else:
             filtered_recalls = sorted(filtered_recalls, key=lambda x: x["recall_date"])
 
@@ -432,9 +409,7 @@ def search_recalls_dev(
         next_cursor = None
         if has_more and paginated_recalls:
             last_recall = paginated_recalls[-1]
-            next_cursor = encode_cursor(
-                last_recall["recall_id"], last_recall["recall_date"], last_recall["id"]
-            )
+            next_cursor = encode_cursor(last_recall["recall_id"], last_recall["recall_date"], last_recall["id"])
 
         return {
             "success": True,
@@ -523,12 +498,8 @@ def get_recall_stats(db: Session = Depends(get_db)):
             "data": {
                 "total_recalls": total_recalls,
                 "recent_recalls_30_days": recent_recalls,
-                "top_agencies": [
-                    {"agency": agency, "count": count} for agency, count in agency_counts
-                ],
-                "top_hazard_categories": [
-                    {"category": category, "count": count} for category, count in hazard_counts
-                ],
+                "top_agencies": [{"agency": agency, "count": count} for agency, count in agency_counts],
+                "top_hazard_categories": [{"category": category, "count": count} for category, count in hazard_counts],
             },
         }
 

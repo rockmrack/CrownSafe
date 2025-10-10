@@ -190,7 +190,7 @@ async def run_all_tests():
         print("All tests passed! EnhancedMemoryManager V2.0 is ready for use.")
         return True
     else:
-        print(f"Some tests failed. Please check the output above.")
+        print("Some tests failed. Please check the output above.")
         return False
 
 

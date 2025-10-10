@@ -61,9 +61,9 @@ def test_product_safety_report():
 
     if result.get("status") == "success":
         print(f"✅ LOW RISK report generated: {result.get('pdf_path')}")
-        print(f"   - Should show default data sources: CPSC, FDA, EU Safety Gate, etc.")
-        print(f"   - Should NOT show critical warning")
-        print(f"   - QR code links to: https://www.cureviax.com/reports/view/WF_*")
+        print("   - Should show default data sources: CPSC, FDA, EU Safety Gate, etc.")
+        print("   - Should NOT show critical warning")
+        print("   - QR code links to: https://www.cureviax.com/reports/view/WF_*")
     else:
         print(f"❌ Failed to generate LOW RISK report: {result.get('message')}")
 
@@ -120,9 +120,9 @@ def test_product_safety_report():
 
     if result.get("status") == "success":
         print(f"✅ HIGH RISK report generated: {result.get('pdf_path')}")
-        print(f"   - Should show actual data sources: CPSC, FDA")
-        print(f"   - SHOULD show critical warning banner")
-        print(f"   - Should show detailed recall information")
+        print("   - Should show actual data sources: CPSC, FDA")
+        print("   - SHOULD show critical warning banner")
+        print("   - Should show detailed recall information")
     else:
         print(f"❌ Failed to generate HIGH RISK report: {result.get('message')}")
 
@@ -155,8 +155,8 @@ def test_product_safety_report():
 
     if result.get("status") == "success":
         print(f"✅ Nursery Quarterly report generated: {result.get('pdf_path')}")
-        print(f"   - Should show combined data sources from all products")
-        print(f"   - Should show summary with 1 high risk product")
+        print("   - Should show combined data sources from all products")
+        print("   - Should show summary with 1 high risk product")
     else:
         print(f"❌ Failed to generate Nursery Quarterly report: {result.get('message')}")
 

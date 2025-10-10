@@ -77,7 +77,7 @@ def test_patient_data_agent():
         }
     )
     assert result["status"] == "COMPLETED"
-    print(f"   -> SUCCESS: Retrieved consent status for patient-001.")
+    print("   -> SUCCESS: Retrieved consent status for patient-001.")
 
     print("\n9. Testing data export...")
     result = logic.process_task(

@@ -1,4 +1,5 @@
-import sqlite3, os
+import sqlite3
+import os
 
 DB = os.path.abspath("dev.db")
 con = sqlite3.connect(DB)

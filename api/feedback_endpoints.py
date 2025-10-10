@@ -252,9 +252,9 @@ Type: {feedback.type.value}
 
 Customer Information:
 --------------------
-Name: {feedback.user_name or 'Not provided'}
-Email: {feedback.user_email or 'Not provided'}
-User ID: {feedback.user_id or 'Anonymous'}
+Name: {feedback.user_name or "Not provided"}
+Email: {feedback.user_email or "Not provided"}
+User ID: {feedback.user_id or "Anonymous"}
 
 Feedback Details:
 ----------------
@@ -265,12 +265,12 @@ Message:
 
 App Context:
 -----------
-Version: {feedback.app_version or 'Unknown'}
-Device: {feedback.device_info or 'Unknown'}
+Version: {feedback.app_version or "Unknown"}
+Device: {feedback.device_info or "Unknown"}
 Locale: {feedback.locale}
 Timestamp: {feedback.timestamp}
 
-{f'Reproduction Steps:{chr(10)}{chr(10).join(f"{i+1}. {step}" for i, step in enumerate(feedback.reproduction_steps))}' if feedback.reproduction_steps else ''}
+{f"Reproduction Steps:{chr(10)}{chr(10).join(f'{i + 1}. {step}' for i, step in enumerate(feedback.reproduction_steps))}" if feedback.reproduction_steps else ""}
 
 Response Time: {get_response_time(priority)}
 
@@ -343,7 +343,7 @@ async def send_auto_reply(
         response_time = get_response_time(priority)
 
         body = f"""
-Hi {user_name or 'there'},
+Hi {user_name or "there"},
 
 Thank you for contacting BabyShield Support. We've received your message and assigned it ticket #{ticket_number}.
 
@@ -413,9 +413,7 @@ def track_feedback_metrics(feedback: FeedbackRequest, priority: Priority):
 
 
 @router.post("/submit", response_model=FeedbackResponse)
-async def submit_feedback(
-    feedback: FeedbackRequest, background_tasks: BackgroundTasks, request: Request
-):
+async def submit_feedback(feedback: FeedbackRequest, background_tasks: BackgroundTasks, request: Request):
     """
     Submit user feedback
 
@@ -433,9 +431,7 @@ async def submit_feedback(
         logger.info(f"Feedback submitted from IP: {client_ip}")
 
         # Send email notification to support team
-        background_tasks.add_task(
-            send_email_notification, feedback, ticket_id, ticket_number, priority
-        )
+        background_tasks.add_task(send_email_notification, feedback, ticket_id, ticket_number, priority)
 
         # Send auto-reply to user if email provided
         if feedback.user_email:
@@ -452,8 +448,8 @@ async def submit_feedback(
         background_tasks.add_task(track_feedback_metrics, feedback, priority)
 
         # Store ticket in database (mock for now)
-        # In production, this would save to database
-        ticket_data = {
+        # In production, this would save to database - Reserved for DB implementation
+        _ = {
             "ticket_id": ticket_id,
             "ticket_number": ticket_number,
             "priority": priority,
@@ -508,9 +504,7 @@ async def get_ticket_status(ticket_number: int):
 
 
 @router.post("/ticket/{ticket_number}/satisfy")
-async def mark_satisfaction(
-    ticket_number: int, satisfied: bool = True, comments: Optional[str] = None
-):
+async def mark_satisfaction(ticket_number: int, satisfied: bool = True, comments: Optional[str] = None):
     """
     Mark customer satisfaction
 
