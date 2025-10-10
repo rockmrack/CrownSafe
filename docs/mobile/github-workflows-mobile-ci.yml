@@ -1,0 +1,269 @@
+# BabyShield Mobile - CI/CD Workflow
+# Linting, Testing, and Build Verification
+# Triggers on: Pull Requests and Pushes to main/develop
+
+name: Mobile CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# Cancel in-progress runs for same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================
+  # JOB 1: Linting & Code Quality
+  # ============================================
+  lint:
+    name: 🔍 Lint & Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Run ESLint
+        run: npm run lint
+        continue-on-error: false
+
+      - name: 💅 Check Prettier formatting
+        run: npm run format:check
+        continue-on-error: false
+
+      - name: 🔒 Check for security vulnerabilities
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+  # ============================================
+  # JOB 2: TypeScript Type Checking
+  # ============================================
+  typecheck:
+    name: 📘 TypeScript Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔎 Run TypeScript compiler
+        run: npm run typecheck
+
+  # ============================================
+  # JOB 3: Unit & Integration Tests
+  # ============================================
+  test:
+    name: 🧪 Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run unit tests
+        run: npm run test:ci
+
+      - name: 📊 Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          flags: mobile
+          name: mobile-coverage
+          fail_ci_if_error: false
+
+  # ============================================
+  # JOB 4: Build Verification (Android)
+  # ============================================
+  build-android:
+    name: 🤖 Build Android
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck]
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: ☕ Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔨 Build Android APK (Debug)
+        run: |
+          cd android
+          ./gradlew assembleDebug --no-daemon
+
+      - name: 📤 Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
+
+  # ============================================
+  # JOB 5: Build Verification (iOS)
+  # ============================================
+  build-ios:
+    name: 🍎 Build iOS
+    runs-on: macos-latest
+    needs: [lint, typecheck]
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 💎 Install CocoaPods
+        run: |
+          cd ios
+          pod install --repo-update
+
+      - name: 🔨 Build iOS (Debug)
+        run: |
+          cd ios
+          xcodebuild -workspace BabyShield.xcworkspace \
+            -scheme BabyShield \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            clean build \
+            CODE_SIGNING_ALLOWED=NO
+
+  # ============================================
+  # JOB 6: API Integration Tests
+  # ============================================
+  api-integration:
+    name: 🔌 API Integration Tests
+    runs-on: ubuntu-latest
+    needs: [test]
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔌 Test API connectivity
+        run: npm run test:api
+        env:
+          API_BASE_URL: ${{ secrets.API_BASE_URL_STAGING }}
+          TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
+
+  # ============================================
+  # JOB 7: Security Scan
+  # ============================================
+  security:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔒 Run Snyk security scan
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+  # ============================================
+  # JOB 8: PR Size Check
+  # ============================================
+  pr-size:
+    name: 📏 Check PR Size
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: 📏 Check PR size
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const additions = pr.additions;
+            const deletions = pr.deletions;
+            const total = additions + deletions;
+
+            if (total > 1000) {
+              core.setFailed(`PR is too large (${total} lines). Consider splitting into smaller PRs.`);
+            } else if (total > 500) {
+              core.warning(`PR is large (${total} lines). Consider reviewing carefully.`);
+            }
+
+  # ============================================
+  # JOB 9: Success Notification
+  # ============================================
+  notify-success:
+    name: ✅ Notify Success
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, test, build-android, build-ios]
+    if: success()
+
+    steps:
+      - name: ✅ All checks passed
+        run: |
+          echo "🎉 All CI checks passed successfully!"
+          echo "✅ Linting: Passed"
+          echo "✅ Type checking: Passed"
+          echo "✅ Tests: Passed"
+          echo "✅ Android build: Passed"
+          echo "✅ iOS build: Passed"

@@ -1,0 +1,342 @@
+# BabyShield Mobile - .gitignore Template
+# Last Updated: October 10, 2025
+# 
+# Instructions: Copy this to your mobile repository root as .gitignore
+# Covers: React Native, Expo, Flutter, iOS, Android, Node.js
+
+# ============================================
+# SECRETS & ENVIRONMENT VARIABLES (CRITICAL!)
+# ============================================
+.env
+.env.local
+.env.production
+.env.staging
+.env.development
+*.env
+**/.env
+config/secrets.json
+config/keys.json
+google-services.json
+GoogleService-Info.plist
+firebase-config.js
+
+# API Keys & Credentials
+**/apiKeys.ts
+**/apiKeys.js
+**/credentials.json
+**/secrets.ts
+**/secrets.js
+
+# ============================================
+# DEPENDENCIES & PACKAGES
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Package manager lock files (optional - commit these in production)
+# Uncomment if you want to ignore lock files
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ============================================
+# BUILD OUTPUTS & ARTIFACTS
+# ============================================
+build/
+dist/
+out/
+.next/
+.expo/
+.expo-shared/
+web-build/
+
+# React Native / Expo
+*.jsbundle
+*.bundle
+*.map
+
+# Android
+android/app/build/
+android/app/release/
+android/build/
+android/.gradle/
+android/local.properties
+android/app/debug/
+android/app/profile/
+android/captures/
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# iOS
+ios/Pods/
+ios/build/
+ios/*.xcworkspace/xcuserdata/
+ios/*.xcodeproj/xcuserdata/
+ios/*.xcodeproj/project.xcworkspace/xcuserdata/
+ios/Podfile.lock
+*.ipa
+*.dSYM.zip
+*.dSYM
+DerivedData/
+*.hmap
+*.ipa
+*.xcuserstate
+**/.xcode.env.local
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+pubspec.lock
+.pub-cache/
+.pub/
+
+# ============================================
+# IDEs & EDITORS
+# ============================================
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+.gradle/
+local.properties
+
+# Xcode
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+project.xcworkspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Eclipse
+.project
+.metadata
+.classpath
+.settings/
+
+# ============================================
+# OPERATING SYSTEM FILES
+# ============================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ============================================
+# TESTING & COVERAGE
+# ============================================
+coverage/
+.nyc_output/
+*.lcov
+.jest/
+__snapshots__/
+test-results/
+jest-results/
+e2e/screenshots/
+e2e/videos/
+
+# ============================================
+# LOGS & TEMPORARY FILES
+# ============================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.swn
+*~
+.cache/
+tmp/
+temp/
+
+# ============================================
+# DEBUGGING & PROFILING
+# ============================================
+.vscode/launch.json
+chrome-profiler-events*.json
+*.cpuprofile
+
+# React Native debugger
+.debugger/
+
+# ============================================
+# ASSETS & MEDIA (LARGE FILES)
+# ============================================
+# Uncomment if you want to exclude large assets
+# *.mp4
+# *.mov
+# *.avi
+# *.mkv
+# videos/
+
+# Development assets (keep production assets)
+assets/dev/
+assets/test/
+
+# ============================================
+# DOCUMENTATION BUILDS
+# ============================================
+docs/build/
+docs/_build/
+site/
+
+# ============================================
+# MISCELLANEOUS
+# ============================================
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.realm
+
+# Certificates (NEVER commit!)
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.keystore
+!debug.keystore
+
+# TypeScript
+*.tsbuildinfo
+.tsbuildinfo
+
+# ESLint
+.eslintcache
+
+# Webpack
+.webpack/
+
+# Turborepo
+.turbo/
+
+# Vercel
+.vercel/
+
+# Sentry
+.sentryclirc
+
+# App-specific
+*.hprof
+*.trace
+
+# ============================================
+# KEEP THESE FILES (IMPORTANT!)
+# ============================================
+# These are commonly ignored but should be kept:
+# !.env.example         # Example environment file
+# !.gitignore           # This file
+# !README.md            # Documentation
+# !package.json         # Dependencies
+# !tsconfig.json        # TypeScript config
+# !.eslintrc.js         # Linting config
+# !.prettierrc          # Code formatting
+# !jest.config.js       # Test config
+# !babel.config.js      # Babel config
+# !metro.config.js      # Metro bundler config
+
+# ============================================
+# PROJECT-SPECIFIC ADDITIONS
+# ============================================
+# Add any project-specific files here:
+
+# Example: Custom build scripts output
+# scripts/output/
+
+# Example: Generated types
+# src/types/generated/
+
+# ============================================
+# IMPORTANT REMINDERS
+# ============================================
+# 1. NEVER commit API keys, secrets, or credentials
+# 2. Review this file before initial commit
+# 3. Use .env.example for environment variable templates
+# 4. Keep sensitive data in GitHub Secrets for CI/CD
+# 5. Use Git LFS for large binary files if needed
+# 6. Update this file as project evolves
