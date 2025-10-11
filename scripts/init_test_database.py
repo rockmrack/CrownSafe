@@ -39,12 +39,16 @@ def init_database():
 
         if alembic_ini_path_db.exists():
             try:
-                # Run alembic upgrade head from project root with correct config
+                # Run alembic upgrade head from db directory (script_location in alembic.ini is relative)
                 result = subprocess.run(
-                    ["alembic", "-c", "db/alembic.ini", "upgrade", "head"],
-                    cwd=str(project_root),
+                    ["alembic", "upgrade", "head"],
+                    cwd=str(project_root / "db"),
                     capture_output=True,
                     text=True,
+                    env={
+                        **os.environ,
+                        "DATABASE_URL": database_url,
+                    },  # Ensure DATABASE_URL is passed
                 )
                 if result.returncode == 0:
                     logger.info("✓ Alembic migrations completed successfully")
