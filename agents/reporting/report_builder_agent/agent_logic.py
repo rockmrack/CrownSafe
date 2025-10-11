@@ -3,6 +3,7 @@
 
 import logging
 import json
+import sys
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timezone
 import os
@@ -21,11 +22,21 @@ except ImportError:
     MARKDOWN_AVAILABLE = False
     markdown = None
 
+# Pre-emptively mock pylibdmtx if it's missing to prevent xhtml2pdf import failures
+try:
+    import pylibdmtx  # noqa: F401
+except (ImportError, OSError):
+    # Create a minimal mock to satisfy xhtml2pdf's optional dependency
+    from unittest.mock import MagicMock
+
+    sys.modules["pylibdmtx"] = MagicMock()
+    sys.modules["pylibdmtx.pylibdmtx"] = MagicMock()
+
 try:
     from xhtml2pdf import pisa
 
     XHTML2PDF_AVAILABLE = True
-except (ImportError, OSError):  # pragma: no cover - optional dependency may have native issues
+except (ImportError, OSError, Exception):  # pragma: no cover - optional dependency may have native issues
     XHTML2PDF_AVAILABLE = False
     pisa = None
 
