@@ -5,23 +5,31 @@ Tracks all data changes for compliance and debugging
 
 import json
 import logging
-from datetime import datetime
-from typing import Any, Dict, Optional, List
-from sqlalchemy import Column, Integer, String, DateTime, JSON, Text, event
-from sqlalchemy.orm import Session
-from sqlalchemy.ext.declarative import declarative_base
-from functools import wraps
-import traceback
 from contextvars import ContextVar
+from datetime import datetime
+from functools import wraps
+from typing import Any, Dict, List, Optional
+import traceback
+
+from sqlalchemy import JSON, Column, DateTime, Integer, String, Text, event
+from sqlalchemy.orm import Session
 
 # Context variable for request tracking
 current_user_context: ContextVar[Optional[int]] = ContextVar("current_user", default=None)
 current_request_id: ContextVar[Optional[str]] = ContextVar("request_id", default=None)
 
-Base = declarative_base()
+
+def get_base():
+    """
+    Lazy import of Base to avoid circular import.
+    database.py needs to finish initializing before we can import Base.
+    """
+    from core_infra.database import Base
+
+    return Base
 
 
-class AuditLog(Base):
+class AuditLog(get_base()):
     """
     Audit log table for tracking all changes
     """
@@ -376,12 +384,7 @@ class AuditQuery:
 
         cutoff = datetime.utcnow() - timedelta(hours=hours)
 
-        return (
-            self.db.query(AuditLog)
-            .filter(AuditLog.timestamp >= cutoff)
-            .order_by(AuditLog.timestamp.desc())
-            .all()
-        )
+        return self.db.query(AuditLog).filter(AuditLog.timestamp >= cutoff).order_by(AuditLog.timestamp.desc()).all()
 
     def search_logs(
         self,

@@ -275,15 +275,9 @@ def get_test_session():
 
 def create_tables():
     """Create all database tables from all Base classes"""
-    # Create tables from main Base class (User, FamilyMember, etc.)
-    Base.metadata.create_all(bind=engine)
-
-    # Also create tables from enhanced schema (recalls_enhanced)
-    from core_infra.enhanced_database_schema import Base as EnhancedBase
-
-    EnhancedBase.metadata.create_all(bind=engine)
-
-    # Risk assessment models use the same Base, so their tables are created above
+    # NOTE: EnhancedRecallDB now uses the same Base as all other models
+    # (fixed in commit db1c0f8 to prevent Base metadata split)
+    # So one call to Base.metadata.create_all() creates ALL tables
 
     # Import all models to ensure they're registered with Base
     try:
