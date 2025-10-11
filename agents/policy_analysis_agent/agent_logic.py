@@ -59,7 +59,9 @@ class PolicyAnalysisAgentLogic:
             self.logger.warning(f"Could not initialize EnhancedMemoryManager: {e}")
 
         # Policy data path
-        self.policy_data_path = Path(__file__).parent.parent.parent / "data" / "mock_insurer_policy.json"
+        self.policy_data_path = (
+            Path(__file__).parent.parent.parent / "data" / "mock_insurer_policy.json"
+        )
 
         # Load policy data
         self.policies = {}
@@ -186,7 +188,9 @@ class PolicyAnalysisAgentLogic:
 
         for name, policy_details in drugs_data.items():
             if name.lower() == drug_name.lower():
-                self.logger.info(f"Found policy for '{drug_name}'. Status: {policy_details.get('status')}")
+                self.logger.info(
+                    f"Found policy for '{drug_name}'. Status: {policy_details.get('status')}"
+                )
                 return {"status": "success", "policy": policy_details}
 
         self.logger.warning(f"No policy found for '{drug_name}' in the mock data.")
@@ -195,7 +199,9 @@ class PolicyAnalysisAgentLogic:
             "message": f"Drug '{drug_name}' is not mentioned in this policy.",
         }
 
-    def check_coverage_criteria(self, drug_name: str, patient_evidence: Dict[str, Any]) -> Dict[str, Any]:
+    def check_coverage_criteria(
+        self, drug_name: str, patient_evidence: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Public method to check coverage criteria - compatible with Gemini test"""
         self.logger.info(f"Checking coverage criteria for '{drug_name}' based on patient evidence.")
 
@@ -480,7 +486,9 @@ class PolicyAnalysisAgentLogic:
                 return self._handle_policy_comparison(task_data)
             else:
                 # P0: Log why discovery might be failing
-                self.logger.warning(f"Unknown task type '{task_type}' - agent capabilities: {CAPABILITIES}")
+                self.logger.warning(
+                    f"Unknown task type '{task_type}' - agent capabilities: {CAPABILITIES}"
+                )
                 return {
                     "status": "FAILED",
                     "error": f"Unknown task type: {task_type}",
@@ -531,7 +539,9 @@ class PolicyAnalysisAgentLogic:
 
         # Use default insurer if not specified
         if not insurer_id:
-            insurer_id = list(self.policies.keys())[0] if self.policies else "Default Health Insurance"
+            insurer_id = (
+                list(self.policies.keys())[0] if self.policies else "Default Health Insurance"
+            )
 
         try:
             # P2: Check cache with TTL
@@ -556,7 +566,9 @@ class PolicyAnalysisAgentLogic:
                 # P1: Extract structured PA criteria if available
                 # FIXED: Case-insensitive PA detection
                 if "prior authorization" in policy_info.get("status", "").lower():
-                    policy_info["structured_pa_criteria"] = self._extract_structured_pa_criteria(policy_info)
+                    policy_info["structured_pa_criteria"] = self._extract_structured_pa_criteria(
+                        policy_info
+                    )
 
                 # FIXED: Deep copy before caching to prevent mutation
                 cached_copy = deepcopy(policy_info)
@@ -673,7 +685,9 @@ class PolicyAnalysisAgentLogic:
                 "drug_name": drug_name,
                 "insurer": insurer,
                 "alternatives": alternatives,
-                "recommendation": self._generate_alternative_recommendation(drug_name, alternatives),
+                "recommendation": self._generate_alternative_recommendation(
+                    drug_name, alternatives
+                ),
                 "agent_id": self.agent_id,
             }
 
@@ -1073,15 +1087,21 @@ class PolicyAnalysisAgentLogic:
         return is_met, {
             "provider_type": provider_type,
             "allowed_types": allowed_types,
-            "message": "Provider type acceptable" if is_met else f"Provider type '{provider_type}' not in allowed list",
+            "message": "Provider type acceptable"
+            if is_met
+            else f"Provider type '{provider_type}' not in allowed list",
         }
 
-    def _generate_criterion_recommendation(self, criterion: Dict[str, Any], details: Dict[str, Any]) -> Optional[str]:
+    def _generate_criterion_recommendation(
+        self, criterion: Dict[str, Any], details: Dict[str, Any]
+    ) -> Optional[str]:
         """Generate recommendation for unmet criterion"""
         criterion_type = criterion.get("type")
 
         if criterion_type == "diagnosis":
-            return f"Obtain documentation for one of: {', '.join(criterion.get('required_codes', []))}"
+            return (
+                f"Obtain documentation for one of: {', '.join(criterion.get('required_codes', []))}"
+            )
         elif criterion_type == "step_therapy":
             return f"Trial of {criterion.get('required_prior_drug')} for {criterion.get('duration_days', 90)} days required"
         elif criterion_type == "lab_value":
@@ -1170,7 +1190,8 @@ class PolicyAnalysisAgentLogic:
                         "status": alt_policy.get("status"),
                         "tier": alt_policy.get("tier"),
                         "monthly_cost": alt_policy.get("monthly_cost"),
-                        "requires_pa": "prior authorization" in alt_policy.get("status", "").lower(),
+                        "requires_pa": "prior authorization"
+                        in alt_policy.get("status", "").lower(),
                         "drug_class": alt_policy.get("drug_class"),
                     }
                 )
@@ -1179,7 +1200,9 @@ class PolicyAnalysisAgentLogic:
 
         return enhanced_alternatives
 
-    def _generate_alternative_recommendation(self, drug_name: str, alternatives: List[Dict[str, Any]]) -> str:
+    def _generate_alternative_recommendation(
+        self, drug_name: str, alternatives: List[Dict[str, Any]]
+    ) -> str:
         """Generate recommendation for alternatives"""
         if not alternatives:
             return f"No alternatives found for {drug_name}"
@@ -1206,7 +1229,8 @@ class PolicyAnalysisAgentLogic:
                         "status": policy_info.get("status"),
                         "tier": policy_info.get("tier"),
                         "monthly_cost": policy_info.get("monthly_cost"),
-                        "requires_pa": "prior authorization" in policy_info.get("status", "").lower(),
+                        "requires_pa": "prior authorization"
+                        in policy_info.get("status", "").lower(),
                         "criteria_count": len(policy_info.get("criteria", [])),
                     }
                 else:

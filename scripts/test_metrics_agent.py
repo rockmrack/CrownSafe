@@ -15,7 +15,9 @@ sys.path.insert(0, project_root)
 
 from agents.business.metrics_agent.agent_logic import MetricsAgentLogic
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # --- Test Configuration ---
 TEST_USER_ID = "user_test_123"
@@ -73,7 +75,9 @@ async def main():
                 print("❌ TEST FAILED: The result message was not as expected.")
         else:
             print("\n" + "=" * 50)
-            print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")
+            print(
+                f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}"
+            )
 
     except ValueError as e:
         print("\n" + "=" * 50)

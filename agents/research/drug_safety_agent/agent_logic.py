@@ -68,7 +68,9 @@ class DrugSafetyAgentLogic:
         self.logger = logger_instance if logger_instance else logger_dsa_logic_default
         self._load_environment()
 
-        self.api_base_url = os.getenv("OPENFDA_API_URL", "https://api.fda.gov/drug/event.json").rstrip("/")
+        self.api_base_url = os.getenv(
+            "OPENFDA_API_URL", "https://api.fda.gov/drug/event.json"
+        ).rstrip("/")
         self.user_agent = f"CureViaX/{self.version} (DrugSafetyAgent; mailto:contact@example.com)"
 
         self.working_headers = {"User-Agent": self.user_agent}
@@ -126,7 +128,9 @@ class DrugSafetyAgentLogic:
             await asyncio.sleep(self.rate_limit_delay - time_since_last)
         self._last_request_time = time.time()
 
-    def _validate_parameters(self, drug_name: Any, max_reactions: Any) -> tuple[bool, Optional[str], str, int]:
+    def _validate_parameters(
+        self, drug_name: Any, max_reactions: Any
+    ) -> tuple[bool, Optional[str], str, int]:
         # ... (same as V2.0.0) ...
         validated_drug_name = ""
         validated_max_reactions = 5
@@ -197,9 +201,13 @@ class DrugSafetyAgentLogic:
 
         for attempt in range(self.max_retries + 1):
             try:
-                self.logger.info(f"openFDA API request (attempt {attempt + 1}/{self.max_retries + 1}) using 'requests'")
+                self.logger.info(
+                    f"openFDA API request (attempt {attempt + 1}/{self.max_retries + 1}) using 'requests'"
+                )
                 self.logger.info(f"  Target URL (constructed): {log_url}")  # Log full URL
-                self.logger.debug(f"  Final Parameters: {final_api_params}, Headers: {self.working_headers}")
+                self.logger.debug(
+                    f"  Final Parameters: {final_api_params}, Headers: {self.working_headers}"
+                )
 
                 response = requests.get(
                     self.api_base_url,  # Base URL
@@ -209,7 +217,9 @@ class DrugSafetyAgentLogic:
                 )
                 self.logger.info(f"  Response Status: {response.status_code} from {response.url}")
                 if response.request and response.request.headers:
-                    self.logger.debug(f"  ACTUAL REQUEST HEADERS SENT by 'requests': {dict(response.request.headers)}")
+                    self.logger.debug(
+                        f"  ACTUAL REQUEST HEADERS SENT by 'requests': {dict(response.request.headers)}"
+                    )
 
                 response.raise_for_status()
                 json_response = response.json()
@@ -244,21 +254,29 @@ class DrugSafetyAgentLogic:
                 )
                 raise last_exception
             except Exception as e:
-                last_exception = RuntimeError(f"Unexpected error during 'requests' API call attempt {attempt + 1}: {e}")
+                last_exception = RuntimeError(
+                    f"Unexpected error during 'requests' API call attempt {attempt + 1}: {e}"
+                )
 
             self.logger.error(str(last_exception))
             if attempt < self.max_retries:
                 if not isinstance(last_exception, (ConnectionError, TimeoutError)):
-                    self.logger.error(f"Non-retryable error on attempt {attempt + 1}. Failing early.")
+                    self.logger.error(
+                        f"Non-retryable error on attempt {attempt + 1}. Failing early."
+                    )
                     raise last_exception
                 delay = self.retry_delay_base * (2**attempt)
-                self.logger.warning(f"Request attempt {attempt + 1} failed. Retrying in {delay}s...")
+                self.logger.warning(
+                    f"Request attempt {attempt + 1} failed. Retrying in {delay}s..."
+                )
                 time.sleep(delay)
             else:
                 self.logger.error(f"All {self.max_retries + 1} attempts failed.")
                 if last_exception:
                     raise last_exception
-                raise RuntimeError(f"All {self.max_retries + 1} attempts failed with an unspecified error.")
+                raise RuntimeError(
+                    f"All {self.max_retries + 1} attempts failed with an unspecified error."
+                )
 
         critical_fallback_error = "All openFDA API request attempts failed after retries (sync)."
         self.logger.critical(critical_fallback_error)
@@ -281,12 +299,18 @@ class DrugSafetyAgentLogic:
         ):
             for item in response_json_for_reactions["results"][:max_reactions_to_return]:
                 if isinstance(item, dict) and "term" in item and "count" in item:
-                    top_reactions_list.append(AdverseReaction(term=str(item["term"]), count=int(item["count"])))
+                    top_reactions_list.append(
+                        AdverseReaction(term=str(item["term"]), count=int(item["count"]))
+                    )
                 else:
-                    self.logger.warning(f"Unexpected item structure in reaction results for {drug_name}: {item}")
+                    self.logger.warning(
+                        f"Unexpected item structure in reaction results for {drug_name}: {item}"
+                    )
         return top_reactions_list
 
-    async def _fetch_adverse_event_data(self, drug_name_validated: str, max_reactions: int) -> DrugSafetyQueryResult:
+    async def _fetch_adverse_event_data(
+        self, drug_name_validated: str, max_reactions: int
+    ) -> DrugSafetyQueryResult:
         start_time_ns = time.perf_counter_ns()
         _ = f"drug_name: {drug_name_validated}, max_reactions: {max_reactions}"  # query_for_log
 
@@ -299,9 +323,13 @@ class DrugSafetyAgentLogic:
             loop = asyncio.get_running_loop()
 
             # 1. Get total reports for the drug
-            self.logger.info(f"Fetching total adverse event report count for drug: '{drug_name_validated}'")
+            self.logger.info(
+                f"Fetching total adverse event report count for drug: '{drug_name_validated}'"
+            )
             # Parameters for the total count query
-            total_count_api_params = {"limit": "1"}  # 'search' will be added by _make_sync_openfda_request
+            total_count_api_params = {
+                "limit": "1"
+            }  # 'search' will be added by _make_sync_openfda_request
 
             # <<< --- V2.0.1: CORRECTED ARGUMENT PASSING --- >>>
             response_total_json = await loop.run_in_executor(
@@ -311,12 +339,20 @@ class DrugSafetyAgentLogic:
                 total_count_api_params,  # This is api_specific_params (dict)
             )
 
-            if response_total_json and "meta" in response_total_json and "results" in response_total_json["meta"]:
+            if (
+                response_total_json
+                and "meta" in response_total_json
+                and "results" in response_total_json["meta"]
+            ):
                 total_reports_for_drug = response_total_json["meta"]["results"].get("total", 0)
-            self.logger.info(f"Total adverse event reports found for '{drug_name_validated}': {total_reports_for_drug}")
+            self.logger.info(
+                f"Total adverse event reports found for '{drug_name_validated}': {total_reports_for_drug}"
+            )
 
             if total_reports_for_drug > 0:
-                self.logger.info(f"Fetching top {max_reactions} adverse reactions for drug: '{drug_name_validated}'")
+                self.logger.info(
+                    f"Fetching top {max_reactions} adverse reactions for drug: '{drug_name_validated}'"
+                )
                 reaction_count_field = "patient.reaction.reactionmeddrapt.exact"
                 # Parameters for the reaction count query
                 reaction_api_params = {
@@ -336,9 +372,13 @@ class DrugSafetyAgentLogic:
                 top_reactions_data = self._parse_openfda_response(
                     response_reactions_json, drug_name_validated, max_reactions
                 )
-                self.logger.info(f"Found {len(top_reactions_data)} top reactions for '{drug_name_validated}'.")
+                self.logger.info(
+                    f"Found {len(top_reactions_data)} top reactions for '{drug_name_validated}'."
+                )
             else:
-                self.logger.info(f"Skipping reaction fetch as no total reports found for '{drug_name_validated}'.")
+                self.logger.info(
+                    f"Skipping reaction fetch as no total reports found for '{drug_name_validated}'."
+                )
 
         except (
             TimeoutError,
@@ -372,7 +412,9 @@ class DrugSafetyAgentLogic:
             return False, "Missing/invalid payload"
         return True, None
 
-    async def process_message(self, message_data: Dict[str, Any], client: Any) -> Optional[Dict[str, Any]]:
+    async def process_message(
+        self, message_data: Dict[str, Any], client: Any
+    ) -> Optional[Dict[str, Any]]:
         # ... (same as V2.0.0, with PONG/ACK handling) ...
         is_valid_msg, msg_err = self._validate_message_structure(message_data)
         if not is_valid_msg:
@@ -386,7 +428,9 @@ class DrugSafetyAgentLogic:
         try:
             message_type = MessageType(message_type_str)
         except ValueError:
-            self.logger.warning(f"Unknown msg type '{message_type_str}' from {sender_id}. Ignoring.")
+            self.logger.warning(
+                f"Unknown msg type '{message_type_str}' from {sender_id}. Ignoring."
+            )
             return None
         if message_type == MessageType.PONG:
             self.logger.debug(f"PONG from {sender_id} for CorrID: {correlation_id}.")
@@ -396,7 +440,9 @@ class DrugSafetyAgentLogic:
                 f"Registration confirmed by {sender_id} (CorrID: {correlation_id}). Agent: {payload.get('agent_id')}"
             )
             return None
-        self.logger.info(f"Processing {message_type.value} from {sender_id} (CorrID: {correlation_id})")
+        self.logger.info(
+            f"Processing {message_type.value} from {sender_id} (CorrID: {correlation_id})"
+        )
         if message_type == MessageType.TASK_ASSIGN:
             return await self._handle_task_assign(payload, correlation_id)
         else:
@@ -444,9 +490,13 @@ class DrugSafetyAgentLogic:
             self.logger.info(
                 f"Performing openFDA search for task {task_id} with drug: '{validated_drug_name}', max_reactions: {validated_max_reactions}"
             )
-            query_result_obj = await self._fetch_adverse_event_data(validated_drug_name, validated_max_reactions)
+            query_result_obj = await self._fetch_adverse_event_data(
+                validated_drug_name, validated_max_reactions
+            )
             if query_result_obj.error:
-                self.logger.error(f"openFDA search failed for task {task_id}: {query_result_obj.error}")
+                self.logger.error(
+                    f"openFDA search failed for task {task_id}: {query_result_obj.error}"
+                )
                 return {
                     "message_type": MessageType.TASK_FAIL.value,
                     "payload": {
@@ -477,7 +527,9 @@ class DrugSafetyAgentLogic:
 
     async def shutdown(self):
         # ... (same as V2.0.0) ...
-        self.logger.info(f"DrugSafetyAgentLogic (requests version) shutting down for agent {self.agent_id}")
+        self.logger.info(
+            f"DrugSafetyAgentLogic (requests version) shutting down for agent {self.agent_id}"
+        )
         self.logger.info(f"DrugSafetyAgentLogic shutdown complete for agent {self.agent_id}")
 
     def get_status(self) -> Dict[str, Any]:

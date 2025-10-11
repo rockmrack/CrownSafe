@@ -100,7 +100,9 @@ class TestLoadStress:
             max_time = max(response_times)
             min_time = min(response_times)
 
-            print(f"✅ Response times: avg={avg_time:.3f}s, min={min_time:.3f}s, max={max_time:.3f}s")
+            print(
+                f"✅ Response times: avg={avg_time:.3f}s, min={min_time:.3f}s, max={max_time:.3f}s"
+            )
 
             # Max should not be more than 3x the minimum
             assert max_time < min_time * 3 or max_time < 2.0

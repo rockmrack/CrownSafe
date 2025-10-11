@@ -21,7 +21,9 @@ class TestAlternativesProvider:
         assert len(result["items"]) == 2
 
         # Check pasteurised brie alternative
-        pasteurised_brie = next(item for item in result["items"] if item["id"] == "alt_pasteurised_brie")
+        pasteurised_brie = next(
+            item for item in result["items"] if item["id"] == "alt_pasteurised_brie"
+        )
         assert pasteurised_brie["name"] == "Pasteurised Brie (labeled)"
         assert pasteurised_brie["pregnancy_safe"] is True
         assert "pasteurised" in pasteurised_brie["tags"]
@@ -72,7 +74,9 @@ class TestAlternativesProvider:
         assert len(result["items"]) == 1
 
         # Check nut-free granola
-        nut_free_granola = next(item for item in result["items"] if item["id"] == "alt_nut_free_granola")
+        nut_free_granola = next(
+            item for item in result["items"] if item["id"] == "alt_nut_free_granola"
+        )
         assert nut_free_granola["name"] == "Nut-free granola or oat bars"
         assert "almond" in nut_free_granola["allergy_safe_for"]
         assert "walnut" in nut_free_granola["allergy_safe_for"]
@@ -90,7 +94,9 @@ class TestAlternativesProvider:
         assert len(result["items"]) == 2
 
         # Check flat sleep surface
-        flat_sleep = next(item for item in result["items"] if item["id"] == "alt_flat_sleep_surface")
+        flat_sleep = next(
+            item for item in result["items"] if item["id"] == "alt_flat_sleep_surface"
+        )
         assert flat_sleep["name"] == "Flat, firm sleep surface (crib/bassinet with fitted sheet)"
         assert flat_sleep["age_min_months"] == 0
         assert "flat-sleep" in flat_sleep["tags"]
@@ -137,7 +143,9 @@ class TestAlternativesProvider:
         assert len(result["items"]) == 1
 
         # Check pregnancy-safe skincare
-        safe_skincare = next(item for item in result["items"] if item["id"] == "alt_pregnancy_safe_skincare")
+        safe_skincare = next(
+            item for item in result["items"] if item["id"] == "alt_pregnancy_safe_skincare"
+        )
         assert safe_skincare["name"] == "Pregnancy-safe skincare (vitamin C, hyaluronic acid)"
         assert safe_skincare["pregnancy_safe"] is True
         assert "pregnancy-safe" in safe_skincare["tags"]
@@ -169,7 +177,9 @@ class TestAlternativesProvider:
         assert len(result["items"]) == 1
 
         # Check pasteurized dairy
-        pasteurized = next(item for item in result["items"] if item["id"] == "alt_pasteurized_dairy")
+        pasteurized = next(
+            item for item in result["items"] if item["id"] == "alt_pasteurized_dairy"
+        )
         assert pasteurized["name"] == "Pasteurized version of same product"
         assert pasteurized["pregnancy_safe"] is True
         assert "pasteurized" in pasteurized["tags"]
@@ -230,7 +240,9 @@ class TestAlternativesProvider:
         result = get_alternatives(scan_data)
 
         # Check evidence structure for pasteurised brie
-        pasteurised_brie = next(item for item in result["items"] if item["id"] == "alt_pasteurised_brie")
+        pasteurised_brie = next(
+            item for item in result["items"] if item["id"] == "alt_pasteurised_brie"
+        )
         evidence = pasteurised_brie["evidence"][0]
 
         assert evidence["type"] == "label"

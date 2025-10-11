@@ -11,7 +11,9 @@ from core_infra.mcp_client_library.models import MCPMessage
 from .agent_logic import DrugBankAgentLogic
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "drugbank_agent_01"
@@ -288,7 +290,9 @@ if __name__ == "__main__":
         test_agent = DrugBankAgent()
 
         # Test drug info retrieval
-        test_result = test_agent.logic.process_task({"task_name": "drug_info", "drug_name": "empagliflozin"})
+        test_result = test_agent.logic.process_task(
+            {"task_name": "drug_info", "drug_name": "empagliflozin"}
+        )
         logger.info(f"Test result: {json.dumps(test_result, indent=2)}")
 
         # Test interaction check

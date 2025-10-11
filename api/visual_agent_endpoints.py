@@ -190,7 +190,9 @@ async def request_image_upload(
 
 
 @visual_router.post("/analyze", response_model=ApiResponse)
-async def analyze_image(request: ImageAnalysisRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
+async def analyze_image(
+    request: ImageAnalysisRequest, db: Session = Depends(get_db_session)
+) -> ApiResponse:
     """
     Start image analysis with optional MFV
 
@@ -372,7 +374,9 @@ async def get_job_status(job_id: str, db: Session = Depends(get_db_session)) -> 
 
 
 @visual_router.post("/mfv/confirm", response_model=ApiResponse)
-async def confirm_mfv(request: MFVConfirmationRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
+async def confirm_mfv(
+    request: MFVConfirmationRequest, db: Session = Depends(get_db_session)
+) -> ApiResponse:
     """
     Confirm multi-factor verification
 
@@ -484,7 +488,9 @@ async def get_review_queue(
 
 
 @visual_router.post("/review/{review_id}/claim", response_model=ApiResponse)
-async def claim_review(review_id: int, request: Request, db: Session = Depends(get_db_session)) -> ApiResponse:
+async def claim_review(
+    review_id: int, request: Request, db: Session = Depends(get_db_session)
+) -> ApiResponse:
     """Claim a review task"""
     try:
         # Handle both raw string and JSON body
@@ -559,7 +565,9 @@ async def claim_review(review_id: int, request: Request, db: Session = Depends(g
 
 
 @visual_router.post("/review/{review_id}/resolve", response_model=ApiResponse)
-async def resolve_review(review_id: int, action: ReviewAction, db: Session = Depends(get_db_session)) -> ApiResponse:
+async def resolve_review(
+    review_id: int, action: ReviewAction, db: Session = Depends(get_db_session)
+) -> ApiResponse:
     """Resolve a review task"""
     try:
         review = db.query(ReviewQueue).filter_by(id=review_id).first()
@@ -700,7 +708,9 @@ async def visual_search(request: ImageAnalysisRequest, db: Session = Depends(get
     try:
         # Validate input
         if not request.image_url and not request.image_base64:
-            return ApiResponse(success=False, error="Either image_url or image_base64 must be provided")
+            return ApiResponse(
+                success=False, error="Either image_url or image_base64 must be provided"
+            )
 
         # Use real visual search agent
         from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic

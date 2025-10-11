@@ -15,7 +15,9 @@ from agents.routing.router_agent.agent_logic import RouterLogic
 import redis.asyncio as redis
 
 # Setup logging to see router messages
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 # Global counters

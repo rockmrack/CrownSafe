@@ -42,7 +42,9 @@ from alembic.config import Config
 import subprocess
 
 # Setup logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -101,7 +103,9 @@ class RecallDataIngester:
             logger.warning(f"Could not get table count: {e}")
             return 0
 
-    async def fetch_agency_data(self, agency_name: str, since_date: Optional[date] = None) -> List[dict]:
+    async def fetch_agency_data(
+        self, agency_name: str, since_date: Optional[date] = None
+    ) -> List[dict]:
         """Fetch recall data from a specific agency"""
         try:
             connector = self.connectors.get(agency_name)
@@ -116,7 +120,11 @@ class RecallDataIngester:
 
             # Filter by date if specified
             if since_date:
-                recalls = [recall for recall in recalls if recall.recall_date and recall.recall_date >= since_date]
+                recalls = [
+                    recall
+                    for recall in recalls
+                    if recall.recall_date and recall.recall_date >= since_date
+                ]
 
             logger.info(f"✅ Fetched {len(recalls)} recalls from {agency_name}")
             return recalls
@@ -273,7 +281,9 @@ async def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(description="BabyShield Recalls Data Ingestion")
     parser.add_argument("--since", type=str, help="Fetch recalls since date (YYYY-MM-DD)")
-    parser.add_argument("--agencies", type=str, help="Comma-separated list of agencies (default: all)")
+    parser.add_argument(
+        "--agencies", type=str, help="Comma-separated list of agencies (default: all)"
+    )
     parser.add_argument("--full-refresh", action="store_true", help="Full refresh of all data")
     parser.add_argument(
         "--migrate-only",

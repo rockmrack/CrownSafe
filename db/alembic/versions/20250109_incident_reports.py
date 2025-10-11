@@ -154,7 +154,9 @@ def upgrade():
         ["severity_level"],
         unique=False,
     )
-    op.create_index(op.f("ix_incident_reports_status"), "incident_reports", ["status"], unique=False)
+    op.create_index(
+        op.f("ix_incident_reports_status"), "incident_reports", ["status"], unique=False
+    )
 
     # Create incident_clusters table
     op.create_table(

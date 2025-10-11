@@ -49,16 +49,20 @@ def test_scan_results_page():
     result_safe = create_scan_results(scan_data_safe, None, barcode_info_safe)
 
     # Verify the response
-    assert result_safe.verdict == VerdictType.NO_RECALLS_FOUND, "Verdict should be 'No Recalls Found'"
+    assert (
+        result_safe.verdict == VerdictType.NO_RECALLS_FOUND
+    ), "Verdict should be 'No Recalls Found'"
     assert result_safe.verdict_color == "green", "Color should be green for safe products"
     assert result_safe.verdict_icon == "checkmark", "Icon should be checkmark"
-    assert result_safe.sub_text == "No recalls or allergen issues found in our database.", (
-        "Sub-text should clarify database check"
-    )
-    assert "39+ (No recalls found)" in result_safe.safety_check.agencies_checked, "Should show 39+ agencies"
-    assert result_safe.barcode_detection.quality_badge == "Best Quality: 014292998228 (ean13)", (
-        "Should show quality badge"
-    )
+    assert (
+        result_safe.sub_text == "No recalls or allergen issues found in our database."
+    ), "Sub-text should clarify database check"
+    assert (
+        "39+ (No recalls found)" in result_safe.safety_check.agencies_checked
+    ), "Should show 39+ agencies"
+    assert (
+        result_safe.barcode_detection.quality_badge == "Best Quality: 014292998228 (ean13)"
+    ), "Should show quality badge"
 
     print(f"✅ Verdict: {result_safe.verdict}")
     print(f"✅ Sub-text: {result_safe.sub_text}")
@@ -108,9 +112,9 @@ def test_scan_results_page():
     assert result_recall.verdict_color == "red", "Color should be red for recalls"
     assert result_recall.verdict_icon == "warning", "Icon should be warning"
     assert "2 recall(s) found" in result_recall.sub_text, "Sub-text should show recall count"
-    assert "39+ (2 recalls found)" in result_recall.safety_check.agencies_checked, (
-        "Should show recall count in agencies"
-    )
+    assert (
+        "39+ (2 recalls found)" in result_recall.safety_check.agencies_checked
+    ), "Should show recall count in agencies"
     assert len(result_recall.recalls) == 2, "Should have 2 recalls"
     assert result_recall.total_recalls == 2, "Total recalls should be 2"
 
@@ -122,8 +126,12 @@ def test_scan_results_page():
     # Test Case 3: Verify action buttons
     print("\n3. Testing action buttons...")
 
-    assert result_safe.actions["download_pdf"] == "/api/v1/reports/generate", "Should have PDF download endpoint"
-    assert result_safe.actions["view_details"] == "/api/v1/products/details", "Should have view details endpoint"
+    assert (
+        result_safe.actions["download_pdf"] == "/api/v1/reports/generate"
+    ), "Should have PDF download endpoint"
+    assert (
+        result_safe.actions["view_details"] == "/api/v1/products/details"
+    ), "Should have view details endpoint"
 
     print(f"✅ Download PDF: {result_safe.actions['download_pdf']}")
     print(f"✅ View Details: {result_safe.actions['view_details']}")

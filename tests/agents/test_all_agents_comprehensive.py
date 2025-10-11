@@ -49,7 +49,9 @@ class TestResults:
         if agent_name not in self.results:
             self.results[agent_name] = {"tests": [], "passed": 0, "failed": 0}
 
-        self.results[agent_name]["tests"].append({"name": test_name, "status": status, "details": details})
+        self.results[agent_name]["tests"].append(
+            {"name": test_name, "status": status, "details": details}
+        )
 
         if status == "PASSED":
             self.results[agent_name]["passed"] += 1
@@ -136,7 +138,9 @@ async def test_recall_agent_cpsc_live_api():
         assert "recall_id" in first_recall
         assert "product_name" in first_recall
 
-        test_results.add_result(agent_name, test_name, "PASSED", f"Fetched {len(recalls)} real recalls from CPSC")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", f"Fetched {len(recalls)} real recalls from CPSC"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -159,7 +163,10 @@ async def test_recall_agent_connectors():
 
         assert all(c is not None for c in connectors)
         test_results.add_result(
-            agent_name, test_name, "PASSED", f"Initialized {len(connectors)} connectors successfully"
+            agent_name,
+            test_name,
+            "PASSED",
+            f"Initialized {len(connectors)} connectors successfully",
         )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
@@ -182,7 +189,9 @@ async def test_recall_agent_process_task():
         assert result is not None
         assert "recalls" in result or "error" not in result
 
-        test_results.add_result(agent_name, test_name, "PASSED", "Successfully processed recall search task")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Successfully processed recall search task"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -226,7 +235,9 @@ async def test_chat_agent_process_simple_query():
         assert result is not None
         assert "response" in result or "answer" in result or "error" not in result
 
-        test_results.add_result(agent_name, test_name, "PASSED", "Successfully processed simple query")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Successfully processed simple query"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -291,7 +302,12 @@ def test_report_builder_generate_report():
                 "upc": "070470003795",
                 "scan_id": "test-scan-123",
                 "recalls": [
-                    {"recall_id": "TEST-001", "product_name": "Baby Stroller", "hazard": "Fall risk", "agency": "CPSC"}
+                    {
+                        "recall_id": "TEST-001",
+                        "product_name": "Baby Stroller",
+                        "hazard": "Fall risk",
+                        "agency": "CPSC",
+                    }
                 ],
             }
         )

@@ -119,7 +119,8 @@ class RecallDataAgentLogic:
                 # Priority 2: Brand + name matching (medium confidence)
                 if brand and product_name:
                     filters.append(
-                        (RecallDB.brand.ilike(f"%{brand}%")) & (RecallDB.product_name.ilike(f"%{product_name}%"))
+                        (RecallDB.brand.ilike(f"%{brand}%"))
+                        & (RecallDB.product_name.ilike(f"%{product_name}%"))
                     )
 
                 # Priority 3: Product name fuzzy matching (lower confidence)
@@ -135,7 +136,9 @@ class RecallDataAgentLogic:
                 else:
                     recalled_products = []
 
-                self.logger.info(f"[{self.agent_id}] Found {len(recalled_products)} matching recalls")
+                self.logger.info(
+                    f"[{self.agent_id}] Found {len(recalled_products)} matching recalls"
+                )
 
                 # Convert to dictionaries using Pydantic validation
                 found_recalls = []
@@ -199,7 +202,9 @@ class RecallDataAgentLogic:
                     "duration_seconds": (datetime.now() - start_time).total_seconds(),
                 }
 
-            self.logger.info(f"[{self.agent_id}] Fetched {len(all_recalls)} total recalls from all agencies")
+            self.logger.info(
+                f"[{self.agent_id}] Fetched {len(all_recalls)} total recalls from all agencies"
+            )
 
             # Upsert into database
             db = SessionLocal()
@@ -211,7 +216,11 @@ class RecallDataAgentLogic:
                 for recall_data in all_recalls:
                     try:
                         # Check if recall already exists
-                        existing = db.query(RecallDB).filter(RecallDB.recall_id == recall_data.recall_id).first()
+                        existing = (
+                            db.query(RecallDB)
+                            .filter(RecallDB.recall_id == recall_data.recall_id)
+                            .first()
+                        )
 
                         if existing:
                             # Update existing record
@@ -284,7 +293,9 @@ class RecallDataAgentLogic:
                 from sqlalchemy import func
 
                 agency_counts = (
-                    db.query(RecallDB.source_agency, func.count(RecallDB.id)).group_by(RecallDB.source_agency).all()
+                    db.query(RecallDB.source_agency, func.count(RecallDB.id))
+                    .group_by(RecallDB.source_agency)
+                    .all()
                 )
 
                 return {

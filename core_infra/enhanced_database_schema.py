@@ -90,7 +90,9 @@ class EnhancedRecallDB(Base):
     # Examples: "choking", "fire", "chemical", "microbial", "allergen"
 
     severity = Column(String(50), nullable=True)  # 🆕 Severity level (low, medium, high, critical)
-    risk_category = Column(String(100), nullable=True)  # 🆕 Risk category (general, food, vehicle, etc.)
+    risk_category = Column(
+        String(100), nullable=True
+    )  # 🆕 Risk category (general, food, vehicle, etc.)
 
     recall_reason = Column(Text, nullable=True)  # Enhanced from hazard_description
     remedy = Column(Text, nullable=True)  # ✅ Existing

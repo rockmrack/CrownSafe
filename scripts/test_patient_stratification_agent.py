@@ -17,7 +17,9 @@ from agents.patient_stratification_agent.agent_logic import (
 )
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 # Try to import nest_asyncio for event loop handling
@@ -108,7 +110,9 @@ async def test_stratification_agent():
             print("\n📊 DECISION SUMMARY:")
             print(f"   • Decision: {normalized_decision}")
             print(f"   • Approval Likelihood: {prediction['approval_likelihood']}%")
-            print(f"   • Confidence: {prediction['confidence_score']:.2f} ({prediction['confidence_level']})")
+            print(
+                f"   • Confidence: {prediction['confidence_score']:.2f} ({prediction['confidence_level']})"
+            )
             print(f"   • Processing Time: {prediction['processing_time_ms']}ms")
             print(f"   • LLM Tokens Used: {prediction['llm_tokens_used']}")
 
@@ -139,12 +143,12 @@ async def test_stratification_agent():
                     print(f"   • {rec}")
 
             # Validate expected outcome
-            assert normalized_decision == DecisionType.APPROVE.value, (
-                f"Expected {DecisionType.APPROVE.value}, got {normalized_decision}"
-            )
-            assert prediction["approval_likelihood"] > 70, (
-                f"Expected high likelihood, got {prediction['approval_likelihood']}%"
-            )
+            assert (
+                normalized_decision == DecisionType.APPROVE.value
+            ), f"Expected {DecisionType.APPROVE.value}, got {normalized_decision}"
+            assert (
+                prediction["approval_likelihood"] > 70
+            ), f"Expected high likelihood, got {prediction['approval_likelihood']}%"
 
             print("\n✅ Test 1 PASSED - Patient correctly identified for APPROVAL")
 
@@ -179,7 +183,9 @@ async def test_stratification_agent():
             print("\n📊 DECISION SUMMARY:")
             print(f"   • Decision: {normalized_decision}")
             print(f"   • Approval Likelihood: {prediction['approval_likelihood']}%")
-            print(f"   • Confidence: {prediction['confidence_score']:.2f} ({prediction['confidence_level']})")
+            print(
+                f"   • Confidence: {prediction['confidence_score']:.2f} ({prediction['confidence_level']})"
+            )
 
             print("\n📝 CLINICAL RATIONALE:")
             print(f"   {prediction['clinical_rationale']}")
@@ -197,12 +203,12 @@ async def test_stratification_agent():
                     )
 
             # Validate expected outcome
-            assert normalized_decision == DecisionType.DENY.value, (
-                f"Expected {DecisionType.DENY.value}, got {normalized_decision}"
-            )
-            assert prediction["approval_likelihood"] < 30, (
-                f"Expected low likelihood, got {prediction['approval_likelihood']}%"
-            )
+            assert (
+                normalized_decision == DecisionType.DENY.value
+            ), f"Expected {DecisionType.DENY.value}, got {normalized_decision}"
+            assert (
+                prediction["approval_likelihood"] < 30
+            ), f"Expected low likelihood, got {prediction['approval_likelihood']}%"
 
             print("\n✅ Test 2 PASSED - Patient correctly identified for DENIAL")
 
@@ -275,7 +281,9 @@ async def test_stratification_agent():
         print("   • Speed improvement: Instant (0ms)")
 
     assert result2.get("source") == "cache", "Second call should be from cache"
-    assert second_call_time < first_call_time / 2 or second_call_time == 0, "Cached call should be significantly faster"
+    assert (
+        second_call_time < first_call_time / 2 or second_call_time == 0
+    ), "Cached call should be significantly faster"
 
     print("\n✅ Test 4 PASSED - Caching working correctly")
 
@@ -304,7 +312,8 @@ async def test_stratification_agent():
             urgency_evidence = [
                 e
                 for e in evidence_items
-                if "urgency" in e.get("type", "").lower() or "urgent" in e.get("content", "").lower()
+                if "urgency" in e.get("type", "").lower()
+                or "urgent" in e.get("content", "").lower()
             ]
 
             if urgency_evidence:

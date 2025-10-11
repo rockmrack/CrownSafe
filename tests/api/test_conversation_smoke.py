@@ -42,7 +42,9 @@ def _fake_scan(product="Brie", extra=None):
 def test_conversation_pregnancy(monkeypatch):
     # Wire LLM + fetch_scan_data
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
-    monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan("Brie Président"))
+    monkeypatch.setattr(
+        chat_router, "fetch_scan_data", lambda db, sid: _fake_scan("Brie Président")
+    )
     client = TestClient(app)
     r = client.post(
         "/api/v1/chat/conversation",

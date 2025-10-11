@@ -16,7 +16,9 @@ from agents.engagement.push_notification_agent.agent_logic import (
     PushNotificationAgentLogic,
 )
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # --- Test Configuration ---
 TEST_DEVICE_TOKEN = "fake_device_token_for_testing_12345"
@@ -43,7 +45,9 @@ async def main():
         logger.info(f"Created task: {task_inputs}")
 
         # 3. Mock the Firebase Admin SDK send method.
-        with patch("firebase_admin.messaging.send", return_value="mock_message_id_123") as mock_send:
+        with patch(
+            "firebase_admin.messaging.send", return_value="mock_message_id_123"
+        ) as mock_send:
             # 4. Process the task.
             logger.info("Calling agent_logic.process_task (Firebase Admin SDK is mocked)...")
             result = await agent_logic.process_task(task_inputs)
@@ -60,7 +64,10 @@ async def main():
         print(json.dumps(result, indent=2))
 
         # 7. Validate the result.
-        if result.get("status") == "COMPLETED" and result.get("message_id") == "mock_message_id_123":
+        if (
+            result.get("status") == "COMPLETED"
+            and result.get("message_id") == "mock_message_id_123"
+        ):
             print("\n" + "=" * 50)
             print("✅✅✅ TEST PASSED: Successfully simulated sending a push notification.")
         else:

@@ -44,7 +44,9 @@ async def forward_message(
 
     try:
         await ws.send_json(message_to_forward)  # FastAPI WebSocket handles dict to json
-        logger.info(f"FORWARDING MSG [{label}]: Successfully delivered Type='{msg_type}' to '{target_agent_id}'.")
+        logger.info(
+            f"FORWARDING MSG [{label}]: Successfully delivered Type='{msg_type}' to '{target_agent_id}'."
+        )
         return True
     except Exception as e:
         logger.error(
@@ -90,12 +92,16 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
     )
     # --- END ADDED CRITICAL LOG ---
 
-    logger.debug(f"ROUTER RECV: from='{agent_id}' snippet='{message_text[:200]}'")  # Existing debug log
+    logger.debug(
+        f"ROUTER RECV: from='{agent_id}' snippet='{message_text[:200]}'"
+    )  # Existing debug log
     msg: Optional[Dict[str, Any]] = None
     try:
         msg = parse_mcp_message(message_text)
         if not msg or "mcp_header" not in msg:
-            logger.warning(f"ROUTER: Malformed message from '{agent_id}'; dropping. raw='{message_text}'")
+            logger.warning(
+                f"ROUTER: Malformed message from '{agent_id}'; dropping. raw='{message_text}'"
+            )
             return
 
         hdr = msg.get("mcp_header", {})
@@ -124,8 +130,12 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             return
 
         if target_svc == "MCP_DISCOVERY":
-            logger.debug(f"ROUTER ROUTE→DISCOVERY: Type='{mtype}', From='{agent_id}', CorrID='{corr}'")
-            await discovery.handle_discovery_message(msg, agent_id)  # Pass full msg and path agent_id
+            logger.debug(
+                f"ROUTER ROUTE→DISCOVERY: Type='{mtype}', From='{agent_id}', CorrID='{corr}'"
+            )
+            await discovery.handle_discovery_message(
+                msg, agent_id
+            )  # Pass full msg and path agent_id
             return
 
         if mtype == "PROCESS_USER_REQUEST":
@@ -144,7 +154,9 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
 
             if target_commander_id:
                 # The sender_id for forward_message should be the original sender (agent_id from path)
-                success = await forward_message(agent_id, msg, target_commander_id, label="PROCESS_USER_REQUEST")
+                success = await forward_message(
+                    agent_id, msg, target_commander_id, label="PROCESS_USER_REQUEST"
+                )
                 if not success:
                     err_resp = create_mcp_error_response(
                         sender_id="MCP_ROUTER",
@@ -158,7 +170,9 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
                     if err_resp:
                         await websocket.send_json(err_resp)
             else:
-                logger.error(f"ROUTER: No CommanderAgent found to handle PROCESS_USER_REQUEST from '{agent_id}'")
+                logger.error(
+                    f"ROUTER: No CommanderAgent found to handle PROCESS_USER_REQUEST from '{agent_id}'"
+                )
                 err_resp = create_mcp_error_response(
                     sender_id="MCP_ROUTER",
                     correlation_id=corr,
@@ -191,7 +205,9 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
                     await websocket.send_json(err_resp)
                 return
             # The sender_id for forward_message should be the original sender (agent_id from path)
-            success = await forward_message(agent_id, msg, target_agent_id_for_task, label="TASK_ASSIGN")
+            success = await forward_message(
+                agent_id, msg, target_agent_id_for_task, label="TASK_ASSIGN"
+            )
             if not success:
                 err_resp = create_mcp_error_response(
                     sender_id="MCP_ROUTER",
@@ -276,13 +292,17 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             if err_resp_unparseable:
                 await websocket.send_json(err_resp_unparseable)
         except Exception as send_err_ex:
-            logger.error(f"ROUTER: Failed to send unparseable JSON error to '{agent_id}': {send_err_ex}")
+            logger.error(
+                f"ROUTER: Failed to send unparseable JSON error to '{agent_id}': {send_err_ex}"
+            )
 
     except Exception:
         logger.exception(f"ROUTER: Internal error handling message from '{agent_id}'")
         try:
             corr_id_for_error = (
-                msg.get("mcp_header", {}).get("correlation_id", "") if msg and isinstance(msg, dict) else None
+                msg.get("mcp_header", {}).get("correlation_id", "")
+                if msg and isinstance(msg, dict)
+                else None
             )  # Use None if not found
             err_resp = create_mcp_error_response(
                 sender_id="MCP_ROUTER",
@@ -296,4 +316,6 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             if err_resp:
                 await websocket.send_json(err_resp)
         except Exception as send_err_ex:
-            logger.error(f"ROUTER: Failed to send internal error notification to '{agent_id}': {send_err_ex}")
+            logger.error(
+                f"ROUTER: Failed to send internal error notification to '{agent_id}': {send_err_ex}"
+            )

@@ -168,7 +168,9 @@ class BarcodeCache:
         if len(self.cache) > self.max_size:
             self.cache.popitem(last=False)
 
-        logger.info(f"Cached scan result for barcode: {barcode[:4]}**** (cache size: {len(self.cache)})")
+        logger.info(
+            f"Cached scan result for barcode: {barcode[:4]}**** (cache size: {len(self.cache)})"
+        )
 
     def clear_user_cache(self, user_id: str):
         """Clear all cache entries for a specific user"""
@@ -320,7 +322,9 @@ def search_exact_barcode(barcode: str, db: Session) -> List[RecallDB]:
     return recalls
 
 
-def search_similar_products(barcode: str, brand: Optional[str], category: Optional[str], db: Session) -> List[RecallDB]:
+def search_similar_products(
+    barcode: str, brand: Optional[str], category: Optional[str], db: Session
+) -> List[RecallDB]:
     """
     Search for similar products when exact match not found
     Uses brand, category, and partial barcode matching
@@ -363,7 +367,13 @@ def search_similar_products(barcode: str, brand: Optional[str], category: Option
         return []
 
     # Combine conditions with OR
-    recalls = db.query(RecallDB).filter(or_(*conditions)).order_by(RecallDB.recall_date.desc()).limit(20).all()
+    recalls = (
+        db.query(RecallDB)
+        .filter(or_(*conditions))
+        .order_by(RecallDB.recall_date.desc())
+        .limit(20)
+        .all()
+    )
 
     return recalls
 
@@ -438,7 +448,9 @@ async def scan_barcode(
         device_id = device_id or request.device_id
 
         # Generate trace ID
-        trace_id = f"barcode_{hashlib.md5(f'{request.barcode}{datetime.now()}'.encode()).hexdigest()[:8]}"
+        trace_id = (
+            f"barcode_{hashlib.md5(f'{request.barcode}{datetime.now()}'.encode()).hexdigest()[:8]}"
+        )
     except Exception as e:
         logger.error(f"Error initializing barcode scan: {str(e)}")
         # Return error response instead of raising 500
@@ -512,7 +524,9 @@ async def scan_barcode(
                             recall_date=str(recall.recall_date)
                             if hasattr(recall, "recall_date") and recall.recall_date
                             else None,
-                            agency=recall.source_agency if hasattr(recall, "source_agency") else "Unknown",
+                            agency=recall.source_agency
+                            if hasattr(recall, "source_agency")
+                            else "Unknown",
                             match_confidence=1.0,
                             match_type="exact",
                         )
@@ -530,13 +544,19 @@ async def scan_barcode(
                 "recalls": recalls,
                 "total_recalls": len(recalls),
             }
-            payload = _normalize_scan_payload(normalized_barcode, raw_payload, trace_id, cached=False)
+            payload = _normalize_scan_payload(
+                normalized_barcode, raw_payload, trace_id, cached=False
+            )
             response = BarcodeScanResponse.model_validate(payload)
 
         elif request.include_similar:
             # No exact match, try similar products
             try:
-                similar_recalls = search_similar_products(normalized_barcode, brand, product.category, db) if db else []
+                similar_recalls = (
+                    search_similar_products(normalized_barcode, brand, product.category, db)
+                    if db
+                    else []
+                )
             except Exception as e:
                 logger.error(f"Database error searching similar products: {str(e)}")
                 similar_recalls = []
@@ -569,7 +589,9 @@ async def scan_barcode(
                             recall_date=str(recall.recall_date)
                             if hasattr(recall, "recall_date") and recall.recall_date
                             else None,
-                            agency=recall.source_agency if hasattr(recall, "source_agency") else "Unknown",
+                            agency=recall.source_agency
+                            if hasattr(recall, "source_agency")
+                            else "Unknown",
                             match_confidence=confidence,
                             match_type=match_type,
                         )
@@ -584,7 +606,9 @@ async def scan_barcode(
                     "recalls": recalls,
                     "total_recalls": len(recalls),
                 }
-                payload = _normalize_scan_payload(normalized_barcode, raw_payload, trace_id, cached=False)
+                payload = _normalize_scan_payload(
+                    normalized_barcode, raw_payload, trace_id, cached=False
+                )
                 response = BarcodeScanResponse.model_validate(payload)
             else:
                 # No recalls found at all
@@ -596,7 +620,9 @@ async def scan_barcode(
                     "recalls": [],
                     "total_recalls": 0,
                 }
-                payload = _normalize_scan_payload(normalized_barcode, raw_payload, trace_id, cached=False)
+                payload = _normalize_scan_payload(
+                    normalized_barcode, raw_payload, trace_id, cached=False
+                )
                 response = BarcodeScanResponse.model_validate(payload)
         else:
             # No exact match and similar search disabled
@@ -608,7 +634,9 @@ async def scan_barcode(
                 "recalls": [],
                 "total_recalls": 0,
             }
-            payload = _normalize_scan_payload(normalized_barcode, raw_payload, trace_id, cached=False)
+            payload = _normalize_scan_payload(
+                normalized_barcode, raw_payload, trace_id, cached=False
+            )
             response = BarcodeScanResponse.model_validate(payload)
 
     except Exception as response_error:
@@ -634,7 +662,9 @@ async def scan_barcode(
         logger.info(
             "Barcode scan completed",
             extra={
-                "barcode": normalized_barcode[:4] + "****" if len(normalized_barcode) > 4 else normalized_barcode,
+                "barcode": normalized_barcode[:4] + "****"
+                if len(normalized_barcode) > 4
+                else normalized_barcode,
                 "match_status": response.match_status,
                 "recalls_found": response.total_recalls,
                 "user_id": user_id,
@@ -671,7 +701,9 @@ async def get_cache_status(user_id: Optional[str] = Header(None, alias="X-User-I
 @router.post("/cache/clear", operation_id="clear_cache_post")
 async def clear_cache(
     barcode: Optional[str] = Query(None, description="Specific barcode to clear (optional)"),
-    user_id: Optional[str] = Header(None, alias="X-User-ID", description="User ID for user-specific cache"),
+    user_id: Optional[str] = Header(
+        None, alias="X-User-ID", description="User ID for user-specific cache"
+    ),
 ):
     """Clear cache - all or specific barcode"""
 
@@ -688,7 +720,9 @@ async def clear_cache(
         return {
             "ok": True,
             "cleared": 1 if cleared else 0,
-            "total_cached_after": getattr(barcode_cache, "get_cache_size", lambda: len(barcode_cache.cache))(),
+            "total_cached_after": getattr(
+                barcode_cache, "get_cache_size", lambda: len(barcode_cache.cache)
+            )(),
         }
     elif user_id:
         # Clear user-specific cache
@@ -702,7 +736,9 @@ async def clear_cache(
         return {
             "ok": True,
             "cleared": 1,
-            "total_cached_after": getattr(barcode_cache, "get_cache_size", lambda: len(barcode_cache.cache))(),
+            "total_cached_after": getattr(
+                barcode_cache, "get_cache_size", lambda: len(barcode_cache.cache)
+            )(),
         }
     else:
         # Clear all cache

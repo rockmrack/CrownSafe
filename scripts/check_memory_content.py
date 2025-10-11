@@ -113,7 +113,9 @@ class MemoryValidationSuite:
         try:
             # Test 1: Basic retrieval (backward compatibility)
             self.print_info("Testing basic document retrieval...")
-            basic_results = await self.memory.retrieve_similar_documents(query_text="SGLT2 inhibitors", n_results=3)
+            basic_results = await self.memory.retrieve_similar_documents(
+                query_text="SGLT2 inhibitors", n_results=3
+            )
 
             if not basic_results:
                 self.print_error("Basic retrieval returned no results")
@@ -130,10 +132,14 @@ class MemoryValidationSuite:
                 return False
 
             cross_workflow_count = len(analytics.get("cross_workflow_evidence", []))
-            high_quality_count = analytics.get("quality_metrics", {}).get("high_quality_documents", 0)
+            high_quality_count = analytics.get("quality_metrics", {}).get(
+                "high_quality_documents", 0
+            )
 
             if cross_workflow_count > 0:
-                self.print_success(f"Cross-workflow evidence confirmed: {cross_workflow_count} documents")
+                self.print_success(
+                    f"Cross-workflow evidence confirmed: {cross_workflow_count} documents"
+                )
                 self.print_info(f"High-quality documents (ref_count >= 2): {high_quality_count}")
 
                 # Show examples of cross-workflow documents
@@ -141,7 +147,9 @@ class MemoryValidationSuite:
                 for i, doc in enumerate(cross_workflow_docs):
                     workflows = doc.get("workflows", [])
                     drugs = doc.get("drugs", [])
-                    self.print_info(f"  Example {i + 1}: {doc.get('id')} - Workflows: {len(workflows)}, Drugs: {drugs}")
+                    self.print_info(
+                        f"  Example {i + 1}: {doc.get('id')} - Workflows: {len(workflows)}, Drugs: {drugs}"
+                    )
 
                 _ = True  # cross_workflow_found
             else:
@@ -222,11 +230,14 @@ class MemoryValidationSuite:
             )
 
             all_high_quality = all(
-                result.get("metadata", {}).get("reference_count", 1) >= 2 for result in high_quality_results
+                result.get("metadata", {}).get("reference_count", 1) >= 2
+                for result in high_quality_results
             )
 
             if all_high_quality and high_quality_results:
-                self.print_success(f"Quality filtering works: {len(high_quality_results)} high-quality documents")
+                self.print_success(
+                    f"Quality filtering works: {len(high_quality_results)} high-quality documents"
+                )
             else:
                 self.print_error("Quality filtering not working correctly")
                 return False
@@ -379,13 +390,17 @@ class MemoryValidationSuite:
                 f"  High-quality documents: {analytics['quality_metrics'].get('high_quality_documents', 0)}"
             )
             self.print_info(f"  Drug patterns found: {len(analytics['drug_class_patterns'])}")
-            self.print_info(f"  Cross-workflow evidence: {len(analytics.get('cross_workflow_evidence', []))}")
+            self.print_info(
+                f"  Cross-workflow evidence: {len(analytics.get('cross_workflow_evidence', []))}"
+            )
 
             # Show top drug patterns
             if analytics["drug_class_patterns"]:
                 self.print_info("  Top drug patterns:")
                 for drug, data in list(analytics["drug_class_patterns"].items())[:3]:
-                    self.print_info(f"    {drug}: {data['document_count']} docs, {data['workflow_count']} workflows")
+                    self.print_info(
+                        f"    {drug}: {data['document_count']} docs, {data['workflow_count']} workflows"
+                    )
 
             self.test_results["analytics"] = True
             return True
@@ -439,7 +454,9 @@ class MemoryValidationSuite:
             print("[PASS] Cross-workflow learning validated")
             print("[PASS] Memory-augmented methods ready for PlannerAgent integration")
         else:
-            print(f"\n[WARNING] {total_tests - passed_tests} test(s) failed. Please review errors above.")
+            print(
+                f"\n[WARNING] {total_tests - passed_tests} test(s) failed. Please review errors above."
+            )
             print("[FAIL] MemoryManager MVP-1.4 needs fixes before proceeding")
 
     async def run_full_validation(self):

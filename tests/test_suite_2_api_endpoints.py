@@ -269,7 +269,9 @@ class TestAPIEndpoints:
 
     def test_register_with_weak_password(self):
         """Test register with weak password"""
-        response = client.post("/api/v1/auth/register", json={"email": "test@test.com", "password": "123"})
+        response = client.post(
+            "/api/v1/auth/register", json={"email": "test@test.com", "password": "123"}
+        )
         assert response.status_code in [400, 404, 422, 500]
 
     def test_login_with_invalid_credentials(self):
@@ -282,7 +284,9 @@ class TestAPIEndpoints:
 
     def test_password_reset_request_endpoint(self):
         """Test password reset request endpoint"""
-        response = client.post("/api/v1/auth/password-reset/request", json={"email": "test@test.com"})
+        response = client.post(
+            "/api/v1/auth/password-reset/request", json={"email": "test@test.com"}
+        )
         assert response.status_code in [200, 400, 404, 422, 500]
 
     def test_password_reset_confirm_endpoint(self):
@@ -389,7 +393,9 @@ class TestAPIEndpoints:
 
     def test_push_notification_token_endpoint(self):
         """Test push notification token registration"""
-        response = client.post("/api/v1/notifications/push-token", json={"token": "test-push-token"})
+        response = client.post(
+            "/api/v1/notifications/push-token", json={"token": "test-push-token"}
+        )
         assert response.status_code in [200, 401, 404, 405, 422, 500]
 
     # ========================
@@ -556,7 +562,9 @@ class TestAPIEndpoints:
 
     def test_content_type_validation(self):
         """Test content type validation"""
-        response = client.post("/api/v1/feedback", data="test", headers={"Content-Type": "text/plain"})
+        response = client.post(
+            "/api/v1/feedback", data="test", headers={"Content-Type": "text/plain"}
+        )
         assert response.status_code in [
             400,
             404,

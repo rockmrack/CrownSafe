@@ -74,7 +74,9 @@ class ClinicalTrialsAgentLogic:
         self.logger = logger_instance if logger_instance else logger_cta_logic_default
         self._load_environment()
 
-        self.api_base_url = os.getenv("CLINICAL_TRIALS_API_URL", "https://clinicaltrials.gov/api/v2").rstrip("/")
+        self.api_base_url = os.getenv(
+            "CLINICAL_TRIALS_API_URL", "https://clinicaltrials.gov/api/v2"
+        ).rstrip("/")
 
         # Using headers that worked with requests/curl
         # Note: 'Host' is typically set automatically by requests.
@@ -160,8 +162,12 @@ class ClinicalTrialsAgentLogic:
         except (ValueError, TypeError):
             return False, "max_trials not int.", validated_max_trials, query_params
         drug_name_s = drug_name.strip() if drug_name and isinstance(drug_name, str) else None
-        disease_name_s = disease_name.strip() if disease_name and isinstance(disease_name, str) else None
-        search_terms_s = search_terms.strip() if search_terms and isinstance(search_terms, str) else None
+        disease_name_s = (
+            disease_name.strip() if disease_name and isinstance(disease_name, str) else None
+        )
+        search_terms_s = (
+            search_terms.strip() if search_terms and isinstance(search_terms, str) else None
+        )
         if drug_name_s and len(drug_name_s) > 500:
             return False, "drug_name too long.", validated_max_trials, query_params
         if disease_name_s and len(disease_name_s) > 500:
@@ -186,7 +192,9 @@ class ClinicalTrialsAgentLogic:
             )
         return True, None, validated_max_trials, query_params
 
-    def _make_sync_api_request(self, query_params: Dict[str, str], max_trials_validated: int) -> Dict[str, Any]:
+    def _make_sync_api_request(
+        self, query_params: Dict[str, str], max_trials_validated: int
+    ) -> Dict[str, Any]:
         """Synchronous API request using the 'requests' library."""
         studies_endpoint = f"{self.api_base_url}/studies"
         api_params = {
@@ -218,7 +226,9 @@ class ClinicalTrialsAgentLogic:
                 self.logger.debug(f"  Response Headers Received: {dict(response.headers)}")
                 # Log actual request headers sent by 'requests' library
                 if response.request and response.request.headers:
-                    self.logger.debug(f"  ACTUAL REQUEST HEADERS SENT by 'requests': {dict(response.request.headers)}")
+                    self.logger.debug(
+                        f"  ACTUAL REQUEST HEADERS SENT by 'requests': {dict(response.request.headers)}"
+                    )
 
                 response.raise_for_status()  # Raises requests.exceptions.HTTPError for 4xx/5xx
 
@@ -245,7 +255,9 @@ class ClinicalTrialsAgentLogic:
                 elif e.response.status_code == 404:
                     current_exception = FileNotFoundError(f"Not Found (404): {err_msg_detail}")
                 elif e.response.status_code == 429:
-                    current_exception = ConnectionError(f"Too Many Requests (429): {err_msg_detail}")  # Retryable
+                    current_exception = ConnectionError(
+                        f"Too Many Requests (429): {err_msg_detail}"
+                    )  # Retryable
                 elif e.response.status_code >= 500:
                     current_exception = ConnectionError(
                         f"Server Error ({e.response.status_code}): {err_msg_detail}"
@@ -277,8 +289,12 @@ class ClinicalTrialsAgentLogic:
 
             # Retry logic
             if attempt < self.max_retries:
-                if last_exception and not isinstance(last_exception, (ConnectionError, TimeoutError)):
-                    self.logger.error(f"Non-retryable error encountered on attempt {attempt + 1}. Failing early.")
+                if last_exception and not isinstance(
+                    last_exception, (ConnectionError, TimeoutError)
+                ):
+                    self.logger.error(
+                        f"Non-retryable error encountered on attempt {attempt + 1}. Failing early."
+                    )
                     raise last_exception
 
                 delay = self.retry_delay_base * (2**attempt)
@@ -291,7 +307,9 @@ class ClinicalTrialsAgentLogic:
                 self.logger.error(f"All {self.max_retries + 1} attempts failed.")
                 if last_exception:
                     raise last_exception
-                raise RuntimeError(f"All {self.max_retries + 1} attempts failed with an unspecified error.")
+                raise RuntimeError(
+                    f"All {self.max_retries + 1} attempts failed with an unspecified error."
+                )
 
         # Fallback, should not be reached
         critical_fallback_error = "All API request attempts failed after retries (sync)."
@@ -313,7 +331,11 @@ class ClinicalTrialsAgentLogic:
             brief_title = id_module.get("briefTitle", "N/A")
             official_title = id_module.get("officialTitle")
             title_to_use = (
-                brief_title if brief_title and brief_title != "N/A" else official_title if official_title else "N/A"
+                brief_title
+                if brief_title and brief_title != "N/A"
+                else official_title
+                if official_title
+                else "N/A"
             )
             overall_status = status_module.get("overallStatus", "N/A")
             trial_url = f"https://clinicaltrials.gov/study/{nct_id}"
@@ -328,10 +350,16 @@ class ClinicalTrialsAgentLogic:
                         intervention_names.append(item.get("name"))
             intervention_str = "; ".join(intervention_names) if intervention_names else "N/A"
             start_date_struct = status_module.get("startDateStruct", {})
-            start_date = start_date_struct.get("date", "N/A") if isinstance(start_date_struct, dict) else "N/A"
+            start_date = (
+                start_date_struct.get("date", "N/A")
+                if isinstance(start_date_struct, dict)
+                else "N/A"
+            )
             completion_date_struct = status_module.get("primaryCompletionDateStruct", {})
             completion_date = (
-                completion_date_struct.get("date", "N/A") if isinstance(completion_date_struct, dict) else "N/A"
+                completion_date_struct.get("date", "N/A")
+                if isinstance(completion_date_struct, dict)
+                else "N/A"
             )
             return ClinicalTrial(
                 nct_id=nct_id,
@@ -381,9 +409,13 @@ class ClinicalTrialsAgentLogic:
                         if parsed_trial:
                             trials_data_parsed.append(parsed_trial)
             else:
-                self.logger.warning(f"'studies' field not a list. Response: {str(api_response_json)[:200]}")
+                self.logger.warning(
+                    f"'studies' field not a list. Response: {str(api_response_json)[:200]}"
+                )
 
-            api_total_count = api_response_json.get("totalCount", 0) if isinstance(api_response_json, dict) else 0
+            api_total_count = (
+                api_response_json.get("totalCount", 0) if isinstance(api_response_json, dict) else 0
+            )
             search_time_ms = (time.perf_counter_ns() - start_time_ns) // 1_000_000
 
             self.logger.info(
@@ -408,7 +440,9 @@ class ClinicalTrialsAgentLogic:
             RuntimeError,
         ) as e:
             search_time_ms_on_error = (time.perf_counter_ns() - start_time_ns) // 1_000_000
-            error_message = f"API Error (requests) for {query_params_str}: {type(e).__name__} - {str(e)}"
+            error_message = (
+                f"API Error (requests) for {query_params_str}: {type(e).__name__} - {str(e)}"
+            )
             self.logger.error(error_message)
             return TrialsQueryResult(
                 query_used_for_api=query_params_str,
@@ -441,7 +475,9 @@ class ClinicalTrialsAgentLogic:
             return False, "Missing/invalid payload"
         return True, None
 
-    async def process_message(self, message_data: Dict[str, Any], client: Any) -> Optional[Dict[str, Any]]:
+    async def process_message(
+        self, message_data: Dict[str, Any], client: Any
+    ) -> Optional[Dict[str, Any]]:
         # ... (This method remains largely the same, ensuring it calls the updated _fetch_clinical_trials_data) ...
         is_valid_msg, msg_err = self._validate_message_structure(message_data)
         if not is_valid_msg:
@@ -455,7 +491,9 @@ class ClinicalTrialsAgentLogic:
         try:
             message_type = MessageType(message_type_str)
         except ValueError:
-            self.logger.warning(f"Unknown msg type '{message_type_str}' from {sender_id}. Ignoring.")
+            self.logger.warning(
+                f"Unknown msg type '{message_type_str}' from {sender_id}. Ignoring."
+            )
             return None
         if message_type == MessageType.PONG:
             self.logger.debug(f"PONG from {sender_id} for CorrID: {correlation_id}.")
@@ -465,7 +503,9 @@ class ClinicalTrialsAgentLogic:
                 f"Registration confirmed by {sender_id} (CorrID: {correlation_id}). Agent: {payload.get('agent_id')}"
             )
             return None
-        self.logger.info(f"Processing {message_type.value} from {sender_id} (CorrID: {correlation_id})")
+        self.logger.info(
+            f"Processing {message_type.value} from {sender_id} (CorrID: {correlation_id})"
+        )
         if message_type == MessageType.TASK_ASSIGN:
             return await self._handle_task_assign(payload, correlation_id)
         else:
@@ -515,9 +555,15 @@ class ClinicalTrialsAgentLogic:
             self.logger.info(
                 f"Performing ClinicalTrials search for task {task_id} with params: {query_params_dict}, max_trials: {validated_max_trials}"
             )
-            query_result_obj = await self._fetch_clinical_trials_data(query_params_dict, validated_max_trials)
-            if query_result_obj.error:  # This error should now be the detailed API error from 'requests'
-                self.logger.error(f"ClinicalTrials search failed for task {task_id}: {query_result_obj.error}")
+            query_result_obj = await self._fetch_clinical_trials_data(
+                query_params_dict, validated_max_trials
+            )
+            if (
+                query_result_obj.error
+            ):  # This error should now be the detailed API error from 'requests'
+                self.logger.error(
+                    f"ClinicalTrials search failed for task {task_id}: {query_result_obj.error}"
+                )
                 return {
                     "message_type": MessageType.TASK_FAIL.value,
                     "payload": {
@@ -547,7 +593,9 @@ class ClinicalTrialsAgentLogic:
             }
 
     async def shutdown(self):
-        self.logger.info(f"ClinicalTrialsAgentLogic (requests version) shutting down for agent {self.agent_id}")
+        self.logger.info(
+            f"ClinicalTrialsAgentLogic (requests version) shutting down for agent {self.agent_id}"
+        )
         # No aiohttp session to close
         self.logger.info(f"ClinicalTrialsAgentLogic shutdown complete for agent {self.agent_id}")
 

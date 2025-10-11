@@ -20,7 +20,9 @@ def label_to_evidence(evidence_id: str, url: Optional[str] = None) -> List[Dict[
     return [{"type": "label", "source": "Product label", "id": evidence_id, "url": url}]
 
 
-def regulatory_to_evidence(agency: str, title: Optional[str] = None, url: Optional[str] = None) -> Dict[str, Any]:
+def regulatory_to_evidence(
+    agency: str, title: Optional[str] = None, url: Optional[str] = None
+) -> Dict[str, Any]:
     """
     Generate evidence item for regulatory guidance.
 
@@ -58,7 +60,9 @@ def recalls_to_evidence(recalls: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return evidence
 
 
-def datasheet_to_evidence(source: str, product_id: str, url: Optional[str] = None) -> Dict[str, Any]:
+def datasheet_to_evidence(
+    source: str, product_id: str, url: Optional[str] = None
+) -> Dict[str, Any]:
     """
     Generate evidence item for product datasheet.
 
@@ -73,7 +77,9 @@ def datasheet_to_evidence(source: str, product_id: str, url: Optional[str] = Non
     return {"type": "datasheet", "source": source, "id": product_id, "url": url}
 
 
-def guideline_to_evidence(organization: str, guideline_name: str, url: Optional[str] = None) -> Dict[str, Any]:
+def guideline_to_evidence(
+    organization: str, guideline_name: str, url: Optional[str] = None
+) -> Dict[str, Any]:
     """
     Generate evidence item for safety guidelines.
 

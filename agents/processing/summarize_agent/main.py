@@ -37,7 +37,9 @@ AGENT_TYPE = "ProcessingAgent"  # Or a more specific type if we define one
 AGENT_VERSION = "1.0.0"  # Stub version
 
 LOG_LEVEL_MAIN = os.getenv("LOG_LEVEL", "INFO").upper()
-logging.basicConfig(level=LOG_LEVEL_MAIN, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=LOG_LEVEL_MAIN, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger_for_main = logging.getLogger(f"{AGENT_ID}.main")
 logger_for_logic_passed = logging.getLogger(f"{AGENT_ID}.logic")
 
@@ -105,7 +107,9 @@ async def handle_incoming_message(message: MCPMessage):
             )
 
     except Exception as e:
-        current_message_type_str = message.mcp_header.message_type if message and message.mcp_header else "UnknownType"
+        current_message_type_str = (
+            message.mcp_header.message_type if message and message.mcp_header else "UnknownType"
+        )
         logic_logger.error(
             f"MAIN_HANDLER: Error processing message (Type: {current_message_type_str}): {e}",
             exc_info=True,
@@ -131,7 +135,9 @@ async def handle_incoming_message(message: MCPMessage):
                     correlation_id=message.mcp_header.correlation_id,
                 )
             except Exception as send_err:
-                logger_for_main.error(f"MAIN_HANDLER: Failed to send TASK_FAIL notification: {send_err}")
+                logger_for_main.error(
+                    f"MAIN_HANDLER: Failed to send TASK_FAIL notification: {send_err}"
+                )
 
 
 async def main_agent_loop():
@@ -184,7 +190,9 @@ async def main_agent_loop():
         await mcp_client_instance.connect()
         if mcp_client_instance.is_connected:
             await mcp_client_instance.register_self()
-            logger_for_main.info(f"{AGENT_ID} connected and registered. Waiting for tasks... (Press Ctrl+C to stop)")
+            logger_for_main.info(
+                f"{AGENT_ID} connected and registered. Waiting for tasks... (Press Ctrl+C to stop)"
+            )
             await stop_event.wait()
         else:
             logger_for_main.critical("MCPClient connection failed.")

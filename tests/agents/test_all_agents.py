@@ -183,7 +183,12 @@ def test_report_builder_generate_report():
         "upc": "070470003795",
         "scan_id": "test-scan-123",
         "recalls": [
-            {"recall_id": "TEST-001", "product_name": "Baby Stroller", "hazard": "Fall risk", "agency": "CPSC"}
+            {
+                "recall_id": "TEST-001",
+                "product_name": "Baby Stroller",
+                "hazard": "Fall risk",
+                "agency": "CPSC",
+            }
         ],
         "report_type": "baby_safety",
     }
@@ -283,7 +288,9 @@ async def test_workflow_scan_to_recall():
     recall_agent = RecallDataAgentLogic(agent_id="workflow-test")
 
     # Step 2: Process recall check
-    result = await recall_agent.process_task({"upc": "070470003795", "product_name": "Test Baby Product"})
+    result = await recall_agent.process_task(
+        {"upc": "070470003795", "product_name": "Test Baby Product"}
+    )
 
     assert result is not None
     print("✓ Complete workflow test successful")
@@ -298,13 +305,20 @@ async def test_workflow_recall_to_report():
 
     # Step 1: Get recalls
     recall_agent = RecallDataAgentLogic(agent_id="workflow-recall-report")
-    recall_result = await recall_agent.process_task({"upc": "070470003795", "product_name": "Test Product"})
+    recall_result = await recall_agent.process_task(
+        {"upc": "070470003795", "product_name": "Test Product"}
+    )
 
     # Step 2: Generate report
     report_agent = ReportBuilderAgentLogic(agent_id="workflow-report", version="2.1-test")
 
     report_result = report_agent.process_task(
-        {"product_name": "Test Product", "upc": "070470003795", "recalls": [], "report_type": "baby_safety"}
+        {
+            "product_name": "Test Product",
+            "upc": "070470003795",
+            "recalls": [],
+            "report_type": "baby_safety",
+        }
     )
 
     assert recall_result is not None
@@ -324,7 +338,9 @@ async def test_multiple_connectors_parallel():
     fda = FDAConnector()
 
     # Run both in parallel
-    results = await asyncio.gather(cpsc.fetch_recent_recalls(), fda.fetch_recent_recalls(), return_exceptions=True)
+    results = await asyncio.gather(
+        cpsc.fetch_recent_recalls(), fda.fetch_recent_recalls(), return_exceptions=True
+    )
 
     cpsc_recalls = results[0] if not isinstance(results[0], Exception) else []
     fda_recalls = results[1] if not isinstance(results[1], Exception) else []

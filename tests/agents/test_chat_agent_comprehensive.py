@@ -125,7 +125,9 @@ class MockLLMClient:
                 "checks": ["Check recall database", "Verify product model/batch"],
                 "flags": ["has_recall"],
                 "disclaimer": "Check official recall notices for details",
-                "evidence": [{"type": "recall", "source": "CPSC", "id": "REC-001", "url": "https://cpsc.gov"}],
+                "evidence": [
+                    {"type": "recall", "source": "CPSC", "id": "REC-001", "url": "https://cpsc.gov"}
+                ],
                 "suggested_questions": ["Is my product recalled?", "What should I do?"],
             }
 
@@ -212,7 +214,9 @@ def test_03_evidence_item_model():
     """Test 3: EvidenceItem model validation"""
     print("\n[TEST 3] EvidenceItem - Model Validation")
 
-    evidence = EvidenceItem(type="recall", source="CPSC", id="REC-001", url="https://cpsc.gov/recall/001")
+    evidence = EvidenceItem(
+        type="recall", source="CPSC", id="REC-001", url="https://cpsc.gov/recall/001"
+    )
 
     assert evidence.type == "recall"
     assert evidence.source == "CPSC"
@@ -987,6 +991,8 @@ if __name__ == "__main__":
     print("=" * 80)
 
     # Run pytest with verbose output
-    exit_code = pytest.main([__file__, "-v", "-s", "--tb=short", "--asyncio-mode=auto", "-m", "unit or integration"])
+    exit_code = pytest.main(
+        [__file__, "-v", "-s", "--tb=short", "--asyncio-mode=auto", "-m", "unit or integration"]
+    )
 
     sys.exit(exit_code)

@@ -66,9 +66,15 @@ class BabyShieldCommanderLogic:
         """
         self.agent_id = agent_id
         self.logger = logger_instance or logging.getLogger(__name__)
-        self.planner = BabyShieldPlannerLogic(agent_id="planner_for_commander", logger_instance=self.logger)
-        self.router = BabyShieldRouterLogic(agent_id="router_for_commander", logger_instance=self.logger)
-        self.logger.info("BabyShieldCommanderLogic initialized. It now directly controls the Planner and Router.")
+        self.planner = BabyShieldPlannerLogic(
+            agent_id="planner_for_commander", logger_instance=self.logger
+        )
+        self.router = BabyShieldRouterLogic(
+            agent_id="router_for_commander", logger_instance=self.logger
+        )
+        self.logger.info(
+            "BabyShieldCommanderLogic initialized. It now directly controls the Planner and Router."
+        )
 
     async def start_safety_check_workflow(self, user_request: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -90,7 +96,9 @@ class BabyShieldCommanderLogic:
             planner_result = self.planner.process_task(user_request)
 
             if planner_result.get("status") != "COMPLETED":
-                error_msg = f"Planner failed: {planner_result.get('error', 'Unknown planning error')}"
+                error_msg = (
+                    f"Planner failed: {planner_result.get('error', 'Unknown planning error')}"
+                )
                 self.logger.error(error_msg)
                 return {"status": "FAILED", "error": error_msg}
 
@@ -102,7 +110,9 @@ class BabyShieldCommanderLogic:
             router_result = await self.router.execute_plan(plan)
 
             if router_result.get("status") != "COMPLETED":
-                error_msg = f"Router failed: {router_result.get('error', 'Unknown execution error')}"
+                error_msg = (
+                    f"Router failed: {router_result.get('error', 'Unknown execution error')}"
+                )
                 self.logger.error(error_msg)
 
                 # --------- ADD DB FALLBACK HERE -----------
@@ -117,8 +127,14 @@ class BabyShieldCommanderLogic:
 
                     recall = None
                     if model_number:
-                        self.logger.info(f"Attempting DB fallback with model_number: {model_number}")
-                        recall = db.query(RecallDB).filter(RecallDB.model_number.ilike(model_number)).first()
+                        self.logger.info(
+                            f"Attempting DB fallback with model_number: {model_number}"
+                        )
+                        recall = (
+                            db.query(RecallDB)
+                            .filter(RecallDB.model_number.ilike(model_number))
+                            .first()
+                        )
 
                     if not recall and barcode:
                         self.logger.info(f"Attempting DB fallback with barcode: {barcode}")
@@ -135,7 +151,9 @@ class BabyShieldCommanderLogic:
                                 "recall_id": recall.recall_id,
                                 "product_name": recall.product_name,
                                 "model_number": recall.model_number,
-                                "recall_date": recall.recall_date.isoformat() if recall.recall_date else None,
+                                "recall_date": recall.recall_date.isoformat()
+                                if recall.recall_date
+                                else None,
                                 "source_agency": recall.source_agency,
                                 "description": recall.description,
                                 "hazard": recall.hazard,
@@ -158,7 +176,9 @@ class BabyShieldCommanderLogic:
             # --- START OF NEW LOGIC ---
             # Check if the workflow completed but produced an empty or inconclusive result.
             # This happens if a product isn't identified or no recalls are found.
-            if router_result.get("status") == "COMPLETED" and (not final_result or not final_result.get("risk_level")):
+            if router_result.get("status") == "COMPLETED" and (
+                not final_result or not final_result.get("risk_level")
+            ):
                 self.logger.warning(
                     "Workflow completed but resulted in an inconclusive analysis. Returning an 'UNKNOWN' status."
                 )

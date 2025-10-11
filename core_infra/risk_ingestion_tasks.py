@@ -261,7 +261,9 @@ def recalculate_affected_products(days_back: int = 7):
 
         for product in recent_products:
             # Get incidents
-            incidents = db.query(SafetyIncident).filter(SafetyIncident.product_id == product.id).all()
+            incidents = (
+                db.query(SafetyIncident).filter(SafetyIncident.product_id == product.id).all()
+            )
 
             # Get company profile
             company_profile = None
@@ -273,10 +275,16 @@ def recalculate_affected_products(days_back: int = 7):
                 )
 
             # Calculate risk score
-            risk_components = risk_engine.calculate_risk_score(product, incidents, company_profile, db)
+            risk_components = risk_engine.calculate_risk_score(
+                product, incidents, company_profile, db
+            )
 
             # Update or create risk profile
-            risk_profile = db.query(ProductRiskProfile).filter(ProductRiskProfile.product_id == product.id).first()
+            risk_profile = (
+                db.query(ProductRiskProfile)
+                .filter(ProductRiskProfile.product_id == product.id)
+                .first()
+            )
 
             if not risk_profile:
                 risk_profile = ProductRiskProfile(product_id=product.id)
@@ -347,7 +355,9 @@ def recalculate_high_risk_scores():
     try:
         # Find high-risk products
         high_risk_profiles = (
-            db.query(ProductRiskProfile).filter(ProductRiskProfile.risk_level.in_(["high", "critical"])).all()
+            db.query(ProductRiskProfile)
+            .filter(ProductRiskProfile.risk_level.in_(["high", "critical"]))
+            .all()
         )
 
         updated = 0
@@ -357,7 +367,9 @@ def recalculate_high_risk_scores():
             product = profile.product
 
             # Get latest incidents
-            incidents = db.query(SafetyIncident).filter(SafetyIncident.product_id == product.id).all()
+            incidents = (
+                db.query(SafetyIncident).filter(SafetyIncident.product_id == product.id).all()
+            )
 
             # Get company profile
             company_profile = None
@@ -369,7 +381,9 @@ def recalculate_high_risk_scores():
                 )
 
             # Recalculate
-            risk_components = risk_engine.calculate_risk_score(product, incidents, company_profile, db)
+            risk_components = risk_engine.calculate_risk_score(
+                product, incidents, company_profile, db
+            )
 
             # Check for significant changes
             old_score = profile.risk_score
@@ -430,7 +444,9 @@ def update_company_compliance():
 
             # Get or create company profile
             profile = (
-                db.query(CompanyComplianceProfile).filter(CompanyComplianceProfile.company_name == manufacturer).first()
+                db.query(CompanyComplianceProfile)
+                .filter(CompanyComplianceProfile.company_name == manufacturer)
+                .first()
             )
 
             if not profile:
@@ -564,7 +580,9 @@ def enrich_product_from_barcode(product_id: str, barcode: str):
 
 
 # Helper functions
-def _find_or_create_product_from_record(record: SafetyDataRecord, db: Session) -> Optional[ProductGoldenRecord]:
+def _find_or_create_product_from_record(
+    record: SafetyDataRecord, db: Session
+) -> Optional[ProductGoldenRecord]:
     """
     Find or create product from safety data record
     """
@@ -602,7 +620,9 @@ def _find_or_create_product_from_record(record: SafetyDataRecord, db: Session) -
     return product
 
 
-def _create_incident_from_record(record: SafetyDataRecord, product_id: str, db: Session) -> Optional[SafetyIncident]:
+def _create_incident_from_record(
+    record: SafetyDataRecord, product_id: str, db: Session
+) -> Optional[SafetyIncident]:
     """
     Create safety incident from record
     """

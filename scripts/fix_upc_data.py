@@ -57,7 +57,9 @@ async def fix_upc_data_with_product_identifier():
                             if keyword.lower() in recall.product_name.lower():
                                 recall.upc = test_upc
                                 enhanced_count += 1
-                                logger.info(f"✅ Enhanced {recall.product_name[:50]} with UPC {test_upc}")
+                                logger.info(
+                                    f"✅ Enhanced {recall.product_name[:50]} with UPC {test_upc}"
+                                )
                                 break
 
                 except Exception as e:
@@ -72,13 +74,17 @@ async def fix_upc_data_with_product_identifier():
             final_upc_count = db.query(RecallDB).filter(RecallDB.upc.isnot(None)).count()
             total_recalls = db.query(RecallDB).count()
 
-            logger.info(f"📊 Final status: {final_upc_count}/{total_recalls} recalls now have UPC codes")
+            logger.info(
+                f"📊 Final status: {final_upc_count}/{total_recalls} recalls now have UPC codes"
+            )
 
             return {
                 "enhanced_recalls": enhanced_count,
                 "total_with_upc": final_upc_count,
                 "total_recalls": total_recalls,
-                "upc_coverage": round((final_upc_count / total_recalls) * 100, 2) if total_recalls > 0 else 0,
+                "upc_coverage": round((final_upc_count / total_recalls) * 100, 2)
+                if total_recalls > 0
+                else 0,
             }
 
     except Exception as e:

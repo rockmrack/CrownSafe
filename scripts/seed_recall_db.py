@@ -10,7 +10,9 @@ sys.path.insert(0, project_root)
 
 from core_infra.database import SessionLocal, RecallDB, Base, engine
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 # --- Real Recall Data for the Yoto Mini Player ---
@@ -45,9 +47,13 @@ def seed_database():
         logger.info("Connecting to the database to seed recall data...")
 
         # Check if the recall already exists
-        existing = db.query(RecallDB).filter(RecallDB.recall_id == YOTO_MINI_RECALL["recall_id"]).first()
+        existing = (
+            db.query(RecallDB).filter(RecallDB.recall_id == YOTO_MINI_RECALL["recall_id"]).first()
+        )
         if existing:
-            logger.warning(f"Recall with ID {YOTO_MINI_RECALL['recall_id']} already exists. Skipping seed.")
+            logger.warning(
+                f"Recall with ID {YOTO_MINI_RECALL['recall_id']} already exists. Skipping seed."
+            )
             return
 
         # Create and insert the new recall
@@ -72,7 +78,9 @@ def clean_database():
         logger.info("Connecting to the database to clean recall data...")
 
         # Find and delete the recall
-        record = db.query(RecallDB).filter(RecallDB.recall_id == YOTO_MINI_RECALL["recall_id"]).first()
+        record = (
+            db.query(RecallDB).filter(RecallDB.recall_id == YOTO_MINI_RECALL["recall_id"]).first()
+        )
         if record:
             db.delete(record)
             db.commit()

@@ -53,7 +53,9 @@ REPORTS_DIR = Path(os.environ.get("REPORTS_DIR", Path.cwd() / "generated_reports
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _write_report_metadata(report_id: str, owner_user_id: int, report_type: str, file_path: Path) -> None:
+def _write_report_metadata(
+    report_id: str, owner_user_id: int, report_type: str, file_path: Path
+) -> None:
     try:
         meta = {
             "report_id": report_id,
@@ -137,7 +139,9 @@ class NotificationRequest(BaseModel):
     user_id: int = Field(..., description="User ID to send notification to")
     title: str = Field(..., max_length=100, description="Notification title")
     body: str = Field(..., max_length=500, description="Notification body")
-    notification_type: str = Field("recall_alert", description="Type: recall_alert, safety_tip, reminder")
+    notification_type: str = Field(
+        "recall_alert", description="Type: recall_alert, safety_tip, reminder"
+    )
     data: Optional[Dict[str, str]] = Field(None, description="Additional data payload")
     device_tokens: Optional[List[str]] = Field(
         None, description="Specific device tokens, or all user devices if not provided"
@@ -206,7 +210,9 @@ class OnboardingRequest(BaseModel):
     """Request model for user onboarding"""
 
     user_id: int
-    child_age_months: Optional[int] = Field(None, ge=0, le=216, description="Child's age in months (0-18 years)")
+    child_age_months: Optional[int] = Field(
+        None, ge=0, le=216, description="Child's age in months (0-18 years)"
+    )
     expecting: Optional[bool] = Field(False, description="Is the user expecting?")
     due_date: Optional[str] = Field(None, description="Expected due date if pregnant")
     interests: Optional[List[str]] = Field(None, description="Product categories of interest")
@@ -304,7 +310,9 @@ async def get_safe_alternatives(request: AlternativesRequest, db: Session = Depe
                 category = "Baby Products"
 
         # Get alternatives from agent
-        alternatives_result = await alternatives_agent.process_task({"product_category": category or "Baby Products"})
+        alternatives_result = await alternatives_agent.process_task(
+            {"product_category": category or "Baby Products"}
+        )
 
         # Process and enhance alternatives
         alternatives = []
@@ -578,7 +586,13 @@ async def generate_safety_report(
                     # OR across filters
                     from sqlalchemy import or_
 
-                    matches = db.query(RecallDB).filter(or_(*q)).order_by(RecallDB.recall_date.desc()).limit(5).all()
+                    matches = (
+                        db.query(RecallDB)
+                        .filter(or_(*q))
+                        .order_by(RecallDB.recall_date.desc())
+                        .limit(5)
+                        .all()
+                    )
                     for r in matches:
                         recalls_list.append(
                             {
@@ -675,7 +689,11 @@ async def generate_safety_report(
         # Derive path from agent result for product_safety/nursery_quarterly
         pdf_path = None
         if isinstance(result, dict):
-            pdf_path = (result.get("payload", {}) or {}).get("result", {}) if "payload" in result else result
+            pdf_path = (
+                (result.get("payload", {}) or {}).get("result", {})
+                if "payload" in result
+                else result
+            )
             if isinstance(pdf_path, dict):
                 pdf_path = pdf_path.get("pdf_path")
             else:
@@ -714,7 +732,9 @@ async def generate_safety_report(
                 now = datetime.utcnow()
                 s3_key = f"reports/{request.user_id}/{now.year}/{now.month:02d}/{request.report_type}/{report_id}.pdf"
                 upload_file(report_path, s3_key, content_type="application/pdf")
-                fname = f"BabyShield-{request.report_type}-{now.strftime('%Y%m%d')}-{report_id[:8]}.pdf"
+                fname = (
+                    f"BabyShield-{request.report_type}-{now.strftime('%Y%m%d')}-{report_id[:8]}.pdf"
+                )
                 presigned = presign_get(s3_key, filename=fname)
                 # Update persisted record to point to S3 URI (create if missing)
                 try:
@@ -1000,10 +1020,14 @@ async def analyze_product_hazards(request: HazardAnalysisRequest, db: Session = 
             recommendations.append("Consider finding a safer alternative product")
             recommendations.append("Keep product out of reach of children")
         if not age_appropriate:
-            recommendations.append(f"Product not recommended for {request.child_age_months} month old")
+            recommendations.append(
+                f"Product not recommended for {request.child_age_months} month old"
+            )
             recommendations.append("Check age recommendations on packaging")
         if not hazards:
-            recommendations.append("No specific hazards identified - follow general safety guidelines")
+            recommendations.append(
+                "No specific hazards identified - follow general safety guidelines"
+            )
 
         # Find safer alternatives if high risk
         safer_alternatives = None

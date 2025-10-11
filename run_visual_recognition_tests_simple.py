@@ -23,7 +23,11 @@ def run_tests():
     # TEST 1: Import Visual Search Agent
     print("[TEST 1] Visual Search Agent Imports...")
     try:
-        from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic, _is_s3_url, _fetch_image_bytes
+        from agents.visual.visual_search_agent.agent_logic import (
+            VisualSearchAgentLogic,
+            _is_s3_url,
+            _fetch_image_bytes,
+        )
 
         print("PASS - All imports successful")
         print("  - VisualSearchAgentLogic: OK")
@@ -172,7 +176,12 @@ def run_tests():
         # Verify what a successful response should look like
         _ = {
             "status": "COMPLETED",
-            "result": {"product_name": str, "brand": str, "model_number": (str, type(None)), "confidence": float},
+            "result": {
+                "product_name": str,
+                "brand": str,
+                "model_number": (str, type(None)),
+                "confidence": float,
+            },
         }  # expected_identification_fields (reserved for validation)
 
         # expected_suggestions_fields (reserved for validation)

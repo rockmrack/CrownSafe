@@ -65,7 +65,9 @@ class DataGovernanceAgentLogic:
             if success:
                 return {
                     "status": "COMPLETED",
-                    "result": {"message": f"Data deletion process completed for user_id: {user_id}."},
+                    "result": {
+                        "message": f"Data deletion process completed for user_id: {user_id}."
+                    },
                 }
             else:
                 return {

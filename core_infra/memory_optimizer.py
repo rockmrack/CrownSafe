@@ -84,7 +84,9 @@ class MemoryOptimizer:
                 "object_pool_cleaned": pool_size_before - len(self.object_pool),
             }
 
-            self.logger.info(f"🧹 Memory optimization: {memory_freed:.2f}MB freed, {collected} objects collected")
+            self.logger.info(
+                f"🧹 Memory optimization: {memory_freed:.2f}MB freed, {collected} objects collected"
+            )
 
             return result
 

@@ -58,7 +58,12 @@ class TestDatabaseTransactions:
     @pytest.fixture
     def sample_user(self, db_session):
         """Create a sample user for testing"""
-        user = UserProfile(user_id=str(uuid.uuid4()), consent_personalization=True, memory_paused=False, allergies=[])
+        user = UserProfile(
+            user_id=str(uuid.uuid4()),
+            consent_personalization=True,
+            memory_paused=False,
+            allergies=[],
+        )
         db_session.add(user)
         db_session.commit()
         db_session.refresh(user)
@@ -110,7 +115,9 @@ class TestDatabaseTransactions:
             db_session = SessionLocal()
 
             # Verify conversation does not exist (full rollback occurred)
-            conversations = db_session.query(Conversation).filter_by(user_id=sample_user.user_id).all()
+            conversations = (
+                db_session.query(Conversation).filter_by(user_id=sample_user.user_id).all()
+            )
 
             # In SQLAlchemy, nested rollbacks affect the entire transaction
             assert len(conversations) == 0, "Rollback should remove all changes"
@@ -148,7 +155,9 @@ class TestDatabaseTransactions:
 
         # Execute concurrent updates
         thread1 = threading.Thread(target=update_user_transaction, args=(sample_user.user_id, True))
-        thread2 = threading.Thread(target=update_user_transaction, args=(sample_user.user_id, False))
+        thread2 = threading.Thread(
+            target=update_user_transaction, args=(sample_user.user_id, False)
+        )
 
         thread1.start()
         thread2.start()
@@ -182,7 +191,10 @@ class TestDatabaseTransactions:
             for attempt in range(max_retries):
                 try:
                     user = UserProfile(
-                        user_id=str(uuid.uuid4()), consent_personalization=False, memory_paused=False, allergies=[]
+                        user_id=str(uuid.uuid4()),
+                        consent_personalization=False,
+                        memory_paused=False,
+                        allergies=[],
                     )
                     db_session.add(user)
                     db_session.commit()
@@ -275,10 +287,16 @@ class TestDatabaseTransactions:
             db_session.commit()
 
             # Verify conversation exists but message doesn't
-            conversations = db_session.query(Conversation).filter_by(user_id=sample_user.user_id).all()
+            conversations = (
+                db_session.query(Conversation).filter_by(user_id=sample_user.user_id).all()
+            )
             assert len(conversations) == 1
 
-            messages = db_session.query(ConversationMessage).filter_by(conversation_id=conversations[0].id).all()
+            messages = (
+                db_session.query(ConversationMessage)
+                .filter_by(conversation_id=conversations[0].id)
+                .all()
+            )
             assert len(messages) == 0, "Message should have been rolled back"
 
         except Exception:
@@ -312,7 +330,10 @@ class TestDatabaseTransactions:
 
         # Verify we can continue with new transaction
         new_user = UserProfile(
-            user_id=str(uuid.uuid4()), consent_personalization=True, memory_paused=False, allergies=[]
+            user_id=str(uuid.uuid4()),
+            consent_personalization=True,
+            memory_paused=False,
+            allergies=[],
         )
         db_session.add(new_user)
         db_session.commit()
@@ -358,7 +379,9 @@ class TestDatabaseTransactions:
         db_session.commit()
 
         # Verify count
-        count = db_session.query(ConversationMessage).filter_by(conversation_id=conversation.id).count()
+        count = (
+            db_session.query(ConversationMessage).filter_by(conversation_id=conversation.id).count()
+        )
         assert count == 1000, "All messages should be inserted atomically"
 
     def test_long_running_transaction_timeout(self, db_session):

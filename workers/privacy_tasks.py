@@ -34,7 +34,11 @@ class DataDeleter:
 
     def delete_user_data(self, user_id):
         """Delete all user data."""
-        return {"tables_affected": 18, "records_deleted": 1247, "audit_log_id": f"audit_{user_id}_deletion"}
+        return {
+            "tables_affected": 18,
+            "records_deleted": 1247,
+            "audit_log_id": f"audit_{user_id}_deletion",
+        }
 
 
 @app.task(name="export_user_data")
@@ -83,4 +87,9 @@ def anonymize_user_data_task(user_id):
         dict: Anonymization result
     """
     # Stub implementation
-    return {"success": True, "user_id": user_id, "fields_anonymized": 25, "anonymization_date": "2025-10-11"}
+    return {
+        "success": True,
+        "user_id": user_id,
+        "fields_anonymized": 25,
+        "anonymization_date": "2025-10-11",
+    }

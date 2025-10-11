@@ -79,4 +79,9 @@ def refresh_cache_task(cache_key, data_source):
         dict: Refresh result
     """
     # Stub implementation
-    return {"success": True, "cache_key": cache_key, "data_source": data_source, "records_cached": 100}
+    return {
+        "success": True,
+        "cache_key": cache_key,
+        "data_source": data_source,
+        "records_cached": 100,
+    }

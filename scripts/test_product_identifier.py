@@ -13,7 +13,9 @@ sys.path.insert(0, project_root)
 
 from agents.product_identifier_agent.agent_logic import ProductIdentifierLogic
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # --- Test Configuration ---
 # We will use a known barcode for a common baby product.
@@ -62,7 +64,9 @@ async def main():
                 )
         else:
             print("\n" + "=" * 50)
-            print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")
+            print(
+                f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}"
+            )
 
     except ValueError as e:
         print("\n" + "=" * 50)

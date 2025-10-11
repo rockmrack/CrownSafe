@@ -18,7 +18,14 @@ class RecallAgent:
 
     def fetch_recalls(self, agency: str, date_range: Dict[str, str]) -> List[Dict[str, Any]]:
         """Fetch recalls from a specific agency."""
-        return [{"recall_id": "TEST-001", "agency": agency, "title": "Test Recall", "date": "2025-01-01"}]
+        return [
+            {
+                "recall_id": "TEST-001",
+                "agency": agency,
+                "title": "Test Recall",
+                "date": "2025-01-01",
+            }
+        ]
 
     def process_recall(self, recall_data: Dict[str, Any]) -> Dict[str, Any]:
         """Process a single recall."""
@@ -48,7 +55,9 @@ except ImportError:
     soft_time_limit=300,
     time_limit=360,
 )
-def ingest_recalls_from_agency_task(self: Task, agency: str, date_range: Dict[str, str]) -> Dict[str, Any]:
+def ingest_recalls_from_agency_task(
+    self: Task, agency: str, date_range: Dict[str, str]
+) -> Dict[str, Any]:
     """
     Ingest recalls from a specific regulatory agency.
 
@@ -112,6 +121,11 @@ def refresh_all_recalls_task() -> Dict[str, Any]:
             countdown=5,  # Stagger requests
         )
 
-        results.append({"agency": agency, "task_id": str(result.id) if hasattr(result, "id") else "mock-task-id"})
+        results.append(
+            {
+                "agency": agency,
+                "task_id": str(result.id) if hasattr(result, "id") else "mock-task-id",
+            }
+        )
 
     return {"success": True, "agencies_triggered": len(agencies), "task_ids": results}

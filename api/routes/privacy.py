@@ -348,7 +348,9 @@ async def verify_privacy_request(token: str, request: Request, db: Session = Dep
     """
     try:
         # Find request by token
-        privacy_request = db.query(PrivacyRequest).filter(PrivacyRequest.verification_token == token).first()
+        privacy_request = (
+            db.query(PrivacyRequest).filter(PrivacyRequest.verification_token == token).first()
+        )
 
         if not privacy_request:
             raise APIError(
@@ -435,8 +437,12 @@ async def check_request_status(request_id: str, request: Request, db: Session = 
                 "kind": privacy_request.kind,
                 "status": privacy_request.status,
                 "submitted_at": privacy_request.submitted_at.isoformat(),
-                "verified_at": privacy_request.verified_at.isoformat() if privacy_request.verified_at else None,
-                "completed_at": privacy_request.completed_at.isoformat() if privacy_request.completed_at else None,
+                "verified_at": privacy_request.verified_at.isoformat()
+                if privacy_request.verified_at
+                else None,
+                "completed_at": privacy_request.completed_at.isoformat()
+                if privacy_request.completed_at
+                else None,
                 "sla_days": privacy_request.sla_days,
                 "is_overdue": privacy_request.is_overdue,
                 "days_elapsed": privacy_request.days_elapsed,
@@ -459,17 +465,23 @@ async def check_request_status(request_id: str, request: Request, db: Session = 
 
 
 @router.post("/data/rectify", dependencies=[Depends(dsar_limiter)])
-async def request_data_rectification(request: Request, body: DSARRequest, db: Session = Depends(get_db)):
+async def request_data_rectification(
+    request: Request, body: DSARRequest, db: Session = Depends(get_db)
+):
     """
     Request rectification of inaccurate data (GDPR Article 16)
     """
     # Similar implementation to export/delete
     # Would create a "rectify" type request
-    return create_response(format_dsar_response("rectify", "queued", body.jurisdiction or "other"), request)
+    return create_response(
+        format_dsar_response("rectify", "queued", body.jurisdiction or "other"), request
+    )
 
 
 @router.post("/data/restrict", dependencies=[Depends(dsar_limiter)])
-async def request_processing_restriction(request: Request, body: DSARRequest, db: Session = Depends(get_db)):
+async def request_processing_restriction(
+    request: Request, body: DSARRequest, db: Session = Depends(get_db)
+):
     """
     Request restriction of processing (GDPR Article 18)
     """
@@ -484,7 +496,9 @@ async def object_to_processing(request: Request, body: DSARRequest, db: Session 
     """
     Object to data processing (GDPR Article 21)
     """
-    return create_response(format_dsar_response("object", "queued", body.jurisdiction or "other"), request)
+    return create_response(
+        format_dsar_response("object", "queued", body.jurisdiction or "other"), request
+    )
 
 
 # Export router

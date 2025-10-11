@@ -17,7 +17,11 @@ class PDFGenerator:
 
     def generate(self, data, output_path):
         """Generate PDF from data."""
-        return {"success": True, "page_count": len(data) if isinstance(data, list) else 10, "size_mb": 1.2}
+        return {
+            "success": True,
+            "page_count": len(data) if isinstance(data, list) else 10,
+            "size_mb": 1.2,
+        }
 
 
 @app.task(name="generate_report")

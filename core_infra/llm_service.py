@@ -397,21 +397,23 @@ class MockLLMProvider:
 
         # If no specific patient but we have a score, use score-based logic
         elif score_found is not None:
-            logger.debug(f"No specific patient detected, using score-based logic: {score_found:.2f}")
+            logger.debug(
+                f"No specific patient detected, using score-based logic: {score_found:.2f}"
+            )
             if score_found > 0.75:
                 template["approval_likelihood_percent"] = int(score_found * 100)
                 template["decision_prediction"] = "Approve"
                 template["confidence_score"] = min(0.9, score_found)
-                template["clinical_rationale"] = (
-                    f"High evidence score ({score_found:.0%}) strongly supports approval based on clinical criteria."
-                )
+                template[
+                    "clinical_rationale"
+                ] = f"High evidence score ({score_found:.0%}) strongly supports approval based on clinical criteria."
             elif score_found < 0.25:
                 template["approval_likelihood_percent"] = int(score_found * 100)
                 template["decision_prediction"] = "Deny"
                 template["confidence_score"] = min(0.9, 1 - score_found)
-                template["clinical_rationale"] = (
-                    f"Low evidence score ({score_found:.0%}) indicates multiple unmet criteria. Step therapy or other requirements not satisfied."
-                )
+                template[
+                    "clinical_rationale"
+                ] = f"Low evidence score ({score_found:.0%}) indicates multiple unmet criteria. Step therapy or other requirements not satisfied."
             else:
                 template["approval_likelihood_percent"] = int(score_found * 100)
                 template["confidence_score"] = 0.5 + abs(score_found - 0.5) * 0.5
@@ -466,7 +468,9 @@ class LLMClient:
         self._request_id = 0
         self._lock = threading.Lock()
 
-        logger.info(f"LLMClient initialized with provider: {config.provider.value}, model: {config.model}")
+        logger.info(
+            f"LLMClient initialized with provider: {config.provider.value}, model: {config.model}"
+        )
 
     def _initialize_provider(self):
         """Initialize the appropriate provider client"""
@@ -479,7 +483,9 @@ class LLMClient:
         api_key = self.config.api_key or os.getenv(f"{self.config.provider.value.upper()}_API_KEY")
 
         if not api_key and self.config.provider != LLMProvider.MOCK:
-            logger.warning(f"No API key found for {self.config.provider.value}, falling back to mock provider")
+            logger.warning(
+                f"No API key found for {self.config.provider.value}, falling back to mock provider"
+            )
             self.config.provider = LLMProvider.MOCK
             return
 
@@ -556,7 +562,9 @@ class LLMClient:
         if AVAILABLE_PROVIDERS["openai"] == "new":
             from openai import AzureOpenAI
 
-            self._provider = AzureOpenAI(api_key=api_key, api_version=api_version, azure_endpoint=api_base)
+            self._provider = AzureOpenAI(
+                api_key=api_key, api_version=api_version, azure_endpoint=api_base
+            )
         else:
             import openai
 
@@ -676,7 +684,9 @@ class LLMClient:
         except Exception as e:
             self.metrics.failed_requests += 1
             error_type = type(e).__name__
-            self.metrics.errors_by_type[error_type] = self.metrics.errors_by_type.get(error_type, 0) + 1
+            self.metrics.errors_by_type[error_type] = (
+                self.metrics.errors_by_type.get(error_type, 0) + 1
+            )
             logger.error(f"LLM request {request_id} failed: {e}")
             raise
 
@@ -910,8 +920,10 @@ class LLMClient:
             "success_rate": self.metrics.successful_requests / max(self.metrics.total_requests, 1),
             "total_tokens": self.metrics.total_tokens,
             "total_cost": f"${self.metrics.total_cost:.2f}",
-            "average_latency_ms": self.metrics.total_latency_ms / max(self.metrics.successful_requests, 1),
-            "cache_hit_rate": self.metrics.cache_hits / max(self.metrics.cache_hits + self.metrics.cache_misses, 1),
+            "average_latency_ms": self.metrics.total_latency_ms
+            / max(self.metrics.successful_requests, 1),
+            "cache_hit_rate": self.metrics.cache_hits
+            / max(self.metrics.cache_hits + self.metrics.cache_misses, 1),
             "errors": dict(self.metrics.errors_by_type),
             "models": dict(self.metrics.requests_by_model),
         }
@@ -945,7 +957,9 @@ def get_all_metrics() -> Dict[str, Any]:
 
 
 # Utility functions
-def build_structured_prompt(sections: Dict[str, Any], separator: str = "\n" + "=" * 50 + "\n") -> str:
+def build_structured_prompt(
+    sections: Dict[str, Any], separator: str = "\n" + "=" * 50 + "\n"
+) -> str:
     """Build a structured prompt from sections"""
     prompt_parts = []
 

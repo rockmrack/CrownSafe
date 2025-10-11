@@ -39,7 +39,11 @@ def main():
     # Check 1: Migration file exists
     print("📋 Checking Database Migrations...")
     migration_file = (
-        project_root / "db" / "migrations" / "versions" / "2024_08_22_0100_001_create_recalls_enhanced_table.py"
+        project_root
+        / "db"
+        / "migrations"
+        / "versions"
+        / "2024_08_22_0100_001_create_recalls_enhanced_table.py"
     )
     all_passed &= check(
         migration_file.exists(),
@@ -50,13 +54,17 @@ def main():
     # Check 2: Alembic config exists
     alembic_ini = project_root / "db" / "alembic.ini"
     all_passed &= check(
-        alembic_ini.exists(), f"Alembic config exists: {alembic_ini}", f"Alembic config NOT found: {alembic_ini}"
+        alembic_ini.exists(),
+        f"Alembic config exists: {alembic_ini}",
+        f"Alembic config NOT found: {alembic_ini}",
     )
 
     # Check 3: Init script exists
     init_script = project_root / "scripts" / "init_test_database.py"
     all_passed &= check(
-        init_script.exists(), f"Init script exists: {init_script.name}", f"Init script NOT found: {init_script}"
+        init_script.exists(),
+        f"Init script exists: {init_script.name}",
+        f"Init script NOT found: {init_script}",
     )
 
     # Check 4: Init script uses correct path
@@ -89,7 +97,10 @@ def main():
         import subprocess
 
         result = subprocess.run(
-            ["ruff", "format", ".", "--check"], capture_output=True, text=True, cwd=str(project_root)
+            ["ruff", "format", ".", "--check"],
+            capture_output=True,
+            text=True,
+            cwd=str(project_root),
         )
         all_passed &= check(
             result.returncode == 0,
@@ -105,7 +116,9 @@ def main():
     try:
         import subprocess
 
-        result = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, cwd=str(project_root))
+        result = subprocess.run(
+            ["git", "status", "--porcelain"], capture_output=True, text=True, cwd=str(project_root)
+        )
         is_clean = len(result.stdout.strip()) == 0
         all_passed &= check(
             is_clean,
@@ -129,7 +142,10 @@ def main():
 
         # Get remote main commit
         remote_result = subprocess.run(
-            ["git", "rev-parse", "origin/main"], capture_output=True, text=True, cwd=str(project_root)
+            ["git", "rev-parse", "origin/main"],
+            capture_output=True,
+            text=True,
+            cwd=str(project_root),
         )
         remote_commit = remote_result.stdout.strip()
 

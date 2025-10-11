@@ -112,7 +112,9 @@ async def rate_limit_exceeded_handler(request: Request, exc) -> JSONResponse:
     )
 
 
-def get_rate_limiter(times: int = 100, seconds: int = 60, key_func: Optional[callable] = None) -> RateLimiter:
+def get_rate_limiter(
+    times: int = 100, seconds: int = 60, key_func: Optional[callable] = None
+) -> RateLimiter:
     """
     Factory function to create rate limiter dependencies
 

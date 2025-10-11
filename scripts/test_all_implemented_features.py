@@ -141,7 +141,9 @@ async def test_premium_features():
 
         # 3. Family Member Management (if endpoint exists)
         try:
-            response = await client.get(f"{BASE_URL}/api/v1/premium/family/members", params={"user_id": 1})
+            response = await client.get(
+                f"{BASE_URL}/api/v1/premium/family/members", params={"user_id": 1}
+            )
             if response.status_code == 404:
                 print("  ⚠️ Family member endpoints not available in simplified API")
             else:
@@ -381,7 +383,9 @@ async def main():
     print("=" * 60)
     print(f"✅ Passed: {test_results['passed']}")
     print(f"❌ Failed: {test_results['failed']}")
-    print(f"📈 Success Rate: {(test_results['passed'] / (test_results['passed'] + test_results['failed']) * 100):.1f}%")
+    print(
+        f"📈 Success Rate: {(test_results['passed'] / (test_results['passed'] + test_results['failed']) * 100):.1f}%"
+    )
 
     if test_results["errors"]:
         print("\n⚠️ Failed Tests:")

@@ -61,10 +61,14 @@ class DrugBankAgentLogic:
             self.logger.warning(f"Could not initialize EnhancedMemoryManager: {e}")
 
         # Mock data path
-        self.mock_data_path = Path(__file__).parent.parent.parent / "data" / "mock_drugbank_data.json"
+        self.mock_data_path = (
+            Path(__file__).parent.parent.parent / "data" / "mock_drugbank_data.json"
+        )
 
         # P1: Fallback CSV path
-        self.fallback_csv_path = Path(__file__).parent.parent.parent / "data" / "drugbank_snapshot.csv"
+        self.fallback_csv_path = (
+            Path(__file__).parent.parent.parent / "data" / "drugbank_snapshot.csv"
+        )
 
         # Load mock data
         self._load_mock_data()
@@ -168,7 +172,9 @@ class DrugBankAgentLogic:
         with self.rate_limit_lock:
             current_time = time.time()
             # Remove calls older than the window
-            while self.last_api_calls and current_time - self.last_api_calls[0] >= RATE_LIMIT_WINDOW:
+            while (
+                self.last_api_calls and current_time - self.last_api_calls[0] >= RATE_LIMIT_WINDOW
+            ):
                 self.last_api_calls.popleft()
 
             # Check if we can make another call
@@ -218,7 +224,9 @@ class DrugBankAgentLogic:
                         fallback_data[drug_name] = {
                             "drugbank_id": row.get("drugbank_id", ""),
                             "drug_class": row.get("drug_class", ""),
-                            "indications": row.get("indications", "").split("|") if row.get("indications") else [],
+                            "indications": row.get("indications", "").split("|")
+                            if row.get("indications")
+                            else [],
                             "contraindications": row.get("contraindications", "").split("|")
                             if row.get("contraindications")
                             else [],
@@ -767,7 +775,9 @@ class DrugBankAgentLogic:
             self.logger.error(f"Failed to check interactions: {e}")
             return {"status": "FAILED", "error": str(e), "agent_id": self.agent_id}
 
-    def _check_drug_interactions_bidirectional(self, drug_ids: Dict[str, str]) -> List[Dict[str, Any]]:
+    def _check_drug_interactions_bidirectional(
+        self, drug_ids: Dict[str, str]
+    ) -> List[Dict[str, Any]]:
         """ENHANCED: Check for interactions between multiple drugs - bidirectional"""
         interactions = []
         checked_pairs = set()
@@ -799,7 +809,9 @@ class DrugBankAgentLogic:
                         interactions.append(
                             {
                                 "drugs": list(pair),
-                                "description": interaction.get("description", "Interaction detected"),
+                                "description": interaction.get(
+                                    "description", "Interaction detected"
+                                ),
                                 "severity": interaction.get("severity", "unknown"),
                                 "management": management,
                                 "direction": f"{drug1_name} → {drug2_name}",
@@ -808,19 +820,25 @@ class DrugBankAgentLogic:
                         break
                 else:
                     # If not found, check drug2 -> drug1
-                    drug2_interactions = self.mock_data.get("drug_interactions", {}).get(drug2_id, [])
+                    drug2_interactions = self.mock_data.get("drug_interactions", {}).get(
+                        drug2_id, []
+                    )
                     for interaction in drug2_interactions:
                         if interaction.get("drugbank_id") == drug1_id:
                             # FIXED: Use management from data or default
                             management = interaction.get("management")
                             if not management:
                                 severity = interaction.get("severity", "unknown")
-                                management = self.default_management.get(severity, "Monitor therapy")
+                                management = self.default_management.get(
+                                    severity, "Monitor therapy"
+                                )
 
                             interactions.append(
                                 {
                                     "drugs": list(pair),
-                                    "description": interaction.get("description", "Interaction detected"),
+                                    "description": interaction.get(
+                                        "description", "Interaction detected"
+                                    ),
                                     "severity": interaction.get("severity", "unknown"),
                                     "management": management,
                                     "direction": f"{drug2_name} → {drug1_name}",
@@ -854,7 +872,9 @@ class DrugBankAgentLogic:
                             {
                                 "drug_name": name,
                                 "drug_id": drug_id,
-                                "drug_class": drug_details.get("drug_class", "Unknown") if drug_details else "Unknown",
+                                "drug_class": drug_details.get("drug_class", "Unknown")
+                                if drug_details
+                                else "Unknown",
                             }
                         )
 
@@ -977,7 +997,9 @@ class DrugBankAgentLogic:
                         "fda_approved_indications": fallback_info.get("indications", []),
                         "contraindications": fallback_info.get("contraindications", []),
                         "source": "fallback",
-                        "pa_recommendations": ["Limited data available - verify with current resources"],
+                        "pa_recommendations": [
+                            "Limited data available - verify with current resources"
+                        ],
                     }
 
                     return {
@@ -1110,7 +1132,8 @@ class DrugBankAgentLogic:
         if indication:
             indication_lower = indication.lower()
             approved_for_indication = any(
-                indication_lower in approved_ind.lower() for approved_ind in pa_criteria["fda_approved_indications"]
+                indication_lower in approved_ind.lower()
+                for approved_ind in pa_criteria["fda_approved_indications"]
             )
             pa_criteria["requested_indication_approved"] = approved_for_indication
             pa_criteria["requested_indication"] = indication
@@ -1141,7 +1164,9 @@ class DrugBankAgentLogic:
 
         # Check if indication is approved
         if pa_criteria.get("requested_indication_approved") is False:
-            recommendations.append("Off-label use - Ensure appropriate documentation and justification")
+            recommendations.append(
+                "Off-label use - Ensure appropriate documentation and justification"
+            )
 
         # Check for contraindications that might affect PA
         high_risk_contraindications = ["pregnancy", "renal", "hepatic", "dialysis"]
@@ -1152,7 +1177,8 @@ class DrugBankAgentLogic:
         # Check for monitoring requirements
         if pa_criteria.get("monitoring_requirements"):
             recommendations.append(
-                "Ensure monitoring plan is in place for: " + ", ".join(pa_criteria["monitoring_requirements"][:3])
+                "Ensure monitoring plan is in place for: "
+                + ", ".join(pa_criteria["monitoring_requirements"][:3])
             )
 
         # Check drug class for specific requirements
@@ -1161,7 +1187,9 @@ class DrugBankAgentLogic:
             recommendations.append("Verify eGFR is appropriate for SGLT2 inhibitor use")
             recommendations.append("Confirm no history of diabetic ketoacidosis")
         elif "glp-1" in drug_class:
-            recommendations.append("Verify no personal/family history of medullary thyroid carcinoma")
+            recommendations.append(
+                "Verify no personal/family history of medullary thyroid carcinoma"
+            )
             recommendations.append("Document previous diabetes therapy trials if applicable")
 
         return recommendations
@@ -1178,7 +1206,9 @@ class DrugBankAgentLogic:
         # Check persistent memory if available
         if self.memory_manager:
             try:
-                results = self.memory_manager.collection.get(where={"drug_name": drug_name.lower()}, limit=1)
+                results = self.memory_manager.collection.get(
+                    where={"drug_name": drug_name.lower()}, limit=1
+                )
                 if results and results["documents"]:
                     # FIXED: Parse the stored JSON and extract info
                     wrapper = json.loads(results["documents"][0])

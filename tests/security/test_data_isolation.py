@@ -43,7 +43,12 @@ class TestMultiTenancyDataIsolation:
     @pytest.fixture
     def user_a(self, db_session):
         """Create user A for testing"""
-        user = UserProfile(user_id=str(uuid.uuid4()), consent_personalization=True, memory_paused=False, allergies=[])
+        user = UserProfile(
+            user_id=str(uuid.uuid4()),
+            consent_personalization=True,
+            memory_paused=False,
+            allergies=[],
+        )
         db_session.add(user)
         db_session.commit()
         db_session.refresh(user)
@@ -52,7 +57,12 @@ class TestMultiTenancyDataIsolation:
     @pytest.fixture
     def user_b(self, db_session):
         """Create user B for testing"""
-        user = UserProfile(user_id=str(uuid.uuid4()), consent_personalization=True, memory_paused=False, allergies=[])
+        user = UserProfile(
+            user_id=str(uuid.uuid4()),
+            consent_personalization=True,
+            memory_paused=False,
+            allergies=[],
+        )
         db_session.add(user)
         db_session.commit()
         db_session.refresh(user)
@@ -73,7 +83,9 @@ class TestMultiTenancyDataIsolation:
         db_session.refresh(conversation)
         return conversation
 
-    def test_user_cannot_access_another_user_conversations(self, db_session, user_a, user_b, user_a_conversation):
+    def test_user_cannot_access_another_user_conversations(
+        self, db_session, user_a, user_b, user_a_conversation
+    ):
         """
         Test User B cannot access User A's conversations
 
@@ -84,7 +96,9 @@ class TestMultiTenancyDataIsolation:
         - Audit log entry created for access attempt
         """
         # User B attempts to query conversations
-        user_b_conversations = db_session.query(Conversation).filter_by(user_id=user_b.user_id).all()
+        user_b_conversations = (
+            db_session.query(Conversation).filter_by(user_id=user_b.user_id).all()
+        )
 
         # Verify User B has no conversations
         assert len(user_b_conversations) == 0
@@ -94,12 +108,16 @@ class TestMultiTenancyDataIsolation:
 
         # Attempt direct access by ID (should fail or return None)
         attempted_access = (
-            db_session.query(Conversation).filter_by(id=user_a_conversation.id, user_id=user_b.user_id).first()
+            db_session.query(Conversation)
+            .filter_by(id=user_a_conversation.id, user_id=user_b.user_id)
+            .first()
         )
 
         assert attempted_access is None, "User B should not access User A's data"
 
-    def test_api_endpoint_enforces_user_id_filtering(self, db_session, user_a, user_b, user_a_conversation):
+    def test_api_endpoint_enforces_user_id_filtering(
+        self, db_session, user_a, user_b, user_a_conversation
+    ):
         """
         Test API endpoints enforce user_id filtering
 
@@ -120,9 +138,14 @@ class TestMultiTenancyDataIsolation:
             response = client.get(f"/api/conversations/{user_a_conversation.id}")
 
             # Should return 404 or 403 (depending on implementation)
-            assert response.status_code in [404, 403], "Should not allow access to other user's data"
+            assert response.status_code in [
+                404,
+                403,
+            ], "Should not allow access to other user's data"
 
-    def test_database_query_row_level_security(self, db_session, user_a, user_b, user_a_conversation):
+    def test_database_query_row_level_security(
+        self, db_session, user_a, user_b, user_a_conversation
+    ):
         """
         Test database row-level security policies
 
@@ -162,8 +185,12 @@ class TestMultiTenancyDataIsolation:
         - Conversations are user-specific
         """
         # Create conversations for both users
-        conv_a = Conversation(id=str(uuid.uuid4()), user_id=user_a.user_id, started_at=datetime.utcnow())
-        conv_b = Conversation(id=str(uuid.uuid4()), user_id=user_b.user_id, started_at=datetime.utcnow())
+        conv_a = Conversation(
+            id=str(uuid.uuid4()), user_id=user_a.user_id, started_at=datetime.utcnow()
+        )
+        conv_b = Conversation(
+            id=str(uuid.uuid4()), user_id=user_b.user_id, started_at=datetime.utcnow()
+        )
         db_session.add(conv_a)
         db_session.add(conv_b)
         db_session.commit()
@@ -178,7 +205,9 @@ class TestMultiTenancyDataIsolation:
         assert len(user_b_convs) == 1
         assert user_b_convs[0].user_id == user_b.user_id
 
-    def test_bulk_operations_respect_tenant_boundaries(self, db_session, user_a, user_b, user_a_conversation):
+    def test_bulk_operations_respect_tenant_boundaries(
+        self, db_session, user_a, user_b, user_a_conversation
+    ):
         """
         Test bulk operations respect tenant boundaries
 
@@ -208,10 +237,14 @@ class TestMultiTenancyDataIsolation:
         assert deleted_count == 6  # Original + 5 new
 
         # Verify User B's data unaffected (if any existed)
-        user_b_conversations = db_session.query(Conversation).filter_by(user_id=user_b.user_id).count()
+        user_b_conversations = (
+            db_session.query(Conversation).filter_by(user_id=user_b.user_id).count()
+        )
         assert user_b_conversations == 0  # User B had no conversations
 
-    def test_cross_tenant_foreign_key_prevention(self, db_session, user_a, user_b, user_a_conversation):
+    def test_cross_tenant_foreign_key_prevention(
+        self, db_session, user_a, user_b, user_a_conversation
+    ):
         """
         Test prevention of cross-tenant foreign key references
 
@@ -233,14 +266,19 @@ class TestMultiTenancyDataIsolation:
 
             # Application-level check (before DB commit)
             # In real implementation, this would be in the service layer
-            conversation = db_session.query(Conversation).filter_by(id=user_a_conversation.id).first()
+            conversation = (
+                db_session.query(Conversation).filter_by(id=user_a_conversation.id).first()
+            )
 
             if conversation.user_id != user_b.user_id:
                 raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN, detail="Cannot add message to another user's conversation"
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Cannot add message to another user's conversation",
                 )
 
-    def test_cascade_delete_respects_tenant_isolation(self, db_session, user_a, user_a_conversation):
+    def test_cascade_delete_respects_tenant_isolation(
+        self, db_session, user_a, user_a_conversation
+    ):
         """
         Test cascade delete respects tenant isolation
 

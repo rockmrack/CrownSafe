@@ -135,7 +135,10 @@ try:
 
     # Test RecallQueryResponse
     query_response = RecallQueryResponse(
-        recalls=[test_recall], total_count=1, query_time="2025-10-10T00:00:00", agencies_queried=["CPSC"]
+        recalls=[test_recall],
+        total_count=1,
+        query_time="2025-10-10T00:00:00",
+        agencies_queried=["CPSC"],
     )
     print("✓ RecallQueryResponse model validation successful")
 except Exception as e:

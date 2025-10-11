@@ -42,7 +42,9 @@ class MetricsAgentLogic:
         """
         self.logger.info(f"Tracking event '{event_name}' for user: {user_id}")
         try:
-            self.mixpanel_client.track(distinct_id=user_id, event_name=event_name, properties=properties or {})
+            self.mixpanel_client.track(
+                distinct_id=user_id, event_name=event_name, properties=properties or {}
+            )
             self.logger.info(f"Successfully sent event '{event_name}' to Mixpanel.")
             return True
         except Exception as e:
@@ -65,7 +67,9 @@ class MetricsAgentLogic:
         # The mixpanel library is synchronous, so we run it in an executor
         # to avoid blocking the asyncio event loop.
         loop = asyncio.get_running_loop()
-        success = await loop.run_in_executor(None, self.track_event, user_id, event_name, properties)
+        success = await loop.run_in_executor(
+            None, self.track_event, user_id, event_name, properties
+        )
 
         if success:
             return {

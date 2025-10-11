@@ -69,7 +69,9 @@ def setup_observability(app: FastAPI):
         inprogress_labels=True,
     )
 
-    instrumentator.instrument(app).expose(app, endpoint="/metrics", include_in_schema=False, tags=["monitoring"])
+    instrumentator.instrument(app).expose(
+        app, endpoint="/metrics", include_in_schema=False, tags=["monitoring"]
+    )
     logger.info("Prometheus metrics configured at /metrics")
 
     # 5. Add system routes

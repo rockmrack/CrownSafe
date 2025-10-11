@@ -68,7 +68,9 @@ def _configure_logging(app: FastAPI, environment: str) -> None:
     """Configure application logging"""
     log_level = "INFO" if environment == "production" else "DEBUG"
 
-    logging.basicConfig(level=log_level, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    logging.basicConfig(
+        level=log_level, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
 
     # Suppress noisy loggers
     logging.getLogger("urllib3").setLevel(logging.WARNING)
