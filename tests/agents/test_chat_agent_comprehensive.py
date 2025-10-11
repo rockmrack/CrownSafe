@@ -17,6 +17,7 @@ Tests cover:
 11. Edge cases and error handling
 """
 
+import ast
 import asyncio
 from datetime import datetime
 from typing import Any, Dict
@@ -72,8 +73,34 @@ class MockLLMClient:
         # Return appropriate mock response based on user query
         user_lower = user.lower()
 
+        # Extract scan_data.query when synthesize_result embeds the payload in the prompt.
+        # This avoids matching on example text from instructions (e.g., 'contains_peanuts').
+        query_text = ""
+        if "scan_data json:" in user_lower:
+            try:
+                payload = user.split("scan_data JSON:\n", 1)[1]
+                payload = payload.split("\n\n", 1)[0].strip()
+                parsed = ast.literal_eval(payload)
+                query_text = str(parsed.get("query", ""))
+            except Exception:
+                query_text = ""
+        if not query_text:
+            query_text = user
+        query_lower = query_text.lower()
+
         # Emergency detection
-        if any(word in user_lower for word in ["choking", "swallowed battery", "emergency", "911"]):
+        if any(
+            word in query_lower
+            for word in [
+                "choking",
+                "swallowed battery",
+                "swallowed a button battery",
+                "button battery",
+                "battery ingestion",
+                "emergency",
+                "911",
+            ]
+        ):
             return {
                 "summary": "🚨 EMERGENCY: Call 911 immediately",
                 "reasons": ["This is a life-threatening emergency"],
@@ -89,7 +116,7 @@ class MockLLMClient:
             }
 
         # Allergen questions
-        if any(word in user_lower for word in ["allerg", "peanut", "nuts", "lactose"]):
+        if any(word in query_lower for word in ["allerg", "peanut", "nuts", "lactose", "gluten", "soy"]):
             return {
                 "summary": "This product may contain allergens. Check the label carefully.",
                 "reasons": [
@@ -106,7 +133,7 @@ class MockLLMClient:
             }
 
         # Pregnancy-related
-        if any(word in user_lower for word in ["pregnan", "breastfeed", "listeria"]):
+        if any(word in query_lower for word in ["pregnan", "breastfeed", "listeria"]):
             return {
                 "summary": "Some products may not be safe during pregnancy or breastfeeding.",
                 "reasons": [
@@ -123,7 +150,18 @@ class MockLLMClient:
             }
 
         # Age appropriateness
-        if any(word in user_lower for word in ["age", "months", "newborn", "suitable for"]):
+        if any(
+            word in query_lower
+            for word in [
+                "age",
+                "month",
+                "month-old",
+                "month old",
+                "months",
+                "newborn",
+                "suitable for",
+            ]
+        ):
             return {
                 "summary": "This product has age recommendations you should follow.",
                 "reasons": [
@@ -137,7 +175,7 @@ class MockLLMClient:
             }
 
         # Recall information
-        if any(word in user_lower for word in ["recall", "cpsc", "safety notice"]):
+        if any(word in query_lower for word in ["recall", "cpsc", "safety notice"]):
             return {
                 "summary": "Product recalls are important safety information.",
                 "reasons": [
@@ -159,7 +197,19 @@ class MockLLMClient:
             }
 
         # Alternative products
-        if any(word in user_lower for word in ["alternative", "instead", "recommend"]):
+        if any(
+            word in query_lower
+            for word in [
+                "alternative",
+                "alternatives",
+                "instead",
+                "recommend",
+                "better option",
+                "better options",
+                "safer option",
+                "safer options",
+            ]
+        ):
             return {
                 "summary": "Here are safer alternatives to consider.",
                 "reasons": ["Better safety features", "No recalls", "Higher ratings"],
@@ -170,7 +220,19 @@ class MockLLMClient:
             }
 
         # Ingredients
-        if any(word in user_lower for word in ["ingredient", "contains", "made of"]):
+        if any(
+            word in query_lower
+            for word in [
+                "ingredient",
+                "ingredients",
+                "contains",
+                "contain",
+                "made of",
+                "component",
+                "components",
+                "bpa",
+            ]
+        ):
             return {
                 "summary": "Understanding ingredients helps ensure safety.",
                 "reasons": [
@@ -244,9 +306,7 @@ def test_03_evidence_item_model():
     """Test 3: EvidenceItem model validation"""
     print("\n[TEST 3] EvidenceItem - Model Validation")
 
-    evidence = EvidenceItem(
-        type="recall", source="CPSC", id="REC-001", url="https://cpsc.gov/recall/001"
-    )
+    evidence = EvidenceItem(type="recall", source="CPSC", id="REC-001", url="https://cpsc.gov/recall/001")
 
     assert evidence.type == "recall"
     assert evidence.source == "CPSC"

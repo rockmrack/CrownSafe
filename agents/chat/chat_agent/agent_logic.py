@@ -1,6 +1,8 @@
 # agents/chat/chat_agent/agent_logic.py
 from __future__ import annotations
-from typing import List, Optional, Dict, Any, Protocol, Literal
+
+from typing import Any, Dict, List, Literal, Optional, Protocol
+
 from pydantic import BaseModel, Field, ValidationError
 
 
@@ -25,10 +27,12 @@ class ExplanationResponse(BaseModel):
 
     summary: str = Field(..., description="2–3 line plain-language explanation.")
     reasons: List[str] = Field(
-        default_factory=list, description="Bulleted reasons behind the verdict."
+        default_factory=list,
+        description="Bulleted reasons behind the verdict.",
     )
     checks: List[str] = Field(
-        default_factory=list, description="Concrete checks for the user to perform."
+        default_factory=list,
+        description="Concrete checks for the user to perform.",
     )
     flags: List[str] = Field(
         default_factory=list,
@@ -42,13 +46,16 @@ class ExplanationResponse(BaseModel):
         description='Applied region context, e.g., {"code":"EU","label":"EU Safety Gate"}',
     )
     evidence: List[EvidenceItem] = Field(
-        default_factory=list, description="Cited sources backing claims."
+        default_factory=list,
+        description="Cited sources backing claims.",
     )
     suggested_questions: List[str] = Field(
-        default_factory=list, description="Follow-up questions parents commonly ask."
+        default_factory=list,
+        description="Follow-up questions parents commonly ask.",
     )
     emergency: Optional[EmergencyNotice] = Field(
-        default=None, description="Emergency notice for urgent situations."
+        default=None,
+        description="Emergency notice for urgent situations.",
     )
 
 
@@ -78,23 +85,32 @@ class LLMClient(Protocol):
         user: str,
         response_schema: Dict[str, Any],
         timeout: float = 8.0,
-    ) -> Dict[str, Any]:
-        ...
+    ) -> Dict[str, Any]: ...
 
 
 _PHASE0_SYSTEM_PROMPT = (
-    "You are the BabyShield Synthesizer. Your job is to explain a completed safety scan to a parent.\n"
+    "You are the BabyShield Synthesizer. Your job is to explain a completed safety scan to a "
+    "parent.\n"
     "RULES:\n"
     "1) Use ONLY the provided scan_data facts. Do not speculate, do not browse the web.\n"
-    "2) No medical advice. If something sounds clinical, add a plain-language caveat and direct to emergency guidance when relevant.\n"
+    "2) No medical advice. If something sounds clinical, add a plain-language caveat "
+    "and direct to emergency guidance when relevant.\n"
     "3) Be concise, warm, and clear (Year-6 reading level). Prefer checklists over paragraphs.\n"
     "4) Return STRICTLY the JSON that matches the schema. No extra keys, no prose outside JSON.\n"
-    "5) Include a jurisdiction tag if provided in context (e.g., EU, US, UK) and cite evidence for any regulatory or recall statements.\n"
-    "6) If tool_facts include evidence, copy it into the output evidence verbatim. Do not invent sources.\n"
-    "7) If tool_facts include alternatives, present at most 3 concise options with plain reasons. Do not imply endorsement, prices, or availability. Include evidence if provided.\n"
-    "8) If no recalls, no critical flags, and tool_facts are empty/minimal, include 2–4 concise suggested_questions parents commonly ask for this category (e.g., 'Is this safe in pregnancy?', 'Any allergy concerns?', 'What age is this for?').\n"
-    "9) If the user text or tool_facts indicate an urgent scenario (e.g., choking, battery ingestion, chemical ingestion, severe reaction), set emergency with level and a plain reason. Never provide medical advice; direct to Emergency Guidance.\n"
-    "10) Keep suggested_questions short (max ~45 chars) and actionable; do not ask multiple questions at once.\n"
+    "5) Include a jurisdiction tag if provided in context (e.g., EU, US, UK) and cite evidence "
+    "for any regulatory or recall statements.\n"
+    "6) If tool_facts include evidence, copy it into the output evidence verbatim. Do not invent "
+    "sources.\n"
+    "7) If tool_facts include alternatives, present at most 3 concise options with plain reasons. "
+    "Do not imply endorsement, prices, or availability. Include evidence if provided.\n"
+    "8) If no recalls, no critical flags, and tool_facts are empty/minimal, include 2–4 concise "
+    "suggested_questions parents commonly ask for this category (e.g., 'Is this safe in "
+    "pregnancy?', 'Any allergy concerns?', 'What age is this for?').\n"
+    "9) If the user text or tool_facts indicate an urgent scenario (e.g., choking, battery "
+    "ingestion, chemical ingestion, severe reaction), set emergency with level and a plain "
+    "reason. Never provide medical advice; direct to Emergency Guidance.\n"
+    "10) Keep suggested_questions short (max ~45 chars) and actionable; do not ask multiple "
+    "questions at once.\n"
 )
 
 # JSON Schema to hard-enforce structure in providers that support JSON-mode
@@ -213,8 +229,10 @@ class ChatAgentLogic:
             "- checks: what the parent should verify on the label/packaging.\n"
             "- flags: short machine tags (e.g., 'soft_cheese','contains_peanuts').\n"
             "- disclaimer: short non-diagnostic note.\n"
-            '- jurisdiction: if provided in context, include the region info (e.g., {"code":"EU","label":"EU Safety Gate"}).\n'
-            "- evidence: cite any regulatory sources, recalls, or guidelines that support your statements.\n"
+            "- jurisdiction: if provided in context, include the region info "
+            '(e.g., {"code":"EU","label":"EU Safety Gate"}).\n'
+            "- evidence: cite any regulatory sources, recalls, or guidelines that support your "
+            "statements.\n"
         )
 
         raw: Dict[str, Any] = self.llm.chat_json(
@@ -242,19 +260,48 @@ class ChatAgentLogic:
 
         # Heuristics (fast path; keeps P50 < 5ms)
         kw = [
-            ("pregnancy_risk", ["pregnan", "trimester", "breastfeed", "listeria"]),
+            (
+                "pregnancy_risk",
+                ["pregnan", "trimester", "breastfeed", "listeria"],
+            ),
             (
                 "allergy_question",
                 ["allerg", "peanut", "nuts", "lactose", "gluten", "soy"],
             ),
-            ("ingredient_info", ["ingredient", "made of", "contains", "what's in"]),
+            (
+                "ingredient_info",
+                [
+                    "ingredient",
+                    "made of",
+                    "contains",
+                    "contain",
+                    "what's in",
+                    "component",
+                    "components",
+                    "bpa",
+                ],
+            ),
             (
                 "age_appropriateness",
-                ["newborn", "months", "age", "years", "suitable for"],
+                [
+                    "newborn",
+                    "month",
+                    "month-old",
+                    "age",
+                    "years",
+                    "suitable for",
+                ],
             ),
             (
                 "alternative_products",
-                ["alternative", "safer option", "instead", "recommend"],
+                [
+                    "alternative",
+                    "safer option",
+                    "safer options",
+                    "instead",
+                    "recommend",
+                    "better option",
+                ],
             ),
             (
                 "recall_details",
