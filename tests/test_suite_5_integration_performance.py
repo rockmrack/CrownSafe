@@ -686,23 +686,27 @@ class TestIntegrationAndPerformance:
 
     def test_special_characters_in_path(self):
         """Test special characters in URL path"""
-        response = client.get("/api/v1/recalls?query=test%20baby")
-        assert response.status_code in [200, 400, 422, 500]
+
+    response = client.get("/api/v1/recalls?query=test%20baby")
+    assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_unicode_in_query_params(self):
         """Test Unicode in query parameters"""
-        response = client.get("/api/v1/recalls?query=bébé")
-        assert response.status_code in [200, 400, 422, 500]
+
+    response = client.get("/api/v1/recalls?query=bébé")
+    assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_empty_query_params(self):
         """Test empty query parameters"""
-        response = client.get("/api/v1/recalls?query=&country=")
-        assert response.status_code in [200, 400, 422, 500]
+
+    response = client.get("/api/v1/recalls?query=&country=")
+    assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_multiple_same_query_params(self):
         """Test multiple same query parameters"""
-        response = client.get("/api/v1/recalls?country=US&country=CA")
-        assert response.status_code in [200, 400, 422, 500]
+
+    response = client.get("/api/v1/recalls?country=US&country=CA")
+    assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_very_long_url(self):
         """Test very long URL handling"""

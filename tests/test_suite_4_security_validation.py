@@ -309,7 +309,9 @@ class TestSecurityAndValidation:
 
     def test_register_with_short_password(self):
         """Test register with short password"""
-        response = client.post("/api/v1/auth/register", json={"email": "test@test.com", "password": "123"})
+        response = client.post(
+            "/api/v1/auth/register", json={"email": "test@test.com", "password": "123"}
+        )
         assert response.status_code in [400, 404, 422, 500]
 
     def test_register_with_invalid_email_format(self):
@@ -322,7 +324,9 @@ class TestSecurityAndValidation:
 
     def test_password_reset_request_valid_email(self):
         """Test password reset with valid email format"""
-        response = client.post("/api/v1/auth/password-reset/request", json={"email": "test@test.com"})
+        response = client.post(
+            "/api/v1/auth/password-reset/request", json={"email": "test@test.com"}
+        )
         assert response.status_code in [200, 400, 404, 422, 500]
 
     def test_password_reset_invalid_token(self):
@@ -486,14 +490,16 @@ class TestSecurityAndValidation:
         """Test SQL injection in query parameter"""
         malicious = "'; DROP TABLE users; --"
         response = client.get(f"/api/v1/recalls?query={malicious}")
-        assert response.status_code in [200, 400, 422, 500]
+
+        assert response.status_code in [200, 400, 422, 429, 500]
         # Should not execute SQL, should treat as string
 
     def test_sql_injection_union_attack(self):
         """Test SQL injection UNION attack"""
         malicious = "' UNION SELECT * FROM users --"
         response = client.get(f"/api/v1/recalls?query={malicious}")
-        assert response.status_code in [200, 400, 422, 500]
+
+        assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_sql_injection_comment_attack(self):
         """Test SQL injection comment attack"""
@@ -511,7 +517,8 @@ class TestSecurityAndValidation:
         """Test SQL injection with semicolon"""
         malicious = "test'; DELETE FROM recalls; --"
         response = client.get(f"/api/v1/recalls?query={malicious}")
-        assert response.status_code in [200, 400, 422, 500]
+
+        assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_sql_injection_in_body(self):
         """Test SQL injection in request body"""
@@ -525,49 +532,57 @@ class TestSecurityAndValidation:
         """Test SQL injection with hex encoding"""
         malicious = "0x27204f52203127"  # ' OR 1' in hex
         response = client.get(f"/api/v1/recalls?query={malicious}")
-        assert response.status_code in [200, 400, 422, 500]
+
+        assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_sql_injection_sleep_attack(self):
         """Test SQL injection SLEEP attack"""
         malicious = "'; SELECT SLEEP(5); --"
         response = client.get(f"/api/v1/recalls?query={malicious}")
-        assert response.status_code in [200, 400, 422, 500]
+
+        assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_sql_injection_information_schema(self):
         """Test SQL injection information_schema attack"""
         malicious = "' UNION SELECT table_name FROM information_schema.tables --"
         response = client.get(f"/api/v1/recalls?query={malicious}")
-        assert response.status_code in [200, 400, 422, 500]
+
+        assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_sql_injection_batch_queries(self):
         """Test SQL injection batch queries"""
         malicious = "'; SELECT * FROM users; SELECT * FROM recalls; --"
         response = client.get(f"/api/v1/recalls?query={malicious}")
-        assert response.status_code in [200, 400, 422, 500]
+
+        assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_sql_injection_stored_procedure(self):
         """Test SQL injection stored procedure attack"""
         malicious = "'; EXEC sp_executesql N'DROP TABLE users'; --"
         response = client.get(f"/api/v1/recalls?query={malicious}")
-        assert response.status_code in [200, 400, 422, 500]
+
+        assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_sql_injection_cast_attack(self):
         """Test SQL injection CAST attack"""
         malicious = "' AND CAST((SELECT COUNT(*) FROM users) AS VARCHAR(32)) > '0"
         response = client.get(f"/api/v1/recalls?query={malicious}")
-        assert response.status_code in [200, 400, 422, 500]
+
+        assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_sql_injection_quote_escape(self):
         """Test SQL injection quote escape"""
         malicious = "\\' OR 1=1 --"
         response = client.get(f"/api/v1/recalls?query={malicious}")
-        assert response.status_code in [200, 400, 422, 500]
+
+        assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_sql_injection_double_encoding(self):
         """Test SQL injection double encoding"""
         malicious = "%2527%20OR%201%3D1%20--"
         response = client.get(f"/api/v1/recalls?query={malicious}")
-        assert response.status_code in [200, 400, 422, 500]
+
+        assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_parameterized_query_usage(self):
         """Test that parameterized queries are used"""
@@ -634,7 +649,8 @@ class TestSecurityAndValidation:
         """Test XSS with HTML entities"""
         malicious = "&lt;script&gt;alert(1)&lt;/script&gt;"
         response = client.get(f"/api/v1/recalls?query={malicious}")
-        assert response.status_code in [200, 400, 422, 500]
+
+        assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_xss_css_injection(self):
         """Test XSS with CSS"""

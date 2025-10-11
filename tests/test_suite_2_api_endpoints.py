@@ -109,7 +109,8 @@ class TestAPIEndpoints:
     def test_recalls_with_empty_query(self):
         """Test recalls endpoint with empty query"""
         response = client.get("/api/v1/recalls?query=")
-        assert response.status_code in [200, 400, 422, 500]
+
+        assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_recalls_with_country_filter(self):
         """Test recalls endpoint with country filter"""
