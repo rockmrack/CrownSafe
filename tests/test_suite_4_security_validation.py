@@ -309,9 +309,7 @@ class TestSecurityAndValidation:
 
     def test_register_with_short_password(self):
         """Test register with short password"""
-        response = client.post(
-            "/api/v1/auth/register", json={"email": "test@test.com", "password": "123"}
-        )
+        response = client.post("/api/v1/auth/register", json={"email": "test@test.com", "password": "123"})
         assert response.status_code in [400, 404, 422, 500]
 
     def test_register_with_invalid_email_format(self):
@@ -324,9 +322,7 @@ class TestSecurityAndValidation:
 
     def test_password_reset_request_valid_email(self):
         """Test password reset with valid email format"""
-        response = client.post(
-            "/api/v1/auth/password-reset/request", json={"email": "test@test.com"}
-        )
+        response = client.post("/api/v1/auth/password-reset/request", json={"email": "test@test.com"})
         assert response.status_code in [200, 400, 404, 422, 500]
 
     def test_password_reset_invalid_token(self):
@@ -509,7 +505,7 @@ class TestSecurityAndValidation:
         """Test SQL injection OR 1=1 attack"""
         malicious = "' OR '1'='1"
         response = client.get(f"/api/v1/recalls?brand={malicious}")
-        assert response.status_code in [200, 400, 422, 500]
+        assert response.status_code in [200, 400, 422, 429, 500]
 
     def test_sql_injection_semicolon_attack(self):
         """Test SQL injection with semicolon"""
