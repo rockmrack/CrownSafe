@@ -72,7 +72,8 @@ jobs:
         python scripts/init_test_database.py
         
         # Try to run Alembic migrations (alembic.ini is in db/ directory)
-        cd db && alembic upgrade head || echo "Migrations failed or not needed, using direct table creation"
+        # Note: DATABASE_URL env var must be available for alembic
+        cd db && DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres" alembic upgrade head || echo "Migrations failed or not needed, using direct table creation"
     
     - name: Run tests with coverage
       timeout-minutes: 8
