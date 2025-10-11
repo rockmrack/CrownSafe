@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "202410_04_001"
-down_revision = None  # Update this to the latest revision ID if there are existing migrations
+down_revision = "202410_03_001"  # Depends on recalls_enhanced table creation
 branch_labels = None
 depends_on = None
 

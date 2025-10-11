@@ -4,17 +4,17 @@ Initialize test database with all required tables and migrations.
 This script is used in CI/CD to ensure the database is properly set up before running tests.
 """
 
+import logging
 import os
+import subprocess
 import sys
 from pathlib import Path
+
+from sqlalchemy import create_engine, inspect, text
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
-
-from sqlalchemy import create_engine, text, inspect
-from sqlalchemy.exc import ProgrammingError
-import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -31,6 +31,45 @@ def init_database():
     logger.info(f"Initializing database at {database_url.split('@')[1] if '@' in database_url else database_url}")
 
     try:
+        # First, run Alembic migrations to ensure all tables are created
+        logger.info("Running Alembic migrations...")
+        alembic_ini_path = project_root / "alembic" / "alembic.ini"
+
+        # Check if we have the alembic migrations directory
+        if alembic_ini_path.exists():
+            import subprocess
+
+            try:
+                # Run alembic upgrade head
+                result = subprocess.run(
+                    ["alembic", "upgrade", "head"], cwd=str(project_root / "alembic"), capture_output=True, text=True
+                )
+                if result.returncode == 0:
+                    logger.info("✓ Alembic migrations completed successfully")
+                else:
+                    logger.warning(f"Alembic migrations had issues: {result.stderr}")
+                    # Continue anyway and try SQLAlchemy Base.metadata.create_all
+            except Exception as e:
+                logger.warning(f"Could not run Alembic migrations: {e}")
+                # Continue with SQLAlchemy fallback
+        else:
+            logger.info("No alembic.ini found in alembic directory, trying db/alembic...")
+            alembic_ini_path_db = project_root / "db" / "alembic.ini"
+            if alembic_ini_path_db.exists():
+                try:
+                    result = subprocess.run(
+                        ["alembic", "-c", str(alembic_ini_path_db), "upgrade", "head"],
+                        cwd=str(project_root),
+                        capture_output=True,
+                        text=True,
+                    )
+                    if result.returncode == 0:
+                        logger.info("✓ Alembic migrations completed successfully")
+                    else:
+                        logger.warning(f"Alembic migrations had issues: {result.stderr}")
+                except Exception as e:
+                    logger.warning(f"Could not run Alembic migrations: {e}")
+
         engine = create_engine(database_url, echo=False)
 
         # Test connection
