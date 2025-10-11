@@ -8,7 +8,6 @@ import json
 import uuid
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, List, Optional, Set, Union, Tuple
-from dataclasses import asdict
 from collections import defaultdict, Counter
 import statistics
 
@@ -36,9 +35,7 @@ except ImportError:
 logger_mm_default = logging.getLogger(__name__)
 
 # Default paths and settings
-DEFAULT_CHROMA_PATH = os.path.join(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), "chroma_db_data_v2"
-)
+DEFAULT_CHROMA_PATH = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), "chroma_db_data_v2")
 DEFAULT_COLLECTION_NAME = "cureviax_knowledge_base_v1"
 
 # Load environment variables
@@ -106,9 +103,7 @@ class MemoryManager:
             self.logger.setLevel(logging.INFO)
 
         # Initialize paths and settings
-        self.db_path = (
-            chroma_db_path if chroma_db_path else os.getenv("CHROMA_DB_PATH", DEFAULT_CHROMA_PATH)
-        )
+        self.db_path = chroma_db_path if chroma_db_path else os.getenv("CHROMA_DB_PATH", DEFAULT_CHROMA_PATH)
         self.collection_name = collection_name if collection_name else DEFAULT_COLLECTION_NAME
 
         # Initialize components
@@ -124,14 +119,10 @@ class MemoryManager:
         # Initialize OpenAI embedding function
         try:
             if self.openai_api_key:
-                self.embedding_function = (
-                    chromadb.utils.embedding_functions.OpenAIEmbeddingFunction(
-                        api_key=self.openai_api_key, model_name="text-embedding-ada-002"
-                    )
+                self.embedding_function = chromadb.utils.embedding_functions.OpenAIEmbeddingFunction(
+                    api_key=self.openai_api_key, model_name="text-embedding-ada-002"
                 )
-                self.logger.info(
-                    "OpenAI EmbeddingFunction initialized with text-embedding-ada-002."
-                )
+                self.logger.info("OpenAI EmbeddingFunction initialized with text-embedding-ada-002.")
             else:
                 self.logger.info("Using default ChromaDB embedding function.")
         except Exception as e_embed:
@@ -167,23 +158,17 @@ class MemoryManager:
                     embedding_function=self.embedding_function,
                     metadata={"hnsw:space": "cosine"},
                 )
-                self.logger.info(
-                    f"ChromaDB collection '{self.collection_name}' created with OpenAI embeddings."
-                )
+                self.logger.info(f"ChromaDB collection '{self.collection_name}' created with OpenAI embeddings.")
             else:
                 # Use default embedding function
                 self.collection = self.chroma_client.get_or_create_collection(
                     name=self.collection_name, metadata={"hnsw:space": "cosine"}
                 )
-                self.logger.info(
-                    f"ChromaDB collection '{self.collection_name}' created with default embeddings."
-                )
+                self.logger.info(f"ChromaDB collection '{self.collection_name}' created with default embeddings.")
 
             # Get current document count
             current_count = self.collection.count()
-            self.logger.info(
-                f"ChromaDB collection loaded successfully. Current document count: {current_count}"
-            )
+            self.logger.info(f"ChromaDB collection loaded successfully. Current document count: {current_count}")
 
         except Exception as e:
             self.logger.error(f"Failed to initialize ChromaDB client/collection: {e}")
@@ -192,14 +177,10 @@ class MemoryManager:
 
     def _generate_canonical_id(self, document_type: str, identifier: str) -> str:
         """Generate canonical IDs for deduplication."""
-        clean_identifier = (
-            str(identifier).lower().replace(" ", "_").replace("/", "_").replace("-", "_")
-        )
+        clean_identifier = str(identifier).lower().replace(" ", "_").replace("/", "_").replace("-", "_")
         return f"{document_type}_{clean_identifier}"
 
-    def _safe_json_loads(
-        self, json_string: Union[str, List, None], default_value: Optional[List] = None
-    ) -> List:
+    def _safe_json_loads(self, json_string: Union[str, List, None], default_value: Optional[List] = None) -> List:
         """Safely parse JSON string to list."""
         if default_value is None:
             default_value = []
@@ -251,9 +232,7 @@ class MemoryManager:
         # Update timestamps
         merged["last_seen_timestamp"] = current_timestamp
         if "first_seen_timestamp" not in merged:
-            merged["first_seen_timestamp"] = new_context_metadata.get(
-                "timestamp_added_or_updated", current_timestamp
-            )
+            merged["first_seen_timestamp"] = new_context_metadata.get("timestamp_added_or_updated", current_timestamp)
 
         # Aggregate context lists
         def _aggregate_context_list(field_key: str, new_value: Any) -> str:
@@ -286,9 +265,7 @@ class MemoryManager:
                 and value is not None
             ):
                 if key not in merged or merged[key] is None:
-                    merged[key] = (
-                        value if not isinstance(value, (list, dict)) else json.dumps(value)
-                    )
+                    merged[key] = value if not isinstance(value, (list, dict)) else json.dumps(value)
 
         return {k: v for k, v in merged.items() if v is not None}
 
@@ -311,9 +288,7 @@ class MemoryManager:
                     ):
                         found_metadatas[doc_id] = existing_docs["metadatas"][i]
 
-            self.logger.debug(
-                f"Checked {len(ids_to_check)} IDs, found {len(found_metadatas)} existing documents."
-            )
+            self.logger.debug(f"Checked {len(ids_to_check)} IDs, found {len(found_metadatas)} existing documents.")
             return found_metadatas
 
         except Exception as e:
@@ -339,15 +314,9 @@ class MemoryManager:
         safe_metadata["reference_count"] = 1
 
         # Initialize context lists
-        safe_metadata["user_goals_context"] = self._safe_json_dumps(
-            [user_goal] if user_goal else []
-        )
-        safe_metadata["drug_names_context"] = self._safe_json_dumps(
-            [drug_name] if drug_name else []
-        )
-        safe_metadata["disease_names_context"] = self._safe_json_dumps(
-            [disease_name] if disease_name else []
-        )
+        safe_metadata["user_goals_context"] = self._safe_json_dumps([user_goal] if user_goal else [])
+        safe_metadata["drug_names_context"] = self._safe_json_dumps([drug_name] if drug_name else [])
+        safe_metadata["disease_names_context"] = self._safe_json_dumps([disease_name] if disease_name else [])
 
         # Ensure all values are ChromaDB-safe
         final_metadata = {}
@@ -367,8 +336,6 @@ class MemoryManager:
         user_goal: str,
         extracted_entities: Dict[str, Optional[str]],
         pubmed_results_payload: Optional[Dict[str, Any]],
-        clinical_trials_payload: Optional[Dict[str, Any]],
-        drug_safety_payload: Optional[Dict[str, Any]],
         pdf_path: Optional[str] = None,
         completion_timestamp: Optional[str] = None,
     ) -> Dict[str, Any]:
@@ -442,9 +409,7 @@ class MemoryManager:
                     "document_type": "pubmed_article",
                     "pmid": pmid,
                     "title": title,
-                    "authors": json.dumps(article.get("authors"))
-                    if article.get("authors")
-                    else None,
+                    "authors": json.dumps(article.get("authors")) if article.get("authors") else None,
                     "journal": article.get("journal"),
                     "publication_date": article.get("publication_date"),
                     "abstract": abstract[:1000] if len(abstract) > 1000 else abstract,
@@ -454,73 +419,7 @@ class MemoryManager:
                 }
                 metadatas_to_prepare.append(article_metadata)
 
-        # 3. Clinical Trials
-        if clinical_trials_payload and isinstance(clinical_trials_payload.get("trials_data"), list):
-            for trial_item in clinical_trials_payload.get("trials_data", []):
-                if isinstance(trial_item, dict):
-                    trial_dict = trial_item
-                elif hasattr(trial_item, "nct_id"):
-                    trial_dict = asdict(trial_item)
-                else:
-                    continue
-
-                if not trial_dict.get("nct_id"):
-                    continue
-
-                nct_id = str(trial_dict["nct_id"])
-                doc_id = self._generate_canonical_id("trial", nct_id)
-                ids_for_upsert.append(doc_id)
-
-                trial_text = (
-                    f"Clinical Trial: {trial_dict.get('title', 'N/A')}. "
-                    f"Status: {trial_dict.get('status', 'N/A')}. "
-                    f"Conditions: {trial_dict.get('condition', 'N/A')}. "
-                    f"Interventions: {trial_dict.get('intervention', 'N/A')}."
-                )
-                docs_for_upsert.append(trial_text)
-
-                trial_metadata = {
-                    "document_type": "clinical_trial",
-                    "nct_id": nct_id,
-                    "title": trial_dict.get("title"),
-                    "status": trial_dict.get("status"),
-                    "condition": trial_dict.get("condition"),
-                    "intervention": trial_dict.get("intervention"),
-                    "url": trial_dict.get("url"),
-                    "source_agent_id": "clinical_trials_agent",
-                    **context_meta,
-                }
-                metadatas_to_prepare.append(trial_metadata)
-
-        # 4. Drug Safety Summary
-        if drug_safety_payload and drug_safety_payload.get("drug_queried"):
-            drug_queried = str(drug_safety_payload["drug_queried"])
-            doc_id = self._generate_canonical_id("drugsafety", f"{drug_queried}_summary")
-            ids_for_upsert.append(doc_id)
-
-            reactions = drug_safety_payload.get("top_adverse_reactions", [])
-            reactions_summary = (
-                ", ".join([r.get("term", r.get("reaction", "N/A")) for r in reactions[:3]])
-                if reactions
-                else "Not specified"
-            )
-
-            safety_text = (
-                f"Drug Safety Summary for {drug_queried}. "
-                f"Total Adverse Event Reports: {drug_safety_payload.get('total_reports', 0)}. "
-                f"Top Reported Reactions: {reactions_summary}."
-            )
-            docs_for_upsert.append(safety_text)
-
-            safety_metadata = {
-                "document_type": "drug_safety_summary",
-                "drug_queried": drug_queried,
-                "total_reports": drug_safety_payload.get("total_reports"),
-                "top_reactions_sample": json.dumps(reactions[:5]) if reactions else "[]",
-                "source_agent_id": "drug_safety_agent",
-                **context_meta,
-            }
-            metadatas_to_prepare.append(safety_metadata)
+        # Clinical trial and drug safety data are no longer collected; legacy payloads are ignored.
 
         # Process for upsert with intelligent merging
         if not ids_for_upsert:
@@ -554,9 +453,7 @@ class MemoryManager:
             num_new = len(ids_for_upsert) - len(existing_metadatas)
             num_updated = len(existing_metadatas)
 
-            self.logger.info(
-                f"Upserting {len(docs_for_upsert)} documents. New: {num_new}, Updated: {num_updated}"
-            )
+            self.logger.info(f"Upserting {len(docs_for_upsert)} documents. New: {num_new}, Updated: {num_updated}")
 
             self.collection.upsert(
                 ids=ids_for_upsert,
@@ -647,9 +544,7 @@ class MemoryManager:
             reference_counts = []
             workflow_docs = defaultdict(int)
             content_types = defaultdict(int)
-            drug_patterns = defaultdict(
-                lambda: {"documents": 0, "workflows": set(), "types": set()}
-            )
+            drug_patterns = defaultdict(lambda: {"documents": 0, "workflows": set(), "types": set()})
             cross_workflow_count = 0
 
             for metadata in all_docs["metadatas"]:
@@ -720,15 +615,11 @@ class MemoryManager:
             print("Collection unavailable.")
             return
 
-        print(
-            f"\n--- Sample Dump: {self.collection_name} (Limit: {limit}, Type: {document_type or 'Any'}) ---"
-        )
+        print(f"\n--- Sample Dump: {self.collection_name} (Limit: {limit}, Type: {document_type or 'Any'}) ---")
 
         try:
             filter_dict = {"document_type": document_type} if document_type else None
-            results = self.collection.get(
-                limit=limit, where=filter_dict, include=["metadatas", "documents"]
-            )
+            results = self.collection.get(limit=limit, where=filter_dict, include=["metadatas", "documents"])
 
             if not results or not results.get("ids"):
                 print("No documents found.")

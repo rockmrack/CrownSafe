@@ -362,22 +362,12 @@ class TestImportsAndConfiguration:
             pytest.skip("Hazard analysis agent not available")
 
     def test_import_guideline_agent(self):
-        """Test guideline_agent import"""
-        try:
-            from agents.guideline_agent import guideline_agent
-
-            assert guideline_agent is not None
-        except ImportError:
-            pytest.skip("Guideline agent not available")
+        """Guidelines feature retired"""
+        pytest.skip("Guideline agent removed from BabyShield platform")
 
     def test_import_policy_analysis_agent(self):
-        """Test policy_analysis_agent import"""
-        try:
-            from agents.policy_analysis_agent import policy_analyzer
-
-            assert policy_analyzer is not None
-        except ImportError:
-            pytest.skip("Policy analysis agent not available")
+        """Policy analysis feature retired"""
+        pytest.skip("Policy analysis agent removed from BabyShield platform")
 
     def test_import_command_agent(self):
         """Test command agent import"""

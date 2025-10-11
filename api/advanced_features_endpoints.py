@@ -36,20 +36,13 @@ logger = logging.getLogger(__name__)
 try:
     from agents.research.web_research_agent.agent_logic import WebResearchLogic
 
-    web_research_agent = WebResearchLogic(
-        agent_id="api_web_research", version="2.0", logger_instance=logger
-    )
+    web_research_agent = WebResearchLogic(agent_id="api_web_research", version="2.0", logger_instance=logger)
 except Exception as e:
     web_research_agent = None
     logger.warning(f"Web Research Agent not available: {e}")
 
-try:
-    from agents.guideline_agent.agent_logic import GuidelineAgentLogic
-
-    guideline_agent = GuidelineAgentLogic(agent_id="api_guideline")
-except Exception as e:
-    guideline_agent = None
-    logger.warning(f"Guideline Agent not available: {e}")
+guideline_agent = None
+logger.info("Guideline agent retired; guidelines endpoint returns informational response only.")
 
 # Create router with prefix
 router = APIRouter(prefix="/api/v1/advanced", tags=["Advanced Features"])
@@ -144,9 +137,7 @@ class VisualRecognitionRequest(BaseModel):
     user_id: int = Field(..., description="User ID")
     include_similar: bool = Field(True, description="Include similar products if no exact match")
     check_for_defects: bool = Field(True, description="Check for visual defects")
-    confidence_threshold: float = Field(
-        0.7, ge=0, le=1, description="Minimum confidence for matches"
-    )
+    confidence_threshold: float = Field(0.7, ge=0, le=1, description="Minimum confidence for matches")
 
 
 class VisualRecognitionResponse(BaseModel):
@@ -320,9 +311,7 @@ async def research_product_safety(
             risk_indicators.append("Multiple negative reports found")
             safety_score -= 10
 
-        high_relevance_negative = any(
-            f.relevance_score > 0.8 and f.sentiment == "negative" for f in findings
-        )
+        high_relevance_negative = any(f.relevance_score > 0.8 and f.sentiment == "negative" for f in findings)
         if high_relevance_negative:
             risk_indicators.append("High-confidence safety concern identified")
             safety_score -= 15
@@ -354,210 +343,13 @@ async def research_product_safety(
 
 @router.post("/guidelines", response_model=GuidelinesResponse)
 async def get_product_guidelines(request: GuidelinesRequest, db: Session = Depends(get_db)):
-    """
-    Get age-appropriate usage guidelines for a product.
-
-    This endpoint:
-    1. Checks age appropriateness
-    2. Provides weight/size recommendations
-    3. Lists safety guidelines and best practices
-    4. Warns about developmental considerations
-    """
-    try:
-        logger.info(f"Getting guidelines for child age {request.child_age_months} months")
-
-        # Validate user
-        user = db.query(User).filter(User.id == request.user_id).first()
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-
-        # Determine product category if not provided
-        product_name = request.product_name or request.product_category or "Unknown Product"
-
-        guidelines = []
-        warnings = []
-        best_practices = []
-        developmental_considerations = []
-        age_appropriate = True
-        weight_appropriate = None
-
-        # Age-based guidelines
-        if request.child_age_months < 3:  # 0-3 months
-            guidelines.append(
-                SafetyGuideline(
-                    guideline_type="age",
-                    title="Newborn Safety",
-                    description="Products must be specifically designed for newborns (0-3 months)",
-                    importance="critical",
-                    source="AAP Guidelines",
-                    applicable=True,
-                    reason="Newborns have unique safety requirements",
-                )
-            )
-
-            if "toy" in product_name.lower():
-                age_appropriate = False
-                warnings.append(
-                    "Most toys are not suitable for newborns due to developmental stage"
-                )
-
-            if "blanket" in product_name.lower():
-                warnings.append("No loose blankets in crib - use sleep sacks instead")
-                guidelines.append(
-                    SafetyGuideline(
-                        guideline_type="warning",
-                        title="SIDS Prevention",
-                        description="Avoid loose bedding to reduce SIDS risk",
-                        importance="critical",
-                        source="AAP Safe Sleep Guidelines",
-                        applicable=True,
-                        reason="Suffocation hazard for infants under 12 months",
-                    )
-                )
-
-        elif request.child_age_months < 6:  # 3-6 months
-            guidelines.append(
-                SafetyGuideline(
-                    guideline_type="age",
-                    title="Infant Safety",
-                    description="Product suitable for 3-6 month infants",
-                    importance="important",
-                    source="CPSC Guidelines",
-                    applicable=True,
-                    reason=None,
-                )
-            )
-
-            if "food" in product_name.lower() and "formula" not in product_name.lower():
-                age_appropriate = False
-                warnings.append("Solid foods not recommended before 4-6 months")
-
-        elif request.child_age_months < 12:  # 6-12 months
-            guidelines.append(
-                SafetyGuideline(
-                    guideline_type="age",
-                    title="Older Infant Guidelines",
-                    description="Products must be safe for mobile infants who can sit and crawl",
-                    importance="important",
-                    source="Pediatric Safety Standards",
-                    applicable=True,
-                    reason="Increased mobility requires different safety considerations",
-                )
-            )
-
-            developmental_considerations.append("Baby is likely sitting up and may be crawling")
-            developmental_considerations.append("Everything goes in mouth - ensure no small parts")
-
-        elif request.child_age_months < 36:  # 1-3 years
-            guidelines.append(
-                SafetyGuideline(
-                    guideline_type="age",
-                    title="Toddler Safety",
-                    description="Products must account for toddler exploration and climbing",
-                    importance="critical",
-                    source="CPSC Toddler Guidelines",
-                    applicable=True,
-                    reason="Toddlers are highly mobile but lack safety awareness",
-                )
-            )
-
-            if "small parts" in product_name.lower() or "3+" in product_name:
-                age_appropriate = False
-                warnings.append("Contains small parts - choking hazard for children under 3")
-
-        # Weight-based guidelines if provided
-        if request.child_weight_lbs:
-            if "car seat" in product_name.lower():
-                if request.child_weight_lbs < 20:
-                    guidelines.append(
-                        SafetyGuideline(
-                            guideline_type="weight",
-                            title="Rear-Facing Required",
-                            description="Must use rear-facing car seat until at least 2 years or max weight",
-                            importance="critical",
-                            source="AAP Car Seat Guidelines",
-                            applicable=True,
-                            reason="Critical for spine and neck protection",
-                        )
-                    )
-                elif request.child_weight_lbs > 40:
-                    best_practices.append(
-                        "Consider forward-facing car seat if child is over 2 years"
-                    )
-
-                weight_appropriate = True
-
-            if "high chair" in product_name.lower():
-                if request.child_weight_lbs > 40:
-                    weight_appropriate = False
-                    warnings.append("Check high chair weight limit - may exceed capacity")
-
-        # General best practices
-        best_practices.extend(
-            [
-                "Always supervise child during use",
-                "Check for recalls before first use",
-                "Inspect regularly for wear and damage",
-                "Follow manufacturer's assembly instructions exactly",
-                "Register product for recall notifications",
-            ]
-        )
-
-        # Category-specific guidelines
-        if "sleep" in product_name.lower() or "crib" in product_name.lower():
-            best_practices.append("Follow ABCs of safe sleep: Alone, on Back, in Crib")
-            guidelines.append(
-                SafetyGuideline(
-                    guideline_type="usage",
-                    title="Safe Sleep Environment",
-                    description="Firm mattress, tight-fitting sheet, no loose items",
-                    importance="critical",
-                    source="AAP Safe Sleep Task Force",
-                    applicable=True,
-                    reason="Reduces SIDS risk by 50%",
-                )
-            )
-
-        # Add alternatives if not age appropriate
-        recommended_alternatives = None
-        if not age_appropriate:
-            if request.child_age_months < 6:
-                recommended_alternatives = [
-                    "Black and white contrast cards",
-                    "Soft rattles designed for newborns",
-                    "Baby gym/play mat",
-                ]
-            elif request.child_age_months < 12:
-                recommended_alternatives = [
-                    "Large soft blocks",
-                    "Teething toys",
-                    "Board books",
-                ]
-            else:
-                recommended_alternatives = [
-                    "Large piece puzzles",
-                    "Push and pull toys",
-                    "Musical instruments for toddlers",
-                ]
-
-        return GuidelinesResponse(
-            status="success",
-            product=product_name,
-            age_appropriate=age_appropriate,
-            weight_appropriate=weight_appropriate,
-            guidelines=guidelines,
-            warnings=warnings,
-            best_practices=best_practices,
-            developmental_considerations=developmental_considerations,
-            recommended_alternatives=recommended_alternatives,
-            timestamp=datetime.now(),
-        )
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Guidelines lookup failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Guidelines lookup failed: {str(e)}")
+    """Return HTTP 501 because the guideline feature is retired."""
+    del request  # Guidelines feature retired; request data unused.
+    del db
+    raise HTTPException(
+        status_code=501,
+        detail="Product guideline feature has been retired from the BabyShield platform.",
+    )
 
 
 # ==================== Visual Recognition Endpoints ====================
