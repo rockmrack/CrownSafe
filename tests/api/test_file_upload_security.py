@@ -49,7 +49,7 @@ class TestFileUploadSecurity:
         - Resources released properly
         """
         # Create a large file (15MB)
-        large_file = mock_upload_file("large_image.jpg", size_mb=15)
+        _large_file = mock_upload_file("large_image.jpg", size_mb=15)
 
         # Mock file processing that takes too long
         with patch("time.time") as mock_time:
@@ -121,12 +121,10 @@ class TestFileUploadSecurity:
         ]
 
         for filename, content_type in malicious_files:
-            mock_file = mock_upload_file(filename, size_mb=1, content_type=content_type)
+            _mock_file = mock_upload_file(filename, size_mb=1, content_type=content_type)
 
             # Verify file type is not allowed
-            assert (
-                content_type not in allowed_types
-            ), f"{content_type} should not be in allowed types"
+            assert content_type not in allowed_types, f"{content_type} should not be in allowed types"
 
     def test_concurrent_file_uploads(self, mock_upload_file):
         """
@@ -166,7 +164,7 @@ class TestFileUploadSecurity:
         - Clean files proceed to storage
         - Scan results logged
         """
-        test_file = mock_upload_file("test.jpg", size_mb=1)
+        _test_file = mock_upload_file("test.jpg", size_mb=1)
 
         # Mock virus scanner (not implemented yet, so we mock the function)
         mock_scanner = Mock()
@@ -204,9 +202,9 @@ class TestFileUploadSecurity:
 
         for filename in malicious_names:
             # Verify path traversal patterns detected
-            assert (
-                ".." in filename or filename.startswith("/") or ":\\" in filename
-            ), "Should detect path traversal attempt"
+            assert ".." in filename or filename.startswith("/") or ":\\" in filename, (
+                "Should detect path traversal attempt"
+            )
 
             # In real implementation:
             # safe_filename = secure_filename(filename)

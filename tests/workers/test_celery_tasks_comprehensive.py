@@ -84,9 +84,7 @@ class TestCeleryTaskExecution:
         # Arrange
         with patch("workers.recall_tasks.RecallAgent") as mock_agent:
             # Simulate network failure
-            mock_agent.return_value.process_recall.side_effect = ConnectionError(
-                "Network unreachable"
-            )
+            mock_agent.return_value.process_recall.side_effect = ConnectionError("Network unreachable")
 
             # Act & Assert
             # Should raise Retry exception with exponential backoff
@@ -109,9 +107,7 @@ class TestCeleryTaskExecution:
         """
         # Arrange
         with patch("workers.recall_tasks.RecallAgent") as mock_agent:
-            mock_agent.return_value.process_recall.side_effect = Exception(
-                "Persistent error"
-            )
+            mock_agent.return_value.process_recall.side_effect = Exception("Persistent error")
 
             # Act
             # with pytest.raises(Exception) as exc_info:
@@ -160,10 +156,7 @@ class TestCeleryTaskExecution:
         - Returns batch summary
         """
         # Arrange
-        notifications = [
-            {"user_id": f"user_{i}", "message": f"Test {i}", "type": "recall_alert"}
-            for i in range(100)
-        ]
+        _notifications = [{"user_id": f"user_{i}", "message": f"Test {i}", "type": "recall_alert"} for i in range(100)]
 
         with patch("workers.notification_tasks.FirebaseMessaging") as mock_fcm:
             mock_fcm.return_value.send.return_value = {"success": True}
@@ -188,7 +181,7 @@ class TestCeleryTaskExecution:
         - Failed notification IDs are logged
         """
         # Arrange
-        notifications = [{"id": i, "user_id": f"user_{i}"} for i in range(10)]
+        _notifications = [{"id": i, "user_id": f"user_{i}"} for i in range(10)]
 
         with patch("workers.notification_tasks.FirebaseMessaging") as mock_fcm:
             # Make every 3rd notification fail
@@ -219,7 +212,7 @@ class TestCeleryTaskExecution:
         - Memory usage stays under 500MB
         """
         # Arrange
-        large_dataset = [
+        _large_dataset = [
             {
                 "recall_id": f"RECALL-{i}",
                 "title": f"Product Recall {i}",
@@ -254,7 +247,7 @@ class TestCeleryTaskExecution:
         - All tasks complete successfully
         """
         # Arrange
-        num_concurrent = 5
+        _num_concurrent = 5
 
         with patch("workers.report_tasks.PDFGenerator") as mock_pdf:
             mock_pdf.return_value.generate.return_value = {"success": True}
@@ -310,7 +303,7 @@ class TestCeleryTaskExecution:
         - File is encrypted before storage
         """
         # Arrange
-        user_id = "user_12345"
+        _user_id = "user_12345"
 
         with patch("workers.privacy_tasks.DataExporter") as mock_exporter:
             mock_exporter.return_value.export_user_data.return_value = {
@@ -340,7 +333,7 @@ class TestCeleryTaskExecution:
         - No orphaned records remain
         """
         # Arrange
-        user_id = "user_to_delete"
+        _user_id = "user_to_delete"
 
         with patch("workers.privacy_tasks.DataDeleter") as mock_deleter:
             mock_deleter.return_value.delete_user_data.return_value = {
@@ -371,7 +364,7 @@ class TestCeleryTaskExecution:
         """
         # Arrange
         with patch("workers.maintenance_tasks.TaskResult") as mock_result:
-            old_date = datetime.utcnow() - timedelta(days=31)
+            _old_date = datetime.utcnow() - timedelta(days=31)
             mock_result.objects.filter.return_value.delete.return_value = (45, {})
 
             # Act

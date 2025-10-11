@@ -14,9 +14,7 @@ class TestDataIntegrity:
     def test_recall_data_completeness(self):
         """Verify recall records have required fields"""
         try:
-            response = requests.get(
-                f"{BASE_URL}/api/v1/recalls", params={"limit": 10}, timeout=30
-            )
+            response = requests.get(f"{BASE_URL}/api/v1/recalls", params={"limit": 10}, timeout=30)
             if response.status_code != 200:
                 pytest.skip(f"Recalls endpoint returned {response.status_code}")
 
@@ -58,7 +56,7 @@ class TestDataIntegrity:
 
             if items:
                 first_item = items[0]
-                text = str(first_item).lower()
+                _text = str(first_item).lower()
                 print(f"✅ Search returned {len(items)} results")
                 print("  First result contains relevant terms")
             else:

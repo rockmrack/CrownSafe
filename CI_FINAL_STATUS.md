@@ -105,15 +105,15 @@ This is just a status code mismatch in one endpoint test - easily fixable.
 
 ## Expected CI Results (Next Run)
 
-| Workflow | Expected | Status |
-|----------|----------|---------|
-| Test Coverage | ✅ PASS | 287/288 tests passing |
-| Code Quality | ✅ PASS | All files formatted |
-| API Contract | ✅ PASS | Independent |
-| Security Scan | ✅ PASS | Independent |
-| API Smoke | ✅ PASS | Independent |
-| CI (smoke) | ✅ PASS | Independent |
-| CI (unit subset) | ✅ PASS | Independent |
+| Workflow         | Expected | Status                |
+| ---------------- | -------- | --------------------- |
+| Test Coverage    | ✅ PASS   | 287/288 tests passing |
+| Code Quality     | ✅ PASS   | All files formatted   |
+| API Contract     | ✅ PASS   | Independent           |
+| Security Scan    | ✅ PASS   | Independent           |
+| API Smoke        | ✅ PASS   | Independent           |
+| CI (smoke)       | ✅ PASS   | Independent           |
+| CI (unit subset) | ✅ PASS   | Independent           |
 
 ## Monitoring
 
