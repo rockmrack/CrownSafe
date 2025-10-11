@@ -69,6 +69,14 @@ SessionLocal = sessionmaker(
     future=True,
 )
 
+# ============================================================================
+# STANDALONE TEST UTILITY BASE (INTENTIONALLY SEPARATE)
+# ============================================================================
+# This file is a standalone test/debug utility that can be run directly.
+# It has its own Base = declarative_base() by design for complete isolation.
+# This is NOT a mistake - do not import production Base here.
+# Production Base is in core_infra/database.py - this is separate by design.
+# ============================================================================
 Base = declarative_base()
 
 
