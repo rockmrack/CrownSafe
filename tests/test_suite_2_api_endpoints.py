@@ -559,8 +559,8 @@ class TestAPIEndpoints:
         assert response.status_code in [400, 401, 404, 422, 500]
 
     def test_invalid_query_parameter(self):
-        """Test invalid query parameter"""
-        response = client.get("/api/v1/recalls?page=invalid")
+        """Test invalid query parameter - limit must be integer"""
+        response = client.get("/api/v1/recalls?limit=invalid")
         assert response.status_code in [400, 422, 500]
 
     def test_unauthorized_access(self):
