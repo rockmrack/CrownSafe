@@ -13,7 +13,9 @@ sys.path.insert(0, project_root)
 
 from agents.value_add.alternatives_agent.agent_logic import AlternativesAgentLogic
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 
 async def main():
@@ -49,10 +51,14 @@ async def main():
                 print(f"✅✅✅ TEST PASSED: Successfully found {alternatives_found} alternatives.")
             else:
                 print("\n" + "=" * 50)
-                print("❌ TEST FAILED: The agent did not find any alternatives for a known category.")
+                print(
+                    "❌ TEST FAILED: The agent did not find any alternatives for a known category."
+                )
         else:
             print("\n" + "=" * 50)
-            print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")
+            print(
+                f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}"
+            )
 
     except Exception as e:
         print("\n" + "=" * 50)

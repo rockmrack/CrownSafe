@@ -14,7 +14,9 @@ sys.path.insert(0, project_root)
 # Set same database URL as seed script
 os.environ["DATABASE_URL"] = os.getenv("DATABASE_URL", "sqlite:///babyshield_test.db")
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 API_URL = os.getenv("API_URL", "http://127.0.0.1:8001/api/v1/safety-check")
 TEST_BARCODE = "037000488786"  # MUST match the one in seed_for_live_test.py!

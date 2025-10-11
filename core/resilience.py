@@ -19,7 +19,9 @@ class CircuitBreaker:
         self.threshold = threshold
         self.window = window_sec
         self.cooldown = cooldown_sec
-        self.state: Dict[str, Dict[str, float]] = {}  # key -> {"fails": int, "window_start": ts, "open_until": ts}
+        self.state: Dict[
+            str, Dict[str, float]
+        ] = {}  # key -> {"fails": int, "window_start": ts, "open_until": ts}
 
     def allow(self, key: str) -> bool:
         now = monotonic()

@@ -49,7 +49,9 @@ class TestResults:
         if agent_name not in self.results:
             self.results[agent_name] = {"tests": [], "passed": 0, "failed": 0}
 
-        self.results[agent_name]["tests"].append({"name": test_name, "status": status, "details": details})
+        self.results[agent_name]["tests"].append(
+            {"name": test_name, "status": status, "details": details}
+        )
 
         if status == "PASSED":
             self.results[agent_name]["passed"] += 1
@@ -190,7 +192,9 @@ async def test_recall_agent_process_task():
         assert result is not None
         assert "recalls" in result or "error" not in result
 
-        test_results.add_result(agent_name, test_name, "PASSED", "Successfully processed recall search task")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Successfully processed recall search task"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -237,7 +241,9 @@ async def test_chat_agent_process_simple_query():
         assert result is not None
         assert "response" in result or "answer" in result or "error" not in result
 
-        test_results.add_result(agent_name, test_name, "PASSED", "Successfully processed simple query")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Successfully processed simple query"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise

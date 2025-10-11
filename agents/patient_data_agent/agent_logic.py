@@ -92,7 +92,9 @@ class PatientDataAgentLogic:
             self.logger.warning(f"Could not initialize EnhancedMemoryManager: {e}")
 
         # Patient data path
-        self.patient_data_path = Path(__file__).parent.parent.parent / "data" / "mock_patient_records.json"
+        self.patient_data_path = (
+            Path(__file__).parent.parent.parent / "data" / "mock_patient_records.json"
+        )
 
         # Load patient data
         self.patient_records = {}
@@ -205,7 +207,9 @@ class PatientDataAgentLogic:
                     self.logger.warning(f"Could not cache patient records: {e}")
 
         except FileNotFoundError:
-            self.logger.error(f"CRITICAL: Mock patient data file not found at {self.patient_data_path}.")
+            self.logger.error(
+                f"CRITICAL: Mock patient data file not found at {self.patient_data_path}."
+            )
             self._create_default_patient_data()
         except json.JSONDecodeError as e:
             self.logger.error(f"CRITICAL: Could not parse JSON from {self.patient_data_path}: {e}")
@@ -351,7 +355,9 @@ class PatientDataAgentLogic:
 
             if result["status"] == "success":
                 # Apply privacy filters based on role
-                filtered_record = self._apply_privacy_filters(result["record"], requester_id, requester_role)
+                filtered_record = self._apply_privacy_filters(
+                    result["record"], requester_id, requester_role
+                )
 
                 return {
                     "status": "COMPLETED",
@@ -537,7 +543,9 @@ class PatientDataAgentLogic:
         action_type = task_data.get("action_type")
         start_time = task_data.get("start_time")
         end_time = task_data.get("end_time")
-        _ = task_data.get("requester_id", "unknown")  # requester_id (reserved for future access control)
+        _ = task_data.get(
+            "requester_id", "unknown"
+        )  # requester_id (reserved for future access control)
         requester_role = task_data.get("requester_role", "nurse")
         redact_user_ids = task_data.get("redact_user_ids", False)  # ADDED
 
@@ -654,7 +662,9 @@ class PatientDataAgentLogic:
                         patient_data = copy.deepcopy(self.patient_records[patient_id])
 
                         # Apply privacy filters
-                        patient_data = self._apply_privacy_filters(patient_data, requester_id, requester_role)
+                        patient_data = self._apply_privacy_filters(
+                            patient_data, requester_id, requester_role
+                        )
 
                         export_data["patients"][patient_id] = patient_data
 
@@ -662,7 +672,9 @@ class PatientDataAgentLogic:
                             audit_entries = self._filter_audit_log(patient_id=patient_id)
                             # FIXED: Redact user IDs in audit log
                             if redact_audit_users:
-                                audit_entries = [{**entry, "user_id": "REDACTED"} for entry in audit_entries]
+                                audit_entries = [
+                                    {**entry, "user_id": "REDACTED"} for entry in audit_entries
+                                ]
                             export_data["patients"][patient_id]["audit_log"] = audit_entries
 
             # Format export based on requested format
@@ -699,7 +711,9 @@ class PatientDataAgentLogic:
                         "agent_id": self.agent_id,
                     }
 
-                validation_result = self._validate_patient_record(self.patient_records[patient_id], validation_type)
+                validation_result = self._validate_patient_record(
+                    self.patient_records[patient_id], validation_type
+                )
 
                 return {
                     "status": "COMPLETED",
@@ -818,7 +832,10 @@ class PatientDataAgentLogic:
                     score += 1.0
                 elif isinstance(record[field_name], list) and value in record[field_name]:
                     score += 0.8
-                elif isinstance(record[field_name], str) and str(value).lower() in record[field_name].lower():
+                elif (
+                    isinstance(record[field_name], str)
+                    and str(value).lower() in record[field_name].lower()
+                ):
                     score += 0.5
 
         return score / max_score if max_score > 0 else 0.0
@@ -881,7 +898,9 @@ class PatientDataAgentLogic:
                     expected_types = (expected_types,)
 
                 if not isinstance(value, expected_types):
-                    errors.append(f"Field '{update_field}' must be of type {expected_types}, got {type(value)}")
+                    errors.append(
+                        f"Field '{update_field}' must be of type {expected_types}, got {type(value)}"
+                    )
 
                 # Additional specific validations
                 if update_field == "age" and isinstance(value, int):
@@ -899,7 +918,9 @@ class PatientDataAgentLogic:
 
         return {"valid": len(errors) == 0, "errors": errors}
 
-    def _validate_patient_record(self, record: Dict[str, Any], validation_type: str) -> Dict[str, Any]:
+    def _validate_patient_record(
+        self, record: Dict[str, Any], validation_type: str
+    ) -> Dict[str, Any]:
         """Validate a patient record"""
         issues = []
 
@@ -986,7 +1007,9 @@ class PatientDataAgentLogic:
             if patient_id in self.patient_records:
                 consent_field = f"{consent_type}_consent"
                 self.patient_records[patient_id][consent_field] = value
-                self.patient_records[patient_id]["consent_updated"] = datetime.now(timezone.utc).isoformat()
+                self.patient_records[patient_id]["consent_updated"] = datetime.now(
+                    timezone.utc
+                ).isoformat()
                 self._save_patient_records_throttled()
                 return True
         return False

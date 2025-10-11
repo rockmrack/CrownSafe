@@ -36,7 +36,9 @@ logger = logging.getLogger(__name__)
 try:
     from agents.research.web_research_agent.agent_logic import WebResearchLogic
 
-    web_research_agent = WebResearchLogic(agent_id="api_web_research", version="2.0", logger_instance=logger)
+    web_research_agent = WebResearchLogic(
+        agent_id="api_web_research", version="2.0", logger_instance=logger
+    )
 except Exception as e:
     web_research_agent = None
     logger.warning(f"Web Research Agent not available: {e}")
@@ -142,7 +144,9 @@ class VisualRecognitionRequest(BaseModel):
     user_id: int = Field(..., description="User ID")
     include_similar: bool = Field(True, description="Include similar products if no exact match")
     check_for_defects: bool = Field(True, description="Check for visual defects")
-    confidence_threshold: float = Field(0.7, ge=0, le=1, description="Minimum confidence for matches")
+    confidence_threshold: float = Field(
+        0.7, ge=0, le=1, description="Minimum confidence for matches"
+    )
 
 
 class VisualRecognitionResponse(BaseModel):
@@ -316,7 +320,9 @@ async def research_product_safety(
             risk_indicators.append("Multiple negative reports found")
             safety_score -= 10
 
-        high_relevance_negative = any(f.relevance_score > 0.8 and f.sentiment == "negative" for f in findings)
+        high_relevance_negative = any(
+            f.relevance_score > 0.8 and f.sentiment == "negative" for f in findings
+        )
         if high_relevance_negative:
             risk_indicators.append("High-confidence safety concern identified")
             safety_score -= 15
@@ -391,7 +397,9 @@ async def get_product_guidelines(request: GuidelinesRequest, db: Session = Depen
 
             if "toy" in product_name.lower():
                 age_appropriate = False
-                warnings.append("Most toys are not suitable for newborns due to developmental stage")
+                warnings.append(
+                    "Most toys are not suitable for newborns due to developmental stage"
+                )
 
             if "blanket" in product_name.lower():
                 warnings.append("No loose blankets in crib - use sleep sacks instead")
@@ -473,7 +481,9 @@ async def get_product_guidelines(request: GuidelinesRequest, db: Session = Depen
                         )
                     )
                 elif request.child_weight_lbs > 40:
-                    best_practices.append("Consider forward-facing car seat if child is over 2 years")
+                    best_practices.append(
+                        "Consider forward-facing car seat if child is over 2 years"
+                    )
 
                 weight_appropriate = True
 

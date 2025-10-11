@@ -191,7 +191,9 @@ class TestDatabaseDeep:
 
         try:
             unicode_str = "测试 тест اختبار"
-            result = db.execute(text("SELECT :unicode_val as unicode_col"), {"unicode_val": unicode_str})
+            result = db.execute(
+                text("SELECT :unicode_val as unicode_col"), {"unicode_val": unicode_str}
+            )
             row = result.first()
             assert row[0] == unicode_str
         finally:

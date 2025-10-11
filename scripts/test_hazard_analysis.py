@@ -13,7 +13,9 @@ sys.path.insert(0, project_root)
 
 from agents.hazard_analysis_agent.agent_logic import HazardAnalysisLogic
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # --- Test Configuration ---
 # We will use sample recall data for a fictional baby product.
@@ -64,10 +66,14 @@ async def main():
                 print(f"Summary: {analysis['summary']}")
             else:
                 print("\n" + "=" * 50)
-                print("❌ TEST FAILED: The LLM response was missing required keys ('summary', 'risk_level').")
+                print(
+                    "❌ TEST FAILED: The LLM response was missing required keys ('summary', 'risk_level')."
+                )
         else:
             print("\n" + "=" * 50)
-            print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")
+            print(
+                f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}"
+            )
 
     except ValueError as e:
         print("\n" + "=" * 50)

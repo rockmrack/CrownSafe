@@ -39,7 +39,9 @@ if ENABLE_RECEIPT_VALIDATION:
     except ImportError:
         logger.error("Receipt validation enabled but Google API libraries not available")
         if os.getenv("ENVIRONMENT") == "production":
-            raise RuntimeError("Receipt validation enabled in production but Google API libraries missing")
+            raise RuntimeError(
+                "Receipt validation enabled in production but Google API libraries missing"
+            )
 else:
     logger.info("Receipt validation disabled by config")
 
@@ -123,7 +125,8 @@ class AppleReceiptValidator:
             "purchase_date": parse_date(latest.get("purchase_date_ms")),
             "expires_date": parse_date(latest.get("expires_date_ms")),
             "is_trial": latest.get("is_trial_period") == "true",
-            "auto_renew": receipt_data.get("pending_renewal_info", [{}])[0].get("auto_renew_status") == "1",
+            "auto_renew": receipt_data.get("pending_renewal_info", [{}])[0].get("auto_renew_status")
+            == "1",
         }
 
 
@@ -162,7 +165,9 @@ class GoogleReceiptValidator:
             # Fallback to file path
             key_path = SubscriptionConfig.GOOGLE_SERVICE_ACCOUNT_KEY_PATH
             if not key_path or not os.path.exists(key_path):
-                logger.error("Receipt validation enabled but Google service account key not configured")
+                logger.error(
+                    "Receipt validation enabled but Google service account key not configured"
+                )
                 if os.getenv("ENVIRONMENT") == "production":
                     raise RuntimeError(
                         "Receipt validation enabled in production but Google service account key missing"
@@ -268,7 +273,9 @@ class ReceiptValidationService:
                         "success": False,
                         "error": "Product ID required for Google receipts",
                     }
-                is_valid, receipt_info = await self.google_validator.validate(receipt_data, product_id)
+                is_valid, receipt_info = await self.google_validator.validate(
+                    receipt_data, product_id
+                )
                 provider_enum = PaymentProvider.GOOGLE
             else:
                 return {"success": False, "error": f"Invalid provider: {provider}"}

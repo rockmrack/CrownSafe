@@ -119,7 +119,9 @@ async def get_monitored_products(
 
         # Apply pagination
         offset = (page - 1) * page_size
-        products = query.order_by(desc(MonitoredProduct.created_at)).offset(offset).limit(page_size).all()
+        products = (
+            query.order_by(desc(MonitoredProduct.created_at)).offset(offset).limit(page_size).all()
+        )
 
         # Build response
         items = []
@@ -362,7 +364,9 @@ async def auto_add_from_scans(
 
 
 @router.get("/status", response_model=ApiResponse)
-async def get_monitoring_status(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
+async def get_monitoring_status(
+    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
+):
     """Get overall monitoring status and statistics"""
     try:
         # Get user's monitoring stats

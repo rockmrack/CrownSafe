@@ -585,7 +585,9 @@ class TestDatabaseAndModels:
         try:
             with get_db_session() as session:
                 recalls = (
-                    session.query(RecallDB).filter(and_(RecallDB.country == "US", RecallDB.brand == "TestBrand")).all()
+                    session.query(RecallDB)
+                    .filter(and_(RecallDB.country == "US", RecallDB.brand == "TestBrand"))
+                    .all()
                 )
                 assert isinstance(recalls, list)
         except Exception:
@@ -598,7 +600,11 @@ class TestDatabaseAndModels:
 
         try:
             with get_db_session() as session:
-                recalls = session.query(RecallDB).filter(or_(RecallDB.country == "US", RecallDB.country == "CA")).all()
+                recalls = (
+                    session.query(RecallDB)
+                    .filter(or_(RecallDB.country == "US", RecallDB.country == "CA"))
+                    .all()
+                )
                 assert isinstance(recalls, list)
         except Exception:
             pytest.skip("Database not available")
@@ -621,7 +627,11 @@ class TestDatabaseAndModels:
 
         try:
             with get_db_session() as session:
-                result = session.query(RecallDB.country, func.count(RecallDB.id)).group_by(RecallDB.country).all()
+                result = (
+                    session.query(RecallDB.country, func.count(RecallDB.id))
+                    .group_by(RecallDB.country)
+                    .all()
+                )
                 assert isinstance(result, list)
         except Exception:
             pytest.skip("Database not available")
@@ -846,7 +856,9 @@ class TestDatabaseAndModels:
         """Test migration versions exist"""
         versions_dir = os.path.join(os.path.dirname(__file__), "..", "alembic", "versions")
         if os.path.exists(versions_dir):
-            versions = [f for f in os.listdir(versions_dir) if f.endswith(".py") and f != "__pycache__"]
+            versions = [
+                f for f in os.listdir(versions_dir) if f.endswith(".py") and f != "__pycache__"
+            ]
             assert len(versions) >= 0
 
     def test_database_current_revision(self):

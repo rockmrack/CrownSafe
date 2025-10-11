@@ -20,7 +20,9 @@ from core_infra.mcp_client_library.exceptions import MCPClientError, ConnectionE
 
 # --- Configuration ---
 # Configure basic logging for the script
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger("TestClientScript")
 
 # Define Agent ID for this test client

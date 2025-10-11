@@ -264,7 +264,9 @@ class RecallAlertService:
                                     new_recalls.append(
                                         {
                                             "recall_id": recall.get("RecallID"),
-                                            "product_name": recall.get("Products", [{}])[0].get("Name"),
+                                            "product_name": recall.get("Products", [{}])[0].get(
+                                                "Name"
+                                            ),
                                             "hazard": recall.get("Hazards", [{}])[0].get("Name"),
                                             "remedy": recall.get("Remedies", [{}])[0].get("Name"),
                                             "date": recall.get("RecallDate"),
@@ -302,7 +304,9 @@ class RecallAlertService:
                 .filter(
                     or_(
                         func.lower(ScanHistory.product_name).contains(product_name),
-                        func.lower(ScanHistory.brand).contains(product_name.split()[0] if product_name else ""),
+                        func.lower(ScanHistory.brand).contains(
+                            product_name.split()[0] if product_name else ""
+                        ),
                     )
                 )
                 .distinct(ScanHistory.user_id)
@@ -341,7 +345,11 @@ class RecallAlertService:
 
         try:
             # Get user's devices
-            devices = db.query(DeviceToken).filter(DeviceToken.user_id == user_id, DeviceToken.is_active).all()
+            devices = (
+                db.query(DeviceToken)
+                .filter(DeviceToken.user_id == user_id, DeviceToken.is_active)
+                .all()
+            )
 
             if not devices:
                 logger.info(f"No active devices for user {user_id}")
@@ -396,7 +404,9 @@ class RecallAlertService:
 
             db.commit()
 
-            logger.info(f"Sent recall alert to {success_count}/{len(devices)} devices for user {user_id}")
+            logger.info(
+                f"Sent recall alert to {success_count}/{len(devices)} devices for user {user_id}"
+            )
             return success_count > 0
 
         except Exception as e:
@@ -410,7 +420,9 @@ class RecallAlertService:
         hazard = recall.get("hazard", "").lower()
 
         # Critical severity keywords
-        if any(word in hazard for word in ["death", "fatal", "choking", "suffocation", "strangulation"]):
+        if any(
+            word in hazard for word in ["death", "fatal", "choking", "suffocation", "strangulation"]
+        ):
             return "critical"
 
         # High severity keywords
@@ -452,7 +464,9 @@ async def check_all_agencies_for_recalls():
         # Check each agency
         for agency in RecallAlertService.AGENCY_ENDPOINTS.keys():
             try:
-                result = await RecallAlertService.check_agency_for_new_recalls(agency, last_check, db)
+                result = await RecallAlertService.check_agency_for_new_recalls(
+                    agency, last_check, db
+                )
 
                 if result.new_recalls_count > 0:
                     logger.info(f"Found {result.new_recalls_count} new recalls from {agency}")
@@ -643,7 +657,9 @@ async def get_alert_history(user_id: int, limit: int = 50, db: Session = Depends
 
     except NameError:
         # Fallback: NotificationHistory not available, return empty history
-        logger.warning(f"NotificationHistory not available, returning empty history for user {user_id}")
+        logger.warning(
+            f"NotificationHistory not available, returning empty history for user {user_id}"
+        )
         return {
             "success": True,
             "alerts": [],

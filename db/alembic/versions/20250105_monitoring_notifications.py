@@ -22,7 +22,9 @@ def upgrade():
     op.create_table(
         "password_reset_tokens",
         sa.Column("id", sa.String(64), primary_key=True),
-        sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False),  # Fixed: Integer not String
+        sa.Column(
+            "user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False
+        ),  # Fixed: Integer not String
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.Column("expires_at", sa.DateTime(), nullable=False),
         sa.Column("used_at", sa.DateTime(), nullable=True),

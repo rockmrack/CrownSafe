@@ -66,7 +66,9 @@ def test_childrenscode_compliance_logic():
             f"      - Setting '{issue['setting']}' is '{issue['current_value']}', should be '{issue['required_default']}'"
         )
 
-    print("\n--- All tests passed successfully! ChildrensCode_ComplianceAgent is working correctly. ---")
+    print(
+        "\n--- All tests passed successfully! ChildrensCode_ComplianceAgent is working correctly. ---"
+    )
 
 
 if __name__ == "__main__":

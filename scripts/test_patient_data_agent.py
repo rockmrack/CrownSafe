@@ -35,7 +35,9 @@ def test_patient_data_agent():
     print("   -> SUCCESS: Correctly handled non-existent patient ID.")
 
     print("\n4. Testing patient search by diagnosis...")
-    result = logic.process_task({"task_name": "search_patients", "criteria": {"diagnoses_icd10": "I50"}})
+    result = logic.process_task(
+        {"task_name": "search_patients", "criteria": {"diagnoses_icd10": "I50"}}
+    )
     assert result["status"] == "COMPLETED"
     assert result["result_count"] >= 2  # Should find patient-001 and patient-002
     print(f"   -> SUCCESS: Found {result['result_count']} patients with heart failure diagnosis.")

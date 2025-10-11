@@ -375,7 +375,9 @@ def sanitize_dict(data: dict) -> dict:
         elif isinstance(value, dict):
             cleaned[key] = sanitize_dict(value)
         elif isinstance(value, list):
-            cleaned[key] = [sanitize_html(item) if isinstance(item, str) else item for item in value]
+            cleaned[key] = [
+                sanitize_html(item) if isinstance(item, str) else item for item in value
+            ]
         else:
             cleaned[key] = value
     return cleaned

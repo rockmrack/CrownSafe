@@ -29,7 +29,9 @@ class ExplainFeedbackResponse(BaseModel):
 
 
 @router.post("/explain-feedback", response_model=ExplainFeedbackResponse)
-def explain_feedback(payload: ExplainFeedbackPayload, request: Request, db: Session = Depends(get_db)):
+def explain_feedback(
+    payload: ExplainFeedbackPayload, request: Request, db: Session = Depends(get_db)
+):
     """
     Record user feedback on explain-result responses.
     Captures thumbs up/down from the mobile UI.

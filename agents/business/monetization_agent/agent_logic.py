@@ -44,7 +44,9 @@ class MonetizationAgentLogic:
                     }
 
                 # Create customer on Stripe
-                customer = stripe.Customer.create(email=user.email, metadata={"babyshield_user_id": user.id})
+                customer = stripe.Customer.create(
+                    email=user.email, metadata={"babyshield_user_id": user.id}
+                )
                 user.stripe_customer_id = customer.id
                 db.commit()
                 db.refresh(user)
@@ -95,7 +97,9 @@ class MonetizationAgentLogic:
                     success_url="https://babyshield.com/subscribe/success?session_id={CHECKOUT_SESSION_ID}",
                     cancel_url="https://babyshield.com/subscribe/cancel",
                 )
-                self.logger.info(f"Created Stripe checkout session for user {user.id}: {checkout_session.url}")
+                self.logger.info(
+                    f"Created Stripe checkout session for user {user.id}: {checkout_session.url}"
+                )
                 return {"status": "success", "checkout_url": checkout_session.url}
 
         except Exception as e:
@@ -119,7 +123,11 @@ class MonetizationAgentLogic:
             subscriptions = stripe.Subscription.list(customer=user.stripe_customer_id)
             for sub in subscriptions.data:
                 if sub.status == "active":
-                    sub_tier = "family_tier" if sub.items.data[0].price.id == FAMILY_TIER_PRICE_ID else "standard"
+                    sub_tier = (
+                        "family_tier"
+                        if sub.items.data[0].price.id == FAMILY_TIER_PRICE_ID
+                        else "standard"
+                    )
                     self.logger.info(f"User {user.id} has an active '{sub_tier}' subscription.")
                     return {
                         "status": "success",

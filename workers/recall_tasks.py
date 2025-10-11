@@ -55,7 +55,9 @@ except ImportError:
     soft_time_limit=300,
     time_limit=360,
 )
-def ingest_recalls_from_agency_task(self: Task, agency: str, date_range: Dict[str, str]) -> Dict[str, Any]:
+def ingest_recalls_from_agency_task(
+    self: Task, agency: str, date_range: Dict[str, str]
+) -> Dict[str, Any]:
     """
     Ingest recalls from a specific regulatory agency.
 

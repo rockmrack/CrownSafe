@@ -11,7 +11,9 @@ from core_infra.mcp_client_library.models import MCPMessage
 from .agent_logic import PolicyAnalysisAgentLogic
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "policy_analysis_agent_01"
@@ -244,10 +246,16 @@ class PolicyAnalysisAgent:
                 drugs = self.logic.policies[insurer].get("drugs", {})
                 stats[insurer] = {
                     "total_drugs": len(drugs),
-                    "pa_required": sum(1 for d in drugs.values() if "Prior Authorization" in d.get("status", "")),
-                    "covered": sum(1 for d in drugs.values() if d.get("status", "").startswith("Covered")),
+                    "pa_required": sum(
+                        1 for d in drugs.values() if "Prior Authorization" in d.get("status", "")
+                    ),
+                    "covered": sum(
+                        1 for d in drugs.values() if d.get("status", "").startswith("Covered")
+                    ),
                     "not_covered": sum(
-                        1 for d in drugs.values() if d.get("status", "") in ["Not on Formulary", "Not Covered"]
+                        1
+                        for d in drugs.values()
+                        if d.get("status", "") in ["Not on Formulary", "Not Covered"]
                     ),
                 }
 
@@ -343,7 +351,9 @@ if __name__ == "__main__":
         test_agent = PolicyAnalysisAgent()
 
         # Test policy retrieval
-        test_result = test_agent.logic.process_task({"task_name": "get_drug_policy", "drug_name": "empagliflozin"})
+        test_result = test_agent.logic.process_task(
+            {"task_name": "get_drug_policy", "drug_name": "empagliflozin"}
+        )
         logger.info(f"Policy test result: {json.dumps(test_result, indent=2)}")
 
         # Test coverage check

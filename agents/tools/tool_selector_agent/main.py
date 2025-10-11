@@ -76,7 +76,9 @@ async def handle_incoming_message(client_ref: MCPClient, message: MCPMessage):
             # ToolSelector might receive TASK_ASSIGN to select a tool/agent,
             # and potentially DISCOVERY_RESPONSE if it queries capabilities itself.
             # Delegate all processing to the logic class.
-            response_payload = await tool_selector_logic_instance.process_message(message_type, payload)
+            response_payload = await tool_selector_logic_instance.process_message(
+                message_type, payload
+            )
 
             # If logic returns a response payload (e.g., TASK_COMPLETE/FAIL for the selection task)
             if response_payload:

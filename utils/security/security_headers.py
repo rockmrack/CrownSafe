@@ -102,7 +102,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
         # 4. Strict-Transport-Security (HSTS)
         if self.enable_hsts:
-            response.headers["Strict-Transport-Security"] = f"max-age={self.hsts_max_age}; includeSubDomains; preload"
+            response.headers[
+                "Strict-Transport-Security"
+            ] = f"max-age={self.hsts_max_age}; includeSubDomains; preload"
 
         # 5. X-XSS-Protection (legacy, but still useful for older browsers)
         if self.enable_xss_protection:
@@ -112,7 +114,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
         # 7. Permissions-Policy (feature restrictions)
-        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+        response.headers[
+            "Permissions-Policy"
+        ] = "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
 
         # 8. X-Permitted-Cross-Domain-Policies (Adobe products)
         response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
@@ -126,7 +130,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         if "Server" in response.headers:
             del response.headers["Server"]
 
-        logger.info(f"✅ SecurityHeadersMiddleware completed. Total headers in response: {len(response.headers)}")
+        logger.info(
+            f"✅ SecurityHeadersMiddleware completed. Total headers in response: {len(response.headers)}"
+        )
         return response
 
 
@@ -158,7 +164,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         # Clean old entries (older than 1 minute)
         current_time = time.time()
         if client_ip in self._request_counts:
-            self._request_counts[client_ip] = [ts for ts in self._request_counts[client_ip] if current_time - ts < 60]
+            self._request_counts[client_ip] = [
+                ts for ts in self._request_counts[client_ip] if current_time - ts < 60
+            ]
         else:
             self._request_counts[client_ip] = []
 
@@ -184,7 +192,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         # Add rate limit headers
         response.headers["X-RateLimit-Limit"] = str(self.requests_per_minute)
-        response.headers["X-RateLimit-Remaining"] = str(self.requests_per_minute - len(self._request_counts[client_ip]))
+        response.headers["X-RateLimit-Remaining"] = str(
+            self.requests_per_minute - len(self._request_counts[client_ip])
+        )
 
         return response
 

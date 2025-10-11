@@ -45,7 +45,9 @@ except Exception as e:
 
 # --- Basic Logging Config ---
 # Agent-specific logging will be configured within the agent's main module
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger("RunAgentScript")
 
 # --- Argument Parsing ---

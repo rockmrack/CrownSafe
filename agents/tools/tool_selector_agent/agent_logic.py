@@ -27,7 +27,9 @@ class ToolSelectorLogic:
         self.pending_selections: Dict[str, Any] = {}
         self.logger.info("ToolSelectorLogic initialized.")
 
-    async def process_message(self, message_type: str, payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    async def process_message(
+        self, message_type: str, payload: Dict[str, Any]
+    ) -> Optional[Dict[str, Any]]:
         """Processes incoming TASK_ASSIGN (for selection) or DISCOVERY_RESPONSE messages."""
         # Return value is optional response payload to be sent back by main.py's handler
 
@@ -50,7 +52,9 @@ class ToolSelectorLogic:
         original_requester_id = payload.get("original_requester_id")  # Who asked for the selection
 
         if not correlation_id or not original_requester_id:
-            self.logger.error("Received selection request missing correlation_id or original_requester_id.")
+            self.logger.error(
+                "Received selection request missing correlation_id or original_requester_id."
+            )
             # Cannot easily report failure without routing info
             return None
 
@@ -155,7 +159,9 @@ class ToolSelectorLogic:
             for agent_info in found_agents:
                 if agent_info.get("metadata", {}).get("status") == "ACTIVE":
                     selected_agent_id = agent_info.get("agent_id")
-                    selection_details["selected_agent_info"] = agent_info  # Store info about selected agent
+                    selection_details[
+                        "selected_agent_info"
+                    ] = agent_info  # Store info about selected agent
                     break
             if selected_agent_id:
                 self.logger.info(
@@ -183,7 +189,9 @@ class ToolSelectorLogic:
             request_state["status"] = "FAILED"
             error_msg = f"Tool/agent selection failed: No suitable agent found (Discovery Status: {status})."
             self.logger.error(f"{error_msg} Request ID: {target_request_id}")
-            response_payload = self._create_failure_response(target_request_id, original_requester_id, error_msg)
+            response_payload = self._create_failure_response(
+                target_request_id, original_requester_id, error_msg
+            )
 
         # Send response back to the original requester of the selection task
         if response_payload:

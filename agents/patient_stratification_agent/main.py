@@ -11,7 +11,9 @@ from core_infra.mcp_client_library.models import MCPMessage
 from .agent_logic import PatientStratificationAgentLogic, DecisionType
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "patient_stratification_agent_01"
@@ -208,7 +210,9 @@ class PatientStratificationAgent:
                 "message": "Missing required parameters: patient_id, drug_name, and insurer_id",
             }
 
-        return await self.logic.predict_approval_likelihood(patient_id, drug_name, insurer_id, urgency)
+        return await self.logic.predict_approval_likelihood(
+            patient_id, drug_name, insurer_id, urgency
+        )
 
     async def _handle_analyze_case(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Handle case analysis without prediction"""
@@ -261,7 +265,9 @@ class PatientStratificationAgent:
             "successful_requests": self.success_count,
             "failed_requests": self.error_count,
             "success_rate": self.success_count / max(self.request_count, 1),
-            "average_requests_per_minute": (self.request_count / uptime_seconds) * 60 if uptime_seconds > 0 else 0,
+            "average_requests_per_minute": (self.request_count / uptime_seconds) * 60
+            if uptime_seconds > 0
+            else 0,
             "logic_metrics": self.logic.metrics,
             "cache_stats": {
                 "decision_cache_size": len(self.logic.decision_cache),

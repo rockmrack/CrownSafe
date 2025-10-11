@@ -29,7 +29,9 @@ class TestEmergencyDetection:
 
         for phrase in emergency_phrases:
             assert looks_emergency(phrase), f"Should detect emergency in: {phrase}"
-            assert looks_emergency(phrase.upper()), f"Should detect emergency (uppercase) in: {phrase}"
+            assert looks_emergency(
+                phrase.upper()
+            ), f"Should detect emergency (uppercase) in: {phrase}"
 
     def test_non_emergency_phrases(self):
         # Test negative cases
@@ -70,7 +72,9 @@ class TestEmergencyDetection:
 
         # All expected terms should be in EMERGENCY_TERMS
         for term in expected_terms:
-            assert any(term in emergency_term for emergency_term in EMERGENCY_TERMS), f"Missing emergency term: {term}"
+            assert any(
+                term in emergency_term for emergency_term in EMERGENCY_TERMS
+            ), f"Missing emergency term: {term}"
 
     def test_empty_or_none_input(self):
         assert not looks_emergency("")

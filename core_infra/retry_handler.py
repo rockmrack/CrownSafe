@@ -186,7 +186,9 @@ class RetryHandler:
                 if self.config.on_retry:
                     self.config.on_retry(e, attempt, delay)
 
-                logger.warning(f"{func.__name__} failed on attempt {attempt}, retrying in {delay:.2f}s: {e}")
+                logger.warning(
+                    f"{func.__name__} failed on attempt {attempt}, retrying in {delay:.2f}s: {e}"
+                )
 
                 # Wait before retry
                 time.sleep(delay)
@@ -239,7 +241,9 @@ class RetryHandler:
                     else:
                         self.config.on_retry(e, attempt, delay)
 
-                logger.warning(f"{func.__name__} failed on attempt {attempt}, retrying in {delay:.2f}s: {e}")
+                logger.warning(
+                    f"{func.__name__} failed on attempt {attempt}, retrying in {delay:.2f}s: {e}"
+                )
 
                 # Wait before retry
                 await asyncio.sleep(delay)

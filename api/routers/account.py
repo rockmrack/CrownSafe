@@ -32,13 +32,17 @@ logger = logging.getLogger(__name__)
 def _rate_limit_delete(user_id: int, limit=3, window_sec=86400):
     """Rate limit account deletion attempts to 3 per day per user"""
     try:
-        r = redis.from_url(os.getenv("REDIS_URL", "redis://localhost:6379/0"), decode_responses=True)
+        r = redis.from_url(
+            os.getenv("REDIS_URL", "redis://localhost:6379/0"), decode_responses=True
+        )
         key = f"acctdel:rl:{user_id}:{time.strftime('%Y%m%d')}"
         v = r.incr(key)
         if v == 1:
             r.expire(key, window_sec)
         if v > limit:
-            raise HTTPException(status_code=429, detail="Too many deletion attempts. Limit: 3 per day.")
+            raise HTTPException(
+                status_code=429, detail="Too many deletion attempts. Limit: 3 per day."
+            )
     except Exception as e:
         logger.error(f"Rate limiting error: {e}")
         # Continue without rate limiting if Redis is unavailable
@@ -51,10 +55,14 @@ def _audit(db: Session, user_id: int, jti: str, status: str, source="mobile", me
         # Check if the audit table exists by trying to query it
         db.execute(text("SELECT 1 FROM account_deletion_audit LIMIT 1"))
 
-        audit_entry = AccountDeletionAudit(user_id=user_id, jti=jti, status=status, source=source, meta=meta or {})
+        audit_entry = AccountDeletionAudit(
+            user_id=user_id, jti=jti, status=status, source=source, meta=meta or {}
+        )
         db.add(audit_entry)
         db.commit()
-        logger.info(f"Audit logged: user={user_id}, status={status}, jti={jti[:8] if jti else 'None'}...")
+        logger.info(
+            f"Audit logged: user={user_id}, status={status}, jti={jti[:8] if jti else 'None'}..."
+        )
     except Exception as e:
         logger.warning(f"Audit logging skipped (table may not exist): {e}")
         # Continue without audit logging if table doesn't exist
@@ -92,13 +100,19 @@ def revoke_tokens_for_user(db: Session, user_id: int):
         # NOTE: If using JWT-only without database storage, implement token blacklist
         from db.models.auth import RefreshToken
 
-        deleted_count = db.query(RefreshToken).filter(RefreshToken.user_id == user_id).delete(synchronize_session=False)
+        deleted_count = (
+            db.query(RefreshToken)
+            .filter(RefreshToken.user_id == user_id)
+            .delete(synchronize_session=False)
+        )
         db.commit()
         logger.info(f"Revoked {deleted_count} tokens for user {user_id}")
     except ImportError:
         # RefreshToken model doesn't exist - using JWT-only approach
         # In this case, tokens should be blacklisted in Redis/cache
-        logger.warning(f"Token revocation not fully implemented - consider adding token blacklist for user {user_id}")
+        logger.warning(
+            f"Token revocation not fully implemented - consider adding token blacklist for user {user_id}"
+        )
     except Exception as e:
         logger.error(f"Failed to revoke tokens for user {user_id}: {e}")
         db.rollback()
@@ -110,7 +124,11 @@ def invalidate_push_tokens(db: Session, user_id: int):
         # Import DeviceToken model and delete user's device tokens
         from api.notification_endpoints import DeviceToken
 
-        deleted_count = db.query(DeviceToken).filter(DeviceToken.user_id == user_id).delete(synchronize_session=False)
+        deleted_count = (
+            db.query(DeviceToken)
+            .filter(DeviceToken.user_id == user_id)
+            .delete(synchronize_session=False)
+        )
         db.commit()
         logger.info(f"Invalidated {deleted_count} push tokens for user {user_id}")
     except Exception as e:
@@ -282,7 +300,9 @@ def delete_account(
                     deleted_count = result.rowcount if hasattr(result, "rowcount") else 0
                     logger.info(f"Cleaned up {deleted_count} {description} for user {user_id}")
             else:
-                logger.debug(f"Skipping cleanup of {description} - table {table_name} does not exist")
+                logger.debug(
+                    f"Skipping cleanup of {description} - table {table_name} does not exist"
+                )
         except Exception as e:
             logger.warning(f"Could not clean up {description}: {e}")
             # Continue with next cleanup - don't let cleanup failures stop account deletion

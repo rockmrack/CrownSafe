@@ -224,7 +224,9 @@ class DocumentationAgentManager:
 
             # Log TASK_ASSIGN reception
             if message_type == "TASK_ASSIGN":
-                logger.critical(f"[TASK] TASK_ASSIGN RECEIVED: From {sender_id}, CorrID: {correlation_id}")
+                logger.critical(
+                    f"[TASK] TASK_ASSIGN RECEIVED: From {sender_id}, CorrID: {correlation_id}"
+                )
                 logger.critical(f"[TASK] TASK_PAYLOAD: {message.payload}")
 
             logger.debug(f"Processing {message_type} from {sender_id} (CorrID: {correlation_id})")
@@ -322,7 +324,9 @@ class DocumentationAgentManager:
                 # Update metrics
                 self.task_count += 1
                 self.metrics["total_tasks"] += 1
-                self.metrics["tasks_by_type"][task_type] = self.metrics["tasks_by_type"].get(task_type, 0) + 1
+                self.metrics["tasks_by_type"][task_type] = (
+                    self.metrics["tasks_by_type"].get(task_type, 0) + 1
+                )
 
                 # Add metadata to payload
                 task_payload["agent_metadata"] = {
@@ -339,7 +343,9 @@ class DocumentationAgentManager:
 
                 # Process the task with timeout
                 result = await asyncio.wait_for(
-                    asyncio.get_event_loop().run_in_executor(None, self.documentation_logic.process_task, task_payload),
+                    asyncio.get_event_loop().run_in_executor(
+                        None, self.documentation_logic.process_task, task_payload
+                    ),
                     timeout=300,  # 5 minute timeout
                 )
 
@@ -358,7 +364,9 @@ class DocumentationAgentManager:
                     self.last_error = result.get("message", "Unknown error")
                     self.active_tasks[task_id]["status"] = "failed"
                     error_type = result.get("error_type", "unknown")
-                    self.metrics["errors_by_type"][error_type] = self.metrics["errors_by_type"].get(error_type, 0) + 1
+                    self.metrics["errors_by_type"][error_type] = (
+                        self.metrics["errors_by_type"].get(error_type, 0) + 1
+                    )
 
                     logger.error(f"Task {task_id} failed: {self.last_error}")
 
@@ -375,7 +383,9 @@ class DocumentationAgentManager:
             except asyncio.TimeoutError:
                 self.error_count += 1
                 self.metrics["failed_tasks"] += 1
-                self.metrics["errors_by_type"]["timeout"] = self.metrics["errors_by_type"].get("timeout", 0) + 1
+                self.metrics["errors_by_type"]["timeout"] = (
+                    self.metrics["errors_by_type"].get("timeout", 0) + 1
+                )
                 self.active_tasks[task_id]["status"] = "timeout"
 
                 logger.error(f"Task {task_id} timed out after 300 seconds")
@@ -394,7 +404,9 @@ class DocumentationAgentManager:
                 self.last_error = str(e)
                 self.active_tasks[task_id]["status"] = "error"
                 error_type = type(e).__name__
-                self.metrics["errors_by_type"][error_type] = self.metrics["errors_by_type"].get(error_type, 0) + 1
+                self.metrics["errors_by_type"][error_type] = (
+                    self.metrics["errors_by_type"].get(error_type, 0) + 1
+                )
 
                 logger.error(f"Error processing task {task_id}: {e}", exc_info=True)
 
@@ -447,7 +459,9 @@ class DocumentationAgentManager:
         self.metrics["total_processing_time"] += processing_time
         successful_tasks = self.metrics["successful_tasks"]
         if successful_tasks > 0:
-            self.metrics["average_processing_time"] = self.metrics["total_processing_time"] / successful_tasks
+            self.metrics["average_processing_time"] = (
+                self.metrics["total_processing_time"] / successful_tasks
+            )
 
     def _get_health_status(self) -> str:
         """Determine agent health status"""
@@ -595,7 +609,9 @@ class DocumentationAgentManager:
 
         for attempt in range(1, Config.MAX_RETRIES + 1):
             try:
-                logger.info(f"[RETRYING] Connection attempt {attempt}/{Config.MAX_RETRIES} for {self.agent_id}")
+                logger.info(
+                    f"[RETRYING] Connection attempt {attempt}/{Config.MAX_RETRIES} for {self.agent_id}"
+                )
 
                 # Clear any existing connection state
                 if self.mcp_client and hasattr(self.mcp_client, "_is_connected"):
@@ -617,7 +633,9 @@ class DocumentationAgentManager:
                 # Success!
                 self.connection_retry_count = 0
                 self.last_successful_connection = asyncio.get_event_loop().time()
-                logger.info(f"[SUCCESS] {self.agent_id} connected and registered successfully on attempt {attempt}")
+                logger.info(
+                    f"[SUCCESS] {self.agent_id} connected and registered successfully on attempt {attempt}"
+                )
 
                 # Start health monitoring
                 await self._start_health_monitoring()
@@ -626,7 +644,9 @@ class DocumentationAgentManager:
 
             except Exception as e:
                 self.connection_retry_count = attempt
-                logger.warning(f"[FAILED] Connection attempt {attempt}/{Config.MAX_RETRIES} failed: {e}")
+                logger.warning(
+                    f"[FAILED] Connection attempt {attempt}/{Config.MAX_RETRIES} failed: {e}"
+                )
 
                 if attempt < Config.MAX_RETRIES:
                     # Calculate exponential backoff delay
@@ -640,7 +660,9 @@ class DocumentationAgentManager:
                         await asyncio.wait_for(self.stop_event.wait(), timeout=delay)
                         # If stop_event is set during delay, abort retry attempts
                         if self.stop_event.is_set():
-                            logger.info("Stop event set during retry delay, aborting connection attempts")
+                            logger.info(
+                                "Stop event set during retry delay, aborting connection attempts"
+                            )
                             return False
                     except asyncio.TimeoutError:
                         pass  # Normal timeout, continue to next attempt
@@ -691,7 +713,9 @@ class DocumentationAgentManager:
                             "agent_id": self.agent_id,
                             "version": self.version,
                             "status": self.status.value,
-                            "uptime": (datetime.now() - self.start_time).total_seconds() if self.start_time else 0,
+                            "uptime": (datetime.now() - self.start_time).total_seconds()
+                            if self.start_time
+                            else 0,
                             "tasks": {
                                 "processed": self.task_count,
                                 "active": len(self.active_tasks),
@@ -702,7 +726,9 @@ class DocumentationAgentManager:
                             "last_error": self.last_error,
                             "metrics": self.metrics,
                             "health_status": self._get_health_status(),
-                            "system_metrics": self._collect_system_metrics() if Config.ENABLE_METRICS else None,
+                            "system_metrics": self._collect_system_metrics()
+                            if Config.ENABLE_METRICS
+                            else None,
                         }
 
                         await self.mcp_client.send_heartbeat(status_data)
@@ -729,7 +755,9 @@ class DocumentationAgentManager:
                     "status": self._get_health_status(),
                     "agent_id": self.agent_id,
                     "version": self.version,
-                    "uptime": (datetime.now() - self.start_time).total_seconds() if self.start_time else 0,
+                    "uptime": (datetime.now() - self.start_time).total_seconds()
+                    if self.start_time
+                    else 0,
                     "tasks_processed": self.task_count,
                     "active_tasks": len(self.active_tasks),
                 }
@@ -772,7 +800,9 @@ class DocumentationAgentManager:
                 "agent_id": self.agent_id,
                 "version": self.version,
                 "export_time": datetime.now().isoformat(),
-                "uptime_seconds": (datetime.now() - self.start_time).total_seconds() if self.start_time else 0,
+                "uptime_seconds": (datetime.now() - self.start_time).total_seconds()
+                if self.start_time
+                else 0,
                 "status": self.status.value,
                 "metrics": self.metrics,
                 "health_status": self._get_health_status(),
@@ -846,7 +876,9 @@ class DocumentationAgentManager:
             logger.info(f"DocumentationAgent components initialized (Version: {self.version})")
             logger.info(f"Environment loaded from: {env_source}")
             logger.info(f"MCP Server URL: {base_mcp_server_url}")
-            logger.info(f"Connection config: Max retries={Config.MAX_RETRIES}, Base delay={Config.RETRY_DELAY}s")
+            logger.info(
+                f"Connection config: Max retries={Config.MAX_RETRIES}, Base delay={Config.RETRY_DELAY}s"
+            )
 
             return True
 
@@ -899,18 +931,24 @@ class DocumentationAgentManager:
             if self.mcp_client and self.mcp_client.is_connected:
                 logger.info(f"[SUCCESS] {self.agent_id} main loop starting with active connection")
             else:
-                logger.warning(f"[WARNING] {self.agent_id} main loop starting without active connection")
+                logger.warning(
+                    f"[WARNING] {self.agent_id} main loop starting without active connection"
+                )
 
             # Start background tasks
             background_tasks = []
 
             # Start health check server if enabled
             if Config.ENABLE_HEALTH_CHECK:
-                background_tasks.append(asyncio.create_task(self._health_check_server(), name="health_check"))
+                background_tasks.append(
+                    asyncio.create_task(self._health_check_server(), name="health_check")
+                )
 
             # Start metrics export if enabled
             if Config.ENABLE_METRICS:
-                background_tasks.append(asyncio.create_task(self._metrics_export_loop(), name="metrics_export"))
+                background_tasks.append(
+                    asyncio.create_task(self._metrics_export_loop(), name="metrics_export")
+                )
 
             self.status = AgentStatus.IDLE
 
@@ -991,7 +1029,10 @@ class DocumentationAgentManager:
     def _save_final_state(self):
         """Save final agent state for debugging/recovery"""
         try:
-            state_file = Path("logs") / f"final_state_{self.agent_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            state_file = (
+                Path("logs")
+                / f"final_state_{self.agent_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            )
 
             final_state = {
                 "agent_id": self.agent_id,
@@ -1016,7 +1057,9 @@ class DocumentationAgentManager:
 
 async def main():
     """Main entry point with enhanced startup sequencing"""
-    logger.info(f"[STARTING] Starting {Config.AGENT_NAME} (ID: {Config.AGENT_ID}, Version: {Config.AGENT_VERSION})")
+    logger.info(
+        f"[STARTING] Starting {Config.AGENT_NAME} (ID: {Config.AGENT_ID}, Version: {Config.AGENT_VERSION})"
+    )
 
     agent_manager = DocumentationAgentManager()
     agent_manager.start_time = datetime.now()

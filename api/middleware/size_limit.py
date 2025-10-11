@@ -29,7 +29,9 @@ class SizeLimitMiddleware(BaseHTTPMiddleware):
         """
         super().__init__(app)
         self.max_bytes = max_bytes or int(os.getenv("MAX_REQUEST_BYTES", "100000"))
-        logger.info(f"Request size limit configured: {self.max_bytes} bytes ({self.max_bytes / 1024:.1f} KB)")
+        logger.info(
+            f"Request size limit configured: {self.max_bytes} bytes ({self.max_bytes / 1024:.1f} KB)"
+        )
 
     async def dispatch(self, request: Request, call_next):
         """

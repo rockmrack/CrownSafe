@@ -21,7 +21,9 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -109,10 +111,14 @@ async def test_direct_database_search(model_number: str) -> Dict[str, Any]:
                         "product_name": recall.product_name,
                         "model_number": recall.model_number,
                         "source_agency": recall.source_agency,
-                        "recall_date": recall.recall_date.isoformat() if recall.recall_date else None,
+                        "recall_date": recall.recall_date.isoformat()
+                        if recall.recall_date
+                        else None,
                     }
                     recall_data.append(recall_dict)
-                    logger.info(f"  - {recall.recall_id}: {recall.product_name} (Model: {recall.model_number})")
+                    logger.info(
+                        f"  - {recall.recall_id}: {recall.product_name} (Model: {recall.model_number})"
+                    )
 
                 return {
                     "success": True,
@@ -122,9 +128,14 @@ async def test_direct_database_search(model_number: str) -> Dict[str, Any]:
             else:
                 # Check if we have any model numbers in the database at all
                 sample_models = (
-                    db.query(RecallDB.model_number).filter(RecallDB.model_number.isnot(None)).limit(10).all()
+                    db.query(RecallDB.model_number)
+                    .filter(RecallDB.model_number.isnot(None))
+                    .limit(10)
+                    .all()
                 )
-                logger.info(f"No exact matches. Sample model numbers in database: {[m[0] for m in sample_models]}")
+                logger.info(
+                    f"No exact matches. Sample model numbers in database: {[m[0] for m in sample_models]}"
+                )
 
                 return {
                     "success": True,
@@ -210,7 +221,9 @@ def run_comprehensive_test_suite(user_id: int, barcode: str, model_number: Optio
 
     # Test 3: API endpoint with model number
     logger.info("\n🌐 Test 3: API Endpoint with Model Number")
-    test_results["api_with_model"] = test_api_endpoint_with_model_number(user_id, barcode, model_number)
+    test_results["api_with_model"] = test_api_endpoint_with_model_number(
+        user_id, barcode, model_number
+    )
 
     # Test 4: API endpoint without model number (baseline)
     logger.info("\n🌐 Test 4: API Endpoint without Model Number (Baseline)")

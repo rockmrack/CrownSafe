@@ -39,7 +39,11 @@ def main():
     # Check 1: Migration file exists
     print("📋 Checking Database Migrations...")
     migration_file = (
-        project_root / "db" / "migrations" / "versions" / "2024_08_22_0100_001_create_recalls_enhanced_table.py"
+        project_root
+        / "db"
+        / "migrations"
+        / "versions"
+        / "2024_08_22_0100_001_create_recalls_enhanced_table.py"
     )
     all_passed &= check(
         migration_file.exists(),

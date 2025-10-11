@@ -52,7 +52,9 @@ class ProductCategory(AppModel):
 
 
 @router.get("/overview", response_model=ApiResponse)
-async def get_dashboard_overview(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
+async def get_dashboard_overview(
+    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
+):
     """Get dashboard overview statistics"""
     try:
         now = datetime.utcnow()
@@ -62,7 +64,9 @@ async def get_dashboard_overview(current_user=Depends(get_current_active_user), 
         total_scans = db.query(ImageJob).filter(ImageJob.user_id == current_user.id).count()
 
         scans_this_month = (
-            db.query(ImageJob).filter(ImageJob.user_id == current_user.id, ImageJob.created_at >= month_ago).count()
+            db.query(ImageJob)
+            .filter(ImageJob.user_id == current_user.id, ImageJob.created_at >= month_ago)
+            .count()
         )
 
         # Get monitoring statistics
@@ -83,7 +87,9 @@ async def get_dashboard_overview(current_user=Depends(get_current_active_user), 
 
         # Get notification statistics
         notifications_received = (
-            db.query(NotificationHistory).filter(NotificationHistory.user_id == current_user.id).count()
+            db.query(NotificationHistory)
+            .filter(NotificationHistory.user_id == current_user.id)
+            .count()
         )
 
         # Calculate safety score (0-100)
@@ -198,11 +204,18 @@ async def get_activity_timeline(
 
 
 @router.get("/product-categories", response_model=ApiResponse)
-async def get_product_categories(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
+async def get_product_categories(
+    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
+):
     """Get breakdown of scanned products by category"""
     try:
         # Get all extractions for user
-        extractions = db.query(ImageExtraction).join(ImageJob).filter(ImageJob.user_id == current_user.id).all()
+        extractions = (
+            db.query(ImageExtraction)
+            .join(ImageJob)
+            .filter(ImageJob.user_id == current_user.id)
+            .all()
+        )
 
         # Categorize products
         categories = {}
@@ -241,7 +254,9 @@ async def get_product_categories(current_user=Depends(get_current_active_user), 
         for cat, count in sorted(categories.items(), key=lambda x: x[1], reverse=True):
             percentage = (count / total * 100) if total > 0 else 0
             category_stats.append(
-                ProductCategory(category=cat, count=count, percentage=round(percentage, 1)).model_dump()
+                ProductCategory(
+                    category=cat, count=count, percentage=round(percentage, 1)
+                ).model_dump()
             )
 
         return ok({"categories": category_stats[:10], "total_products": total})  # Top 10 categories
@@ -252,7 +267,9 @@ async def get_product_categories(current_user=Depends(get_current_active_user), 
 
 
 @router.get("/safety-insights", response_model=ApiResponse)
-async def get_safety_insights(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
+async def get_safety_insights(
+    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
+):
     """Get personalized safety insights and recommendations"""
     try:
         insights = []
@@ -287,7 +304,10 @@ async def get_safety_insights(current_user=Depends(get_current_active_user), db:
 
         # Check scan frequency
         last_scan = (
-            db.query(ImageJob).filter(ImageJob.user_id == current_user.id).order_by(desc(ImageJob.created_at)).first()
+            db.query(ImageJob)
+            .filter(ImageJob.user_id == current_user.id)
+            .order_by(desc(ImageJob.created_at))
+            .first()
         )
 
         if last_scan:
@@ -389,7 +409,11 @@ async def get_recent_recalls(
 
         # From scan history
         extractions = (
-            db.query(ImageExtraction).join(ImageJob).filter(ImageJob.user_id == current_user.id).limit(100).all()
+            db.query(ImageExtraction)
+            .join(ImageJob)
+            .filter(ImageJob.user_id == current_user.id)
+            .limit(100)
+            .all()
         )
 
         for ext in extractions:
@@ -449,7 +473,9 @@ async def get_recent_recalls(
 
 
 @router.get("/achievements", response_model=ApiResponse)
-async def get_user_achievements(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
+async def get_user_achievements(
+    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
+):
     """Get user achievements and milestones"""
     try:
         achievements = []

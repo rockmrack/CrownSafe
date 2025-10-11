@@ -74,5 +74,7 @@ class CommunityAlertAgentLogic:
 
             return {"status": "COMPLETED", "result": analysis}
         except Exception as e:
-            self.logger.error(f"An error occurred during community alert analysis: {e}", exc_info=True)
+            self.logger.error(
+                f"An error occurred during community alert analysis: {e}", exc_info=True
+            )
             return {"status": "FAILED", "error": str(e)}

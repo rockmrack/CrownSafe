@@ -67,7 +67,9 @@ def test_celery_task(articles):
             try:
                 # Check if article already exists
                 existing = (
-                    db.query(SafetyArticle).filter(SafetyArticle.article_id == article_data["article_id"]).first()
+                    db.query(SafetyArticle)
+                    .filter(SafetyArticle.article_id == article_data["article_id"])
+                    .first()
                 )
 
                 if not existing:

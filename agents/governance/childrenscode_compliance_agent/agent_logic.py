@@ -24,7 +24,9 @@ class ChildrensCode_ComplianceAgentLogic:
         country_code = user_profile.get("country_code")
         age = user_profile.get("age")  # Assuming age is already calculated
 
-        self.logger.info(f"Performing Children's Code check for user_id: {user_id} in region {country_code}")
+        self.logger.info(
+            f"Performing Children's Code check for user_id: {user_id} in region {country_code}"
+        )
 
         # The code applies to users under 18 in the UK.
         if country_code != "UK" or (age is not None and age >= 18):

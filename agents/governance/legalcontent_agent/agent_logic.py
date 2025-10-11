@@ -14,7 +14,9 @@ from typing import Dict, Any, Optional
 logger = logging.getLogger(__name__)
 
 # Path to directory containing legal documents (data/legal)
-LEGAL_DOCS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "legal"))
+LEGAL_DOCS_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "legal")
+)
 
 
 class LegalContentAgentLogic:

@@ -113,7 +113,10 @@ class ConnectionPoolOptimizer:
                 # Priority 1: Model number (most precise)
                 if model_number and len(model_number) > 2:
                     recalls = (
-                        db.query(RecallDB).filter(RecallDB.model_number.ilike(f"%{model_number}%")).limit(20).all()
+                        db.query(RecallDB)
+                        .filter(RecallDB.model_number.ilike(f"%{model_number}%"))
+                        .limit(20)
+                        .all()
                     )
 
                     if recalls:
@@ -134,7 +137,10 @@ class ConnectionPoolOptimizer:
                 if not recalls and product_name and len(product_name) > 3:
                     # First try exact substring
                     recalls = (
-                        db.query(RecallDB).filter(RecallDB.product_name.ilike(f"%{product_name}%")).limit(15).all()
+                        db.query(RecallDB)
+                        .filter(RecallDB.product_name.ilike(f"%{product_name}%"))
+                        .limit(15)
+                        .all()
                     )
 
                     elapsed = time.time() - start_time
@@ -163,7 +169,9 @@ class ConnectionPoolOptimizer:
 
         return self.agent_instance_pool[pool_key]
 
-    async def parallel_agent_execution(self, agent_tasks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    async def parallel_agent_execution(
+        self, agent_tasks: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Execute multiple agent tasks in parallel for massive speedup
         """
@@ -173,7 +181,9 @@ class ConnectionPoolOptimizer:
             # Create async tasks for parallel execution
             async def execute_agent_task(task_info):
                 try:
-                    agent_instance = self.get_pooled_agent_instance(task_info["agent_class"], task_info["agent_id"])
+                    agent_instance = self.get_pooled_agent_instance(
+                        task_info["agent_class"], task_info["agent_id"]
+                    )
 
                     # Execute the agent task
                     if hasattr(agent_instance, "process_task"):
@@ -209,7 +219,8 @@ class ConnectionPoolOptimizer:
                 [
                     r
                     for r in results
-                    if not isinstance(r, Exception) and r.get("result", {}).get("status") == "COMPLETED"
+                    if not isinstance(r, Exception)
+                    and r.get("result", {}).get("status") == "COMPLETED"
                 ]
             )
 

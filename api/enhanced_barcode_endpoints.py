@@ -21,7 +21,9 @@ from api.services.dev_override import dev_entitled
 logger = logging.getLogger(__name__)
 
 # Create router
-enhanced_barcode_router = APIRouter(prefix="/api/v1/enhanced-scan", tags=["enhanced-barcode-scanning"])
+enhanced_barcode_router = APIRouter(
+    prefix="/api/v1/enhanced-scan", tags=["enhanced-barcode-scanning"]
+)
 
 
 # Request/Response Models
@@ -94,7 +96,9 @@ async def exact_barcode_scan(
             return await _basic_scan_fallback(request)
 
         # Perform enhanced exact scan
-        scan_result = await enhanced_barcode_service.scan_barcode_exact(request.barcode, request.user_id)
+        scan_result = await enhanced_barcode_service.scan_barcode_exact(
+            request.barcode, request.user_id
+        )
 
         # Build response
         response_data = {
@@ -111,12 +115,16 @@ async def exact_barcode_scan(
             "confidence_score": scan_result.confidence_score,
             "error_message": scan_result.error_message,
             "recommendations": scan_result.recommendations or [],
-            "matches": scan_result.exact_matches[:10] if request.include_recommendations else [],  # Limit matches
+            "matches": scan_result.exact_matches[:10]
+            if request.include_recommendations
+            else [],  # Limit matches
         }
 
         # Add validation details if requested
         if request.include_validation_details:
-            response_data["validation_details"] = enhanced_barcode_service.validator.get_validation_summary(
+            response_data[
+                "validation_details"
+            ] = enhanced_barcode_service.validator.get_validation_summary(
                 scan_result.barcode_validation
             )
 
@@ -163,16 +171,18 @@ async def validate_barcode_format(
             "check_digit": validation_result.check_digit,
             "confidence_score": validation_result.confidence_score,
             "error_message": validation_result.error_message,
-            "recommendations": enhanced_barcode_service.validator._get_recommendations(validation_result),
+            "recommendations": enhanced_barcode_service.validator._get_recommendations(
+                validation_result
+            ),
         }
 
         # Validate against expected type if provided
         if request.expected_type:
             expected_type = BarcodeType(request.expected_type)
             if validation_result.barcode_type != expected_type:
-                response_data["error_message"] = (
-                    f"Expected {expected_type.value}, got {validation_result.barcode_type.value}"
-                )
+                response_data[
+                    "error_message"
+                ] = f"Expected {expected_type.value}, got {validation_result.barcode_type.value}"
                 response_data["is_valid"] = False
 
         logger.info(
@@ -211,7 +221,9 @@ async def test_barcode_validation(
             "confidence": validation_result.confidence_score,
             "check_digit": validation_result.check_digit,
             "error": validation_result.error_message,
-            "recommendations": enhanced_barcode_service.validator._get_recommendations(validation_result),
+            "recommendations": enhanced_barcode_service.validator._get_recommendations(
+                validation_result
+            ),
         }
 
     except Exception as e:
@@ -237,8 +249,12 @@ async def _basic_scan_fallback(request: EnhancedScanRequest) -> EnhancedScanResp
             exact_matches_count=0,
             confidence_score=validation_result.confidence_score,
             error_message=validation_result.error_message,
-            recommendations=["Upgrade to premium for product matching and detailed recommendations"],
-            validation_details=enhanced_barcode_service.validator.get_validation_summary(validation_result)
+            recommendations=[
+                "Upgrade to premium for product matching and detailed recommendations"
+            ],
+            validation_details=enhanced_barcode_service.validator.get_validation_summary(
+                validation_result
+            )
             if request.include_validation_details
             else None,
             matches=[],

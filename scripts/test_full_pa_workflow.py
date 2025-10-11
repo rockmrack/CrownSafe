@@ -35,7 +35,9 @@ logger.addHandler(handler)
 API_BASE_URL = "http://127.0.0.1:8000"
 
 
-def check_endpoint(method: str, endpoint: str, data: Optional[Dict] = None, expected_status: int = 200) -> tuple:
+def check_endpoint(
+    method: str, endpoint: str, data: Optional[Dict] = None, expected_status: int = 200
+) -> tuple:
     """Check a single endpoint and return (success, response_data, error_message)"""
     url = f"{API_BASE_URL}{endpoint}"
 
@@ -209,13 +211,19 @@ def diagnose_api():
                 if redis_check.get("expected_key_exists"):
                     logger.info(f"   ✅ Workflow found in Redis at: {redis_check['expected_key']}")
                     if redis_check.get("workflow_id_field") == "MISSING":
-                        logger.error("   ❌ ISSUE DETECTED: workflow_id field is missing in the stored data!")
+                        logger.error(
+                            "   ❌ ISSUE DETECTED: workflow_id field is missing in the stored data!"
+                        )
                         logger.error("   This is why the API returns 404 when checking status.")
-                        logger.error("   FIX: Restart the Router Agent with the updated agent_logic.py")
+                        logger.error(
+                            "   FIX: Restart the Router Agent with the updated agent_logic.py"
+                        )
                     elif redis_check.get("workflow_id_field") == workflow_id:
                         logger.info("   ✅ workflow_id field is correctly set")
                     else:
-                        logger.warning(f"   ⚠️  workflow_id mismatch: {redis_check.get('workflow_id_field')}")
+                        logger.warning(
+                            f"   ⚠️  workflow_id mismatch: {redis_check.get('workflow_id_field')}"
+                        )
                 else:
                     logger.warning("   ⚠️  Workflow not found at expected Redis key")
                     if redis_check.get("matching_keys"):
@@ -327,7 +335,9 @@ def test_minimal_workflow():
                 if redis_info.get("workflow_id_field") == workflow_id:
                     logger.info("✅ workflow_id field is correctly set")
                 else:
-                    logger.error(f"❌ workflow_id field issue: {redis_info.get('workflow_id_field')}")
+                    logger.error(
+                        f"❌ workflow_id field issue: {redis_info.get('workflow_id_field')}"
+                    )
             else:
                 logger.warning("⚠️  Workflow not yet in Redis")
 
@@ -411,7 +421,9 @@ def check_workflow_id_fix():
                 logger.error(f"Error checking {key}: {e}")
 
         if missing_id_count > 0:
-            logger.error(f"\n❌ Found {missing_id_count} workflows with missing/invalid workflow_id field")
+            logger.error(
+                f"\n❌ Found {missing_id_count} workflows with missing/invalid workflow_id field"
+            )
             logger.error("This is why the API returns 404 when checking status")
             logger.error("\nTO FIX:")
             logger.error("1. We've already updated the router agent code")

@@ -108,14 +108,20 @@ def test_clinical_trials_api():
                     interventions_module = protocol_section.get("interventionsModule", {})
 
                     print(f"  First study NCT ID: {identification_module.get('nctId', 'N/A')}")
-                    print(f"  Brief Title: {identification_module.get('briefTitle', 'N/A')[:100]}...")
+                    print(
+                        f"  Brief Title: {identification_module.get('briefTitle', 'N/A')[:100]}..."
+                    )
                     print(f"  Overall Status: {status_module.get('overallStatus', 'N/A')}")
                     print(f"  Conditions: {conditions_module.get('conditions', [])}")
                     # Check if interventionList and intervention exist before list comprehension
                     intervention_list = interventions_module.get("interventionList", {})
-                    interventions = intervention_list.get("intervention", []) if intervention_list else []
+                    interventions = (
+                        intervention_list.get("intervention", []) if intervention_list else []
+                    )
                     if interventions:
-                        print(f"  Interventions: {[i.get('name') for i in interventions if isinstance(i, dict)]}")
+                        print(
+                            f"  Interventions: {[i.get('name') for i in interventions if isinstance(i, dict)]}"
+                        )
                     else:
                         print("  Interventions: N/A or empty list")
 

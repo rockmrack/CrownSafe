@@ -15,7 +15,9 @@ celery_app = Celery(
     "babyshield_tasks",
     broker=BROKER_URL,
     backend=BACKEND_URL,
-    include=["agents.engagement.push_notification_agent.tasks"],  # IMPORTANT: Tell Celery where to find our tasks
+    include=[
+        "agents.engagement.push_notification_agent.tasks"
+    ],  # IMPORTANT: Tell Celery where to find our tasks
 )
 
 celery_app.conf.update(

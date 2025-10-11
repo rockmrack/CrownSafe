@@ -440,7 +440,9 @@ if __name__ == "__main__":
         sys.exit(1)
 
     if not IMPORTS_SUCCESS:
-        print("ERROR: Cannot import required modules. Please check file structure and dependencies.")
+        print(
+            "ERROR: Cannot import required modules. Please check file structure and dependencies."
+        )
         sys.exit(1)
 
     # Run simple test first

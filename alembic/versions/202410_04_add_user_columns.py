@@ -31,9 +31,7 @@ def upgrade():
         if "hashed_password" not in existing_columns:
             op.add_column(
                 "users",
-                sa.Column(
-                    "hashed_password", sa.Text(), nullable=False, server_default=""
-                ),
+                sa.Column("hashed_password", sa.Text(), nullable=False, server_default=""),
             )
             # Remove the server_default so future inserts must provide a value
             op.alter_column("users", "hashed_password", server_default=None)

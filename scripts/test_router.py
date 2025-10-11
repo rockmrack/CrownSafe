@@ -98,7 +98,9 @@ async def main():
             print("❌ TEST FAILED: The final result was not as expected.")
     else:
         print("\n" + "=" * 50)
-        print(f"❌ TEST FAILED: The router did not complete the plan. Status: {router_result.get('status')}")
+        print(
+            f"❌ TEST FAILED: The router did not complete the plan. Status: {router_result.get('status')}"
+        )
 
     print("--- Test Complete ---")
 

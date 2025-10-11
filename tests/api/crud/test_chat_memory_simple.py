@@ -51,7 +51,9 @@ class ConversationModel(TestBase):
 class ConversationMessageModel(TestBase):
     __tablename__ = "conversation_message"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    conversation_id = Column(String(36), ForeignKey("conversation.id", ondelete="CASCADE"), nullable=False)
+    conversation_id = Column(
+        String(36), ForeignKey("conversation.id", ondelete="CASCADE"), nullable=False
+    )
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     role = Column(String(16), nullable=False)  # 'user' | 'assistant'
     intent = Column(String(64), nullable=True)

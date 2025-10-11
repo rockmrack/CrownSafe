@@ -140,7 +140,9 @@ class IncidentAnalyzer:
                     IncidentReport.created_at >= cutoff_date,
                     IncidentReport.id != incident.id,
                     or_(
-                        func.lower(IncidentReport.product_name).contains(incident.product_name.lower()),
+                        func.lower(IncidentReport.product_name).contains(
+                            incident.product_name.lower()
+                        ),
                         and_(
                             IncidentReport.brand_name == incident.brand_name,
                             IncidentReport.incident_type == incident.incident_type,
@@ -165,7 +167,11 @@ class IncidentAnalyzer:
         # Check if similar incidents already have a cluster
         for similar in similar_incidents:
             if similar.cluster_id:
-                cluster = db.query(IncidentCluster).filter(IncidentCluster.id == similar.cluster_id).first()
+                cluster = (
+                    db.query(IncidentCluster)
+                    .filter(IncidentCluster.id == similar.cluster_id)
+                    .first()
+                )
                 if cluster:
                     return cluster
 
@@ -287,7 +293,9 @@ class IncidentAnalyzer:
     async def _trigger_critical_alert(cls, incident: IncidentReport, db: Session):
         """Trigger immediate alert for critical incident"""
 
-        logger.critical(f"CRITICAL INCIDENT: {incident.product_name} - {incident.incident_type.value}")
+        logger.critical(
+            f"CRITICAL INCIDENT: {incident.product_name} - {incident.incident_type.value}"
+        )
 
         # In production, this would page on-call safety team
         # Send immediate notifications to safety team
@@ -322,7 +330,9 @@ class IncidentAnalyzer:
 
         # In production, this would call CPSC API
         # For now, log the notification
-        logger.info(f"CPSC notified about {cluster.incident_count} incidents for {cluster.product_name}")
+        logger.info(
+            f"CPSC notified about {cluster.incident_count} incidents for {cluster.product_name}"
+        )
 
 
 # Background task wrapper for incident analysis
@@ -489,12 +499,18 @@ async def submit_incident_json(
             if product:
                 product_id = product.id
                 product_found = True
-                logger.info(f"Found product for barcode {request.product_barcode}: {product.product_name}")
+                logger.info(
+                    f"Found product for barcode {request.product_barcode}: {product.product_name}"
+                )
             else:
-                logger.info(f"Product not found for barcode {request.product_barcode}, creating incident anyway")
+                logger.info(
+                    f"Product not found for barcode {request.product_barcode}, creating incident anyway"
+                )
 
         # Generate report ID
-        report_id = f"INC-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
+        report_id = (
+            f"INC-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
+        )
 
         # Create incident report (tolerant of missing products)
         incident = IncidentReport(
@@ -567,7 +583,9 @@ async def submit_incident_json_alias(
 
 
 @incident_router.get("/clusters", response_model=ApiResponse)
-async def get_incident_clusters(trending_only: bool = False, min_incidents: int = 3, db: Session = Depends(get_db)):
+async def get_incident_clusters(
+    trending_only: bool = False, min_incidents: int = 3, db: Session = Depends(get_db)
+):
     """Get current incident clusters for monitoring"""
 
     query = db.query(IncidentCluster)
@@ -594,8 +612,12 @@ async def get_incident_clusters(trending_only: bool = False, min_incidents: int 
                     "trending": c.trending,
                     "alert_triggered": c.alert_triggered,
                     "cpsc_notified": c.cpsc_notified,
-                    "first_incident": c.first_incident_date.isoformat() if c.first_incident_date else None,
-                    "last_incident": c.last_incident_date.isoformat() if c.last_incident_date else None,
+                    "first_incident": c.first_incident_date.isoformat()
+                    if c.first_incident_date
+                    else None,
+                    "last_incident": c.last_incident_date.isoformat()
+                    if c.last_incident_date
+                    else None,
                 }
                 for c in clusters
             ]
@@ -610,7 +632,9 @@ async def get_incident_statistics(days: int = 30, db: Session = Depends(get_db))
     cutoff_date = datetime.utcnow() - timedelta(days=days)
 
     # Total incidents
-    total_incidents = db.query(IncidentReport).filter(IncidentReport.created_at >= cutoff_date).count()
+    total_incidents = (
+        db.query(IncidentReport).filter(IncidentReport.created_at >= cutoff_date).count()
+    )
 
     # By severity
     severity_stats = (
@@ -639,7 +663,9 @@ async def get_incident_statistics(days: int = 30, db: Session = Depends(get_db))
             "severity_breakdown": {s.value: count for s, count in severity_stats},
             "type_breakdown": {t.value: count for t, count in type_stats},
             "active_clusters": active_clusters,
-            "agencies_notified": db.query(AgencyNotification).filter(AgencyNotification.sent_at >= cutoff_date).count(),
+            "agencies_notified": db.query(AgencyNotification)
+            .filter(AgencyNotification.sent_at >= cutoff_date)
+            .count(),
         },
     )
 
@@ -654,7 +680,9 @@ async def submit_incident_dev(request: IncidentSubmitRequest):
     """
     try:
         # Generate report ID
-        report_id = f"INC-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
+        report_id = (
+            f"INC-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
+        )
 
         # Simulate product lookup
         product_found = False

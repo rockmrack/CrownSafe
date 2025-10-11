@@ -34,7 +34,9 @@ except ImportError as e:
     sys.exit(1)
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -150,7 +152,9 @@ async def test_guideline_agent():
                     print("\nRecommendations:")
                     for rec in criteria["recommendations"]:
                         print(f"  • {rec['text']}")
-                        print(f"    Source: {rec['source']} (relevance: {rec.get('relevance', 0):.2f})")
+                        print(
+                            f"    Source: {rec['source']} (relevance: {rec.get('relevance', 0):.2f})"
+                        )
 
                 if criteria.get("prerequisites"):
                     print("\nPrerequisites:")

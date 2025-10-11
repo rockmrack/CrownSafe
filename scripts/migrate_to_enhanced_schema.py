@@ -80,7 +80,9 @@ class BabyShieldMigration:
             logger.info("✅ Enhanced schema created successfully!")
 
             # Show new columns
-            enhanced_columns = [col["name"] for col in self.inspector.get_columns("recalls_enhanced")]
+            enhanced_columns = [
+                col["name"] for col in self.inspector.get_columns("recalls_enhanced")
+            ]
             logger.info(f"🆕 Enhanced table columns ({len(enhanced_columns)}): {enhanced_columns}")
 
             return True

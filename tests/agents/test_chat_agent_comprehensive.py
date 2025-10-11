@@ -244,7 +244,9 @@ def test_03_evidence_item_model():
     """Test 3: EvidenceItem model validation"""
     print("\n[TEST 3] EvidenceItem - Model Validation")
 
-    evidence = EvidenceItem(type="recall", source="CPSC", id="REC-001", url="https://cpsc.gov/recall/001")
+    evidence = EvidenceItem(
+        type="recall", source="CPSC", id="REC-001", url="https://cpsc.gov/recall/001"
+    )
 
     assert evidence.type == "recall"
     assert evidence.source == "CPSC"

@@ -84,7 +84,9 @@ class TestMetricsEdgeCases:
         for endpoint, intent, ok, circuit, expected_ok, expected_circuit in test_cases:
             mock_chat_req.reset_mock()
             inc_req(endpoint, intent, ok, circuit)
-            mock_chat_req.labels.assert_called_once_with(endpoint, intent, expected_ok, expected_circuit)
+            mock_chat_req.labels.assert_called_once_with(
+                endpoint, intent, expected_ok, expected_circuit
+            )
             mock_labels.inc.assert_called_once()
 
     @patch("core.metrics.PROM", True)

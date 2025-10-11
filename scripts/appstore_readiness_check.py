@@ -29,7 +29,9 @@ def expect(cond, msg):
 def get_json(path):
     try:
         r = S.get(f"{BASE}{path}", timeout=15)
-        return r, (r.json() if r.headers.get("content-type", "").startswith("application/json") else None)
+        return r, (
+            r.json() if r.headers.get("content-type", "").startswith("application/json") else None
+        )
     except Exception as e:
         print(f"❌ Failed to GET {path}: {e}")
         return None, None
@@ -38,7 +40,9 @@ def get_json(path):
 def post_json(path, payload):
     try:
         r = S.post(f"{BASE}{path}", json=payload, timeout=30)
-        return r, (r.json() if r.headers.get("content-type", "").startswith("application/json") else None)
+        return r, (
+            r.json() if r.headers.get("content-type", "").startswith("application/json") else None
+        )
     except Exception as e:
         print(f"❌ Failed to POST {path}: {e}")
         return None, None

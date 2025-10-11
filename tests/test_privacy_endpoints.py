@@ -185,7 +185,9 @@ class PrivacyEndpointTester:
         )
 
         # Test with auth
-        response = self.session.get(f"{self.base_url}/api/v1/admin/privacy/requests", headers=self.admin_headers)
+        response = self.session.get(
+            f"{self.base_url}/api/v1/admin/privacy/requests", headers=self.admin_headers
+        )
 
         if response.status_code == 503:
             print("   ⚠️ Admin not configured, skipping")
@@ -286,7 +288,9 @@ class PrivacyEndpointTester:
                 self.export_request_id = create_response.json().get("data", {}).get("request_id")
 
         if self.export_request_id:
-            response = self.session.get(f"{self.base_url}/api/v1/user/privacy/status/{self.export_request_id}")
+            response = self.session.get(
+                f"{self.base_url}/api/v1/user/privacy/status/{self.export_request_id}"
+            )
 
             self.test(
                 response.status_code == 200,
@@ -334,7 +338,9 @@ class PrivacyEndpointTester:
 
         all_ok = True
         for email in invalid_emails:
-            response = self.session.post(f"{self.base_url}/api/v1/user/data/export", json={"email": email})
+            response = self.session.post(
+                f"{self.base_url}/api/v1/user/data/export", json={"email": email}
+            )
 
             self.test(
                 response.status_code in (400, 422),

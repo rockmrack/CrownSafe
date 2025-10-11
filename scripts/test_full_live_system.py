@@ -55,7 +55,9 @@ async def run_live_test(barcode: str):
     # 3. Live hazard analysis
     analyzer = HazardAnalysisLogic()
     try:
-        hazard_summary = await analyzer.analyze_hazards(product_name=product_info.get("name"), recalls=all_recalls)
+        hazard_summary = await analyzer.analyze_hazards(
+            product_name=product_info.get("name"), recalls=all_recalls
+        )
         logger.info("Hazard analysis result:")
         logger.info(hazard_summary)
     except Exception as e:

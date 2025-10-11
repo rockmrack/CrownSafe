@@ -34,7 +34,9 @@ class TestMonitoring:
         trace_headers = [
             k
             for k in headers.keys()
-            if any(x in k.lower() for x in ["request-id", "trace-id", "correlation-id", "x-request"])
+            if any(
+                x in k.lower() for x in ["request-id", "trace-id", "correlation-id", "x-request"]
+            )
         ]
 
         if trace_headers:

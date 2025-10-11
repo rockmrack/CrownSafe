@@ -24,8 +24,12 @@ class ExplanationResponse(BaseModel):
     """
 
     summary: str = Field(..., description="2–3 line plain-language explanation.")
-    reasons: List[str] = Field(default_factory=list, description="Bulleted reasons behind the verdict.")
-    checks: List[str] = Field(default_factory=list, description="Concrete checks for the user to perform.")
+    reasons: List[str] = Field(
+        default_factory=list, description="Bulleted reasons behind the verdict."
+    )
+    checks: List[str] = Field(
+        default_factory=list, description="Concrete checks for the user to perform."
+    )
     flags: List[str] = Field(
         default_factory=list,
         description="Machine-readable tags (e.g., 'soft_cheese','contains_peanuts').",
@@ -37,11 +41,15 @@ class ExplanationResponse(BaseModel):
         default=None,
         description='Applied region context, e.g., {"code":"EU","label":"EU Safety Gate"}',
     )
-    evidence: List[EvidenceItem] = Field(default_factory=list, description="Cited sources backing claims.")
+    evidence: List[EvidenceItem] = Field(
+        default_factory=list, description="Cited sources backing claims."
+    )
     suggested_questions: List[str] = Field(
         default_factory=list, description="Follow-up questions parents commonly ask."
     )
-    emergency: Optional[EmergencyNotice] = Field(default=None, description="Emergency notice for urgent situations.")
+    emergency: Optional[EmergencyNotice] = Field(
+        default=None, description="Emergency notice for urgent situations."
+    )
 
 
 Intent = Literal[
@@ -70,7 +78,8 @@ class LLMClient(Protocol):
         user: str,
         response_schema: Dict[str, Any],
         timeout: float = 8.0,
-    ) -> Dict[str, Any]: ...
+    ) -> Dict[str, Any]:
+        ...
 
 
 _PHASE0_SYSTEM_PROMPT = (

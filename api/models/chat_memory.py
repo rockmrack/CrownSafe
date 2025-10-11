@@ -22,7 +22,9 @@ from core_infra.database import Base  # reuse your existing Base
 JsonType = JSONB if os.getenv("DATABASE_URL", "").startswith("postgresql") else JSON
 
 # Use String for UUID in SQLite, UUID for PostgreSQL
-UuidType = UUID(as_uuid=True) if os.getenv("DATABASE_URL", "").startswith("postgresql") else String(36)
+UuidType = (
+    UUID(as_uuid=True) if os.getenv("DATABASE_URL", "").startswith("postgresql") else String(36)
+)
 
 
 class UserProfile(Base):
@@ -56,7 +58,9 @@ class Conversation(Base):
 class ConversationMessage(Base):
     __tablename__ = "conversation_message"
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    conversation_id = Column(UuidType, ForeignKey("conversation.id", ondelete="CASCADE"), nullable=False)
+    conversation_id = Column(
+        UuidType, ForeignKey("conversation.id", ondelete="CASCADE"), nullable=False
+    )
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     role = Column(String(16), nullable=False)  # 'user' | 'assistant'
     intent = Column(String(64), nullable=True)

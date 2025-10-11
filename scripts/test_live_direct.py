@@ -5,7 +5,9 @@ import json
 import logging
 import argparse
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 # --- Configuration ---
@@ -44,7 +46,9 @@ def main(barcode: str):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run a direct live test against the BabyShield API.")
+    parser = argparse.ArgumentParser(
+        description="Run a direct live test against the BabyShield API."
+    )
     parser.add_argument("--barcode", required=True, help="The product barcode to test.")
     args = parser.parse_args()
     main(barcode=args.barcode)

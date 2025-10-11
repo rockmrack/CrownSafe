@@ -8,7 +8,9 @@ from core_infra.database import get_db_session, User, FamilyMember
 
 logger = logging.getLogger(__name__)
 
-MOCK_INGREDIENTS_PATH = Path(__file__).parent.parent.parent.parent / "data" / "mock_product_ingredients.json"
+MOCK_INGREDIENTS_PATH = (
+    Path(__file__).parent.parent.parent.parent / "data" / "mock_product_ingredients.json"
+)
 
 
 class AllergySensitivityAgentLogic:
@@ -94,7 +96,9 @@ class AllergySensitivityAgentLogic:
                 # 3. Check for allergen conflicts
                 alerts = []
                 for member in family_members:
-                    member_allergies = set([allergy.allergen_name.lower() for allergy in member.allergies])
+                    member_allergies = set(
+                        [allergy.allergen_name.lower() for allergy in member.allergies]
+                    )
 
                     # Check for direct ingredient matches
                     conflicting_ingredients = product_ingredients.intersection(member_allergies)
@@ -131,7 +135,9 @@ class AllergySensitivityAgentLogic:
         try:
             with get_db_session() as db:
                 # 1. Get product ingredients from database
-                product = db.query(ProductIngredient).filter(ProductIngredient.upc == product_upc).first()
+                product = (
+                    db.query(ProductIngredient).filter(ProductIngredient.upc == product_upc).first()
+                )
                 if not product:
                     return {
                         "status": "error",
@@ -165,7 +171,9 @@ class AllergySensitivityAgentLogic:
                 # 3. Check for allergen conflicts
                 alerts = []
                 for member in family_members:
-                    member_allergies = set([allergy.allergen_name.lower() for allergy in member.allergies])
+                    member_allergies = set(
+                        [allergy.allergen_name.lower() for allergy in member.allergies]
+                    )
 
                     # Check for direct ingredient matches
                     conflicting_ingredients = product_ingredients.intersection(member_allergies)
@@ -186,7 +194,10 @@ class AllergySensitivityAgentLogic:
                         )
 
                         for safety_record in safety_records:
-                            if safety_record.allergen_type and safety_record.allergen_type.lower() in member_allergies:
+                            if (
+                                safety_record.allergen_type
+                                and safety_record.allergen_type.lower() in member_allergies
+                            ):
                                 ingredient_alerts.append(
                                     {
                                         "ingredient": ingredient,
@@ -219,7 +230,9 @@ class AllergySensitivityAgentLogic:
                     "family_members_checked": len(family_members),
                     "data_source": "database",
                     "confidence_score": product.confidence_score,
-                    "last_updated": product.last_updated.isoformat() if product.last_updated else None,
+                    "last_updated": product.last_updated.isoformat()
+                    if product.last_updated
+                    else None,
                 }
 
         except Exception as e:

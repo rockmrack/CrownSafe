@@ -29,7 +29,9 @@ def test_pregnancy():
 
 
 def test_allergy():
-    assert _agent().classify_intent("My son has a peanut allergy, is this ok?") == "allergy_question"
+    assert (
+        _agent().classify_intent("My son has a peanut allergy, is this ok?") == "allergy_question"
+    )
 
 
 def test_ingredients():
@@ -41,7 +43,9 @@ def test_age():
 
 
 def test_alternatives():
-    assert _agent().classify_intent("Any safer alternatives you recommend?") == "alternative_products"
+    assert (
+        _agent().classify_intent("Any safer alternatives you recommend?") == "alternative_products"
+    )
 
 
 def test_recall():

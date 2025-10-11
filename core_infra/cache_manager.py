@@ -209,7 +209,9 @@ class BabyShieldCacheManager:
                 "keyspace_hits": info.get("keyspace_hits", 0),
                 "keyspace_misses": info.get("keyspace_misses", 0),
                 "total_keys": sum(
-                    db.get("keys", 0) for db in info.get("keyspace", {}).values() if isinstance(db, dict)
+                    db.get("keys", 0)
+                    for db in info.get("keyspace", {}).values()
+                    if isinstance(db, dict)
                 ),
                 "hit_rate": round(
                     info.get("keyspace_hits", 0)
@@ -244,7 +246,9 @@ def get_cached(cache_type: str, identifier: str, **kwargs) -> Optional[Dict[str,
     return result.get("data") if result else None
 
 
-def set_cached(cache_type: str, identifier: str, data: Any, ttl: Optional[int] = None, **kwargs) -> bool:
+def set_cached(
+    cache_type: str, identifier: str, data: Any, ttl: Optional[int] = None, **kwargs
+) -> bool:
     """Set cached data"""
     return cache_manager.set(cache_type, identifier, data, ttl, **kwargs)
 

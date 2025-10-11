@@ -14,7 +14,9 @@ sys.path.insert(0, project_root)
 
 from agents.recall_data_agent.connectors import NHTSAConnector
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # --- Mock API Response ---
 # This is a simplified structure based on the real NHTSA API response for a car seat recall.
@@ -84,13 +86,17 @@ async def main():
                 and first_recall.source_agency == "NHTSA"
                 and "Safety 1st" in first_recall.product_name
             ):
-                print("\n✅✅✅ NHTSA Connector Test PASSED: Successfully parsed the mock JSON response.")
+                print(
+                    "\n✅✅✅ NHTSA Connector Test PASSED: Successfully parsed the mock JSON response."
+                )
             else:
                 print("\n❌❌❌ NHTSA Connector Test FAILED: Incorrect data parsing.")
                 print(f"Expected ID: NHTSA-25V123456, Got: {first_recall.recall_id}")
                 print(f"Expected Agency: NHTSA, Got: {first_recall.source_agency}")
         else:
-            print(f"\n❌❌❌ NHTSA Connector Test FAILED: Expected 2 recalls, got {len(nhtsa_recalls)}")
+            print(
+                f"\n❌❌❌ NHTSA Connector Test FAILED: Expected 2 recalls, got {len(nhtsa_recalls)}"
+            )
 
     print("\n--- Test Complete ---")
 

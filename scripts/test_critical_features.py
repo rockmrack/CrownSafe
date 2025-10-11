@@ -44,7 +44,9 @@ def register_user() -> Dict[str, Any]:
 
 def login_user() -> str:
     """Login and get access token"""
-    response = client.post("/api/v1/auth/token", data={"username": TEST_EMAIL, "password": TEST_PASSWORD})
+    response = client.post(
+        "/api/v1/auth/token", data={"username": TEST_EMAIL, "password": TEST_PASSWORD}
+    )
     data = response.json()
     return data.get("access_token", "")
 
