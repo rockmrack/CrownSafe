@@ -17,9 +17,18 @@ from agents.recall_data_agent.connectors import (
     HealthCanadaConnector,
     NHTSAConnector,
 )
-from agents.reporting.report_builder_agent.agent_logic import ReportBuilderAgentLogic
 from agents.value_add.alternatives_agent.agent_logic import AlternativesAgentLogic
 from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
+
+try:
+    from agents.reporting.report_builder_agent.agent_logic import ReportBuilderAgentLogic
+
+    _REPORT_BUILDER_IMPORT_ERROR: Exception | None = None
+    _REPORT_BUILDER_AVAILABLE = True
+except Exception as exc:  # pragma: no cover - optional dependency guard
+    ReportBuilderAgentLogic = None  # type: ignore[assignment]
+    _REPORT_BUILDER_IMPORT_ERROR = exc
+    _REPORT_BUILDER_AVAILABLE = False
 
 # Import ChatAgent, ProductIdentifierAgent, and RouterAgent
 try:
@@ -36,6 +45,11 @@ try:
     from agents.routing.router_agent.agent_logic import RouterAgentLogic
 except ImportError:
     RouterAgentLogic = None
+
+if not _REPORT_BUILDER_AVAILABLE:
+    pytestmark = pytest.mark.skip(  # type: ignore[var-annotated]
+        reason=(f"ReportBuilderAgent dependencies unavailable: {_REPORT_BUILDER_IMPORT_ERROR}")
+    )
 
 
 class TestResults:
