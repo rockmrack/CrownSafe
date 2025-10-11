@@ -30,9 +30,7 @@ class PatientRecord:
     age: Optional[int] = None
     gender: Optional[str] = None
     provider_type: Optional[str] = None
-    last_updated: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    last_updated: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     access_log: List[Dict[str, Any]] = field(default_factory=list)
 
 
@@ -94,9 +92,7 @@ class PatientDataAgentLogic:
             self.logger.warning(f"Could not initialize EnhancedMemoryManager: {e}")
 
         # Patient data path
-        self.patient_data_path = (
-            Path(__file__).parent.parent.parent / "data" / "mock_patient_records.json"
-        )
+        self.patient_data_path = Path(__file__).parent.parent.parent / "data" / "mock_patient_records.json"
 
         # Load patient data
         self.patient_records = {}
@@ -209,14 +205,10 @@ class PatientDataAgentLogic:
                     self.logger.warning(f"Could not cache patient records: {e}")
 
         except FileNotFoundError:
-            self.logger.error(
-                f"CRITICAL: Mock patient data file not found at {self.patient_data_path}."
-            )
+            self.logger.error(f"CRITICAL: Mock patient data file not found at {self.patient_data_path}.")
             self._create_default_patient_data()
         except json.JSONDecodeError as e:
-            self.logger.error(
-                f"CRITICAL: Could not parse JSON from {self.patient_data_path}: {e}"
-            )
+            self.logger.error(f"CRITICAL: Could not parse JSON from {self.patient_data_path}: {e}")
             self._create_default_patient_data()
         except Exception as e:
             self.logger.error(f"Unexpected error loading patient data: {e}")
@@ -267,9 +259,7 @@ class PatientDataAgentLogic:
             self.patient_data_path.parent.mkdir(parents=True, exist_ok=True)
             with open(self.patient_data_path, "w") as f:
                 json.dump(default_data, f, indent=2)
-            self.logger.info(
-                f"Created default patient data at {self.patient_data_path}"
-            )
+            self.logger.info(f"Created default patient data at {self.patient_data_path}")
         except Exception as e:
             self.logger.error(f"Failed to save default patient data: {e}")
 
@@ -280,9 +270,7 @@ class PatientDataAgentLogic:
         try:
             task_type = task_data.get("task_name", "").lower()
 
-            if "patient" in task_type and (
-                "get" in task_type or "retrieve" in task_type
-            ):
+            if "patient" in task_type and ("get" in task_type or "retrieve" in task_type):
                 return self._handle_patient_retrieval(task_data)
             elif "search" in task_type:
                 return self._handle_patient_search(task_data)
@@ -340,9 +328,7 @@ class PatientDataAgentLogic:
         """Handle patient record retrieval"""
         patient_id = task_data.get("patient_id", "").strip()
         requester_id = task_data.get("requester_id", "unknown")
-        requester_role = task_data.get(
-            "requester_role", "nurse"
-        )  # Default to limited role
+        requester_role = task_data.get("requester_role", "nurse")  # Default to limited role
 
         if not patient_id:
             return {
@@ -365,9 +351,7 @@ class PatientDataAgentLogic:
 
             if result["status"] == "success":
                 # Apply privacy filters based on role
-                filtered_record = self._apply_privacy_filters(
-                    result["record"], requester_id, requester_role
-                )
+                filtered_record = self._apply_privacy_filters(result["record"], requester_id, requester_role)
 
                 return {
                     "status": "COMPLETED",
@@ -425,8 +409,7 @@ class PatientDataAgentLogic:
                         "result_count": len(cached_results),
                         "page": page,
                         "page_size": page_size,
-                        "total_pages": (len(cached_results) + page_size - 1)
-                        // page_size,
+                        "total_pages": (len(cached_results) + page_size - 1) // page_size,
                         "results": paginated_results,
                         "source": "cache",
                         "agent_id": self.agent_id,
@@ -554,9 +537,7 @@ class PatientDataAgentLogic:
         action_type = task_data.get("action_type")
         start_time = task_data.get("start_time")
         end_time = task_data.get("end_time")
-        _ = task_data.get(
-            "requester_id", "unknown"
-        )  # requester_id (reserved for future access control)
+        _ = task_data.get("requester_id", "unknown")  # requester_id (reserved for future access control)
         requester_role = task_data.get("requester_role", "nurse")
         redact_user_ids = task_data.get("redact_user_ids", False)  # ADDED
 
@@ -579,9 +560,7 @@ class PatientDataAgentLogic:
 
             # FIXED: Redact user IDs if requested
             if redact_user_ids:
-                filtered_log = [
-                    {**entry, "user_id": "REDACTED"} for entry in filtered_log
-                ]
+                filtered_log = [{**entry, "user_id": "REDACTED"} for entry in filtered_log]
 
             return {
                 "status": "COMPLETED",
@@ -590,9 +569,7 @@ class PatientDataAgentLogic:
                 "filters_applied": {
                     "patient_id": patient_id,
                     "action_type": action_type,
-                    "time_range": f"{start_time} to {end_time}"
-                    if start_time
-                    else "all",
+                    "time_range": f"{start_time} to {end_time}" if start_time else "all",
                 },
                 "agent_id": self.agent_id,
             }
@@ -625,9 +602,7 @@ class PatientDataAgentLogic:
             elif action == "update_consent":
                 consent_type = task_data.get("consent_type", "general")
                 consent_value = task_data.get("consent_value", False)
-                result = self._update_patient_consent(
-                    patient_id, consent_type, consent_value
-                )
+                result = self._update_patient_consent(patient_id, consent_type, consent_value)
                 return {
                     "status": "COMPLETED",
                     "patient_id": patient_id,
@@ -679,25 +654,16 @@ class PatientDataAgentLogic:
                         patient_data = copy.deepcopy(self.patient_records[patient_id])
 
                         # Apply privacy filters
-                        patient_data = self._apply_privacy_filters(
-                            patient_data, requester_id, requester_role
-                        )
+                        patient_data = self._apply_privacy_filters(patient_data, requester_id, requester_role)
 
                         export_data["patients"][patient_id] = patient_data
 
                         if include_audit:
-                            audit_entries = self._filter_audit_log(
-                                patient_id=patient_id
-                            )
+                            audit_entries = self._filter_audit_log(patient_id=patient_id)
                             # FIXED: Redact user IDs in audit log
                             if redact_audit_users:
-                                audit_entries = [
-                                    {**entry, "user_id": "REDACTED"}
-                                    for entry in audit_entries
-                                ]
-                            export_data["patients"][patient_id][
-                                "audit_log"
-                            ] = audit_entries
+                                audit_entries = [{**entry, "user_id": "REDACTED"} for entry in audit_entries]
+                            export_data["patients"][patient_id]["audit_log"] = audit_entries
 
             # Format export based on requested format
             if export_format == "json":
@@ -709,9 +675,7 @@ class PatientDataAgentLogic:
                 "status": "COMPLETED",
                 "export_format": export_format,
                 "patient_count": len(export_data["patients"]),
-                "export_data": formatted_export
-                if export_format == "json"
-                else export_data,
+                "export_data": formatted_export if export_format == "json" else export_data,
                 "agent_id": self.agent_id,
             }
 
@@ -735,9 +699,7 @@ class PatientDataAgentLogic:
                         "agent_id": self.agent_id,
                     }
 
-                validation_result = self._validate_patient_record(
-                    self.patient_records[patient_id], validation_type
-                )
+                validation_result = self._validate_patient_record(self.patient_records[patient_id], validation_type)
 
                 return {
                     "status": "COMPLETED",
@@ -783,9 +745,7 @@ class PatientDataAgentLogic:
                         {
                             "patient_id": patient_id,
                             "name": record.get("name", "Unknown"),
-                            "match_score": self._calculate_match_score(
-                                record, criteria
-                            ),
+                            "match_score": self._calculate_match_score(record, criteria),
                         }
                     )
 
@@ -799,9 +759,7 @@ class PatientDataAgentLogic:
         criteria = json.loads(criteria_json)
         return self._search_patients(criteria)
 
-    def _matches_criteria(
-        self, record: Dict[str, Any], criteria: Dict[str, Any]
-    ) -> bool:
+    def _matches_criteria(self, record: Dict[str, Any], criteria: Dict[str, Any]) -> bool:
         """Check if patient record matches search criteria"""
         for field_name, value in criteria.items():
             if field_name not in self.searchable_fields:
@@ -849,9 +807,7 @@ class PatientDataAgentLogic:
 
         return any(needle in haystack_lower for needle in needles_lower)
 
-    def _calculate_match_score(
-        self, record: Dict[str, Any], criteria: Dict[str, Any]
-    ) -> float:
+    def _calculate_match_score(self, record: Dict[str, Any], criteria: Dict[str, Any]) -> float:
         """Calculate how well a record matches the search criteria"""
         score = 0.0
         max_score = len(criteria)
@@ -860,21 +816,14 @@ class PatientDataAgentLogic:
             if field_name in record:
                 if record[field_name] == value:
                     score += 1.0
-                elif (
-                    isinstance(record[field_name], list) and value in record[field_name]
-                ):
+                elif isinstance(record[field_name], list) and value in record[field_name]:
                     score += 0.8
-                elif (
-                    isinstance(record[field_name], str)
-                    and str(value).lower() in record[field_name].lower()
-                ):
+                elif isinstance(record[field_name], str) and str(value).lower() in record[field_name].lower():
                     score += 0.5
 
         return score / max_score if max_score > 0 else 0.0
 
-    def _apply_updates(
-        self, patient_id: str, updates: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _apply_updates(self, patient_id: str, updates: Dict[str, Any]) -> Dict[str, Any]:
         """Apply updates to patient record"""
         record = copy.deepcopy(self.patient_records[patient_id])
 
@@ -885,9 +834,7 @@ class PatientDataAgentLogic:
                 if field_name not in record:
                     record[field_name] = []
                 if isinstance(value, list):
-                    record[field_name].extend(
-                        [v for v in value if v not in record[field_name]]
-                    )
+                    record[field_name].extend([v for v in value if v not in record[field_name]])
                 else:
                     if value not in record[field_name]:
                         record[field_name].append(value)
@@ -934,9 +881,7 @@ class PatientDataAgentLogic:
                     expected_types = (expected_types,)
 
                 if not isinstance(value, expected_types):
-                    errors.append(
-                        f"Field '{update_field}' must be of type {expected_types}, got {type(value)}"
-                    )
+                    errors.append(f"Field '{update_field}' must be of type {expected_types}, got {type(value)}")
 
                 # Additional specific validations
                 if update_field == "age" and isinstance(value, int):
@@ -954,9 +899,7 @@ class PatientDataAgentLogic:
 
         return {"valid": len(errors) == 0, "errors": errors}
 
-    def _validate_patient_record(
-        self, record: Dict[str, Any], validation_type: str
-    ) -> Dict[str, Any]:
+    def _validate_patient_record(self, record: Dict[str, Any], validation_type: str) -> Dict[str, Any]:
         """Validate a patient record"""
         issues = []
 
@@ -999,9 +942,7 @@ class PatientDataAgentLogic:
         if requester_role == "researcher":
             # Researchers get anonymized data
             filtered["name"] = "ANONYMIZED"
-            filtered["patient_id"] = hashlib.md5(
-                filtered["patient_id"].encode()
-            ).hexdigest()[:8]
+            filtered["patient_id"] = hashlib.md5(filtered["patient_id"].encode()).hexdigest()[:8]
             if "ssn" in filtered:
                 filtered.pop("ssn")
             if "dob" in filtered:
@@ -1010,10 +951,7 @@ class PatientDataAgentLogic:
                 filtered.pop("address")
             if "phone" in filtered:
                 filtered.pop("phone")
-        elif (
-            self.privacy_config["mask_sensitive_data"]
-            and requester_id != "authorized_system"
-        ):
+        elif self.privacy_config["mask_sensitive_data"] and requester_id != "authorized_system":
             # Standard masking for non-authorized users
             if "ssn" in filtered:
                 filtered["ssn"] = "***-**-****"
@@ -1042,17 +980,13 @@ class PatientDataAgentLogic:
 
         return {"has_general_consent": False, "error": "Patient not found"}
 
-    def _update_patient_consent(
-        self, patient_id: str, consent_type: str, value: bool
-    ) -> bool:
+    def _update_patient_consent(self, patient_id: str, consent_type: str, value: bool) -> bool:
         """Update patient consent status"""
         with self.data_lock:
             if patient_id in self.patient_records:
                 consent_field = f"{consent_type}_consent"
                 self.patient_records[patient_id][consent_field] = value
-                self.patient_records[patient_id]["consent_updated"] = datetime.now(
-                    timezone.utc
-                ).isoformat()
+                self.patient_records[patient_id]["consent_updated"] = datetime.now(timezone.utc).isoformat()
                 self._save_patient_records_throttled()
                 return True
         return False

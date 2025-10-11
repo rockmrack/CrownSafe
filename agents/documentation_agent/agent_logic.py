@@ -42,9 +42,7 @@ class DocumentationAgentLogic:
         # Directory setup
         self.base_dir = Path(__file__).parent
         self.templates_dir = self.base_dir / "templates"
-        self.output_dir = (
-            self.base_dir.parent.parent / "_outputs_and_data" / "generated_reports"
-        )
+        self.output_dir = self.base_dir.parent.parent / "_outputs_and_data" / "generated_reports"
         self.archive_dir = self.output_dir / "archive"
 
         # Create directories
@@ -52,9 +50,7 @@ class DocumentationAgentLogic:
             directory.mkdir(parents=True, exist_ok=True)
 
         # Initialize Jinja2 environment with custom filters
-        self.jinja_env = Environment(
-            loader=FileSystemLoader(self.templates_dir), autoescape=True
-        )
+        self.jinja_env = Environment(loader=FileSystemLoader(self.templates_dir), autoescape=True)
         self._register_custom_filters()
 
         # Configuration
@@ -81,31 +77,18 @@ class DocumentationAgentLogic:
             "def_list",
         ]
 
-        self.logger.info(
-            f"DocumentationAgentLogic v{self.version} initialized for agent {self.agent_id}"
-        )
+        self.logger.info(f"DocumentationAgentLogic v{self.version} initialized for agent {self.agent_id}")
 
     def _register_custom_filters(self):
         """Register custom Jinja2 filters"""
         self.jinja_env.filters["title_case"] = lambda x: str(x).title() if x else ""
-        self.jinja_env.filters["percentage"] = (
-            lambda x: f"{float(x) * 100:.1f}%" if x else "0%"
-        )
-        self.jinja_env.filters["round_percent"] = (
-            lambda x: f"{round(float(x) * 100)}%" if x else "0%"
-        )
+        self.jinja_env.filters["percentage"] = lambda x: f"{float(x) * 100:.1f}%" if x else "0%"
+        self.jinja_env.filters["round_percent"] = lambda x: f"{round(float(x) * 100)}%" if x else "0%"
         self.jinja_env.filters["date_format"] = (
-            lambda x: datetime.strptime(x, "%Y-%m-%d").strftime("%B %d, %Y")
-            if x
-            else ""
+            lambda x: datetime.strptime(x, "%Y-%m-%d").strftime("%B %d, %Y") if x else ""
         )
         self.jinja_env.filters["escape_html"] = (
-            lambda x: str(x)
-            .replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-            if x
-            else ""
+            lambda x: str(x).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") if x else ""
         )
         # Add safe unicode filter
         self.jinja_env.filters["safe_unicode"] = lambda x: self._safe_unicode_str(x)
@@ -149,9 +132,7 @@ class DocumentationAgentLogic:
             }
 
         # Validate normalized inputs
-        validation_result = self._validate_normalized_inputs(
-            report_data, original_request
-        )
+        validation_result = self._validate_normalized_inputs(report_data, original_request)
         if not validation_result["valid"]:
             return {
                 "status": "error",
@@ -159,30 +140,22 @@ class DocumentationAgentLogic:
                 "agent_id": self.agent_id,
             }
 
-        self.logger.info(
-            f"Generating documentation for workflow '{workflow_id}' of type '{report_type}'"
-        )
+        self.logger.info(f"Generating documentation for workflow '{workflow_id}' of type '{report_type}'")
 
         try:
             results = {}
 
             # Generate PDF report
-            pdf_result = self._build_pa_summary_pdf(
-                report_data, original_request, workflow_id, report_type
-            )
+            pdf_result = self._build_pa_summary_pdf(report_data, original_request, workflow_id, report_type)
             results["pdf_generation"] = asdict(pdf_result)
 
             # Generate Markdown letter
-            md_result = self._build_necessity_letter_md(
-                report_data, original_request, workflow_id
-            )
+            md_result = self._build_necessity_letter_md(report_data, original_request, workflow_id)
             results["markdown_generation"] = asdict(md_result)
 
             # Generate HTML preview if requested
             if task_payload.get("generate_html_preview", False):
-                html_result = self._build_html_preview(
-                    report_data, original_request, workflow_id
-                )
+                html_result = self._build_html_preview(report_data, original_request, workflow_id)
                 results["html_generation"] = asdict(html_result)
 
             # Calculate total generation time
@@ -196,12 +169,8 @@ class DocumentationAgentLogic:
                 "status": "success",
                 "outputs": {
                     "summary_pdf_path": pdf_result.pdf_path,
-                    "necessity_letter_md": self._console_safe_str(
-                        md_result.markdown_content
-                    ),
-                    "html_preview_path": results.get("html_generation", {}).get(
-                        "html_path"
-                    ),
+                    "necessity_letter_md": self._console_safe_str(md_result.markdown_content),
+                    "html_preview_path": results.get("html_generation", {}).get("html_path"),
                     "generation_results": results,
                 },
                 "message": "Documentation generated successfully",
@@ -222,9 +191,7 @@ class DocumentationAgentLogic:
     def _normalize_input_data(self, task_payload: dict) -> dict:
         """Normalize input data to handle various structures"""
         # Extract base data
-        workflow_id = task_payload.get(
-            "workflow_id", f"WF_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        )
+        workflow_id = task_payload.get("workflow_id", f"WF_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
         report_type = task_payload.get("report_type", "prior_authorization")
 
         # Initialize report_data and original_request
@@ -233,17 +200,11 @@ class DocumentationAgentLogic:
 
         # First, check if report_data is a string reference
         report_data_field = task_payload.get("report_data", {})
-        if isinstance(report_data_field, str) and report_data_field.startswith(
-            "RESULT_FROM_"
-        ):
-            self.logger.info(
-                f"Found workflow reference: {report_data_field}, looking for actual data in payload"
-            )
+        if isinstance(report_data_field, str) and report_data_field.startswith("RESULT_FROM_"):
+            self.logger.info(f"Found workflow reference: {report_data_field}, looking for actual data in payload")
 
         # Extract original_request from various possible locations
-        if "original_request" in task_payload and isinstance(
-            task_payload["original_request"], dict
-        ):
+        if "original_request" in task_payload and isinstance(task_payload["original_request"], dict):
             original_request = task_payload["original_request"]
         elif "data" in task_payload and isinstance(task_payload["data"], dict):
             # Sometimes original request is nested under 'data'
@@ -276,8 +237,7 @@ class DocumentationAgentLogic:
         report_data = {
             "decision_prediction": prediction_fields["decision"] or "Unknown",
             "confidence_score": prediction_fields["confidence"],
-            "clinical_rationale": prediction_fields["clinical_rationale"]
-            or "No rationale provided",
+            "clinical_rationale": prediction_fields["clinical_rationale"] or "No rationale provided",
             "supporting_evidence": prediction_fields["supporting_evidence"] or [],
             "identified_gaps": prediction_fields["identified_gaps"] or [],
             "key_factors": prediction_fields["key_factors"] or [],
@@ -301,9 +261,7 @@ class DocumentationAgentLogic:
                 "patient_id": task_payload.get("patient_id", "Unknown"),
                 "drug_name": task_payload.get("drug_name", "Unknown"),
                 "diagnosis_codes": task_payload.get("diagnosis_codes", []),
-                "provider_name": task_payload.get(
-                    "provider_name", "Healthcare Provider"
-                ),
+                "provider_name": task_payload.get("provider_name", "Healthcare Provider"),
                 "provider_npi": task_payload.get("provider_npi", "0000000000"),
                 "insurer_id": task_payload.get("insurer_id", "Unknown"),
             }
@@ -335,19 +293,14 @@ class DocumentationAgentLogic:
             if isinstance(value, str):
                 cleaned[key] = self._safe_unicode_str(value)
             elif isinstance(value, list):
-                cleaned[key] = [
-                    self._safe_unicode_str(item) if isinstance(item, str) else item
-                    for item in value
-                ]
+                cleaned[key] = [self._safe_unicode_str(item) if isinstance(item, str) else item for item in value]
             elif isinstance(value, dict):
                 cleaned[key] = self._clean_unicode_dict(value)
             else:
                 cleaned[key] = value
         return cleaned
 
-    def _validate_normalized_inputs(
-        self, report_data: dict, original_request: dict
-    ) -> dict:
+    def _validate_normalized_inputs(self, report_data: dict, original_request: dict) -> dict:
         """Validate normalized input data"""
         if not report_data:
             return {"valid": False, "message": "Empty report_data after normalization"}
@@ -357,19 +310,13 @@ class DocumentationAgentLogic:
         missing_fields = []
 
         for field in required_fields:
-            if (
-                field not in report_data
-                or report_data[field] is None
-                or str(report_data[field]).strip() == ""
-            ):
+            if field not in report_data or report_data[field] is None or str(report_data[field]).strip() == "":
                 missing_fields.append(field)
 
         if missing_fields:
             # Log what we actually have for debugging
             self.logger.warning(f"Missing required fields: {missing_fields}")
-            self.logger.warning(
-                f"Available fields in report_data: {list(report_data.keys())}"
-            )
+            self.logger.warning(f"Available fields in report_data: {list(report_data.keys())}")
 
             # Try to provide helpful error message
             return {
@@ -421,38 +368,21 @@ class DocumentationAgentLogic:
                 "company": self.config,
                 "generation_timestamp": datetime.now().isoformat(),
                 # Additional context for enhanced reporting
-                "drug_name_formatted": self._safe_unicode_str(
-                    original_request.get("drug_name", "N/A")
-                ).title(),
-                "patient_id_masked": self._mask_patient_id(
-                    original_request.get("patient_id", "")
-                ),
-                "insurer_name": self._get_insurer_name(
-                    original_request.get("insurer_id", "")
-                ),
+                "drug_name_formatted": self._safe_unicode_str(original_request.get("drug_name", "N/A")).title(),
+                "patient_id_masked": self._mask_patient_id(original_request.get("patient_id", "")),
+                "insurer_name": self._get_insurer_name(original_request.get("insurer_id", "")),
                 "diagnosis_codes_formatted": ", ".join(
-                    [
-                        self._safe_unicode_str(code)
-                        for code in original_request.get("diagnosis_codes", [])
-                    ]
+                    [self._safe_unicode_str(code) for code in original_request.get("diagnosis_codes", [])]
                 ),
-                "provider_name": self._safe_unicode_str(
-                    original_request.get("provider_name", "Healthcare Provider")
-                ),
+                "provider_name": self._safe_unicode_str(original_request.get("provider_name", "Healthcare Provider")),
                 "is_approved": is_approved,
                 "decision_formatted": "APPROVED" if is_approved else "DENIED",
-                "confidence_percentage": self._format_confidence(
-                    prediction_data.get("confidence_score")
-                ),
+                "confidence_percentage": self._format_confidence(prediction_data.get("confidence_score")),
                 "report_metadata": {
-                    "total_evidence": len(
-                        prediction_data.get("supporting_evidence", [])
-                    ),
+                    "total_evidence": len(prediction_data.get("supporting_evidence", [])),
                     "total_gaps": len(prediction_data.get("identified_gaps", [])),
                     "has_approval": is_approved,
-                    "workflow_stage": prediction_data.get(
-                        "workflow_stage", "Final Review"
-                    ),
+                    "workflow_stage": prediction_data.get("workflow_stage", "Final Review"),
                 },
             }
 
@@ -462,17 +392,13 @@ class DocumentationAgentLogic:
             # Generate filename
             decision_text = "Approved" if is_approved else "Denied"
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            pdf_filename = (
-                f"PA_Summary_{decision_text}_{workflow_id[:8]}_{timestamp}.pdf"
-            )
+            pdf_filename = f"PA_Summary_{decision_text}_{workflow_id[:8]}_{timestamp}.pdf"
             pdf_filepath = self.output_dir / pdf_filename
 
             # Generate PDF with WeasyPrint
             HTML(string=html_string, base_url=str(self.base_dir)).write_pdf(
                 pdf_filepath,
-                stylesheets=[self._get_print_stylesheet()]
-                if self._get_print_stylesheet()
-                else None,
+                stylesheets=[self._get_print_stylesheet()] if self._get_print_stylesheet() else None,
             )
 
             # Calculate file hash
@@ -481,15 +407,11 @@ class DocumentationAgentLogic:
             # Verify file size
             file_size_mb = pdf_filepath.stat().st_size / (1024 * 1024)
             if file_size_mb > self.config["max_file_size_mb"]:
-                self.logger.warning(
-                    f"Generated PDF exceeds size limit: {file_size_mb:.2f}MB"
-                )
+                self.logger.warning(f"Generated PDF exceeds size limit: {file_size_mb:.2f}MB")
 
             generation_time = (datetime.now() - start_time).total_seconds()
 
-            self.logger.info(
-                f"Generated PA Summary PDF at: {pdf_filepath} (Size: {file_size_mb:.2f}MB)"
-            )
+            self.logger.info(f"Generated PA Summary PDF at: {pdf_filepath} (Size: {file_size_mb:.2f}MB)")
 
             return DocumentGenerationResult(
                 success=True,
@@ -513,12 +435,8 @@ class DocumentationAgentLogic:
         """Enhanced Markdown letter generation with professional formatting"""
         try:
             patient_id = original_request.get("patient_id", "Unknown")
-            drug_name = self._safe_unicode_str(
-                original_request.get("drug_name", "Unknown")
-            )
-            provider_name = self._safe_unicode_str(
-                original_request.get("provider_name", "Dr. Smith")
-            )
+            drug_name = self._safe_unicode_str(original_request.get("drug_name", "Unknown"))
+            provider_name = self._safe_unicode_str(original_request.get("provider_name", "Dr. Smith"))
             provider_npi = original_request.get("provider_npi", "1234567890")
             diagnosis_codes = original_request.get("diagnosis_codes", ["E11.9"])
 
@@ -621,9 +539,7 @@ class DocumentationAgentLogic:
                 )
 
             # Add patient safety considerations if any
-            if original_request.get("allergies") or original_request.get(
-                "contraindications"
-            ):
+            if original_request.get("allergies") or original_request.get("contraindications"):
                 md_parts.extend(
                     [
                         "## Patient Safety Considerations",
@@ -691,17 +607,13 @@ class DocumentationAgentLogic:
         """Generate HTML preview of the markdown letter"""
         try:
             # Get markdown content
-            md_result = self._build_necessity_letter_md(
-                report_data, original_request, workflow_id
-            )
+            md_result = self._build_necessity_letter_md(report_data, original_request, workflow_id)
 
             if not md_result.success:
                 return md_result
 
             # Convert markdown to HTML
-            html_content = markdown.markdown(
-                md_result.markdown_content, extensions=self.markdown_extensions
-            )
+            html_content = markdown.markdown(md_result.markdown_content, extensions=self.markdown_extensions)
 
             # Wrap in HTML template with enhanced styling
             html_template = f"""
@@ -787,9 +699,7 @@ class DocumentationAgentLogic:
             return DocumentGenerationResult(success=True, html_path=str(html_filepath))
 
         except Exception as e:
-            return DocumentGenerationResult(
-                success=False, error_message=f"HTML preview generation failed: {str(e)}"
-            )
+            return DocumentGenerationResult(success=False, error_message=f"HTML preview generation failed: {str(e)}")
 
     def _create_default_template(self):
         """Create a default PA summary template if none exists"""
@@ -960,9 +870,7 @@ class DocumentationAgentLogic:
     def _get_logo_path(self) -> str:
         """Get the logo file path with fallback options"""
         logo_locations = [
-            self.base_dir.parent.parent.parent
-            / "branding"
-            / self.config["logo_filename"],
+            self.base_dir.parent.parent.parent / "branding" / self.config["logo_filename"],
             self.base_dir.parent.parent / "branding" / self.config["logo_filename"],
             self.base_dir / "assets" / self.config["logo_filename"],
         ]
@@ -1044,6 +952,4 @@ class DocumentationAgentLogic:
 
     async def shutdown(self):
         """Cleanup resources"""
-        self.logger.info(
-            f"DocumentationAgentLogic shutting down for agent {self.agent_id}"
-        )
+        self.logger.info(f"DocumentationAgentLogic shutting down for agent {self.agent_id}")

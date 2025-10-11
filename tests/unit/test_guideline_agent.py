@@ -47,9 +47,7 @@ class TestGuidelineAgentLogic:
             (False, True),  # EnhancedMemoryManager import fails
         ],
     )
-    def test_init_with_memory_manager_import(
-        self, monkeypatch, memory_manager_available, expected_is_none
-    ):
+    def test_init_with_memory_manager_import(self, monkeypatch, memory_manager_available, expected_is_none):
         """Test GuidelineAgentLogic initialization with/without EnhancedMemoryManager available"""
         from agents.guideline_agent import agent_logic
 
@@ -383,9 +381,7 @@ class TestGuidelineAgentLogic:
     @patch.object(GuidelineAgentLogic, "fetch_guideline_from_url")
     @patch.object(GuidelineAgentLogic, "fetch_guideline_from_file")
     @patch.object(GuidelineAgentLogic, "extract_text_from_pdf")
-    def test_ingest_guideline_success(
-        self, mock_extract, mock_fetch_file, mock_fetch_url
-    ):
+    def test_ingest_guideline_success(self, mock_extract, mock_fetch_file, mock_fetch_url):
         """Test ingest_guideline with success"""
         agent = GuidelineAgentLogic("test_agent")
 

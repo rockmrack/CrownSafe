@@ -61,9 +61,7 @@ class SafetyCheckStatus(BaseModel):
     """Safety check status with accurate agency reporting"""
 
     status: str = Field(..., description="Check completion status")
-    agencies_checked: str = Field(
-        ..., description="Number and status of agencies checked"
-    )
+    agencies_checked: str = Field(..., description="Number and status of agencies checked")
     check_timestamp: datetime = Field(..., description="When the check was performed")
     database_version: Optional[str] = Field(None, description="Database version used")
 
@@ -89,21 +87,15 @@ class RecallSummary(BaseModel):
     hazard: str
     remedy: str
     severity: str = Field(..., description="low, medium, high, critical")
-    match_confidence: float = Field(
-        ..., description="How closely this matches the scanned product"
-    )
+    match_confidence: float = Field(..., description="How closely this matches the scanned product")
 
 
 class ScanResultsPage(BaseModel):
     """Complete scan results page data structure"""
 
     # Top-level verdict - legally defensible language
-    verdict: VerdictType = Field(
-        ..., description="Main verdict using legally defensible language"
-    )
-    verdict_color: str = Field(
-        ..., description="Color for verdict display (green, red, yellow)"
-    )
+    verdict: VerdictType = Field(..., description="Main verdict using legally defensible language")
+    verdict_color: str = Field(..., description="Color for verdict display (green, red, yellow)")
     verdict_icon: str = Field(..., description="Icon type (checkmark, warning, error)")
     sub_text: str = Field(..., description="Clarifying sub-text about the verdict")
 
@@ -193,9 +185,7 @@ def create_scan_results(
         verdict = VerdictType.RECALL_FOUND
         verdict_color = "red"
         verdict_icon = "warning"
-        sub_text = (
-            f"{recall_check.get('recall_count', 0)} recall(s) found. See details below."
-        )
+        sub_text = f"{recall_check.get('recall_count', 0)} recall(s) found. See details below."
         agencies_checked = f"39+ ({recall_check.get('recall_count', 0)} recalls found)"
     else:
         verdict = VerdictType.NO_RECALLS_FOUND

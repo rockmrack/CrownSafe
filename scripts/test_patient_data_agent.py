@@ -35,14 +35,10 @@ def test_patient_data_agent():
     print("   -> SUCCESS: Correctly handled non-existent patient ID.")
 
     print("\n4. Testing patient search by diagnosis...")
-    result = logic.process_task(
-        {"task_name": "search_patients", "criteria": {"diagnoses_icd10": "I50"}}
-    )
+    result = logic.process_task({"task_name": "search_patients", "criteria": {"diagnoses_icd10": "I50"}})
     assert result["status"] == "COMPLETED"
     assert result["result_count"] >= 2  # Should find patient-001 and patient-002
-    print(
-        f"   -> SUCCESS: Found {result['result_count']} patients with heart failure diagnosis."
-    )
+    print(f"   -> SUCCESS: Found {result['result_count']} patients with heart failure diagnosis.")
 
     print("\n5. Testing patient search by medication...")
     result = logic.process_task(
@@ -55,9 +51,7 @@ def test_patient_data_agent():
     print(f"   -> SUCCESS: Found {result['result_count']} patients on Metformin.")
 
     print("\n6. Testing patient data validation...")
-    result = logic.process_task(
-        {"task_name": "validate_patient_data", "patient_id": "patient-001"}
-    )
+    result = logic.process_task({"task_name": "validate_patient_data", "patient_id": "patient-001"})
     assert result["status"] == "COMPLETED"
     assert result["is_valid"]
     print("   -> SUCCESS: Patient-001 data is valid.")
@@ -67,14 +61,10 @@ def test_patient_data_agent():
     _ = logic.get_patient_record("patient-001")
 
     # Then check audit log
-    result = logic.process_task(
-        {"task_name": "get_audit_log", "patient_id": "patient-001"}
-    )
+    result = logic.process_task({"task_name": "get_audit_log", "patient_id": "patient-001"})
     assert result["status"] == "COMPLETED"
     assert result["entry_count"] > 0
-    print(
-        f"   -> SUCCESS: Found {result['entry_count']} audit entries for patient-001."
-    )
+    print(f"   -> SUCCESS: Found {result['entry_count']} audit entries for patient-001.")
 
     print("\n8. Testing privacy consent check...")
     result = logic.process_task(
@@ -108,9 +98,7 @@ def test_patient_data_agent():
         }
     )
     assert result["status"] == "COMPLETED"
-    print(
-        f"   -> SUCCESS: Complex search found {result['result_count']} matching patients."
-    )
+    print(f"   -> SUCCESS: Complex search found {result['result_count']} matching patients.")
 
     print("\n--- All tests passed successfully! ---")
 

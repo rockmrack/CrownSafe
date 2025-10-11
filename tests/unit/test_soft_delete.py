@@ -311,12 +311,8 @@ class TestRecycleBin:
         mock_session.query.assert_called_once_with(TestModel)
         mock_query.filter.assert_called_once()
         mock_query.filter.return_value.order_by.assert_called_once()
-        mock_query.filter.return_value.order_by.return_value.offset.assert_called_once_with(
-            0
-        )
-        mock_query.filter.return_value.offset.return_value.limit.assert_called_once_with(
-            10
-        )
+        mock_query.filter.return_value.order_by.return_value.offset.assert_called_once_with(0)
+        mock_query.filter.return_value.offset.return_value.limit.assert_called_once_with(10)
 
     def test_get_deleted_items_invalid_model(self):
         """Test get_deleted_items with model that doesn't support soft delete"""

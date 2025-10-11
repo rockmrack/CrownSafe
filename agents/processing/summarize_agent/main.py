@@ -10,9 +10,7 @@ from typing import Optional, Dict, Any
 from dotenv import load_dotenv
 
 # Ensure project root is in sys.path
-project_root_main = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..")
-)
+project_root_main = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 if project_root_main not in sys.path:
     sys.path.insert(0, project_root_main)
 
@@ -39,9 +37,7 @@ AGENT_TYPE = "ProcessingAgent"  # Or a more specific type if we define one
 AGENT_VERSION = "1.0.0"  # Stub version
 
 LOG_LEVEL_MAIN = os.getenv("LOG_LEVEL", "INFO").upper()
-logging.basicConfig(
-    level=LOG_LEVEL_MAIN, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=LOG_LEVEL_MAIN, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger_for_main = logging.getLogger(f"{AGENT_ID}.main")
 logger_for_logic_passed = logging.getLogger(f"{AGENT_ID}.logic")
 
@@ -75,12 +71,8 @@ async def handle_incoming_message(message: MCPMessage):
             response_message_type = response_from_logic.get("message_type")
             response_payload_to_send = response_from_logic.get("payload")
 
-            if not response_message_type or not isinstance(
-                response_payload_to_send, dict
-            ):
-                logic_logger.error(
-                    f"Logic returned invalid response: {response_from_logic}"
-                )
+            if not response_message_type or not isinstance(response_payload_to_send, dict):
+                logic_logger.error(f"Logic returned invalid response: {response_from_logic}")
                 return
 
             # The response from logic should be sent back to the original sender of the TASK_ASSIGN,
@@ -113,11 +105,7 @@ async def handle_incoming_message(message: MCPMessage):
             )
 
     except Exception as e:
-        current_message_type_str = (
-            message.mcp_header.message_type
-            if message and message.mcp_header
-            else "UnknownType"
-        )
+        current_message_type_str = message.mcp_header.message_type if message and message.mcp_header else "UnknownType"
         logic_logger.error(
             f"MAIN_HANDLER: Error processing message (Type: {current_message_type_str}): {e}",
             exc_info=True,
@@ -129,12 +117,8 @@ async def handle_incoming_message(message: MCPMessage):
                     "correlation_id": message.mcp_header.correlation_id,
                     "agent_id": AGENT_ID,
                     "error_message": f"SummarizeAgent failed: {str(e)}",
-                    "workflow_id": message.payload.get(
-                        "workflow_id"
-                    ),  # Pass through if available
-                    "task_id": message.payload.get(
-                        "task_id"
-                    ),  # Pass through if available
+                    "workflow_id": message.payload.get("workflow_id"),  # Pass through if available
+                    "task_id": message.payload.get("task_id"),  # Pass through if available
                 }
                 fail_payload = {k: v for k, v in fail_payload.items() if v is not None}
                 logger_for_main.info(
@@ -147,9 +131,7 @@ async def handle_incoming_message(message: MCPMessage):
                     correlation_id=message.mcp_header.correlation_id,
                 )
             except Exception as send_err:
-                logger_for_main.error(
-                    f"MAIN_HANDLER: Failed to send TASK_FAIL notification: {send_err}"
-                )
+                logger_for_main.error(f"MAIN_HANDLER: Failed to send TASK_FAIL notification: {send_err}")
 
 
 async def main_agent_loop():
@@ -163,9 +145,7 @@ async def main_agent_loop():
             agent_id=AGENT_ID, version=AGENT_VERSION, logger=logger_for_logic_passed
         )
     except Exception as e:
-        logger_for_main.critical(
-            f"Failed to initialize SummarizeAgentLogic: {e}.", exc_info=True
-        )
+        logger_for_main.critical(f"Failed to initialize SummarizeAgentLogic: {e}.", exc_info=True)
         return
 
     mcp_settings = MCPConfig()
@@ -198,17 +178,13 @@ async def main_agent_loop():
                 lambda s=sig_name_enum.name: signal_handler_func_wrapper(s),
             )
         except Exception as e:
-            logger_for_main.warning(
-                f"Cannot add signal handler for {sig_name_enum.name}: {e}."
-            )
+            logger_for_main.warning(f"Cannot add signal handler for {sig_name_enum.name}: {e}.")
 
     try:
         await mcp_client_instance.connect()
         if mcp_client_instance.is_connected:
             await mcp_client_instance.register_self()
-            logger_for_main.info(
-                f"{AGENT_ID} connected and registered. Waiting for tasks... (Press Ctrl+C to stop)"
-            )
+            logger_for_main.info(f"{AGENT_ID} connected and registered. Waiting for tasks... (Press Ctrl+C to stop)")
             await stop_event.wait()
         else:
             logger_for_main.critical("MCPClient connection failed.")

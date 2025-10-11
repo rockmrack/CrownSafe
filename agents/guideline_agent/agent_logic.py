@@ -104,9 +104,7 @@ class GuidelineAgentLogic:
                 error_str = str(e).lower()
                 if "dimension" in error_str or "dimensionality" in error_str:
                     self.logger.warning(f"Dimension mismatch detected: {e}")
-                    self.logger.warning(
-                        "Recreating collection with correct dimensions..."
-                    )
+                    self.logger.warning("Recreating collection with correct dimensions...")
 
                     # Get ChromaDB client and collection name
                     client = self.memory_manager.chroma_client
@@ -115,9 +113,7 @@ class GuidelineAgentLogic:
                     # Delete existing collection
                     try:
                         client.delete_collection(name=collection_name)
-                        self.logger.info(
-                            f"Deleted existing collection: {collection_name}"
-                        )
+                        self.logger.info(f"Deleted existing collection: {collection_name}")
                     except Exception as del_e:
                         self.logger.warning(f"Could not delete collection: {del_e}")
 
@@ -125,9 +121,7 @@ class GuidelineAgentLogic:
                     self.memory_manager.collection = client.create_collection(
                         name=collection_name, metadata={"hnsw:space": "cosine"}
                     )
-                    self.logger.info(
-                        f"Collection '{collection_name}' recreated successfully with correct dimensions"
-                    )
+                    self.logger.info(f"Collection '{collection_name}' recreated successfully with correct dimensions")
                 else:
                     # Some other error, re-raise
                     raise
@@ -194,9 +188,7 @@ class GuidelineAgentLogic:
                 pdf_content = self._load_local_pdf(str(local_path))
             elif "url" in config:
                 # Try to download the PDF
-                self.logger.info(
-                    f"Attempting to download PDF from URL: {config['url']}"
-                )
+                self.logger.info(f"Attempting to download PDF from URL: {config['url']}")
                 try:
                     pdf_content = self._download_pdf(config["url"])
                     # Save for future use
@@ -264,18 +256,14 @@ class GuidelineAgentLogic:
             # Try to extract drug and condition from topic if not provided
             if not drug_name and not condition:
                 # Pattern: "Guidelines for DRUG in treating CONDITION"
-                match = re.match(
-                    r"Guidelines for (.+?) in treating (.+)", topic, re.IGNORECASE
-                )
+                match = re.match(r"Guidelines for (.+?) in treating (.+)", topic, re.IGNORECASE)
                 if match:
                     drug_name = drug_name or match.group(1).strip()
                     condition = condition or match.group(2).strip()
 
         # Build enhanced query
         if drug_name and condition:
-            enhanced_query = (
-                f"{drug_name} for {condition} clinical guidelines recommendations"
-            )
+            enhanced_query = f"{drug_name} for {condition} clinical guidelines recommendations"
         elif drug_name:
             enhanced_query = f"{drug_name} clinical use guidelines"
         elif condition:
@@ -304,16 +292,12 @@ class GuidelineAgentLogic:
         try:
             # P1: Auto-ingest if collection is empty
             if self.memory_manager and not self._has_any_guidelines():
-                self.logger.info(
-                    "No guidelines in collection, auto-ingesting default guideline..."
-                )
+                self.logger.info("No guidelines in collection, auto-ingesting default guideline...")
                 ingest_result = self._handle_guideline_ingestion(
                     {"guideline_id": "AHA_HF_2022"}  # Default guideline
                 )
                 if ingest_result.get("status") != "COMPLETED":
-                    self.logger.warning(
-                        f"Auto-ingestion failed: {ingest_result.get('error')}"
-                    )
+                    self.logger.warning(f"Auto-ingestion failed: {ingest_result.get('error')}")
 
             # Search across all guidelines
             results = self._search_guidelines(enhanced_query)
@@ -400,9 +384,7 @@ class GuidelineAgentLogic:
                                     with page.expect_download() as download_info:
                                         page.locator(selector).first.click()
                                         download = download_info.value
-                                        download_path = (
-                                            Path(temp_dir) / download.suggested_filename
-                                        )
+                                        download_path = Path(temp_dir) / download.suggested_filename
                                         download.save_as(download_path)
                                         pdf_content = download_path.read_bytes()
                                         download_triggered = True
@@ -417,9 +399,7 @@ class GuidelineAgentLogic:
 
                 browser.close()
 
-                self.logger.info(
-                    f"Successfully downloaded PDF via Playwright ({len(pdf_content)} bytes)"
-                )
+                self.logger.info(f"Successfully downloaded PDF via Playwright ({len(pdf_content)} bytes)")
                 return pdf_content
 
         except Exception as e:
@@ -433,15 +413,11 @@ class GuidelineAgentLogic:
         try:
             response = requests.get(
                 url,
-                headers={
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-                },
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
                 timeout=30,
             )
             response.raise_for_status()
-            self.logger.info(
-                f"Successfully downloaded PDF via requests ({len(response.content)} bytes)"
-            )
+            self.logger.info(f"Successfully downloaded PDF via requests ({len(response.content)} bytes)")
             return response.content
         except Exception as e:
             self.logger.error(f"Requests download failed: {e}")
@@ -464,9 +440,7 @@ class GuidelineAgentLogic:
         except Exception as e:
             self.logger.warning(f"Could not save PDF locally: {e}")
 
-    def _extract_and_chunk_pdf(
-        self, pdf_content: bytes, guideline_id: str
-    ) -> List[Dict[str, Any]]:
+    def _extract_and_chunk_pdf(self, pdf_content: bytes, guideline_id: str) -> List[Dict[str, Any]]:
         """Extract text from PDF and create overlapping chunks"""
         chunks = []
 
@@ -502,9 +476,7 @@ class GuidelineAgentLogic:
 
                     # Extract key concepts
                     chunk["extracted_drugs"] = self._extract_drug_names(chunk["text"])
-                    chunk["extracted_conditions"] = self._extract_conditions(
-                        chunk["text"]
-                    )
+                    chunk["extracted_conditions"] = self._extract_conditions(chunk["text"])
 
                 self.logger.info(f"Created {len(chunks)} chunks from PDF")
 
@@ -536,9 +508,7 @@ class GuidelineAgentLogic:
 
             if current_words + section_words > chunk_size and current_chunk:
                 # Save current chunk
-                chunks.append(
-                    {"text": current_chunk.strip(), "word_count": current_words}
-                )
+                chunks.append({"text": current_chunk.strip(), "word_count": current_words})
 
                 # Start new chunk with overlap
                 overlap_text = " ".join(current_chunk.split()[-overlap:])
@@ -596,16 +566,12 @@ class GuidelineAgentLogic:
             return False
 
         try:
-            results = self.memory_manager.collection.get(
-                where={"guideline_id": guideline_id}, limit=1
-            )
+            results = self.memory_manager.collection.get(where={"guideline_id": guideline_id}, limit=1)
             return bool(results and results["ids"])
         except:
             return False
 
-    def _store_chunks(
-        self, chunks: List[Dict[str, Any]], guideline_id: str, guideline_name: str
-    ):
+    def _store_chunks(self, chunks: List[Dict[str, Any]], guideline_id: str, guideline_name: str):
         """Store chunks in memory"""
         if not self.memory_manager:
             self.logger.warning("Memory manager not available, skipping storage")
@@ -630,9 +596,7 @@ class GuidelineAgentLogic:
                 for chunk in chunks
             ]
 
-            self.memory_manager.collection.upsert(
-                ids=ids, documents=documents, metadatas=metadatas
-            )
+            self.memory_manager.collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
 
             self.logger.info(f"Stored {len(chunks)} chunks for {guideline_id}")
 
@@ -640,9 +604,7 @@ class GuidelineAgentLogic:
             self.logger.error(f"Failed to store chunks: {e}")
             raise
 
-    def _search_guidelines(
-        self, query: str, n_results: int = 10
-    ) -> List[Dict[str, Any]]:
+    def _search_guidelines(self, query: str, n_results: int = 10) -> List[Dict[str, Any]]:
         """Search across all guidelines"""
         if not self.memory_manager:
             return []
@@ -664,9 +626,7 @@ class GuidelineAgentLogic:
                         "id": results["ids"][0][i],
                         "text": results["documents"][0][i],
                         "guideline_id": results["metadatas"][0][i].get("guideline_id"),
-                        "guideline_name": results["metadatas"][0][i].get(
-                            "guideline_name"
-                        ),
+                        "guideline_name": results["metadatas"][0][i].get("guideline_name"),
                         "relevance_score": 1 - results["distances"][0][i],
                         "metadata": results["metadatas"][0][i],
                     }
@@ -692,9 +652,7 @@ class GuidelineAgentLogic:
             "monitoring_requirements": [],
         }
 
-        for result in search_results[
-            :5
-        ]:  # Increased to top 5 results for better coverage
+        for result in search_results[:5]:  # Increased to top 5 results for better coverage
             text = result["text"].lower()
             original_text = result["text"]
 
@@ -737,10 +695,7 @@ class GuidelineAgentLogic:
                 )
 
             # Look for contraindications
-            if any(
-                keyword in text
-                for keyword in ["contraindicated", "should not", "avoid", "do not use"]
-            ):
+            if any(keyword in text for keyword in ["contraindicated", "should not", "avoid", "do not use"]):
                 criteria["contraindications"].append(
                     {
                         "text": self._extract_sentence(original_text, drug_name),
@@ -763,18 +718,13 @@ class GuidelineAgentLogic:
                 if not drug_name or drug_name.lower() in text:
                     criteria["dosing_guidance"].append(
                         {
-                            "text": self._extract_sentence(
-                                original_text, drug_name or "dose"
-                            ),
+                            "text": self._extract_sentence(original_text, drug_name or "dose"),
                             "source": result["guideline_name"],
                         }
                     )
 
             # Look for monitoring requirements
-            if any(
-                keyword in text
-                for keyword in ["monitor", "monitoring", "assess", "follow-up", "check"]
-            ):
+            if any(keyword in text for keyword in ["monitor", "monitoring", "assess", "follow-up", "check"]):
                 criteria["monitoring_requirements"].append(
                     {
                         "text": self._extract_sentence(original_text, "monitor"),

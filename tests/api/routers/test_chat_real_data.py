@@ -51,9 +51,7 @@ class TestChatWithRealData:
 
     @patch("api.routers.chat.get_db")
     @patch("api.routers.chat.ChatAgentLogic")
-    def test_explain_result_with_real_scan_data(
-        self, mock_chat_agent_class, mock_get_db
-    ):
+    def test_explain_result_with_real_scan_data(self, mock_chat_agent_class, mock_get_db):
         """Test /explain-result endpoint with real scan data from database"""
         # Setup mock database session
         mock_db = MagicMock(spec=Session)
@@ -106,9 +104,7 @@ class TestChatWithRealData:
         mock_chat_agent_class.return_value = mock_agent
 
         # Make request
-        response = self.client.post(
-            "/api/v1/chat/explain-result", json={"scan_id": "real_test_scan_123"}
-        )
+        response = self.client.post("/api/v1/chat/explain-result", json={"scan_id": "real_test_scan_123"})
 
         # Verify response
         assert response.status_code == 200
@@ -130,13 +126,9 @@ class TestChatWithRealData:
         assert call_args["brand"] == "Gerber"
         assert call_args["category"] == "baby_food"
         assert call_args["recalls_found"] == 0
-        assert call_args["flags"] == [
-            "allergen_milk"
-        ]  # Normalized from allergen_alerts
+        assert call_args["flags"] == ["allergen_milk"]  # Normalized from allergen_alerts
         assert call_args["allergens"] == ["milk"]
-        assert isinstance(
-            call_args["ingredients"], list
-        )  # Should be empty list, not None
+        assert isinstance(call_args["ingredients"], list)  # Should be empty list, not None
         assert isinstance(call_args["recalls"], list)  # Should be empty list, not None
 
     @patch("api.routers.chat.get_db")
@@ -189,9 +181,7 @@ class TestChatWithRealData:
         # Setup other mocks
         mock_conv.return_value = MagicMock(id="conv-456")
         mock_profile.return_value = {"allergies": [], "consent_personalization": True}
-        mock_tool.return_value = {
-            "recall_details": {"recalls_found": 1, "batch_check": "Verify model number"}
-        }
+        mock_tool.return_value = {"recall_details": {"recalls_found": 1, "batch_check": "Verify model number"}}
 
         # Setup mock chat agent
         mock_agent = MagicMock()
@@ -219,9 +209,7 @@ class TestChatWithRealData:
         assert "tool_calls" in data
 
         # Verify intent classification was called
-        mock_agent.classify_intent.assert_called_once_with(
-            "Is this product safe? I heard there might be recalls."
-        )
+        mock_agent.classify_intent.assert_called_once_with("Is this product safe? I heard there might be recalls.")
 
         # Verify tool was called with normalized scan data
         mock_tool.assert_called_once()
@@ -249,9 +237,7 @@ class TestChatWithRealData:
         # Mock query to return None (scan not found)
         mock_db.query.return_value.filter.return_value.first.return_value = None
 
-        response = self.client.post(
-            "/api/v1/chat/explain-result", json={"scan_id": "nonexistent_scan_999"}
-        )
+        response = self.client.post("/api/v1/chat/explain-result", json={"scan_id": "nonexistent_scan_999"})
 
         assert response.status_code == 404
         assert response.json()["detail"] == "scan_id not found"

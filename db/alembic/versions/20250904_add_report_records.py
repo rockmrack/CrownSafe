@@ -23,9 +23,7 @@ def upgrade():
             nullable=False,
         ),
     )
-    op.create_index(
-        "ix_report_records_user_created", "report_records", ["user_id", "created_at"]
-    )
+    op.create_index("ix_report_records_user_created", "report_records", ["user_id", "created_at"])
     op.create_index(
         "ix_report_records_type_created",
         "report_records",

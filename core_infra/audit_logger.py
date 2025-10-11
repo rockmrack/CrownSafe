@@ -15,9 +15,7 @@ import traceback
 from contextvars import ContextVar
 
 # Context variable for request tracking
-current_user_context: ContextVar[Optional[int]] = ContextVar(
-    "current_user", default=None
-)
+current_user_context: ContextVar[Optional[int]] = ContextVar("current_user", default=None)
 current_request_id: ContextVar[Optional[str]] = ContextVar("request_id", default=None)
 
 Base = declarative_base()
@@ -367,9 +365,7 @@ class AuditQuery:
         """Get history for a specific entity"""
         return (
             self.db.query(AuditLog)
-            .filter(
-                AuditLog.entity_type == entity_type, AuditLog.entity_id == entity_id
-            )
+            .filter(AuditLog.entity_type == entity_type, AuditLog.entity_id == entity_id)
             .order_by(AuditLog.timestamp.desc())
             .all()
         )
@@ -380,12 +376,7 @@ class AuditQuery:
 
         cutoff = datetime.utcnow() - timedelta(hours=hours)
 
-        return (
-            self.db.query(AuditLog)
-            .filter(AuditLog.timestamp >= cutoff)
-            .order_by(AuditLog.timestamp.desc())
-            .all()
-        )
+        return self.db.query(AuditLog).filter(AuditLog.timestamp >= cutoff).order_by(AuditLog.timestamp.desc()).all()
 
     def search_logs(
         self,

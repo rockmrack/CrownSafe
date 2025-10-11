@@ -95,9 +95,7 @@ def verify_cursor(token: str, key: Optional[str] = None) -> Dict[str, Any]:
         signature = _b64u_decode(signature_b64)
 
         # Verify signature
-        expected_signature = hmac.new(
-            key.encode("utf-8"), payload_bytes, hashlib.sha256
-        ).digest()
+        expected_signature = hmac.new(key.encode("utf-8"), payload_bytes, hashlib.sha256).digest()
 
         if not hmac.compare_digest(signature, expected_signature):
             raise ValueError("Invalid cursor signature")
@@ -193,17 +191,13 @@ def hash_filters(filters: Dict[str, Any], exclude_cursor: bool = True) -> str:
     canonical = {k: v for k, v in canonical.items() if v is not None}
 
     # Serialize to deterministic JSON
-    json_str = json.dumps(
-        canonical, separators=(",", ":"), ensure_ascii=False, sort_keys=True
-    )
+    json_str = json.dumps(canonical, separators=(",", ":"), ensure_ascii=False, sort_keys=True)
 
     # Return SHA256 hash
     return hashlib.sha256(json_str.encode("utf-8")).hexdigest()
 
 
-def validate_cursor_filters(
-    cursor_data: Dict[str, Any], current_filters_hash: str
-) -> None:
+def validate_cursor_filters(cursor_data: Dict[str, Any], current_filters_hash: str) -> None:
     """
     Validate that cursor filters match current request filters
 

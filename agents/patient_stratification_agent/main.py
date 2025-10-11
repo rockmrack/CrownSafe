@@ -11,9 +11,7 @@ from core_infra.mcp_client_library.models import MCPMessage
 from .agent_logic import PatientStratificationAgentLogic, DecisionType
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "patient_stratification_agent_01"
@@ -27,9 +25,7 @@ class PatientStratificationAgent:
         self.agent_id = AGENT_ID
         self.agent_name = AGENT_NAME
         self.agent_type = AGENT_TYPE
-        self.logic = PatientStratificationAgentLogic(
-            agent_id=self.agent_id, logger_instance=logger
-        )
+        self.logic = PatientStratificationAgentLogic(agent_id=self.agent_id, logger_instance=logger)
 
         # Define capabilities for discovery service
         self.capabilities = [
@@ -131,9 +127,7 @@ class PatientStratificationAgent:
         workflow_id = payload.get("workflow_id", "unknown")
         task_name = payload.get("task_name", "").lower()
 
-        logger.info(
-            f"Processing task {task_id} ({task_name}) for workflow {workflow_id}"
-        )
+        logger.info(f"Processing task {task_id} ({task_name}) for workflow {workflow_id}")
         self.request_count += 1
 
         try:
@@ -214,9 +208,7 @@ class PatientStratificationAgent:
                 "message": "Missing required parameters: patient_id, drug_name, and insurer_id",
             }
 
-        return await self.logic.predict_approval_likelihood(
-            patient_id, drug_name, insurer_id, urgency
-        )
+        return await self.logic.predict_approval_likelihood(patient_id, drug_name, insurer_id, urgency)
 
     async def _handle_analyze_case(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Handle case analysis without prediction"""
@@ -269,9 +261,7 @@ class PatientStratificationAgent:
             "successful_requests": self.success_count,
             "failed_requests": self.error_count,
             "success_rate": self.success_count / max(self.request_count, 1),
-            "average_requests_per_minute": (self.request_count / uptime_seconds) * 60
-            if uptime_seconds > 0
-            else 0,
+            "average_requests_per_minute": (self.request_count / uptime_seconds) * 60 if uptime_seconds > 0 else 0,
             "logic_metrics": self.logic.metrics,
             "cache_stats": {
                 "decision_cache_size": len(self.logic.decision_cache),
@@ -317,13 +307,10 @@ class PatientStratificationAgent:
             }
         elif info_type == "performance":
             info = {
-                "average_processing_time_ms": self.logic.metrics.get(
-                    "average_processing_time", 0
-                ),
+                "average_processing_time_ms": self.logic.metrics.get("average_processing_time", 0),
                 "cache_hit_rate": self.logic.metrics["cache_hits"]
                 / max(
-                    self.logic.metrics["cache_hits"]
-                    + self.logic.metrics["cache_misses"],
+                    self.logic.metrics["cache_hits"] + self.logic.metrics["cache_misses"],
                     1,
                 ),
                 "total_llm_tokens": self.logic.metrics["total_llm_tokens"],
@@ -362,9 +349,7 @@ class PatientStratificationAgent:
 
             logger.info(f"{self.agent_name} started successfully")
             logger.info(f"Configuration: {json.dumps(self.logic.config, indent=2)}")
-            logger.info(
-                f"Evidence weights: {json.dumps(self.logic.evidence_weights, indent=2)}"
-            )
+            logger.info(f"Evidence weights: {json.dumps(self.logic.evidence_weights, indent=2)}")
 
             # Keep running until stopped
             while self.running:

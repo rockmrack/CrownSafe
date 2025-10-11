@@ -11,6 +11,4 @@ async def legacy_delete(request: Request, body: Optional[Any] = None):
     Accepts any request format to avoid validation errors.
     """
     # Explicit deprecation to force client upgrade
-    raise HTTPException(
-        status_code=410, detail="Endpoint removed. Use DELETE /api/v1/account"
-    )
+    raise HTTPException(status_code=410, detail="Endpoint removed. Use DELETE /api/v1/account")

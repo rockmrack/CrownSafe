@@ -135,9 +135,7 @@ def upgrade():
         ["created_at"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_incident_reports_id"), "incident_reports", ["id"], unique=False
-    )
+    op.create_index(op.f("ix_incident_reports_id"), "incident_reports", ["id"], unique=False)
     op.create_index(
         op.f("ix_incident_reports_incident_type"),
         "incident_reports",
@@ -156,9 +154,7 @@ def upgrade():
         ["severity_level"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_incident_reports_status"), "incident_reports", ["status"], unique=False
-    )
+    op.create_index(op.f("ix_incident_reports_status"), "incident_reports", ["status"], unique=False)
 
     # Create incident_clusters table
     op.create_table(
@@ -237,21 +233,13 @@ def upgrade():
 
 def downgrade():
     op.drop_table("agency_notifications")
-    op.drop_index(
-        op.f("ix_incident_clusters_product_name"), table_name="incident_clusters"
-    )
+    op.drop_index(op.f("ix_incident_clusters_product_name"), table_name="incident_clusters")
     op.drop_table("incident_clusters")
 
     op.drop_index(op.f("ix_incident_reports_status"), table_name="incident_reports")
-    op.drop_index(
-        op.f("ix_incident_reports_severity_level"), table_name="incident_reports"
-    )
-    op.drop_index(
-        op.f("ix_incident_reports_product_name"), table_name="incident_reports"
-    )
-    op.drop_index(
-        op.f("ix_incident_reports_incident_type"), table_name="incident_reports"
-    )
+    op.drop_index(op.f("ix_incident_reports_severity_level"), table_name="incident_reports")
+    op.drop_index(op.f("ix_incident_reports_product_name"), table_name="incident_reports")
+    op.drop_index(op.f("ix_incident_reports_incident_type"), table_name="incident_reports")
     op.drop_index(op.f("ix_incident_reports_id"), table_name="incident_reports")
     op.drop_index(op.f("ix_incident_reports_created_at"), table_name="incident_reports")
     op.drop_index(op.f("ix_incident_reports_cluster_id"), table_name="incident_reports")

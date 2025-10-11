@@ -84,9 +84,7 @@ def paginate_query(query: SQLQuery, params: PaginationParams) -> tuple[List, int
     return items, total
 
 
-async def paginate_async(
-    query: SQLQuery, params: PaginationParams
-) -> PaginatedResponse:
+async def paginate_async(query: SQLQuery, params: PaginationParams) -> PaginatedResponse:
     """
     Async pagination helper
     """
@@ -146,9 +144,7 @@ def paginate_with_cursor(
 
     # Apply cursor filter if provided
     if last_id:
-        query = query.filter(
-            getattr(query.column_descriptions[0]["type"], id_field) > last_id
-        )
+        query = query.filter(getattr(query.column_descriptions[0]["type"], id_field) > last_id)
 
     # Order by ID for consistent pagination
     query = query.order_by(getattr(query.column_descriptions[0]["type"], id_field))
@@ -183,9 +179,7 @@ def paginate_list(items: List[T], params: PaginationParams) -> PaginatedResponse
     return PaginatedResponse.create(paginated_items, total, params)
 
 
-def create_pagination_links(
-    base_url: str, params: PaginationParams, total: int
-) -> Dict[str, Optional[str]]:
+def create_pagination_links(base_url: str, params: PaginationParams, total: int) -> Dict[str, Optional[str]]:
     """
     Create HATEOAS links for pagination
     """
@@ -204,9 +198,7 @@ def create_pagination_links(
 
     # Next link
     if params.skip + params.limit < total:
-        links[
-            "next"
-        ] = f"{base_url}?skip={params.skip + params.limit}&limit={params.limit}"
+        links["next"] = f"{base_url}?skip={params.skip + params.limit}&limit={params.limit}"
 
     # Previous link
     if params.skip > 0:

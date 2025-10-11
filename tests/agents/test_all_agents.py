@@ -106,9 +106,7 @@ async def test_recall_agent_process_task():
 
     agent = RecallDataAgentLogic(agent_id="test-process-task")
 
-    result = await agent.process_task(
-        {"upc": "070470003795", "product_name": "Test Baby Product"}
-    )
+    result = await agent.process_task({"upc": "070470003795", "product_name": "Test Baby Product"})
 
     assert result is not None
     print("✓ Successfully processed recall search task")
@@ -294,9 +292,7 @@ async def test_workflow_scan_to_recall():
     recall_agent = RecallDataAgentLogic(agent_id="workflow-test")
 
     # Step 2: Process recall check
-    result = await recall_agent.process_task(
-        {"upc": "070470003795", "product_name": "Test Baby Product"}
-    )
+    result = await recall_agent.process_task({"upc": "070470003795", "product_name": "Test Baby Product"})
 
     assert result is not None
     print("✓ Complete workflow test successful")
@@ -311,14 +307,10 @@ async def test_workflow_recall_to_report():
 
     # Step 1: Get recalls
     recall_agent = RecallDataAgentLogic(agent_id="workflow-recall-report")
-    recall_result = await recall_agent.process_task(
-        {"upc": "070470003795", "product_name": "Test Product"}
-    )
+    recall_result = await recall_agent.process_task({"upc": "070470003795", "product_name": "Test Product"})
 
     # Step 2: Generate report
-    report_agent = ReportBuilderAgentLogic(
-        agent_id="workflow-report", version="2.1-test"
-    )
+    report_agent = ReportBuilderAgentLogic(agent_id="workflow-report", version="2.1-test")
 
     report_result = report_agent.process_task(
         {
@@ -346,17 +338,13 @@ async def test_multiple_connectors_parallel():
     fda = FDAConnector()
 
     # Run both in parallel
-    results = await asyncio.gather(
-        cpsc.fetch_recent_recalls(), fda.fetch_recent_recalls(), return_exceptions=True
-    )
+    results = await asyncio.gather(cpsc.fetch_recent_recalls(), fda.fetch_recent_recalls(), return_exceptions=True)
 
     cpsc_recalls = results[0] if not isinstance(results[0], Exception) else []
     fda_recalls = results[1] if not isinstance(results[1], Exception) else []
 
     print("✓ Parallel connector test complete")
-    print(
-        f"  CPSC recalls: {len(cpsc_recalls) if isinstance(cpsc_recalls, list) else 0}"
-    )
+    print(f"  CPSC recalls: {len(cpsc_recalls) if isinstance(cpsc_recalls, list) else 0}")
     print(f"  FDA recalls: {len(fda_recalls) if isinstance(fda_recalls, list) else 0}")
 
 

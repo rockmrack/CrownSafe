@@ -25,45 +25,27 @@ def _agent():
 
 
 def test_pregnancy():
-    assert (
-        _agent().classify_intent("Is this safe in second trimester?")
-        == "pregnancy_risk"
-    )
+    assert _agent().classify_intent("Is this safe in second trimester?") == "pregnancy_risk"
 
 
 def test_allergy():
-    assert (
-        _agent().classify_intent("My son has a peanut allergy, is this ok?")
-        == "allergy_question"
-    )
+    assert _agent().classify_intent("My son has a peanut allergy, is this ok?") == "allergy_question"
 
 
 def test_ingredients():
-    assert (
-        _agent().classify_intent("What ingredients does it contain?")
-        == "ingredient_info"
-    )
+    assert _agent().classify_intent("What ingredients does it contain?") == "ingredient_info"
 
 
 def test_age():
-    assert (
-        _agent().classify_intent("Is it suitable for a 3-month-old?")
-        == "age_appropriateness"
-    )
+    assert _agent().classify_intent("Is it suitable for a 3-month-old?") == "age_appropriateness"
 
 
 def test_alternatives():
-    assert (
-        _agent().classify_intent("Any safer alternatives you recommend?")
-        == "alternative_products"
-    )
+    assert _agent().classify_intent("Any safer alternatives you recommend?") == "alternative_products"
 
 
 def test_recall():
-    assert (
-        _agent().classify_intent("Show recall details for this batch")
-        == "recall_details"
-    )
+    assert _agent().classify_intent("Show recall details for this batch") == "recall_details"
 
 
 def test_heuristic_variants():

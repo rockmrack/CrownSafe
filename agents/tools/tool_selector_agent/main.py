@@ -50,9 +50,7 @@ ROUTER_URL = os.getenv("MCP_ROUTER_URL", "ws://127.0.0.1:8001")
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
 # --- Logging Setup ---
-logging.basicConfig(
-    level=LOG_LEVEL, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=LOG_LEVEL, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(AGENT_ID)
 
 # Global variable for the client instance to be accessed by signal handler
@@ -71,20 +69,14 @@ async def handle_incoming_message(client_ref: MCPClient, message: MCPMessage):
             if hasattr(message, "mcp_header")
             else message.get("mcp_header", {}).get("message_type")
         )
-        payload = (
-            message.payload
-            if hasattr(message, "payload")
-            else message.get("payload", {})
-        )
+        payload = message.payload if hasattr(message, "payload") else message.get("payload", {})
 
         logger.debug(f"Received message: Type={message_type}, Payload={payload}")
         try:
             # ToolSelector might receive TASK_ASSIGN to select a tool/agent,
             # and potentially DISCOVERY_RESPONSE if it queries capabilities itself.
             # Delegate all processing to the logic class.
-            response_payload = await tool_selector_logic_instance.process_message(
-                message_type, payload
-            )
+            response_payload = await tool_selector_logic_instance.process_message(message_type, payload)
 
             # If logic returns a response payload (e.g., TASK_COMPLETE/FAIL for the selection task)
             if response_payload:
@@ -105,18 +97,14 @@ async def handle_incoming_message(client_ref: MCPClient, message: MCPMessage):
                         payload=response_payload,
                         target_agent_id=original_requester_id,
                     )
-                    logger.info(
-                        f"Sent {response_type} response for CorrID: {correlation_id}"
-                    )
+                    logger.info(f"Sent {response_type} response for CorrID: {correlation_id}")
                 else:
                     logger.warning(
                         f"Cannot send {response_type}: Missing correlation_id or original_requester_id in incoming message payload."
                     )
 
         except Exception as e:
-            logger.error(
-                f"Error processing message (Type: {message_type}): {e}", exc_info=True
-            )
+            logger.error(f"Error processing message (Type: {message_type}): {e}", exc_info=True)
     else:
         logger.error("ToolSelectorLogic instance not available for message handling.")
 
@@ -138,9 +126,7 @@ async def main():
     mcp_client_instance = client  # Store instance for signal handler
 
     # Initialize the agent's core logic, passing the client instance
-    tool_selector_logic = ToolSelectorLogic(
-        agent_id=AGENT_ID, mcp_client=client, logger=logger
-    )
+    tool_selector_logic = ToolSelectorLogic(agent_id=AGENT_ID, mcp_client=client, logger=logger)
     tool_selector_logic_instance = tool_selector_logic  # Store instance
 
     # --- Graceful Shutdown Handling ---
@@ -160,18 +146,14 @@ async def main():
     # --- Connection and Run Loop ---
     try:
         await client.connect()  # Connects and automatically registers
-        logger.info(
-            f"{AGENT_ID} connected and registered. Waiting for tasks or shutdown signal..."
-        )
+        logger.info(f"{AGENT_ID} connected and registered. Waiting for tasks or shutdown signal...")
         await stop_event.wait()  # Keep running
 
     except MCPConnectionError as e:
         logger.critical(f"Initial connection failed: {e}. Agent cannot start.")
         return
     except Exception as e:
-        logger.critical(
-            f"An unexpected error occurred during agent runtime: {e}", exc_info=True
-        )
+        logger.critical(f"An unexpected error occurred during agent runtime: {e}", exc_info=True)
     finally:
         logger.info(f"Shutting down {AGENT_ID}...")
         if client and client.is_connected:

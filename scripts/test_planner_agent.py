@@ -14,9 +14,7 @@ sys.path.insert(0, str(project_root))
 from agents.planning.planner_agent.agent_logic import MemoryAugmentedPlannerLogic
 
 # Configure logging with more detail
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -62,9 +60,7 @@ def fix_template_file():
         # Check if template needs fixing
         template_str = json.dumps(template_data)
         if '"none"' in template_str or '"none "' in template_str:
-            print_info(
-                "Fixing template file - replacing 'none' with proper placeholders..."
-            )
+            print_info("Fixing template file - replacing 'none' with proper placeholders...")
 
             # Create proper template
             fixed_template = {
@@ -85,9 +81,7 @@ def fix_template_file():
                         "task_description": "Retrieve relevant clinical guidelines.",
                         "agent_capability_required": "query_guidelines",
                         "target_agent_type": "GuidelineAgent",
-                        "inputs": {
-                            "topic": "Guidelines for {drug_name} in treating {condition_name}"
-                        },
+                        "inputs": {"topic": "Guidelines for {drug_name} in treating {condition_name}"},
                         "dependencies": [],
                         "priority": "high",
                     },
@@ -156,21 +150,15 @@ def test_template_based_planning(logic: MemoryAugmentedPlannerLogic):
     print_info(f"Plan generated in {elapsed_time:.0f}ms")
 
     # Validate result
-    assert (
-        result["status"] == "COMPLETED"
-    ), f"Expected COMPLETED, got {result['status']}"
+    assert result["status"] == "COMPLETED", f"Expected COMPLETED, got {result['status']}"
     assert result.get("template_based"), "Expected template_based flag"
-    assert (
-        result.get("template_name") == "prior_auth_plan_template"
-    ), "Wrong template name"
+    assert result.get("template_name") == "prior_auth_plan_template", "Wrong template name"
 
     plan = result["plan"]
 
     # Validate plan structure
     required_fields = ["plan_id", "plan_name", "steps", "created_timestamp"]
-    assert validate_plan_structure(
-        plan, required_fields
-    ), "Plan structure validation failed"
+    assert validate_plan_structure(plan, required_fields), "Plan structure validation failed"
 
     # Verify step count (should be 4 for prior auth template)
     assert len(plan["steps"]) == 4, f"Expected 4 steps, got {len(plan['steps'])}"
@@ -179,38 +167,38 @@ def test_template_based_planning(logic: MemoryAugmentedPlannerLogic):
     # Verify placeholder substitution in all steps
     # Step 1 - patient data
     step1 = plan["steps"][0]
-    assert (
-        step1["inputs"]["patient_id"] == "patient-001"
-    ), f"Step 1: Expected patient_id 'patient-001', got {step1['inputs'].get('patient_id')}"
+    assert step1["inputs"]["patient_id"] == "patient-001", (
+        f"Step 1: Expected patient_id 'patient-001', got {step1['inputs'].get('patient_id')}"
+    )
 
     # Step 2 - guidelines
     step2 = plan["steps"][1]
     expected_topic = "Guidelines for Empagliflozin in treating Heart Failure"
-    assert (
-        step2["inputs"]["topic"] == expected_topic
-    ), f"Step 2: Expected topic '{expected_topic}', got {step2['inputs'].get('topic')}"
+    assert step2["inputs"]["topic"] == expected_topic, (
+        f"Step 2: Expected topic '{expected_topic}', got {step2['inputs'].get('topic')}"
+    )
 
     # Step 3 - policy
     step3 = plan["steps"][2]
-    assert (
-        step3["inputs"]["drug_name"] == "Empagliflozin"
-    ), f"Step 3: Expected drug_name 'Empagliflozin', got {step3['inputs'].get('drug_name')}"
-    assert (
-        step3["inputs"]["insurer_id"] == "UHC-123"
-    ), f"Step 3: Expected insurer_id 'UHC-123', got {step3['inputs'].get('insurer_id')}"
+    assert step3["inputs"]["drug_name"] == "Empagliflozin", (
+        f"Step 3: Expected drug_name 'Empagliflozin', got {step3['inputs'].get('drug_name')}"
+    )
+    assert step3["inputs"]["insurer_id"] == "UHC-123", (
+        f"Step 3: Expected insurer_id 'UHC-123', got {step3['inputs'].get('insurer_id')}"
+    )
 
     # Step 4 - final prediction
     final_step = plan["steps"][3]
     assert final_step["step_id"] == "step4_predict_approval"
-    assert (
-        final_step["inputs"]["patient_id"] == "patient-001"
-    ), f"Step 4: Expected patient_id 'patient-001', got {final_step['inputs'].get('patient_id')}"
-    assert (
-        final_step["inputs"]["drug_name"] == "Empagliflozin"
-    ), f"Step 4: Expected drug_name 'Empagliflozin', got {final_step['inputs'].get('drug_name')}"
-    assert (
-        final_step["inputs"]["insurer_id"] == "UHC-123"
-    ), f"Step 4: Expected insurer_id 'UHC-123', got {final_step['inputs'].get('insurer_id')}"
+    assert final_step["inputs"]["patient_id"] == "patient-001", (
+        f"Step 4: Expected patient_id 'patient-001', got {final_step['inputs'].get('patient_id')}"
+    )
+    assert final_step["inputs"]["drug_name"] == "Empagliflozin", (
+        f"Step 4: Expected drug_name 'Empagliflozin', got {final_step['inputs'].get('drug_name')}"
+    )
+    assert final_step["inputs"]["insurer_id"] == "UHC-123", (
+        f"Step 4: Expected insurer_id 'UHC-123', got {final_step['inputs'].get('insurer_id')}"
+    )
 
     print_success("All placeholders correctly substituted in plan")
 
@@ -223,9 +211,7 @@ def test_template_based_planning(logic: MemoryAugmentedPlannerLogic):
     # Display substituted values
     print_info("Substituted Values:")
     for i, step in enumerate(plan["steps"], 1):
-        print(
-            f"   Step {i}: {json.dumps(step['inputs'], indent=0).replace(chr(10), ' ')}"
-        )
+        print(f"   Step {i}: {json.dumps(step['inputs'], indent=0).replace(chr(10), ' ')}")
 
     print_success("Template-based planning test passed!")
 
@@ -272,42 +258,36 @@ def test_memory_augmented_planning(logic: MemoryAugmentedPlannerLogic):
         print_info(f"Plan generated in {elapsed_time:.0f}ms")
 
         # Validate result
-        assert (
-            result["status"] == "COMPLETED"
-        ), f"Expected COMPLETED, got {result['status']}"
+        assert result["status"] == "COMPLETED", f"Expected COMPLETED, got {result['status']}"
 
         plan = result["plan"]
 
         # Validate extracted entities
         entities = plan.get("extracted_entities", {})
         if research_task["expected_drug"]:
-            assert (
-                entities.get("primary_drug") == research_task["expected_drug"]
-            ), f"Expected drug {research_task['expected_drug']}, got {entities.get('primary_drug')}"
+            assert entities.get("primary_drug") == research_task["expected_drug"], (
+                f"Expected drug {research_task['expected_drug']}, got {entities.get('primary_drug')}"
+            )
             print_success(f"Correctly extracted drug: {entities.get('primary_drug')}")
 
         if research_task["expected_disease"]:
-            assert (
-                entities.get("primary_disease") == research_task["expected_disease"]
-            ), f"Expected disease {research_task['expected_disease']}, got {entities.get('primary_disease')}"
-            print_success(
-                f"Correctly extracted disease: {entities.get('primary_disease')}"
+            assert entities.get("primary_disease") == research_task["expected_disease"], (
+                f"Expected disease {research_task['expected_disease']}, got {entities.get('primary_disease')}"
             )
+            print_success(f"Correctly extracted disease: {entities.get('primary_disease')}")
 
         # Validate drug class identification
         if entities.get("drug_class"):
-            assert (
-                entities.get("drug_class") == research_task["expected_drug_class"]
-            ), f"Expected drug class {research_task['expected_drug_class']}, got {entities.get('drug_class')}"
-            print_success(
-                f"Correctly identified drug class: {entities.get('drug_class')}"
+            assert entities.get("drug_class") == research_task["expected_drug_class"], (
+                f"Expected drug class {research_task['expected_drug_class']}, got {entities.get('drug_class')}"
             )
+            print_success(f"Correctly identified drug class: {entities.get('drug_class')}")
 
         # Validate research strategy
         strategy = plan.get("research_strategy", "unknown")
-        assert (
-            strategy in research_task["expected_strategy"]
-        ), f"Expected strategy in {research_task['expected_strategy']}, got {strategy}"
+        assert strategy in research_task["expected_strategy"], (
+            f"Expected strategy in {research_task['expected_strategy']}, got {strategy}"
+        )
         print_success(f"Applied research strategy: {strategy}")
 
         # Validate plan steps
@@ -317,9 +297,7 @@ def test_memory_augmented_planning(logic: MemoryAugmentedPlannerLogic):
         if result.get("memory_augmented"):
             print_info("Memory augmentation was used")
             if plan.get("drug_intelligence"):
-                print_info(
-                    f"Drug intelligence: {json.dumps(plan['drug_intelligence'], indent=2)}"
-                )
+                print_info(f"Drug intelligence: {json.dumps(plan['drug_intelligence'], indent=2)}")
 
         print_success(f"Research planning test {i} passed!")
 
@@ -362,9 +340,7 @@ def test_edge_cases(logic: MemoryAugmentedPlannerLogic):
     print_success(f"Extracted drugs: {entities.get('drugs', [])}")
 
     # Should extract multiple diseases
-    assert (
-        len(entities.get("diseases", [])) >= 2
-    ), "Expected multiple diseases extracted"
+    assert len(entities.get("diseases", [])) >= 2, "Expected multiple diseases extracted"
     print_success(f"Extracted diseases: {entities.get('diseases', [])}")
 
 
@@ -389,9 +365,9 @@ def test_fallback_planning(logic: MemoryAugmentedPlannerLogic):
 
     # Verify plan structure regardless
     assert len(plan["steps"]) == 4, f"Expected 4 steps, got {len(plan['steps'])}"
-    assert all(
-        step.get("agent_capability_required") for step in plan["steps"]
-    ), "All steps should have required capabilities"
+    assert all(step.get("agent_capability_required") for step in plan["steps"]), (
+        "All steps should have required capabilities"
+    )
 
     print_success("Fallback planning test passed!")
 
@@ -401,9 +377,7 @@ def test_plan_validation(logic: MemoryAugmentedPlannerLogic):
     print_section("Test 5: Plan Structure Validation")
 
     # Generate a plan
-    result = logic.process_task(
-        {"goal": "Research lisinopril for hypertension treatment"}
-    )
+    result = logic.process_task({"goal": "Research lisinopril for hypertension treatment"})
 
     assert result["status"] == "COMPLETED", "Expected COMPLETED status"
     plan = result["plan"]
@@ -486,9 +460,7 @@ def run_all_tests():
     fix_template_file()
 
     # Initialize the planner
-    logic = MemoryAugmentedPlannerLogic(
-        agent_id="test_planner_agent_01", logger_instance=logger
-    )
+    logic = MemoryAugmentedPlannerLogic(agent_id="test_planner_agent_01", logger_instance=logger)
 
     # Check initialization
     print_info(f"Planner initialized with agent_id: {logic.agent_id}")
@@ -538,9 +510,7 @@ def run_all_tests():
     print(f"Failed: {failed_tests} ❌")
 
     if failed_tests == 0:
-        print(
-            "\n🎉 ALL TESTS PASSED! The Enhanced Planner Agent is ready for production!"
-        )
+        print("\n🎉 ALL TESTS PASSED! The Enhanced Planner Agent is ready for production!")
         print("   Features validated:")
         print("   ✓ Template-based planning for prior authorization")
         print("   ✓ Memory-augmented planning with drug intelligence")

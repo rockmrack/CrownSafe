@@ -29,9 +29,7 @@ class TestEmergencyDetection:
 
         for phrase in emergency_phrases:
             assert looks_emergency(phrase), f"Should detect emergency in: {phrase}"
-            assert looks_emergency(
-                phrase.upper()
-            ), f"Should detect emergency (uppercase) in: {phrase}"
+            assert looks_emergency(phrase.upper()), f"Should detect emergency (uppercase) in: {phrase}"
 
     def test_non_emergency_phrases(self):
         # Test negative cases
@@ -46,9 +44,7 @@ class TestEmergencyDetection:
         ]
 
         for phrase in normal_phrases:
-            assert not looks_emergency(
-                phrase
-            ), f"Should NOT detect emergency in: {phrase}"
+            assert not looks_emergency(phrase), f"Should NOT detect emergency in: {phrase}"
 
     def test_emergency_terms_completeness(self):
         # Ensure we have comprehensive coverage
@@ -74,9 +70,7 @@ class TestEmergencyDetection:
 
         # All expected terms should be in EMERGENCY_TERMS
         for term in expected_terms:
-            assert any(
-                term in emergency_term for emergency_term in EMERGENCY_TERMS
-            ), f"Missing emergency term: {term}"
+            assert any(term in emergency_term for emergency_term in EMERGENCY_TERMS), f"Missing emergency term: {term}"
 
     def test_empty_or_none_input(self):
         assert not looks_emergency("")
@@ -132,9 +126,7 @@ class TestSuggestedQuestions:
     def test_unique_questions_only(self):
         # Test that duplicate questions are removed
         questions = build_suggested_questions("cheese", {"is_pregnant": True})
-        assert len(questions) == len(
-            set(questions)
-        ), "Should not have duplicate questions"
+        assert len(questions) == len(set(questions)), "Should not have duplicate questions"
 
     def test_max_four_questions(self):
         # Even with profile additions, should not exceed 4
@@ -189,10 +181,7 @@ class TestEmergencyEndToEnd:
         # Should have emergency block
         assert "emergency" in body["message"]
         assert body["message"]["emergency"]["level"] == "red"
-        assert (
-            body["message"]["emergency"]["reason"]
-            == "Possible urgent situation reported."
-        )
+        assert body["message"]["emergency"]["reason"] == "Possible urgent situation reported."
         assert body["message"]["emergency"]["cta"] == "Open Emergency Guidance"
 
     @patch("api.routers.chat.get_llm_client")

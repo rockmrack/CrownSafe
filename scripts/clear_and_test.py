@@ -49,6 +49,4 @@ if response.status_code == 202:
             # Check first message
             msg = r.lindex("mcp:queue:commander_agent_01", 0)
             msg_data = json.loads(msg)
-            print(
-                f"First message type: {msg_data.get('mcp_header', {}).get('message_type')}"
-            )
+            print(f"First message type: {msg_data.get('mcp_header', {}).get('message_type')}")

@@ -11,9 +11,7 @@ from core_infra.mcp_client_library.models import MCPMessage
 from .agent_logic import PatientDataAgentLogic
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "patient_data_agent_01"
@@ -27,9 +25,7 @@ class PatientDataAgent:
         self.agent_id = AGENT_ID
         self.agent_name = AGENT_NAME
         self.agent_type = AGENT_TYPE
-        self.logic = PatientDataAgentLogic(
-            agent_id=self.agent_id, logger_instance=logger
-        )
+        self.logic = PatientDataAgentLogic(agent_id=self.agent_id, logger_instance=logger)
 
         # Define capabilities for discovery service
         self.capabilities = [
@@ -333,9 +329,7 @@ class PatientDataAgent:
 
             logger.info(f"{self.agent_name} started successfully")
             logger.info(f"Loaded {len(self.logic.patient_records)} patient records")
-            logger.info(
-                f"Audit logging: {'Enabled' if self.logic.privacy_config['audit_all_access'] else 'Disabled'}"
-            )
+            logger.info(f"Audit logging: {'Enabled' if self.logic.privacy_config['audit_all_access'] else 'Disabled'}")
 
             # Keep running until stopped
             while self.running:
@@ -398,9 +392,7 @@ if __name__ == "__main__":
         test_agent = PatientDataAgent()
 
         # Test patient retrieval
-        test_result = test_agent.logic.process_task(
-            {"task_name": "get_patient_record", "patient_id": "patient-001"}
-        )
+        test_result = test_agent.logic.process_task({"task_name": "get_patient_record", "patient_id": "patient-001"})
         logger.info(f"Patient retrieval test: {json.dumps(test_result, indent=2)}")
 
         # Test patient search

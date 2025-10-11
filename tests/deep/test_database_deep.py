@@ -90,9 +90,7 @@ class TestDatabaseDeep:
         """Test handling of database connection errors"""
         # This test verifies the error handling doesn't crash
         try:
-            invalid_engine = create_engine(
-                "postgresql://invalid:invalid@localhost:9999/invalid"
-            )
+            invalid_engine = create_engine("postgresql://invalid:invalid@localhost:9999/invalid")
             Session = sessionmaker(bind=invalid_engine)
             session = Session()
             # Try to query - should fail gracefully
@@ -193,9 +191,7 @@ class TestDatabaseDeep:
 
         try:
             unicode_str = "测试 тест اختبار"
-            result = db.execute(
-                text("SELECT :unicode_val as unicode_col"), {"unicode_val": unicode_str}
-            )
+            result = db.execute(text("SELECT :unicode_val as unicode_col"), {"unicode_val": unicode_str})
             row = result.first()
             assert row[0] == unicode_str
         finally:

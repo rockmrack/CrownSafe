@@ -27,9 +27,7 @@ class TestSQLInjection:
         ]
 
         for query in malicious_queries:
-            response = client.post(
-                "/api/v1/search", headers=headers, json={"query": query}
-            )
+            response = client.post("/api/v1/search", headers=headers, json={"query": query})
             # Should either reject or safely sanitize
             assert response.status_code in [400, 200]
             if response.status_code == 200:
@@ -74,9 +72,7 @@ class TestXSSProtection:
         ]
 
         for payload in xss_payloads:
-            response = client.post(
-                "/api/v1/product", headers=headers, json={"name": payload}
-            )
+            response = client.post("/api/v1/product", headers=headers, json={"name": payload})
             # Should sanitize or reject
             if response.status_code == 200:
                 assert "<script>" not in response.json().get("name", "")
@@ -171,9 +167,7 @@ class TestAuthorization:
         response = client.get(f"/api/v1/user/{user2_id}/profile", headers=headers)
         assert response.status_code == 403
 
-    def test_regular_user_cannot_access_admin_endpoints(
-        self, client, regular_user_token
-    ):
+    def test_regular_user_cannot_access_admin_endpoints(self, client, regular_user_token):
         """
         Test admin endpoint protection.
 

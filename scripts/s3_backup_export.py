@@ -15,9 +15,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -87,13 +85,9 @@ class S3BackupExporter:
             task_id = f"export-{db_instance}-{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}"
 
             # S3 prefix for organization
-            s3_prefix = (
-                f"rds-exports/{datetime.datetime.now().strftime('%Y/%m/%d')}/{task_id}/"
-            )
+            s3_prefix = f"rds-exports/{datetime.datetime.now().strftime('%Y/%m/%d')}/{task_id}/"
 
-            logger.info(
-                f"Starting export of {snapshot_id} to s3://{self.bucket_name}/{s3_prefix}"
-            )
+            logger.info(f"Starting export of {snapshot_id} to s3://{self.bucket_name}/{s3_prefix}")
 
             # Start export task
             params = {
@@ -198,9 +192,7 @@ class S3BackupExporter:
             if not task:
                 return False, None
 
-            logger.info(
-                f"Export status: {task.status.value} ({task.percent_progress}% complete)"
-            )
+            logger.info(f"Export status: {task.status.value} ({task.percent_progress}% complete)")
 
             if task.status == ExportStatus.COMPLETE:
                 logger.info("Export completed successfully!")
@@ -231,9 +223,7 @@ class S3BackupExporter:
             bucket, prefix = task.s3_location.replace("s3://", "").split("/", 1)
 
             # List objects in export location
-            response = self.s3.list_objects_v2(
-                Bucket=bucket, Prefix=prefix, MaxKeys=100
-            )
+            response = self.s3.list_objects_v2(Bucket=bucket, Prefix=prefix, MaxKeys=100)
 
             if "Contents" not in response:
                 logger.error("No files found in export location")
@@ -279,9 +269,7 @@ class S3BackupExporter:
         """Clean up old exports from S3"""
 
         try:
-            cutoff_date = datetime.datetime.now() - datetime.timedelta(
-                days=days_to_keep
-            )
+            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=days_to_keep)
 
             # List all exports
             paginator = self.s3.get_paginator("list_objects_v2")
@@ -322,9 +310,7 @@ class S3BackupExporter:
             return
 
         try:
-            response = self.s3.delete_objects(
-                Bucket=self.bucket_name, Delete={"Objects": objects}
-            )
+            response = self.s3.delete_objects(Bucket=self.bucket_name, Delete={"Objects": objects})
 
             if "Errors" in response:
                 for error in response["Errors"]:
@@ -362,9 +348,7 @@ class S3BackupExporter:
 
                     # Calculate duration
                     if task.get("TaskStartTime") and task.get("TaskEndTime"):
-                        duration = (
-                            task["TaskEndTime"] - task["TaskStartTime"]
-                        ).total_seconds() / 60
+                        duration = (task["TaskEndTime"] - task["TaskStartTime"]).total_seconds() / 60
                         durations.append(duration)
 
                 elif status == "FAILED":
@@ -379,9 +363,7 @@ class S3BackupExporter:
                         "status": status,
                         "progress": task.get("PercentProgress", 0),
                         "size_gb": task.get("TotalExtractedDataInGB", 0),
-                        "start_time": task.get("TaskStartTime").isoformat()
-                        if task.get("TaskStartTime")
-                        else None,
+                        "start_time": task.get("TaskStartTime").isoformat() if task.get("TaskStartTime") else None,
                     }
                 )
 
@@ -420,9 +402,7 @@ class S3BackupExporter:
             # Calculate duration
             duration_minutes = 0
             if task.start_time and task.end_time:
-                duration_minutes = (
-                    task.end_time - task.start_time
-                ).total_seconds() / 60
+                duration_minutes = (task.end_time - task.start_time).total_seconds() / 60
 
             self.cloudwatch.put_metric_data(
                 Namespace="BabyShield/Backups",
@@ -481,11 +461,7 @@ def main():
     exporter = S3BackupExporter()
 
     # Get export configuration
-    tables_to_export = (
-        os.environ.get("EXPORT_TABLES", "").split(",")
-        if os.environ.get("EXPORT_TABLES")
-        else None
-    )
+    tables_to_export = os.environ.get("EXPORT_TABLES", "").split(",") if os.environ.get("EXPORT_TABLES") else None
 
     # Start export
     task_id = exporter.export_latest_snapshot(tables=tables_to_export)

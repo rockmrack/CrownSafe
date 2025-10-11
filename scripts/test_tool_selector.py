@@ -34,9 +34,7 @@ except ImportError as e:
     sys.exit(1)
 
 # --- Configuration ---
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logging.getLogger("websockets.client").setLevel(logging.WARNING)
 logger = logging.getLogger("TestToolSelectorScript")
 
@@ -78,9 +76,7 @@ async def handle_controller_message(message: Dict[str, Any]):
                 f"Received TASK_ACKNOWLEDGE for tool selection task (CorrID: {correlation_id}), Status: {payload.get('status')}"
             )
         else:
-            logger.debug(
-                f"Received other message type {message_type} with matching correlation ID."
-            )
+            logger.debug(f"Received other message type {message_type} with matching correlation ID.")
     else:
         logger.debug(
             f"Received message with non-matching correlation ID: {correlation_id} (Expected: {task_correlation_id})"
@@ -96,9 +92,7 @@ async def run_tool_selection():
     global task_result, task_completion_event, task_correlation_id
     logger.info(f"Instantiating MCPClient for controller: {CONTROLLER_AGENT_ID}")
 
-    client = MCPClient(
-        agent_id=CONTROLLER_AGENT_ID, message_handler=handle_controller_message
-    )
+    client = MCPClient(agent_id=CONTROLLER_AGENT_ID, message_handler=handle_controller_message)
 
     subtask_id_to_send = str(uuid.uuid4())  # ID for the tool selection task itself
     task_correlation_id = str(uuid.uuid4())  # Correlation ID for this request
@@ -142,30 +136,17 @@ async def run_tool_selection():
         await client.send_message(task_message)
         logger.info("Tool selection request message sent.")
 
-        logger.info(
-            f"Waiting up to {TASK_TIMEOUT_SECONDS} seconds for TOOL_SELECTOR task completion..."
-        )
+        logger.info(f"Waiting up to {TASK_TIMEOUT_SECONDS} seconds for TOOL_SELECTOR task completion...")
         try:
-            await asyncio.wait_for(
-                task_completion_event.wait(), timeout=TASK_TIMEOUT_SECONDS
-            )
+            await asyncio.wait_for(task_completion_event.wait(), timeout=TASK_TIMEOUT_SECONDS)
             logger.info("ToolSelector task completion event received.")
             if task_result:
-                logger.info(
-                    f"Final TOOL_SELECTOR Task Result Message: {json.dumps(task_result, indent=2)}"
-                )
-                if (
-                    task_result.get("mcp_header", {}).get("message_type")
-                    == "TASK_COMPLETE"
-                ):
+                logger.info(f"Final TOOL_SELECTOR Task Result Message: {json.dumps(task_result, indent=2)}")
+                if task_result.get("mcp_header", {}).get("message_type") == "TASK_COMPLETE":
                     output_data = task_result.get("payload", {}).get("output_data", {})
                     if output_data.get("status") == "DELEGATED":
-                        logger.info(
-                            f"ToolSelector successfully delegated task to: {output_data.get('tool_used')}"
-                        )
-                        logger.info(
-                            "Observe RouterAgent and WebResearchAgent logs for subtask execution..."
-                        )
+                        logger.info(f"ToolSelector successfully delegated task to: {output_data.get('tool_used')}")
+                        logger.info("Observe RouterAgent and WebResearchAgent logs for subtask execution...")
                         await asyncio.sleep(10)  # Wait to observe subtask execution
                     else:
                         logger.warning(
@@ -174,9 +155,7 @@ async def run_tool_selection():
                 else:
                     logger.error("ToolSelector task failed.")
             else:
-                logger.error(
-                    "Completion event received, but no result was stored for tool selector task."
-                )
+                logger.error("Completion event received, but no result was stored for tool selector task.")
 
         except asyncio.TimeoutError:
             logger.error(
@@ -211,9 +190,7 @@ if __name__ == "__main__":
     expected_dir_name = "RossNetAgents"
     current_working_dir = os.path.basename(os.getcwd())
     if current_working_dir != expected_dir_name:
-        print(
-            f"\nERROR: This script must be run from the '{expected_dir_name}' directory."
-        )
+        print(f"\nERROR: This script must be run from the '{expected_dir_name}' directory.")
         print(f"       Current directory: '{os.getcwd()}'")
         sys.exit(1)
 

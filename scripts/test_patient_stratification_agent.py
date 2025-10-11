@@ -17,9 +17,7 @@ from agents.patient_stratification_agent.agent_logic import (
 )
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # Try to import nest_asyncio for event loop handling
@@ -29,9 +27,7 @@ try:
     nest_asyncio.apply()
     logger.info("nest_asyncio applied successfully")
 except ImportError:
-    logger.warning(
-        "nest_asyncio not available - install with: pip install nest-asyncio"
-    )
+    logger.warning("nest_asyncio not available - install with: pip install nest-asyncio")
 
 
 def normalize_decision(decision_value: Any) -> str:
@@ -69,9 +65,7 @@ def setup_event_loop():
                 nest_asyncio.apply()
                 logger.info("Applied nest_asyncio to handle nested loops")
             except ImportError:
-                logger.warning(
-                    "Consider installing nest_asyncio for better async handling"
-                )
+                logger.warning("Consider installing nest_asyncio for better async handling")
     except RuntimeError:
         logger.info("No event loop running, creating new one")
         loop = asyncio.new_event_loop()
@@ -114,9 +108,7 @@ async def test_stratification_agent():
             print("\n📊 DECISION SUMMARY:")
             print(f"   • Decision: {normalized_decision}")
             print(f"   • Approval Likelihood: {prediction['approval_likelihood']}%")
-            print(
-                f"   • Confidence: {prediction['confidence_score']:.2f} ({prediction['confidence_level']})"
-            )
+            print(f"   • Confidence: {prediction['confidence_score']:.2f} ({prediction['confidence_level']})")
             print(f"   • Processing Time: {prediction['processing_time_ms']}ms")
             print(f"   • LLM Tokens Used: {prediction['llm_tokens_used']}")
 
@@ -147,12 +139,12 @@ async def test_stratification_agent():
                     print(f"   • {rec}")
 
             # Validate expected outcome
-            assert (
-                normalized_decision == DecisionType.APPROVE.value
-            ), f"Expected {DecisionType.APPROVE.value}, got {normalized_decision}"
-            assert (
-                prediction["approval_likelihood"] > 70
-            ), f"Expected high likelihood, got {prediction['approval_likelihood']}%"
+            assert normalized_decision == DecisionType.APPROVE.value, (
+                f"Expected {DecisionType.APPROVE.value}, got {normalized_decision}"
+            )
+            assert prediction["approval_likelihood"] > 70, (
+                f"Expected high likelihood, got {prediction['approval_likelihood']}%"
+            )
 
             print("\n✅ Test 1 PASSED - Patient correctly identified for APPROVAL")
 
@@ -187,17 +179,13 @@ async def test_stratification_agent():
             print("\n📊 DECISION SUMMARY:")
             print(f"   • Decision: {normalized_decision}")
             print(f"   • Approval Likelihood: {prediction['approval_likelihood']}%")
-            print(
-                f"   • Confidence: {prediction['confidence_score']:.2f} ({prediction['confidence_level']})"
-            )
+            print(f"   • Confidence: {prediction['confidence_score']:.2f} ({prediction['confidence_level']})")
 
             print("\n📝 CLINICAL RATIONALE:")
             print(f"   {prediction['clinical_rationale']}")
 
             if prediction.get("identified_gaps"):
-                print(
-                    f"\n🚫 IDENTIFIED GAPS ({len(prediction['identified_gaps'])} items):"
-                )
+                print(f"\n🚫 IDENTIFIED GAPS ({len(prediction['identified_gaps'])} items):")
                 for gap in prediction["identified_gaps"]:
                     print(f"   • {gap}")
 
@@ -209,12 +197,12 @@ async def test_stratification_agent():
                     )
 
             # Validate expected outcome
-            assert (
-                normalized_decision == DecisionType.DENY.value
-            ), f"Expected {DecisionType.DENY.value}, got {normalized_decision}"
-            assert (
-                prediction["approval_likelihood"] < 30
-            ), f"Expected low likelihood, got {prediction['approval_likelihood']}%"
+            assert normalized_decision == DecisionType.DENY.value, (
+                f"Expected {DecisionType.DENY.value}, got {normalized_decision}"
+            )
+            assert prediction["approval_likelihood"] < 30, (
+                f"Expected low likelihood, got {prediction['approval_likelihood']}%"
+            )
 
             print("\n✅ Test 2 PASSED - Patient correctly identified for DENIAL")
 
@@ -273,9 +261,7 @@ async def test_stratification_agent():
 
     # Second call - should be fast (cached)
     start_time = time.time()
-    result2 = await logic.predict_approval_likelihood(
-        "patient-001", "Empagliflozin", "UHC"
-    )
+    result2 = await logic.predict_approval_likelihood("patient-001", "Empagliflozin", "UHC")
     second_call_time = (time.time() - start_time) * 1000
 
     print(f"\n   • First call time: {first_call_time:.0f}ms")
@@ -289,9 +275,7 @@ async def test_stratification_agent():
         print("   • Speed improvement: Instant (0ms)")
 
     assert result2.get("source") == "cache", "Second call should be from cache"
-    assert (
-        second_call_time < first_call_time / 2 or second_call_time == 0
-    ), "Cached call should be significantly faster"
+    assert second_call_time < first_call_time / 2 or second_call_time == 0, "Cached call should be significantly faster"
 
     print("\n✅ Test 4 PASSED - Caching working correctly")
 
@@ -313,17 +297,14 @@ async def test_stratification_agent():
 
         if result["status"] == "success":
             print("\n✅ URGENT request processed successfully")
-            print(
-                f"   • Processing time: {result['prediction']['processing_time_ms']}ms"
-            )
+            print(f"   • Processing time: {result['prediction']['processing_time_ms']}ms")
 
             # Check if urgency was considered in evidence
             evidence_items = result["prediction"]["evidence_items"]
             urgency_evidence = [
                 e
                 for e in evidence_items
-                if "urgency" in e.get("type", "").lower()
-                or "urgent" in e.get("content", "").lower()
+                if "urgency" in e.get("type", "").lower() or "urgent" in e.get("content", "").lower()
             ]
 
             if urgency_evidence:

@@ -9,9 +9,7 @@ import json
 from agents.drugbank_agent.agent_logic import DrugBankAgentLogic
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 
 def test_drugbank_agent():
@@ -22,9 +20,7 @@ def test_drugbank_agent():
 
     print("\n1. Testing Drug ID lookup through drug_info task...")
     # Test drug info retrieval
-    result = logic.process_task(
-        {"task_name": "drug_info", "drug_name": "empagliflozin"}
-    )
+    result = logic.process_task({"task_name": "drug_info", "drug_name": "empagliflozin"})
 
     if result["status"] == "COMPLETED":
         drug_info = result.get("drug_info", {})
@@ -37,9 +33,7 @@ def test_drugbank_agent():
 
     print("\n2. Testing drug interactions check...")
     # Test interaction checking
-    result = logic.process_task(
-        {"task_name": "check_interactions", "drug_names": ["warfarin", "aspirin"]}
-    )
+    result = logic.process_task({"task_name": "check_interactions", "drug_names": ["warfarin", "aspirin"]})
 
     if result["status"] == "COMPLETED":
         interactions = result.get("interactions", [])
@@ -56,9 +50,7 @@ def test_drugbank_agent():
 
     print("\n3. Testing drug search by class...")
     # Test search functionality
-    result = logic.process_task(
-        {"task_name": "search_drugs", "query": "SGLT2", "search_type": "class"}
-    )
+    result = logic.process_task({"task_name": "search_drugs", "query": "SGLT2", "search_type": "class"})
 
     if result["status"] == "COMPLETED":
         search_results = result.get("results", [])
@@ -82,9 +74,7 @@ def test_drugbank_agent():
         pa_criteria = result.get("pa_criteria", {})
         print(f"✓ PA Criteria for {pa_criteria.get('drug_name')}:")
         print(f"  Drug Class: {pa_criteria.get('drug_class')}")
-        print(
-            f"  Requested indication approved: {pa_criteria.get('requested_indication_approved', 'Unknown')}"
-        )
+        print(f"  Requested indication approved: {pa_criteria.get('requested_indication_approved', 'Unknown')}")
 
         recommendations = pa_criteria.get("pa_recommendations", [])
         if recommendations:
@@ -96,9 +86,7 @@ def test_drugbank_agent():
 
     print("\n5. Testing error handling with invalid drug...")
     # Test error handling
-    result = logic.process_task(
-        {"task_name": "drug_info", "drug_name": "nonexistent_drug_xyz"}
-    )
+    result = logic.process_task({"task_name": "drug_info", "drug_name": "nonexistent_drug_xyz"})
 
     if result["status"] == "FAILED":
         print(f"✓ Properly handled invalid drug: {result.get('error')}")
@@ -129,9 +117,7 @@ def test_drugbank_agent():
 
     print("\n7. Testing search by indication...")
     # Test search by indication
-    result = logic.process_task(
-        {"task_name": "search_drugs", "query": "diabetes", "search_type": "indication"}
-    )
+    result = logic.process_task({"task_name": "search_drugs", "query": "diabetes", "search_type": "indication"})
 
     if result["status"] == "COMPLETED":
         search_results = result.get("results", [])

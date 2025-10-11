@@ -56,9 +56,7 @@ async def trace_workflow(workflow_id: str):
                     corr_id = msg_data.get("mcp_header", {}).get("correlation_id", "")
                     if workflow_id in corr_id:
                         print("   ✅ Found message with workflow ID!")
-                        print(
-                            f"      Type: {msg_data.get('mcp_header', {}).get('message_type')}"
-                        )
+                        print(f"      Type: {msg_data.get('mcp_header', {}).get('message_type')}")
                 except:
                     pass
 

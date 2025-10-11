@@ -73,10 +73,7 @@ class MockLLMClient:
         user_lower = user.lower()
 
         # Emergency detection
-        if any(
-            word in user_lower
-            for word in ["choking", "swallowed battery", "emergency", "911"]
-        ):
+        if any(word in user_lower for word in ["choking", "swallowed battery", "emergency", "911"]):
             return {
                 "summary": "🚨 EMERGENCY: Call 911 immediately",
                 "reasons": ["This is a life-threatening emergency"],
@@ -126,9 +123,7 @@ class MockLLMClient:
             }
 
         # Age appropriateness
-        if any(
-            word in user_lower for word in ["age", "months", "newborn", "suitable for"]
-        ):
+        if any(word in user_lower for word in ["age", "months", "newborn", "suitable for"]):
             return {
                 "summary": "This product has age recommendations you should follow.",
                 "reasons": [
@@ -249,9 +244,7 @@ def test_03_evidence_item_model():
     """Test 3: EvidenceItem model validation"""
     print("\n[TEST 3] EvidenceItem - Model Validation")
 
-    evidence = EvidenceItem(
-        type="recall", source="CPSC", id="REC-001", url="https://cpsc.gov/recall/001"
-    )
+    evidence = EvidenceItem(type="recall", source="CPSC", id="REC-001", url="https://cpsc.gov/recall/001")
 
     assert evidence.type == "recall"
     assert evidence.source == "CPSC"

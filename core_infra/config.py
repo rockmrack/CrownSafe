@@ -15,9 +15,7 @@ class Config:
     BASE_DIR = Path(__file__).resolve().parent.parent
 
     # Database
-    DATABASE_URL: str = os.getenv(
-        "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/babyshield"
-    )
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/babyshield")
     DATABASE_POOL_SIZE: int = int(os.getenv("DATABASE_POOL_SIZE", "20"))
     DATABASE_MAX_OVERFLOW: int = int(os.getenv("DATABASE_MAX_OVERFLOW", "40"))
 
@@ -32,14 +30,10 @@ class Config:
     DEBUG: bool = os.getenv("DEBUG", "True").lower() == "true"
 
     # Security
-    SECRET_KEY: str = os.getenv(
-        "SECRET_KEY", "dev-secret-key-change-this-in-production"
-    )
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "dev-secret-key-change-this-in-production")
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "dev-jwt-secret-change-this")
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
-    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = int(
-        os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30")
-    )
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
     # AWS Configuration (Optional)
     AWS_ACCESS_KEY_ID: Optional[str] = os.getenv("AWS_ACCESS_KEY_ID")
@@ -54,21 +48,13 @@ class Config:
 
     # Celery
     CELERY_BROKER_URL: str = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/1")
-    CELERY_RESULT_BACKEND: str = os.getenv(
-        "CELERY_RESULT_BACKEND", "redis://localhost:6379/2"
-    )
+    CELERY_RESULT_BACKEND: str = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/2")
 
     # Feature Flags
-    ENABLE_RATE_LIMITING: bool = (
-        os.getenv("ENABLE_RATE_LIMITING", "False").lower() == "true"
-    )
-    ENABLE_AUTHENTICATION: bool = (
-        os.getenv("ENABLE_AUTHENTICATION", "False").lower() == "true"
-    )
+    ENABLE_RATE_LIMITING: bool = os.getenv("ENABLE_RATE_LIMITING", "False").lower() == "true"
+    ENABLE_AUTHENTICATION: bool = os.getenv("ENABLE_AUTHENTICATION", "False").lower() == "true"
     ENABLE_CACHE: bool = os.getenv("ENABLE_CACHE", "True").lower() == "true"
-    ENABLE_ASYNC_PROCESSING: bool = (
-        os.getenv("ENABLE_ASYNC_PROCESSING", "True").lower() == "true"
-    )
+    ENABLE_ASYNC_PROCESSING: bool = os.getenv("ENABLE_ASYNC_PROCESSING", "True").lower() == "true"
 
     # Logging
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
