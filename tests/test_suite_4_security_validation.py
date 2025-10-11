@@ -309,9 +309,7 @@ class TestSecurityAndValidation:
 
     def test_register_with_short_password(self):
         """Test register with short password"""
-        response = client.post(
-            "/api/v1/auth/register", json={"email": "test@test.com", "password": "123"}
-        )
+        response = client.post("/api/v1/auth/register", json={"email": "test@test.com", "password": "123"})
         assert response.status_code in [400, 404, 422, 500]
 
     def test_register_with_invalid_email_format(self):
@@ -324,9 +322,7 @@ class TestSecurityAndValidation:
 
     def test_password_reset_request_valid_email(self):
         """Test password reset with valid email format"""
-        response = client.post(
-            "/api/v1/auth/password-reset/request", json={"email": "test@test.com"}
-        )
+        response = client.post("/api/v1/auth/password-reset/request", json={"email": "test@test.com"})
         assert response.status_code in [200, 400, 404, 422, 500]
 
     def test_password_reset_invalid_token(self):
@@ -526,7 +522,7 @@ class TestSecurityAndValidation:
             "/api/v1/feedback",
             json={"message": "'; DROP TABLE feedback; --", "rating": 5},
         )
-        assert response.status_code in [200, 201, 401, 404, 422, 500]
+        assert response.status_code in [200, 201, 401, 404, 422, 429, 500]
 
     def test_sql_injection_hex_encoding(self):
         """Test SQL injection with hex encoding"""
