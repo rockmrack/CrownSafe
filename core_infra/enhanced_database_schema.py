@@ -2,10 +2,11 @@
 # Enhanced RecallDB Schema for Complete 39-Agency Coverage
 # Addresses ALL GPT recommendations for comprehensive product identification
 
-from sqlalchemy import Column, Integer, String, Date, Text, Boolean, JSON
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, Date, Integer, String, Text
+from sqlalchemy.dialects.postgresql import JSON
 
-Base = declarative_base()
+# Import Base from main database module to ensure all models share the same metadata
+from core_infra.database import Base
 
 
 class EnhancedRecallDB(Base):
@@ -113,10 +114,12 @@ class EnhancedRecallDB(Base):
 
     def to_dict(self) -> dict:
         """Convert to dictionary with proper handling of dates and JSON fields"""
+        from datetime import date
+
         result = {}
         for c in self.__table__.columns:
             v = getattr(self, c.name)
-            if isinstance(v, Date):
+            if isinstance(v, date):
                 result[c.name] = v.isoformat() if v else None
             else:
                 result[c.name] = v

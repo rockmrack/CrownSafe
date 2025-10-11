@@ -5,17 +5,18 @@ $ErrorActionPreference = "Stop"
 
 # Configuration
 $TIMESTAMP = Get-Date -Format "yyyyMMdd-HHmm"
-$IMAGE_TAG = "production-$TIMESTAMP"
+$IMAGE_TAG = "main-$TIMESTAMP"
 $ECR_REGISTRY = "180703226577.dkr.ecr.eu-north-1.amazonaws.com"
 $ECR_REPO = "babyshield-backend"
 $AWS_REGION = "eu-north-1"
 $ECS_CLUSTER = "babyshield-cluster"
 $ECS_SERVICE = "babyshield-backend-task-service-0l41s2a9"
+$COMMIT_HASH = "9c52d08"
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "  BabyShield Production Deployment" -ForegroundColor Cyan
-Write-Host "  pg_trgm Hotfix - Commit: 1ff957e" -ForegroundColor Cyan
+Write-Host "  Main Branch - Commit: $COMMIT_HASH" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Image Tag: $IMAGE_TAG" -ForegroundColor Yellow

@@ -73,12 +73,13 @@ SessionLocal = sessionmaker(
     future=True,
 )
 
+# Create Base BEFORE importing any models that use it
 Base = declarative_base()
 
 # -------------------------------------------------------------------
 # ORM Models
 # -------------------------------------------------------------------
-# Import the enhanced schema
+# Import the enhanced schema (must come AFTER Base is defined)
 from core_infra.enhanced_database_schema import EnhancedRecallDB
 
 # Use enhanced schema as RecallDB for backward compatibility
