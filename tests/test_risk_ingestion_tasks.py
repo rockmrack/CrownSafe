@@ -1,4 +1,4 @@
-﻿"""Tests for core_infra/risk_ingestion_tasks.py"""
+"""Tests for core_infra/risk_ingestion_tasks.py"""
 
 import unittest
 from unittest.mock import Mock, patch, MagicMock

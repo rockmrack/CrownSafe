@@ -130,9 +130,7 @@ class InputValidator:
         name = name.strip()
 
         if len(name) > cls.MAX_LENGTHS["product_name"]:
-            raise ValueError(
-                f"Product name too long (max {cls.MAX_LENGTHS['product_name']} characters)"
-            )
+            raise ValueError(f"Product name too long (max {cls.MAX_LENGTHS['product_name']} characters)")
 
         if cls._contains_dangerous_pattern(name):
             raise ValueError("Product name contains invalid content")
@@ -151,9 +149,7 @@ class InputValidator:
         query = query.strip()
 
         if len(query) > cls.MAX_LENGTHS["search_query"]:
-            raise ValueError(
-                f"Search query too long (max {cls.MAX_LENGTHS['search_query']} characters)"
-            )
+            raise ValueError(f"Search query too long (max {cls.MAX_LENGTHS['search_query']} characters)")
 
         if cls._contains_dangerous_pattern(query):
             raise ValueError("Search query contains invalid content")

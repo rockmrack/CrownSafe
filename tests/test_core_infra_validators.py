@@ -1,4 +1,5 @@
-﻿"""Tests for core_infra/validators.py"""
+"""Tests for core_infra/validators.py"""
+
 import unittest
 from core_infra.validators import (
     validate_barcode,

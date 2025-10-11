@@ -1,4 +1,5 @@
-﻿"""Tests for core_infra/transactions.py"""
+"""Tests for core_infra/transactions.py"""
+
 import unittest
 from unittest.mock import Mock, MagicMock, patch, call
 from sqlalchemy.orm import Session

@@ -299,7 +299,7 @@ class ImageMemoryManager:
                 # Periodic cleanup
                 if (i + 1) % 10 == 0:
                     gc.collect()
-                    logger.info(f"Processed {i+1}/{len(image_paths)} images")
+                    logger.info(f"Processed {i + 1}/{len(image_paths)} images")
 
         finally:
             processor.cleanup()

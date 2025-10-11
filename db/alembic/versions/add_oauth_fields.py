@@ -5,6 +5,7 @@ Revises: fix_missing_columns
 Create Date: 2025-08-27
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 from datetime import datetime

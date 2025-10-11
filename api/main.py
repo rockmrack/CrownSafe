@@ -1,6 +1,7 @@
 """
 Main entry point for Docker - imports main_babyshield
 """
+
 from api.main_babyshield import app
 
 if __name__ == "__main__":

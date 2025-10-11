@@ -2,6 +2,7 @@
 AWS WAF Rules Configuration for BabyShield
 Enterprise-grade Web Application Firewall rules
 """
+
 import json
 from typing import Dict, List, Any
 

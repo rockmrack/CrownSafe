@@ -1,4 +1,5 @@
-﻿"""Tests for core_infra/error_handlers.py"""
+"""Tests for core_infra/error_handlers.py"""
+
 import unittest
 from unittest.mock import Mock, patch
 

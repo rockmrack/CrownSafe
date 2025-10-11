@@ -4,6 +4,7 @@ Query Result Caching Module.
 This module provides caching decorators and utilities for expensive database queries.
 Uses in-memory TTL caches to reduce database load for frequently accessed data.
 """
+
 import hashlib
 import json
 import logging

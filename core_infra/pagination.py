@@ -179,9 +179,7 @@ def paginate_list(items: List[T], params: PaginationParams) -> PaginatedResponse
     return PaginatedResponse.create(paginated_items, total, params)
 
 
-def create_pagination_links(
-    base_url: str, params: PaginationParams, total: int
-) -> Dict[str, Optional[str]]:
+def create_pagination_links(base_url: str, params: PaginationParams, total: int) -> Dict[str, Optional[str]]:
     """
     Create HATEOAS links for pagination
     """

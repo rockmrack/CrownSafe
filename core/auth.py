@@ -2,6 +2,7 @@
 Authentication utilities for BabyShield API.
 Provides current user context for authenticated requests.
 """
+
 from typing import Optional
 from uuid import UUID
 import logging

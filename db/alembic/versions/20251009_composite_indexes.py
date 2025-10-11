@@ -2,9 +2,10 @@
 
 Revision ID: 20251009_composite_indexes
 Revises: fix_missing_columns
-Create Date: 2025-10-09 
+Create Date: 2025-10-09
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

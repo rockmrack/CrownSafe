@@ -213,9 +213,7 @@ async def send_push_notification(
         elif platform == "android":
             message.android = messaging.AndroidConfig(
                 priority="high",
-                notification=messaging.AndroidNotification(
-                    sound="default", click_action="FLUTTER_NOTIFICATION_CLICK"
-                ),
+                notification=messaging.AndroidNotification(sound="default", click_action="FLUTTER_NOTIFICATION_CLICK"),
             )
 
         # Send message
@@ -450,9 +448,7 @@ async def unregister_device(
     """Unregister a device from push notifications"""
     try:
         device = (
-            db.query(DeviceToken)
-            .filter(DeviceToken.token == token, DeviceToken.user_id == current_user.id)
-            .first()
+            db.query(DeviceToken).filter(DeviceToken.token == token, DeviceToken.user_id == current_user.id).first()
         )
 
         if device:
@@ -468,16 +464,10 @@ async def unregister_device(
 
 
 @router.get("/devices", response_model=ApiResponse)
-async def get_registered_devices(
-    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
-):
+async def get_registered_devices(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
     """Get all registered devices for current user"""
     try:
-        devices = (
-            db.query(DeviceToken)
-            .filter(DeviceToken.user_id == current_user.id, DeviceToken.is_active)
-            .all()
-        )
+        devices = db.query(DeviceToken).filter(DeviceToken.user_id == current_user.id, DeviceToken.is_active).all()
 
         device_list = [
             {
@@ -524,9 +514,7 @@ async def get_notification_history(
 
         # Apply pagination
         offset = (page - 1) * page_size
-        notifications = (
-            query.order_by(desc(NotificationHistory.sent_at)).offset(offset).limit(page_size).all()
-        )
+        notifications = query.order_by(desc(NotificationHistory.sent_at)).offset(offset).limit(page_size).all()
 
         # Build response
         items = []
@@ -602,9 +590,7 @@ async def mark_notification_read(
 
 
 @router.post("/mark-all-read", response_model=ApiResponse)
-async def mark_all_notifications_read(
-    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
-):
+async def mark_all_notifications_read(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
     """Mark all notifications as read"""
     try:
         db.query(NotificationHistory).filter(
@@ -628,11 +614,7 @@ async def update_notification_preferences(
 ):
     """Update notification preferences for all user devices"""
     try:
-        devices = (
-            db.query(DeviceToken)
-            .filter(DeviceToken.user_id == current_user.id, DeviceToken.is_active)
-            .all()
-        )
+        devices = db.query(DeviceToken).filter(DeviceToken.user_id == current_user.id, DeviceToken.is_active).all()
 
         for device in devices:
             if preferences.quiet_hours_enabled:
@@ -666,11 +648,7 @@ async def send_test_notification(
 ):
     """Send a test notification to all user devices"""
     try:
-        devices = (
-            db.query(DeviceToken)
-            .filter(DeviceToken.user_id == current_user.id, DeviceToken.is_active)
-            .all()
-        )
+        devices = db.query(DeviceToken).filter(DeviceToken.user_id == current_user.id, DeviceToken.is_active).all()
 
         if not devices:
             return fail("No registered devices found", code="NO_DEVICES")

@@ -16,7 +16,7 @@ def create_explain_feedback(
     platform: Optional[str] = None,
     app_version: Optional[str] = None,
     locale: Optional[str] = None,
-    jurisdiction_code: Optional[str] = None
+    jurisdiction_code: Optional[str] = None,
 ) -> int:
     """
     Create a new explain feedback record.

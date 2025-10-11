@@ -1,4 +1,5 @@
-﻿"""Tests for conversation with real tools"""
+"""Tests for conversation with real tools"""
+
 import unittest
 from unittest.mock import Mock, patch
 from sqlalchemy.orm import Session

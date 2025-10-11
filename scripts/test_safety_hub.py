@@ -39,7 +39,7 @@ async def test_fetch_articles_from_cpsc():
 
         # Show first 3 articles
         for i, article in enumerate(articles[:3]):
-            print(f"\n  Article {i+1}:")
+            print(f"\n  Article {i + 1}:")
             print(f"    Title: {article['title']}")
             print(f"    Agency: {article['source_agency']}")
             print(f"    Date: {article['publication_date']}")
@@ -67,9 +67,7 @@ def test_celery_task(articles):
             try:
                 # Check if article already exists
                 existing = (
-                    db.query(SafetyArticle)
-                    .filter(SafetyArticle.article_id == article_data["article_id"])
-                    .first()
+                    db.query(SafetyArticle).filter(SafetyArticle.article_id == article_data["article_id"]).first()
                 )
 
                 if not existing:

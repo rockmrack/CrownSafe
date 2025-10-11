@@ -22,9 +22,7 @@ logger = logging.getLogger(__name__)
 if FIREBASE_AVAILABLE:
     try:
         if not firebase_admin._apps:
-            key_path = os.path.join(
-                os.path.dirname(__file__), "../../../secrets/serviceAccountKey.json"
-            )
+            key_path = os.path.join(os.path.dirname(__file__), "../../../secrets/serviceAccountKey.json")
             if os.path.exists(key_path):
                 cred = credentials.Certificate(key_path)
                 firebase_admin.initialize_app(cred)
@@ -101,9 +99,7 @@ class PushNotificationAgentLogic:
             }
 
         loop = asyncio.get_running_loop()
-        result = await loop.run_in_executor(
-            None, self.send_notification, device_token, title, body, data
-        )
+        result = await loop.run_in_executor(None, self.send_notification, device_token, title, body, data)
 
         if result.get("status") == "success":
             return {"status": "COMPLETED", "message_id": result.get("message_id")}

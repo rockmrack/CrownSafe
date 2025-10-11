@@ -1,6 +1,7 @@
 """
 FastAPI Logging Middleware - Issue #32
 """
+
 import time
 from fastapi import Request, Response
 

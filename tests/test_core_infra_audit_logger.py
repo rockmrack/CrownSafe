@@ -1,4 +1,5 @@
 """Tests for core_infra/audit_logger.py"""
+
 import unittest
 from unittest.mock import Mock, MagicMock, patch
 from sqlalchemy.orm import Session

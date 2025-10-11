@@ -67,7 +67,7 @@ async def test_flow():
             except:
                 pass
 
-        print(f"   Attempt {i+1}: Not found yet...")
+        print(f"   Attempt {i + 1}: Not found yet...")
 
     print("\n❌ Workflow was never created!")
 

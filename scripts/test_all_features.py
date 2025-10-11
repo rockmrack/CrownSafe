@@ -51,7 +51,7 @@ def start_api_server():
         if check_api_running():
             print("✅ API server is running on http://localhost:8001")
             return process
-        print(f"  Waiting for server to start... ({i+1}/10)")
+        print(f"  Waiting for server to start... ({i + 1}/10)")
 
     print("❌ Failed to start API server")
     process.terminate()
@@ -60,7 +60,7 @@ def start_api_server():
 
 async def run_test_script(script_name, description):
     """Run a single test script"""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Running: {description}")
     print(f"Script: {script_name}")
     print("=" * 60)
@@ -164,7 +164,7 @@ async def main():
     print(f"  Total Tests: {total_tests}")
     print(f"  Passed: {passed_tests}")
     print(f"  Failed: {failed_tests}")
-    print(f"  Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+    print(f"  Success Rate: {(passed_tests / total_tests) * 100:.1f}%")
 
     print(f"\n🏁 Test suite completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 

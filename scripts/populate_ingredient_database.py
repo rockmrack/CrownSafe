@@ -273,10 +273,7 @@ def populate_ingredient_safety_table():
 
         # Add common allergens that aren't already added
         for allergen, data in COMMON_ALLERGENS.items():
-            if (
-                allergen not in PREGNANCY_UNSAFE_INGREDIENTS
-                and allergen not in BABY_UNSAFE_INGREDIENTS
-            ):
+            if allergen not in PREGNANCY_UNSAFE_INGREDIENTS and allergen not in BABY_UNSAFE_INGREDIENTS:
                 safety_record = IngredientSafety(
                     ingredient_name=allergen,
                     common_allergen=True,

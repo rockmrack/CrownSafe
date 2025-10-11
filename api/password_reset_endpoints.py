@@ -99,7 +99,7 @@ async def send_reset_email(email: str, token: str, user_name: Optional[str] = No
 
         # Email body
         text = f"""
-        Hello {user_name or 'User'},
+        Hello {user_name or "User"},
         
         You requested to reset your password for your BabyShield account.
         
@@ -119,7 +119,7 @@ async def send_reset_email(email: str, token: str, user_name: Optional[str] = No
           <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
               <h2 style="color: #2c3e50;">Reset Your Password</h2>
-              <p>Hello {user_name or 'User'},</p>
+              <p>Hello {user_name or "User"},</p>
               <p>You requested to reset your password for your BabyShield account.</p>
               <p style="margin: 30px 0;">
                 <a href="{reset_url}" 

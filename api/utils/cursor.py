@@ -211,6 +211,5 @@ def validate_cursor_filters(cursor_data: Dict[str, Any], current_filters_hash: s
     cursor_filters_hash = cursor_data.get("f")
     if cursor_filters_hash != current_filters_hash:
         raise ValueError(
-            "Cursor filters don't match current search filters. "
-            "Please start a new search with updated filters."
+            "Cursor filters don't match current search filters. Please start a new search with updated filters."
         )

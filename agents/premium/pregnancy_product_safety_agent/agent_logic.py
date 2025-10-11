@@ -6,12 +6,8 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-MOCK_INGREDIENTS_PATH = (
-    Path(__file__).parent.parent.parent.parent / "data" / "mock_product_ingredients.json"
-)
-MOCK_SAFETY_DATA_PATH = (
-    Path(__file__).parent.parent.parent.parent / "data" / "mock_pregnancy_safety_data.json"
-)
+MOCK_INGREDIENTS_PATH = Path(__file__).parent.parent.parent.parent / "data" / "mock_product_ingredients.json"
+MOCK_SAFETY_DATA_PATH = Path(__file__).parent.parent.parent.parent / "data" / "mock_pregnancy_safety_data.json"
 
 
 class PregnancyProductSafetyAgentLogic:
@@ -38,9 +34,7 @@ class PregnancyProductSafetyAgentLogic:
                     self.ingredient_db = json.load(f)
                 with open(MOCK_SAFETY_DATA_PATH, "r") as f:
                     self.safety_db = json.load(f).get("unsafe_ingredients", {})
-                self.logger.info(
-                    "Successfully loaded mock ingredient and pregnancy safety databases."
-                )
+                self.logger.info("Successfully loaded mock ingredient and pregnancy safety databases.")
             except Exception as e:
                 self.logger.error(f"CRITICAL: Could not load mock data: {e}")
                 self.ingredient_db = {}
@@ -57,9 +51,7 @@ class PregnancyProductSafetyAgentLogic:
         Checks a product's ingredients against the pregnancy safety database.
         The 'trimester' argument is included for future, more advanced logic.
         """
-        self.logger.info(
-            f"Performing pregnancy safety check for UPC {product_upc} (Trimester: {trimester})"
-        )
+        self.logger.info(f"Performing pregnancy safety check for UPC {product_upc} (Trimester: {trimester})")
 
         # Use mock data if available (development mode)
         if self.ingredient_db is not None and self.safety_db is not None:
@@ -112,9 +104,7 @@ class PregnancyProductSafetyAgentLogic:
 
         with get_db_session() as db:
             # 1. Get product ingredients from database
-            product = (
-                db.query(ProductIngredient).filter(ProductIngredient.upc == product_upc).first()
-            )
+            product = db.query(ProductIngredient).filter(ProductIngredient.upc == product_upc).first()
             if not product:
                 return {
                     "status": "error",
@@ -128,9 +118,7 @@ class PregnancyProductSafetyAgentLogic:
                     "product_name": product.product_name,
                     "is_safe": False,
                     "unsafe_ingredients": ["Product marked as pregnancy unsafe"],
-                    "total_ingredients_checked": len(product.ingredients)
-                    if product.ingredients
-                    else 0,
+                    "total_ingredients_checked": len(product.ingredients) if product.ingredients else 0,
                     "data_source": "database",
                     "confidence_score": product.confidence_score,
                 }

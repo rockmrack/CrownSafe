@@ -13,9 +13,7 @@ sys.path.insert(0, project_root)
 
 from agents.engagement.community_alert_agent.agent_logic import CommunityAlertAgentLogic
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 
 async def main():
@@ -67,14 +65,10 @@ async def main():
                 )
             else:
                 print("\n" + "=" * 50)
-                print(
-                    f"❌ TEST FAILED: The agent only found {len(risks_found)} keywords, but expected at least 4."
-                )
+                print(f"❌ TEST FAILED: The agent only found {len(risks_found)} keywords, but expected at least 4.")
         else:
             print("\n" + "=" * 50)
-            print(
-                f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}"
-            )
+            print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")
 
     except Exception as e:
         print("\n" + "=" * 50)

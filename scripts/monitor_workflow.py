@@ -70,7 +70,7 @@ async def trace_workflow_creation():
 
         # Monitor it immediately
         for i in range(10):
-            print(f"\n⏱️  Check {i+1}/10 (after {i*2} seconds)")
+            print(f"\n⏱️  Check {i + 1}/10 (after {i * 2} seconds)")
             await monitor_workflow(workflow_id)
 
             # Also check status endpoint

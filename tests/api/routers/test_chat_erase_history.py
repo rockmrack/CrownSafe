@@ -137,9 +137,12 @@ def test_erase_history_no_conversations(mock_mark_erase, mock_get_db):
 
 def test_erase_history_trace_id_header():
     """Test that erase history endpoint returns trace ID in header"""
-    with patch("api.routers.chat.get_db"), patch("api.routers.chat.mark_erase_requested"), patch(
-        "api.routers.chat.purge_conversations_for_user", return_value=1
-    ), patch("api.routers.chat.current_user") as mock_user:
+    with (
+        patch("api.routers.chat.get_db"),
+        patch("api.routers.chat.mark_erase_requested"),
+        patch("api.routers.chat.purge_conversations_for_user", return_value=1),
+        patch("api.routers.chat.current_user") as mock_user,
+    ):
         mock_user.id = "test-user-123"
 
         response = client.post("/api/v1/chat/erase-history")

@@ -208,9 +208,7 @@ class ProductDataSource(Base):
     product = relationship("ProductGoldenRecord", back_populates="data_sources")
 
     # Unique constraint to prevent duplicates
-    __table_args__ = (
-        UniqueConstraint("product_id", "source_type", "source_id", name="uq_product_source"),
-    )
+    __table_args__ = (UniqueConstraint("product_id", "source_type", "source_id", name="uq_product_source"),)
 
 
 class SafetyIncident(Base):

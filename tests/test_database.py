@@ -1,4 +1,5 @@
-﻿"""Tests for core_infra/database.py"""
+"""Tests for core_infra/database.py"""
+
 import unittest
 from unittest.mock import Mock, patch, MagicMock
 

@@ -5,6 +5,7 @@ Revises: add_account_deletion_audit
 Create Date: 2025-09-20 18:30:00.000000
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql

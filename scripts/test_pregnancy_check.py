@@ -16,9 +16,7 @@ sys.path.insert(0, project_root)
 from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
 from core_infra.database import Base, engine, SessionLocal, User, get_db_session
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 # --- Test Configuration ---
 TEST_BARCODE_RISKY_PRODUCT = "850016249012"  # CeraVe Cleanser
@@ -224,17 +222,13 @@ async def main():
             # Try to find pregnancy results in the response
             result_str = json.dumps(result)
 
-            if "Salicylic Acid" in result_str and (
-                "risks_found" in result_str or "risky_ingredients" in result_str
-            ):
+            if "Salicylic Acid" in result_str and ("risks_found" in result_str or "risky_ingredients" in result_str):
                 print("\n✅ TEST PASSED: Pregnancy risks correctly identified!")
                 print("Found Salicylic Acid as a risky ingredient")
             elif "pregnancy" in result_str.lower():
                 print("\n✅ TEST PASSED: Pregnancy check was executed!")
             else:
-                print(
-                    "\n⚠️  TEST INCONCLUSIVE: Workflow completed but pregnancy results not clearly found in response"
-                )
+                print("\n⚠️  TEST INCONCLUSIVE: Workflow completed but pregnancy results not clearly found in response")
                 print("This might be due to response structure differences")
 
         else:

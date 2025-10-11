@@ -47,9 +47,7 @@ class TestGuidelineAgentLogic:
             (False, True),  # EnhancedMemoryManager import fails
         ],
     )
-    def test_init_with_memory_manager_import(
-        self, monkeypatch, memory_manager_available, expected_is_none
-    ):
+    def test_init_with_memory_manager_import(self, monkeypatch, memory_manager_available, expected_is_none):
         """Test GuidelineAgentLogic initialization with/without EnhancedMemoryManager available"""
         from agents.guideline_agent import agent_logic
 

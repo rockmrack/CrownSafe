@@ -32,12 +32,8 @@ if PROM:
         "Synth latency (ms)",
         buckets=(50, 100, 200, 400, 800, 1600),
     )
-    CHAT_FALLBACK = Counter(
-        "bs_chat_fallback_total", "LLM/template fallback used", ["endpoint", "reason"]
-    )
-    CHAT_BLOCKED = Counter(
-        "bs_chat_blocked_total", "Requests blocked by feature flag", ["endpoint"]
-    )
+    CHAT_FALLBACK = Counter("bs_chat_fallback_total", "LLM/template fallback used", ["endpoint", "reason"])
+    CHAT_BLOCKED = Counter("bs_chat_blocked_total", "Requests blocked by feature flag", ["endpoint"])
     EXPLAIN_FB = Counter("bs_explain_feedback_total", "Explain feedback", ["helpful", "reason"])
     ALT_SHOWN = Counter("bs_alternatives_shown_total", "Alternatives shown in responses", ["count"])
     ALT_CLICKED = Counter("bs_alternative_clicked_total", "Alternative clicked", ["id"])
@@ -55,15 +51,9 @@ else:
         def inc(self, *_a, **_k):
             pass
 
-    CHAT_REQ = (
-        CHAT_LAT
-    ) = (
-        TOOL_LAT
-    ) = (
-        SYN_LAT
-    ) = (
-        CHAT_FALLBACK
-    ) = CHAT_BLOCKED = EXPLAIN_FB = ALT_SHOWN = ALT_CLICKED = CHAT_UNCLEAR = CHAT_EMERG = _N()
+    CHAT_REQ = CHAT_LAT = TOOL_LAT = SYN_LAT = CHAT_FALLBACK = CHAT_BLOCKED = EXPLAIN_FB = ALT_SHOWN = ALT_CLICKED = (
+        CHAT_UNCLEAR
+    ) = CHAT_EMERG = _N()
 
 
 def inc_req(endpoint: str, intent: str, ok: bool, circuit: bool):

@@ -5,6 +5,7 @@ Revises: 20250924_chat_memory
 Create Date: 2025-10-09 08:30:00.000000
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

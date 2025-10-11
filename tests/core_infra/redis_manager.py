@@ -80,7 +80,7 @@ async def create_redis_pool(force_new=False) -> ConnectionPool:
                     connection_kwargs["password"] = REDIS_PASSWORD
 
                 logger.debug(
-                    f"Redis connection attempt {attempt+1} with params: {REDIS_HOST}:{REDIS_PORT} DB={REDIS_DB}"
+                    f"Redis connection attempt {attempt + 1} with params: {REDIS_HOST}:{REDIS_PORT} DB={REDIS_DB}"
                 )
                 _redis_pool = redis.ConnectionPool(**connection_kwargs)
 
@@ -98,7 +98,7 @@ async def create_redis_pool(force_new=False) -> ConnectionPool:
                 redis.RedisError,
                 ConnectionRefusedError,
             ) as e:
-                logger.warning(f"Redis connection attempt {attempt+1} failed: {e}")
+                logger.warning(f"Redis connection attempt {attempt + 1} failed: {e}")
                 if attempt < REDIS_RETRY_ATTEMPTS - 1:
                     logger.info(f"Retrying in {REDIS_RETRY_DELAY} seconds...")
                     await asyncio.sleep(REDIS_RETRY_DELAY)

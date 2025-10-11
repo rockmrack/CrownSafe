@@ -116,16 +116,13 @@ class ObservabilityTester:
                 self.test(False, "404 response is valid JSON")
 
         # Test validation error (422)
-        response = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json={"invalid_field": "test"}
-        )
+        response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json={"invalid_field": "test"})
         if response.status_code in [400, 422]:
             try:
                 data = response.json()
                 self.test(not data.get("ok"), "Validation error has ok=false")
                 self.test(
-                    data.get("error", {}).get("code")
-                    in ["VALIDATION_ERROR", "INVALID_PARAMETERS", "BAD_REQUEST"],
+                    data.get("error", {}).get("code") in ["VALIDATION_ERROR", "INVALID_PARAMETERS", "BAD_REQUEST"],
                     "Validation error has appropriate error code",
                 )
             except:
@@ -289,13 +286,11 @@ def test_rate_limit_stress(base_url: str = BASE_URL):
     # Make 65 requests (should hit 60 req/min limit)
     statuses = []
     for i in range(65):
-        response = session.post(
-            f"{base_url}/api/v1/search/advanced", json={"product": "test", "limit": 1}
-        )
+        response = session.post(f"{base_url}/api/v1/search/advanced", json={"product": "test", "limit": 1})
         statuses.append(response.status_code)
 
         if response.status_code == 429:
-            print(f"   ✅ Rate limit hit at request {i+1}")
+            print(f"   ✅ Rate limit hit at request {i + 1}")
             data = response.json()
             print(f"   Error: {data.get('error', {}).get('message')}")
             print(f"   Retry-After: {response.headers.get('Retry-After')} seconds")

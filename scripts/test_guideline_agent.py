@@ -34,17 +34,15 @@ except ImportError as e:
     sys.exit(1)
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
 def print_section(title: str):
     """Print a formatted section header"""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f" {title}")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
 
 def print_result(result: dict, indent: int = 2):
@@ -139,7 +137,7 @@ async def test_guideline_agent():
             # Show top results
             print("\nTop Matching Sections:")
             for i, match in enumerate(result["results"][:3]):
-                print(f"\n--- Match {i+1} (Relevance: {match.get('relevance_score', 0):.2f}) ---")
+                print(f"\n--- Match {i + 1} (Relevance: {match.get('relevance_score', 0):.2f}) ---")
                 print(f"Guideline: {match.get('guideline_name', 'Unknown')}")
                 print(f"Text preview: {match['text'][:300]}...")
 
@@ -152,9 +150,7 @@ async def test_guideline_agent():
                     print("\nRecommendations:")
                     for rec in criteria["recommendations"]:
                         print(f"  • {rec['text']}")
-                        print(
-                            f"    Source: {rec['source']} (relevance: {rec.get('relevance', 0):.2f})"
-                        )
+                        print(f"    Source: {rec['source']} (relevance: {rec.get('relevance', 0):.2f})")
 
                 if criteria.get("prerequisites"):
                     print("\nPrerequisites:")

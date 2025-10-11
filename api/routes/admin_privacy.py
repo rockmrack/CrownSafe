@@ -44,9 +44,7 @@ class UpdatePrivacyRequest(BaseModel):
     rejection_reason: Optional[str] = Field(
         None, max_length=500, description="Reason for rejection (if status=rejected)"
     )
-    export_url: Optional[str] = Field(
-        None, description="Export download URL (if status=done for export requests)"
-    )
+    export_url: Optional[str] = Field(None, description="Export download URL (if status=done for export requests)")
 
 
 class PrivacyRequestFilter(BaseModel):
@@ -55,12 +53,8 @@ class PrivacyRequestFilter(BaseModel):
     """
 
     kind: Optional[str] = Field(None, pattern="^(export|delete|rectify|access|restrict|object)$")
-    status: Optional[str] = Field(
-        None, pattern="^(queued|verifying|processing|done|rejected|expired|cancelled)$"
-    )
-    jurisdiction: Optional[str] = Field(
-        None, pattern="^(gdpr|uk_gdpr|ccpa|pipeda|lgpd|appi|other)$"
-    )
+    status: Optional[str] = Field(None, pattern="^(queued|verifying|processing|done|rejected|expired|cancelled)$")
+    jurisdiction: Optional[str] = Field(None, pattern="^(gdpr|uk_gdpr|ccpa|pipeda|lgpd|appi|other)$")
     overdue_only: bool = False
     email_search: Optional[str] = None
 
@@ -309,14 +303,10 @@ async def update_privacy_request_status(
             privacy_request.verified_at = datetime.now(timezone.utc)
 
         elif new_status == "done":
-            privacy_request.set_completed(
-                export_url=body.export_url if privacy_request.kind == "export" else None
-            )
+            privacy_request.set_completed(export_url=body.export_url if privacy_request.kind == "export" else None)
 
         elif new_status == "rejected":
-            privacy_request.set_rejected(
-                body.rejection_reason or "Request rejected by administrator"
-            )
+            privacy_request.set_rejected(body.rejection_reason or "Request rejected by administrator")
 
         elif new_status == "cancelled":
             privacy_request.status = "cancelled"
@@ -326,9 +316,7 @@ async def update_privacy_request_status(
         if body.notes:
             existing_notes = privacy_request.notes or ""
             timestamp = datetime.now(timezone.utc).isoformat()
-            privacy_request.notes = (
-                f"{existing_notes}\n[{timestamp}] Admin ({admin}): {body.notes}".strip()
-            )
+            privacy_request.notes = f"{existing_notes}\n[{timestamp}] Admin ({admin}): {body.notes}".strip()
 
         # Save changes
         db.commit()
@@ -384,10 +372,7 @@ async def privacy_request_statistics(
 
         # Overall statistics
         total_requests = (
-            db.query(func.count(PrivacyRequest.id))
-            .filter(PrivacyRequest.submitted_at >= since_date)
-            .scalar()
-            or 0
+            db.query(func.count(PrivacyRequest.id)).filter(PrivacyRequest.submitted_at >= since_date).scalar() or 0
         )
 
         # By kind
@@ -461,13 +446,9 @@ async def privacy_request_statistics(
                 .filter(PrivacyRequest.status.in_(["queued", "verifying", "processing"]))
                 .scalar()
                 or 0,
-                "completed": db.query(func.count(PrivacyRequest.id))
-                .filter(PrivacyRequest.status == "done")
-                .scalar()
+                "completed": db.query(func.count(PrivacyRequest.id)).filter(PrivacyRequest.status == "done").scalar()
                 or 0,
-                "rejected": db.query(func.count(PrivacyRequest.id))
-                .filter(PrivacyRequest.status == "rejected")
-                .scalar()
+                "rejected": db.query(func.count(PrivacyRequest.id)).filter(PrivacyRequest.status == "rejected").scalar()
                 or 0,
                 "overdue": overdue_count,
             },
@@ -475,9 +456,7 @@ async def privacy_request_statistics(
             "by_status": {status: count for status, count in by_status},
             "by_jurisdiction": {juris: count for juris, count in by_jurisdiction},
             "processing_metrics": {
-                "average_days": round(avg_processing_time / 86400, 1)
-                if avg_processing_time
-                else None,
+                "average_days": round(avg_processing_time / 86400, 1) if avg_processing_time else None,
                 "sla_compliance_rate": round((1 - (overdue_count / total_requests)) * 100, 1)
                 if total_requests > 0
                 else 100,
@@ -552,9 +531,7 @@ async def process_privacy_request(
         # Add note
         timestamp = datetime.now(timezone.utc).isoformat()
         notes = privacy_request.notes or ""
-        privacy_request.notes = (
-            f"{notes}\n[{timestamp}] Processing initiated by admin ({admin})".strip()
-        )
+        privacy_request.notes = f"{notes}\n[{timestamp}] Processing initiated by admin ({admin})".strip()
 
         db.commit()
 

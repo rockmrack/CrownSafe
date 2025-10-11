@@ -13,9 +13,10 @@ class TestExplainFeedbackEndpoint:
 
     def test_explain_feedback_valid_payload(self):
         """Test POST /analytics/explain-feedback with valid payload"""
-        with patch("api.routers.analytics.get_db") as mock_get_db, patch(
-            "api.routers.analytics.create_explain_feedback"
-        ) as mock_create:
+        with (
+            patch("api.routers.analytics.get_db") as mock_get_db,
+            patch("api.routers.analytics.create_explain_feedback") as mock_create,
+        ):
             # Mock database session
             mock_db = MagicMock()
             mock_get_db.return_value = mock_db
@@ -59,9 +60,10 @@ class TestExplainFeedbackEndpoint:
 
     def test_explain_feedback_minimal_payload(self):
         """Test with only required fields"""
-        with patch("api.routers.analytics.get_db") as mock_get_db, patch(
-            "api.routers.analytics.create_explain_feedback"
-        ) as mock_create:
+        with (
+            patch("api.routers.analytics.get_db") as mock_get_db,
+            patch("api.routers.analytics.create_explain_feedback") as mock_create,
+        ):
             mock_db = MagicMock()
             mock_get_db.return_value = mock_db
             mock_create.return_value = 67890
@@ -140,9 +142,10 @@ class TestExplainFeedbackEndpoint:
 
     def test_explain_feedback_with_headers(self):
         """Test that request headers are used for platform info"""
-        with patch("api.routers.analytics.get_db") as mock_get_db, patch(
-            "api.routers.analytics.create_explain_feedback"
-        ) as mock_create:
+        with (
+            patch("api.routers.analytics.get_db") as mock_get_db,
+            patch("api.routers.analytics.create_explain_feedback") as mock_create,
+        ):
             mock_db = MagicMock()
             mock_get_db.return_value = mock_db
             mock_create.return_value = 11111
@@ -170,9 +173,10 @@ class TestExplainFeedbackEndpoint:
 
     def test_explain_feedback_payload_overrides_headers(self):
         """Test that payload values override headers"""
-        with patch("api.routers.analytics.get_db") as mock_get_db, patch(
-            "api.routers.analytics.create_explain_feedback"
-        ) as mock_create:
+        with (
+            patch("api.routers.analytics.get_db") as mock_get_db,
+            patch("api.routers.analytics.create_explain_feedback") as mock_create,
+        ):
             mock_db = MagicMock()
             mock_get_db.return_value = mock_db
             mock_create.return_value = 22222
@@ -205,9 +209,11 @@ class TestExplainFeedbackEndpoint:
         """Test that user_id is resolved when authenticated"""
         test_user_id = uuid4()
 
-        with patch("api.routers.analytics.get_db") as mock_get_db, patch(
-            "api.routers.analytics.create_explain_feedback"
-        ) as mock_create, patch("core.auth.current_user") as mock_user:
+        with (
+            patch("api.routers.analytics.get_db") as mock_get_db,
+            patch("api.routers.analytics.create_explain_feedback") as mock_create,
+            patch("core.auth.current_user") as mock_user,
+        ):
             mock_db = MagicMock()
             mock_get_db.return_value = mock_db
             mock_create.return_value = 33333
@@ -227,9 +233,10 @@ class TestExplainFeedbackEndpoint:
 
     def test_explain_feedback_unauthenticated_user(self):
         """Test that unauthenticated users can still provide feedback"""
-        with patch("api.routers.analytics.get_db") as mock_get_db, patch(
-            "api.routers.analytics.create_explain_feedback"
-        ) as mock_create:
+        with (
+            patch("api.routers.analytics.get_db") as mock_get_db,
+            patch("api.routers.analytics.create_explain_feedback") as mock_create,
+        ):
             mock_db = MagicMock()
             mock_get_db.return_value = mock_db
             mock_create.return_value = 44444
@@ -247,9 +254,10 @@ class TestExplainFeedbackEndpoint:
 
     def test_explain_feedback_database_error(self):
         """Test handling of database errors"""
-        with patch("api.routers.analytics.get_db") as mock_get_db, patch(
-            "api.routers.analytics.create_explain_feedback"
-        ) as mock_create:
+        with (
+            patch("api.routers.analytics.get_db") as mock_get_db,
+            patch("api.routers.analytics.create_explain_feedback") as mock_create,
+        ):
             mock_db = MagicMock()
             mock_get_db.return_value = mock_db
 
@@ -265,9 +273,11 @@ class TestExplainFeedbackEndpoint:
 
     def test_explain_feedback_metrics_integration(self):
         """Test that metrics are recorded when available"""
-        with patch("api.routers.analytics.get_db") as mock_get_db, patch(
-            "api.routers.analytics.create_explain_feedback"
-        ) as mock_create, patch("core.metrics.inc_explain_feedback") as mock_metrics:
+        with (
+            patch("api.routers.analytics.get_db") as mock_get_db,
+            patch("api.routers.analytics.create_explain_feedback") as mock_create,
+            patch("core.metrics.inc_explain_feedback") as mock_metrics,
+        ):
             mock_db = MagicMock()
             mock_get_db.return_value = mock_db
             mock_create.return_value = 55555
@@ -287,9 +297,10 @@ class TestExplainFeedbackEndpoint:
 
     def test_explain_feedback_metrics_not_available(self):
         """Test graceful handling when metrics module is not available"""
-        with patch("api.routers.analytics.get_db") as mock_get_db, patch(
-            "api.routers.analytics.create_explain_feedback"
-        ) as mock_create:
+        with (
+            patch("api.routers.analytics.get_db") as mock_get_db,
+            patch("api.routers.analytics.create_explain_feedback") as mock_create,
+        ):
             mock_db = MagicMock()
             mock_get_db.return_value = mock_db
             mock_create.return_value = 66666
@@ -340,9 +351,10 @@ class TestExplainFeedbackValidation:
 
     def test_optional_fields_null_values(self):
         """Test that optional fields accept null values"""
-        with patch("api.routers.analytics.get_db") as mock_get_db, patch(
-            "api.routers.analytics.create_explain_feedback"
-        ) as mock_create:
+        with (
+            patch("api.routers.analytics.get_db") as mock_get_db,
+            patch("api.routers.analytics.create_explain_feedback") as mock_create,
+        ):
             mock_db = MagicMock()
             mock_get_db.return_value = mock_db
             mock_create.return_value = 77777

@@ -1,4 +1,5 @@
-﻿"""Comprehensive API endpoint tests"""
+"""Comprehensive API endpoint tests"""
+
 import unittest
 from unittest.mock import Mock, patch
 

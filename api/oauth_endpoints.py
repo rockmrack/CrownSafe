@@ -34,9 +34,7 @@ GOOGLE_ISSUER = "https://accounts.google.com"
 class OAuthLoginRequest(BaseModel):
     """OAuth login request with provider token"""
 
-    provider: str = Field(
-        ..., pattern="^(apple|google)$", description="OAuth provider (apple or google)"
-    )
+    provider: str = Field(..., pattern="^(apple|google)$", description="OAuth provider (apple or google)")
     id_token: str = Field(..., description="ID token from provider")
     authorization_code: Optional[str] = Field(None, description="Authorization code (for Apple)")
     device_id: Optional[str] = Field(None, description="Device ID for tracking")
@@ -313,9 +311,7 @@ async def oauth_login(
 
 
 @router.post("/logout")
-async def oauth_logout(
-    request: Request, user_id: Optional[str] = None, device_id: Optional[str] = None
-):
+async def oauth_logout(request: Request, user_id: Optional[str] = None, device_id: Optional[str] = None):
     """
     OAuth logout
 

@@ -5,6 +5,7 @@ LegalContentAgentLogic v1.1
 Reads full text of legal documents (e.g., TOS, Privacy Policy) from disk
 and returns them as part of the agent result payload.
 """
+
 import os
 import asyncio
 import logging
@@ -13,9 +14,7 @@ from typing import Dict, Any, Optional
 logger = logging.getLogger(__name__)
 
 # Path to directory containing legal documents (data/legal)
-LEGAL_DOCS_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "legal")
-)
+LEGAL_DOCS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "legal"))
 
 
 class LegalContentAgentLogic:

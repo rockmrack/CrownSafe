@@ -1,6 +1,7 @@
 """
 Chat tools service - stub implementation for chat router
 """
+
 from typing import Dict, Any
 from sqlalchemy.orm import Session
 

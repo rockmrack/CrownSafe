@@ -60,4 +60,4 @@ test_formats = [
 
 print("\n🧪 Which format does Commander accept?")
 for i, fmt in enumerate(test_formats):
-    print(f"\nFormat {i+1}: {list(fmt.keys())}")
+    print(f"\nFormat {i + 1}: {list(fmt.keys())}")

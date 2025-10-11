@@ -35,9 +35,7 @@ class PrivacyRequest(Base):
 
     # Status tracking
     status = Column(String(16), nullable=False, default="queued", index=True)
-    submitted_at = Column(
-        DateTime(timezone=True), server_default=func.current_timestamp(), nullable=False
-    )
+    submitted_at = Column(DateTime(timezone=True), server_default=func.current_timestamp(), nullable=False)
     verified_at = Column(DateTime(timezone=True), nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)
     expires_at = Column(DateTime(timezone=True), nullable=True)

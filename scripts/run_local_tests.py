@@ -68,7 +68,7 @@ def start_api_server():
                 return process
         except:
             pass
-        print(f"  Waiting for server to start... ({i+1}/15)")
+        print(f"  Waiting for server to start... ({i + 1}/15)")
 
     print("❌ Failed to start API server")
     process.terminate()
@@ -77,7 +77,7 @@ def start_api_server():
 
 async def run_test(script_name, description):
     """Run a single test script"""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"🧪 {description}")
     print(f"Script: {script_name}")
     print("=" * 60)
@@ -176,7 +176,7 @@ async def main():
     print(f"  Total Tests: {total_tests}")
     print(f"  Passed: {passed_tests}")
     print(f"  Failed: {failed_tests}")
-    print(f"  Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+    print(f"  Success Rate: {(passed_tests / total_tests) * 100:.1f}%")
 
     # Cleanup
     print("\n🛑 Stopping API server...")

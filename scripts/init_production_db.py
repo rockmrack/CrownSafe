@@ -29,7 +29,7 @@ def init_production_database():
             pass
 
         if i < max_retries - 1:
-            print(f"⏳ Waiting for API to be ready... ({i+1}/{max_retries})")
+            print(f"⏳ Waiting for API to be ready... ({i + 1}/{max_retries})")
             time.sleep(2)
     else:
         print("❌ API not ready after maximum retries")

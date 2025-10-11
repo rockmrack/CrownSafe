@@ -20,9 +20,7 @@ from core_infra.mcp_client_library.exceptions import MCPClientError, ConnectionE
 
 # --- Configuration ---
 # Configure basic logging for the script
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("TestClientScript")
 
 # Define Agent ID for this test client
@@ -50,7 +48,7 @@ async def run_test_client():
     # Instantiate the client, passing our agent ID and message handler
     client = MCPClient(
         agent_id=TEST_AGENT_ID,
-        message_handler=handle_incoming_message
+        message_handler=handle_incoming_message,
         # Optionally override settings here if needed, e.g., different router URL
         # settings_override=ClientSettings(MCP_ROUTER_WS_URL="ws://...")
     )

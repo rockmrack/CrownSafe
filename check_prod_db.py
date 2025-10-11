@@ -1,6 +1,7 @@
 """
 Check production database schema
 """
+
 import psycopg2
 import sys
 

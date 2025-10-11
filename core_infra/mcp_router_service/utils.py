@@ -31,14 +31,8 @@ def parse_mcp_message(message_text: str) -> Optional[Dict[str, Any]]:
     try:
         message_dict = json.loads(message_text)
         # Basic structure validation
-        if (
-            isinstance(message_dict, dict)
-            and "mcp_header" in message_dict
-            and "payload" in message_dict
-        ):
-            if isinstance(message_dict["mcp_header"], dict) and isinstance(
-                message_dict["payload"], dict
-            ):
+        if isinstance(message_dict, dict) and "mcp_header" in message_dict and "payload" in message_dict:
+            if isinstance(message_dict["mcp_header"], dict) and isinstance(message_dict["payload"], dict):
                 # Deeper check for essential header fields
                 header = message_dict["mcp_header"]
                 if not header.get("message_type"):
@@ -137,9 +131,7 @@ def create_mcp_response(
 ) -> Optional[Dict[str, Any]]:
     """Helper to create a standard response message addressed to the original sender (target_agent_id)."""
     if not target_agent_id or not sender_service or not response_message_type:
-        logger.error(
-            "create_mcp_response requires target_agent_id, sender_service, and response_message_type."
-        )
+        logger.error("create_mcp_response requires target_agent_id, sender_service, and response_message_type.")
         return None
 
     payload_copy = copy.deepcopy(response_payload)  # Deep copy to avoid modifying the input dict
@@ -191,9 +183,7 @@ def create_mcp_response(
         else str(payload_copy)
     )
     results_count_for_log = (
-        len(payload_copy.get("results", []))
-        if isinstance(payload_copy, dict) and "results" in payload_copy
-        else "N/A"
+        len(payload_copy.get("results", [])) if isinstance(payload_copy, dict) and "results" in payload_copy else "N/A"
     )
 
     logger.debug(
@@ -211,9 +201,7 @@ def create_mcp_response(
             if len(str(payload_copy["results"][0])) > 100
             else str(payload_copy["results"][0])
         )
-        logger.debug(
-            f"First result snippet in final payload (CorrID: {correlation_id}): {first_result_snippet}"
-        )
+        logger.debug(f"First result snippet in final payload (CorrID: {correlation_id}): {first_result_snippet}")
 
     return create_mcp_message(
         message_id=message_id,
@@ -273,12 +261,8 @@ def safe_json_serialize(obj: Any, default_msg: str = "Object not serializable") 
                     json.dumps({key: value})
                     sanitized[key] = value
                 except Exception:
-                    sanitized[
-                        key
-                    ] = f"UNSERIALIZABLE_VALUE:{str(value)[:100]}"  # Truncate long string representations
-            logger.warning(
-                f"Attempting to send sanitized dict after serialization error: {list(sanitized.keys())}"
-            )
+                    sanitized[key] = f"UNSERIALIZABLE_VALUE:{str(value)[:100]}"  # Truncate long string representations
+            logger.warning(f"Attempting to send sanitized dict after serialization error: {list(sanitized.keys())}")
             return json.dumps(sanitized)
         elif isinstance(obj, list):
             sanitized = []
@@ -288,12 +272,8 @@ def safe_json_serialize(obj: Any, default_msg: str = "Object not serializable") 
                     sanitized.append(item)
                 except Exception:
                     sanitized.append(f"UNSERIALIZABLE_ITEM:{str(item)[:100]}")  # Truncate
-            logger.warning(
-                f"Attempting to send sanitized list after serialization error. Length: {len(sanitized)}"
-            )
+            logger.warning(f"Attempting to send sanitized list after serialization error. Length: {len(sanitized)}")
             return json.dumps(sanitized)
         else:
-            logger.error(
-                f"Cannot sanitize non-dict/list object of type {type(obj)}. Returning error placeholder."
-            )
+            logger.error(f"Cannot sanitize non-dict/list object of type {type(obj)}. Returning error placeholder.")
             return json.dumps({"error": default_msg, "original_type": str(type(obj))})

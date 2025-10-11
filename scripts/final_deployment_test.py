@@ -94,7 +94,7 @@ test(
 test("Get Family Members", "GET", "/api/v1/premium/family/members", params={"user_id": 1})
 
 # Add Family Member with unique name to avoid duplicates
-unique_name = f"TestBaby_{random.randint(10000,99999)}"
+unique_name = f"TestBaby_{random.randint(10000, 99999)}"
 test(
     "Add Family Member",
     "POST",

@@ -60,7 +60,7 @@ async def test_router_directly():
             print(f"   workflow_id field: {data.get('workflow_id', 'MISSING')}")
             return True
         else:
-            print(f"   Attempt {i+1}: Not found yet...")
+            print(f"   Attempt {i + 1}: Not found yet...")
 
     print("❌ Workflow was not created by Router")
     return False
@@ -101,9 +101,7 @@ def verify_router_is_running():
                 print("✅ Router Agent likely running")
             else:
                 print("⚠️  Cannot confirm Router Agent is running")
-                print(
-                    "   Check manually and start with: python -m agents.routing.router_agent.main"
-                )
+                print("   Check manually and start with: python -m agents.routing.router_agent.main")
 
             return True  # Can't be sure on Windows
         except:

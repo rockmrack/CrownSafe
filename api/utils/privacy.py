@@ -157,9 +157,7 @@ def anonymize_ip(ip_address: str) -> str:
     return ip_address
 
 
-def detect_jurisdiction(
-    ip_address: Optional[str] = None, country_code: Optional[str] = None
-) -> str:
+def detect_jurisdiction(ip_address: Optional[str] = None, country_code: Optional[str] = None) -> str:
     """
     Detect privacy jurisdiction based on location indicators
 
@@ -264,9 +262,7 @@ def calculate_sla_deadline(jurisdiction: str, submitted_at: Optional[datetime] =
     return submitted_at + timedelta(days=days)
 
 
-def format_dsar_response(
-    request_type: str, status: str = "queued", jurisdiction: str = "other"
-) -> Dict[str, Any]:
+def format_dsar_response(request_type: str, status: str = "queued", jurisdiction: str = "other") -> Dict[str, Any]:
     """
     Format standard DSAR response
 
@@ -296,9 +292,7 @@ def format_dsar_response(
     }
 
     return {
-        "message": messages.get(
-            request_type, f"Request received. We will respond within {days} days."
-        ),
+        "message": messages.get(request_type, f"Request received. We will respond within {days} days."),
         "sla_days": days,
         "status": status,
         "request_type": request_type,
@@ -422,9 +416,7 @@ class PrivacyDataExporter:
                 "generated_at": datetime.now(timezone.utc).isoformat(),
                 "format_version": "1.0",
                 "data_categories": list(user_data.keys()),
-                "record_count": sum(
-                    len(v) if isinstance(v, list) else 1 for v in user_data.values()
-                ),
+                "record_count": sum(len(v) if isinstance(v, list) else 1 for v in user_data.values()),
             },
             "user_data": user_data,
             "data_sources": {
@@ -457,9 +449,7 @@ class PIIMasker:
         if custom_patterns:
             self.patterns.update(custom_patterns)
 
-    def mask_dict(
-        self, data: Dict[str, Any], sensitive_keys: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+    def mask_dict(self, data: Dict[str, Any], sensitive_keys: Optional[List[str]] = None) -> Dict[str, Any]:
         """
         Mask PII in dictionary
 

@@ -77,24 +77,18 @@ class DocumentationAgentLogic:
             "def_list",
         ]
 
-        self.logger.info(
-            f"DocumentationAgentLogic v{self.version} initialized for agent {self.agent_id}"
-        )
+        self.logger.info(f"DocumentationAgentLogic v{self.version} initialized for agent {self.agent_id}")
 
     def _register_custom_filters(self):
         """Register custom Jinja2 filters"""
         self.jinja_env.filters["title_case"] = lambda x: str(x).title() if x else ""
         self.jinja_env.filters["percentage"] = lambda x: f"{float(x) * 100:.1f}%" if x else "0%"
-        self.jinja_env.filters["round_percent"] = (
-            lambda x: f"{round(float(x) * 100)}%" if x else "0%"
-        )
+        self.jinja_env.filters["round_percent"] = lambda x: f"{round(float(x) * 100)}%" if x else "0%"
         self.jinja_env.filters["date_format"] = (
             lambda x: datetime.strptime(x, "%Y-%m-%d").strftime("%B %d, %Y") if x else ""
         )
         self.jinja_env.filters["escape_html"] = (
-            lambda x: str(x).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            if x
-            else ""
+            lambda x: str(x).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") if x else ""
         )
         # Add safe unicode filter
         self.jinja_env.filters["safe_unicode"] = lambda x: self._safe_unicode_str(x)
@@ -146,17 +140,13 @@ class DocumentationAgentLogic:
                 "agent_id": self.agent_id,
             }
 
-        self.logger.info(
-            f"Generating documentation for workflow '{workflow_id}' of type '{report_type}'"
-        )
+        self.logger.info(f"Generating documentation for workflow '{workflow_id}' of type '{report_type}'")
 
         try:
             results = {}
 
             # Generate PDF report
-            pdf_result = self._build_pa_summary_pdf(
-                report_data, original_request, workflow_id, report_type
-            )
+            pdf_result = self._build_pa_summary_pdf(report_data, original_request, workflow_id, report_type)
             results["pdf_generation"] = asdict(pdf_result)
 
             # Generate Markdown letter
@@ -201,9 +191,7 @@ class DocumentationAgentLogic:
     def _normalize_input_data(self, task_payload: dict) -> dict:
         """Normalize input data to handle various structures"""
         # Extract base data
-        workflow_id = task_payload.get(
-            "workflow_id", f"WF_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        )
+        workflow_id = task_payload.get("workflow_id", f"WF_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
         report_type = task_payload.get("report_type", "prior_authorization")
 
         # Initialize report_data and original_request
@@ -213,14 +201,10 @@ class DocumentationAgentLogic:
         # First, check if report_data is a string reference
         report_data_field = task_payload.get("report_data", {})
         if isinstance(report_data_field, str) and report_data_field.startswith("RESULT_FROM_"):
-            self.logger.info(
-                f"Found workflow reference: {report_data_field}, looking for actual data in payload"
-            )
+            self.logger.info(f"Found workflow reference: {report_data_field}, looking for actual data in payload")
 
         # Extract original_request from various possible locations
-        if "original_request" in task_payload and isinstance(
-            task_payload["original_request"], dict
-        ):
+        if "original_request" in task_payload and isinstance(task_payload["original_request"], dict):
             original_request = task_payload["original_request"]
         elif "data" in task_payload and isinstance(task_payload["data"], dict):
             # Sometimes original request is nested under 'data'
@@ -253,8 +237,7 @@ class DocumentationAgentLogic:
         report_data = {
             "decision_prediction": prediction_fields["decision"] or "Unknown",
             "confidence_score": prediction_fields["confidence"],
-            "clinical_rationale": prediction_fields["clinical_rationale"]
-            or "No rationale provided",
+            "clinical_rationale": prediction_fields["clinical_rationale"] or "No rationale provided",
             "supporting_evidence": prediction_fields["supporting_evidence"] or [],
             "identified_gaps": prediction_fields["identified_gaps"] or [],
             "key_factors": prediction_fields["key_factors"] or [],
@@ -310,10 +293,7 @@ class DocumentationAgentLogic:
             if isinstance(value, str):
                 cleaned[key] = self._safe_unicode_str(value)
             elif isinstance(value, list):
-                cleaned[key] = [
-                    self._safe_unicode_str(item) if isinstance(item, str) else item
-                    for item in value
-                ]
+                cleaned[key] = [self._safe_unicode_str(item) if isinstance(item, str) else item for item in value]
             elif isinstance(value, dict):
                 cleaned[key] = self._clean_unicode_dict(value)
             else:
@@ -330,11 +310,7 @@ class DocumentationAgentLogic:
         missing_fields = []
 
         for field in required_fields:
-            if (
-                field not in report_data
-                or report_data[field] is None
-                or str(report_data[field]).strip() == ""
-            ):
+            if field not in report_data or report_data[field] is None or str(report_data[field]).strip() == "":
                 missing_fields.append(field)
 
         if missing_fields:
@@ -392,25 +368,16 @@ class DocumentationAgentLogic:
                 "company": self.config,
                 "generation_timestamp": datetime.now().isoformat(),
                 # Additional context for enhanced reporting
-                "drug_name_formatted": self._safe_unicode_str(
-                    original_request.get("drug_name", "N/A")
-                ).title(),
+                "drug_name_formatted": self._safe_unicode_str(original_request.get("drug_name", "N/A")).title(),
                 "patient_id_masked": self._mask_patient_id(original_request.get("patient_id", "")),
                 "insurer_name": self._get_insurer_name(original_request.get("insurer_id", "")),
                 "diagnosis_codes_formatted": ", ".join(
-                    [
-                        self._safe_unicode_str(code)
-                        for code in original_request.get("diagnosis_codes", [])
-                    ]
+                    [self._safe_unicode_str(code) for code in original_request.get("diagnosis_codes", [])]
                 ),
-                "provider_name": self._safe_unicode_str(
-                    original_request.get("provider_name", "Healthcare Provider")
-                ),
+                "provider_name": self._safe_unicode_str(original_request.get("provider_name", "Healthcare Provider")),
                 "is_approved": is_approved,
                 "decision_formatted": "APPROVED" if is_approved else "DENIED",
-                "confidence_percentage": self._format_confidence(
-                    prediction_data.get("confidence_score")
-                ),
+                "confidence_percentage": self._format_confidence(prediction_data.get("confidence_score")),
                 "report_metadata": {
                     "total_evidence": len(prediction_data.get("supporting_evidence", [])),
                     "total_gaps": len(prediction_data.get("identified_gaps", [])),
@@ -431,9 +398,7 @@ class DocumentationAgentLogic:
             # Generate PDF with WeasyPrint
             HTML(string=html_string, base_url=str(self.base_dir)).write_pdf(
                 pdf_filepath,
-                stylesheets=[self._get_print_stylesheet()]
-                if self._get_print_stylesheet()
-                else None,
+                stylesheets=[self._get_print_stylesheet()] if self._get_print_stylesheet() else None,
             )
 
             # Calculate file hash
@@ -446,9 +411,7 @@ class DocumentationAgentLogic:
 
             generation_time = (datetime.now() - start_time).total_seconds()
 
-            self.logger.info(
-                f"Generated PA Summary PDF at: {pdf_filepath} (Size: {file_size_mb:.2f}MB)"
-            )
+            self.logger.info(f"Generated PA Summary PDF at: {pdf_filepath} (Size: {file_size_mb:.2f}MB)")
 
             return DocumentGenerationResult(
                 success=True,
@@ -473,9 +436,7 @@ class DocumentationAgentLogic:
         try:
             patient_id = original_request.get("patient_id", "Unknown")
             drug_name = self._safe_unicode_str(original_request.get("drug_name", "Unknown"))
-            provider_name = self._safe_unicode_str(
-                original_request.get("provider_name", "Dr. Smith")
-            )
+            provider_name = self._safe_unicode_str(original_request.get("provider_name", "Dr. Smith"))
             provider_npi = original_request.get("provider_npi", "1234567890")
             diagnosis_codes = original_request.get("diagnosis_codes", ["E11.9"])
 
@@ -621,9 +582,7 @@ class DocumentationAgentLogic:
             markdown_content = "\n".join(md_parts)
 
             # Save markdown file with UTF-8 encoding
-            md_filename = (
-                f"Letter_of_Necessity_{workflow_id[:8]}_{datetime.now().strftime('%Y%m%d')}.md"
-            )
+            md_filename = f"Letter_of_Necessity_{workflow_id[:8]}_{datetime.now().strftime('%Y%m%d')}.md"
             md_filepath = self.output_dir / md_filename
 
             with open(md_filepath, "w", encoding="utf-8") as f:
@@ -654,9 +613,7 @@ class DocumentationAgentLogic:
                 return md_result
 
             # Convert markdown to HTML
-            html_content = markdown.markdown(
-                md_result.markdown_content, extensions=self.markdown_extensions
-            )
+            html_content = markdown.markdown(md_result.markdown_content, extensions=self.markdown_extensions)
 
             # Wrap in HTML template with enhanced styling
             html_template = f"""
@@ -742,9 +699,7 @@ class DocumentationAgentLogic:
             return DocumentGenerationResult(success=True, html_path=str(html_filepath))
 
         except Exception as e:
-            return DocumentGenerationResult(
-                success=False, error_message=f"HTML preview generation failed: {str(e)}"
-            )
+            return DocumentGenerationResult(success=False, error_message=f"HTML preview generation failed: {str(e)}")
 
     def _create_default_template(self):
         """Create a default PA summary template if none exists"""

@@ -79,7 +79,7 @@ formats_to_test = [
 
 for i, test_format in enumerate(formats_to_test):
     workflow_id = str(uuid.uuid4())
-    print(f"Test {i+1}: {test_format['name']}")
+    print(f"Test {i + 1}: {test_format['name']}")
 
     msg = {
         "mcp_header": {

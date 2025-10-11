@@ -1,4 +1,5 @@
-﻿"""Simple smoke tests for API modules"""
+"""Simple smoke tests for API modules"""
+
 import unittest
 from unittest.mock import Mock, patch
 

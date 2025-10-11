@@ -5,6 +5,7 @@ Revises: 20250105_monitoring_notifications
 Create Date: 2025-01-10
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

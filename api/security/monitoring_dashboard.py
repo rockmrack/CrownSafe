@@ -2,6 +2,7 @@
 Security Monitoring Dashboard for BabyShield
 Real-time threat intelligence and attack visualization
 """
+
 from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 from typing import Dict, List, Any, Optional
@@ -52,20 +53,14 @@ def update_security_metrics(
         security_metrics["threat_score_distribution"]["low"] += 1
 
     # Attack types
-    security_metrics["attack_types"][attack_type] = (
-        security_metrics["attack_types"].get(attack_type, 0) + 1
-    )
+    security_metrics["attack_types"][attack_type] = security_metrics["attack_types"].get(attack_type, 0) + 1
 
     # Top attacking IPs
-    security_metrics["top_attacking_ips"][client_ip] = (
-        security_metrics["top_attacking_ips"].get(client_ip, 0) + 1
-    )
+    security_metrics["top_attacking_ips"][client_ip] = security_metrics["top_attacking_ips"].get(client_ip, 0) + 1
 
     # User agent tracking
     if blocked:
-        security_metrics["user_agent_blocks"][user_agent] = (
-            security_metrics["user_agent_blocks"].get(user_agent, 0) + 1
-        )
+        security_metrics["user_agent_blocks"][user_agent] = security_metrics["user_agent_blocks"].get(user_agent, 0) + 1
 
     security_metrics["last_updated"] = time.time()
 
@@ -80,12 +75,8 @@ async def security_dashboard():
     block_rate = (blocked_requests / max(total_requests, 1)) * 100
 
     # Get top threats
-    top_ips = sorted(
-        security_metrics["top_attacking_ips"].items(), key=lambda x: x[1], reverse=True
-    )[:10]
-    top_attacks = sorted(
-        security_metrics["attack_types"].items(), key=lambda x: x[1], reverse=True
-    )[:10]
+    top_ips = sorted(security_metrics["top_attacking_ips"].items(), key=lambda x: x[1], reverse=True)[:10]
+    top_attacks = sorted(security_metrics["attack_types"].items(), key=lambda x: x[1], reverse=True)[:10]
 
     dashboard_html = f"""
     <!DOCTYPE html>
@@ -140,7 +131,7 @@ async def security_dashboard():
                     <div class="metric-label">Blocked Attacks</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-value {'threat-high' if block_rate > 10 else 'threat-medium' if block_rate > 5 else 'threat-low'}">{block_rate:.1f}%</div>
+                    <div class="metric-value {"threat-high" if block_rate > 10 else "threat-medium" if block_rate > 5 else "threat-low"}">{block_rate:.1f}%</div>
                     <div class="metric-label">Block Rate</div>
                 </div>
                 <div class="metric-card">
@@ -152,12 +143,12 @@ async def security_dashboard():
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="table">
                     <div class="table-header">🎯 Top Attacking IPs</div>
-                    {''.join(f'<div class="table-row"><span class="status-indicator status-danger"></span>{ip} ({count} attacks)</div>' for ip, count in top_ips)}
+                    {"".join(f'<div class="table-row"><span class="status-indicator status-danger"></span>{ip} ({count} attacks)</div>' for ip, count in top_ips)}
                 </div>
                 
                 <div class="table">
                     <div class="table-header">⚔️ Attack Types</div>
-                    {''.join(f'<div class="table-row"><span class="status-indicator status-warning"></span>{attack} ({count} attempts)</div>' for attack, count in top_attacks)}
+                    {"".join(f'<div class="table-row"><span class="status-indicator status-warning"></span>{attack} ({count} attempts)</div>' for attack, count in top_attacks)}
                 </div>
             </div>
             
@@ -210,10 +201,7 @@ async def live_threats():
     return JSONResponse(
         content={
             "active_threats": len(security_metrics["top_attacking_ips"]),
-            "block_rate": (
-                security_metrics["blocked_requests"] / max(security_metrics["total_requests"], 1)
-            )
-            * 100,
+            "block_rate": (security_metrics["blocked_requests"] / max(security_metrics["total_requests"], 1)) * 100,
             "threat_level": "low",  # Would be calculated based on recent activity
             "last_attack": datetime.fromtimestamp(security_metrics["last_updated"]).isoformat(),
             "protection_status": "active",

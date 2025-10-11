@@ -3,6 +3,7 @@
 Local dev helper: if DATABASE_URL uses sqlite, map SQLAlchemy's JSONB to JSON
 so SQLite can create tables. No effect on Postgres/ECS.
 """
+
 import os
 
 DB_URL = os.getenv("DATABASE_URL", "")

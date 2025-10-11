@@ -68,9 +68,7 @@ class VisualSearchAgentLogic:
         # Check if OpenAI API key is available
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key or api_key.startswith("sk-mock"):
-            self.logger.warning(
-                "OpenAI API key not configured - visual identification will be unavailable"
-            )
+            self.logger.warning("OpenAI API key not configured - visual identification will be unavailable")
             self.llm_client = None
         else:
             self.llm_client = AsyncOpenAI(api_key=api_key)
@@ -109,9 +107,7 @@ class VisualSearchAgentLogic:
                     "type": "image_url",
                     "image_url": {"url": f"data:image/{fmt};base64,{b64}"},
                 }
-                self.logger.info(
-                    f"Fetched external image for suggestions ({len(image_bytes)} bytes, {content_type})"
-                )
+                self.logger.info(f"Fetched external image for suggestions ({len(image_bytes)} bytes, {content_type})")
             except Exception as fetch_err:
                 # Map common fetch errors to clean failures; skip OpenAI entirely
                 msg = str(fetch_err)
@@ -164,9 +160,7 @@ class VisualSearchAgentLogic:
             )
             self.logger.info("OpenAI API call for suggestions completed successfully")
             suggestions_json = response.choices[0].message.content
-            self.logger.info(
-                f"OpenAI suggestions response: {suggestions_json[:200]}..."
-            )  # Log first 200 chars
+            self.logger.info(f"OpenAI suggestions response: {suggestions_json[:200]}...")  # Log first 200 chars
 
             if not suggestions_json or suggestions_json.strip() == "":
                 self.logger.warning("OpenAI returned empty suggestions response")
@@ -212,9 +206,7 @@ class VisualSearchAgentLogic:
             if "401" in error_message and (
                 "api key" in error_message.lower() or "unauthorized" in error_message.lower()
             ):
-                self.logger.warning(
-                    "OpenAI API key is invalid or missing - visual identification unavailable"
-                )
+                self.logger.warning("OpenAI API key is invalid or missing - visual identification unavailable")
                 return {
                     "status": "FAILED",
                     "error": "Visual identification unavailable - OpenAI API key not configured",
@@ -255,9 +247,7 @@ class VisualSearchAgentLogic:
                     "type": "image_url",
                     "image_url": {"url": f"data:image/{fmt};base64,{b64}"},
                 }
-                self.logger.info(
-                    f"Fetched external image ({len(image_bytes)} bytes, {content_type})"
-                )
+                self.logger.info(f"Fetched external image ({len(image_bytes)} bytes, {content_type})")
             except Exception as fetch_err:
                 # Map common fetch errors to clean failures; skip OpenAI entirely
                 msg = str(fetch_err)
@@ -310,9 +300,7 @@ class VisualSearchAgentLogic:
             )
             self.logger.info("OpenAI API call completed successfully")
             result_json = response.choices[0].message.content
-            self.logger.info(
-                f"OpenAI response content: {result_json[:200]}..."
-            )  # Log first 200 chars
+            self.logger.info(f"OpenAI response content: {result_json[:200]}...")  # Log first 200 chars
 
             if not result_json or result_json.strip() == "":
                 self.logger.warning("OpenAI returned empty response")
@@ -348,9 +336,7 @@ class VisualSearchAgentLogic:
                 ]
                 for field in required_fields:
                     if field not in best_guess:
-                        self.logger.warning(
-                            f"Missing field '{field}' in OpenAI response, setting to null"
-                        )
+                        self.logger.warning(f"Missing field '{field}' in OpenAI response, setting to null")
                         best_guess[field] = None
 
                 # Ensure confidence is a number
@@ -390,9 +376,7 @@ class VisualSearchAgentLogic:
             if "401" in error_message and (
                 "api key" in error_message.lower() or "unauthorized" in error_message.lower()
             ):
-                self.logger.warning(
-                    "OpenAI API key is invalid or missing - visual identification unavailable"
-                )
+                self.logger.warning("OpenAI API key is invalid or missing - visual identification unavailable")
                 return {
                     "status": "FAILED",
                     "error": "Visual identification unavailable - OpenAI API key not configured",

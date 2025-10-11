@@ -38,9 +38,7 @@ except ImportError as e:
     sys.exit(1)
 
 # --- Configuration ---
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 # Set higher level for noisy libraries if needed
 logging.getLogger("websockets.client").setLevel(logging.WARNING)
 logger = logging.getLogger("TestTaskAssignScript")
@@ -74,9 +72,7 @@ async def handle_controller_message(message: Dict[str, Any]):
     # Check if this message corresponds to the task we sent using correlation_id
     if correlation_id == task_correlation_id:
         if message_type in ["TASK_COMPLETE", "TASK_FAIL"]:
-            logger.info(
-                f"Received final task status: {message_type} for correlation_id: {correlation_id}"
-            )
+            logger.info(f"Received final task status: {message_type} for correlation_id: {correlation_id}")
             task_result = message  # Store the whole message
             task_completion_event.set()  # Signal that the task is done
         elif message_type == "TASK_ACKNOWLEDGE":
@@ -88,9 +84,7 @@ async def handle_controller_message(message: Dict[str, Any]):
                 f"Received STATUS_UPDATE for correlation_id: {correlation_id}, Description: {payload.get('status_description')}"
             )
         else:
-            logger.debug(
-                f"Received message type {message_type} with matching correlation ID, but not final status."
-            )
+            logger.debug(f"Received message type {message_type} with matching correlation ID, but not final status.")
     else:
         logger.debug(
             f"Received message with non-matching correlation ID: {correlation_id} (Expected: {task_correlation_id})"
@@ -153,9 +147,7 @@ async def run_task_assignment():
                 logger.error("Completion event received, but no result was stored.")
 
         except asyncio.TimeoutError:
-            logger.error(
-                f"Timeout: Did not receive task completion message within {TASK_TIMEOUT_SECONDS} seconds."
-            )
+            logger.error(f"Timeout: Did not receive task completion message within {TASK_TIMEOUT_SECONDS} seconds.")
 
     except ConnectionError as e:
         logger.error(f"Connection error during task assignment test: {e}")

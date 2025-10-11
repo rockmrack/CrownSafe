@@ -108,9 +108,7 @@ async def trigger_ingestion(
             },
         )
 
-        return create_response(
-            {"runId": run_id, "status": status, "agency": agency, "mode": mode}, request
-        )
+        return create_response({"runId": run_id, "status": status, "agency": agency, "mode": mode}, request)
 
     except ValueError as e:
         raise APIError(status_code=400, code="INVALID_REQUEST", message=str(e))
@@ -260,9 +258,7 @@ async def cancel_ingestion_run(
 
 
 @router.post("/reindex", dependencies=[Depends(AdminRateLimit.get_reindex_limiter)])
-async def reindex_database(
-    request: Request, admin: str = Depends(require_admin), db: Session = Depends(get_db)
-):
+async def reindex_database(request: Request, admin: str = Depends(require_admin), db: Session = Depends(get_db)):
     """
     Reindex database and run VACUUM ANALYZE
     """
@@ -363,9 +359,7 @@ async def data_freshness(request: Request, db: Session = Depends(get_db)):
                     "lastUpdated": stat.last_updated.isoformat() if stat.last_updated else None,
                     "new24h": stat.new_24h or 0,
                     "new7d": stat.new_7d or 0,
-                    "staleness": "fresh"
-                    if stat.new_24h > 0
-                    else ("recent" if stat.new_7d > 0 else "stale"),
+                    "staleness": "fresh" if stat.new_24h > 0 else ("recent" if stat.new_7d > 0 else "stale"),
                 }
             )
 
@@ -436,9 +430,9 @@ async def admin_statistics(request: Request, db: Session = Depends(get_db)):
                 func.count(IngestionRun.id).label("total"),
                 func.sum(func.cast(IngestionRun.status == "success", Integer)).label("success"),
                 func.sum(func.cast(IngestionRun.status == "failed", Integer)).label("failed"),
-                func.avg(
-                    func.extract("epoch", IngestionRun.finished_at - IngestionRun.started_at)
-                ).label("avg_duration"),
+                func.avg(func.extract("epoch", IngestionRun.finished_at - IngestionRun.started_at)).label(
+                    "avg_duration"
+                ),
             )
             .filter(IngestionRun.created_at >= week_ago)
             .first()

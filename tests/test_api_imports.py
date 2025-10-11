@@ -1,4 +1,5 @@
-﻿"""Tests for API module imports"""
+"""Tests for API module imports"""
+
 import unittest
 from unittest.mock import Mock, patch
 

@@ -35,9 +35,7 @@ from agents.recall_data_agent.agent_logic import RecallDataAgentLogic
 from agents.recall_data_agent.models import Recall
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # --- Test Configuration ---
@@ -73,22 +71,16 @@ async def main():
     logger.info("In-memory tables created.")
 
     # 2. Patch connectors in the connectors module
-    with patch(
-        "agents.recall_data_agent.connectors.CPSCConnector", new=MockCPSCConnector
-    ), patch(
-        "agents.recall_data_agent.connectors.FDAConnector", new=EmptyConnector
-    ), patch(
-        "agents.recall_data_agent.connectors.EU_RAPEX_Connector", new=EmptyConnector
-    ), patch(
-        "agents.recall_data_agent.connectors.UK_OPSS_Connector", new=EmptyConnector
-    ), patch(
-        "agents.recall_data_agent.connectors.SG_CPSO_Connector", new=EmptyConnector
+    with (
+        patch("agents.recall_data_agent.connectors.CPSCConnector", new=MockCPSCConnector),
+        patch("agents.recall_data_agent.connectors.FDAConnector", new=EmptyConnector),
+        patch("agents.recall_data_agent.connectors.EU_RAPEX_Connector", new=EmptyConnector),
+        patch("agents.recall_data_agent.connectors.UK_OPSS_Connector", new=EmptyConnector),
+        patch("agents.recall_data_agent.connectors.SG_CPSO_Connector", new=EmptyConnector),
     ):
         try:
             # 3. Initialize agent logic
-            agent_logic = RecallDataAgentLogic(
-                agent_id="test_rda_001", logger_instance=logger
-            )
+            agent_logic = RecallDataAgentLogic(agent_id="test_rda_001", logger_instance=logger)
 
             # 4. Test WRITE
             logger.info("--- Testing WRITE (run_ingestion_cycle) ---")
@@ -109,9 +101,7 @@ async def main():
             if read_result.get("status") == "COMPLETED":
                 recalls = read_result["result"]["recalls"]
                 if len(recalls) == 1 and recalls[0]["recall_id"] == MOCK_CPSC_RECALL.recall_id:
-                    print(
-                        Fore.GREEN + Style.BRIGHT + f"✔ READ succeeded: {recalls[0]['recall_id']}"
-                    )
+                    print(Fore.GREEN + Style.BRIGHT + f"✔ READ succeeded: {recalls[0]['recall_id']}")
                 else:
                     print(Fore.RED + Style.BRIGHT + "✖ READ mismatch.")
             else:

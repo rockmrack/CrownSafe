@@ -21,7 +21,7 @@ test_cases = [
 
 for i, test in enumerate(test_cases):
     workflow_id = str(uuid.uuid4())
-    print(f"Test {i+1}: {test['drug_name']} for {test['disease']}")
+    print(f"Test {i + 1}: {test['drug_name']} for {test['disease']}")
 
     msg = {
         "mcp_header": {

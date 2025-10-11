@@ -123,9 +123,7 @@ def _rules(scan: Dict[str, Any], profile: Dict[str, Any]) -> List[AlternativeIte
         )
 
     # Cosmetic ingredients: pregnancy-safe alternatives
-    if cat == "cosmetic" and any(
-        ing in ingredients for ing in ["retinol", "salicylic acid", "hydroquinone"]
-    ):
+    if cat == "cosmetic" and any(ing in ingredients for ing in ["retinol", "salicylic acid", "hydroquinone"]):
         items.append(
             AlternativeItem(
                 id="alt_pregnancy_safe_skincare",

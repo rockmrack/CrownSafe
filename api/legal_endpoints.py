@@ -148,7 +148,7 @@ def get_document_content(doc_id: str, format: str = "markdown") -> tuple[str, st
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>{doc_info['title']}</title>
+            <title>{doc_info["title"]}</title>
             <style>
                 body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
                        line-height: 1.6; padding: 20px; max-width: 800px; margin: 0 auto; }}
@@ -164,7 +164,7 @@ def get_document_content(doc_id: str, format: str = "markdown") -> tuple[str, st
             {html_content}
             <footer>
                 <hr>
-                <p><small>Version: {doc_info['version']} | Last Updated: {doc_info['last_updated']}</small></p>
+                <p><small>Version: {doc_info["version"]} | Last Updated: {doc_info["last_updated"]}</small></p>
             </footer>
         </body>
         </html>
@@ -269,9 +269,7 @@ async def list_legal_documents(language: Optional[str] = "en"):
 
 
 @router.get("/{document_id}")
-async def get_legal_document(
-    document_id: str, format: Optional[str] = "html", language: Optional[str] = "en"
-):
+async def get_legal_document(document_id: str, format: Optional[str] = "html", language: Optional[str] = "en"):
     """
     Get a specific legal document
 
@@ -439,9 +437,7 @@ async def request_data_export(user_id: str = Header(..., alias="X-User-ID")):
 
 
 @router.post("/privacy/delete-data")
-async def request_data_deletion(
-    deletion: DataDeletionRequest, user_id: str = Header(..., alias="X-User-ID")
-):
+async def request_data_deletion(deletion: DataDeletionRequest, user_id: str = Header(..., alias="X-User-ID")):
     """Request deletion of user's data (GDPR Article 17)"""
 
     # Validate user

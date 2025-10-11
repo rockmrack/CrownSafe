@@ -81,9 +81,7 @@ class RecallDB(Base):
     id = Column(Integer, primary_key=True, index=True)
     recall_id = Column(String, unique=True, index=True, nullable=False)
     product_name = Column(String, index=True, nullable=False)
-    model_number = Column(
-        String, index=True, nullable=True
-    )  # NEW: Model number for precise matching
+    model_number = Column(String, index=True, nullable=True)  # NEW: Model number for precise matching
     brand = Column(String, nullable=True)
     country = Column(String, nullable=True)
     recall_date = Column(Date, index=True, nullable=False)
@@ -118,9 +116,7 @@ class User(Base):
     is_pregnant = Column(Boolean, default=False, nullable=False)
 
     # Relationship to family members
-    family_members = relationship(
-        "FamilyMember", back_populates="user", cascade="all, delete-orphan"
-    )
+    family_members = relationship("FamilyMember", back_populates="user", cascade="all, delete-orphan")
 
     def to_dict(self) -> dict:
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -141,9 +137,7 @@ class FamilyMember(Base):
 
     # Relationships
     user = relationship("User", back_populates="family_members")
-    allergies = relationship(
-        "Allergy", back_populates="family_member", cascade="all, delete-orphan"
-    )
+    allergies = relationship("Allergy", back_populates="family_member", cascade="all, delete-orphan")
 
     def to_dict(self) -> dict:
         return {
@@ -370,9 +364,7 @@ def ensure_test_users():
             print(f"Error creating test users: {e}")
 
 
-def create_or_update_test_user(
-    user_id: int, email: str, is_subscribed: bool = False, is_pregnant: bool = False
-):
+def create_or_update_test_user(user_id: int, email: str, is_subscribed: bool = False, is_pregnant: bool = False):
     """Helper to create or update a single test user."""
     with get_db_session() as db:
         try:

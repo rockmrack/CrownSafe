@@ -5,6 +5,7 @@ Revises: 20250108_share_tokens
 Create Date: 2025-01-09
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
@@ -153,9 +154,7 @@ def upgrade():
         ["severity_level"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_incident_reports_status"), "incident_reports", ["status"], unique=False
-    )
+    op.create_index(op.f("ix_incident_reports_status"), "incident_reports", ["status"], unique=False)
 
     # Create incident_clusters table
     op.create_table(

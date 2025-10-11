@@ -155,9 +155,7 @@ class UpsertHandler:
             return False
 
     @staticmethod
-    def bulk_upsert_recalls(
-        db: Session, recalls: List[Dict[str, Any]], batch_size: int = 100
-    ) -> Dict[str, int]:
+    def bulk_upsert_recalls(db: Session, recalls: List[Dict[str, Any]], batch_size: int = 100) -> Dict[str, int]:
         """
         Perform bulk UPSERT for multiple recalls with batching
 
@@ -254,7 +252,7 @@ class UpsertHandler:
                         remedy, description, recall_date, source_agency,
                         country, regions_affected, url, manufacturer_contact,
                         search_keywords, agency_specific_data
-                    ) VALUES {', '.join(values_list)}
+                    ) VALUES {", ".join(values_list)}
                     ON CONFLICT (recall_id) 
                     DO UPDATE SET
                         product_name = EXCLUDED.product_name,
@@ -382,11 +380,11 @@ class EnhancedUpsertHandler(UpsertHandler):
 
             query = text(
                 f"""
-                INSERT INTO {table} ({', '.join(columns)})
-                VALUES ({', '.join(value_placeholders)})
+                INSERT INTO {table} ({", ".join(columns)})
+                VALUES ({", ".join(value_placeholders)})
                 ON CONFLICT ({unique_key})
                 DO UPDATE SET
-                    {', '.join(update_sets)},
+                    {", ".join(update_sets)},
                     updated_at = CURRENT_TIMESTAMP
                 RETURNING {unique_key}, (xmax = 0) AS inserted
             """

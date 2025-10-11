@@ -66,9 +66,7 @@ class AsyncAPIClient:
 
                     if response.status == 200:
                         data = await response.json()
-                        logger.info(
-                            f"API call successful: {method} {url} " f"({response_time:.2f}s)"
-                        )
+                        logger.info(f"API call successful: {method} {url} ({response_time:.2f}s)")
                         return data
                     elif response.status == 429:  # Rate limited
                         retry_after = int(response.headers.get("Retry-After", 60))
@@ -76,9 +74,7 @@ class AsyncAPIClient:
                         await asyncio.sleep(retry_after)
                         continue
                     else:
-                        logger.warning(
-                            f"API call failed: {method} {url} " f"Status: {response.status}"
-                        )
+                        logger.warning(f"API call failed: {method} {url} Status: {response.status}")
                         last_exception = Exception(f"HTTP {response.status}")
 
             except asyncio.TimeoutError:
@@ -157,9 +153,7 @@ class AsyncBatchProcessor:
             batch_results = await self._process_batch(batch, process_func)
             results.extend(batch_results)
 
-            logger.info(
-                f"Processed batch {i//self.batch_size + 1}, " f"Total: {len(results)}/{len(items)}"
-            )
+            logger.info(f"Processed batch {i // self.batch_size + 1}, Total: {len(results)}/{len(items)}")
 
         return results
 
@@ -281,9 +275,7 @@ class AsyncTaskQueue:
     async def start(self):
         """Start processing tasks"""
         self.running = True
-        self.workers = [
-            asyncio.create_task(self._worker(f"worker-{i}")) for i in range(self.max_workers)
-        ]
+        self.workers = [asyncio.create_task(self._worker(f"worker-{i}")) for i in range(self.max_workers)]
 
     async def stop(self):
         """Stop processing tasks"""

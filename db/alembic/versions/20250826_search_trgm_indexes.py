@@ -5,6 +5,7 @@ Revises: add_subscription_unique_constraint
 Create Date: 2025-01-26
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy import text
@@ -31,9 +32,7 @@ def upgrade():
 
     # Check for recalls_enhanced
     result = connection.execute(
-        text(
-            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls_enhanced');"
-        )
+        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls_enhanced');")
     )
     has_enhanced = result.scalar()
 
@@ -205,9 +204,7 @@ def downgrade():
     connection = op.get_bind()
 
     result = connection.execute(
-        text(
-            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls_enhanced');"
-        )
+        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls_enhanced');")
     )
     has_enhanced = result.scalar()
 

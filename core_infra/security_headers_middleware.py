@@ -41,9 +41,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-XSS-Protection"] = "1; mode=block"
 
         # HSTS (only for production)
-        response.headers[
-            "Strict-Transport-Security"
-        ] = "max-age=63072000; includeSubDomains; preload"
+        response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
 
         # Cache control for security
         if request.url.path.startswith("/api/"):
@@ -78,9 +76,7 @@ class EnhancedCORSMiddleware(BaseHTTPMiddleware):
                 response.headers["Access-Control-Allow-Origin"] = self.allowed_origins[0]
 
             response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-            response.headers[
-                "Access-Control-Allow-Headers"
-            ] = "Content-Type, Authorization, X-API-Key"
+            response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-API-Key"
             response.headers["Access-Control-Max-Age"] = "86400"
 
             if self.allow_credentials and origin != "*":

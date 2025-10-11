@@ -73,7 +73,7 @@ test(
 test("Get Members", "GET", "/api/v1/premium/family/members", params={"user_id": 1})
 
 # Try Add Member with unique name
-unique_name = f"Baby_{random.randint(1000,9999)}"
+unique_name = f"Baby_{random.randint(1000, 9999)}"
 r = requests.post(
     f"{BASE_URL}/api/v1/premium/family/members?user_id=1",
     json={"name": unique_name, "relationship": "child"},

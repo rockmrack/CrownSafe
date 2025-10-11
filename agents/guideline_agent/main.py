@@ -11,9 +11,7 @@ from core_infra.mcp_client_library.models import MCPMessage
 from .agent_logic import GuidelineAgentLogic
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "guideline_agent_01"

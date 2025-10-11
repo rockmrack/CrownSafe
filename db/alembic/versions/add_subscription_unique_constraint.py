@@ -5,6 +5,7 @@ Revises: add_subscription_tables
 Create Date: 2024-01-25
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy import text

@@ -105,7 +105,7 @@ def generate_test_jwt(agent_id: str) -> str:
         "sub": agent_id,
         "iat": datetime.datetime.utcnow(),
         "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),  # Token valid for 1 hour
-        "iss": settings.SERVICE_NAME  # Issuer
+        "iss": settings.SERVICE_NAME,  # Issuer
         # Add other claims like scope ('scp') if needed
     }
     token = jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)

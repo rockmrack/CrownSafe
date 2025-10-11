@@ -1,10 +1,11 @@
 """Add missing severity and risk_category columns
 
 Revision ID: fix_missing_columns
-Revises: 
+Revises:
 Create Date: 2025-08-27
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

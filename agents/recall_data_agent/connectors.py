@@ -76,13 +76,9 @@ class CPSCConnector:
                                 model_number=product.get("Model"),
                                 upc=product.get("UPC"),
                                 recall_date=datetime.strptime(recall_date_str, "%Y-%m-%d").date(),
-                                hazard=item.get("Hazards", [{}])[0].get("Name")
-                                if item.get("Hazards")
-                                else None,
+                                hazard=item.get("Hazards", [{}])[0].get("Name") if item.get("Hazards") else None,
                                 recall_reason=item.get("Description"),
-                                remedy=item.get("Remedies", [{}])[0].get("Name")
-                                if item.get("Remedies")
-                                else None,
+                                remedy=item.get("Remedies", [{}])[0].get("Name") if item.get("Remedies") else None,
                                 url=item.get("URL"),
                                 source_agency="CPSC",
                                 country="US",
@@ -140,14 +136,10 @@ class FDAConnector:
                                 recalls.append(
                                     Recall(
                                         recall_id=f"FDA-{item.get('recall_number')}",
-                                        product_name=item.get(
-                                            "product_description", "Unknown Product"
-                                        ),
+                                        product_name=item.get("product_description", "Unknown Product"),
                                         brand=item.get("recalling_firm"),
                                         lot_number=item.get("code_info"),
-                                        recall_date=datetime.strptime(
-                                            recall_date_str, "%Y%m%d"
-                                        ).date(),
+                                        recall_date=datetime.strptime(recall_date_str, "%Y%m%d").date(),
                                         recall_reason=item.get("reason_for_recall"),
                                         recall_class=item.get("classification"),
                                         country=item.get("country"),
@@ -204,9 +196,7 @@ class NHTSAConnector:
                                         vehicle_model=item.get("Model"),
                                         model_year=str(item.get("ModelYear")),
                                         manufacturer=item.get("Manufacturer"),
-                                        recall_date=datetime.strptime(
-                                            item.get("ReportReceivedDate"), "%Y%m%d"
-                                        ).date(),
+                                        recall_date=datetime.strptime(item.get("ReportReceivedDate"), "%Y%m%d").date(),
                                         hazard=item.get("Consequence"),
                                         recall_reason=item.get("Summary"),
                                         remedy=item.get("Remedy"),
@@ -255,9 +245,7 @@ class USDA_FSIS_Connector:
                                 product_name=item.get("product_description", "Unknown"),
                                 brand=item.get("brand_name"),
                                 lot_number=item.get("case_lot_code"),
-                                production_date=datetime.strptime(
-                                    item.get("production_date"), "%Y-%m-%d"
-                                ).date()
+                                production_date=datetime.strptime(item.get("production_date"), "%Y-%m-%d").date()
                                 if item.get("production_date")
                                 else None,
                                 recall_date=datetime.strptime(recall_date_str, "%Y-%m-%d").date(),
@@ -309,9 +297,7 @@ class HealthCanadaConnector:
                                 brand=item.get("brand_name"),
                                 model_number=item.get("model_number"),
                                 upc=item.get("upc"),
-                                recall_date=datetime.strptime(
-                                    item.get("date_published"), "%Y-%m-%d"
-                                ).date(),
+                                recall_date=datetime.strptime(item.get("date_published"), "%Y-%m-%d").date(),
                                 hazard=item.get("hazard"),
                                 recall_reason=item.get("issue"),
                                 remedy=item.get("what_to_do"),
@@ -463,9 +449,7 @@ class CommerceCommissionNZConnector:
         """Fetch recalls from NZ Commerce Commission"""
         logger.info("Fetching recent recalls from NZ Commerce Commission...")
         # Note: Requires web scraping - placeholder implementation
-        logger.warning(
-            "NZ Commerce Commission connector requires web scraping - not yet implemented"
-        )
+        logger.warning("NZ Commerce Commission connector requires web scraping - not yet implemented")
         return []
 
 

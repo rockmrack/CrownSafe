@@ -1,4 +1,5 @@
-﻿"""Tests for api/routers/chat.py"""
+"""Tests for api/routers/chat.py"""
+
 import unittest
 from unittest.mock import Mock, patch
 

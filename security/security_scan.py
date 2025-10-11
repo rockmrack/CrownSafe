@@ -101,10 +101,7 @@ class SecurityScanner:
                             matches = re.finditer(pattern, content)
                             for match in matches:
                                 # Check if it's an environment variable reference
-                                if (
-                                    "os.environ"
-                                    in content[max(0, match.start() - 20) : match.end() + 20]
-                                ):
+                                if "os.environ" in content[max(0, match.start() - 20) : match.end() + 20]:
                                     continue
 
                                 secrets_found.append(
@@ -272,9 +269,7 @@ class SecurityScanner:
                     data_checks["data_retention"] = True
 
                 # Check for secure deletion
-                if "delete" in content.lower() and (
-                    "secure" in content.lower() or "permanent" in content.lower()
-                ):
+                if "delete" in content.lower() and ("secure" in content.lower() or "permanent" in content.lower()):
                     data_checks["secure_deletion"] = True
 
         # Summary
@@ -494,9 +489,7 @@ class SecurityScanner:
                 "security_score": 0,
             },
             "compliance": {
-                "no_email_storage": not self.findings.get("data_handling", {}).get(
-                    "email_storage", True
-                ),
+                "no_email_storage": not self.findings.get("data_handling", {}).get("email_storage", True),
                 "user_id_only": self.findings.get("data_handling", {}).get("user_id_only", False),
                 "provider_sub": self.findings.get("data_handling", {}).get("provider_sub", False),
             },
@@ -505,9 +498,7 @@ class SecurityScanner:
         # Calculate security score
         configs = self.findings.get("configuration", {})
         if configs:
-            report["statistics"]["security_score"] = (
-                sum(1 for v in configs.values() if v) / len(configs) * 100
-            )
+            report["statistics"]["security_score"] = sum(1 for v in configs.values() if v) / len(configs) * 100
 
         # Print summary
         print(f"\n🔍 Secrets Found: {report['statistics']['secrets_found']}")

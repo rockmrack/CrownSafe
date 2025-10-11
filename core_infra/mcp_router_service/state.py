@@ -32,9 +32,7 @@ def add_connection(agent_id: str, websocket: Any) -> bool:
 
     # If agent already exists, close the old connection first
     if agent_id in active_connections:
-        logger.warning(
-            f"State: Agent ID '{agent_id}' already exists in active connections. Replacing old connection."
-        )
+        logger.warning(f"State: Agent ID '{agent_id}' already exists in active connections. Replacing old connection.")
         old_ws = active_connections[agent_id]
         if old_ws:
             try:
@@ -42,9 +40,7 @@ def add_connection(agent_id: str, websocket: Any) -> bool:
                 import asyncio
 
                 if hasattr(old_ws, "close"):
-                    asyncio.create_task(
-                        old_ws.close(code=1001, reason="Replaced by new connection")
-                    )
+                    asyncio.create_task(old_ws.close(code=1001, reason="Replaced by new connection"))
             except Exception as e:
                 logger.debug(f"Error closing old connection for {agent_id}: {e}")
 
@@ -65,9 +61,7 @@ def remove_connection(agent_id: str) -> bool:
         logger.debug(f"State: Connection for agent '{agent_id}' removed.")
         return True
     else:
-        logger.warning(
-            f"State: Attempted to remove non-existent connection for agent '{agent_id}'."
-        )
+        logger.warning(f"State: Attempted to remove non-existent connection for agent '{agent_id}'.")
         return False
 
 

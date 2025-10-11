@@ -82,10 +82,7 @@ class SmartCacheWarmer:
                             brand_counter[brand] += mention_count
 
                 # Extract most popular brands
-                popular_brands = [
-                    brand
-                    for brand, count in brand_counter.most_common(self.config["warm_top_brands"])
-                ]
+                popular_brands = [brand for brand, count in brand_counter.most_common(self.config["warm_top_brands"])]
 
                 elapsed = time.time() - start_time
                 self.logger.info(
@@ -114,9 +111,7 @@ class SmartCacheWarmer:
 
             # Batch products into groups for parallel processing
             batch_size = self.config["concurrent_warming"]
-            product_batches = [
-                products[i : i + batch_size] for i in range(0, len(products), batch_size)
-            ]
+            product_batches = [products[i : i + batch_size] for i in range(0, len(products), batch_size)]
 
             for batch in product_batches:
                 # Process batch in parallel
@@ -224,9 +219,7 @@ class SmartCacheWarmer:
                         self.logger.warning(f"Autocomplete warming failed for '{query}': {e}")
 
             elapsed = time.time() - start_time
-            self.logger.info(
-                f"🎯 Autocomplete warming: {successful_warming} queries pre-cached in {elapsed:.3f}s"
-            )
+            self.logger.info(f"🎯 Autocomplete warming: {successful_warming} queries pre-cached in {elapsed:.3f}s")
 
             return successful_warming
 

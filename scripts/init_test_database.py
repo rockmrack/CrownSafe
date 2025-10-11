@@ -3,6 +3,7 @@
 Initialize test database with all required tables and migrations.
 This script is used in CI/CD to ensure the database is properly set up before running tests.
 """
+
 import os
 import sys
 from pathlib import Path
@@ -27,9 +28,7 @@ def init_database():
         logger.warning("DATABASE_URL not set, skipping database initialization")
         return
 
-    logger.info(
-        f"Initializing database at {database_url.split('@')[1] if '@' in database_url else database_url}"
-    )
+    logger.info(f"Initializing database at {database_url.split('@')[1] if '@' in database_url else database_url}")
 
     try:
         engine = create_engine(database_url, echo=False)
@@ -79,25 +78,13 @@ def init_database():
                 logger.warning("⚠ 'severity' column missing from recalls_enhanced, adding it now")
                 try:
                     with engine.connect() as conn:
+                        conn.execute(text("ALTER TABLE recalls_enhanced ADD COLUMN IF NOT EXISTS severity VARCHAR(50)"))
                         conn.execute(
-                            text(
-                                "ALTER TABLE recalls_enhanced ADD COLUMN IF NOT EXISTS severity VARCHAR(50)"
-                            )
+                            text("ALTER TABLE recalls_enhanced ADD COLUMN IF NOT EXISTS risk_category VARCHAR(100)")
                         )
+                        conn.execute(text("UPDATE recalls_enhanced SET severity = 'medium' WHERE severity IS NULL"))
                         conn.execute(
-                            text(
-                                "ALTER TABLE recalls_enhanced ADD COLUMN IF NOT EXISTS risk_category VARCHAR(100)"
-                            )
-                        )
-                        conn.execute(
-                            text(
-                                "UPDATE recalls_enhanced SET severity = 'medium' WHERE severity IS NULL"
-                            )
-                        )
-                        conn.execute(
-                            text(
-                                "UPDATE recalls_enhanced SET risk_category = 'general' WHERE risk_category IS NULL"
-                            )
+                            text("UPDATE recalls_enhanced SET risk_category = 'general' WHERE risk_category IS NULL")
                         )
                         conn.commit()
                         logger.info("✓ Added missing severity and risk_category columns")

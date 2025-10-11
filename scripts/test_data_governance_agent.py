@@ -21,9 +21,7 @@ from core_infra.database import (
     drop_tables,
 )
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 # --- Test Configuration ---
 TEST_USER_ID_TO_DELETE = 99
@@ -39,9 +37,7 @@ async def main():
     drop_tables()
     create_tables()
     with SessionLocal() as db:
-        user_to_delete = User(
-            id=TEST_USER_ID_TO_DELETE, email="delete.me@example.com", is_subscribed=True
-        )
+        user_to_delete = User(id=TEST_USER_ID_TO_DELETE, email="delete.me@example.com", is_subscribed=True)
         db.add(user_to_delete)
         db.commit()
     logger.info(f"Database seeded with user to be deleted, ID: {TEST_USER_ID_TO_DELETE}")
@@ -84,13 +80,9 @@ async def main():
         else:
             print("\n" + "=" * 50)
             if not user_was_deleted:
-                print(
-                    "❌ TEST FAILED: The agent did not correctly delete the user from the database."
-                )
+                print("❌ TEST FAILED: The agent did not correctly delete the user from the database.")
             else:
-                print(
-                    f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}"
-                )
+                print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")
 
     except Exception as e:
         print("\n" + "=" * 50)

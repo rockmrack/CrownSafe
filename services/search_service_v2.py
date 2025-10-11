@@ -153,10 +153,10 @@ class SearchServiceV2:
             # For exact ID, simplified query
             sql = f"""
                 SELECT 
-                    {', '.join(select_columns)},
+                    {", ".join(select_columns)},
                     1.0 as score
                 FROM {table}
-                WHERE {' AND '.join(where_conditions)}
+                WHERE {" AND ".join(where_conditions)}
                 LIMIT 1
             """
             return sql, params, as_of, cursor_data
@@ -284,11 +284,11 @@ class SearchServiceV2:
         # Fetch one extra to detect if there's a next page
         sql = f"""
             SELECT 
-                {', '.join(select_columns)},
+                {", ".join(select_columns)},
                 {score_expression} as score
             FROM {table}
             WHERE {where_clause}
-            ORDER BY {', '.join(order_by)}
+            ORDER BY {", ".join(order_by)}
             LIMIT :limit
         """
 

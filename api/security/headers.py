@@ -138,13 +138,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # For API responses, we typically don't need COEP
         # But include for completeness
         if self.cross_origin_embedder_policy:
-            response.headers.setdefault(
-                "Cross-Origin-Embedder-Policy", self.cross_origin_embedder_policy
-            )
+            response.headers.setdefault("Cross-Origin-Embedder-Policy", self.cross_origin_embedder_policy)
 
-        response.headers.setdefault(
-            "Cross-Origin-Resource-Policy", self.cross_origin_resource_policy
-        )
+        response.headers.setdefault("Cross-Origin-Resource-Policy", self.cross_origin_resource_policy)
 
         # CSP only for HTML responses
         # Skip for JSON API responses to avoid console warnings

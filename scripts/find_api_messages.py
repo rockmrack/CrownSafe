@@ -21,7 +21,7 @@ for i in range(min(queue_len, 10)):  # Check up to 10 messages
         sender = msg_data.get("mcp_header", {}).get("sender_id", "")
         corr_id = msg_data.get("mcp_header", {}).get("correlation_id", "")
 
-        print(f"Message {i+1}:")
+        print(f"Message {i + 1}:")
         print(f"  Type: {msg_type}")
         print(f"  From: {sender}")
         print(f"  Correlation ID: {corr_id[:8]}..." if corr_id else "  Correlation ID: None")
@@ -35,7 +35,7 @@ for i in range(min(queue_len, 10)):  # Check up to 10 messages
         print()
 
     except:
-        print(f"Message {i+1}: Could not parse\n")
+        print(f"Message {i + 1}: Could not parse\n")
 
 # Also check for workflows with API correlation IDs
 print("\n🔍 Checking if any workflows match recent API calls...")

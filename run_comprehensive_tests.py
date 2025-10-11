@@ -26,10 +26,10 @@ class ComprehensiveTestRunner:
 
     def run_command(self, cmd, category):
         """Run a test command and capture results"""
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print(f"Running: {category}")
         print(f"Command: {' '.join(cmd)}")
-        print(f"{'='*80}\n")
+        print(f"{'=' * 80}\n")
 
         try:
             result = subprocess.run(
@@ -253,8 +253,8 @@ class ComprehensiveTestRunner:
         print("=" * 80 + "\n")
 
         print(f"Total Test Suites: {total}")
-        print(f"Passed: {passed} ({passed/total*100:.1f}%)")
-        print(f"Failed: {failed} ({failed/total*100:.1f}%)")
+        print(f"Passed: {passed} ({passed / total * 100:.1f}%)")
+        print(f"Failed: {failed} ({failed / total * 100:.1f}%)")
         print(f"\nTimestamp: {self.results['timestamp']}")
 
         # Read coverage data if available

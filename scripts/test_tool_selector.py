@@ -34,9 +34,7 @@ except ImportError as e:
     sys.exit(1)
 
 # --- Configuration ---
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logging.getLogger("websockets.client").setLevel(logging.WARNING)
 logger = logging.getLogger("TestToolSelectorScript")
 
@@ -78,9 +76,7 @@ async def handle_controller_message(message: Dict[str, Any]):
                 f"Received TASK_ACKNOWLEDGE for tool selection task (CorrID: {correlation_id}), Status: {payload.get('status')}"
             )
         else:
-            logger.debug(
-                f"Received other message type {message_type} with matching correlation ID."
-            )
+            logger.debug(f"Received other message type {message_type} with matching correlation ID.")
     else:
         logger.debug(
             f"Received message with non-matching correlation ID: {correlation_id} (Expected: {task_correlation_id})"
@@ -119,7 +115,7 @@ async def run_tool_selection():
             "input_data": {  # This is the data for the *target* tool (WebSearchAgent)
                 "query": "Recent news AI agents",
                 "num_results": 4,
-            }
+            },
             # "required_capability": "web_search", # Optional hint
             # "constraints": {"priority": "medium"} # Optional constraints
         }
@@ -140,25 +136,17 @@ async def run_tool_selection():
         await client.send_message(task_message)
         logger.info("Tool selection request message sent.")
 
-        logger.info(
-            f"Waiting up to {TASK_TIMEOUT_SECONDS} seconds for TOOL_SELECTOR task completion..."
-        )
+        logger.info(f"Waiting up to {TASK_TIMEOUT_SECONDS} seconds for TOOL_SELECTOR task completion...")
         try:
             await asyncio.wait_for(task_completion_event.wait(), timeout=TASK_TIMEOUT_SECONDS)
             logger.info("ToolSelector task completion event received.")
             if task_result:
-                logger.info(
-                    f"Final TOOL_SELECTOR Task Result Message: {json.dumps(task_result, indent=2)}"
-                )
+                logger.info(f"Final TOOL_SELECTOR Task Result Message: {json.dumps(task_result, indent=2)}")
                 if task_result.get("mcp_header", {}).get("message_type") == "TASK_COMPLETE":
                     output_data = task_result.get("payload", {}).get("output_data", {})
                     if output_data.get("status") == "DELEGATED":
-                        logger.info(
-                            f"ToolSelector successfully delegated task to: {output_data.get('tool_used')}"
-                        )
-                        logger.info(
-                            "Observe RouterAgent and WebResearchAgent logs for subtask execution..."
-                        )
+                        logger.info(f"ToolSelector successfully delegated task to: {output_data.get('tool_used')}")
+                        logger.info("Observe RouterAgent and WebResearchAgent logs for subtask execution...")
                         await asyncio.sleep(10)  # Wait to observe subtask execution
                     else:
                         logger.warning(
@@ -167,9 +155,7 @@ async def run_tool_selection():
                 else:
                     logger.error("ToolSelector task failed.")
             else:
-                logger.error(
-                    "Completion event received, but no result was stored for tool selector task."
-                )
+                logger.error("Completion event received, but no result was stored for tool selector task.")
 
         except asyncio.TimeoutError:
             logger.error(

@@ -39,17 +39,13 @@ async def test_coppa_age_verification():
             }
 
             try:
-                response = await client.post(
-                    f"{BASE_URL}/api/v1/compliance/coppa/verify-age", json=request_data
-                )
+                response = await client.post(f"{BASE_URL}/api/v1/compliance/coppa/verify-age", json=request_data)
 
                 if response.status_code == 200:
                     data = response.json()
                     print(f"  ✅ Age: {data['age']} years")
                     print(f"  COPPA Applies: {'Yes ⚠️' if data['coppa_applies'] else 'No ✅'}")
-                    print(
-                        f"  Parental Consent Required: {'Yes' if data['requires_parental_consent'] else 'No'}"
-                    )
+                    print(f"  Parental Consent Required: {'Yes' if data['requires_parental_consent'] else 'No'}")
 
                     if data.get("verification_token"):
                         print(f"  Token Generated: {data['verification_token'][:20]}...")
@@ -144,9 +140,7 @@ async def test_childrens_code():
                     data = response.json()
                     print(f"  Compliant: {'✅ Yes' if data['compliant'] else '❌ No'}")
                     print(f"  Age Appropriate: {'✅' if data['age_appropriate'] else '❌'}")
-                    print(
-                        f"  Parental Controls Required: {'Yes' if data['parental_controls_required'] else 'No'}"
-                    )
+                    print(f"  Parental Controls Required: {'Yes' if data['parental_controls_required'] else 'No'}")
 
                     if data.get("prohibited_features"):
                         print("  ⛔ Prohibited Features:")
@@ -190,9 +184,7 @@ async def test_gdpr_data_requests():
             }
 
             try:
-                response = await client.post(
-                    f"{BASE_URL}/api/v1/compliance/gdpr/data-request", json=request_data
-                )
+                response = await client.post(f"{BASE_URL}/api/v1/compliance/gdpr/data-request", json=request_data)
 
                 if response.status_code == 200:
                     data = response.json()
@@ -246,18 +238,14 @@ async def test_legal_documents():
                 request_data["user_age"] = test["age"]
 
             try:
-                response = await client.post(
-                    f"{BASE_URL}/api/v1/compliance/legal/document", json=request_data
-                )
+                response = await client.post(f"{BASE_URL}/api/v1/compliance/legal/document", json=request_data)
 
                 if response.status_code == 200:
                     data = response.json()
                     print(f"  ✅ Document Type: {data['document_type']}")
                     print(f"  Version: {data['version']}")
                     print(f"  Age Appropriate: {'✅' if data['age_appropriate'] else '❌'}")
-                    print(
-                        f"  Requires Acceptance: {'Yes' if data['requires_acceptance'] else 'No'}"
-                    )
+                    print(f"  Requires Acceptance: {'Yes' if data['requires_acceptance'] else 'No'}")
 
                     if data.get("summary_points"):
                         print("  📝 Key Points:")

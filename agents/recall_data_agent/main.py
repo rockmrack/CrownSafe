@@ -78,9 +78,7 @@ async def run_manual_ingestion():
         logger.info("DATABASE STATISTICS")
         logger.info(f"Total Recalls in Database: {stats.get('total_recalls', 0)}")
         logger.info("Recalls by Agency:")
-        for agency, count in sorted(
-            stats.get("by_agency", {}).items(), key=lambda x: x[1], reverse=True
-        ):
+        for agency, count in sorted(stats.get("by_agency", {}).items(), key=lambda x: x[1], reverse=True):
             logger.info(f"  {agency}: {count}")
 
     logger.info("=" * 80)
@@ -130,12 +128,8 @@ def main():
     """Main entry point"""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="BabyShield RecallDataAgent - Manual Ingestion Tool"
-    )
-    parser.add_argument(
-        "--test", action="store_true", help="Run in test query mode instead of ingestion"
-    )
+    parser = argparse.ArgumentParser(description="BabyShield RecallDataAgent - Manual Ingestion Tool")
+    parser.add_argument("--test", action="store_true", help="Run in test query mode instead of ingestion")
     args = parser.parse_args()
 
     if args.test:

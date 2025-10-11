@@ -5,6 +5,7 @@ Revises: 20250109_incident_reports
 Create Date: 2025-01-09
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 

@@ -200,9 +200,7 @@ class TestEnhancedUpsertHandler:
 
         data = {"id": "entity_123", "name": "Test Entity", "value": "Test Value"}
 
-        result = EnhancedUpsertHandler.upsert_with_history(
-            mock_session, "test_table", data, "id", track_changes=True
-        )
+        result = EnhancedUpsertHandler.upsert_with_history(mock_session, "test_table", data, "id", track_changes=True)
 
         assert result is True
         # Should call execute twice: once for upsert, once for history
@@ -219,9 +217,7 @@ class TestEnhancedUpsertHandler:
 
         data = {"id": "entity_123", "name": "Test Entity"}
 
-        result = EnhancedUpsertHandler.upsert_with_history(
-            mock_session, "test_table", data, "id", track_changes=False
-        )
+        result = EnhancedUpsertHandler.upsert_with_history(mock_session, "test_table", data, "id", track_changes=False)
 
         assert result is True
         # Should call execute only once for upsert
@@ -249,9 +245,7 @@ class TestEnhancedUpsertHandler:
 
         data = {"id": "entity_123", "name": "Updated Entity"}
 
-        result = EnhancedUpsertHandler.upsert_with_history(
-            mock_session, "test_table", data, "id", track_changes=True
-        )
+        result = EnhancedUpsertHandler.upsert_with_history(mock_session, "test_table", data, "id", track_changes=True)
 
         assert result is True
         assert mock_session.execute.call_count == 2
@@ -378,9 +372,7 @@ class TestParameterHandling:
         mock_result = Mock()
         mock_session.execute.return_value = mock_result
 
-        recalls = [
-            {"recall_id": f"RECALL-{i:03d}", "product_name": f"Product {i}"} for i in range(5)
-        ]
+        recalls = [{"recall_id": f"RECALL-{i:03d}", "product_name": f"Product {i}"} for i in range(5)]
 
         result = UpsertHandler.bulk_upsert_recalls(mock_session, recalls, batch_size=2)
 

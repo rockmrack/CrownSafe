@@ -17,9 +17,7 @@ from dotenv import load_dotenv
 project_root_main_py = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 env_path = os.path.join(project_root_main_py, ".env")
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 bootstrap_logger = logging.getLogger("MCPRouterService_Bootstrap")
 
 if os.path.exists(env_path):
@@ -54,9 +52,7 @@ async def lifespan(app: FastAPI):
         # Initialize or clear agent registry
         if hasattr(discovery, "initialize_registry") and callable(discovery.initialize_registry):
             discovery.initialize_registry()
-            logger.info(
-                "Lifespan: In-memory agent registry explicitly initialized via initialize_registry()."
-            )
+            logger.info("Lifespan: In-memory agent registry explicitly initialized via initialize_registry().")
         elif hasattr(discovery, "agent_registry") and isinstance(discovery.agent_registry, dict):
             discovery.agent_registry.clear()
             logger.info("Lifespan: In-memory agent registry cleared via agent_registry.clear().")
@@ -105,9 +101,7 @@ async def lifespan(app: FastAPI):
 
 # --- FastAPI App Initialization ---
 SERVICE_NAME = getattr(settings, "SERVICE_NAME", "MCP_Router_Service")
-app_logger = (
-    logger if "logger" in locals() and isinstance(logger, logging.Logger) else bootstrap_logger
-)
+app_logger = logger if "logger" in locals() and isinstance(logger, logging.Logger) else bootstrap_logger
 
 app = FastAPI(
     title=SERVICE_NAME,
@@ -146,9 +140,7 @@ async def websocket_endpoint(websocket: WebSocket, agent_id: str):
         return
 
     await websocket.accept()
-    app_logger.info(
-        f"Agent '{agent_id}' attempting connection from {websocket.client.host}:{websocket.client.port}"
-    )
+    app_logger.info(f"Agent '{agent_id}' attempting connection from {websocket.client.host}:{websocket.client.port}")
 
     # FIXED: Properly check return value of add_connection
     connection_added = state.add_connection(agent_id, websocket)
@@ -202,12 +194,8 @@ async def websocket_endpoint(websocket: WebSocket, agent_id: str):
 async def read_root():
     app_logger.debug("Root endpoint '/' requested.")
     try:
-        active_conn_count = (
-            len(state.get_all_connections()) if hasattr(state, "get_all_connections") else "N/A"
-        )
-        reg_agent_count = (
-            len(discovery.agent_registry) if hasattr(discovery, "agent_registry") else "N/A"
-        )
+        active_conn_count = len(state.get_all_connections()) if hasattr(state, "get_all_connections") else "N/A"
+        reg_agent_count = len(discovery.agent_registry) if hasattr(discovery, "agent_registry") else "N/A"
     except Exception:
         active_conn_count = "Error"
         reg_agent_count = "Error"
@@ -225,9 +213,7 @@ async def read_root():
 if __name__ == "__main__":
     import uvicorn
 
-    main_execution_logger = (
-        logger if "logger" in locals() and isinstance(logger, logging.Logger) else bootstrap_logger
-    )
+    main_execution_logger = logger if "logger" in locals() and isinstance(logger, logging.Logger) else bootstrap_logger
 
     main_execution_logger.info("Starting MCP Router Service directly using Uvicorn...")
 

@@ -26,9 +26,7 @@ class OnboardingAgentLogic:
         Updates a user's record in the database with their pregnancy status.
         """
         await asyncio.sleep(0.1)  # Simulate I/O delay
-        self.logger.info(
-            f"Setting initial profile for user_id: {user_id}. Is Pregnant: {is_pregnant}"
-        )
+        self.logger.info(f"Setting initial profile for user_id: {user_id}. Is Pregnant: {is_pregnant}")
         try:
             with get_db_session() as db:
                 user = db.query(User).filter(User.id == user_id).first()

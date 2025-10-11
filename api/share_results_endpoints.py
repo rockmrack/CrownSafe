@@ -110,15 +110,11 @@ class ShareRequest(BaseModel):
         ...,
         description="Type of content (scan_result, report, safety_summary, nursery_quarterly)",
     )
-    content_id: Union[str, int] = Field(
-        ..., description="ID of the content to share (numeric ID or UUID)"
-    )
+    content_id: Union[str, int] = Field(..., description="ID of the content to share (numeric ID or UUID)")
     user_id: int = Field(..., description="User creating the share")
 
     # Optional UUID field for reports
-    report_uuid: Optional[str] = Field(
-        None, description="Report UUID (alternative to content_id for reports)"
-    )
+    report_uuid: Optional[str] = Field(None, description="Report UUID (alternative to content_id for reports)")
 
     # Share settings
     expires_in_hours: Optional[int] = Field(24, description="Hours until expiration (default 24)")
@@ -387,9 +383,7 @@ async def create_share_link(request: ShareRequest, db: Session = Depends(get_db)
                     content_snapshot = {
                         "report_id": report.report_id,
                         "report_type": report.report_type,
-                        "period_start": report.period_start.isoformat()
-                        if report.period_start
-                        else None,
+                        "period_start": report.period_start.isoformat() if report.period_start else None,
                         "period_end": report.period_end.isoformat() if report.period_end else None,
                         "total_scans": report.total_scans,
                         "unique_products": report.unique_products,
@@ -497,12 +491,8 @@ async def view_share_link_dev(token: str) -> ApiResponse:
             "report_type": share_data["share_type"],
             "title": f"Safety Report: {share_data['share_type']}",
             "summary": "This is a mock safety report for testing purposes",
-            "created_at": share_data[
-                "expires_at"
-            ].isoformat(),  # Using expires_at as created_at for simplicity
-            "expires_at": share_data["expires_at"].isoformat()
-            if share_data["expires_at"]
-            else None,
+            "created_at": share_data["expires_at"].isoformat(),  # Using expires_at as created_at for simplicity
+            "expires_at": share_data["expires_at"].isoformat() if share_data["expires_at"] else None,
             "pdf_available": True,
             "created_via": "dev_override",
         }
@@ -546,9 +536,7 @@ async def view_shared_content(
 
         # Validate token
         if not share_token.is_valid():
-            raise HTTPException(
-                status_code=410, detail="Share link has expired or reached view limit"
-            )
+            raise HTTPException(status_code=410, detail="Share link has expired or reached view limit")
 
         # Check password if required
         if share_token.password_protected:
@@ -621,7 +609,7 @@ async def share_via_email(request: EmailShareRequest, db: Session = Depends(get_
                     <p>Hi,</p>
                     <p><strong>{request.sender_name}</strong> has shared product safety results with you from BabyShield.</p>
                     
-                    {f'<p style="background-color: #e3f2fd; padding: 15px; border-radius: 5px;"><em>{request.message}</em></p>' if request.message else ''}
+                    {f'<p style="background-color: #e3f2fd; padding: 15px; border-radius: 5px;"><em>{request.message}</em></p>' if request.message else ""}
                     
                     <div style="text-align: center; margin: 30px 0;">
                         <a href="{share_url}" style="background-color: #2196f3; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
@@ -631,7 +619,7 @@ async def share_via_email(request: EmailShareRequest, db: Session = Depends(get_
                     
                     <p style="color: #666; font-size: 14px;">
                         This link will expire in {(share_token.expires_at - datetime.utcnow()).total_seconds() / 3600:.0f} hours.
-                        {f'It can be viewed {share_token.max_views - share_token.view_count} more time(s).' if share_token.max_views else ''}
+                        {f"It can be viewed {share_token.max_views - share_token.view_count} more time(s)." if share_token.max_views else ""}
                     </p>
                     
                     <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
@@ -730,11 +718,7 @@ async def revoke_share_link(
     """
     try:
         # Get share token
-        share_token = (
-            db.query(ShareToken)
-            .filter(ShareToken.token == token, ShareToken.created_by == user_id)
-            .first()
-        )
+        share_token = db.query(ShareToken).filter(ShareToken.token == token, ShareToken.created_by == user_id).first()
 
         if not share_token:
             raise HTTPException(status_code=404, detail="Share link not found or unauthorized")
@@ -856,10 +840,10 @@ async def preview_share_link_dev(token: str) -> HTMLResponse:
         <body>
             <div class="header">
                 <h1>Safety Report Preview</h1>
-                <p><strong>Report Type:</strong> {share_data['share_type']}</p>
-                <p><strong>Report ID:</strong> {share_data['content_id']}</p>
-                <p><strong>Created By:</strong> User {share_data['created_by']}</p>
-                <p><strong>Expires:</strong> {share_data['expires_at']}</p>
+                <p><strong>Report Type:</strong> {share_data["share_type"]}</p>
+                <p><strong>Report ID:</strong> {share_data["content_id"]}</p>
+                <p><strong>Created By:</strong> User {share_data["created_by"]}</p>
+                <p><strong>Expires:</strong> {share_data["expires_at"]}</p>
             </div>
             <div class="content">
                 <h2>Report Summary</h2>
@@ -911,7 +895,9 @@ async def preview_shared_content(token: str, db: Session = Depends(get_db)) -> H
 
         if share_token.share_type == "scan_result":
             title = f"Product Safety: {content.get('product_name', 'Unknown Product')}"
-            description = f"Risk Level: {content.get('risk_level', 'Unknown')} | Verdict: {content.get('verdict', 'No data')}"
+            description = (
+                f"Risk Level: {content.get('risk_level', 'Unknown')} | Verdict: {content.get('verdict', 'No data')}"
+            )
         else:
             title = f"Safety Report: {content.get('report_type', 'Unknown Type')}"
             description = f"Products: {content.get('unique_products', 0)} | Recalls: {content.get('recalls_found', 0)}"

@@ -77,18 +77,12 @@ class SecureAdvancedSearchRequest(BaseModel):
     ] = Field(None, description="Risk category filter", examples=["toy"])
 
     # Date range (validated)
-    date_from: Optional[date] = Field(
-        None, description="Start date for recall date range", examples=["2024-01-01"]
-    )
+    date_from: Optional[date] = Field(None, description="Start date for recall date range", examples=["2024-01-01"])
 
-    date_to: Optional[date] = Field(
-        None, description="End date for recall date range", examples=["2024-12-31"]
-    )
+    date_to: Optional[date] = Field(None, description="End date for recall date range", examples=["2024-12-31"])
 
     # Pagination (bounded)
-    limit: int = Field(
-        default=20, ge=1, le=50, description="Results per page (1-50)", examples=[20]
-    )
+    limit: int = Field(default=20, ge=1, le=50, description="Results per page (1-50)", examples=[20])
 
     # Cursor (length limited)
     nextCursor: Optional[constr(max_length=512)] = Field(
@@ -243,9 +237,7 @@ class SecureAdvancedSearchRequest(BaseModel):
         has_text_search = bool(self.query or self.product or self.keywords)
 
         # Check if any filters are provided
-        has_filters = bool(
-            self.agencies or self.severity or self.riskCategory or self.date_from or self.date_to
-        )
+        has_filters = bool(self.agencies or self.severity or self.riskCategory or self.date_from or self.date_to)
 
         # If pagination cursor, allow without other criteria
         if self.nextCursor:
@@ -253,9 +245,7 @@ class SecureAdvancedSearchRequest(BaseModel):
 
         # Otherwise need at least one criterion
         if not (has_text_search or has_filters):
-            raise ValueError(
-                "At least one search criterion required: " "query, product, keywords, or filters"
-            )
+            raise ValueError("At least one search criterion required: query, product, keywords, or filters")
 
         return self
 
@@ -279,9 +269,7 @@ class RecallDetailRequest(BaseModel):
     Request for recall detail endpoint
     """
 
-    recall_id: constr(
-        strip_whitespace=True, min_length=3, max_length=64, pattern=r"^[A-Za-z0-9\-_]+$"
-    ) = Field(
+    recall_id: constr(strip_whitespace=True, min_length=3, max_length=64, pattern=r"^[A-Za-z0-9\-_]+$") = Field(
         ...,
         description="Recall ID (alphanumeric, dash, underscore only)",
         examples=["FDA-2025-1234", "CPSC_2025_0001"],

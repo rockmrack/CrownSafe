@@ -123,9 +123,7 @@ async def main():
                 print(f"{name:12} → {len(recalls):3d} recalls")
                 if recalls:
                     sample = recalls[0]
-                    print(
-                        f"             Sample: {sample.recall_id} - {sample.product_name[:50]}..."
-                    )
+                    print(f"             Sample: {sample.recall_id} - {sample.product_name[:50]}...")
             except Exception as e:
                 print(f"{name:12} → ERROR: {str(e)[:50]}...")
         print("=" * 60)

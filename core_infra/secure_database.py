@@ -115,9 +115,7 @@ def create_secure_engine(mode: str = "readonly") -> Engine:
         connect_args = {}
 
     # Create engine
-    engine = create_engine(
-        database_url, poolclass=QueuePool, connect_args=connect_args, **pool_settings
-    )
+    engine = create_engine(database_url, poolclass=QueuePool, connect_args=connect_args, **pool_settings)
 
     # Add event listeners for monitoring
     @event.listens_for(engine, "connect")

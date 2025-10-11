@@ -152,8 +152,7 @@ class OptimisticLock:
         if hasattr(entity, "version"):
             if entity.version != expected_version:
                 raise ValueError(
-                    f"Version mismatch: expected {expected_version}, "
-                    f"got {entity.version}. Data may have been modified."
+                    f"Version mismatch: expected {expected_version}, got {entity.version}. Data may have been modified."
                 )
 
     @staticmethod
@@ -226,7 +225,7 @@ def bulk_operation(db: Session, items: list, operation: Callable, batch_size: in
                 processed += len(batch)
                 logger.info(f"Processed {processed}/{total} items")
         except Exception as e:
-            logger.error(f"Batch {i//batch_size + 1} failed: {str(e)}")
+            logger.error(f"Batch {i // batch_size + 1} failed: {str(e)}")
             errors.append((i, str(e)))
             # Continue with next batch
 

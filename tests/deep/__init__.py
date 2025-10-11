@@ -2,6 +2,7 @@
 Deep test package initialization
 Configures environment for comprehensive testing
 """
+
 import os
 
 # Enable chat feature for all deep tests

@@ -15,9 +15,7 @@ class Config:
     BASE_DIR = Path(__file__).resolve().parent.parent
 
     # Database
-    DATABASE_URL: str = os.getenv(
-        "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/babyshield"
-    )
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/babyshield")
     DATABASE_POOL_SIZE: int = int(os.getenv("DATABASE_POOL_SIZE", "20"))
     DATABASE_MAX_OVERFLOW: int = int(os.getenv("DATABASE_MAX_OVERFLOW", "40"))
 

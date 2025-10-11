@@ -96,9 +96,7 @@ class ClinicalTrialsAgentManager:
             message_dict = message.model_dump()
 
             # Process through logic
-            response_from_logic = await self.clinical_trials_logic.process_message(
-                message_dict, self.mcp_client
-            )
+            response_from_logic = await self.clinical_trials_logic.process_message(message_dict, self.mcp_client)
 
             # Handle response if present
             if response_from_logic is not None:
@@ -140,9 +138,7 @@ class ClinicalTrialsAgentManager:
                 return
 
             # Send response
-            logger.info(
-                f"Sending {response_message_type} response to {target_agent_id} (CorrID: {correlation_id})"
-            )
+            logger.info(f"Sending {response_message_type} response to {target_agent_id} (CorrID: {correlation_id})")
 
             await self.mcp_client.send_message(
                 payload=response_payload,

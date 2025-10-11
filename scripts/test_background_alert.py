@@ -26,9 +26,10 @@ def main():
     push_path = "agents.engagement.push_notification_agent.agent_logic.PushNotificationAgentLogic.process_task"
     metrics_path = "agents.business.metrics_agent.agent_logic.MetricsAgentLogic.process_task"
 
-    with patch(push_path, new=AsyncMock(return_value={"status": "COMPLETED"})) as mock_push, patch(
-        metrics_path, new=AsyncMock(return_value={"status": "COMPLETED"})
-    ) as mock_metrics:
+    with (
+        patch(push_path, new=AsyncMock(return_value={"status": "COMPLETED"})) as mock_push,
+        patch(metrics_path, new=AsyncMock(return_value={"status": "COMPLETED"})) as mock_metrics,
+    ):
         # Execute the Celery task synchronously
         logger.info("Executing the Celery task directly (agents are mocked)...")
         result = check_for_new_recalls_and_alert.apply()

@@ -1,4 +1,5 @@
-﻿"""Tests for core_infra/redis_manager.py"""
+"""Tests for core_infra/redis_manager.py"""
+
 import unittest
 from unittest.mock import Mock, patch, MagicMock
 

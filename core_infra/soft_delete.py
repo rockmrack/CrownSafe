@@ -46,9 +46,7 @@ class SoftDeleteMixin:
         self.deleted_at = datetime.utcnow()
         self.deleted_by = deleted_by_id
 
-        logger.info(
-            f"Soft deleted {self.__class__.__name__} " f"id={getattr(self, 'id', 'unknown')}"
-        )
+        logger.info(f"Soft deleted {self.__class__.__name__} id={getattr(self, 'id', 'unknown')}")
 
     def restore(self):
         """
@@ -58,15 +56,13 @@ class SoftDeleteMixin:
         self.deleted_at = None
         self.deleted_by = None
 
-        logger.info(f"Restored {self.__class__.__name__} " f"id={getattr(self, 'id', 'unknown')}")
+        logger.info(f"Restored {self.__class__.__name__} id={getattr(self, 'id', 'unknown')}")
 
     def hard_delete(self, session: Session):
         """
         Permanently delete this record (use with caution!)
         """
-        logger.warning(
-            f"Hard deleting {self.__class__.__name__} " f"id={getattr(self, 'id', 'unknown')}"
-        )
+        logger.warning(f"Hard deleting {self.__class__.__name__} id={getattr(self, 'id', 'unknown')}")
         session.delete(self)
 
     @classmethod
@@ -181,9 +177,7 @@ def soft_delete_filter(mapper, class_):
         """Check if loaded instance is soft-deleted"""
         if hasattr(target, "is_deleted") and target.is_deleted:
             # Log access to deleted record
-            logger.warning(
-                f"Accessed soft-deleted {class_.__name__} " f"id={getattr(target, 'id', 'unknown')}"
-            )
+            logger.warning(f"Accessed soft-deleted {class_.__name__} id={getattr(target, 'id', 'unknown')}")
 
 
 class RecycleBin:
@@ -261,9 +255,7 @@ class RecycleBin:
         cutoff_date = datetime.utcnow() - timedelta(days=older_than_days)
 
         # Get records to delete
-        to_delete = (
-            self.session.query(model).filter(model.is_deleted, model.deleted_at < cutoff_date).all()
-        )
+        to_delete = self.session.query(model).filter(model.is_deleted, model.deleted_at < cutoff_date).all()
 
         count = len(to_delete)
 

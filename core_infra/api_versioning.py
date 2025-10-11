@@ -127,9 +127,7 @@ def versioned_endpoint(versions: list = None, deprecated_in: str = None, removed
 
             # Check if endpoint supports this version
             if versions and version not in versions:
-                raise HTTPException(
-                    status_code=404, detail=f"Endpoint not available in API {version}"
-                )
+                raise HTTPException(status_code=404, detail=f"Endpoint not available in API {version}")
 
             # Check if removed
             if removed_in and version >= removed_in:

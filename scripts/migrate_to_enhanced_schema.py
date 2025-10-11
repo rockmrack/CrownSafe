@@ -5,7 +5,7 @@ Migrates from basic RecallDB to Enhanced 39-Agency Schema
 
 This migration adds CRITICAL fields for complete international coverage:
 - Food agencies: lot_number, expiry_date, production_date
-- Vehicle agencies: vehicle_make, vehicle_model, model_year, vin_range  
+- Vehicle agencies: vehicle_make, vehicle_model, model_year, vin_range
 - Pharma agencies: ndc_number, din_number, batch_number
 - International: ean_code, gtin, registry_codes, regions_affected
 - And 15+ more identifier types for comprehensive matching
@@ -80,9 +80,7 @@ class BabyShieldMigration:
             logger.info("✅ Enhanced schema created successfully!")
 
             # Show new columns
-            enhanced_columns = [
-                col["name"] for col in self.inspector.get_columns("recalls_enhanced")
-            ]
+            enhanced_columns = [col["name"] for col in self.inspector.get_columns("recalls_enhanced")]
             logger.info(f"🆕 Enhanced table columns ({len(enhanced_columns)}): {enhanced_columns}")
 
             return True

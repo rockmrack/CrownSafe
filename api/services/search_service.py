@@ -99,10 +99,10 @@ class SearchService:
             # For exact ID, no scoring needed
             sql = f"""
                 SELECT 
-                    {', '.join(select_columns)},
+                    {", ".join(select_columns)},
                     1.0 as score
                 FROM {table}
-                WHERE {' AND '.join(where_conditions)}
+                WHERE {" AND ".join(where_conditions)}
                 LIMIT 1
             """
             return sql, params, False
@@ -145,9 +145,7 @@ class SearchService:
                 try:
                     use_pg_trgm = self.check_pg_trgm_enabled()
                     if not use_pg_trgm:
-                        logger.warning(
-                            "[WARN] pg_trgm extension not enabled, falling back to LIKE search"
-                        )
+                        logger.warning("[WARN] pg_trgm extension not enabled, falling back to LIKE search")
                 except Exception as e:
                     logger.warning(f"[WARN] pg_trgm check failed: {e}, falling back to LIKE search")
 
@@ -253,11 +251,11 @@ class SearchService:
 
         sql = f"""
             SELECT 
-                {', '.join(select_columns)},
+                {", ".join(select_columns)},
                 {score_expression} as score
             FROM {table}
             WHERE {where_clause}
-            ORDER BY {', '.join(order_by)}
+            ORDER BY {", ".join(order_by)}
             LIMIT :limit
         """
 
@@ -302,9 +300,7 @@ class SearchService:
                     cursor_data = json.loads(base64.b64decode(cursor).decode())
                     actual_offset = cursor_data.get("offset", 0)
                     use_cursor_pagination = True
-                    logger.info(
-                        f"Cursor decoded: offset={actual_offset}, cursor_data={cursor_data}"
-                    )
+                    logger.info(f"Cursor decoded: offset={actual_offset}, cursor_data={cursor_data}")
                 except Exception as e:
                     logger.warning(f"Invalid cursor: {e}, falling back to offset")
                     actual_offset = offset or 0
@@ -385,7 +381,7 @@ class SearchService:
             else:
                 count_sql = f"""
                     SELECT COUNT(*) as total
-                    FROM ({sql_query.replace('LIMIT :limit', '').replace('OFFSET :offset', '')}) as subquery
+                    FROM ({sql_query.replace("LIMIT :limit", "").replace("OFFSET :offset", "")}) as subquery
                 """
                 count_params = {k: v for k, v in params.items() if k not in ["limit", "offset"]}
                 total_result = self.db.execute(text(count_sql), count_params)
@@ -438,9 +434,7 @@ class SearchService:
             # Only check on PostgreSQL
             if self.db.bind.dialect.name != "postgresql":
                 return False
-            result = self.db.execute(
-                text("SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')")
-            )
+            result = self.db.execute(text("SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')"))
             return result.scalar()
         except:
             return False

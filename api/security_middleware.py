@@ -121,9 +121,7 @@ class IPAllowlistMiddleware(BaseHTTPMiddleware):
 
             # Check IP allowlist
             if not self._is_ip_allowed(client_ip):
-                logger.warning(
-                    f"Blocked admin access from IP: {client_ip} to path: {request.url.path}"
-                )
+                logger.warning(f"Blocked admin access from IP: {client_ip} to path: {request.url.path}")
 
                 return JSONResponse(
                     status_code=status.HTTP_403_FORBIDDEN,
@@ -162,9 +160,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
         # HSTS (only in production with HTTPS)
         if os.environ.get("ENVIRONMENT") == "production":
-            response.headers[
-                "Strict-Transport-Security"
-            ] = "max-age=31536000; includeSubDomains; preload"
+            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
 
         # CSP (Content Security Policy)
         response.headers["Content-Security-Policy"] = (

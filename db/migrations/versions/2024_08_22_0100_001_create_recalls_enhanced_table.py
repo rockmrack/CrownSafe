@@ -1,10 +1,11 @@
 """Create recalls_enhanced table
 
 Revision ID: 001
-Revises: 
+Revises:
 Create Date: 2024-08-22 01:00:00.000000
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSON, UUID
@@ -176,9 +177,7 @@ def upgrade() -> None:
             )
         )
         op.execute(
-            text(
-                "CREATE INDEX idx_recalls_enhanced_brand_trgm ON recalls_enhanced USING gin (brand gin_trgm_ops)"
-            )
+            text("CREATE INDEX idx_recalls_enhanced_brand_trgm ON recalls_enhanced USING gin (brand gin_trgm_ops)")
         )
         op.execute(
             text(
@@ -187,9 +186,7 @@ def upgrade() -> None:
         )
         print("Created trigram indexes for fuzzy search optimization")
     except Exception as e:
-        print(
-            f"Warning: Could not create trigram indexes (pg_trgm extension may not be available): {e}"
-        )
+        print(f"Warning: Could not create trigram indexes (pg_trgm extension may not be available): {e}")
 
     print("Successfully created recalls_enhanced table with all indexes")
 

@@ -285,9 +285,7 @@ print(" FINAL TEST RESULTS SUMMARY")
 print("=" * 80)
 print(f" PASSED: {len(results['passed'])} tests")
 print(f" FAILED: {len(results['failed'])} tests")
-print(
-    f" SUCCESS RATE: {len(results['passed'])/(len(results['passed'])+len(results['failed']))*100:.1f}%"
-)
+print(f" SUCCESS RATE: {len(results['passed']) / (len(results['passed']) + len(results['failed'])) * 100:.1f}%")
 
 if results["failed"]:
     print("\n Failed Tests:")

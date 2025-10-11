@@ -48,9 +48,7 @@ async def test_high_confidence_visual_workflow():
 
         # Replace visual agent in router registry
         if hasattr(commander.router, "agent_registry"):
-            commander.router.agent_registry[
-                "identify_product_from_image"
-            ] = MockHighConfidenceVisual()
+            commander.router.agent_registry["identify_product_from_image"] = MockHighConfidenceVisual()
 
         # Test with image URL
         test_request = {
@@ -133,9 +131,7 @@ async def test_medium_confidence_visual_workflow():
 
         # Replace agents in router
         if hasattr(commander.router, "agent_registry"):
-            commander.router.agent_registry[
-                "identify_product_from_image"
-            ] = MockMediumConfidenceVisual()
+            commander.router.agent_registry["identify_product_from_image"] = MockMediumConfidenceVisual()
             commander.router.agent_registry["analyze_hazards"] = MockHazardAnalysis()
 
         test_request = {
@@ -322,9 +318,7 @@ async def test_visual_agent_modes():
 
         # Test identify mode (Phase 3 new feature)
         logger.info("Testing identify mode...")
-        result = await visual_agent.process_task(
-            {"image_url": "https://example.com/test.jpg", "mode": "identify"}
-        )
+        result = await visual_agent.process_task({"image_url": "https://example.com/test.jpg", "mode": "identify"})
         assert result["status"] == "COMPLETED"
         assert "confidence" in result["result"]
         assert result["result"]["confidence"] == 0.85

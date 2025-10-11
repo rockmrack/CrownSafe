@@ -2,6 +2,7 @@
 Structured Logging Module for BabyShield Backend
 Issue #32 - Phase 2 Implementation
 """
+
 import sys
 import json
 from pathlib import Path

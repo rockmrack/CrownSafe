@@ -1,10 +1,11 @@
 """Add account deletion audit table
 
 Revision ID: add_account_deletion_audit
-Revises: 
+Revises:
 Create Date: 2024-01-01 00:00:00.000000
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql

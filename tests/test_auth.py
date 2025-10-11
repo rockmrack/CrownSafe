@@ -1,4 +1,5 @@
-﻿"""Tests for core_infra/auth.py"""
+"""Tests for core_infra/auth.py"""
+
 import unittest
 from unittest.mock import Mock, patch
 

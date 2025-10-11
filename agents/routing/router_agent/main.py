@@ -113,9 +113,7 @@ class RouterAgentManager:
     async def handle_incoming_message(self, message: MCPMessage):
         """Handle incoming messages with proper response processing"""
         if not self.router_logic or not self.mcp_client:
-            logger.error(
-                "Logic/MCPClient instance missing in RouterAgent handler during message processing."
-            )
+            logger.error("Logic/MCPClient instance missing in RouterAgent handler during message processing.")
             return
 
         try:
@@ -124,9 +122,7 @@ class RouterAgentManager:
             sender_id = header.sender_id
             correlation_id = header.correlation_id
 
-            logger.debug(
-                f"MAIN_HANDLER: Processing {message_type} from {sender_id} (CorrID: {correlation_id})"
-            )
+            logger.debug(f"MAIN_HANDLER: Processing {message_type} from {sender_id} (CorrID: {correlation_id})")
 
             message_dict = message.model_dump()  # Pass the full message dict to logic
 
@@ -141,9 +137,7 @@ class RouterAgentManager:
             # unless process_message was redesigned to return something for main.py to send.
             # Based on RouterLogic's current design, it sends its own messages.
 
-            logger.debug(
-                f"MAIN_HANDLER: Logic processing complete for {message_type} from {sender_id}"
-            )
+            logger.debug(f"MAIN_HANDLER: Logic processing complete for {message_type} from {sender_id}")
 
         except Exception as e:
             logger.error(f"MAIN_HANDLER: Error processing message: {e}", exc_info=True)
@@ -173,10 +167,8 @@ class RouterAgentManager:
                 message_handler=self.handle_incoming_message,  # This method will be called by MCPClient
             )
 
-            self.router_logic = (
-                RouterLogic(  # RouterLogic needs the mcp_client to send its own messages
-                    agent_id=AGENT_ID, mcp_client=self.mcp_client, logger=logic_logger
-                )
+            self.router_logic = RouterLogic(  # RouterLogic needs the mcp_client to send its own messages
+                agent_id=AGENT_ID, mcp_client=self.mcp_client, logger=logic_logger
             )
 
             logger.info(f"RouterAgent components initialized (Version: {AGENT_VERSION})")
@@ -217,9 +209,7 @@ class RouterAgentManager:
                     logger.warning(f"Signal {sig_name} not available on this platform.")
 
         except RuntimeError as e:  # e.g. "Cannot add signal handler" if not in main thread
-            logger.warning(
-                f"Could not setup signal handlers: {e}. This might be normal if not running in main thread."
-            )
+            logger.warning(f"Could not setup signal handlers: {e}. This might be normal if not running in main thread.")
 
     async def connect_and_register(self):
         """Connect to MCP server and register agent"""
@@ -331,9 +321,7 @@ if __name__ == "__main__":
         logger.info(f"{AGENT_NAME} exiting with code {exit_code}.")
         sys.exit(exit_code)
     except KeyboardInterrupt:  # Catch KeyboardInterrupt here if asyncio.run is interrupted
-        logger.info(
-            f"{AGENT_NAME} main process interrupted by KeyboardInterrupt before or during asyncio.run."
-        )
+        logger.info(f"{AGENT_NAME} main process interrupted by KeyboardInterrupt before or during asyncio.run.")
         sys.exit(0)
     except Exception as e:  # Catch any other unexpected errors at the top level
         logger.critical(f"Fatal error at {AGENT_NAME} entry point: {e}", exc_info=True)

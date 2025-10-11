@@ -30,11 +30,7 @@ class COPPA_ComplianceAgentLogic:
 
             birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d").date()
             today = datetime.now().date()
-            age = (
-                today.year
-                - birth_date.year
-                - ((today.month, today.day) < (birth_date.month, birth_date.day))
-            )
+            age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
 
             self.logger.info(f"Calculated age for user is {age}.")
 

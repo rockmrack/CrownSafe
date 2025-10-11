@@ -1,4 +1,5 @@
-﻿"""Tests for api/services/chat_tools.py"""
+"""Tests for api/services/chat_tools.py"""
+
 import unittest
 from unittest.mock import Mock, patch
 

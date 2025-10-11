@@ -117,9 +117,7 @@ class RiskReportGenerator:
         logger.info(f"Generating {format} report for product {product.id}")
 
         # Prepare report data
-        report_data = self._prepare_report_data(
-            product, risk_profile, risk_components, incidents, company_profile
-        )
+        report_data = self._prepare_report_data(product, risk_profile, risk_components, incidents, company_profile)
 
         # Generate report based on format
         if format == "pdf":
@@ -508,11 +506,7 @@ class RiskReportGenerator:
             summary += f"Injuries Reported: {injuries}\n"
 
         # Recent incidents
-        recent = [
-            i
-            for i in incidents
-            if i.incident_date and (datetime.utcnow() - i.incident_date).days < 90
-        ]
+        recent = [i for i in incidents if i.incident_date and (datetime.utcnow() - i.incident_date).days < 90]
         if recent:
             summary += f"Recent Incidents (last 90 days): {len(recent)}\n"
 
@@ -561,8 +555,7 @@ class RiskReportGenerator:
         # Risk level based recommendations
         if risk_components.risk_level == "critical":
             recommendations.append(
-                "IMMEDIATE ACTION REQUIRED: Stop using this product immediately "
-                "and check for active recalls"
+                "IMMEDIATE ACTION REQUIRED: Stop using this product immediately and check for active recalls"
             )
             recommendations.append("Contact the manufacturer or retailer for remedy information")
         elif risk_components.risk_level == "high":
@@ -570,33 +563,21 @@ class RiskReportGenerator:
             recommendations.append("Monitor CPSC.gov for updates on this product")
 
         # Factor-specific recommendations
-        if (
-            risk_components.severity_details
-            and risk_components.severity_details.get("total_deaths") > 0
-        ):
+        if risk_components.severity_details and risk_components.severity_details.get("total_deaths") > 0:
             recommendations.append(
                 "⚠️ CRITICAL: Deaths have been reported with this product. "
                 "Exercise extreme caution and consider alternatives"
             )
 
-        if (
-            risk_components.recency_details
-            and risk_components.recency_details.get("incidents_last_3_months") > 0
-        ):
-            recommendations.append(
-                "Recent incidents detected - check for the latest safety notices"
-            )
+        if risk_components.recency_details and risk_components.recency_details.get("incidents_last_3_months") > 0:
+            recommendations.append("Recent incidents detected - check for the latest safety notices")
 
-        if risk_components.violation_details and risk_components.violation_details.get(
-            "repeat_violations"
-        ):
+        if risk_components.violation_details and risk_components.violation_details.get("repeat_violations"):
             recommendations.append("Pattern of violations detected - consider alternative products")
 
         # General safety recommendations
         recommendations.append("Keep all product packaging and receipts for potential recalls")
-        recommendations.append(
-            "Register your product with the manufacturer for direct recall notifications"
-        )
+        recommendations.append("Register your product with the manufacturer for direct recall notifications")
         recommendations.append("Report any safety issues to CPSC at SaferProducts.gov")
 
         return recommendations

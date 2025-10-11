@@ -1,7 +1,8 @@
 """
-Deep Integration Tests  
+Deep Integration Tests
 Testing cross-component integration and complex workflows
 """
+
 import pytest
 from fastapi.testclient import TestClient
 from api.main_babyshield import app

@@ -31,9 +31,7 @@ class HazardAnalysisLogic:
         self.agent_id = agent_id
         self.logger = logger_instance or logger
         if not API_KEY:
-            self.logger.critical(
-                "OPENAI_API_KEY not found in environment variables. The agent cannot function."
-            )
+            self.logger.critical("OPENAI_API_KEY not found in environment variables. The agent cannot function.")
             raise ValueError("OPENAI_API_KEY is not set.")
         self.logger.info(f"HazardAnalysisLogic initialized for agent {self.agent_id}.")
 
@@ -55,7 +53,7 @@ class HazardAnalysisLogic:
                 date = datetime.fromisoformat(date).date().isoformat()
             except Exception:
                 pass
-            recall_details += f"Recall {i+1}: Reason: '{reason}', Date: '{date}'.\n"
+            recall_details += f"Recall {i + 1}: Reason: '{reason}', Date: '{date}'.\n"
 
         return f"""
 You are a baby product safety expert named BabyShield. Your task is to analyze recall data for a specific product and provide a clear, concise, and direct summary for a concerned parent.

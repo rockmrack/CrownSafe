@@ -32,8 +32,9 @@ class TestChatFeatureGating:
     @patch("api.routers.chat.get_llm_client")
     def test_conversation_blocked_when_user_not_in_rollout(self, mock_llm, mock_fetch):
         """Test that conversation endpoint returns 403 when user is not in rollout percentage"""
-        with patch("core.feature_flags.FEATURE_CHAT_ENABLED", True), patch(
-            "core.feature_flags.chat_enabled_for", return_value=False
+        with (
+            patch("core.feature_flags.FEATURE_CHAT_ENABLED", True),
+            patch("core.feature_flags.chat_enabled_for", return_value=False),
         ):
             response = self.client.post(
                 "/api/v1/chat/conversation",
@@ -78,9 +79,11 @@ class TestChatFeatureGating:
         }
         mock_llm.return_value = mock_llm_client
 
-        with patch("core.feature_flags.FEATURE_CHAT_ENABLED", True), patch(
-            "core.feature_flags.chat_enabled_for", return_value=True
-        ), patch("api.routers.chat.ChatAgentLogic") as mock_agent_class:
+        with (
+            patch("core.feature_flags.FEATURE_CHAT_ENABLED", True),
+            patch("core.feature_flags.chat_enabled_for", return_value=True),
+            patch("api.routers.chat.ChatAgentLogic") as mock_agent_class,
+        ):
             mock_agent = MagicMock()
             mock_agent.classify_intent.return_value = "pregnancy_risk"
             mock_agent_class.return_value = mock_agent
@@ -108,9 +111,10 @@ class TestChatFeatureGating:
         """Test that explain-result endpoint is not gated (for backward compatibility)"""
         mock_fetch.return_value = {"product_name": "Test Product"}
 
-        with patch("core.feature_flags.FEATURE_CHAT_ENABLED", False), patch(
-            "api.routers.chat.ChatAgentLogic"
-        ) as mock_agent_class:
+        with (
+            patch("core.feature_flags.FEATURE_CHAT_ENABLED", False),
+            patch("api.routers.chat.ChatAgentLogic") as mock_agent_class,
+        ):
             mock_agent = MagicMock()
             mock_agent.synthesize_result.return_value = {
                 "summary": "Test summary",
@@ -123,9 +127,7 @@ class TestChatFeatureGating:
             }
             mock_agent_class.return_value = mock_agent
 
-            response = self.client.post(
-                "/api/v1/chat/explain-result", json={"scan_id": "test-scan-123"}
-            )
+            response = self.client.post("/api/v1/chat/explain-result", json={"scan_id": "test-scan-123"})
 
             # Should succeed even when chat is disabled
             assert response.status_code == 200
@@ -134,9 +136,10 @@ class TestChatFeatureGating:
 
     def test_feature_gating_uses_user_and_device_ids(self):
         """Test that feature gating correctly uses user_id and device_id"""
-        with patch("core.feature_flags.FEATURE_CHAT_ENABLED", True), patch(
-            "core.feature_flags.chat_enabled_for"
-        ) as mock_enabled:
+        with (
+            patch("core.feature_flags.FEATURE_CHAT_ENABLED", True),
+            patch("core.feature_flags.chat_enabled_for") as mock_enabled,
+        ):
             mock_enabled.return_value = False
 
             response = self.client.post(

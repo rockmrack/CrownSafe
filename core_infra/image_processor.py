@@ -339,9 +339,7 @@ class ImageAnalysisService:
             logger.error(f"Barcode extraction error: {e}")
             return []
 
-    async def _extract_text(
-        self, image: Image.Image, providers: List[Provider]
-    ) -> Optional[OCRResult]:
+    async def _extract_text(self, image: Image.Image, providers: List[Provider]) -> Optional[OCRResult]:
         """Extract text using specified providers"""
         for provider in providers:
             try:
@@ -437,9 +435,7 @@ class ImageAnalysisService:
             processing_time_ms=processing_time,
         )
 
-    async def _extract_labels(
-        self, image_data: bytes, providers: List[Provider]
-    ) -> Optional[LabelResult]:
+    async def _extract_labels(self, image_data: bytes, providers: List[Provider]) -> Optional[LabelResult]:
         """Extract image labels/tags"""
         for provider in providers:
             try:
@@ -525,9 +521,7 @@ class ImageAnalysisService:
         if lines and not result.product_name:
             # Assume first substantial line is product name
             for line in lines:
-                if len(line) > 10 and not any(
-                    word in line.lower() for word in ["warning", "caution", "model"]
-                ):
+                if len(line) > 10 and not any(word in line.lower() for word in ["warning", "caution", "model"]):
                     result.product_name = line.strip()
                     break
 
@@ -681,9 +675,7 @@ class ImageAnalysisService:
                                     "height": int(h),
                                 },
                                 "severity": "high" if area > 1000 else "medium",
-                                "confidence": min(
-                                    0.95, 0.3 + (area / 5000)
-                                ),  # Confidence based on area
+                                "confidence": min(0.95, 0.3 + (area / 5000)),  # Confidence based on area
                                 "area_pixels": int(area),
                             }
                         )
@@ -695,9 +687,7 @@ class ImageAnalysisService:
             thresh = cv2.threshold(diff, 25, 255, cv2.THRESH_BINARY)[1]
 
             # Find significant anomalies
-            contours_missing, _ = cv2.findContours(
-                thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-            )
+            contours_missing, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
             for contour in contours_missing:
                 area = cv2.contourArea(contour)
@@ -739,9 +729,7 @@ class ImageAnalysisService:
             # Areas with very high or very low saturation compared to average
             unusual_sat = cv2.threshold(s, s_mean + 2 * s_std, 255, cv2.THRESH_BINARY)[1]
 
-            contours_color, _ = cv2.findContours(
-                unusual_sat, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-            )
+            contours_color, _ = cv2.findContours(unusual_sat, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
             for contour in contours_color:
                 area = cv2.contourArea(contour)
