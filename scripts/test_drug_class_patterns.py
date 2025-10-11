@@ -175,7 +175,9 @@ class DrugClassPatternTester:
             cross_workflow_evidence = analytics.get("cross_workflow_evidence", [])
 
             # DEBUG: Check type of cross_workflow_evidence
-            self.print_debug(f"Type of cross_workflow_evidence: {type(cross_workflow_evidence)}")
+            self.print_debug(
+                f"Type of cross_workflow_evidence: {type(cross_workflow_evidence)}"
+            )
 
             # Handle different types of cross_workflow_evidence
             cross_workflow_count = 0
@@ -183,12 +185,16 @@ class DrugClassPatternTester:
 
             if isinstance(cross_workflow_evidence, int):
                 cross_workflow_count = cross_workflow_evidence
-                self.print_info(f"Cross-workflow evidence count: {cross_workflow_count}")
+                self.print_info(
+                    f"Cross-workflow evidence count: {cross_workflow_count}"
+                )
                 cross_workflow_docs = []  # We don't have the actual docs, just count
             elif isinstance(cross_workflow_evidence, list):
                 cross_workflow_count = len(cross_workflow_evidence)
                 cross_workflow_docs = cross_workflow_evidence
-                self.print_info(f"Cross-workflow evidence: {cross_workflow_count} documents")
+                self.print_info(
+                    f"Cross-workflow evidence: {cross_workflow_count} documents"
+                )
             else:
                 self.print_warning(
                     f"Unexpected type for cross_workflow_evidence: {type(cross_workflow_evidence)}"
@@ -204,7 +210,9 @@ class DrugClassPatternTester:
                 self.print_info(f"  {drug}:")
                 self.print_info(f"    Documents: {data.get('document_count', 0)}")
                 self.print_info(f"    Workflows: {data.get('workflow_count', 0)}")
-                self.print_info(f"    Document types: {list(data.get('document_types', []))}")
+                self.print_info(
+                    f"    Document types: {list(data.get('document_types', []))}"
+                )
 
                 # Check if it's an SGLT2 drug with correct names
                 if any(sglt2 in drug.lower() for sglt2 in self.sglt2_drugs):
@@ -226,7 +234,9 @@ class DrugClassPatternTester:
                     drugs_str = ", ".join(str(d) for d in doc.get("drugs", []))
                     doc_id = str(doc.get("id", "unknown"))[:30]
                     ref_count = doc.get("reference_count", doc.get("ref_count", 1))
-                    self.print_info(f"  {i + 1}. {doc_id}...: {drugs_str} (ref_count: {ref_count})")
+                    self.print_info(
+                        f"  {i + 1}. {doc_id}...: {drugs_str} (ref_count: {ref_count})"
+                    )
 
             # Get enhanced analytics if available
             if ENHANCED_AVAILABLE and hasattr(self.memory, "get_enhanced_analytics"):
@@ -273,7 +283,9 @@ class DrugClassPatternTester:
                         # Try to get counts if they're dicts/objects
                         if isinstance(temporal, dict):
                             temporal = temporal.get("total_patterns", len(temporal))
-                        elif hasattr(temporal, "__len__") and not isinstance(temporal, (str, int)):
+                        elif hasattr(temporal, "__len__") and not isinstance(
+                            temporal, (str, int)
+                        ):
                             temporal = len(temporal)
 
                         if isinstance(contradictions, dict):
@@ -287,12 +299,16 @@ class DrugClassPatternTester:
 
                         if isinstance(gaps, dict):
                             gaps = gaps.get("total_gaps", len(gaps))
-                        elif hasattr(gaps, "__len__") and not isinstance(gaps, (str, int)):
+                        elif hasattr(gaps, "__len__") and not isinstance(
+                            gaps, (str, int)
+                        ):
                             gaps = len(gaps)
 
                         if isinstance(insights, dict):
                             insights = insights.get("total_insights", len(insights))
-                        elif hasattr(insights, "__len__") and not isinstance(insights, (str, int)):
+                        elif hasattr(insights, "__len__") and not isinstance(
+                            insights, (str, int)
+                        ):
                             insights = len(insights)
 
                         self.print_info(f"  Temporal patterns: {temporal}")
@@ -342,7 +358,9 @@ class DrugClassPatternTester:
                 ],
                 n_results=50,
                 include=["metadatas", "documents"],
-                where={"reference_count": {"$gte": 2}},  # Only high-quality, cross-referenced docs
+                where={
+                    "reference_count": {"$gte": 2}
+                },  # Only high-quality, cross-referenced docs
             )
 
             if not results or not results["metadatas"] or not results["metadatas"][0]:
@@ -356,7 +374,11 @@ class DrugClassPatternTester:
                     drug_context = [drug_context]
 
                 # Check both metadata and document content
-                document = results["documents"][0][i] if i < len(results["documents"][0]) else ""
+                document = (
+                    results["documents"][0][i]
+                    if i < len(results["documents"][0])
+                    else ""
+                )
 
                 sglt2_drugs_in_doc = []
                 for drug in drug_context:
@@ -372,7 +394,9 @@ class DrugClassPatternTester:
                 if sglt2_drugs_in_doc:
                     sglt2_docs.append(
                         {
-                            "id": metadata.get("canonical_id", metadata.get("id", f"doc_{i}")),
+                            "id": metadata.get(
+                                "canonical_id", metadata.get("id", f"doc_{i}")
+                            ),
                             "drugs": sglt2_drugs_in_doc,
                             "reference_count": metadata.get("reference_count", 1),
                             "source_type": metadata.get("source_type", "unknown"),
@@ -388,7 +412,9 @@ class DrugClassPatternTester:
 
     async def test_ertugliflozin_simulation(self) -> Dict[str, Any]:
         """Simulate what would happen if we query Ertugliflozin (a new SGLT2) with detailed debugging"""
-        self.print_section("Ertugliflozin Query Simulation (New SGLT2) - Enhanced Debugging")
+        self.print_section(
+            "Ertugliflozin Query Simulation (New SGLT2) - Enhanced Debugging"
+        )
 
         try:
             # Prepare comprehensive entities for enhanced recommendations
@@ -411,16 +437,24 @@ class DrugClassPatternTester:
             await self._debug_existing_sglt2_knowledge()
 
             # Test enhanced research recommendations if available
-            if ENHANCED_AVAILABLE and hasattr(self.memory, "get_enhanced_research_recommendations"):
-                self.print_info("Testing enhanced research recommendations for Ertugliflozin...")
+            if ENHANCED_AVAILABLE and hasattr(
+                self.memory, "get_enhanced_research_recommendations"
+            ):
+                self.print_info(
+                    "Testing enhanced research recommendations for Ertugliflozin..."
+                )
 
                 try:
-                    recommendations = await self.memory.get_enhanced_research_recommendations(
-                        entities
+                    recommendations = (
+                        await self.memory.get_enhanced_research_recommendations(
+                            entities
+                        )
                     )
 
                     self.print_debug(f"Raw recommendations response: {recommendations}")
-                    self.print_debug(f"Type of recommendations: {type(recommendations)}")
+                    self.print_debug(
+                        f"Type of recommendations: {type(recommendations)}"
+                    )
 
                     if recommendations:
                         # Extract key information with multiple possible keys
@@ -434,7 +468,9 @@ class DrugClassPatternTester:
 
                         gaps = recommendations.get(
                             "knowledge_gaps",
-                            recommendations.get("gaps", recommendations.get("research_gaps", [])),
+                            recommendations.get(
+                                "gaps", recommendations.get("research_gaps", [])
+                            ),
                         )
 
                         priorities = recommendations.get(
@@ -456,7 +492,9 @@ class DrugClassPatternTester:
                         # Look for related evidence indicators
                         related_docs = recommendations.get("related_documents", [])
                         similar_drugs = recommendations.get("similar_drugs", [])
-                        cross_workflow_ops = recommendations.get("cross_workflow_opportunities", [])
+                        cross_workflow_ops = recommendations.get(
+                            "cross_workflow_opportunities", []
+                        )
 
                         self.print_success(
                             "Enhanced research recommendations generated for Ertugliflozin"
@@ -480,17 +518,27 @@ class DrugClassPatternTester:
                         total_existing = 0
                         if isinstance(existing_evidence, dict):
                             total_existing = sum(
-                                v for v in existing_evidence.values() if isinstance(v, (int, float))
+                                v
+                                for v in existing_evidence.values()
+                                if isinstance(v, (int, float))
                             )
-                            self.print_info(f"  Existing evidence breakdown: {existing_evidence}")
+                            self.print_info(
+                                f"  Existing evidence breakdown: {existing_evidence}"
+                            )
                         elif isinstance(existing_evidence, (list, set)):
                             total_existing = len(existing_evidence)
-                            self.print_info(f"  Existing evidence items: {total_existing}")
+                            self.print_info(
+                                f"  Existing evidence items: {total_existing}"
+                            )
                         elif isinstance(existing_evidence, (int, float)):
                             total_existing = int(existing_evidence)
-                            self.print_info(f"  Existing evidence count: {total_existing}")
+                            self.print_info(
+                                f"  Existing evidence count: {total_existing}"
+                            )
                         else:
-                            self.print_info(f"  Existing evidence (raw): {existing_evidence}")
+                            self.print_info(
+                                f"  Existing evidence (raw): {existing_evidence}"
+                            )
 
                         self.print_info(
                             f"  Total existing evidence recognized: {total_existing} items"
@@ -530,13 +578,19 @@ class DrugClassPatternTester:
                                 "  [?] This may indicate conservative approach or threshold issues"
                             )
                         elif strategy == "unknown":
-                            self.print_error("ISSUE: System returned 'unknown' strategy")
+                            self.print_error(
+                                "ISSUE: System returned 'unknown' strategy"
+                            )
                             self.print_info(
                                 "  [X] This suggests get_enhanced_research_recommendations may have failed internally"
                             )
-                            self.print_info("  [X] Need to debug the method's internal logic")
+                            self.print_info(
+                                "  [X] Need to debug the method's internal logic"
+                            )
                         else:
-                            self.print_warning("System treating Ertugliflozin as new research area")
+                            self.print_warning(
+                                "System treating Ertugliflozin as new research area"
+                            )
                             self.print_info(
                                 "  [?] This may indicate limited cross-drug pattern recognition"
                             )
@@ -605,12 +659,18 @@ class DrugClassPatternTester:
 
             # Check for class-level knowledge
             class_results = self.memory.collection.query(
-                query_texts=["SGLT2 inhibitor class cardiovascular outcomes heart failure"],
+                query_texts=[
+                    "SGLT2 inhibitor class cardiovascular outcomes heart failure"
+                ],
                 n_results=10,
                 include=["metadatas"],
             )
 
-            if class_results and class_results["metadatas"] and class_results["metadatas"][0]:
+            if (
+                class_results
+                and class_results["metadatas"]
+                and class_results["metadatas"][0]
+            ):
                 self.print_debug(
                     f"  SGLT2 class-level documents: {len(class_results['metadatas'][0])}"
                 )
@@ -669,10 +729,14 @@ class DrugClassPatternTester:
 
             if results and results["metadatas"] and results["metadatas"][0]:
                 metadatas = results["metadatas"][0]
-                _ = results["documents"][0] if results.get("documents") else []  # documents
+                _ = (
+                    results["documents"][0] if results.get("documents") else []
+                )  # documents
                 distances = results["distances"][0] if results.get("distances") else []
 
-                self.print_success(f"Found {len(metadatas)} potentially related documents")
+                self.print_success(
+                    f"Found {len(metadatas)} potentially related documents"
+                )
 
                 # Analyze if any are from other SGLT2 drugs
                 sglt2_related = 0
@@ -686,7 +750,9 @@ class DrugClassPatternTester:
 
                     doc_is_sglt2 = False
                     for drug in drug_context:
-                        if any(sglt2 in str(drug).lower() for sglt2 in self.sglt2_drugs):
+                        if any(
+                            sglt2 in str(drug).lower() for sglt2 in self.sglt2_drugs
+                        ):
                             doc_is_sglt2 = True
                             drug_diversity.add(str(drug))
 
@@ -708,8 +774,12 @@ class DrugClassPatternTester:
                         )
                         self.print_info(f"    Drugs: {drug_context}")
 
-                self.print_info(f"\nSGLT2-related documents: {sglt2_related}/{len(metadatas)}")
-                self.print_info(f"Drug diversity in results: {sorted(list(drug_diversity))}")
+                self.print_info(
+                    f"\nSGLT2-related documents: {sglt2_related}/{len(metadatas)}"
+                )
+                self.print_info(
+                    f"Drug diversity in results: {sorted(list(drug_diversity))}"
+                )
 
                 # Show top SGLT2-specific results
                 if sglt2_specific_docs:
@@ -774,7 +844,9 @@ class DrugClassPatternTester:
                 }
 
             metadatas = results["metadatas"][0]
-            self.print_success(f"Found {len(metadatas)} potential class-level documents")
+            self.print_success(
+                f"Found {len(metadatas)} potential class-level documents"
+            )
 
             # Analyze drug diversity in results - FIXED LOGIC
             all_drugs = []
@@ -836,7 +908,9 @@ class DrugClassPatternTester:
             self.print_success(
                 f"Multi-SGLT2 documents: {multi_sglt2_docs_count}/{sglt2_class_docs}"
             )  # FIXED
-            self.print_success(f"Class-level SGLT2 documents: {sglt2_class_docs}/{len(metadatas)}")
+            self.print_success(
+                f"Class-level SGLT2 documents: {sglt2_class_docs}/{len(metadatas)}"
+            )
 
             # Show multi-drug examples
             if sglt2_multi_drug_examples:
@@ -858,7 +932,11 @@ class DrugClassPatternTester:
             )
 
             comp_examples = []
-            if comp_results and comp_results["metadatas"] and comp_results["metadatas"][0]:
+            if (
+                comp_results
+                and comp_results["metadatas"]
+                and comp_results["metadatas"][0]
+            ):
                 comp_metadatas = comp_results["metadatas"][0]
                 self.print_success(
                     f"Found {len(comp_metadatas)} comparative effectiveness documents"
@@ -958,7 +1036,9 @@ class DrugClassPatternTester:
                 elif not isinstance(drug_context, list):
                     drug_context = []
 
-                doc_content = all_docs["documents"][i] if i < len(all_docs["documents"]) else ""
+                doc_content = (
+                    all_docs["documents"][i] if i < len(all_docs["documents"]) else ""
+                )
 
                 # Check both metadata and content
                 is_sglt2 = False
@@ -986,14 +1066,19 @@ class DrugClassPatternTester:
                     # Count by drug (including JSON arrays)
                     for drug in drugs_found:
                         # If drug is a JSON array string, parse it
-                        if isinstance(drug, str) and drug.startswith("[") and drug.endswith("]"):
+                        if (
+                            isinstance(drug, str)
+                            and drug.startswith("[")
+                            and drug.endswith("]")
+                        ):
                             try:
                                 import json
 
                                 parsed_drugs = json.loads(drug)
                                 for parsed_drug in parsed_drugs:
                                     sglt2_stats["by_drug"][str(parsed_drug)] = (
-                                        sglt2_stats["by_drug"].get(str(parsed_drug), 0) + 1
+                                        sglt2_stats["by_drug"].get(str(parsed_drug), 0)
+                                        + 1
                                     )
                             except:
                                 sglt2_stats["by_drug"][drug] = (
@@ -1014,7 +1099,11 @@ class DrugClassPatternTester:
                     # Multi-drug documents - FIXED LOGIC
                     unique_sglt2_in_doc = set()
                     for drug in drugs_found:
-                        if isinstance(drug, str) and drug.startswith("[") and drug.endswith("]"):
+                        if (
+                            isinstance(drug, str)
+                            and drug.startswith("[")
+                            and drug.endswith("]")
+                        ):
                             try:
                                 import json
 
@@ -1026,10 +1115,14 @@ class DrugClassPatternTester:
                                     ):
                                         unique_sglt2_in_doc.add(str(parsed_drug))
                             except:
-                                if any(sglt2 in drug.lower() for sglt2 in self.sglt2_drugs):
+                                if any(
+                                    sglt2 in drug.lower() for sglt2 in self.sglt2_drugs
+                                ):
                                     unique_sglt2_in_doc.add(drug)
                         else:
-                            if any(sglt2 in str(drug).lower() for sglt2 in self.sglt2_drugs):
+                            if any(
+                                sglt2 in str(drug).lower() for sglt2 in self.sglt2_drugs
+                            ):
                                 unique_sglt2_in_doc.add(str(drug))
 
                     if len(unique_sglt2_in_doc) > 1:
@@ -1078,7 +1171,10 @@ class DrugClassPatternTester:
             ):
                 # Clean up drug name display
                 clean_drug = (
-                    drug.replace("[", "").replace("]", "").replace('"', "").replace("'", "")
+                    drug.replace("[", "")
+                    .replace("]", "")
+                    .replace('"', "")
+                    .replace("'", "")
                 )
                 self.print_info(f"    {clean_drug}: {count}")
 
@@ -1088,9 +1184,15 @@ class DrugClassPatternTester:
                     self.print_info(f"    {source}: {count}")
 
             self.print_info("\n  Quality metrics:")
-            self.print_info(f"    Multi-drug documents: {sglt2_stats['multi_drug_docs']}")
-            self.print_info(f"    High-quality (ref>=2): {sglt2_stats['high_quality_docs']}")
-            self.print_info(f"    Unique workflows: {len(sglt2_stats['unique_workflows'])}")
+            self.print_info(
+                f"    Multi-drug documents: {sglt2_stats['multi_drug_docs']}"
+            )
+            self.print_info(
+                f"    High-quality (ref>=2): {sglt2_stats['high_quality_docs']}"
+            )
+            self.print_info(
+                f"    Unique workflows: {len(sglt2_stats['unique_workflows'])}"
+            )
 
             # Show drug combinations
             if sglt2_stats["drug_combinations"]:
@@ -1104,7 +1206,10 @@ class DrugClassPatternTester:
                     clean_combo = []
                     for drug in combo:
                         clean_drug = (
-                            drug.replace("[", "").replace("]", "").replace('"', "").replace("'", "")
+                            drug.replace("[", "")
+                            .replace("]", "")
+                            .replace('"', "")
+                            .replace("'", "")
                         )
                         clean_combo.append(clean_drug)
                     combo_str = (
@@ -1119,8 +1224,12 @@ class DrugClassPatternTester:
                 and sglt2_stats["temporal_spread"]["newest"]
             ):
                 self.print_info("\n  Temporal spread:")
-                self.print_info(f"    Oldest: {sglt2_stats['temporal_spread']['oldest']}")
-                self.print_info(f"    Newest: {sglt2_stats['temporal_spread']['newest']}")
+                self.print_info(
+                    f"    Oldest: {sglt2_stats['temporal_spread']['oldest']}"
+                )
+                self.print_info(
+                    f"    Newest: {sglt2_stats['temporal_spread']['newest']}"
+                )
 
             return sglt2_stats
 
@@ -1166,17 +1275,25 @@ class DrugClassPatternTester:
         self.print_info("   - Strong semantic similarity (distances 0.08-0.10)")
 
         self.print_error("4. CRITICAL ISSUE IDENTIFIED:")
-        self.print_info("   - get_enhanced_research_recommendations() returning empty results")
-        self.print_info("   - Raw response: {'priority_research': [], 'gap_addressing': [], ...}")
+        self.print_info(
+            "   - get_enhanced_research_recommendations() returning empty results"
+        )
+        self.print_info(
+            "   - Raw response: {'priority_research': [], 'gap_addressing': [], ...}"
+        )
         self.print_info("   - This explains the 'unknown' strategy issue")
 
         # Overall assessment
         print("\n[ASSESSMENT] Drug Class Pattern Recognition Capability:")
-        print(f"Testing with SGLT2 drug names: {', '.join([d.title() for d in self.sglt2_drugs])}")
+        print(
+            f"Testing with SGLT2 drug names: {', '.join([d.title() for d in self.sglt2_drugs])}"
+        )
 
         # Check 1: Existing cross-workflow evidence - EXCELLENT
         sglt2_evidence = current_patterns.get("sglt2_evidence", [])
-        sglt2_evidence_count = len(sglt2_evidence) if isinstance(sglt2_evidence, list) else 0
+        sglt2_evidence_count = (
+            len(sglt2_evidence) if isinstance(sglt2_evidence, list) else 0
+        )
         cross_workflow_count = current_patterns.get("cross_workflow_count", 0)
         sglt2_drugs_count = len(current_patterns.get("sglt2_drugs", []))
 
@@ -1204,7 +1321,9 @@ class DrugClassPatternTester:
             ertugliflozin_sim.get("predicted_strategy", "comprehensive"),
         )
         sglt2_related = ertugliflozin_sim.get("sglt2_related", 0)
-        _ = ertugliflozin_sim.get("total_existing_evidence", 0)  # total_existing_evidence
+        _ = ertugliflozin_sim.get(
+            "total_existing_evidence", 0
+        )  # total_existing_evidence
         _ = ertugliflozin_sim.get("similar_drugs", [])  # similar_drugs
 
         # BASED ON YOUR LOGS - the manual analysis worked perfectly!
@@ -1212,7 +1331,9 @@ class DrugClassPatternTester:
             self.print_success(
                 f"INTELLIGENT: Manual analysis predicts '{predicted_strategy}' strategy"
             )
-            self.print_info("  [CHECK] Manual similarity search found excellent SGLT2 match")
+            self.print_info(
+                "  [CHECK] Manual similarity search found excellent SGLT2 match"
+            )
             self.print_info(
                 "  [CHECK] System found 20/20 SGLT2-related documents for Ertugliflozin"
             )
@@ -1223,8 +1344,12 @@ class DrugClassPatternTester:
             self.print_error(
                 f"CRITICAL: get_enhanced_research_recommendations returned '{predicted_strategy if predicted_strategy != 'update' else 'unknown'}' strategy"
             )
-            self.print_info("  [X] Method is not leveraging the excellent similarity results")
-            self.print_info("  [X] All internal arrays are empty despite rich knowledge base")
+            self.print_info(
+                "  [X] Method is not leveraging the excellent similarity results"
+            )
+            self.print_info(
+                "  [X] All internal arrays are empty despite rich knowledge base"
+            )
 
         # Check 4: Knowledge base completeness - EXCELLENT
         total_sglt2_docs = sglt2_kb.get("total_sglt2_docs", 0)
@@ -1238,17 +1363,23 @@ class DrugClassPatternTester:
         # ROOT CAUSE ANALYSIS
         self.print_section("ROOT CAUSE ANALYSIS")
 
-        self.print_error("PRIMARY ISSUE: get_enhanced_research_recommendations() Implementation")
+        self.print_error(
+            "PRIMARY ISSUE: get_enhanced_research_recommendations() Implementation"
+        )
         self.print_info("Evidence from your logs:")
         self.print_info(
             "  1. Raw response shows all empty arrays: {'priority_research': [], 'gap_addressing': [], ...}"
         )
-        self.print_info("  2. Manual similarity search works perfectly (20/20 SGLT2 matches)")
+        self.print_info(
+            "  2. Manual similarity search works perfectly (20/20 SGLT2 matches)"
+        )
         self.print_info("  3. Database has excellent cross-drug evidence")
         self.print_info("  4. Method is not populating any of its output fields")
 
         self.print_info("\nMost Likely Causes:")
-        self.print_info("  A. Method's internal similarity search is not finding matches")
+        self.print_info(
+            "  A. Method's internal similarity search is not finding matches"
+        )
         self.print_info("  B. Method's thresholds are too restrictive")
         self.print_info("  C. Method's query formation is incorrect")
         self.print_info("  D. Method's result processing logic has bugs")
@@ -1256,18 +1387,28 @@ class DrugClassPatternTester:
         # RECOMMENDATIONS
         self.print_section("SPECIFIC DEBUGGING RECOMMENDATIONS")
 
-        self.print_error("HIGHEST PRIORITY: Debug get_enhanced_research_recommendations()")
+        self.print_error(
+            "HIGHEST PRIORITY: Debug get_enhanced_research_recommendations()"
+        )
         self.print_info("Required debugging steps:")
         self.print_info("  1. Add logging to method's internal similarity queries")
         self.print_info("  2. Check what embeddings/queries it's actually running")
         self.print_info("  3. Verify threshold values for 'existing evidence'")
         self.print_info("  4. Compare its queries to our working manual queries")
-        self.print_info("  5. Check if it's properly parsing drug_names_context JSON arrays")
+        self.print_info(
+            "  5. Check if it's properly parsing drug_names_context JSON arrays"
+        )
 
         self.print_info("\nRecommended test:")
-        self.print_info("  Create a minimal test that calls ONLY the internal similarity")
-        self.print_info("  portions of get_enhanced_research_recommendations() with Ertugliflozin")
-        self.print_info("  and compares results to our working manual similarity search.")
+        self.print_info(
+            "  Create a minimal test that calls ONLY the internal similarity"
+        )
+        self.print_info(
+            "  portions of get_enhanced_research_recommendations() with Ertugliflozin"
+        )
+        self.print_info(
+            "  and compares results to our working manual similarity search."
+        )
 
         # OVERALL ASSESSMENT - Actually very positive!
         self.print_section("OVERALL SYSTEM ASSESSMENT")
@@ -1281,9 +1422,13 @@ class DrugClassPatternTester:
         self.print_info("  [CHECK] Drug class pattern recognition (manual)")
 
         self.print_error("Single remaining issue:")
-        self.print_info("  [X] get_enhanced_research_recommendations() method implementation")
+        self.print_info(
+            "  [X] get_enhanced_research_recommendations() method implementation"
+        )
 
-        self.print_success("RECOMMENDATION: Focus debugging on the single method issue.")
+        self.print_success(
+            "RECOMMENDATION: Focus debugging on the single method issue."
+        )
         self.print_success(
             "The underlying EnhancedMemoryManager V2.0 architecture is working excellently!"
         )
@@ -1292,8 +1437,12 @@ class DrugClassPatternTester:
         print("\n[METRICS SUMMARY - FROM ACTUAL LOG]")
         print("  Total documents: 70 (100% SGLT2)")
         print("  Cross-workflow evidence: 26 documents")
-        print("  SGLT2 drugs identified: Canagliflozin(27), Sotagliflozin(28), Empagliflozin(22)")
-        print("  Multi-drug documents: 7 (including 4 Cana+Sota, 2 Empa+Sota, 1 Cana+Empa)")
+        print(
+            "  SGLT2 drugs identified: Canagliflozin(27), Sotagliflozin(28), Empagliflozin(22)"
+        )
+        print(
+            "  Multi-drug documents: 7 (including 4 Cana+Sota, 2 Empa+Sota, 1 Cana+Empa)"
+        )
         print("  High-quality documents: 26")
         print("  Ertugliflozin similarity: 20/20 SGLT2 matches (excellent)")
         print("  Manual predicted strategy: update (correct)")

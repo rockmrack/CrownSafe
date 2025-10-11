@@ -40,14 +40,18 @@ async def main():
     create_tables()
     with SessionLocal() as db:
         # Create a new user with default values (is_pregnant=False)
-        test_user = User(id=TEST_USER_ID, email="new.user@example.com", is_subscribed=True)
+        test_user = User(
+            id=TEST_USER_ID, email="new.user@example.com", is_subscribed=True
+        )
         db.add(test_user)
         db.commit()
     logger.info(f"Database seeded with new user ID: {TEST_USER_ID} (is_pregnant=False)")
 
     try:
         # 2. Initialize the real OnboardingAgentLogic.
-        agent_logic = OnboardingAgentLogic(agent_id="test_onboard_001", logger_instance=logger)
+        agent_logic = OnboardingAgentLogic(
+            agent_id="test_onboard_001", logger_instance=logger
+        )
         logger.info("Agent logic initialized.")
 
         # 3. Define the task payload to set the user as pregnant.
@@ -78,7 +82,9 @@ async def main():
         # 7. Validate the final result.
         if result.get("status") == "COMPLETED" and db_was_updated:
             print("\n" + "=" * 50)
-            print("✅✅✅ TEST PASSED: Agent successfully updated the user's profile in the database.")
+            print(
+                "✅✅✅ TEST PASSED: Agent successfully updated the user's profile in the database."
+            )
         else:
             print("\n" + "=" * 50)
             if not db_was_updated:

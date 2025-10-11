@@ -40,7 +40,9 @@ def upgrade():
 
     # Check for recalls
     result = connection.execute(
-        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls');")
+        text(
+            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls');"
+        )
     )
     has_recalls = result.scalar()
 
@@ -213,7 +215,9 @@ def downgrade():
     has_enhanced = result.scalar()
 
     result = connection.execute(
-        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls');")
+        text(
+            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls');"
+        )
     )
     has_recalls = result.scalar()
 

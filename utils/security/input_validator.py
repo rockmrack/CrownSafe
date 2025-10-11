@@ -82,7 +82,9 @@ class InputValidator:
 
         # Check length
         if len(barcode) > cls.MAX_LENGTHS["barcode"]:
-            raise ValueError(f"Barcode too long (max {cls.MAX_LENGTHS['barcode']} characters)")
+            raise ValueError(
+                f"Barcode too long (max {cls.MAX_LENGTHS['barcode']} characters)"
+            )
 
         # Check for dangerous patterns
         if cls._contains_dangerous_pattern(barcode):
@@ -103,7 +105,9 @@ class InputValidator:
         email = email.strip().lower()
 
         if len(email) > cls.MAX_LENGTHS["email"]:
-            raise ValueError(f"Email too long (max {cls.MAX_LENGTHS['email']} characters)")
+            raise ValueError(
+                f"Email too long (max {cls.MAX_LENGTHS['email']} characters)"
+            )
 
         if not re.match(cls.PATTERNS["email"], email):
             raise ValueError("Invalid email format")
@@ -178,7 +182,9 @@ class InputValidator:
         text = re.sub(r"<[^>]+>", "", text)
 
         # Remove script content
-        text = re.sub(r"<script[^>]*>.*?</script>", "", text, flags=re.IGNORECASE | re.DOTALL)
+        text = re.sub(
+            r"<script[^>]*>.*?</script>", "", text, flags=re.IGNORECASE | re.DOTALL
+        )
 
         # Remove inline event handlers
         text = re.sub(r'on\w+\s*=\s*["\'].*?["\']', "", text, flags=re.IGNORECASE)

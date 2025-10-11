@@ -27,7 +27,9 @@ class PatientDataAgent:
         self.agent_id = AGENT_ID
         self.agent_name = AGENT_NAME
         self.agent_type = AGENT_TYPE
-        self.logic = PatientDataAgentLogic(agent_id=self.agent_id, logger_instance=logger)
+        self.logic = PatientDataAgentLogic(
+            agent_id=self.agent_id, logger_instance=logger
+        )
 
         # Define capabilities for discovery service
         self.capabilities = [

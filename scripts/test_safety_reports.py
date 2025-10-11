@@ -282,12 +282,16 @@ def test_90_day_report():
 
         # Verify report retrieval
         saved_report = (
-            db.query(SafetyReport).filter(SafetyReport.report_id == report.report_id).first()
+            db.query(SafetyReport)
+            .filter(SafetyReport.report_id == report.report_id)
+            .first()
         )
 
         assert saved_report is not None, "Report should be saved"
         assert saved_report.total_scans == total_scans, "Total scans should match"
-        assert saved_report.unique_products == unique_products, "Unique products should match"
+        assert (
+            saved_report.unique_products == unique_products
+        ), "Unique products should match"
 
         print("\n" + "=" * 60)
         print("✅ All tests passed!")

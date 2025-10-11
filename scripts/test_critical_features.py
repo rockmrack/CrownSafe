@@ -83,7 +83,9 @@ def test_password_reset():
     print("\n=== Testing Password Reset ===")
 
     # Request password reset
-    response = client.post("/api/v1/auth/password-reset/request", json={"email": TEST_EMAIL})
+    response = client.post(
+        "/api/v1/auth/password-reset/request", json={"email": TEST_EMAIL}
+    )
     print_test(
         "POST /password-reset/request",
         response.status_code == 200,
@@ -92,7 +94,9 @@ def test_password_reset():
 
     # Validate token (would need actual token from email)
     test_token = "test_token_123"
-    response = client.post("/api/v1/auth/password-reset/validate", params={"token": test_token})
+    response = client.post(
+        "/api/v1/auth/password-reset/validate", params={"token": test_token}
+    )
     # This will fail with invalid token, but endpoint should work
     print_test(
         "POST /password-reset/validate",

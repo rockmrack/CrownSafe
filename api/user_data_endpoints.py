@@ -279,7 +279,9 @@ async def delete_user_data_endpoint(
 
     try:
         # If email provided, hash it for logging
-        email_hash = hash_email(deletion_request.email) if deletion_request.email else None
+        email_hash = (
+            hash_email(deletion_request.email) if deletion_request.email else None
+        )
 
         # Log the deletion request
         logger.info(
@@ -404,7 +406,9 @@ async def download_export(
             return StreamingResponse(
                 buf,
                 media_type="text/csv",
-                headers={"Content-Disposition": f"attachment; filename=export_{request_id}.csv"},
+                headers={
+                    "Content-Disposition": f"attachment; filename=export_{request_id}.csv"
+                },
             )
         else:
             # JSON download
@@ -414,7 +418,9 @@ async def download_export(
             return StreamingResponse(
                 io.BytesIO(payload),
                 media_type="application/json",
-                headers={"Content-Disposition": f"attachment; filename=export_{request_id}.json"},
+                headers={
+                    "Content-Disposition": f"attachment; filename=export_{request_id}.json"
+                },
             )
     except HTTPException:
         raise

@@ -45,7 +45,9 @@ try:
 
     # 3. Check pg_trgm extension
     print("\n=== CHECKING EXTENSIONS ===")
-    cur.execute("SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm'")
+    cur.execute(
+        "SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm'"
+    )
     extensions = cur.fetchall()
     if extensions:
         print(f"  pg_trgm extension: INSTALLED (version {extensions[0][1]})")

@@ -511,12 +511,16 @@ class TestImportsAndConfiguration:
 
     def test_dockerfile_final_exists(self):
         """Test Dockerfile.final exists"""
-        dockerfile_path = os.path.join(os.path.dirname(__file__), "..", "Dockerfile.final")
+        dockerfile_path = os.path.join(
+            os.path.dirname(__file__), "..", "Dockerfile.final"
+        )
         assert os.path.exists(dockerfile_path)
 
     def test_docker_compose_exists(self):
         """Test docker-compose.yml exists"""
-        compose_path = os.path.join(os.path.dirname(__file__), "..", "docker-compose.yml")
+        compose_path = os.path.join(
+            os.path.dirname(__file__), "..", "docker-compose.yml"
+        )
         assert os.path.exists(compose_path)
 
     def test_pytest_ini_exists(self):

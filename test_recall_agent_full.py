@@ -24,7 +24,11 @@ try:
         ACCCConnector,
         UK_OPSS_Connector,
     )
-    from agents.recall_data_agent.models import Recall, RecallQueryRequest, RecallQueryResponse
+    from agents.recall_data_agent.models import (
+        Recall,
+        RecallQueryRequest,
+        RecallQueryResponse,
+    )
 
     print("✓ All RecallDataAgent imports successful")
 except Exception as e:

@@ -122,7 +122,9 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     stripe_customer_id = Column(String, unique=True, index=True, nullable=True)
     hashed_password = Column(String, nullable=False, default="", server_default="")
-    is_subscribed = Column(Boolean, default=False, nullable=False)  # Single subscription status
+    is_subscribed = Column(
+        Boolean, default=False, nullable=False
+    )  # Single subscription status
     is_pregnant = Column(Boolean, default=False, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)  # Account status
 
@@ -163,7 +165,9 @@ class FamilyMember(Base):
         }
 
     def __repr__(self):
-        return f"<FamilyMember(id={self.id}, name={self.name!r}, user_id={self.user_id})>"
+        return (
+            f"<FamilyMember(id={self.id}, name={self.name!r}, user_id={self.user_id})>"
+        )
 
 
 class Allergy(Base):
@@ -346,7 +350,9 @@ def ensure_test_users():
     """Create or update test users for testing."""
     if TEST_MODE:
         try:
-            with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
+            with engine.connect().execution_options(
+                isolation_level="AUTOCOMMIT"
+            ) as conn:
                 # Clean up existing test users
                 conn.execute(text("DELETE FROM users WHERE id IN (1, 2)"))
                 print("Cleaned up existing test users")
@@ -495,7 +501,9 @@ class SafetyArticle(Base):
     source_agency = Column(String, index=True, nullable=False)  # e.g., "CPSC", "AAP"
     publication_date = Column(Date, nullable=False)
     image_url = Column(String, nullable=True)  # URL for the article's main image
-    article_url = Column(String, nullable=False)  # The direct URL to the original article
+    article_url = Column(
+        String, nullable=False
+    )  # The direct URL to the original article
     is_featured = Column(
         Boolean, default=False, index=True
     )  # A flag to feature an article on the home screen

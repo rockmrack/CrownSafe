@@ -79,7 +79,9 @@ def _configure_logging(app: FastAPI, environment: str) -> None:
     logger.info(f"Logging configured: level={log_level}")
 
 
-def _configure_middleware(app: FastAPI, environment: str, config: Optional[object]) -> None:
+def _configure_middleware(
+    app: FastAPI, environment: str, config: Optional[object]
+) -> None:
     """Configure all application middleware"""
 
     # 1. Security headers and rate limiting

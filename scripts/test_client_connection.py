@@ -87,7 +87,9 @@ async def run_test_client():
             await asyncio.sleep(15)  # Keep connection open for a while
             logger.info("Wait finished.")
         else:
-            logger.warning("Client did not connect successfully within the expected time.")
+            logger.warning(
+                "Client did not connect successfully within the expected time."
+            )
             # Check if the connect task raised an exception
             if connect_task.done() and connect_task.exception():
                 logger.error(f"Connection task failed: {connect_task.exception()}")

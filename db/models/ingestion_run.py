@@ -65,7 +65,9 @@ class IngestionRun(Base):
     )
 
     def __repr__(self):
-        return f"<IngestionRun(id={self.id}, agency={self.agency}, status={self.status})>"
+        return (
+            f"<IngestionRun(id={self.id}, agency={self.agency}, status={self.status})>"
+        )
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
@@ -98,7 +100,8 @@ class IngestionRun(Base):
         elif self.started_at:
             # Still running
             return (
-                datetime.utcnow().replace(tzinfo=self.started_at.tzinfo) - self.started_at
+                datetime.utcnow().replace(tzinfo=self.started_at.tzinfo)
+                - self.started_at
             ).total_seconds()
         return None
 

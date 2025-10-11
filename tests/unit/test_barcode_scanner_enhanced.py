@@ -383,7 +383,9 @@ class TestEnhancedBarcodeScanner:
         mock_code.write = Mock()
 
         with patch("core_infra.barcode_scanner_enhanced.BytesIO") as mock_bytesio:
-            with patch("core_infra.barcode_scanner_enhanced.ImageWriter") as _:  # mock_writer
+            with patch(
+                "core_infra.barcode_scanner_enhanced.ImageWriter"
+            ) as _:  # mock_writer
                 mock_bytesio.return_value = mock_buffer
 
                 result = scanner.generate_barcode("123456789", "code128")
@@ -397,7 +399,9 @@ class TestEnhancedBarcodeScanner:
         """Test generate_barcode when barcode generation library not available"""
         scanner = EnhancedBarcodeScanner()
 
-        with pytest.raises(ValueError, match="Barcode generation library not available"):
+        with pytest.raises(
+            ValueError, match="Barcode generation library not available"
+        ):
             scanner.generate_barcode("123456789")
 
     def test_test_functionality(self):
@@ -406,7 +410,9 @@ class TestEnhancedBarcodeScanner:
 
         with patch("core_infra.barcode_scanner_enhanced.PYZBAR_AVAILABLE", True):
             with patch("core_infra.barcode_scanner_enhanced.OPENCV_AVAILABLE", True):
-                with patch("core_infra.barcode_scanner_enhanced.QRCODE_AVAILABLE", True):
+                with patch(
+                    "core_infra.barcode_scanner_enhanced.QRCODE_AVAILABLE", True
+                ):
                     with patch(
                         "core_infra.barcode_scanner_enhanced.BARCODE_GEN_AVAILABLE",
                         True,

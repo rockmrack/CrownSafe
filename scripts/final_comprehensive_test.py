@@ -47,7 +47,9 @@ def test_endpoint(name, method, path, data=None, params=None, files=None):
             print(f" {name}: FAILED ({response.status_code})")
             try:
                 error = response.json()
-                print(f"   Error: {error.get('detail', error.get('error', str(error))[:100])}")
+                print(
+                    f"   Error: {error.get('detail', error.get('error', str(error))[:100])}"
+                )
             except:
                 print(f"   Error: {response.text[:100]}")
             results["failed"].append(name)
@@ -120,7 +122,9 @@ test_endpoint(
     },
 )
 
-test_endpoint("Get Family Members", "GET", "/api/v1/premium/family/members", params={"user_id": 1})
+test_endpoint(
+    "Get Family Members", "GET", "/api/v1/premium/family/members", params={"user_id": 1}
+)
 
 test_endpoint(
     "Add Family Member",

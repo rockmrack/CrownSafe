@@ -18,7 +18,9 @@ class LegalContentAgent:
         self.mcp_client = MCPClient(agent_id=self.agent_id, server_url=MCP_SERVER_URL)
         self.logic = LegalContentAgentLogic(agent_id=self.agent_id)
 
-        self.mcp_client.register_capability("get_legal_document", self.handle_get_document)
+        self.mcp_client.register_capability(
+            "get_legal_document", self.handle_get_document
+        )
 
     async def handle_get_document(self, task_payload: dict) -> dict:
         doc_type = task_payload.get("doc_type")

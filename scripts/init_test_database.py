@@ -107,7 +107,9 @@ def init_database():
         if "recalls_enhanced" in tables:
             columns = [col["name"] for col in inspector.get_columns("recalls_enhanced")]
             if "severity" not in columns:
-                logger.warning("⚠ 'severity' column missing from recalls_enhanced, adding it now")
+                logger.warning(
+                    "⚠ 'severity' column missing from recalls_enhanced, adding it now"
+                )
                 try:
                     with engine.connect() as conn:
                         conn.execute(
@@ -131,7 +133,9 @@ def init_database():
                             )
                         )
                         conn.commit()
-                        logger.info("✓ Added missing severity and risk_category columns")
+                        logger.info(
+                            "✓ Added missing severity and risk_category columns"
+                        )
                 except Exception as e:
                     logger.warning(f"Could not add severity column: {e}")
             else:

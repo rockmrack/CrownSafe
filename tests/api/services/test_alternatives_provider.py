@@ -32,7 +32,9 @@ class TestAlternativesProvider:
         assert pasteurised_brie["evidence"][0]["type"] == "label"
 
         # Check hard cheese alternative
-        hard_cheese = next(item for item in result["items"] if item["id"] == "alt_hard_cheese")
+        hard_cheese = next(
+            item for item in result["items"] if item["id"] == "alt_hard_cheese"
+        )
         assert hard_cheese["name"] == "Hard cheeses (Cheddar, Gruyère)"
         assert hard_cheese["pregnancy_safe"] is True
         assert "pregnancy" in hard_cheese["tags"]
@@ -51,13 +53,17 @@ class TestAlternativesProvider:
         assert len(result["items"]) == 2
 
         # Check nut-free bar
-        nut_free_bar = next(item for item in result["items"] if item["id"] == "alt_peanut_free_bar")
+        nut_free_bar = next(
+            item for item in result["items"] if item["id"] == "alt_peanut_free_bar"
+        )
         assert nut_free_bar["name"] == "Nut-free snack bar"
         assert "peanut" in nut_free_bar["allergy_safe_for"]
         assert "peanut-free" in nut_free_bar["tags"]
 
         # Check sunbutter alternative
-        sunbutter = next(item for item in result["items"] if item["id"] == "alt_sunbutter")
+        sunbutter = next(
+            item for item in result["items"] if item["id"] == "alt_sunbutter"
+        )
         assert sunbutter["name"] == "SunButter (sunflower seed spread)"
         assert "peanut" in sunbutter["allergy_safe_for"]
         assert "spread" in sunbutter["tags"]
@@ -97,13 +103,18 @@ class TestAlternativesProvider:
         flat_sleep = next(
             item for item in result["items"] if item["id"] == "alt_flat_sleep_surface"
         )
-        assert flat_sleep["name"] == "Flat, firm sleep surface (crib/bassinet with fitted sheet)"
+        assert (
+            flat_sleep["name"]
+            == "Flat, firm sleep surface (crib/bassinet with fitted sheet)"
+        )
         assert flat_sleep["age_min_months"] == 0
         assert "flat-sleep" in flat_sleep["tags"]
         assert "safe-sleep" in flat_sleep["tags"]
 
         # Check bassinet
-        bassinet = next(item for item in result["items"] if item["id"] == "alt_bassinet")
+        bassinet = next(
+            item for item in result["items"] if item["id"] == "alt_bassinet"
+        )
         assert bassinet["name"] == "CPSC-compliant bassinet"
         assert bassinet["age_min_months"] == 0
         assert "cpsc-approved" in bassinet["tags"]
@@ -120,13 +131,17 @@ class TestAlternativesProvider:
         assert len(result["items"]) == 2
 
         # Check large-piece toy
-        large_piece = next(item for item in result["items"] if item["id"] == "alt_large_piece_toy")
+        large_piece = next(
+            item for item in result["items"] if item["id"] == "alt_large_piece_toy"
+        )
         assert large_piece["name"] == "Large-piece version of similar toy"
         assert large_piece["age_min_months"] == 0
         assert "no-small-parts" in large_piece["tags"]
 
         # Check soft toy
-        soft_toy = next(item for item in result["items"] if item["id"] == "alt_soft_toy")
+        soft_toy = next(
+            item for item in result["items"] if item["id"] == "alt_soft_toy"
+        )
         assert soft_toy["name"] == "Soft fabric toy without detachable parts"
         assert "soft" in soft_toy["tags"]
         assert "no-small-parts" in soft_toy["tags"]
@@ -144,9 +159,14 @@ class TestAlternativesProvider:
 
         # Check pregnancy-safe skincare
         safe_skincare = next(
-            item for item in result["items"] if item["id"] == "alt_pregnancy_safe_skincare"
+            item
+            for item in result["items"]
+            if item["id"] == "alt_pregnancy_safe_skincare"
         )
-        assert safe_skincare["name"] == "Pregnancy-safe skincare (vitamin C, hyaluronic acid)"
+        assert (
+            safe_skincare["name"]
+            == "Pregnancy-safe skincare (vitamin C, hyaluronic acid)"
+        )
         assert safe_skincare["pregnancy_safe"] is True
         assert "pregnancy-safe" in safe_skincare["tags"]
         assert "skincare" in safe_skincare["tags"]
@@ -159,7 +179,9 @@ class TestAlternativesProvider:
         assert len(result["items"]) == 1
 
         # Check low-mercury fish
-        low_mercury = next(item for item in result["items"] if item["id"] == "alt_low_mercury_fish")
+        low_mercury = next(
+            item for item in result["items"] if item["id"] == "alt_low_mercury_fish"
+        )
         assert low_mercury["name"] == "Low-mercury fish (salmon, sardines, anchovies)"
         assert low_mercury["pregnancy_safe"] is True
         assert "low-mercury" in low_mercury["tags"]
@@ -208,7 +230,9 @@ class TestAlternativesProvider:
                 "peanuts",
                 "raw milk",
             ],  # triggers peanut + dairy rules (3 more items)
-            "profile": {"allergies": ["peanut", "tree_nut"]},  # triggers more allergy rules
+            "profile": {
+                "allergies": ["peanut", "tree_nut"]
+            },  # triggers more allergy rules
         }
 
         result = get_alternatives(scan_data)

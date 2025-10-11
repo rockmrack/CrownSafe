@@ -77,7 +77,9 @@ def test_clinical_trials_api():
         print(f"Parameters: {test_case['params']}")
 
         # Construct the request to get the full URL for logging
-        prepared_request = requests.Request("GET", base_url, params=test_case["params"]).prepare()
+        prepared_request = requests.Request(
+            "GET", base_url, params=test_case["params"]
+        ).prepare()
         print(f"Full URL: {prepared_request.url}")
         print(f"{'=' * 50}")
 
@@ -102,21 +104,31 @@ def test_clinical_trials_api():
                 if studies:
                     first_study = studies[0]
                     protocol_section = first_study.get("protocolSection", {})
-                    identification_module = protocol_section.get("identificationModule", {})
+                    identification_module = protocol_section.get(
+                        "identificationModule", {}
+                    )
                     status_module = protocol_section.get("statusModule", {})
                     conditions_module = protocol_section.get("conditionsModule", {})
-                    interventions_module = protocol_section.get("interventionsModule", {})
+                    interventions_module = protocol_section.get(
+                        "interventionsModule", {}
+                    )
 
-                    print(f"  First study NCT ID: {identification_module.get('nctId', 'N/A')}")
+                    print(
+                        f"  First study NCT ID: {identification_module.get('nctId', 'N/A')}"
+                    )
                     print(
                         f"  Brief Title: {identification_module.get('briefTitle', 'N/A')[:100]}..."
                     )
-                    print(f"  Overall Status: {status_module.get('overallStatus', 'N/A')}")
+                    print(
+                        f"  Overall Status: {status_module.get('overallStatus', 'N/A')}"
+                    )
                     print(f"  Conditions: {conditions_module.get('conditions', [])}")
                     # Check if interventionList and intervention exist before list comprehension
                     intervention_list = interventions_module.get("interventionList", {})
                     interventions = (
-                        intervention_list.get("intervention", []) if intervention_list else []
+                        intervention_list.get("intervention", [])
+                        if intervention_list
+                        else []
                     )
                     if interventions:
                         print(

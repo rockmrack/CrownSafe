@@ -36,7 +36,9 @@ class MetricsAgentLogic:
         self.mixpanel_client = Mixpanel(TOKEN)
         self.logger.info(f"MetricsAgentLogic initialized for agent {self.agent_id}.")
 
-    def track_event(self, user_id: str, event_name: str, properties: Optional[Dict] = None) -> bool:
+    def track_event(
+        self, user_id: str, event_name: str, properties: Optional[Dict] = None
+    ) -> bool:
         """
         Sends a single event to Mixpanel.
         """

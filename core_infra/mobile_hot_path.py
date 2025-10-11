@@ -33,7 +33,9 @@ class MobileHotPath:
             "aggressive_caching": True,  # Use all caching layers
         }
 
-    async def ultra_fast_barcode_check(self, barcode: str, user_id: int) -> Dict[str, Any]:
+    async def ultra_fast_barcode_check(
+        self, barcode: str, user_id: int
+    ) -> Dict[str, Any]:
         """
         Ultra-fast barcode check optimized for <100ms mobile responses
         """
@@ -90,9 +92,9 @@ class MobileHotPath:
                     "safe": False,
                     "level": "DANGER",
                     "summary": f"⚠️ RECALL: {first_recall.get('product_name', 'Product')[:50]}...",
-                    "details": first_recall.get("hazard_description", "Safety concern identified")[
-                        :100
-                    ],
+                    "details": first_recall.get(
+                        "hazard_description", "Safety concern identified"
+                    )[:100],
                     "agencies": 39,
                     "recall_count": len(recalls),
                 }
@@ -143,7 +145,9 @@ class MobileHotPath:
 
         except Exception as e:
             elapsed_ms = int((time.time() - start_time) * 1000)
-            self.logger.error(f"Ultra-fast barcode check failed after {elapsed_ms}ms: {e}")
+            self.logger.error(
+                f"Ultra-fast barcode check failed after {elapsed_ms}ms: {e}"
+            )
 
             # Return safe default on error
             return {
@@ -201,10 +205,14 @@ class MobileHotPath:
                             break
 
                     except Exception as e:
-                        self.logger.warning(f"Pre-computation failed for {product_name}: {e}")
+                        self.logger.warning(
+                            f"Pre-computation failed for {product_name}: {e}"
+                        )
 
                 elapsed = time.time() - start_time
-                self.logger.info(f"🔥 Pre-computed {precomputed} popular products in {elapsed:.3f}s")
+                self.logger.info(
+                    f"🔥 Pre-computed {precomputed} popular products in {elapsed:.3f}s"
+                )
 
                 return precomputed
 

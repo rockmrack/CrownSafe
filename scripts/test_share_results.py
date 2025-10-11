@@ -154,7 +154,9 @@ def test_share_results():
         print("✅ Share 2 correctly invalidated after max views")
 
         # Test password verification
-        assert pwd_context.verify(password, share3.password_hash), "Password should verify"
+        assert pwd_context.verify(
+            password, share3.password_hash
+        ), "Password should verify"
         print("✅ Password verification works")
 
         # Test 5: Revoke a share

@@ -29,7 +29,9 @@ try:
     nest_asyncio.apply()
     logger.info("nest_asyncio applied successfully")
 except ImportError:
-    logger.warning("nest_asyncio not available - install with: pip install nest-asyncio")
+    logger.warning(
+        "nest_asyncio not available - install with: pip install nest-asyncio"
+    )
 
 
 def normalize_decision(decision_value: Any) -> str:
@@ -67,7 +69,9 @@ def setup_event_loop():
                 nest_asyncio.apply()
                 logger.info("Applied nest_asyncio to handle nested loops")
             except ImportError:
-                logger.warning("Consider installing nest_asyncio for better async handling")
+                logger.warning(
+                    "Consider installing nest_asyncio for better async handling"
+                )
     except RuntimeError:
         logger.info("No event loop running, creating new one")
         loop = asyncio.new_event_loop()
@@ -191,7 +195,9 @@ async def test_stratification_agent():
             print(f"   {prediction['clinical_rationale']}")
 
             if prediction.get("identified_gaps"):
-                print(f"\n🚫 IDENTIFIED GAPS ({len(prediction['identified_gaps'])} items):")
+                print(
+                    f"\n🚫 IDENTIFIED GAPS ({len(prediction['identified_gaps'])} items):"
+                )
                 for gap in prediction["identified_gaps"]:
                     print(f"   • {gap}")
 
@@ -267,7 +273,9 @@ async def test_stratification_agent():
 
     # Second call - should be fast (cached)
     start_time = time.time()
-    result2 = await logic.predict_approval_likelihood("patient-001", "Empagliflozin", "UHC")
+    result2 = await logic.predict_approval_likelihood(
+        "patient-001", "Empagliflozin", "UHC"
+    )
     second_call_time = (time.time() - start_time) * 1000
 
     print(f"\n   • First call time: {first_call_time:.0f}ms")
@@ -305,7 +313,9 @@ async def test_stratification_agent():
 
         if result["status"] == "success":
             print("\n✅ URGENT request processed successfully")
-            print(f"   • Processing time: {result['prediction']['processing_time_ms']}ms")
+            print(
+                f"   • Processing time: {result['prediction']['processing_time_ms']}ms"
+            )
 
             # Check if urgency was considered in evidence
             evidence_items = result["prediction"]["evidence_items"]

@@ -39,7 +39,9 @@ router = APIRouter(prefix="/api/v1/barcode", tags=["Barcode Bridge"])
 # ========================= PAYLOAD NORMALIZATION =========================
 
 
-def _normalize_scan_payload(barcode: str, payload: dict, trace_id: str, cached: bool) -> dict:
+def _normalize_scan_payload(
+    barcode: str, payload: dict, trace_id: str, cached: bool
+) -> dict:
     """
     Ensure the response payload has all required fields for BarcodeScanResponse.
     Never read barcode from upstream objects – always use the request barcode.
@@ -70,10 +72,14 @@ class BarcodeScanRequest(BaseModel):
     """Enhanced barcode scan request"""
 
     barcode: str = Field(..., description="UPC/EAN barcode value")
-    barcode_type: Optional[str] = Field("UPC", description="Barcode type: UPC, EAN, CODE128, etc")
+    barcode_type: Optional[str] = Field(
+        "UPC", description="Barcode type: UPC, EAN, CODE128, etc"
+    )
     user_id: Optional[str] = Field(None, description="User ID for caching")
     device_id: Optional[str] = Field(None, description="Device ID for caching")
-    include_similar: bool = Field(True, description="Include similar products if no exact match")
+    include_similar: bool = Field(
+        True, description="Include similar products if no exact match"
+    )
 
 
 class BarcodeProduct(AppModel):
@@ -109,7 +115,9 @@ class BarcodeScanResponse(BaseModel):
     ok: bool = True
     barcode: str
     product: Optional[BarcodeProduct] = None
-    match_status: str = Field(..., description="exact_match, similar_found, no_recalls, no_match")
+    match_status: str = Field(
+        ..., description="exact_match, similar_found, no_recalls, no_match"
+    )
     message: Optional[str] = None
     recalls: List[RecallMatch] = []
     total_recalls: int = 0
@@ -134,7 +142,9 @@ class BarcodeCache:
             return f"{user_id}:{barcode}"
         return f"anon:{barcode}"
 
-    def get(self, barcode: str, user_id: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    def get(
+        self, barcode: str, user_id: Optional[str] = None
+    ) -> Optional[Dict[str, Any]]:
         """Get cached scan result"""
         key = self.get_key(barcode, user_id)
 
@@ -448,13 +458,13 @@ async def scan_barcode(
         device_id = device_id or request.device_id
 
         # Generate trace ID
-        trace_id = (
-            f"barcode_{hashlib.md5(f'{request.barcode}{datetime.now()}'.encode()).hexdigest()[:8]}"
-        )
+        trace_id = f"barcode_{hashlib.md5(f'{request.barcode}{datetime.now()}'.encode()).hexdigest()[:8]}"
     except Exception as e:
         logger.error(f"Error initializing barcode scan: {str(e)}")
         # Return error response instead of raising 500
-        barcode_value = getattr(request, "barcode", "") if hasattr(request, "barcode") else ""
+        barcode_value = (
+            getattr(request, "barcode", "") if hasattr(request, "barcode") else ""
+        )
         err = {
             "ok": False,
             "match_status": "error",
@@ -468,7 +478,9 @@ async def scan_barcode(
         cached_result = barcode_cache.get(request.barcode, user_id)
         if cached_result:
             # Return cached result with normalized payload
-            payload = _normalize_scan_payload(request.barcode, cached_result, trace_id, cached=True)
+            payload = _normalize_scan_payload(
+                request.barcode, cached_result, trace_id, cached=True
+            )
             return BarcodeScanResponse.model_validate(payload)
 
         # Normalize and validate barcode
@@ -504,7 +516,9 @@ async def scan_barcode(
             "match_status": "error",
             "message": f"Error processing barcode: {str(e)[:100]}",
         }
-        payload = _normalize_scan_payload(normalized_barcode, err, trace_id, cached=False)
+        payload = _normalize_scan_payload(
+            normalized_barcode, err, trace_id, cached=False
+        )
         return BarcodeScanResponse.model_validate(payload)
 
     # Final safety wrapper for all response generation
@@ -553,7 +567,9 @@ async def scan_barcode(
             # No exact match, try similar products
             try:
                 similar_recalls = (
-                    search_similar_products(normalized_barcode, brand, product.category, db)
+                    search_similar_products(
+                        normalized_barcode, brand, product.category, db
+                    )
                     if db
                     else []
                 )
@@ -647,13 +663,17 @@ async def scan_barcode(
             "match_status": "error",
             "message": "Unable to process barcode scan",
         }
-        payload = _normalize_scan_payload(normalized_barcode, err, trace_id, cached=False)
+        payload = _normalize_scan_payload(
+            normalized_barcode, err, trace_id, cached=False
+        )
         response = BarcodeScanResponse.model_validate(payload)
 
     # Cache the result (exclude trace_id for caching, but keep scan_timestamp)
     try:
         cache_data = response.dict(exclude={"trace_id", "cached"})
-        background_tasks.add_task(barcode_cache.set, normalized_barcode, cache_data, user_id)
+        background_tasks.add_task(
+            barcode_cache.set, normalized_barcode, cache_data, user_id
+        )
     except Exception as cache_error:
         logger.error(f"Error caching result: {str(cache_error)}")
 
@@ -691,7 +711,9 @@ async def get_cache_status(user_id: Optional[str] = Header(None, alias="X-User-I
 
     if user_id:
         # Count user's cached items
-        user_items = sum(1 for k in barcode_cache.cache.keys() if k.startswith(f"{user_id}:"))
+        user_items = sum(
+            1 for k in barcode_cache.cache.keys() if k.startswith(f"{user_id}:")
+        )
         cache_info["user_cached_items"] = user_items
 
     return cache_info
@@ -700,7 +722,9 @@ async def get_cache_status(user_id: Optional[str] = Header(None, alias="X-User-I
 @router.delete("/cache/clear", operation_id="clear_cache_delete")
 @router.post("/cache/clear", operation_id="clear_cache_post")
 async def clear_cache(
-    barcode: Optional[str] = Query(None, description="Specific barcode to clear (optional)"),
+    barcode: Optional[str] = Query(
+        None, description="Specific barcode to clear (optional)"
+    ),
     user_id: Optional[str] = Header(
         None, alias="X-User-ID", description="User ID for user-specific cache"
     ),
@@ -713,7 +737,9 @@ async def clear_cache(
             cleared = barcode_cache.clear_barcode(barcode)
         else:
             # Fallback: manually clear barcode entries
-            keys_to_remove = [k for k in barcode_cache.cache.keys() if k.endswith(f":{barcode}")]
+            keys_to_remove = [
+                k for k in barcode_cache.cache.keys() if k.endswith(f":{barcode}")
+            ]
             for key in keys_to_remove:
                 del barcode_cache.cache[key]
             cleared = len(keys_to_remove) > 0
@@ -730,7 +756,9 @@ async def clear_cache(
             barcode_cache.clear_user_cache(user_id)
         else:
             # Fallback: manually clear user entries
-            keys_to_remove = [k for k in barcode_cache.cache.keys() if k.startswith(f"{user_id}:")]
+            keys_to_remove = [
+                k for k in barcode_cache.cache.keys() if k.startswith(f"{user_id}:")
+            ]
             for key in keys_to_remove:
                 del barcode_cache.cache[key]
         return {
@@ -742,7 +770,9 @@ async def clear_cache(
         }
     else:
         # Clear all cache
-        total_before = getattr(barcode_cache, "get_cache_size", lambda: len(barcode_cache.cache))()
+        total_before = getattr(
+            barcode_cache, "get_cache_size", lambda: len(barcode_cache.cache)
+        )()
         if hasattr(barcode_cache, "clear_all_cache"):
             barcode_cache.clear_all_cache()
         else:

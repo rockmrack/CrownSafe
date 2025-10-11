@@ -32,7 +32,9 @@ async def forward_message(
             message_content_snippet = message_content_snippet[:300] + "..."
     except Exception:
         pass
-    logger.debug(f"FORWARDING MSG CONTENT to {target_agent_id}: {message_content_snippet}")
+    logger.debug(
+        f"FORWARDING MSG CONTENT to {target_agent_id}: {message_content_snippet}"
+    )
 
     ws = state.get_connection(target_agent_id)
 
@@ -61,7 +63,9 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
 
     # --- ADDED CRITICAL LOG (GPT Suggestion B) ---
     # Attempt to parse for logging details, but log raw snippet regardless
-    log_snippet_critical = message_text[:300] + "..." if len(message_text) > 300 else message_text
+    log_snippet_critical = (
+        message_text[:300] + "..." if len(message_text) > 300 else message_text
+    )
     msg_type_log = "UNPARSABLE_JSON"
     sender_log = agent_id  # agent_id from path is the connected agent
     target_agent_log = "N/A"
@@ -72,7 +76,9 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
         if isinstance(parsed_for_log, dict) and "mcp_header" in parsed_for_log:
             header_for_log = parsed_for_log["mcp_header"]
             msg_type_log = header_for_log.get("message_type", "NO_MSG_TYPE_IN_HDR")
-            sender_log = header_for_log.get("sender_id", agent_id)  # Prefer header sender_id
+            sender_log = header_for_log.get(
+                "sender_id", agent_id
+            )  # Prefer header sender_id
             target_agent_log = header_for_log.get("target_agent_id", "N/A")
             target_service_log = header_for_log.get("target_service", "N/A")
             corr_id_log = header_for_log.get("correlation_id", "N/A")
@@ -145,7 +151,9 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
                 f"ROUTER: Searching for CommanderAgent among: {all_connected_agents} for PROCESS_USER_REQUEST from '{agent_id}'"
             )
             for connected_agent_id_str in all_connected_agents:
-                if "commander_agent" in connected_agent_id_str.lower():  # More specific check
+                if (
+                    "commander_agent" in connected_agent_id_str.lower()
+                ):  # More specific check
                     target_commander_id = connected_agent_id_str
                     logger.info(
                         f"ROUTER: Found CommanderAgent '{target_commander_id}' to handle PROCESS_USER_REQUEST from '{agent_id}'"
@@ -258,7 +266,9 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             if pong_msg:
                 await websocket.send_json(pong_msg)
             else:
-                logger.error(f"ROUTER: Unable to build PONG for '{agent_id}', CorrID='{corr}'")
+                logger.error(
+                    f"ROUTER: Unable to build PONG for '{agent_id}', CorrID='{corr}'"
+                )
             return
 
         logger.warning(

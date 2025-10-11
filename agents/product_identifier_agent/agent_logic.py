@@ -31,11 +31,15 @@ class ProductIdentifierLogic:
         self.logger = logger_instance or logger
 
         # Check if trial endpoint is allowed in production
-        USE_TRIAL_UPCITEMDB = os.getenv("USE_TRIAL_UPCITEMDB", "false").lower() == "true"
+        USE_TRIAL_UPCITEMDB = (
+            os.getenv("USE_TRIAL_UPCITEMDB", "false").lower() == "true"
+        )
         ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 
         if ENVIRONMENT == "production" and USE_TRIAL_UPCITEMDB:
-            raise RuntimeError("Production environment cannot use trial UPCitemdb endpoint")
+            raise RuntimeError(
+                "Production environment cannot use trial UPCitemdb endpoint"
+            )
 
         if USE_TRIAL_UPCITEMDB:
             self.logger.info(
@@ -54,7 +58,9 @@ class ProductIdentifierLogic:
         self.logger.info(f"Performing live UPCitemdb lookup for barcode: {barcode}")
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(API_BASE_URL, params={"upc": barcode}) as response:
+                async with session.get(
+                    API_BASE_URL, params={"upc": barcode}
+                ) as response:
                     text = await response.text()
 
                     # Log full response for debugging
@@ -63,7 +69,9 @@ class ProductIdentifierLogic:
                     )
 
                     if response.status != 200:
-                        self.logger.error(f"UPCitemdb HTTP {response.status} for barcode {barcode}")
+                        self.logger.error(
+                            f"UPCitemdb HTTP {response.status} for barcode {barcode}"
+                        )
                         return None
 
                     data = json.loads(text)
@@ -78,7 +86,8 @@ class ProductIdentifierLogic:
                         product_details = {
                             "product_name": item.get("title"),
                             "upc": item.get("upc"),
-                            "manufacturer": item.get("manufacturer") or item.get("brand"),
+                            "manufacturer": item.get("manufacturer")
+                            or item.get("brand"),
                             "category": item.get("category"),
                             "description": item.get("description"),
                             "source": "upcitemdb.com (trial)",
@@ -98,13 +107,19 @@ class ProductIdentifierLogic:
                         return None
 
         except aiohttp.ClientError as e:
-            self.logger.error(f"Network error during UPC lookup for {barcode}: {e}", exc_info=True)
+            self.logger.error(
+                f"Network error during UPC lookup for {barcode}: {e}", exc_info=True
+            )
             return None
         except json.JSONDecodeError as e:
-            self.logger.error(f"Invalid JSON from UPCitemdb for {barcode}: {e}", exc_info=True)
+            self.logger.error(
+                f"Invalid JSON from UPCitemdb for {barcode}: {e}", exc_info=True
+            )
             return None
         except Exception as e:
-            self.logger.error(f"Unexpected error in UPC lookup for {barcode}: {e}", exc_info=True)
+            self.logger.error(
+                f"Unexpected error in UPC lookup for {barcode}: {e}", exc_info=True
+            )
             return None
 
     async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:

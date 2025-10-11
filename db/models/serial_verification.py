@@ -51,7 +51,9 @@ class SerialVerification(Base):
 
     # Timestamps
     checked_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, default=datetime.utcnow
+    )
 
 
 # Helpful composite indexes

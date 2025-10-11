@@ -378,7 +378,9 @@ class EnhancedUpsertHandler(UpsertHandler):
             update_sets = []
             for col in columns:
                 if col != unique_key:  # Don't update the unique key
-                    update_sets.append(f"{col} = COALESCE(EXCLUDED.{col}, {table}.{col})")
+                    update_sets.append(
+                        f"{col} = COALESCE(EXCLUDED.{col}, {table}.{col})"
+                    )
 
             query = text(
                 f"""

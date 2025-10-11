@@ -118,7 +118,9 @@ def upgrade() -> None:
         # ================================
         # 🔍 SEARCH OPTIMIZATION
         # ================================
-        sa.Column("search_keywords", sa.Text(), nullable=True),  # Concatenated searchable fields
+        sa.Column(
+            "search_keywords", sa.Text(), nullable=True
+        ),  # Concatenated searchable fields
         # ================================
         # 🛠️ TECHNICAL FIELDS
         # ================================
@@ -141,8 +143,12 @@ def upgrade() -> None:
     print("Creating performance indexes...")
 
     # Core search indexes
-    op.create_index("idx_recalls_enhanced_source_agency", "recalls_enhanced", ["source_agency"])
-    op.create_index("idx_recalls_enhanced_recall_date", "recalls_enhanced", ["recall_date"])
+    op.create_index(
+        "idx_recalls_enhanced_source_agency", "recalls_enhanced", ["source_agency"]
+    )
+    op.create_index(
+        "idx_recalls_enhanced_recall_date", "recalls_enhanced", ["recall_date"]
+    )
     op.create_index("idx_recalls_enhanced_status", "recalls_enhanced", ["status"])
 
     # Composite index for common search pattern (agency + date)

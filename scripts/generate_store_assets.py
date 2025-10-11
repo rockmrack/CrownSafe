@@ -32,7 +32,9 @@ ASSET_SPECS = {
     },
     "android": {
         "icon": {"Icon512.png": (512, 512, "PNG", "Play Store icon - with alpha")},
-        "graphics": {"play-feature-1024x500.png": (1024, 500, "PNG/JPG", "Feature graphic")},
+        "graphics": {
+            "play-feature-1024x500.png": (1024, 500, "PNG/JPG", "Feature graphic")
+        },
         "screenshots": {
             "phone": {
                 "size": (1080, 1920),  # Minimum size
@@ -126,7 +128,9 @@ DESIGN GUIDELINES:
         # App icon
         icon_path = self.assets_path / "icons" / "android" / "Icon512.png"
         if not icon_path.exists():
-            self.create_placeholder_image(icon_path, (512, 512), "Android Play Store Icon")
+            self.create_placeholder_image(
+                icon_path, (512, 512), "Android Play Store Icon"
+            )
             self.report["created"].append(str(icon_path))
             print(f"  ✓ Created: {icon_path.name}")
         else:
@@ -136,7 +140,9 @@ DESIGN GUIDELINES:
         # Feature graphic
         feature_path = self.assets_path / "graphics" / "play-feature-1024x500.png"
         if not feature_path.exists():
-            self.create_placeholder_image(feature_path, (1024, 500), "Play Store Feature Graphic")
+            self.create_placeholder_image(
+                feature_path, (1024, 500), "Play Store Feature Graphic"
+            )
             self.report["created"].append(str(feature_path))
             print(f"  ✓ Created: {feature_path.name}")
         else:
@@ -218,7 +224,9 @@ DESIGN GUIDELINES:
         else:
             print("  ✓ Feature Graphic present")
 
-        phone_count = len(list((self.assets_path / "screenshots" / "android").glob("phone-*.png")))
+        phone_count = len(
+            list((self.assets_path / "screenshots" / "android").glob("phone-*.png"))
+        )
         if phone_count < 2:
             print(f"  ❌ Phone screenshots: {phone_count}/2 minimum")
             self.report["missing"].append(

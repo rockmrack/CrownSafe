@@ -20,7 +20,9 @@ ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY")
 if not ENCRYPTION_KEY:
     # Generate a key for development (DO NOT USE IN PRODUCTION)
     ENCRYPTION_KEY = Fernet.generate_key().decode()
-    print("⚠️ Generated development encryption key. Set ENCRYPTION_KEY env var for production!")
+    print(
+        "⚠️ Generated development encryption key. Set ENCRYPTION_KEY env var for production!"
+    )
 
 
 class EncryptionManager:
@@ -33,7 +35,9 @@ class EncryptionManager:
             self.key = key.encode() if isinstance(key, str) else key
         else:
             self.key = (
-                ENCRYPTION_KEY.encode() if isinstance(ENCRYPTION_KEY, str) else ENCRYPTION_KEY
+                ENCRYPTION_KEY.encode()
+                if isinstance(ENCRYPTION_KEY, str)
+                else ENCRYPTION_KEY
             )
 
         self.cipher = Fernet(self.key)
@@ -173,7 +177,9 @@ def mask_pii(data: str, mask_char: str = "*", visible_chars: int = 4) -> str:
             username = parts[0]
             domain = parts[1]
             if len(username) > 2:
-                masked_username = username[0] + mask_char * (len(username) - 2) + username[-1]
+                masked_username = (
+                    username[0] + mask_char * (len(username) - 2) + username[-1]
+                )
             else:
                 masked_username = mask_char * len(username)
             return f"{masked_username}@{domain}"

@@ -15,7 +15,9 @@ def run_command(cmd, description):
     print(f"{'=' * 80}")
 
     try:
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=30)
+        result = subprocess.run(
+            cmd, shell=True, capture_output=True, text=True, timeout=30
+        )
 
         if result.returncode == 0:
             print(f"✅ PASSED - {description}")
@@ -106,7 +108,9 @@ def main():
     # Test 5: AlternativesAgent
     print("\n[TEST 5] Testing AlternativesAgent...")
     try:
-        from agents.value_add.alternatives_agent.agent_logic import AlternativesAgentLogic
+        from agents.value_add.alternatives_agent.agent_logic import (
+            AlternativesAgentLogic,
+        )
 
         agent = AlternativesAgentLogic(agent_id="test-alt")
         assert agent is not None
@@ -169,7 +173,11 @@ def main():
     print("=" * 80)
 
     # Return 0 if all critical tests passed
-    critical_tests = ["RecallDataAgent Imports", "RecallDataAgent Init", "Recall Connectors"]
+    critical_tests = [
+        "RecallDataAgent Imports",
+        "RecallDataAgent Init",
+        "Recall Connectors",
+    ]
     critical_passed = all(results.get(t, False) for t in critical_tests)
 
     if critical_passed:

@@ -149,7 +149,9 @@ class SearchService:
                             "[WARN] pg_trgm extension not enabled, falling back to LIKE search"
                         )
                 except Exception as e:
-                    logger.warning(f"[WARN] pg_trgm check failed: {e}, falling back to LIKE search")
+                    logger.warning(
+                        f"[WARN] pg_trgm check failed: {e}, falling back to LIKE search"
+                    )
 
             if dialect == "postgresql" and use_pg_trgm:
                 # Use pg_trgm similarity for fuzzy matching (PostgreSQL only)
@@ -192,7 +194,9 @@ class SearchService:
 
         # 4. Keyword AND logic
         if keywords:
-            normalized_keywords = [k.strip().lower() for k in keywords if k and k.strip()]
+            normalized_keywords = [
+                k.strip().lower() for k in keywords if k and k.strip()
+            ]
             for i, keyword in enumerate(normalized_keywords):
                 # Each keyword must appear in at least one text field
                 keyword_conditions = [
@@ -215,7 +219,9 @@ class SearchService:
         # Handle NULLS LAST syntax for different dialects
         dialect = self.db.bind.dialect.name
         if dialect == "postgresql":
-            order_by.extend([f"{table}.recall_date DESC NULLS LAST", f"{table}.recall_id ASC"])
+            order_by.extend(
+                [f"{table}.recall_date DESC NULLS LAST", f"{table}.recall_id ASC"]
+            )
         else:
             # SQLite doesn't support NULLS LAST, use COALESCE
             order_by.extend(
@@ -243,11 +249,15 @@ class SearchService:
                 )
                 params["cursor_date"] = last_date
                 params["cursor_id"] = last_id
-                logger.info(f"Cursor pagination: last_date={last_date}, last_id={last_id}")
+                logger.info(
+                    f"Cursor pagination: last_date={last_date}, last_id={last_id}"
+                )
 
             if cursor_conditions:
                 if where_clause:
-                    where_clause = f"({where_clause}) AND ({' AND '.join(cursor_conditions)})"
+                    where_clause = (
+                        f"({where_clause}) AND ({' AND '.join(cursor_conditions)})"
+                    )
                 else:
                     where_clause = " AND ".join(cursor_conditions)
 
@@ -374,7 +384,9 @@ class SearchService:
                     title_parts.append(row.brand)
                 if row.product_name:
                     title_parts.append(row.product_name)
-                item["title"] = " - ".join(title_parts) if title_parts else "Unknown Product"
+                item["title"] = (
+                    " - ".join(title_parts) if title_parts else "Unknown Product"
+                )
 
                 items.append(item)
 
@@ -387,7 +399,9 @@ class SearchService:
                     SELECT COUNT(*) as total
                     FROM ({sql_query.replace("LIMIT :limit", "").replace("OFFSET :offset", "")}) as subquery
                 """
-                count_params = {k: v for k, v in params.items() if k not in ["limit", "offset"]}
+                count_params = {
+                    k: v for k, v in params.items() if k not in ["limit", "offset"]
+                }
                 total_result = self.db.execute(text(count_sql), count_params)
                 total = total_result.scalar() or 0
 
@@ -406,7 +420,9 @@ class SearchService:
                 import base64
                 import json
 
-                next_cursor = base64.b64encode(json.dumps(cursor_data).encode()).decode()
+                next_cursor = base64.b64encode(
+                    json.dumps(cursor_data).encode()
+                ).decode()
 
             return {
                 "ok": True,
@@ -439,7 +455,9 @@ class SearchService:
             if self.db.bind.dialect.name != "postgresql":
                 return False
             result = self.db.execute(
-                text("SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')")
+                text(
+                    "SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')"
+                )
             )
             return result.scalar()
         except:

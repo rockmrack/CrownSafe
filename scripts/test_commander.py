@@ -29,7 +29,9 @@ TEST_BARCODE = "381370037248"
 
 async def main():
     logger = logging.getLogger(__name__)
-    logger.info("--- Starting Golden Master (Live End-to-End) Test for Baby Product ---")
+    logger.info(
+        "--- Starting Golden Master (Live End-to-End) Test for Baby Product ---"
+    )
 
     # 1. Set up in-memory test database and seed with matching recall
     logger.info("Setting up in-memory test database...")
@@ -82,7 +84,9 @@ async def main():
                 )
             else:
                 print("\n" + "=" * 60)
-                print(f"❌ TEST FAILED: Workflow completed but risk_level was '{risk_level}'.")
+                print(
+                    f"❌ TEST FAILED: Workflow completed but risk_level was '{risk_level}'."
+                )
         else:
             print("\n" + "=" * 60)
             print(f"❌ TEST FAILED: Workflow failed with status '{status}'.")

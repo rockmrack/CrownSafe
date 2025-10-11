@@ -6,7 +6,9 @@ import json
 import logging
 from datetime import datetime
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -42,7 +44,10 @@ async def test_mcp_connection():
                 print(json.dumps(response_data, indent=2))
 
                 # Check if commander agent is registered
-                if response_data.get("mcp_header", {}).get("message_type") == "DISCOVERY_RESPONSE":
+                if (
+                    response_data.get("mcp_header", {}).get("message_type")
+                    == "DISCOVERY_RESPONSE"
+                ):
                     results = response_data.get("payload", {}).get("results", [])
                     if results:
                         print("\n✅ Found registered agents:")
@@ -172,7 +177,9 @@ async def check_agent_registrations():
                         if results:
                             print(f"✅ {agent_id}: FOUND")
                         else:
-                            print(f"❌ {agent_id}: NOT FOUND - Make sure this agent is running")
+                            print(
+                                f"❌ {agent_id}: NOT FOUND - Make sure this agent is running"
+                            )
 
                 except asyncio.TimeoutError:
                     print(f"❌ {agent_id}: NO RESPONSE")

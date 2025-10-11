@@ -38,7 +38,9 @@ class QueryPerformanceMonitor:
         self.query_count += 1
 
         if duration > self.slow_query_threshold:
-            self.slow_queries.append({"query": query, "duration": duration, "params": params})
+            self.slow_queries.append(
+                {"query": query, "duration": duration, "params": params}
+            )
             logger.warning(f"Slow query detected ({duration:.2f}s): {query[:200]}...")
 
     def get_stats(self) -> dict:
@@ -69,11 +71,15 @@ def setup_query_logging(engine: Engine, echo_slow_only: bool = True):
     """
 
     @event.listens_for(engine, "before_cursor_execute")
-    def receive_before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+    def receive_before_cursor_execute(
+        conn, cursor, statement, parameters, context, executemany
+    ):
         conn.info.setdefault("query_start_time", []).append(time.time())
 
     @event.listens_for(engine, "after_cursor_execute")
-    def receive_after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+    def receive_after_cursor_execute(
+        conn, cursor, statement, parameters, context, executemany
+    ):
         total_time = time.time() - conn.info["query_start_time"].pop()
 
         if echo_slow_only:
@@ -210,7 +216,9 @@ def track_queries():
     )
 
 
-def batch_load(db: Session, model: type, ids: List[int], batch_size: int = 100) -> List[Any]:
+def batch_load(
+    db: Session, model: type, ids: List[int], batch_size: int = 100
+) -> List[Any]:
     """
     Load multiple records by ID in batches to prevent large IN clauses
 
@@ -261,7 +269,9 @@ class BulkOperationHelper:
     """Helper for efficient bulk database operations"""
 
     @staticmethod
-    def bulk_insert(db: Session, model: type, records: List[dict], batch_size: int = 1000):
+    def bulk_insert(
+        db: Session, model: type, records: List[dict], batch_size: int = 1000
+    ):
         """
         Insert multiple records efficiently
 
@@ -278,7 +288,9 @@ class BulkOperationHelper:
         logger.info(f"Bulk inserted {len(records)} {model.__name__} records")
 
     @staticmethod
-    def bulk_update(db: Session, model: type, records: List[dict], batch_size: int = 1000):
+    def bulk_update(
+        db: Session, model: type, records: List[dict], batch_size: int = 1000
+    ):
         """
         Update multiple records efficiently
 
@@ -336,7 +348,9 @@ def get_recalls_with_products(
     return query.order_by(RecallDB.recall_date.desc()).paginate(limit, offset).all()
 
 
-def search_with_count(db: Session, query: Query, limit: int, offset: int) -> tuple[List[Any], int]:
+def search_with_count(
+    db: Session, query: Query, limit: int, offset: int
+) -> tuple[List[Any], int]:
     """
     Execute query with pagination and return results + total count
 
@@ -381,6 +395,8 @@ def suggest_indexes(db: Session, model: type) -> List[str]:
     for column in model.__table__.columns:
         if column.foreign_keys:
             index_name = f"idx_{table_name}_{column.name}"
-            suggestions.append(f"CREATE INDEX {index_name} ON {table_name}({column.name});")
+            suggestions.append(
+                f"CREATE INDEX {index_name} ON {table_name}({column.name});"
+            )
 
     return suggestions

@@ -62,7 +62,9 @@ class SearchResult:
     search_time_ms: int = 0
     error: Optional[str] = None
     source: str = "pubmed_api"
-    original_input_query: Optional[str] = None  # To store the high-level query if different
+    original_input_query: Optional[
+        str
+    ] = None  # To store the high-level query if different
 
 
 class WebResearchLogic:
@@ -78,9 +80,15 @@ class WebResearchLogic:
         self._load_environment()
         self.ncbi_api_key = os.getenv("NCBI_API_KEY")
         self.pubmed_use_mock = os.getenv("PUBMED_USE_MOCK", "false").lower() == "true"
-        self.user_agent = f"CureViaX/{self.version} (WebResearchAgent; mailto:contact@example.com)"
-        self.base_url_esearch = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
-        self.base_url_efetch = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
+        self.user_agent = (
+            f"CureViaX/{self.version} (WebResearchAgent; mailto:contact@example.com)"
+        )
+        self.base_url_esearch = (
+            "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+        )
+        self.base_url_efetch = (
+            "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
+        )
 
         self.max_retries = 2  # Total 3 attempts (initial + 2 retries)
         self.retry_delay_base = 3  # seconds, for exponential backoff
@@ -100,7 +108,9 @@ class WebResearchLogic:
             "Accept": "application/xml, text/xml, */*",  # PubMed API often returns XML
         }
 
-        api_key_status = "Yes" if self.ncbi_api_key else "No (Rate limits apply: ~3 req/sec)"
+        api_key_status = (
+            "Yes" if self.ncbi_api_key else "No (Rate limits apply: ~3 req/sec)"
+        )
         self.logger.info(
             f"WebResearchLogic initialized for agent {agent_id} (Version 2.0.0 - Targeted Query). "
             f"API Key Loaded: {api_key_status}, Mock Mode: {self.pubmed_use_mock}, User-Agent: {self.user_agent}"
@@ -169,7 +179,9 @@ class WebResearchLogic:
             drug_name = drug_name.strip()
             if len(drug_name) > 200:
                 return False, "drug_name too long (max 200 chars).", "", 0
-            pubmed_query_term += f"({drug_name}[Title/Abstract] OR {drug_name}[MeSH Terms])"
+            pubmed_query_term += (
+                f"({drug_name}[Title/Abstract] OR {drug_name}[MeSH Terms])"
+            )
 
         if disease_name and isinstance(disease_name, str) and disease_name.strip():
             disease_name = disease_name.strip()
@@ -178,10 +190,10 @@ class WebResearchLogic:
             if pubmed_query_term:
                 pubmed_query_term += " AND "
             # Quote disease name if it contains spaces for exact phrase matching
-            disease_query_part = f'"{disease_name}"' if " " in disease_name else disease_name
-            pubmed_query_term += (
-                f"({disease_query_part}[Title/Abstract] OR {disease_query_part}[MeSH Terms])"
+            disease_query_part = (
+                f'"{disease_name}"' if " " in disease_name else disease_name
             )
+            pubmed_query_term += f"({disease_query_part}[Title/Abstract] OR {disease_query_part}[MeSH Terms])"
 
         if search_terms and isinstance(search_terms, str) and search_terms.strip():
             search_terms = search_terms.strip()
@@ -193,7 +205,9 @@ class WebResearchLogic:
                 f"({search_terms})"  # Assume search_terms might already be structured
             )
 
-        if not pubmed_query_term:  # Fallback to raw_query if no structured terms provided
+        if (
+            not pubmed_query_term
+        ):  # Fallback to raw_query if no structured terms provided
             if raw_query and isinstance(raw_query, str) and raw_query.strip():
                 raw_query = raw_query.strip()
                 if len(raw_query) > 1000:
@@ -225,7 +239,9 @@ class WebResearchLogic:
         self.logger.info(f"Constructed PubMed API query term: '{pubmed_query_term}'")
         return True, None, pubmed_query_term, max_results_int
 
-    def _validate_message_structure(self, message_data: Any) -> tuple[bool, Optional[str]]:
+    def _validate_message_structure(
+        self, message_data: Any
+    ) -> tuple[bool, Optional[str]]:
         if not isinstance(message_data, dict):
             return False, f"Message must be dict, got {type(message_data)}"
         if not isinstance(message_data.get("mcp_header"), dict):
@@ -283,7 +299,9 @@ class WebResearchLogic:
             original_input_query=original_input_query,
         )
 
-    async def _make_ncbi_request(self, url: str, params: Dict[str, str], description: str) -> str:
+    async def _make_ncbi_request(
+        self, url: str, params: Dict[str, str], description: str
+    ) -> str:
         # ... (This method remains the same robust version from "Enhanced-Timeouts-V2" / V2.4.x ClinicalTrialsAgent) ...
         # ... It should correctly handle aiohttp exceptions and re-raise standard ones ...
         session = await self._get_session()
@@ -303,11 +321,17 @@ class WebResearchLogic:
                 )
                 self.logger.debug(f"  URL: {url}, Params: {params_to_send}")
 
-                overall_attempt_timeout = self.request_timeout + self.asyncio_task_timeout_buffer
+                overall_attempt_timeout = (
+                    self.request_timeout + self.asyncio_task_timeout_buffer
+                )
                 async with asyncio.timeout(overall_attempt_timeout):
                     async with session.get(url, params=params_to_send) as response:
-                        self.logger.info(f"  Response Status: {response.status} for {description}")
-                        self.logger.debug(f"  Response Headers: {dict(response.headers)}")
+                        self.logger.info(
+                            f"  Response Status: {response.status} for {description}"
+                        )
+                        self.logger.debug(
+                            f"  Response Headers: {dict(response.headers)}"
+                        )
 
                         if response.status >= 400:
                             error_body = "N/A"
@@ -333,8 +357,12 @@ class WebResearchLogic:
                         else:
                             content = await response.text()
                             if not content or not content.strip():
-                                raise ValueError(f"Empty response from NCBI API for {description}")
-                            self.logger.info(f"NCBI API request successful: {description}")
+                                raise ValueError(
+                                    f"Empty response from NCBI API for {description}"
+                                )
+                            self.logger.info(
+                                f"NCBI API request successful: {description}"
+                            )
                             return content
 
             except asyncio.TimeoutError as e:
@@ -370,7 +398,9 @@ class WebResearchLogic:
                     last_exception,
                     (ConnectionError, TimeoutError, ConnectionRefusedError),
                 ):
-                    self.logger.error(f"Non-retryable error for {description}. Failing early.")
+                    self.logger.error(
+                        f"Non-retryable error for {description}. Failing early."
+                    )
                     raise last_exception
                 delay = self.retry_delay_base * (2**attempt)
                 self.logger.warning(
@@ -378,22 +408,40 @@ class WebResearchLogic:
                 )
                 await asyncio.sleep(delay)
             else:
-                self.logger.error(f"All {self.max_retries + 1} attempts failed for {description}.")
+                self.logger.error(
+                    f"All {self.max_retries + 1} attempts failed for {description}."
+                )
                 if last_exception:
                     raise last_exception
-                raise RuntimeError(f"All attempts failed for {description} with unspecified error.")
+                raise RuntimeError(
+                    f"All attempts failed for {description} with unspecified error."
+                )
         # Fallback
-        raise RuntimeError(f"All API request attempts failed for {description} (fallback).")
+        raise RuntimeError(
+            f"All API request attempts failed for {description} (fallback)."
+        )
 
-    def _parse_article_xml_details(self, pubmed_article_element: ET.Element) -> PubMedArticle:
+    def _parse_article_xml_details(
+        self, pubmed_article_element: ET.Element
+    ) -> PubMedArticle:
         title_elem = pubmed_article_element.find(".//ArticleTitle")
-        title = title_elem.text.strip() if title_elem is not None and title_elem.text else "N/A"
+        title = (
+            title_elem.text.strip()
+            if title_elem is not None and title_elem.text
+            else "N/A"
+        )
 
         pmid_elem = pubmed_article_element.find(".//MedlineCitation/PMID")
-        pmid = pmid_elem.text.strip() if pmid_elem is not None and pmid_elem.text else "N/A"
+        pmid = (
+            pmid_elem.text.strip()
+            if pmid_elem is not None and pmid_elem.text
+            else "N/A"
+        )
 
         abstract_parts = []
-        for abstract_text_node in pubmed_article_element.findall(".//Abstract/AbstractText"):
+        for abstract_text_node in pubmed_article_element.findall(
+            ".//Abstract/AbstractText"
+        ):
             text_content = "".join(
                 abstract_text_node.itertext()
             ).strip()  # Handles mixed content like <i>
@@ -496,7 +544,11 @@ class WebResearchLogic:
             )
 
             count_node = search_xml_root.find("Count")
-            total_found = int(count_node.text) if count_node is not None and count_node.text else 0
+            total_found = (
+                int(count_node.text)
+                if count_node is not None and count_node.text
+                else 0
+            )
 
             if not article_ids:
                 self.logger.info(
@@ -641,7 +693,9 @@ class WebResearchLogic:
             ) = self._validate_search_parameters(parameters)
 
             if not is_valid_params:
-                self.logger.error(f"Invalid search parameters for task {task_id}: {param_err_msg}")
+                self.logger.error(
+                    f"Invalid search parameters for task {task_id}: {param_err_msg}"
+                )
                 return {
                     "message_type": MessageType.TASK_FAIL.value,
                     "payload": {
@@ -664,11 +718,17 @@ class WebResearchLogic:
                 # If structured terms were used, reconstruct a semblance of the original intent for logging/SearchResult
                 original_input_query_parts = []
                 if parameters.get("drug_name"):
-                    original_input_query_parts.append(f"Drug: {parameters.get('drug_name')}")
+                    original_input_query_parts.append(
+                        f"Drug: {parameters.get('drug_name')}"
+                    )
                 if parameters.get("disease_name"):
-                    original_input_query_parts.append(f"Disease: {parameters.get('disease_name')}")
+                    original_input_query_parts.append(
+                        f"Disease: {parameters.get('disease_name')}"
+                    )
                 if parameters.get("search_terms"):
-                    original_input_query_parts.append(f"Terms: {parameters.get('search_terms')}")
+                    original_input_query_parts.append(
+                        f"Terms: {parameters.get('search_terms')}"
+                    )
                 original_input_query = "; ".join(original_input_query_parts)
 
             self.logger.info(
@@ -690,7 +750,9 @@ class WebResearchLogic:
                     },
                 }
 
-            result_data_dict = asdict(search_result_obj)  # Convert SearchResult dataclass to dict
+            result_data_dict = asdict(
+                search_result_obj
+            )  # Convert SearchResult dataclass to dict
 
             final_payload = {
                 **response_payload_base,
@@ -718,7 +780,9 @@ class WebResearchLogic:
         if self._session and not self._session.closed:
             await self._session.close()
             self.logger.debug("aiohttp ClientSession closed during shutdown.")
-        self.logger.info(f"WebResearchLogic shutdown complete for agent {self.agent_id}")
+        self.logger.info(
+            f"WebResearchLogic shutdown complete for agent {self.agent_id}"
+        )
 
     def get_status(self) -> Dict[str, Any]:
         return {

@@ -223,13 +223,17 @@ class BulletproofSecurityMiddleware:
         # 3. Suspicious User-Agent
         user_agent = request.headers.get("User-Agent", "").lower()
         if any(agent in user_agent for agent in self.suspicious_user_agents):
-            logger.warning(f"Blocked suspicious User-Agent: {user_agent} from {client_ip}")
+            logger.warning(
+                f"Blocked suspicious User-Agent: {user_agent} from {client_ip}"
+            )
             return True
 
         # 4. Request size limits
         content_length = request.headers.get("Content-Length")
         if content_length and int(content_length) > 10_000_000:  # 10MB limit
-            logger.warning(f"Blocked oversized request: {content_length} bytes from {client_ip}")
+            logger.warning(
+                f"Blocked oversized request: {content_length} bytes from {client_ip}"
+            )
             return True
 
         return False
@@ -250,13 +254,17 @@ class BulletproofSecurityMiddleware:
         # - 100 requests per minute (normal)
         # - 10 requests per 10 seconds (burst protection)
         if len(history) > 100:
-            logger.warning(f"Rate limit exceeded: {len(history)} req/min from {client_ip}")
+            logger.warning(
+                f"Rate limit exceeded: {len(history)} req/min from {client_ip}"
+            )
             return True
 
         # Burst protection
         recent = [t for t in history if t > now - 10]
         if len(recent) > 10:
-            logger.warning(f"Burst limit exceeded: {len(recent)} req/10s from {client_ip}")
+            logger.warning(
+                f"Burst limit exceeded: {len(recent)} req/10s from {client_ip}"
+            )
             return True
 
         return False
@@ -284,7 +292,9 @@ class BulletproofSecurityMiddleware:
             score += 15
 
         # Request pattern scoring
-        if request.method in ["PUT", "DELETE", "PATCH"] and not path.startswith("/api/v1/"):
+        if request.method in ["PUT", "DELETE", "PATCH"] and not path.startswith(
+            "/api/v1/"
+        ):
             score += 25  # Suspicious methods on non-API paths
 
         # Header analysis
@@ -311,7 +321,9 @@ class BulletproofSecurityMiddleware:
     def _record_honeypot_hit(self, client_ip: str):
         """Record honeypot access and auto-block repeat offenders"""
         self.honeypot_hits[client_ip] += 1
-        logger.warning(f"Honeypot hit #{self.honeypot_hits[client_ip]} from {client_ip}")
+        logger.warning(
+            f"Honeypot hit #{self.honeypot_hits[client_ip]} from {client_ip}"
+        )
 
         # Auto-block after 3 honeypot hits
         if self.honeypot_hits[client_ip] >= 3:

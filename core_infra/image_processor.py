@@ -166,7 +166,9 @@ class ImageAnalysisService:
         self.rekognition_client = None
         if AWS_AVAILABLE:
             try:
-                self.rekognition_client = boto3.client("rekognition", region_name=aws_region)
+                self.rekognition_client = boto3.client(
+                    "rekognition", region_name=aws_region
+                )
                 logger.info("AWS Rekognition initialized")
             except Exception as e:
                 logger.warning(f"AWS Rekognition init failed: {e}")
@@ -468,9 +470,14 @@ class ImageAnalysisService:
             label_list.append({"name": label.description, "confidence": label.score})
 
             # Categorize
-            if any(word in label.description.lower() for word in ["baby", "infant", "child"]):
+            if any(
+                word in label.description.lower()
+                for word in ["baby", "infant", "child"]
+            ):
                 categories.add("baby_product")
-            if any(word in label.description.lower() for word in ["toy", "game", "play"]):
+            if any(
+                word in label.description.lower() for word in ["toy", "game", "play"]
+            ):
                 categories.add("toy")
 
         processing_time = int((datetime.now() - start_time).total_seconds() * 1000)
@@ -658,7 +665,9 @@ class ImageAnalysisService:
             edges = cv2.Canny(gray, 50, 150, apertureSize=3)
 
             # Find contours for crack detection
-            contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours, _ = cv2.findContours(
+                edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+            )
 
             for contour in contours:
                 area = cv2.contourArea(contour)
@@ -737,7 +746,9 @@ class ImageAnalysisService:
             s_std = np.std(s)
 
             # Areas with very high or very low saturation compared to average
-            unusual_sat = cv2.threshold(s, s_mean + 2 * s_std, 255, cv2.THRESH_BINARY)[1]
+            unusual_sat = cv2.threshold(s, s_mean + 2 * s_std, 255, cv2.THRESH_BINARY)[
+                1
+            ]
 
             contours_color, _ = cv2.findContours(
                 unusual_sat, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
@@ -783,7 +794,9 @@ def redact_pii(text: str) -> str:
     text = re.sub(r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b", "[PHONE]", text)
 
     # Email addresses
-    text = re.sub(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", "[EMAIL]", text)
+    text = re.sub(
+        r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", "[EMAIL]", text
+    )
 
     # SSN
     text = re.sub(r"\b\d{3}-\d{2}-\d{4}\b", "[SSN]", text)

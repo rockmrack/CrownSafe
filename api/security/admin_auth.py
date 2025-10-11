@@ -16,7 +16,9 @@ logger = logging.getLogger(__name__)
 
 # Get admin key from environment
 ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "")
-ADMIN_KEY_HASH = hashlib.sha256(ADMIN_API_KEY.encode()).hexdigest() if ADMIN_API_KEY else ""
+ADMIN_KEY_HASH = (
+    hashlib.sha256(ADMIN_API_KEY.encode()).hexdigest() if ADMIN_API_KEY else ""
+)
 
 # Optional: Multiple admin keys for different services
 ADMIN_KEYS = {
@@ -87,7 +89,9 @@ async def require_admin(
                     "traceId": trace_id,
                     "path": request.url.path,
                     "ip": request.client.host if request.client else None,
-                    "key_prefix": x_admin_key[:8] + "..." if len(x_admin_key) > 8 else "***",
+                    "key_prefix": x_admin_key[:8] + "..."
+                    if len(x_admin_key) > 8
+                    else "***",
                 },
             )
             raise APIError(

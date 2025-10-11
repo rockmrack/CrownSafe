@@ -56,7 +56,9 @@ class PasswordResetConfirm(BaseModel):
 
 
 @router.post("/register", response_model=UserResponse)
-async def register(request: Request, user_data: UserRegister, db: Session = Depends(get_db)):
+async def register(
+    request: Request, user_data: UserRegister, db: Session = Depends(get_db)
+):
     """
     Register a new user
     Limited to 5 registrations per hour per IP
@@ -135,7 +137,9 @@ async def login(
             )
 
         if not user.is_active:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is inactive")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Account is inactive"
+            )
 
         # Create tokens
         access_token = create_access_token(data={"sub": str(user.id)})
@@ -186,7 +190,9 @@ async def refresh_token(request: Request, db: Session = Depends(get_db)):
         refresh_token = body.get("refresh_token")
 
         if not refresh_token:
-            raise HTTPException(status_code=400, detail="refresh_token is required in request body")
+            raise HTTPException(
+                status_code=400, detail="refresh_token is required in request body"
+            )
     except Exception:
         raise HTTPException(
             status_code=400,
@@ -335,7 +341,9 @@ async def verify_token(
             }
 
         except Exception:
-            raise HTTPException(status_code=400, detail="Invalid or expired verification code")
+            raise HTTPException(
+                status_code=400, detail="Invalid or expired verification code"
+            )
     else:
         # Token verification flow (requires auth)
         if not current_user:

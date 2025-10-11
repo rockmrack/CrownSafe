@@ -24,7 +24,9 @@ class PregnancyProductSafetyAgent:
         self.logic = PregnancyProductSafetyAgentLogic(agent_id=self.agent_id)
 
         # Register the agent's capabilities with the MCP client
-        self.mcp_client.register_capability("check_pregnancy_safety", self.handle_check_safety)
+        self.mcp_client.register_capability(
+            "check_pregnancy_safety", self.handle_check_safety
+        )
 
     async def handle_check_safety(self, task_payload: dict) -> dict:
         """

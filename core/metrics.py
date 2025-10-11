@@ -38,8 +38,12 @@ if PROM:
     CHAT_BLOCKED = Counter(
         "bs_chat_blocked_total", "Requests blocked by feature flag", ["endpoint"]
     )
-    EXPLAIN_FB = Counter("bs_explain_feedback_total", "Explain feedback", ["helpful", "reason"])
-    ALT_SHOWN = Counter("bs_alternatives_shown_total", "Alternatives shown in responses", ["count"])
+    EXPLAIN_FB = Counter(
+        "bs_explain_feedback_total", "Explain feedback", ["helpful", "reason"]
+    )
+    ALT_SHOWN = Counter(
+        "bs_alternatives_shown_total", "Alternatives shown in responses", ["count"]
+    )
     ALT_CLICKED = Counter("bs_alternative_clicked_total", "Alternative clicked", ["id"])
     CHAT_UNCLEAR = Counter("bs_chat_unclear_total", "Unclear-intent responses")
     CHAT_EMERG = Counter("bs_chat_emergency_total", "Emergency-path responses")
@@ -63,7 +67,9 @@ else:
         SYN_LAT
     ) = (
         CHAT_FALLBACK
-    ) = CHAT_BLOCKED = EXPLAIN_FB = ALT_SHOWN = ALT_CLICKED = CHAT_UNCLEAR = CHAT_EMERG = _N()
+    ) = (
+        CHAT_BLOCKED
+    ) = EXPLAIN_FB = ALT_SHOWN = ALT_CLICKED = CHAT_UNCLEAR = CHAT_EMERG = _N()
 
 
 def inc_req(endpoint: str, intent: str, ok: bool, circuit: bool):

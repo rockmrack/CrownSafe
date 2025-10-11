@@ -40,7 +40,9 @@ try:
                 "notify_user",  # Kept for future use
             ]
             if v not in valid_capabilities:
-                raise ValueError(f"Invalid capability: '{v}'. Must be one of {valid_capabilities}")
+                raise ValueError(
+                    f"Invalid capability: '{v}'. Must be one of {valid_capabilities}"
+                )
             return v
 
     class BabyShieldPlan(BaseModel):
@@ -156,7 +158,11 @@ class BabyShieldPlannerLogic:
         }
 
         # Validate that at least one identifier was provided.
-        if not params["barcode"] and not params["model_number"] and not params["image_url"]:
+        if (
+            not params["barcode"]
+            and not params["model_number"]
+            and not params["image_url"]
+        ):
             msg = "Missing required parameters for planning. Need 'barcode', 'model_number', or 'image_url'."
             self.logger.error(f"{msg} - Received: {task_payload}")
             raise ValueError(msg)
@@ -167,16 +173,23 @@ class BabyShieldPlannerLogic:
         # Filter out visual search step if no image URL is provided
         if not params["image_url"]:
             plan_steps_template = [
-                step for step in plan_steps_template if step.get("step_id") != "step0_visual_search"
+                step
+                for step in plan_steps_template
+                if step.get("step_id") != "step0_visual_search"
             ]
             self.logger.info("Filtered out visual search step (no image URL provided)")
 
             # Update dependencies and inputs that reference the removed visual search step
             for step in plan_steps_template:
                 # Remove step0_visual_search from dependencies
-                if "dependencies" in step and "step0_visual_search" in step["dependencies"]:
+                if (
+                    "dependencies" in step
+                    and "step0_visual_search" in step["dependencies"]
+                ):
                     step["dependencies"] = [
-                        dep for dep in step["dependencies"] if dep != "step0_visual_search"
+                        dep
+                        for dep in step["dependencies"]
+                        if dep != "step0_visual_search"
                     ]
 
                 # Update inputs that reference step0_visual_search
@@ -213,7 +226,9 @@ class BabyShieldPlannerLogic:
 
         # Construct the final plan object.
         final_plan_data = {
-            "workflow_goal": task_payload.get("goal", "Perform BabyShield Product Safety Check"),
+            "workflow_goal": task_payload.get(
+                "goal", "Perform BabyShield Product Safety Check"
+            ),
             "steps": substituted_steps,
             "template_name": template_name,
         }
@@ -221,9 +236,9 @@ class BabyShieldPlannerLogic:
         # Validate the final plan against our Pydantic model.
         try:
             # We use the template's plan_name as the workflow_goal if not provided
-            final_plan_data["workflow_goal"] = final_plan_data.get("workflow_goal") or template.get(
-                "plan_name"
-            )
+            final_plan_data["workflow_goal"] = final_plan_data.get(
+                "workflow_goal"
+            ) or template.get("plan_name")
             validated_plan = BabyShieldPlan(**final_plan_data)
             self.logger.info(
                 f"Successfully generated and validated plan '{validated_plan.plan_id}' from template."
@@ -243,7 +258,9 @@ class BabyShieldPlannerLogic:
             # The name of your file, without the .json extension
             plan_template_name = "babyshield_safety_check_plan"
 
-            generated_plan = self._generate_plan_from_template(plan_template_name, task_data)
+            generated_plan = self._generate_plan_from_template(
+                plan_template_name, task_data
+            )
 
             return {
                 "status": "COMPLETED",

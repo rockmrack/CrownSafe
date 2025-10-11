@@ -11,7 +11,9 @@ from typing import Optional, Dict, Any
 from dotenv import load_dotenv
 
 # Ensure project root is in sys.path for core_infra imports
-project_root_main = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+project_root_main = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..")
+)
 if project_root_main not in sys.path:
     sys.path.insert(0, project_root_main)
 
@@ -79,7 +81,9 @@ class ClinicalTrialsAgentManager:
     async def handle_incoming_message(self, message: MCPMessage):
         """Handle incoming messages with proper response processing"""
         if not self.clinical_trials_logic or not self.mcp_client:
-            logger.error("Logic/MCPClient instance missing in ClinicalTrialsAgent handler")
+            logger.error(
+                "Logic/MCPClient instance missing in ClinicalTrialsAgent handler"
+            )
             return
 
         try:
@@ -90,7 +94,9 @@ class ClinicalTrialsAgentManager:
             correlation_id = header.correlation_id
 
             # Reduced logging to avoid duplication with logic
-            logger.debug(f"Processing {message_type} from {sender_id} (CorrID: {correlation_id})")
+            logger.debug(
+                f"Processing {message_type} from {sender_id} (CorrID: {correlation_id})"
+            )
 
             # Convert message to dict format expected by logic
             message_dict = message.model_dump()
@@ -111,7 +117,9 @@ class ClinicalTrialsAgentManager:
             logger.error(f"Error processing message: {e}", exc_info=True)
             await self._handle_message_error(message, e)
 
-    async def _handle_logic_response(self, response: Dict[str, Any], original_header: MCPHeader):
+    async def _handle_logic_response(
+        self, response: Dict[str, Any], original_header: MCPHeader
+    ):
         """Handle response from logic with proper validation"""
         try:
             # Validate response structure
@@ -128,7 +136,9 @@ class ClinicalTrialsAgentManager:
                 return
 
             if not isinstance(response_payload, dict):
-                logger.error(f"Logic response payload is not dict: {type(response_payload)}")
+                logger.error(
+                    f"Logic response payload is not dict: {type(response_payload)}"
+                )
                 return
 
             # Determine target and correlation ID
@@ -187,7 +197,9 @@ class ClinicalTrialsAgentManager:
                 }
 
                 # Remove None values
-                error_payload = {k: v for k, v in error_payload.items() if v is not None}
+                error_payload = {
+                    k: v for k, v in error_payload.items() if v is not None
+                }
 
                 await self.mcp_client.send_message(
                     payload=error_payload,
@@ -225,7 +237,9 @@ class ClinicalTrialsAgentManager:
                 message_handler=self.handle_incoming_message,
             )
 
-            logger.info(f"ClinicalTrialsAgent components initialized (Version: {AGENT_VERSION})")
+            logger.info(
+                f"ClinicalTrialsAgent components initialized (Version: {AGENT_VERSION})"
+            )
             logger.info(f"Environment loaded from: {env_source}")
             logger.info(f"MCP Server URL: {base_mcp_server_url}")
 
@@ -253,7 +267,9 @@ class ClinicalTrialsAgentManager:
                     loop.add_signal_handler(sig, lambda s=sig: signal_handler(s))
                     logger.debug(f"Added signal handler for {signal.Signals(sig).name}")
                 except (NotImplementedError, OSError) as e:
-                    logger.warning(f"Cannot add signal handler for {signal.Signals(sig).name}: {e}")
+                    logger.warning(
+                        f"Cannot add signal handler for {signal.Signals(sig).name}: {e}"
+                    )
 
         except RuntimeError as e:
             logger.warning(f"Could not setup signal handlers: {e}")
@@ -299,7 +315,9 @@ class ClinicalTrialsAgentManager:
 
         try:
             # Shutdown ClinicalTrialsAgentLogic first - FIXED: Added missing shutdown call
-            if self.clinical_trials_logic and hasattr(self.clinical_trials_logic, "shutdown"):
+            if self.clinical_trials_logic and hasattr(
+                self.clinical_trials_logic, "shutdown"
+            ):
                 await self.clinical_trials_logic.shutdown()
                 logger.debug("ClinicalTrialsAgentLogic shutdown complete")
 

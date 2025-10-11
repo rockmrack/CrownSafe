@@ -11,8 +11,12 @@ class MonetizationAgent:
         # ... (Standard __init__) ...
         self.logic = MonetizationAgentLogic(agent_id=self.agent_id)
 
-        self.mcp_client.register_capability("create_subscription", self.handle_create_subscription)
-        self.mcp_client.register_capability("get_subscription_status", self.handle_get_status)
+        self.mcp_client.register_capability(
+            "create_subscription", self.handle_create_subscription
+        )
+        self.mcp_client.register_capability(
+            "get_subscription_status", self.handle_get_status
+        )
 
     async def handle_create_subscription(self, task_payload: dict) -> dict:
         user_id = task_payload.get("user_id")

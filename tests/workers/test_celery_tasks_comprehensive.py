@@ -109,7 +109,9 @@ class TestCeleryTaskExecution:
         """
         # Arrange
         with patch("workers.recall_tasks.RecallAgent") as mock_agent:
-            mock_agent.return_value.process_recall.side_effect = Exception("Persistent error")
+            mock_agent.return_value.process_recall.side_effect = Exception(
+                "Persistent error"
+            )
 
             # Act
             # with pytest.raises(Exception) as exc_info:
@@ -218,7 +220,11 @@ class TestCeleryTaskExecution:
         """
         # Arrange
         large_dataset = [
-            {"recall_id": f"RECALL-{i}", "title": f"Product Recall {i}", "date": "2025-01-01"}
+            {
+                "recall_id": f"RECALL-{i}",
+                "title": f"Product Recall {i}",
+                "date": "2025-01-01",
+            }
             for i in range(10000)
         ]
 

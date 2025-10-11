@@ -36,7 +36,9 @@ if FIREBASE_AVAILABLE:
         logger.warning(f"Failed to initialize Firebase: {e}")
         FIREBASE_AVAILABLE = False
 else:
-    logger.warning("Firebase Admin SDK not available - push notifications will be mocked")
+    logger.warning(
+        "Firebase Admin SDK not available - push notifications will be mocked"
+    )
 
 
 class PushNotificationAgentLogic:
@@ -47,7 +49,9 @@ class PushNotificationAgentLogic:
     def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
-        self.logger.info(f"PushNotificationAgentLogic initialized for agent {self.agent_id}.")
+        self.logger.info(
+            f"PushNotificationAgentLogic initialized for agent {self.agent_id}."
+        )
 
     def send_notification(
         self,

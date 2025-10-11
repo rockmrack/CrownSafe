@@ -37,7 +37,9 @@ def run_us_mvp_test():
     # 2. Make the initial POST request to trigger the workflow
     try:
         # NOTE: We are now calling the main /process endpoint, as the Commander will route it.
-        response = requests.post(f"{API_BASE_URL}/api/v1/process", json=request_payload, timeout=15)
+        response = requests.post(
+            f"{API_BASE_URL}/api/v1/process", json=request_payload, timeout=15
+        )
         response.raise_for_status()
 
         response_data = response.json()
@@ -46,7 +48,9 @@ def run_us_mvp_test():
         assert response.status_code == 202
         assert workflow_id is not None
 
-        print(f"   -> SUCCESS: API Gateway accepted the request. Workflow ID: {workflow_id}")
+        print(
+            f"   -> SUCCESS: API Gateway accepted the request. Workflow ID: {workflow_id}"
+        )
 
     except requests.exceptions.RequestException as e:
         print(f"   -> FAILED: Could not connect to the API Gateway at {API_BASE_URL}.")

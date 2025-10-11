@@ -64,4 +64,9 @@ def generate_pdf_report_task(data, output_path):
         dict: Generation result
     """
     # Stub implementation
-    return {"success": True, "output_path": output_path, "page_count": 10, "size_mb": 1.2}
+    return {
+        "success": True,
+        "output_path": output_path,
+        "page_count": 10,
+        "size_mb": 1.2,
+    }

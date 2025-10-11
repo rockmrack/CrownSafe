@@ -65,7 +65,9 @@ class TestChatMemoryModels:
 
         # Retrieve and verify
         retrieved = (
-            db_session.query(UserProfile).filter(UserProfile.user_id == "test-user-123").first()
+            db_session.query(UserProfile)
+            .filter(UserProfile.user_id == "test-user-123")
+            .first()
         )
 
         assert retrieved is not None
@@ -87,7 +89,9 @@ class TestChatMemoryModels:
         db_session.commit()
 
         retrieved = (
-            db_session.query(UserProfile).filter(UserProfile.user_id == "test-user-456").first()
+            db_session.query(UserProfile)
+            .filter(UserProfile.user_id == "test-user-456")
+            .first()
         )
 
         assert retrieved.consent_personalization is False
@@ -111,19 +115,25 @@ class TestChatMemoryModels:
         db_session.commit()
 
         retrieved = (
-            db_session.query(UserProfile).filter(UserProfile.user_id == "test-user-789").first()
+            db_session.query(UserProfile)
+            .filter(UserProfile.user_id == "test-user-789")
+            .first()
         )
 
         assert retrieved.allergies == complex_allergies
 
     def test_conversation_creation(self, db_session):
         """Test Conversation model creation"""
-        conversation = Conversation(id="conv-123", user_id="user-123", scan_id="scan-456")
+        conversation = Conversation(
+            id="conv-123", user_id="user-123", scan_id="scan-456"
+        )
 
         db_session.add(conversation)
         db_session.commit()
 
-        retrieved = db_session.query(Conversation).filter(Conversation.id == "conv-123").first()
+        retrieved = (
+            db_session.query(Conversation).filter(Conversation.id == "conv-123").first()
+        )
 
         assert retrieved is not None
         assert retrieved.id == "conv-123"
@@ -139,7 +149,9 @@ class TestChatMemoryModels:
         db_session.add(conversation)
         db_session.commit()
 
-        retrieved = db_session.query(Conversation).filter(Conversation.id == "conv-456").first()
+        retrieved = (
+            db_session.query(Conversation).filter(Conversation.id == "conv-456").first()
+        )
 
         assert retrieved.user_id is None
         assert retrieved.scan_id is None
@@ -269,7 +281,9 @@ class TestChatMemoryModels:
 
         # Test relationship
         retrieved_conv = (
-            db_session.query(Conversation).filter(Conversation.id == "conv-relationship").first()
+            db_session.query(Conversation)
+            .filter(Conversation.id == "conv-relationship")
+            .first()
         )
 
         assert len(retrieved_conv.messages) == 2
@@ -341,7 +355,9 @@ class TestChatMemoryModels:
         db_session.commit()
 
         retrieved = (
-            db_session.query(UserProfile).filter(UserProfile.user_id == "test-erase-user").first()
+            db_session.query(UserProfile)
+            .filter(UserProfile.user_id == "test-erase-user")
+            .first()
         )
 
         assert retrieved.erase_requested_at is not None
@@ -359,7 +375,9 @@ class TestChatMemoryModels:
         db_session.commit()
 
         retrieved = (
-            db_session.query(Conversation).filter(Conversation.id == "conv-activity").first()
+            db_session.query(Conversation)
+            .filter(Conversation.id == "conv-activity")
+            .first()
         )
 
         assert retrieved.last_activity_at > original_activity
@@ -469,7 +487,9 @@ class TestChatMemoryModels:
         db_session.commit()
 
         retrieved = (
-            db_session.query(UserProfile).filter(UserProfile.user_id == "test-pregnancy").first()
+            db_session.query(UserProfile)
+            .filter(UserProfile.user_id == "test-pregnancy")
+            .first()
         )
 
         assert retrieved.pregnancy_trimester == 3
@@ -509,7 +529,11 @@ class TestChatMemoryModels:
         db_session.add(conversation)
         db_session.commit()
 
-        retrieved = db_session.query(Conversation).filter(Conversation.id == "conv-scan").first()
+        retrieved = (
+            db_session.query(Conversation)
+            .filter(Conversation.id == "conv-scan")
+            .first()
+        )
 
         assert retrieved.scan_id == "scan-abc123"
 

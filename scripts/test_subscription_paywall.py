@@ -44,7 +44,9 @@ async def main():
     create_tables()
     with SessionLocal() as db:
         # --- THIS IS THE FIX ---
-        subscriber = User(id=SUBSCRIBER_ID, email="subscriber@test.com", is_subscribed=True)
+        subscriber = User(
+            id=SUBSCRIBER_ID, email="subscriber@test.com", is_subscribed=True
+        )
         non_subscriber = User(
             id=NON_SUBSCRIBER_ID, email="nonsubscriber@test.com", is_subscribed=False
         )
@@ -111,7 +113,9 @@ async def main():
     except httpx.ConnectError:
         print("\n" + "=" * 50)
         print("❌ TEST FAILED: Could not connect to the API server.")
-        print("Please ensure the FastAPI server is running in a separate terminal on port 8001.")
+        print(
+            "Please ensure the FastAPI server is running in a separate terminal on port 8001."
+        )
         print("Command: uvicorn api.main_babyshield:app --port 8001")
     finally:
         # 3. Clean up the test database.

@@ -223,7 +223,9 @@ class DrugBankAgent:
 
             logger.info(f"{self.agent_name} started successfully")
             logger.info(f"Mock data loaded from: {self.logic.mock_data_path}")
-            logger.info(f"Memory manager available: {self.logic.memory_manager is not None}")
+            logger.info(
+                f"Memory manager available: {self.logic.memory_manager is not None}"
+            )
 
             # Log available drugs in mock data
             drug_count = len(self.logic.mock_data.get("drug_search", {}))

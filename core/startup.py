@@ -22,7 +22,9 @@ def log_feature_status():
     # OCR Features
     tesseract_enabled = os.getenv("ENABLE_TESSERACT", "false").lower() == "true"
     easyocr_enabled = os.getenv("ENABLE_EASYOCR", "false").lower() == "true"
-    logger.info(f"  📝 Tesseract OCR: {'✅ Enabled' if tesseract_enabled else '❌ Disabled'}")
+    logger.info(
+        f"  📝 Tesseract OCR: {'✅ Enabled' if tesseract_enabled else '❌ Disabled'}"
+    )
     logger.info(f"  📝 EasyOCR: {'✅ Enabled' if easyocr_enabled else '❌ Disabled'}")
 
     # Barcode Features
@@ -32,19 +34,27 @@ def log_feature_status():
     )
 
     # Receipt Validation
-    receipt_validation_enabled = os.getenv("ENABLE_RECEIPT_VALIDATION", "false").lower() == "true"
+    receipt_validation_enabled = (
+        os.getenv("ENABLE_RECEIPT_VALIDATION", "false").lower() == "true"
+    )
     logger.info(
         f"  🧾 Receipt Validation: {'✅ Enabled' if receipt_validation_enabled else '❌ Disabled'}"
     )
 
     # API Keys
     openai_available = bool(os.getenv("OPENAI_API_KEY"))
-    logger.info(f"  🤖 OpenAI Vision: {'✅ Available' if openai_available else '⚠️  Not configured'}")
+    logger.info(
+        f"  🤖 OpenAI Vision: {'✅ Available' if openai_available else '⚠️  Not configured'}"
+    )
 
     # Database
     db_url = os.getenv("DATABASE_URL", "")
     db_type = (
-        "PostgreSQL" if "postgresql" in db_url else "SQLite" if "sqlite" in db_url else "Unknown"
+        "PostgreSQL"
+        if "postgresql" in db_url
+        else "SQLite"
+        if "sqlite" in db_url
+        else "Unknown"
     )
     logger.info(f"  🗄️  Database: {db_type}")
 
@@ -77,11 +87,15 @@ def check_environment():
             logger.warning("Using SQLite database for TEST_MODE")
         else:
             logger.warning("DATABASE_URL not set - using PostgreSQL default")
-            os.environ["DATABASE_URL"] = "postgresql://postgres:postgres@localhost/babyshield"
+            os.environ[
+                "DATABASE_URL"
+            ] = "postgresql://postgres:postgres@localhost/babyshield"
 
     # Check for optional service keys
     if "OPENAI_API_KEY" not in os.environ:
-        logger.warning("OPENAI_API_KEY not set - visual identification will be unavailable")
+        logger.warning(
+            "OPENAI_API_KEY not set - visual identification will be unavailable"
+        )
         # Don't set a mock key - let the service handle missing keys gracefully
 
     # Log enabled features status

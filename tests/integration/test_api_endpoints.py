@@ -105,7 +105,9 @@ class TestBarcodeScanningFlow:
 
         # Step 3: Check safety
         safety_request = {"barcode": barcode, "user_id": authenticated_user["user_id"]}
-        safety_response = client.post("/api/v1/safety/check", headers=headers, json=safety_request)
+        safety_response = client.post(
+            "/api/v1/safety/check", headers=headers, json=safety_request
+        )
         assert safety_response.status_code == 200
         assert "verdict" in safety_response.json()
 

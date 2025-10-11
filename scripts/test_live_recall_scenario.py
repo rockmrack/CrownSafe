@@ -24,7 +24,9 @@ def validate_response(resp: Dict[str, Any]) -> bool:
       - data.risk_level is one of expected levels
     """
     if resp.get("status") != "COMPLETED":
-        print(f"❌ TEST FAILED: status was '{resp.get('status')}', expected 'COMPLETED'.")
+        print(
+            f"❌ TEST FAILED: status was '{resp.get('status')}', expected 'COMPLETED'."
+        )
         return False
 
     data = resp.get("data", {})
@@ -75,7 +77,9 @@ def main():
 
     print("\n" + "=" * 60)
     if validate_response(result):
-        print("✅✅✅ TEST PASSED: Received COMPLETED status with valid summary and risk level.")
+        print(
+            "✅✅✅ TEST PASSED: Received COMPLETED status with valid summary and risk level."
+        )
     else:
         # validate_response already printed the failure reason
         pass

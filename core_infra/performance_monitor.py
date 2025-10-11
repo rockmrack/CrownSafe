@@ -457,7 +457,9 @@ class BottleneckDetector:
                             "avg_time_ms": avg_time,
                             "max_time_ms": max_time,
                             "count": len(metrics),
-                            "severity": "high" if max_time > self.threshold_ms * 2 else "medium",
+                            "severity": "high"
+                            if max_time > self.threshold_ms * 2
+                            else "medium",
                         }
                     )
 
@@ -496,7 +498,9 @@ class PerformanceReporter:
                 report.append(f"  {name}:")
                 report.append(f"    Calls: {stats['count']}")
                 report.append(f"    Avg: {stats['avg']:.2f}{stats['unit']}")
-                report.append(f"    Min/Max: {stats['min']:.2f}/{stats['max']:.2f}{stats['unit']}")
+                report.append(
+                    f"    Min/Max: {stats['min']:.2f}/{stats['max']:.2f}{stats['unit']}"
+                )
 
         # Bottlenecks
         if bottlenecks:

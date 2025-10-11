@@ -36,11 +36,15 @@ def upgrade():
             "kind", sa.String(16), nullable=False
         ),  # "export" | "delete" | "rectify" | "access"
         sa.Column("email", sa.String(320), nullable=False),  # Max email length per RFC
-        sa.Column("email_hash", sa.String(64), nullable=False),  # SHA-256 hash for searching
+        sa.Column(
+            "email_hash", sa.String(64), nullable=False
+        ),  # SHA-256 hash for searching
         sa.Column(
             "status", sa.String(16), nullable=False, server_default="queued"
         ),  # queued|verifying|processing|done|rejected|expired
-        sa.Column("submitted_at", sa.DateTime(timezone=True), server_default=sa.text("NOW()")),
+        sa.Column(
+            "submitted_at", sa.DateTime(timezone=True), server_default=sa.text("NOW()")
+        ),
         sa.Column("verified_at", sa.DateTime(timezone=True), nullable=True),  # Added
         sa.Column("completed_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column(
@@ -49,7 +53,9 @@ def upgrade():
         sa.Column("notes", sa.Text, nullable=True),
         sa.Column("rejection_reason", sa.Text, nullable=True),  # Added
         sa.Column("trace_id", sa.String(64), nullable=True),
-        sa.Column("jurisdiction", sa.String(32), nullable=True),  # gdpr|ccpa|pipeda|other
+        sa.Column(
+            "jurisdiction", sa.String(32), nullable=True
+        ),  # gdpr|ccpa|pipeda|other
         sa.Column("source", sa.String(32), nullable=True),  # ios|android|web|email|api
         sa.Column("ip_address", sa.String(45), nullable=True),  # Added for audit
         sa.Column("user_agent", sa.Text, nullable=True),  # Added for audit
@@ -57,17 +63,25 @@ def upgrade():
             "verification_token", sa.String(128), nullable=True
         ),  # Added for email verification
         sa.Column("export_url", sa.Text, nullable=True),  # Added for download links
-        sa.Column("metadata_json", postgresql.JSONB, nullable=True),  # Added for flexibility
+        sa.Column(
+            "metadata_json", postgresql.JSONB, nullable=True
+        ),  # Added for flexibility
     )
 
     # Create indexes for efficient querying
-    op.create_index("ix_privacy_email_hash", "privacy_requests", ["email_hash"], unique=False)
+    op.create_index(
+        "ix_privacy_email_hash", "privacy_requests", ["email_hash"], unique=False
+    )
 
     op.create_index("ix_privacy_status", "privacy_requests", ["status"], unique=False)
 
-    op.create_index("ix_privacy_submitted_at", "privacy_requests", ["submitted_at"], unique=False)
+    op.create_index(
+        "ix_privacy_submitted_at", "privacy_requests", ["submitted_at"], unique=False
+    )
 
-    op.create_index("ix_privacy_kind_status", "privacy_requests", ["kind", "status"], unique=False)
+    op.create_index(
+        "ix_privacy_kind_status", "privacy_requests", ["kind", "status"], unique=False
+    )
 
     # Add check constraints
     op.execute(

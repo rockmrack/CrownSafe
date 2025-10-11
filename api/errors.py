@@ -123,7 +123,9 @@ async def handle_request_validation_error(
     )
 
 
-async def handle_http_exception(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+async def handle_http_exception(
+    request: Request, exc: StarletteHTTPException
+) -> JSONResponse:
     """
     Handle HTTP exceptions (4xx, 5xx)
     """

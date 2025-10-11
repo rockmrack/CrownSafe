@@ -22,7 +22,9 @@ EMAIL_REGEX = re.compile(
 # PII patterns for masking
 PII_PATTERNS = {
     "email": re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"),
-    "phone": re.compile(r"\b(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}\b"),
+    "phone": re.compile(
+        r"\b(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}\b"
+    ),
     "ssn": re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),
     "credit_card": re.compile(r"\b(?:\d{4}[-\s]?){3}\d{4}\b"),
     "ip_address": re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b"),
@@ -233,7 +235,9 @@ def generate_dsar_token() -> str:
     return secrets.token_urlsafe(48)
 
 
-def calculate_sla_deadline(jurisdiction: str, submitted_at: Optional[datetime] = None) -> datetime:
+def calculate_sla_deadline(
+    jurisdiction: str, submitted_at: Optional[datetime] = None
+) -> datetime:
     """
     Calculate SLA deadline based on jurisdiction
 
@@ -484,7 +488,9 @@ class PIIMasker:
             elif isinstance(value, dict):
                 masked[key] = self.mask_dict(value, sensitive_keys)
             elif isinstance(value, list):
-                masked[key] = [mask_pii(item) if isinstance(item, str) else item for item in value]
+                masked[key] = [
+                    mask_pii(item) if isinstance(item, str) else item for item in value
+                ]
             else:
                 masked[key] = value
 

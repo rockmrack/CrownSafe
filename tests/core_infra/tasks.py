@@ -34,7 +34,9 @@ def check_for_new_recalls_and_alert():
         "product_name": "Happy Baby Super-Puffs",
         "reason": "URGENT: Potential choking hazard from small parts.",
     }
-    logger.info(f"[Celery Task] Found a new high-risk recall: {mock_new_recall['product_name']}")
+    logger.info(
+        f"[Celery Task] Found a new high-risk recall: {mock_new_recall['product_name']}"
+    )
 
     # 2. Simulate finding an affected user.
     mock_affected_user = {

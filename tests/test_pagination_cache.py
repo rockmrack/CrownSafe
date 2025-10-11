@@ -58,7 +58,9 @@ class PaginationCacheTester:
             else:
                 payload.pop("nextCursor", None)
 
-            response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=payload)
+            response = self.session.post(
+                f"{self.base_url}/api/v1/search/advanced", json=payload
+            )
 
             if response.status_code != 200:
                 self.test(False, f"Search failed with status {response.status_code}")
@@ -98,7 +100,9 @@ class PaginationCacheTester:
         )
 
         # Verify ordering (each page should have consistent order)
-        self.test(pages_fetched > 0, f"Successfully paginated through {pages_fetched} pages")
+        self.test(
+            pages_fetched > 0, f"Successfully paginated through {pages_fetched} pages"
+        )
 
         return len(all_ids) == len(unique_ids)
 
@@ -112,7 +116,9 @@ class PaginationCacheTester:
         # Get first page with snapshot time
         payload1 = {"product": "bottle", "limit": 3}
 
-        response1 = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=payload1)
+        response1 = self.session.post(
+            f"{self.base_url}/api/v1/search/advanced", json=payload1
+        )
 
         if response1.status_code != 200:
             self.test(False, f"First search failed with status {response1.status_code}")
@@ -128,10 +134,14 @@ class PaginationCacheTester:
         # Get second page using cursor (should use same snapshot)
         payload2 = {"product": "bottle", "limit": 3, "nextCursor": cursor1}
 
-        response2 = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=payload2)
+        response2 = self.session.post(
+            f"{self.base_url}/api/v1/search/advanced", json=payload2
+        )
 
         if response2.status_code != 200:
-            self.test(False, f"Second search failed with status {response2.status_code}")
+            self.test(
+                False, f"Second search failed with status {response2.status_code}"
+            )
             return False
 
         data2 = response2.json()
@@ -149,10 +159,14 @@ class PaginationCacheTester:
         # Get a valid cursor first
         payload = {"product": "test", "limit": 2}
 
-        response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=payload)
+        response = self.session.post(
+            f"{self.base_url}/api/v1/search/advanced", json=payload
+        )
 
         if response.status_code != 200:
-            self.test(False, f"Initial search failed with status {response.status_code}")
+            self.test(
+                False, f"Initial search failed with status {response.status_code}"
+            )
             return False
 
         data = response.json()
@@ -236,7 +250,9 @@ class PaginationCacheTester:
         # First request
         payload = {"product": "pacifier", "agencies": ["FDA"], "limit": 5}
 
-        response1 = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=payload)
+        response1 = self.session.post(
+            f"{self.base_url}/api/v1/search/advanced", json=payload
+        )
 
         if response1.status_code != 200:
             self.test(False, f"First search failed with status {response1.status_code}")
@@ -301,7 +317,9 @@ class PaginationCacheTester:
             return True
 
         if response1.status_code != 200:
-            self.test(False, f"Detail request failed with status {response1.status_code}")
+            self.test(
+                False, f"Detail request failed with status {response1.status_code}"
+            )
             return False
 
         # Check for cache headers
@@ -388,7 +406,9 @@ class PaginationCacheTester:
                 payload.pop("nextCursor", None)
 
             start_time = time.time()
-            response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=payload)
+            response = self.session.post(
+                f"{self.base_url}/api/v1/search/advanced", json=payload
+            )
             elapsed = (time.time() - start_time) * 1000  # Convert to ms
 
             if response.status_code == 200:

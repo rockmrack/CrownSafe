@@ -244,8 +244,12 @@ def populate_ingredient_safety_table():
                 pregnancy_risk_level=data["risk_level"],
                 pregnancy_risk_reason=data["reason"],
                 pregnancy_source=data["source"],
-                baby_risk_level=BABY_UNSAFE_INGREDIENTS.get(ingredient, {}).get("risk_level"),
-                baby_risk_reason=BABY_UNSAFE_INGREDIENTS.get(ingredient, {}).get("reason"),
+                baby_risk_level=BABY_UNSAFE_INGREDIENTS.get(ingredient, {}).get(
+                    "risk_level"
+                ),
+                baby_risk_reason=BABY_UNSAFE_INGREDIENTS.get(ingredient, {}).get(
+                    "reason"
+                ),
                 baby_source=BABY_UNSAFE_INGREDIENTS.get(ingredient, {}).get("source"),
                 common_allergen=ingredient in COMMON_ALLERGENS,
                 allergen_type=COMMON_ALLERGENS.get(ingredient, {}).get("type"),

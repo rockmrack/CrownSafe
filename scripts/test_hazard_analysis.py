@@ -42,7 +42,9 @@ async def main():
     try:
         # 1. Initialize the real HazardAnalysisLogic.
         # It will load the API key from your .env file.
-        agent_logic = HazardAnalysisLogic(agent_id="test_ha_001", logger_instance=logger)
+        agent_logic = HazardAnalysisLogic(
+            agent_id="test_ha_001", logger_instance=logger
+        )
         logger.info("Agent logic initialized.")
 
         # 2. Process the task with our sample data.
@@ -61,7 +63,9 @@ async def main():
             analysis = result.get("result", {})
             if "summary" in analysis and "risk_level" in analysis:
                 print("\n" + "=" * 50)
-                print("✅✅✅ TEST PASSED: Successfully received a valid analysis from the LLM.")
+                print(
+                    "✅✅✅ TEST PASSED: Successfully received a valid analysis from the LLM."
+                )
                 print(f"Risk Level: {analysis['risk_level']}")
                 print(f"Summary: {analysis['summary']}")
             else:

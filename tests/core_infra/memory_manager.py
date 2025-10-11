@@ -44,11 +44,15 @@ DEFAULT_COLLECTION_NAME = "cureviax_knowledge_base_v1"
 # Load environment variables
 if DOTENV_AVAILABLE:
     try:
-        project_root_for_env = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        project_root_for_env = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..")
+        )
         dotenv_path_for_env = os.path.join(project_root_for_env, ".env")
         if os.path.exists(dotenv_path_for_env):
             load_dotenv(dotenv_path_for_env)
-            logger_mm_default.debug(f"MemoryManager: Loaded .env from {dotenv_path_for_env}")
+            logger_mm_default.debug(
+                f"MemoryManager: Loaded .env from {dotenv_path_for_env}"
+            )
     except Exception as e_env:
         logger_mm_default.warning(f"MemoryManager: Error loading .env file: {e_env}")
 
@@ -87,7 +91,9 @@ class MemoryManager:
         if not self.logger.handlers:
             # Add basic handler if none exists
             handler = logging.StreamHandler()
-            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
             handler.setFormatter(formatter)
             self.logger.addHandler(handler)
             self.logger.setLevel(logging.INFO)
@@ -100,16 +106,22 @@ class MemoryManager:
             print(f"Logger test failed: {logger_test_error}. Creating fallback logger.")
             self.logger = logging.getLogger(f"{__name__}_{id(self)}")
             handler = logging.StreamHandler()
-            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
             handler.setFormatter(formatter)
             self.logger.addHandler(handler)
             self.logger.setLevel(logging.INFO)
 
         # Initialize paths and settings
         self.db_path = (
-            chroma_db_path if chroma_db_path else os.getenv("CHROMA_DB_PATH", DEFAULT_CHROMA_PATH)
+            chroma_db_path
+            if chroma_db_path
+            else os.getenv("CHROMA_DB_PATH", DEFAULT_CHROMA_PATH)
         )
-        self.collection_name = collection_name if collection_name else DEFAULT_COLLECTION_NAME
+        self.collection_name = (
+            collection_name if collection_name else DEFAULT_COLLECTION_NAME
+        )
 
         # Initialize components
         self.openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -119,7 +131,9 @@ class MemoryManager:
 
         # Check for OpenAI API key
         if not self.openai_api_key:
-            self.logger.warning("OPENAI_API_KEY not found. Will use default embedding function.")
+            self.logger.warning(
+                "OPENAI_API_KEY not found. Will use default embedding function."
+            )
 
         # Initialize OpenAI embedding function
         try:
@@ -135,7 +149,9 @@ class MemoryManager:
             else:
                 self.logger.info("Using default ChromaDB embedding function.")
         except Exception as e_embed:
-            self.logger.error(f"Failed to initialize OpenAIEmbeddingFunction: {e_embed}")
+            self.logger.error(
+                f"Failed to initialize OpenAIEmbeddingFunction: {e_embed}"
+            )
             self.logger.warning("Falling back to default embedding function")
             self.embedding_function = None
 
@@ -151,10 +167,14 @@ class MemoryManager:
                 os.makedirs(self.db_path, exist_ok=True)
                 self.logger.info(f"Created ChromaDB directory: {self.db_path}")
             except Exception as e:
-                self.logger.error(f"Failed to create ChromaDB directory {self.db_path}: {e}")
+                self.logger.error(
+                    f"Failed to create ChromaDB directory {self.db_path}: {e}"
+                )
                 return
 
-        self.logger.info(f"Initializing MemoryManager with ChromaDB path: {self.db_path}")
+        self.logger.info(
+            f"Initializing MemoryManager with ChromaDB path: {self.db_path}"
+        )
 
         try:
             # Initialize ChromaDB client
@@ -193,7 +213,11 @@ class MemoryManager:
     def _generate_canonical_id(self, document_type: str, identifier: str) -> str:
         """Generate canonical IDs for deduplication."""
         clean_identifier = (
-            str(identifier).lower().replace(" ", "_").replace("/", "_").replace("-", "_")
+            str(identifier)
+            .lower()
+            .replace(" ", "_")
+            .replace("/", "_")
+            .replace("-", "_")
         )
         return f"{document_type}_{clean_identifier}"
 
@@ -240,7 +264,9 @@ class MemoryManager:
         merged = existing_metadata.copy()
 
         # Track workflows
-        existing_workflows = self._safe_json_loads(merged.get("referenced_in_workflows"))
+        existing_workflows = self._safe_json_loads(
+            merged.get("referenced_in_workflows")
+        )
         new_workflow_id = new_context_metadata.get("workflow_id_source")
         if new_workflow_id and new_workflow_id not in existing_workflows:
             existing_workflows.append(new_workflow_id)
@@ -287,12 +313,16 @@ class MemoryManager:
             ):
                 if key not in merged or merged[key] is None:
                     merged[key] = (
-                        value if not isinstance(value, (list, dict)) else json.dumps(value)
+                        value
+                        if not isinstance(value, (list, dict))
+                        else json.dumps(value)
                     )
 
         return {k: v for k, v in merged.items() if v is not None}
 
-    def _get_existing_metadatas(self, ids_to_check: List[str]) -> Dict[str, Dict[str, Any]]:
+    def _get_existing_metadatas(
+        self, ids_to_check: List[str]
+    ) -> Dict[str, Dict[str, Any]]:
         """Check which documents already exist and return their metadata."""
         if not self.collection or not ids_to_check:
             return {}
@@ -374,7 +404,9 @@ class MemoryManager:
     ) -> Dict[str, Any]:
         """Store workflow outputs with intelligent deduplication and metadata merging."""
         if not self.collection:
-            self.logger.error("Cannot store workflow outputs: ChromaDB collection not available.")
+            self.logger.error(
+                "Cannot store workflow outputs: ChromaDB collection not available."
+            )
             return {"status": "error", "message": "ChromaDB collection not available"}
 
         if completion_timestamp is None:
@@ -425,7 +457,9 @@ class MemoryManager:
         metadatas_to_prepare.append(workflow_metadata)
 
         # 2. PubMed Articles
-        if pubmed_results_payload and isinstance(pubmed_results_payload.get("articles"), list):
+        if pubmed_results_payload and isinstance(
+            pubmed_results_payload.get("articles"), list
+        ):
             for article in pubmed_results_payload.get("articles", []):
                 if not isinstance(article, dict) or not article.get("pmid"):
                     continue
@@ -455,7 +489,9 @@ class MemoryManager:
                 metadatas_to_prepare.append(article_metadata)
 
         # 3. Clinical Trials
-        if clinical_trials_payload and isinstance(clinical_trials_payload.get("trials_data"), list):
+        if clinical_trials_payload and isinstance(
+            clinical_trials_payload.get("trials_data"), list
+        ):
             for trial_item in clinical_trials_payload.get("trials_data", []):
                 if isinstance(trial_item, dict):
                     trial_dict = trial_item
@@ -495,12 +531,16 @@ class MemoryManager:
         # 4. Drug Safety Summary
         if drug_safety_payload and drug_safety_payload.get("drug_queried"):
             drug_queried = str(drug_safety_payload["drug_queried"])
-            doc_id = self._generate_canonical_id("drugsafety", f"{drug_queried}_summary")
+            doc_id = self._generate_canonical_id(
+                "drugsafety", f"{drug_queried}_summary"
+            )
             ids_for_upsert.append(doc_id)
 
             reactions = drug_safety_payload.get("top_adverse_reactions", [])
             reactions_summary = (
-                ", ".join([r.get("term", r.get("reaction", "N/A")) for r in reactions[:3]])
+                ", ".join(
+                    [r.get("term", r.get("reaction", "N/A")) for r in reactions[:3]]
+                )
                 if reactions
                 else "Not specified"
             )
@@ -516,7 +556,9 @@ class MemoryManager:
                 "document_type": "drug_safety_summary",
                 "drug_queried": drug_queried,
                 "total_reports": drug_safety_payload.get("total_reports"),
-                "top_reactions_sample": json.dumps(reactions[:5]) if reactions else "[]",
+                "top_reactions_sample": json.dumps(reactions[:5])
+                if reactions
+                else "[]",
                 "source_agent_id": "drug_safety_agent",
                 **context_meta,
             }
@@ -565,7 +607,9 @@ class MemoryManager:
             )
 
             total_count = self.collection.count()
-            self.logger.info(f"Successfully upserted documents. Collection total: {total_count}")
+            self.logger.info(
+                f"Successfully upserted documents. Collection total: {total_count}"
+            )
 
             return {
                 "status": "success",
@@ -576,7 +620,9 @@ class MemoryManager:
             }
 
         except Exception as e:
-            self.logger.error(f"Failed to upsert documents for workflow {workflow_id}: {e}")
+            self.logger.error(
+                f"Failed to upsert documents for workflow {workflow_id}: {e}"
+            )
             return {"status": "error", "message": str(e)}
 
     def find_similar_documents(
@@ -657,7 +703,9 @@ class MemoryManager:
                     continue
 
                 # Parse JSON fields
-                workflows = self._safe_json_loads(metadata.get("referenced_in_workflows"))
+                workflows = self._safe_json_loads(
+                    metadata.get("referenced_in_workflows")
+                )
                 drugs = self._safe_json_loads(metadata.get("drug_names_context"))
 
                 ref_count = len(workflows)
@@ -689,7 +737,9 @@ class MemoryManager:
             if reference_counts:
                 analytics["quality_metrics"] = {
                     "average_references": statistics.mean(reference_counts),
-                    "high_quality_documents": sum(1 for rc in reference_counts if rc >= 2),
+                    "high_quality_documents": sum(
+                        1 for rc in reference_counts if rc >= 2
+                    ),
                 }
 
             # Drug class patterns
@@ -702,7 +752,9 @@ class MemoryManager:
                 for drug, data in drug_patterns.items()
             }
 
-            self.logger.info(f"Generated analytics for {analytics['total_documents']} documents")
+            self.logger.info(
+                f"Generated analytics for {analytics['total_documents']} documents"
+            )
             return analytics
 
         except Exception as e:

@@ -16,7 +16,9 @@ try:
     project_root = os.path.dirname(script_dir)  # RossNetAgents directory
     if project_root not in sys.path:
         sys.path.insert(0, project_root)
-        print(f"Added {project_root} to sys.path")  # Add print statement for verification
+        print(
+            f"Added {project_root} to sys.path"
+        )  # Add print statement for verification
     # Verify core_infra exists
     core_infra_path = os.path.join(project_root, "core_infra")
     if not os.path.isdir(core_infra_path):
@@ -47,7 +49,9 @@ logger = logging.getLogger("TestTaskAssignScript")
 
 CONTROLLER_AGENT_ID = "controller_agent_001"  # ID for this test script client
 TARGET_AGENT_ID = "web_research_agent_01"  # The agent we want to send the task to
-TASK_NAME = "perform_web_search"  # The capability name defined in the agent's CAPABILITIES
+TASK_NAME = (
+    "perform_web_search"  # The capability name defined in the agent's CAPABILITIES
+)
 TASK_TIMEOUT_SECONDS = 30.0  # How long to wait for the task result
 
 # --- Shared State for Response Handling ---
@@ -105,7 +109,9 @@ async def run_task_assignment():
     global task_result, task_completion_event, task_correlation_id
     logger.info(f"Instantiating MCPClient for controller: {CONTROLLER_AGENT_ID}")
 
-    client = MCPClient(agent_id=CONTROLLER_AGENT_ID, message_handler=handle_controller_message)
+    client = MCPClient(
+        agent_id=CONTROLLER_AGENT_ID, message_handler=handle_controller_message
+    )
 
     subtask_id_to_send = str(uuid.uuid4())
     task_correlation_id = str(uuid.uuid4())
@@ -143,12 +149,18 @@ async def run_task_assignment():
         await client.send_message(task_message)
         logger.info("Task message sent.")
 
-        logger.info(f"Waiting up to {TASK_TIMEOUT_SECONDS} seconds for task completion...")
+        logger.info(
+            f"Waiting up to {TASK_TIMEOUT_SECONDS} seconds for task completion..."
+        )
         try:
-            await asyncio.wait_for(task_completion_event.wait(), timeout=TASK_TIMEOUT_SECONDS)
+            await asyncio.wait_for(
+                task_completion_event.wait(), timeout=TASK_TIMEOUT_SECONDS
+            )
             logger.info("Task completion event received.")
             if task_result:
-                logger.info(f"Final Task Result Message: {json.dumps(task_result, indent=2)}")
+                logger.info(
+                    f"Final Task Result Message: {json.dumps(task_result, indent=2)}"
+                )
             else:
                 logger.error("Completion event received, but no result was stored.")
 
@@ -186,7 +198,9 @@ if __name__ == "__main__":
     expected_dir_name = "RossNetAgents"
     current_working_dir = os.path.basename(os.getcwd())
     if current_working_dir != expected_dir_name:
-        print(f"\nERROR: This script must be run from the '{expected_dir_name}' directory.")
+        print(
+            f"\nERROR: This script must be run from the '{expected_dir_name}' directory."
+        )
         print(f"       Current directory: '{os.getcwd()}'")
         sys.exit(1)
 

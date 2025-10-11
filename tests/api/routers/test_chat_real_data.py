@@ -51,7 +51,9 @@ class TestChatWithRealData:
 
     @patch("api.routers.chat.get_db")
     @patch("api.routers.chat.ChatAgentLogic")
-    def test_explain_result_with_real_scan_data(self, mock_chat_agent_class, mock_get_db):
+    def test_explain_result_with_real_scan_data(
+        self, mock_chat_agent_class, mock_get_db
+    ):
         """Test /explain-result endpoint with real scan data from database"""
         # Setup mock database session
         mock_db = MagicMock(spec=Session)
@@ -128,9 +130,13 @@ class TestChatWithRealData:
         assert call_args["brand"] == "Gerber"
         assert call_args["category"] == "baby_food"
         assert call_args["recalls_found"] == 0
-        assert call_args["flags"] == ["allergen_milk"]  # Normalized from allergen_alerts
+        assert call_args["flags"] == [
+            "allergen_milk"
+        ]  # Normalized from allergen_alerts
         assert call_args["allergens"] == ["milk"]
-        assert isinstance(call_args["ingredients"], list)  # Should be empty list, not None
+        assert isinstance(
+            call_args["ingredients"], list
+        )  # Should be empty list, not None
         assert isinstance(call_args["recalls"], list)  # Should be empty list, not None
 
     @patch("api.routers.chat.get_db")

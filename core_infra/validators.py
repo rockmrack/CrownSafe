@@ -208,7 +208,9 @@ def validate_search_query(query: str) -> str:
             raise ValueError(f"Dangerous pattern detected in search query: {pattern}")
 
     # Check for SQL injection with semicolon
-    if ";" in query and any(kw in query_upper for kw in ["DROP", "DELETE", "INSERT", "UPDATE"]):
+    if ";" in query and any(
+        kw in query_upper for kw in ["DROP", "DELETE", "INSERT", "UPDATE"]
+    ):
         raise ValueError("SQL injection attempt detected")
 
     # Check for quotes followed by SQL comment (like "admin'--")

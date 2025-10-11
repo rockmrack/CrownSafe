@@ -46,7 +46,9 @@ class SoftDeleteMixin:
         self.deleted_at = datetime.utcnow()
         self.deleted_by = deleted_by_id
 
-        logger.info(f"Soft deleted {self.__class__.__name__} id={getattr(self, 'id', 'unknown')}")
+        logger.info(
+            f"Soft deleted {self.__class__.__name__} id={getattr(self, 'id', 'unknown')}"
+        )
 
     def restore(self):
         """
@@ -56,7 +58,9 @@ class SoftDeleteMixin:
         self.deleted_at = None
         self.deleted_by = None
 
-        logger.info(f"Restored {self.__class__.__name__} id={getattr(self, 'id', 'unknown')}")
+        logger.info(
+            f"Restored {self.__class__.__name__} id={getattr(self, 'id', 'unknown')}"
+        )
 
     def hard_delete(self, session: Session):
         """
@@ -192,7 +196,9 @@ class RecycleBin:
     def __init__(self, session: Session):
         self.session = session
 
-    def get_deleted_items(self, model: type, limit: int = 100, offset: int = 0) -> List[Any]:
+    def get_deleted_items(
+        self, model: type, limit: int = 100, offset: int = 0
+    ) -> List[Any]:
         """
         Get deleted items of a specific type
         """
@@ -260,7 +266,9 @@ class RecycleBin:
 
         # Get records to delete
         to_delete = (
-            self.session.query(model).filter(model.is_deleted, model.deleted_at < cutoff_date).all()
+            self.session.query(model)
+            .filter(model.is_deleted, model.deleted_at < cutoff_date)
+            .all()
         )
 
         count = len(to_delete)

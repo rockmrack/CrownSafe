@@ -52,7 +52,9 @@ def upgrade():
     )
 
     # Create indexes
-    op.create_index(op.f("ix_share_tokens_token"), "share_tokens", ["token"], unique=True)
+    op.create_index(
+        op.f("ix_share_tokens_token"), "share_tokens", ["token"], unique=True
+    )
     op.create_index(
         op.f("ix_share_tokens_created_by"), "share_tokens", ["created_by"], unique=False
     )

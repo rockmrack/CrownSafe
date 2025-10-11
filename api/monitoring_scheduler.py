@@ -64,7 +64,9 @@ class MonitoredProduct(Base):
     # Metadata
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    extra_metadata = Column("metadata", JSON)  # Renamed to avoid SQLAlchemy reserved attribute
+    extra_metadata = Column(
+        "metadata", JSON
+    )  # Renamed to avoid SQLAlchemy reserved attribute
 
 
 class MonitoringRun(Base):
@@ -145,7 +147,9 @@ class ProductMonitoringScheduler:
             db.commit()
             db.refresh(monitored)
 
-            logger.info(f"Added product to monitoring: {product_name} for user {user_id}")
+            logger.info(
+                f"Added product to monitoring: {product_name} for user {user_id}"
+            )
             return monitored
 
     @classmethod
@@ -159,7 +163,9 @@ class ProductMonitoringScheduler:
             # Search by UPC if available
             if product.upc_code:
                 recalls = (
-                    db.query(RecallDB).filter(RecallDB.upc_codes.contains([product.upc_code])).all()
+                    db.query(RecallDB)
+                    .filter(RecallDB.upc_codes.contains([product.upc_code]))
+                    .all()
                 )
                 recalls_found.extend(recalls)
 
@@ -176,7 +182,9 @@ class ProductMonitoringScheduler:
                     )
 
                 query = query.filter(
-                    func.lower(RecallDB.product_name).contains(product.product_name.lower())
+                    func.lower(RecallDB.product_name).contains(
+                        product.product_name.lower()
+                    )
                 )
 
                 recalls = query.limit(10).all()
@@ -192,7 +200,9 @@ class ProductMonitoringScheduler:
                 recalls = (
                     db.query(RecallDB)
                     .filter(
-                        func.lower(RecallDB.model_numbers).contains(product.model_number.lower())
+                        func.lower(RecallDB.model_numbers).contains(
+                            product.model_number.lower()
+                        )
                     )
                     .limit(5)
                     .all()
@@ -243,9 +253,7 @@ class ProductMonitoringScheduler:
             if recall_count == 1:
                 body = f"A recall has been issued for {product.product_name}. Tap for details."
             else:
-                body = (
-                    f"{recall_count} recalls found for {product.product_name}. Check immediately."
-                )
+                body = f"{recall_count} recalls found for {product.product_name}. Check immediately."
 
             # Store in history
             notification = NotificationHistory(
@@ -269,7 +277,9 @@ class ProductMonitoringScheduler:
             for device in devices:
                 # Check quiet hours
                 if cls._is_quiet_hours(device):
-                    logger.info(f"Skipping notification for device {device.id} (quiet hours)")
+                    logger.info(
+                        f"Skipping notification for device {device.id} (quiet hours)"
+                    )
                     continue
 
                 # Check if recalls are enabled
@@ -289,7 +299,9 @@ class ProductMonitoringScheduler:
                     platform=device.platform,
                 )
 
-            logger.info(f"Sent recall notification to user {user_id} for product {product.id}")
+            logger.info(
+                f"Sent recall notification to user {user_id} for product {product.id}"
+            )
 
         except Exception as e:
             logger.error(f"Error sending notification: {e}")
@@ -358,7 +370,9 @@ class ProductMonitoringScheduler:
                         if result.get("recalls_found", 0) > 0:
                             # Check if these are new recalls
                             if product.recalls_found < result["recalls_found"]:
-                                new_recalls_found += result["recalls_found"] - product.recalls_found
+                                new_recalls_found += (
+                                    result["recalls_found"] - product.recalls_found
+                                )
 
                                 # Send notification
                                 await cls.send_recall_notification(
@@ -370,7 +384,9 @@ class ProductMonitoringScheduler:
                             product.recall_status = "recalled"
                             product.recalls_found = result["recalls_found"]
                             product.last_recall_id = (
-                                result["recalls"][0]["id"] if result["recalls"] else None
+                                result["recalls"][0]["id"]
+                                if result["recalls"]
+                                else None
                             )
                         else:
                             product.recall_status = "safe"
@@ -399,7 +415,9 @@ class ProductMonitoringScheduler:
                     run.status = "completed"
                     run.run_details = {
                         "errors": errors[:10],  # Store first 10 errors
-                        "duration_seconds": (run.completed_at - run.started_at).total_seconds(),
+                        "duration_seconds": (
+                            run.completed_at - run.started_at
+                        ).total_seconds(),
                     }
                     db.commit()
 
@@ -447,7 +465,9 @@ class ProductMonitoringScheduler:
 
                 added_count = 0
                 for job in recent_scans:
-                    extraction = db.query(ImageExtraction).filter_by(job_id=job.id).first()
+                    extraction = (
+                        db.query(ImageExtraction).filter_by(job_id=job.id).first()
+                    )
                     if extraction and extraction.product_name:
                         # Check if already monitoring
                         existing = (

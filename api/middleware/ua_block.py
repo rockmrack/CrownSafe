@@ -82,7 +82,8 @@ class UserAgentBlocker(BaseHTTPMiddleware):
 
         self.allowed_patterns = allowed_patterns or self.ALLOWED_PATTERNS
         self.block_empty_ua = (
-            block_empty_ua or os.getenv("BLOCK_EMPTY_USER_AGENT", "false").lower() == "true"
+            block_empty_ua
+            or os.getenv("BLOCK_EMPTY_USER_AGENT", "false").lower() == "true"
         )
         self.case_sensitive = case_sensitive
 
@@ -95,7 +96,9 @@ class UserAgentBlocker(BaseHTTPMiddleware):
             re.compile(re.escape(pattern), flags) for pattern in self.allowed_patterns
         ]
 
-        logger.info(f"UA blocker configured with {len(self.blocked_patterns)} blocked patterns")
+        logger.info(
+            f"UA blocker configured with {len(self.blocked_patterns)} blocked patterns"
+        )
 
     async def dispatch(self, request: Request, call_next):
         """
@@ -204,7 +207,9 @@ class UserAgentBlocker(BaseHTTPMiddleware):
 
         return False
 
-    def _forbidden_response(self, trace_id: Optional[str], message: str) -> JSONResponse:
+    def _forbidden_response(
+        self, trace_id: Optional[str], message: str
+    ) -> JSONResponse:
         """
         Create forbidden response
 

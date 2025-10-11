@@ -153,7 +153,9 @@ async def test_family_members_endpoint():
                 print(f"  Allergies: {', '.join(member['allergies'])}")
                 return member["id"]  # Return for later deletion
             else:
-                print(f"❌ Error adding member: {response.status_code} - {response.text}")
+                print(
+                    f"❌ Error adding member: {response.status_code} - {response.text}"
+                )
 
         except Exception as e:
             print(f"❌ Connection error: {e}")
@@ -178,7 +180,9 @@ async def test_integrated_safety_check():
         }
 
         try:
-            response = await client.post(f"{BASE_URL}/api/v1/safety-check", json=request_data)
+            response = await client.post(
+                f"{BASE_URL}/api/v1/safety-check", json=request_data
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -194,7 +198,9 @@ async def test_integrated_safety_check():
                         print(f"  Safe: {preg.get('safe', 'Unknown')}")
                         if preg.get("alerts"):
                             for alert in preg["alerts"]:
-                                print(f"  ⚠️ {alert['ingredient']}: {alert.get('reason', 'Risk')}")
+                                print(
+                                    f"  ⚠️ {alert['ingredient']}: {alert.get('reason', 'Risk')}"
+                                )
 
                     # Check for allergy safety results
                     if "allergy_safety" in result:
@@ -212,7 +218,10 @@ async def test_integrated_safety_check():
                         print("\n✨ Premium safety checks were included in the results")
 
                     # Display summary with premium alerts
-                    if "summary" in result and "PREMIUM SAFETY ALERTS" in result["summary"]:
+                    if (
+                        "summary" in result
+                        and "PREMIUM SAFETY ALERTS" in result["summary"]
+                    ):
                         print("\n📄 Enhanced Summary (with premium alerts):")
                         print(result["summary"])
 
@@ -240,7 +249,9 @@ async def test_mobile_scan_with_premium():
         }
 
         try:
-            response = await client.post(f"{BASE_URL}/api/v1/mobile/scan", json=request_data)
+            response = await client.post(
+                f"{BASE_URL}/api/v1/mobile/scan", json=request_data
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -300,7 +311,9 @@ async def test_comprehensive_safety():
                         print(f"  Type: {risk['type']}")
                         for alert in risk.get("alerts", []):
                             if risk["type"] == "pregnancy":
-                                print(f"    - {alert['ingredient']}: {alert.get('reason', 'Risk')}")
+                                print(
+                                    f"    - {alert['ingredient']}: {alert.get('reason', 'Risk')}"
+                                )
                             elif risk["type"] == "allergies":
                                 print(
                                     f"    - {alert['member_name']}: {', '.join(alert.get('found_allergens', []))}"

@@ -73,14 +73,21 @@ class MockLLMClient:
         user_lower = user.lower()
 
         # Emergency detection
-        if any(word in user_lower for word in ["choking", "swallowed battery", "emergency", "911"]):
+        if any(
+            word in user_lower
+            for word in ["choking", "swallowed battery", "emergency", "911"]
+        ):
             return {
                 "summary": "🚨 EMERGENCY: Call 911 immediately",
                 "reasons": ["This is a life-threatening emergency"],
                 "checks": ["Call emergency services now"],
                 "flags": ["emergency"],
                 "disclaimer": "This is medical emergency guidance only",
-                "emergency": {"level": "red", "reason": "Life-threatening", "cta": "Call 911"},
+                "emergency": {
+                    "level": "red",
+                    "reason": "Life-threatening",
+                    "cta": "Call 911",
+                },
                 "suggested_questions": [],
             }
 
@@ -88,29 +95,46 @@ class MockLLMClient:
         if any(word in user_lower for word in ["allerg", "peanut", "nuts", "lactose"]):
             return {
                 "summary": "This product may contain allergens. Check the label carefully.",
-                "reasons": ["Common allergens may be present", "Cross-contamination possible"],
+                "reasons": [
+                    "Common allergens may be present",
+                    "Cross-contamination possible",
+                ],
                 "checks": ["Check ingredient list", "Look for allergen warnings"],
                 "flags": ["contains_allergens"],
                 "disclaimer": "Always consult with a pediatrician for allergy concerns",
-                "suggested_questions": ["What allergens are common?", "How to read labels?"],
+                "suggested_questions": [
+                    "What allergens are common?",
+                    "How to read labels?",
+                ],
             }
 
         # Pregnancy-related
         if any(word in user_lower for word in ["pregnan", "breastfeed", "listeria"]):
             return {
                 "summary": "Some products may not be safe during pregnancy or breastfeeding.",
-                "reasons": ["Certain ingredients avoided during pregnancy", "Risk to baby"],
+                "reasons": [
+                    "Certain ingredients avoided during pregnancy",
+                    "Risk to baby",
+                ],
                 "checks": ["Consult healthcare provider", "Check ingredient safety"],
                 "flags": ["pregnancy_concern"],
                 "disclaimer": "Not medical advice. Consult your doctor.",
-                "suggested_questions": ["Is this safe in pregnancy?", "Breastfeeding concerns?"],
+                "suggested_questions": [
+                    "Is this safe in pregnancy?",
+                    "Breastfeeding concerns?",
+                ],
             }
 
         # Age appropriateness
-        if any(word in user_lower for word in ["age", "months", "newborn", "suitable for"]):
+        if any(
+            word in user_lower for word in ["age", "months", "newborn", "suitable for"]
+        ):
             return {
                 "summary": "This product has age recommendations you should follow.",
-                "reasons": ["Age-appropriate features", "Safety for developmental stage"],
+                "reasons": [
+                    "Age-appropriate features",
+                    "Safety for developmental stage",
+                ],
                 "checks": ["Check age label", "Verify small parts warning"],
                 "flags": ["age_restricted"],
                 "disclaimer": "Follow manufacturer age guidelines",
@@ -121,12 +145,20 @@ class MockLLMClient:
         if any(word in user_lower for word in ["recall", "cpsc", "safety notice"]):
             return {
                 "summary": "Product recalls are important safety information.",
-                "reasons": ["Recall may indicate serious hazard", "Manufacturer notified"],
+                "reasons": [
+                    "Recall may indicate serious hazard",
+                    "Manufacturer notified",
+                ],
                 "checks": ["Check recall database", "Verify product model/batch"],
                 "flags": ["has_recall"],
                 "disclaimer": "Check official recall notices for details",
                 "evidence": [
-                    {"type": "recall", "source": "CPSC", "id": "REC-001", "url": "https://cpsc.gov"}
+                    {
+                        "type": "recall",
+                        "source": "CPSC",
+                        "id": "REC-001",
+                        "url": "https://cpsc.gov",
+                    }
                 ],
                 "suggested_questions": ["Is my product recalled?", "What should I do?"],
             }
@@ -146,7 +178,10 @@ class MockLLMClient:
         if any(word in user_lower for word in ["ingredient", "contains", "made of"]):
             return {
                 "summary": "Understanding ingredients helps ensure safety.",
-                "reasons": ["Ingredient transparency important", "Some may cause reactions"],
+                "reasons": [
+                    "Ingredient transparency important",
+                    "Some may cause reactions",
+                ],
                 "checks": ["Read full ingredient list", "Look for preservatives"],
                 "flags": ["check_ingredients"],
                 "disclaimer": "Ingredient safety varies by individual",
@@ -992,7 +1027,15 @@ if __name__ == "__main__":
 
     # Run pytest with verbose output
     exit_code = pytest.main(
-        [__file__, "-v", "-s", "--tb=short", "--asyncio-mode=auto", "-m", "unit or integration"]
+        [
+            __file__,
+            "-v",
+            "-s",
+            "--tb=short",
+            "--asyncio-mode=auto",
+            "-m",
+            "unit or integration",
+        ]
     )
 
     sys.exit(exit_code)

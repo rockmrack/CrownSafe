@@ -59,7 +59,9 @@ class ImageScanRequest(BaseModel):
     """Request model for image-based scanning"""
 
     image_base64: str = Field(..., description="Base64 encoded image data")
-    scan_mode: Optional[str] = Field("auto", description="Scan mode: auto, qr, datamatrix, barcode")
+    scan_mode: Optional[str] = Field(
+        "auto", description="Scan mode: auto, qr, datamatrix, barcode"
+    )
 
 
 class QRGenerateRequest(BaseModel):
@@ -69,7 +71,9 @@ class QRGenerateRequest(BaseModel):
     lot_number: Optional[str] = Field(None, description="Lot/Batch number")
     serial_number: Optional[str] = Field(None, description="Serial number")
     expiry_date: Optional[str] = Field(None, description="Expiry date (YYYY-MM-DD)")
-    custom_data: Optional[Dict[str, Any]] = Field(None, description="Additional custom data")
+    custom_data: Optional[Dict[str, Any]] = Field(
+        None, description="Additional custom data"
+    )
 
 
 class RecallCheckResult(BaseModel):
@@ -141,7 +145,9 @@ def check_recall_database(scan_result: ScanResult, db: Session) -> RecallCheckRe
             recall_check.recall_count = len(exact_matches)
             recall_check.match_type = "exact_unit"
             recall_check.confidence = 0.99
-            recall_check.recalls = [_convert_recall_to_safety_issue(r) for r in exact_matches]
+            recall_check.recalls = [
+                _convert_recall_to_safety_issue(r) for r in exact_matches
+            ]
 
             # Determine severity
             recall_check.severity = _get_highest_severity(exact_matches)
@@ -167,7 +173,9 @@ def check_recall_database(scan_result: ScanResult, db: Session) -> RecallCheckRe
             recall_check.recall_count = len(lot_matches)
             recall_check.match_type = "lot_match"
             recall_check.confidence = 0.95
-            recall_check.recalls = [_convert_recall_to_safety_issue(r) for r in lot_matches]
+            recall_check.recalls = [
+                _convert_recall_to_safety_issue(r) for r in lot_matches
+            ]
             recall_check.severity = _get_highest_severity(lot_matches)
             return recall_check
 
@@ -189,7 +197,9 @@ def check_recall_database(scan_result: ScanResult, db: Session) -> RecallCheckRe
             recall_check.recall_count = len(expiry_matches)
             recall_check.match_type = "expiry_match"
             recall_check.confidence = 0.90
-            recall_check.recalls = [_convert_recall_to_safety_issue(r) for r in expiry_matches]
+            recall_check.recalls = [
+                _convert_recall_to_safety_issue(r) for r in expiry_matches
+            ]
             recall_check.severity = _get_highest_severity(expiry_matches)
             return recall_check
 
@@ -221,7 +231,9 @@ def check_recall_database(scan_result: ScanResult, db: Session) -> RecallCheckRe
                 recall_check.recall_count = len(general_recalls)
                 recall_check.match_type = "product_match"
                 recall_check.confidence = 0.85
-                recall_check.recalls = [_convert_recall_to_safety_issue(r) for r in general_recalls]
+                recall_check.recalls = [
+                    _convert_recall_to_safety_issue(r) for r in general_recalls
+                ]
                 recall_check.severity = _get_highest_severity(general_recalls)
             else:
                 # Product has recalls but only for specific lots/serials
@@ -402,9 +414,7 @@ async def scan_barcode_text(
 
         # Add warning message if recall found
         if recall_check.recall_found:
-            response_data.message = (
-                f"⚠️ RECALL ALERT: {recall_check.recall_count} recall(s) found for this product!"
-            )
+            response_data.message = f"⚠️ RECALL ALERT: {recall_check.recall_count} recall(s) found for this product!"
 
         return ApiResponse(success=True, data=response_data.model_dump(), message=None)
 
@@ -453,7 +463,9 @@ async def scan_image(
         response_data = {
             "ok": True,
             "scan_results": [r.to_dict() for r in scan_results],
-            "recall_checks": [r.model_dump() for r in recall_checks] if recall_checks else None,
+            "recall_checks": [r.model_dump() for r in recall_checks]
+            if recall_checks
+            else None,
             "trace_id": trace_id,
             "verifications": verifications if verifications else None,
         }
@@ -484,9 +496,7 @@ async def scan_qr_code(
     """
     try:
         # Generate trace ID
-        trace_id = (
-            f"scan_qr_{int(datetime.utcnow().timestamp())}_{hash(request.barcode_data) % 10000}"
-        )
+        trace_id = f"scan_qr_{int(datetime.utcnow().timestamp())}_{hash(request.barcode_data) % 10000}"
 
         # Parse as QR code
         scan_result = scanner.scan_text(request.barcode_data, "QRCODE")
@@ -506,7 +516,9 @@ async def scan_qr_code(
         )
 
         if recall_check.recall_found:
-            response_data.message = f"⚠️ RECALL ALERT: {recall_check.recall_count} recall(s) found!"
+            response_data.message = (
+                f"⚠️ RECALL ALERT: {recall_check.recall_count} recall(s) found!"
+            )
 
         return ApiResponse(success=True, data=response_data.model_dump(), message=None)
 
@@ -557,7 +569,9 @@ async def scan_datamatrix(
         )
 
         if recall_check.recall_found:
-            response_data.message = f"⚠️ RECALL ALERT: {recall_check.recall_count} recall(s) found!"
+            response_data.message = (
+                f"⚠️ RECALL ALERT: {recall_check.recall_count} recall(s) found!"
+            )
 
         return ApiResponse(success=True, data=response_data.model_dump(), message=None)
 
@@ -589,7 +603,9 @@ async def parse_gs1_data(
         scan_result = scanner.scan_text(gs1_data, "GS1_128")
 
         if not scan_result.success:
-            return ApiResponse(success=False, data={"message": "Invalid GS1 format"}, message=None)
+            return ApiResponse(
+                success=False, data={"message": "Invalid GS1 format"}, message=None
+            )
 
         # Check against recall database
         recall_check = check_recall_database(scan_result, db)
@@ -624,7 +640,9 @@ class VerifyRequest(BaseModel):
 
 
 @barcode_router.post("/verify", response_model=ApiResponse)
-async def verify_unit(request: VerifyRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
+async def verify_unit(
+    request: VerifyRequest, db: Session = Depends(get_db_session)
+) -> ApiResponse:
     """
     Verify a unit (GTIN/lot/serial/expiry) with a pluggable manufacturer connector.
     Always persists a verification record for audit.
@@ -766,7 +784,9 @@ async def get_scan_results_page(
                     {
                         "recall_id": r.id,
                         "agency": r.source_agency or "CPSC",
-                        "date": r.recall_date.strftime("%Y-%m-%d") if r.recall_date else "",
+                        "date": r.recall_date.strftime("%Y-%m-%d")
+                        if r.recall_date
+                        else "",
                         "hazard": r.hazard or "",
                         "remedy": r.remedy or "",
                         "severity": _get_highest_severity([r]),

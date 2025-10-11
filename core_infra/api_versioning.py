@@ -79,7 +79,9 @@ class VersionedAPI:
                 return version
 
         # 2. Check header (API-Version or X-API-Version)
-        api_version = request.headers.get("API-Version") or request.headers.get("X-API-Version")
+        api_version = request.headers.get("API-Version") or request.headers.get(
+            "X-API-Version"
+        )
         if api_version and api_version in cls.SUPPORTED_VERSIONS:
             return api_version
 
@@ -109,7 +111,9 @@ class VersionedAPI:
         return None
 
 
-def versioned_endpoint(versions: list = None, deprecated_in: str = None, removed_in: str = None):
+def versioned_endpoint(
+    versions: list = None, deprecated_in: str = None, removed_in: str = None
+):
     """
     Decorator for versioned endpoints
 
@@ -165,7 +169,9 @@ class VersionedRouter:
         for version in VersionedAPI.SUPPORTED_VERSIONS:
             self.routers[version] = APIRouter(prefix=f"/api/{version}")
 
-    def add_route(self, path: str, endpoint: Callable, methods: list, versions: list = None):
+    def add_route(
+        self, path: str, endpoint: Callable, methods: list, versions: list = None
+    ):
         """Add route to specific versions"""
         versions = versions or list(self.routers.keys())
 
@@ -173,7 +179,9 @@ class VersionedRouter:
             if version in self.routers:
                 router = self.routers[version]
                 for method in methods:
-                    router.add_api_route(path, endpoint, methods=[method], tags=[f"{version}"])
+                    router.add_api_route(
+                        path, endpoint, methods=[method], tags=[f"{version}"]
+                    )
 
     def get_routers(self):
         """Get all version routers"""

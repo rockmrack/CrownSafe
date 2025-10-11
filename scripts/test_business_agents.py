@@ -41,7 +41,9 @@ def test_business_agents():
     result = alt_logic.get_alternatives("Super Baby Rocker", "Rocker")
     assert result["status"] == "success"
     assert len(result["alternatives"]) == 2
-    print(f"   -> SUCCESS: Found {len(result['alternatives'])} alternatives for 'Rocker'.")
+    print(
+        f"   -> SUCCESS: Found {len(result['alternatives'])} alternatives for 'Rocker'."
+    )
     print(f"      Suggestion 1: {result['alternatives'][0]['name']}")
 
     print("\n4. Testing alternatives for an unknown category...")

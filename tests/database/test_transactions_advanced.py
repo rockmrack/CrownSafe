@@ -31,7 +31,8 @@ def is_sqlite():
 
 # Skip marker for SQLite-incompatible tests
 skip_on_sqlite = pytest.mark.skipif(
-    is_sqlite(), reason="SQLite doesn't support RETURNING clause with autoincrement properly"
+    is_sqlite(),
+    reason="SQLite doesn't support RETURNING clause with autoincrement properly",
 )
 
 
@@ -44,7 +45,11 @@ class TestDatabaseTransactions:
     def db_session(self):
         """Create a fresh database session for testing"""
         # Import models to register them with Base
-        from api.models.chat_memory import UserProfile, Conversation, ConversationMessage
+        from api.models.chat_memory import (
+            UserProfile,
+            Conversation,
+            ConversationMessage,
+        )
 
         # Create only the tables we need for testing (not all tables in Base)
         UserProfile.__table__.create(bind=engine, checkfirst=True)
@@ -116,7 +121,9 @@ class TestDatabaseTransactions:
 
             # Verify conversation does not exist (full rollback occurred)
             conversations = (
-                db_session.query(Conversation).filter_by(user_id=sample_user.user_id).all()
+                db_session.query(Conversation)
+                .filter_by(user_id=sample_user.user_id)
+                .all()
             )
 
             # In SQLAlchemy, nested rollbacks affect the entire transaction
@@ -154,7 +161,9 @@ class TestDatabaseTransactions:
                 session.close()
 
         # Execute concurrent updates
-        thread1 = threading.Thread(target=update_user_transaction, args=(sample_user.user_id, True))
+        thread1 = threading.Thread(
+            target=update_user_transaction, args=(sample_user.user_id, True)
+        )
         thread2 = threading.Thread(
             target=update_user_transaction, args=(sample_user.user_id, False)
         )
@@ -222,23 +231,31 @@ class TestDatabaseTransactions:
         """
         # Transaction 1: Update user consent
         session1 = SessionLocal()
-        user1 = session1.query(UserProfile).filter_by(user_id=sample_user.user_id).first()
+        user1 = (
+            session1.query(UserProfile).filter_by(user_id=sample_user.user_id).first()
+        )
         user1.consent_personalization = False
         session1.flush()  # Don't commit yet
 
         # Transaction 2: Read user consent (should see old value)
         session2 = SessionLocal()
-        user2 = session2.query(UserProfile).filter_by(user_id=sample_user.user_id).first()
+        user2 = (
+            session2.query(UserProfile).filter_by(user_id=sample_user.user_id).first()
+        )
 
         # Verify dirty read doesn't occur (should see original True value)
-        assert user2.consent_personalization is True, "Should not see uncommitted changes"
+        assert (
+            user2.consent_personalization is True
+        ), "Should not see uncommitted changes"
 
         # Commit transaction 1
         session1.commit()
 
         # Transaction 2: Re-read (should see new value)
         session2.expire_all()  # Clear session cache
-        user2 = session2.query(UserProfile).filter_by(user_id=sample_user.user_id).first()
+        user2 = (
+            session2.query(UserProfile).filter_by(user_id=sample_user.user_id).first()
+        )
         assert user2.consent_personalization is False, "Should see committed changes"
 
         session1.close()
@@ -288,7 +305,9 @@ class TestDatabaseTransactions:
 
             # Verify conversation exists but message doesn't
             conversations = (
-                db_session.query(Conversation).filter_by(user_id=sample_user.user_id).all()
+                db_session.query(Conversation)
+                .filter_by(user_id=sample_user.user_id)
+                .all()
             )
             assert len(conversations) == 1
 
@@ -380,7 +399,9 @@ class TestDatabaseTransactions:
 
         # Verify count
         count = (
-            db_session.query(ConversationMessage).filter_by(conversation_id=conversation.id).count()
+            db_session.query(ConversationMessage)
+            .filter_by(conversation_id=conversation.id)
+            .count()
         )
         assert count == 1000, "All messages should be inserted atomically"
 
@@ -398,7 +419,9 @@ class TestDatabaseTransactions:
         # For now, simulate timeout behavior
 
         with patch.object(db_session, "execute") as mock_execute:
-            mock_execute.side_effect = OperationalError("Query timeout exceeded", {}, None)
+            mock_execute.side_effect = OperationalError(
+                "Query timeout exceeded", {}, None
+            )
 
             with pytest.raises(OperationalError) as exc_info:
                 db_session.execute(text("SELECT SLEEP(31)"))  # Simulated long query

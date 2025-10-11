@@ -94,12 +94,20 @@ class CPSCDataConnector:
                             record = SafetyDataRecord(
                                 source="CPSC_RECALL",
                                 source_id=recall.get("RecallID", ""),
-                                product_name=recall.get("Products", [{}])[0].get("Name", "Unknown"),
+                                product_name=recall.get("Products", [{}])[0].get(
+                                    "Name", "Unknown"
+                                ),
                                 brand=recall.get("Manufacturers", [{}])[0].get("Name"),
-                                manufacturer=recall.get("Manufacturers", [{}])[0].get("Name"),
-                                model_number=recall.get("Products", [{}])[0].get("Model"),
+                                manufacturer=recall.get("Manufacturers", [{}])[0].get(
+                                    "Name"
+                                ),
+                                model_number=recall.get("Products", [{}])[0].get(
+                                    "Model"
+                                ),
                                 recall_date=self._parse_date(recall.get("RecallDate")),
-                                hazard_type=recall.get("Hazards", [{}])[0].get("HazardType"),
+                                hazard_type=recall.get("Hazards", [{}])[0].get(
+                                    "HazardType"
+                                ),
                                 hazard_description=recall.get("Description"),
                                 remedy=recall.get("Remedies", [{}])[0].get("Remedy"),
                                 units_affected=units,
@@ -215,13 +223,17 @@ class CPSCDataConnector:
                             article_id = f"CPSC-NEWS-{item.get('nid', 'unknown')}"
 
                             # Parse publication date
-                            pub_date = datetime.fromtimestamp(int(item.get("created", 0)))
+                            pub_date = datetime.fromtimestamp(
+                                int(item.get("created", 0))
+                            )
 
                             articles.append(
                                 {
                                     "article_id": article_id,
                                     "title": item["title"],
-                                    "summary": item.get("description", "Read more for details."),
+                                    "summary": item.get(
+                                        "description", "Read more for details."
+                                    ),
                                     "source_agency": "CPSC",
                                     "publication_date": pub_date.date(),
                                     "image_url": item.get("image_medium"),
@@ -378,7 +390,9 @@ class CommercialDatabaseConnector:
             try:
                 result = await lookup_func(barcode)
                 if result:
-                    logger.info(f"Found product in {service_name}: {result.get('product_name')}")
+                    logger.info(
+                        f"Found product in {service_name}: {result.get('product_name')}"
+                    )
                     return result
             except Exception as e:
                 logger.warning(f"Error with {service_name}: {e}")
@@ -452,7 +466,9 @@ class DataUnificationEngine:
 
         return golden
 
-    def match_records(self, record1: SafetyDataRecord, record2: SafetyDataRecord) -> float:
+    def match_records(
+        self, record1: SafetyDataRecord, record2: SafetyDataRecord
+    ) -> float:
         """
         Calculate match score between two records
         Returns score between 0 and 1
@@ -477,7 +493,9 @@ class DataUnificationEngine:
 
         # Fuzzy matches on text fields
         if record1.product_name and record2.product_name:
-            similarity = self._string_similarity(record1.product_name, record2.product_name)
+            similarity = self._string_similarity(
+                record1.product_name, record2.product_name
+            )
             score += weights["product_name"] * similarity
 
         if record1.brand and record2.brand:
@@ -485,7 +503,9 @@ class DataUnificationEngine:
             score += weights["brand"] * similarity
 
         if record1.manufacturer and record2.manufacturer:
-            similarity = self._string_similarity(record1.manufacturer, record2.manufacturer)
+            similarity = self._string_similarity(
+                record1.manufacturer, record2.manufacturer
+            )
             score += weights["manufacturer"] * similarity
 
         return score
@@ -496,7 +516,9 @@ class DataUnificationEngine:
         best_score = 0
 
         for record in records:
-            score = sum(1 for field, value in record.__dict__.items() if value is not None)
+            score = sum(
+                1 for field, value in record.__dict__.items() if value is not None
+            )
             if score > best_score:
                 best_score = score
                 best_record = record.__dict__.copy()
@@ -515,10 +537,14 @@ class DataUnificationEngine:
                 elif field == "severity":
                     # Take the highest severity
                     severity_order = ["low", "medium", "high", "critical"]
-                    if severity_order.index(value) > severity_order.index(golden.get(field, "low")):
+                    if severity_order.index(value) > severity_order.index(
+                        golden.get(field, "low")
+                    ):
                         golden[field] = value
 
-    def _calculate_confidence(self, golden: Dict, source_records: List[SafetyDataRecord]) -> float:
+    def _calculate_confidence(
+        self, golden: Dict, source_records: List[SafetyDataRecord]
+    ) -> float:
         """Calculate confidence score for the golden record"""
         # Factors that increase confidence:
         # - Multiple sources agree

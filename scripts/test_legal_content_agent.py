@@ -30,7 +30,9 @@ async def main():
 
     try:
         # 1. Initialize the real LegalContentAgentLogic.
-        agent_logic = LegalContentAgentLogic(agent_id="test_lc_001", logger_instance=logger)
+        agent_logic = LegalContentAgentLogic(
+            agent_id="test_lc_001", logger_instance=logger
+        )
         logger.info("Agent logic initialized.")
 
         # 2. Define the task payload.
@@ -49,7 +51,9 @@ async def main():
         # We print the first 200 characters of the content for brevity
         if result.get("status") == "COMPLETED":
             result_copy = result.copy()
-            result_copy["result"]["content"] = result_copy["result"]["content"][:200] + "..."
+            result_copy["result"]["content"] = (
+                result_copy["result"]["content"][:200] + "..."
+            )
             print(json.dumps(result_copy, indent=2))
         else:
             print(json.dumps(result, indent=2))

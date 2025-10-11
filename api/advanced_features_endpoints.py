@@ -62,9 +62,13 @@ class WebResearchRequest(BaseModel):
 
     product_name: str = Field(..., description="Product name to research")
     barcode: Optional[str] = Field(None, description="Product barcode if available")
-    search_depth: str = Field("standard", description="Search depth: quick, standard, deep")
+    search_depth: str = Field(
+        "standard", description="Search depth: quick, standard, deep"
+    )
     sources: Optional[List[str]] = Field(None, description="Specific sources to search")
-    include_social_media: bool = Field(True, description="Include social media monitoring")
+    include_social_media: bool = Field(
+        True, description="Include social media monitoring"
+    )
     include_forums: bool = Field(True, description="Include parent forums")
     user_id: int = Field(..., description="User ID for personalization")
 
@@ -104,9 +108,15 @@ class GuidelinesRequest(BaseModel):
     product_name: Optional[str] = Field(None, description="Product name")
     product_category: Optional[str] = Field(None, description="Product category")
     barcode: Optional[str] = Field(None, description="Product barcode")
-    child_age_months: int = Field(..., ge=0, le=216, description="Child's age in months")
-    child_weight_lbs: Optional[float] = Field(None, gt=0, description="Child's weight in pounds")
-    child_height_inches: Optional[float] = Field(None, gt=0, description="Child's height in inches")
+    child_age_months: int = Field(
+        ..., ge=0, le=216, description="Child's age in months"
+    )
+    child_weight_lbs: Optional[float] = Field(
+        None, gt=0, description="Child's weight in pounds"
+    )
+    child_height_inches: Optional[float] = Field(
+        None, gt=0, description="Child's height in inches"
+    )
     usage_scenario: Optional[str] = Field(None, description="How product will be used")
     user_id: int = Field(..., description="User ID")
 
@@ -142,7 +152,9 @@ class VisualRecognitionRequest(BaseModel):
     """Request model for visual product recognition"""
 
     user_id: int = Field(..., description="User ID")
-    include_similar: bool = Field(True, description="Include similar products if no exact match")
+    include_similar: bool = Field(
+        True, description="Include similar products if no exact match"
+    )
     check_for_defects: bool = Field(True, description="Check for visual defects")
     confidence_threshold: float = Field(
         0.7, ge=0, le=1, description="Minimum confidence for matches"
@@ -168,9 +180,15 @@ class MonitoringRequest(BaseModel):
     product_name: str = Field(..., description="Product to monitor")
     barcode: Optional[str] = Field(None, description="Product barcode")
     user_id: int = Field(..., description="User ID")
-    monitoring_duration_days: int = Field(30, ge=1, le=365, description="How long to monitor")
-    alert_threshold: str = Field("medium", description="Alert sensitivity: low, medium, high")
-    sources: Optional[List[str]] = Field(None, description="Specific sources to monitor")
+    monitoring_duration_days: int = Field(
+        30, ge=1, le=365, description="How long to monitor"
+    )
+    alert_threshold: str = Field(
+        "medium", description="Alert sensitivity: low, medium, high"
+    )
+    sources: Optional[List[str]] = Field(
+        None, description="Specific sources to monitor"
+    )
 
 
 class MonitoringResponse(BaseModel):
@@ -353,7 +371,9 @@ async def research_product_safety(
 
 
 @router.post("/guidelines", response_model=GuidelinesResponse)
-async def get_product_guidelines(request: GuidelinesRequest, db: Session = Depends(get_db)):
+async def get_product_guidelines(
+    request: GuidelinesRequest, db: Session = Depends(get_db)
+):
     """
     Get age-appropriate usage guidelines for a product.
 
@@ -364,7 +384,9 @@ async def get_product_guidelines(request: GuidelinesRequest, db: Session = Depen
     4. Warns about developmental considerations
     """
     try:
-        logger.info(f"Getting guidelines for child age {request.child_age_months} months")
+        logger.info(
+            f"Getting guidelines for child age {request.child_age_months} months"
+        )
 
         # Validate user
         user = db.query(User).filter(User.id == request.user_id).first()
@@ -372,7 +394,9 @@ async def get_product_guidelines(request: GuidelinesRequest, db: Session = Depen
             raise HTTPException(status_code=404, detail="User not found")
 
         # Determine product category if not provided
-        product_name = request.product_name or request.product_category or "Unknown Product"
+        product_name = (
+            request.product_name or request.product_category or "Unknown Product"
+        )
 
         guidelines = []
         warnings = []
@@ -445,8 +469,12 @@ async def get_product_guidelines(request: GuidelinesRequest, db: Session = Depen
                 )
             )
 
-            developmental_considerations.append("Baby is likely sitting up and may be crawling")
-            developmental_considerations.append("Everything goes in mouth - ensure no small parts")
+            developmental_considerations.append(
+                "Baby is likely sitting up and may be crawling"
+            )
+            developmental_considerations.append(
+                "Everything goes in mouth - ensure no small parts"
+            )
 
         elif request.child_age_months < 36:  # 1-3 years
             guidelines.append(
@@ -463,7 +491,9 @@ async def get_product_guidelines(request: GuidelinesRequest, db: Session = Depen
 
             if "small parts" in product_name.lower() or "3+" in product_name:
                 age_appropriate = False
-                warnings.append("Contains small parts - choking hazard for children under 3")
+                warnings.append(
+                    "Contains small parts - choking hazard for children under 3"
+                )
 
         # Weight-based guidelines if provided
         if request.child_weight_lbs:
@@ -490,7 +520,9 @@ async def get_product_guidelines(request: GuidelinesRequest, db: Session = Depen
             if "high chair" in product_name.lower():
                 if request.child_weight_lbs > 40:
                     weight_appropriate = False
-                    warnings.append("Check high chair weight limit - may exceed capacity")
+                    warnings.append(
+                        "Check high chair weight limit - may exceed capacity"
+                    )
 
         # General best practices
         best_practices.extend(
@@ -557,7 +589,9 @@ async def get_product_guidelines(request: GuidelinesRequest, db: Session = Depen
         raise
     except Exception as e:
         logger.error(f"Guidelines lookup failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Guidelines lookup failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Guidelines lookup failed: {str(e)}"
+        )
 
 
 # ==================== Visual Recognition Endpoints ====================
@@ -569,7 +603,9 @@ async def recognize_product_from_image(
     image: UploadFile = File(..., description="Product image"),
     include_similar: bool = Query(True, description="Include similar products"),
     check_for_defects: bool = Query(True, description="Check for visual defects"),
-    confidence_threshold: float = Query(0.7, ge=0, le=1, description="Minimum confidence"),
+    confidence_threshold: float = Query(
+        0.7, ge=0, le=1, description="Minimum confidence"
+    ),
     db: Session = Depends(get_db),
 ):
     """
@@ -635,7 +671,9 @@ async def recognize_product_from_image(
             # Upload image to S3 for processing
             import boto3
 
-            s3_client = boto3.client("s3", region_name=os.getenv("S3_BUCKET_REGION", "us-east-1"))
+            s3_client = boto3.client(
+                "s3", region_name=os.getenv("S3_BUCKET_REGION", "us-east-1")
+            )
             s3_client.put_object(
                 Bucket=job.s3_bucket,
                 Key=s3_key,
@@ -688,7 +726,9 @@ async def recognize_product_from_image(
 
                 products_identified.append(
                     {
-                        "product_name": product_data.get("product_name", "Unknown Product"),
+                        "product_name": product_data.get(
+                            "product_name", "Unknown Product"
+                        ),
                         "confidence": confidence,
                         "barcode": None,  # Would come from barcode extraction if available
                         "category": "Baby Product",  # Could be enhanced with category classification
@@ -715,7 +755,9 @@ async def recognize_product_from_image(
         except Exception as e:
             logger.error(f"Real visual recognition failed: {e}", exc_info=True)
             # Don't mask errors as 200 - raise proper HTTP exception
-            raise HTTPException(status_code=500, detail=f"Processing error: {type(e).__name__}")
+            raise HTTPException(
+                status_code=500, detail=f"Processing error: {type(e).__name__}"
+            )
 
         # Check for visual defects if requested
         if check_for_defects and confidence > confidence_threshold:
@@ -746,7 +788,9 @@ async def recognize_product_from_image(
                         }
                     )
 
-                logger.info(f"Real defect detection found {len(detected_defects)} defects")
+                logger.info(
+                    f"Real defect detection found {len(detected_defects)} defects"
+                )
 
             except Exception as e:
                 logger.error(f"Defect detection failed: {e}")
@@ -791,7 +835,9 @@ async def recognize_product_from_image(
         raise
     except Exception as e:
         logger.error(f"Visual recognition failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Visual recognition failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Visual recognition failed: {str(e)}"
+        )
 
 
 # ==================== Continuous Monitoring Endpoints ====================
@@ -864,7 +910,9 @@ async def setup_product_monitoring(
         raise
     except Exception as e:
         logger.error(f"Monitoring setup failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Monitoring setup failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Monitoring setup failed: {str(e)}"
+        )
 
 
 @router.get("/monitor/{monitoring_id}/status")

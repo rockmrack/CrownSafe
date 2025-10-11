@@ -109,7 +109,9 @@ def create_secure_engine(mode: str = "readonly") -> Engine:
         }
     elif mode == "write":
         pool_settings = WRITE_POOL_SETTINGS
-        connect_args = {"options": "-c statement_timeout=60000"}  # 60s timeout for writes
+        connect_args = {
+            "options": "-c statement_timeout=60000"
+        }  # 60s timeout for writes
     else:  # admin
         pool_settings = ADMIN_POOL_SETTINGS
         connect_args = {}
@@ -210,11 +212,17 @@ db_engines = DatabaseEngines()
 # ========================= SESSION FACTORIES =========================
 
 # Create session factories
-ReadOnlySessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engines.readonly)
+ReadOnlySessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=db_engines.readonly
+)
 
-WriteSessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=db_engines.write)
+WriteSessionLocal = sessionmaker(
+    autocommit=False, autoflush=True, bind=db_engines.write
+)
 
-AdminSessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=db_engines.admin)
+AdminSessionLocal = sessionmaker(
+    autocommit=False, autoflush=True, bind=db_engines.admin
+)
 
 
 # ========================= CONTEXT MANAGERS =========================
@@ -376,7 +384,9 @@ def migrate_to_secure_database():
     except Exception as e:
         print(f"❌ Error testing secure connections: {e}")
         print("\nPlease ensure you have set up the following environment variables:")
-        print("  - DATABASE_URL_READONLY: postgresql://babyshield_readonly:PASSWORD@host/db")
+        print(
+            "  - DATABASE_URL_READONLY: postgresql://babyshield_readonly:PASSWORD@host/db"
+        )
         print("  - DATABASE_URL: postgresql://babyshield_app:PASSWORD@host/db")
         print("  - DATABASE_URL_ADMIN: postgresql://babyshield_admin:PASSWORD@host/db")
 

@@ -28,13 +28,17 @@ class CommunityAlertAgent:
         try:
             await self.logic.scrape_for_signals()
         except Exception as e:
-            logger.error(f"An error occurred in the scheduled scrape job: {e}", exc_info=True)
+            logger.error(
+                f"An error occurred in the scheduled scrape job: {e}", exc_info=True
+            )
 
     def start(self):
         """Starts the agent's scheduled data scraping."""
         logger.info(f"Starting {self.agent_id}...")
 
-        schedule.every(SCRAPE_INTERVAL_HOURS).hours.do(lambda: asyncio.run(self._run_scrape_job()))
+        schedule.every(SCRAPE_INTERVAL_HOURS).hours.do(
+            lambda: asyncio.run(self._run_scrape_job())
+        )
 
         self.is_running = True
 

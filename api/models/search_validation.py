@@ -244,7 +244,11 @@ class SecureAdvancedSearchRequest(BaseModel):
 
         # Check if any filters are provided
         has_filters = bool(
-            self.agencies or self.severity or self.riskCategory or self.date_from or self.date_to
+            self.agencies
+            or self.severity
+            or self.riskCategory
+            or self.date_from
+            or self.date_to
         )
 
         # If pagination cursor, allow without other criteria

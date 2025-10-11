@@ -199,8 +199,12 @@ async def security_metrics_api():
             "status": "bulletproof",
             "metrics": security_metrics,
             "protection_level": "enterprise",
-            "last_updated": datetime.fromtimestamp(security_metrics["last_updated"]).isoformat(),
-            "threat_level": "low" if security_metrics["blocked_requests"] < 100 else "high",
+            "last_updated": datetime.fromtimestamp(
+                security_metrics["last_updated"]
+            ).isoformat(),
+            "threat_level": "low"
+            if security_metrics["blocked_requests"] < 100
+            else "high",
         }
     )
 
@@ -212,11 +216,14 @@ async def live_threats():
         content={
             "active_threats": len(security_metrics["top_attacking_ips"]),
             "block_rate": (
-                security_metrics["blocked_requests"] / max(security_metrics["total_requests"], 1)
+                security_metrics["blocked_requests"]
+                / max(security_metrics["total_requests"], 1)
             )
             * 100,
             "threat_level": "low",  # Would be calculated based on recent activity
-            "last_attack": datetime.fromtimestamp(security_metrics["last_updated"]).isoformat(),
+            "last_attack": datetime.fromtimestamp(
+                security_metrics["last_updated"]
+            ).isoformat(),
             "protection_status": "active",
         }
     )

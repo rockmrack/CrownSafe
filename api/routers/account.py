@@ -49,7 +49,9 @@ def _rate_limit_delete(user_id: int, limit=3, window_sec=86400):
 
 
 # Audit logging helper
-def _audit(db: Session, user_id: int, jti: str, status: str, source="mobile", meta=None):
+def _audit(
+    db: Session, user_id: int, jti: str, status: str, source="mobile", meta=None
+):
     """Log account deletion attempts for audit trail"""
     try:
         # Check if the audit table exists by trying to query it
@@ -290,15 +292,21 @@ def delete_account(
                     WHERE table_name = :table_name
                 )
             """
-            table_exists = db.execute(text(check_query), {"table_name": table_name}).scalar()
+            table_exists = db.execute(
+                text(check_query), {"table_name": table_name}
+            ).scalar()
 
             if table_exists:
                 # Use a separate transaction for each cleanup
                 with db.begin():
                     delete_query = f"DELETE FROM {table_name} WHERE user_id = :uid"
                     result = db.execute(text(delete_query), {"uid": user_id})
-                    deleted_count = result.rowcount if hasattr(result, "rowcount") else 0
-                    logger.info(f"Cleaned up {deleted_count} {description} for user {user_id}")
+                    deleted_count = (
+                        result.rowcount if hasattr(result, "rowcount") else 0
+                    )
+                    logger.info(
+                        f"Cleaned up {deleted_count} {description} for user {user_id}"
+                    )
             else:
                 logger.debug(
                     f"Skipping cleanup of {description} - table {table_name} does not exist"

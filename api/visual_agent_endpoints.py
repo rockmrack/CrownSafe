@@ -82,7 +82,9 @@ class ImageAnalysisRequest(BaseModel):
     job_id: Optional[str] = Field(None, description="Job ID from upload")
     image_url: Optional[str] = Field(None, description="Direct image URL for analysis")
     image_base64: Optional[str] = Field(None, description="Base64 encoded image data")
-    claimed_product: Optional[str] = Field(None, description="User claimed product name")
+    claimed_product: Optional[str] = Field(
+        None, description="User claimed product name"
+    )
     claimed_brand: Optional[str] = Field(None, description="User claimed brand")
     claimed_model: Optional[str] = Field(None, description="User claimed model number")
     skip_mfv: bool = Field(False, description="Skip multi-factor verification")
@@ -261,11 +263,15 @@ async def analyze_image(
             response = ImageAnalysisResponse(
                 job_id=job.id,
                 status=job.status.value,
-                confidence_level=job.confidence_level.value if job.confidence_level else "unknown",
+                confidence_level=job.confidence_level.value
+                if job.confidence_level
+                else "unknown",
                 confidence_score=job.confidence_score or 0.0,
                 mfv_required=mfv_required,
                 mfv_message=mfv_message,
-                needs_review=bool(db.query(ReviewQueue).filter_by(job_id=job.id).first()),
+                needs_review=bool(
+                    db.query(ReviewQueue).filter_by(job_id=job.id).first()
+                ),
                 safety_message=_generate_safety_message(job, extraction),
             )
 
@@ -328,7 +334,9 @@ async def analyze_image(
 
 
 @visual_router.get("/status/{job_id}", response_model=ApiResponse)
-async def get_job_status(job_id: str, db: Session = Depends(get_db_session)) -> ApiResponse:
+async def get_job_status(
+    job_id: str, db: Session = Depends(get_db_session)
+) -> ApiResponse:
     """Get image processing job status"""
     try:
         job = db.query(ImageJob).filter_by(id=job_id).first()
@@ -342,7 +350,9 @@ async def get_job_status(job_id: str, db: Session = Depends(get_db_session)) -> 
             "job_id": job.id,
             "status": job.status.value,
             "created_at": job.created_at.isoformat(),
-            "confidence_level": job.confidence_level.value if job.confidence_level else None,
+            "confidence_level": job.confidence_level.value
+            if job.confidence_level
+            else None,
             "confidence_score": job.confidence_score,
             "error_message": job.error_message,
         }
@@ -393,7 +403,9 @@ async def confirm_mfv(
         mfv.user_correction = request.user_corrections
 
         # Calculate match scores
-        mfv.product_match = _fuzzy_match(mfv.extracted_product, request.confirmed_product)
+        mfv.product_match = _fuzzy_match(
+            mfv.extracted_product, request.confirmed_product
+        )
         mfv.brand_match = _fuzzy_match(mfv.extracted_brand, request.confirmed_brand)
         mfv.model_match = _fuzzy_match(mfv.extracted_model, request.confirmed_model)
 
@@ -428,7 +440,9 @@ async def confirm_mfv(
             data={
                 "verification_passed": mfv.verification_passed,
                 "message": mfv.verification_message,
-                "safety_message": _generate_safety_message(job, extraction, always_qualified=True),
+                "safety_message": _generate_safety_message(
+                    job, extraction, always_qualified=True
+                ),
             },
         )
 
@@ -502,7 +516,9 @@ async def claim_review(
                 body_data = await request.json()
                 if isinstance(body_data, dict):
                     # Support both user_id and assignee fields
-                    reviewer_email = str(body_data.get("assignee") or body_data.get("user_id", ""))
+                    reviewer_email = str(
+                        body_data.get("assignee") or body_data.get("user_id", "")
+                    )
                 else:
                     reviewer_email = str(body_data)
             except:
@@ -542,7 +558,9 @@ async def claim_review(
         data = {
             "review_id": review.id,
             "job_id": review.job_id,
-            "image_url": generate_presigned_url(job.s3_bucket, job.s3_key) if job else None,
+            "image_url": generate_presigned_url(job.s3_bucket, job.s3_key)
+            if job
+            else None,
             "extraction": {
                 "product_name": extraction.product_name,
                 "brand": extraction.brand_name,
@@ -589,7 +607,9 @@ async def resolve_review(
 
         # Apply corrections if provided
         if action.corrected_product or action.corrected_brand or action.corrected_model:
-            extraction = db.query(ImageExtraction).filter_by(job_id=review.job_id).first()
+            extraction = (
+                db.query(ImageExtraction).filter_by(job_id=review.job_id).first()
+            )
             if extraction:
                 if action.corrected_product:
                     extraction.product_name = action.corrected_product
@@ -701,7 +721,9 @@ def _fuzzy_match(str1: Optional[str], str2: Optional[str]) -> bool:
 
 
 @visual_router.post("/search", response_model=ApiResponse)
-async def visual_search(request: ImageAnalysisRequest, db: Session = Depends(get_db_session)):
+async def visual_search(
+    request: ImageAnalysisRequest, db: Session = Depends(get_db_session)
+):
     """
     Visual search endpoint for product recognition and safety checking
     """
@@ -729,7 +751,9 @@ async def visual_search(request: ImageAnalysisRequest, db: Session = Depends(get
             )
 
         if result["status"] == "FAILED":
-            return ApiResponse(success=False, error=result.get("error", "Visual analysis failed"))
+            return ApiResponse(
+                success=False, error=result.get("error", "Visual analysis failed")
+            )
 
         # Extract results
         product_data = result["result"]
@@ -763,7 +787,9 @@ async def visual_search(request: ImageAnalysisRequest, db: Session = Depends(get
                         recall_found = True
                         recall_count = result_count[0]
                 else:
-                    logger.warning("recalls_enhanced table not found, skipping recall check")
+                    logger.warning(
+                        "recalls_enhanced table not found, skipping recall check"
+                    )
             except Exception as recall_err:
                 logger.warning(f"Recall check failed: {recall_err}")
 
@@ -782,7 +808,9 @@ async def visual_search(request: ImageAnalysisRequest, db: Session = Depends(get
                 "product_name": product_data.get("product_name", "Unknown"),
                 "brand": product_data.get("brand", "Unknown"),
                 "model_number": product_data.get("model_number", "Unknown"),
-                "safety_status": "no_recalls_found" if not recall_found else "recalls_found",
+                "safety_status": "no_recalls_found"
+                if not recall_found
+                else "recalls_found",
                 "recall_check": {
                     "has_recalls": recall_found,
                     "recall_count": recall_count,

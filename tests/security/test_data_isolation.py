@@ -29,7 +29,11 @@ class TestMultiTenancyDataIsolation:
     def db_session(self):
         """Create a fresh database session for testing"""
         # Import models to register them with Base
-        from api.models.chat_memory import UserProfile, Conversation, ConversationMessage
+        from api.models.chat_memory import (
+            UserProfile,
+            Conversation,
+            ConversationMessage,
+        )
 
         # Create only the tables we need for testing (not all tables in Base)
         UserProfile.__table__.create(bind=engine, checkfirst=True)
@@ -162,7 +166,9 @@ class TestMultiTenancyDataIsolation:
 
         # Query as User B
         start_time = time.time()
-        conversations = db_session.query(Conversation).filter_by(user_id=user_b.user_id).all()
+        conversations = (
+            db_session.query(Conversation).filter_by(user_id=user_b.user_id).all()
+        )
         query_time = (time.time() - start_time) * 1000  # Convert to ms
 
         # Verify isolation
@@ -170,7 +176,9 @@ class TestMultiTenancyDataIsolation:
         assert query_time < 100, "Query should be fast (relaxed from 10ms to 100ms)"
 
         # Verify User A's data is isolated
-        user_a_data = db_session.query(Conversation).filter_by(user_id=user_a.user_id).all()
+        user_a_data = (
+            db_session.query(Conversation).filter_by(user_id=user_a.user_id).all()
+        )
         assert len(user_a_data) == 1
         assert user_a_data[0].id == user_a_conversation.id
 
@@ -196,12 +204,16 @@ class TestMultiTenancyDataIsolation:
         db_session.commit()
 
         # User A should only see their own conversations
-        user_a_convs = db_session.query(Conversation).filter_by(user_id=user_a.user_id).all()
+        user_a_convs = (
+            db_session.query(Conversation).filter_by(user_id=user_a.user_id).all()
+        )
         assert len(user_a_convs) == 1
         assert user_a_convs[0].user_id == user_a.user_id
 
         # User B should only see their own conversations
-        user_b_convs = db_session.query(Conversation).filter_by(user_id=user_b.user_id).all()
+        user_b_convs = (
+            db_session.query(Conversation).filter_by(user_id=user_b.user_id).all()
+        )
         assert len(user_b_convs) == 1
         assert user_b_convs[0].user_id == user_b.user_id
 
@@ -230,7 +242,9 @@ class TestMultiTenancyDataIsolation:
         db_session.commit()
 
         # User A bulk deletes conversations
-        deleted_count = db_session.query(Conversation).filter_by(user_id=user_a.user_id).delete()
+        deleted_count = (
+            db_session.query(Conversation).filter_by(user_id=user_a.user_id).delete()
+        )
         db_session.commit()
 
         # Verify only User A's conversations deleted
@@ -267,7 +281,9 @@ class TestMultiTenancyDataIsolation:
             # Application-level check (before DB commit)
             # In real implementation, this would be in the service layer
             conversation = (
-                db_session.query(Conversation).filter_by(id=user_a_conversation.id).first()
+                db_session.query(Conversation)
+                .filter_by(id=user_a_conversation.id)
+                .first()
             )
 
             if conversation.user_id != user_b.user_id:

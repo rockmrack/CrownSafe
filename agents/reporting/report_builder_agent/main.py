@@ -10,7 +10,9 @@ from typing import Optional, Dict, Any
 from dotenv import load_dotenv
 
 # Ensure project root is in sys.path for core_infra imports
-project_root_main = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+project_root_main = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..")
+)
 if project_root_main not in sys.path:
     sys.path.insert(0, project_root_main)
 
@@ -97,7 +99,9 @@ class ReportBuilderAgentManager:
     async def handle_incoming_message(self, message: MCPMessage):
         """Handle incoming messages with proper response processing"""
         if not self.report_builder_logic or not self.mcp_client:
-            logger.error("Logic/MCPClient instance missing in ReportBuilderAgent handler")
+            logger.error(
+                "Logic/MCPClient instance missing in ReportBuilderAgent handler"
+            )
             return
 
         try:
@@ -114,7 +118,9 @@ class ReportBuilderAgentManager:
                 )
                 logger.critical(f"🎯 TASK_PAYLOAD: {message.payload}")
 
-            logger.debug(f"Processing {message_type} from {sender_id} (CorrID: {correlation_id})")
+            logger.debug(
+                f"Processing {message_type} from {sender_id} (CorrID: {correlation_id})"
+            )
 
             # Convert message to dict format expected by logic
             message_dict = message.model_dump()
@@ -134,7 +140,9 @@ class ReportBuilderAgentManager:
             logger.error(f"Error processing message: {e}", exc_info=True)
             await self._handle_message_error(message, e)
 
-    async def _handle_logic_response(self, response: Dict[str, Any], original_header: MCPHeader):
+    async def _handle_logic_response(
+        self, response: Dict[str, Any], original_header: MCPHeader
+    ):
         """Handle response from logic with proper validation - FIXED VERSION"""
         try:
             # The response from logic is a flat structure with message_type and payload at top level
@@ -151,7 +159,9 @@ class ReportBuilderAgentManager:
                 return
 
             if not isinstance(response_payload, dict):
-                logger.error(f"Logic response payload is not dict: {type(response_payload)}")
+                logger.error(
+                    f"Logic response payload is not dict: {type(response_payload)}"
+                )
                 return
 
             # Use the original sender as target
@@ -223,7 +233,9 @@ class ReportBuilderAgentManager:
 
         for attempt in range(1, MAX_CONNECT_RETRIES + 1):
             try:
-                logger.info(f"🔄 Connection attempt {attempt}/{MAX_CONNECT_RETRIES} for {AGENT_ID}")
+                logger.info(
+                    f"🔄 Connection attempt {attempt}/{MAX_CONNECT_RETRIES} for {AGENT_ID}"
+                )
 
                 # Clear any existing connection state
                 if self.mcp_client and hasattr(self.mcp_client, "_is_connected"):
@@ -233,7 +245,9 @@ class ReportBuilderAgentManager:
                 await self.mcp_client.connect()
 
                 if not self.mcp_client.is_connected:
-                    raise MCPConnectionError("Connection established but is_connected is False")
+                    raise MCPConnectionError(
+                        "Connection established but is_connected is False"
+                    )
 
                 # Register with discovery service
                 await self.mcp_client.register_self()
@@ -256,11 +270,15 @@ class ReportBuilderAgentManager:
 
             except Exception as e:
                 self.connection_retry_count = attempt
-                logger.warning(f"❌ Connection attempt {attempt}/{MAX_CONNECT_RETRIES} failed: {e}")
+                logger.warning(
+                    f"❌ Connection attempt {attempt}/{MAX_CONNECT_RETRIES} failed: {e}"
+                )
 
                 if attempt < MAX_CONNECT_RETRIES:
                     # Calculate exponential backoff delay
-                    delay = min(BASE_RETRY_DELAY * (2 ** (attempt - 1)), MAX_RETRY_DELAY)
+                    delay = min(
+                        BASE_RETRY_DELAY * (2 ** (attempt - 1)), MAX_RETRY_DELAY
+                    )
                     logger.info(f"⏳ Retrying in {delay:.1f} seconds...")
 
                     try:
@@ -344,7 +362,9 @@ class ReportBuilderAgentManager:
                 message_handler=self.handle_incoming_message,
             )
 
-            logger.info(f"ReportBuilderAgent components initialized (Version: {AGENT_VERSION})")
+            logger.info(
+                f"ReportBuilderAgent components initialized (Version: {AGENT_VERSION})"
+            )
             logger.info(f"Environment loaded from: {env_source}")
             logger.info(f"MCP Server URL: {base_mcp_server_url}")
             logger.info(
@@ -375,7 +395,9 @@ class ReportBuilderAgentManager:
                     loop.add_signal_handler(sig, lambda s=sig: signal_handler(s))
                     logger.debug(f"Added signal handler for {signal.Signals(sig).name}")
                 except (NotImplementedError, OSError) as e:
-                    logger.warning(f"Cannot add signal handler for {signal.Signals(sig).name}: {e}")
+                    logger.warning(
+                        f"Cannot add signal handler for {signal.Signals(sig).name}: {e}"
+                    )
 
         except RuntimeError as e:
             logger.warning(f"Could not setup signal handlers: {e}")
@@ -393,7 +415,9 @@ class ReportBuilderAgentManager:
             if self.mcp_client and self.mcp_client.is_connected:
                 logger.info(f"✅ {AGENT_ID} main loop starting with active connection")
             else:
-                logger.warning(f"⚠️ {AGENT_ID} main loop starting without active connection")
+                logger.warning(
+                    f"⚠️ {AGENT_ID} main loop starting without active connection"
+                )
 
             # Wait for shutdown signal
             await self.stop_event.wait()
@@ -423,7 +447,9 @@ class ReportBuilderAgentManager:
                 logger.debug("Health check task cancelled")
 
             # Shutdown ReportBuilderAgentLogic
-            if self.report_builder_logic and hasattr(self.report_builder_logic, "shutdown"):
+            if self.report_builder_logic and hasattr(
+                self.report_builder_logic, "shutdown"
+            ):
                 logger.debug("Shutting down ReportBuilderAgentLogic...")
                 await self.report_builder_logic.shutdown()
                 logger.debug("ReportBuilderAgentLogic shutdown complete")

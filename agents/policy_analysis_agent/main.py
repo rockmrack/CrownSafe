@@ -27,7 +27,9 @@ class PolicyAnalysisAgent:
         self.agent_id = AGENT_ID
         self.agent_name = AGENT_NAME
         self.agent_type = AGENT_TYPE
-        self.logic = PolicyAnalysisAgentLogic(agent_id=self.agent_id, logger_instance=logger)
+        self.logic = PolicyAnalysisAgentLogic(
+            agent_id=self.agent_id, logger_instance=logger
+        )
 
         # Define capabilities for discovery service
         self.capabilities = [
@@ -247,10 +249,14 @@ class PolicyAnalysisAgent:
                 stats[insurer] = {
                     "total_drugs": len(drugs),
                     "pa_required": sum(
-                        1 for d in drugs.values() if "Prior Authorization" in d.get("status", "")
+                        1
+                        for d in drugs.values()
+                        if "Prior Authorization" in d.get("status", "")
                     ),
                     "covered": sum(
-                        1 for d in drugs.values() if d.get("status", "").startswith("Covered")
+                        1
+                        for d in drugs.values()
+                        if d.get("status", "").startswith("Covered")
                     ),
                     "not_covered": sum(
                         1

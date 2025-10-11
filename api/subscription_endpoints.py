@@ -26,11 +26,15 @@ router = APIRouter(prefix="/api/v1/subscription", tags=["subscriptions"])
 class ActivateSubscriptionRequest(BaseModel):
     """Request to activate subscription with receipt"""
 
-    provider: str = Field(..., pattern="^(apple|google)$", description="Payment provider")
+    provider: str = Field(
+        ..., pattern="^(apple|google)$", description="Payment provider"
+    )
     receipt_data: str = Field(
         ..., description="Receipt data (base64 for Apple, purchase token for Google)"
     )
-    product_id: Optional[str] = Field(None, description="Product ID (required for Google)")
+    product_id: Optional[str] = Field(
+        None, description="Product ID (required for Google)"
+    )
 
 
 class SubscriptionStatusResponse(BaseModel):
@@ -94,7 +98,9 @@ async def activate_subscription(
     This endpoint should be called after a successful purchase in the mobile app.
     The app sends the receipt data which we validate with Apple/Google servers.
     """
-    logger.info(f"Activating subscription for user {current_user.id} with provider {data.provider}")
+    logger.info(
+        f"Activating subscription for user {current_user.id} with provider {data.provider}"
+    )
 
     try:
         # Validate and activate subscription
@@ -106,7 +112,9 @@ async def activate_subscription(
         )
 
         if result["success"]:
-            logger.info(f"Successfully activated subscription for user {current_user.id}")
+            logger.info(
+                f"Successfully activated subscription for user {current_user.id}"
+            )
         else:
             logger.warning(
                 f"Failed to activate subscription for user {current_user.id}: {result.get('error')}"
@@ -122,7 +130,9 @@ async def activate_subscription(
 @router.get("/status", response_model=SubscriptionStatusResponse)
 async def get_subscription_status(
     request: Request,
-    user_id: Optional[int] = Query(None, description="User ID (for testing without auth)"),
+    user_id: Optional[int] = Query(
+        None, description="User ID (for testing without auth)"
+    ),
     current_user: Optional[User] = Depends(lambda: None),
 ):
     """
@@ -134,7 +144,9 @@ async def get_subscription_status(
     try:
         # Use user_id parameter if provided (for testing), otherwise use authenticated user
         target_user_id = (
-            user_id if user_id is not None else (current_user.id if current_user else None)
+            user_id
+            if user_id is not None
+            else (current_user.id if current_user else None)
         )
 
         if target_user_id is None:
@@ -180,7 +192,9 @@ async def get_subscription_status(
 async def check_entitlement(
     request: Request,
     user_id: int = Query(..., ge=1, description="User ID to check entitlement for"),
-    feature: str = Query(..., min_length=3, description="Feature to check entitlement for"),
+    feature: str = Query(
+        ..., min_length=3, description="Feature to check entitlement for"
+    ),
     db=Depends(get_db_session),
 ):
     """
@@ -270,7 +284,9 @@ async def check_entitlement(
 
 
 @router.post("/cancel")
-async def cancel_subscription(request: Request, current_user: User = Depends(get_current_user)):
+async def cancel_subscription(
+    request: Request, current_user: User = Depends(get_current_user)
+):
     """
     Cancel subscription (will remain active until expiry)
 
@@ -328,7 +344,9 @@ async def get_subscription_history(
             f"Error getting subscription history for user {current_user.id if current_user else 'unknown'}: {e}",
             exc_info=True,
         )
-        raise HTTPException(status_code=500, detail="Failed to retrieve subscription history")
+        raise HTTPException(
+            status_code=500, detail="Failed to retrieve subscription history"
+        )
 
 
 @router.get("/history-dev")
@@ -394,7 +412,9 @@ async def get_subscription_history_dev(
 
     except Exception as e:
         logger.error(f"Error getting subscription history: {e}")
-        raise HTTPException(status_code=500, detail="Failed to retrieve subscription history")
+        raise HTTPException(
+            status_code=500, detail="Failed to retrieve subscription history"
+        )
 
 
 @router.get("/products")
@@ -510,7 +530,9 @@ class PlansResponse(BaseModel):
     """Response for plans endpoint"""
 
     success: bool = Field(True, description="Request success status")
-    plans: List[SubscriptionPlan] = Field(..., description="Available subscription plans")
+    plans: List[SubscriptionPlan] = Field(
+        ..., description="Available subscription plans"
+    )
     total: int = Field(..., description="Total number of plans")
 
 
@@ -628,7 +650,9 @@ async def get_subscription_plans(
 
         # Filter by feature if specified
         if feature:
-            plans = [plan for plan in plans if any(f.name == feature for f in plan.features)]
+            plans = [
+                plan for plan in plans if any(f.name == feature for f in plan.features)
+            ]
 
         # Sort plans
         if sort == "price":
@@ -642,4 +666,6 @@ async def get_subscription_plans(
 
     except Exception as e:
         logger.error(f"Error getting subscription plans: {e}")
-        raise HTTPException(status_code=500, detail="Failed to retrieve subscription plans")
+        raise HTTPException(
+            status_code=500, detail="Failed to retrieve subscription plans"
+        )

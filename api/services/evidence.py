@@ -6,7 +6,9 @@ Provides helper functions to create properly formatted evidence items.
 from typing import List, Dict, Any, Optional
 
 
-def label_to_evidence(evidence_id: str, url: Optional[str] = None) -> List[Dict[str, Any]]:
+def label_to_evidence(
+    evidence_id: str, url: Optional[str] = None
+) -> List[Dict[str, Any]]:
     """
     Generate evidence items for product label information.
 

@@ -15,7 +15,9 @@ try:
     OPENAI_AVAILABLE = True
 except ImportError:
     OPENAI_AVAILABLE = False
-    logging.warning("OpenAI library not available. Install with: pip install openai httpx")
+    logging.warning(
+        "OpenAI library not available. Install with: pip install openai httpx"
+    )
 
 
 class OpenAILLMClient:
@@ -48,7 +50,9 @@ class OpenAILLMClient:
 
                 http_client = httpx.Client(
                     transport=transport,  # Force IPv4
-                    timeout=httpx.Timeout(OPENAI_TIMEOUT, connect=5.0, read=OPENAI_TIMEOUT),
+                    timeout=httpx.Timeout(
+                        OPENAI_TIMEOUT, connect=5.0, read=OPENAI_TIMEOUT
+                    ),
                     http2=False,  # Disable HTTP/2 - h2 package not installed
                     limits=httpx.Limits(
                         max_connections=1, max_keepalive_connections=0
@@ -67,7 +71,9 @@ class OpenAILLMClient:
                 logging.error(f"Failed to initialize OpenAI client: {e}")
                 self.client = None
         else:
-            logging.warning("OpenAI client not initialized - missing API key or library")
+            logging.warning(
+                "OpenAI client not initialized - missing API key or library"
+            )
 
     def chat_json(
         self,

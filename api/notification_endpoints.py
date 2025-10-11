@@ -91,7 +91,9 @@ class NotificationHistory(Base):
     device_token_id = Column(Integer, ForeignKey("device_tokens.id"))
 
     # Status
-    status = Column(String(20), default="sent")  # sent, delivered, failed, read, clicked
+    status = Column(
+        String(20), default="sent"
+    )  # sent, delivered, failed, read, clicked
     error_message = Column(Text)
 
     # Priority and categorization
@@ -208,7 +210,9 @@ async def send_push_notification(
         # Platform-specific config
         if platform == "ios":
             message.apns = messaging.APNSConfig(
-                payload=messaging.APNSPayload(aps=messaging.Aps(badge=1, sound="default"))
+                payload=messaging.APNSPayload(
+                    aps=messaging.Aps(badge=1, sound="default")
+                )
             )
         elif platform == "android":
             message.android = messaging.AndroidConfig(
@@ -237,7 +241,9 @@ async def register_device(
     """Register a device for push notifications"""
     try:
         # Check if token already exists
-        existing = db.query(DeviceToken).filter(DeviceToken.token == request.token).first()
+        existing = (
+            db.query(DeviceToken).filter(DeviceToken.token == request.token).first()
+        )
 
         if existing:
             # Update existing token
@@ -510,7 +516,9 @@ async def get_notification_history(
 ):
     """Get notification history with pagination"""
     try:
-        query = db.query(NotificationHistory).filter(NotificationHistory.user_id == current_user.id)
+        query = db.query(NotificationHistory).filter(
+            NotificationHistory.user_id == current_user.id
+        )
 
         # Apply filters
         if type:
@@ -525,7 +533,10 @@ async def get_notification_history(
         # Apply pagination
         offset = (page - 1) * page_size
         notifications = (
-            query.order_by(desc(NotificationHistory.sent_at)).offset(offset).limit(page_size).all()
+            query.order_by(desc(NotificationHistory.sent_at))
+            .offset(offset)
+            .limit(page_size)
+            .all()
         )
 
         # Build response

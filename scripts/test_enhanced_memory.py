@@ -67,9 +67,15 @@ async def test_enhanced_memory():
         print("\n2. Testing enhanced analytics...")
         analytics = memory.get_enhanced_analytics()
 
-        print(f"SUCCESS: Total documents: {analytics['base_analytics']['total_documents']}")
-        print(f"SUCCESS: Temporal patterns: {analytics['temporal_patterns']['total_patterns']}")
-        print(f"SUCCESS: Contradictions: {analytics['contradictions']['total_contradictions']}")
+        print(
+            f"SUCCESS: Total documents: {analytics['base_analytics']['total_documents']}"
+        )
+        print(
+            f"SUCCESS: Temporal patterns: {analytics['temporal_patterns']['total_patterns']}"
+        )
+        print(
+            f"SUCCESS: Contradictions: {analytics['contradictions']['total_contradictions']}"
+        )
         print(f"SUCCESS: Research gaps: {analytics['research_gaps']['total_gaps']}")
         print(
             f"SUCCESS: Cross-workflow insights: {analytics['cross_workflow_insights']['total_insights']}"
@@ -83,8 +89,12 @@ async def test_enhanced_memory():
         print(
             f"SUCCESS: Priority research: {len(recommendations['priority_research'])} recommendations"
         )
-        print(f"SUCCESS: Gap addressing: {len(recommendations['gap_addressing'])} suggestions")
-        print(f"SUCCESS: Temporal insights: {len(recommendations['temporal_insights'])} insights")
+        print(
+            f"SUCCESS: Gap addressing: {len(recommendations['gap_addressing'])} suggestions"
+        )
+        print(
+            f"SUCCESS: Temporal insights: {len(recommendations['temporal_insights'])} insights"
+        )
 
         print("\nAll enhanced memory tests passed!")
         return True
@@ -107,7 +117,9 @@ async def test_basic_functionality():
 
         # Test basic analytics
         analytics = memory.get_document_usage_analytics()
-        print(f"SUCCESS: Basic analytics - Total documents: {analytics['total_documents']}")
+        print(
+            f"SUCCESS: Basic analytics - Total documents: {analytics['total_documents']}"
+        )
 
         # Test similarity search
         if analytics["total_documents"] > 0:
@@ -139,7 +151,9 @@ async def test_memory_integration():
 
         if analytics["total_documents"] > 0:
             print(f"SUCCESS: Found {analytics['total_documents']} existing documents")
-            print(f"SUCCESS: High-quality documents: {analytics.get('high_quality_documents', 0)}")
+            print(
+                f"SUCCESS: High-quality documents: {analytics.get('high_quality_documents', 0)}"
+            )
 
             # Test cross-workflow evidence
             cross_evidence = analytics.get("cross_workflow_evidence", 0)

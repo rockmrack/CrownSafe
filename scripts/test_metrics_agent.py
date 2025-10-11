@@ -56,7 +56,9 @@ async def main():
                 event_name="Product Scan Completed",
                 properties={"product_name": "Mock Baby Formula", "risk_level": "High"},
             )
-            logger.info("Verified that the Mixpanel API was called with the correct parameters.")
+            logger.info(
+                "Verified that the Mixpanel API was called with the correct parameters."
+            )
 
         # 6. Analyze and print the result.
         print("\n" + "=" * 50)
@@ -69,7 +71,9 @@ async def main():
             message = result.get("result", {}).get("message")
             if "Event tracked successfully" in message:
                 print("\n" + "=" * 50)
-                print("✅✅✅ TEST PASSED: Successfully simulated tracking a Mixpanel event.")
+                print(
+                    "✅✅✅ TEST PASSED: Successfully simulated tracking a Mixpanel event."
+                )
             else:
                 print("\n" + "=" * 50)
                 print("❌ TEST FAILED: The result message was not as expected.")
@@ -82,7 +86,9 @@ async def main():
     except ValueError as e:
         print("\n" + "=" * 50)
         print(f"❌ TEST FAILED: A configuration error occurred. {e}")
-        print("Please ensure you have added your MIXPANEL_PROJECT_TOKEN to the .env file.")
+        print(
+            "Please ensure you have added your MIXPANEL_PROJECT_TOKEN to the .env file."
+        )
     except Exception as e:
         print("\n" + "=" * 50)
         print(f"❌ TEST FAILED: An unexpected error occurred: {e}")

@@ -91,7 +91,9 @@ class MemoryValidationSuite:
                 return False
 
             count = self.memory.collection.count()
-            self.print_success(f"Connected to ChromaDB collection '{self.memory.collection_name}'")
+            self.print_success(
+                f"Connected to ChromaDB collection '{self.memory.collection_name}'"
+            )
             self.print_success(f"Database path: {self.memory.db_path}")
             self.print_success(f"Document count: {count}")
 
@@ -128,7 +130,9 @@ class MemoryValidationSuite:
             analytics = await self.memory.get_document_usage_analytics()
 
             if not analytics or "error" in analytics:
-                self.print_error("Could not get analytics to check cross-workflow evidence")
+                self.print_error(
+                    "Could not get analytics to check cross-workflow evidence"
+                )
                 return False
 
             cross_workflow_count = len(analytics.get("cross_workflow_evidence", []))
@@ -140,7 +144,9 @@ class MemoryValidationSuite:
                 self.print_success(
                     f"Cross-workflow evidence confirmed: {cross_workflow_count} documents"
                 )
-                self.print_info(f"High-quality documents (ref_count >= 2): {high_quality_count}")
+                self.print_info(
+                    f"High-quality documents (ref_count >= 2): {high_quality_count}"
+                )
 
                 # Show examples of cross-workflow documents
                 cross_workflow_docs = analytics.get("cross_workflow_evidence", [])[:3]
@@ -165,12 +171,18 @@ class MemoryValidationSuite:
             )
 
             if high_quality_results:
-                self.print_success(f"High-quality retrieval: {len(high_quality_results)} documents")
+                self.print_success(
+                    f"High-quality retrieval: {len(high_quality_results)} documents"
+                )
                 for result in high_quality_results:
                     ref_count = result.get("metadata", {}).get("reference_count", 1)
-                    self.print_info(f"  Document {result['id']}: reference_count = {ref_count}")
+                    self.print_info(
+                        f"  Document {result['id']}: reference_count = {ref_count}"
+                    )
             else:
-                self.print_error("No high-quality documents found with quality_threshold=2")
+                self.print_error(
+                    "No high-quality documents found with quality_threshold=2"
+                )
                 return False
 
             self.test_results["basic_functionality"] = True
@@ -210,10 +222,14 @@ class MemoryValidationSuite:
                 if "context_history" in result:
                     context = result["context_history"]
                     self.print_success(f"Context history found for {result['id']}")
-                    self.print_info(f"  Workflows: {len(context.get('referenced_workflows', []))}")
+                    self.print_info(
+                        f"  Workflows: {len(context.get('referenced_workflows', []))}"
+                    )
                     self.print_info(f"  Goals: {len(context.get('user_goals', []))}")
                     self.print_info(f"  Drugs: {context.get('drug_contexts', [])}")
-                    self.print_info(f"  Reference count: {context.get('reference_count', 1)}")
+                    self.print_info(
+                        f"  Reference count: {context.get('reference_count', 1)}"
+                    )
                     context_found = True
                     break
 
@@ -365,7 +381,9 @@ class MemoryValidationSuite:
             self.test_results["performance"]["analytics_time"] = analytics_time
 
             if not analytics or "error" in analytics:
-                self.print_error(f"Analytics failed: {analytics.get('error', 'Unknown error')}")
+                self.print_error(
+                    f"Analytics failed: {analytics.get('error', 'Unknown error')}"
+                )
                 return False
 
             # Validate analytics structure
@@ -378,7 +396,9 @@ class MemoryValidationSuite:
                 "drug_class_patterns",
             ]
 
-            missing_fields = [field for field in required_fields if field not in analytics]
+            missing_fields = [
+                field for field in required_fields if field not in analytics
+            ]
             if missing_fields:
                 self.print_error(f"Missing analytics fields: {missing_fields}")
                 return False
@@ -389,7 +409,9 @@ class MemoryValidationSuite:
             self.print_info(
                 f"  High-quality documents: {analytics['quality_metrics'].get('high_quality_documents', 0)}"
             )
-            self.print_info(f"  Drug patterns found: {len(analytics['drug_class_patterns'])}")
+            self.print_info(
+                f"  Drug patterns found: {len(analytics['drug_class_patterns'])}"
+            )
             self.print_info(
                 f"  Cross-workflow evidence: {len(analytics.get('cross_workflow_evidence', []))}"
             )
@@ -436,7 +458,9 @@ class MemoryValidationSuite:
         self.print_header("Final Validation Summary")
 
         total_tests = len([k for k in self.test_results.keys() if k != "performance"])
-        passed_tests = sum(1 for k, v in self.test_results.items() if k != "performance" and v)
+        passed_tests = sum(
+            1 for k, v in self.test_results.items() if k != "performance" and v
+        )
 
         print(f"[RESULTS] Test Results: {passed_tests}/{total_tests} passed")
 
@@ -449,7 +473,9 @@ class MemoryValidationSuite:
             print(f"  {test_display}: {status}")
 
         if passed_tests == total_tests:
-            print("\n[SUCCESS] ALL TESTS PASSED! MemoryManager MVP-1.4 is working correctly!")
+            print(
+                "\n[SUCCESS] ALL TESTS PASSED! MemoryManager MVP-1.4 is working correctly!"
+            )
             print("[PASS] Enhanced features are functional")
             print("[PASS] Cross-workflow learning validated")
             print("[PASS] Memory-augmented methods ready for PlannerAgent integration")

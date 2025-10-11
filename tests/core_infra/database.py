@@ -114,7 +114,9 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     stripe_customer_id = Column(String, unique=True, index=True, nullable=True)
     hashed_password = Column(String, nullable=False, default="", server_default="")
-    is_subscribed = Column(Boolean, default=False, nullable=False)  # Single subscription status
+    is_subscribed = Column(
+        Boolean, default=False, nullable=False
+    )  # Single subscription status
     is_pregnant = Column(Boolean, default=False, nullable=False)
 
     # Relationship to family members
@@ -154,7 +156,9 @@ class FamilyMember(Base):
         }
 
     def __repr__(self):
-        return f"<FamilyMember(id={self.id}, name={self.name!r}, user_id={self.user_id})>"
+        return (
+            f"<FamilyMember(id={self.id}, name={self.name!r}, user_id={self.user_id})>"
+        )
 
 
 class Allergy(Base):
@@ -188,19 +192,27 @@ def ensure_user_columns():
 
     # Add new columns only if they don't exist
     if "hashed_password" not in existing:
-        migrations.append("ALTER TABLE users ADD COLUMN hashed_password TEXT NOT NULL DEFAULT ''")
+        migrations.append(
+            "ALTER TABLE users ADD COLUMN hashed_password TEXT NOT NULL DEFAULT ''"
+        )
     if "is_pregnant" not in existing:
-        migrations.append("ALTER TABLE users ADD COLUMN is_pregnant BOOLEAN DEFAULT FALSE")
+        migrations.append(
+            "ALTER TABLE users ADD COLUMN is_pregnant BOOLEAN DEFAULT FALSE"
+        )
 
     # Handle is_subscribed column
     if "is_subscribed" not in existing:
         if "is_premium" in existing:
             # Migrate from is_premium to is_subscribed
-            migrations.append("ALTER TABLE users ADD COLUMN is_subscribed BOOLEAN DEFAULT FALSE")
+            migrations.append(
+                "ALTER TABLE users ADD COLUMN is_subscribed BOOLEAN DEFAULT FALSE"
+            )
             migrations.append("UPDATE users SET is_subscribed = is_premium")
         else:
             # Just add is_subscribed
-            migrations.append("ALTER TABLE users ADD COLUMN is_subscribed BOOLEAN DEFAULT FALSE")
+            migrations.append(
+                "ALTER TABLE users ADD COLUMN is_subscribed BOOLEAN DEFAULT FALSE"
+            )
 
     # Apply migrations
     if migrations:
@@ -228,7 +240,9 @@ def cleanup_deprecated_columns():
     # Only try to drop is_premium if it exists and we're on PostgreSQL
     if "is_premium" in existing and DATABASE_URL.startswith("postgresql"):
         try:
-            with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
+            with engine.connect().execution_options(
+                isolation_level="AUTOCOMMIT"
+            ) as conn:
                 conn.execute(text("ALTER TABLE users DROP COLUMN is_premium"))
                 print("Removed deprecated is_premium column")
         except Exception as e:
@@ -328,7 +342,9 @@ def ensure_test_users():
     """Create or update test users for testing."""
     if TEST_MODE:
         try:
-            with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
+            with engine.connect().execution_options(
+                isolation_level="AUTOCOMMIT"
+            ) as conn:
                 # Clean up existing test users
                 conn.execute(text("DELETE FROM users WHERE id IN (1, 2)"))
                 print("Cleaned up existing test users")

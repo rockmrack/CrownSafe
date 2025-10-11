@@ -53,12 +53,16 @@ class BabyShieldRouterLogic:
             # Special‐case RecallDataAgentLogic (no logger accepted)
             if LogicClass == RecallDataAgentLogic:
                 self.agent_registry[capability] = LogicClass(agent_id=instance_id)
-                self.logger.info(f"Router registered legacy agent for capability: '{capability}'")
+                self.logger.info(
+                    f"Router registered legacy agent for capability: '{capability}'"
+                )
             else:
                 self.agent_registry[capability] = LogicClass(
                     agent_id=instance_id, logger_instance=self.logger
                 )
-                self.logger.info(f"Router registered agent for capability: '{capability}'")
+                self.logger.info(
+                    f"Router registered agent for capability: '{capability}'"
+                )
 
         self.logger.info(
             "BabyShieldRouterLogic initialized with %d available agents.",
@@ -75,7 +79,11 @@ class BabyShieldRouterLogic:
         substituted = json.loads(json.dumps(inputs))  # deep copy
 
         for key, value in substituted.items():
-            if isinstance(value, str) and value.startswith("{{") and value.endswith("}}"):
+            if (
+                isinstance(value, str)
+                and value.startswith("{{")
+                and value.endswith("}}")
+            ):
                 placeholder = value.strip("{}")
                 parts = placeholder.split(".")
                 if len(parts) < 2:
@@ -155,7 +163,9 @@ class BabyShieldRouterLogic:
                         continue
 
                     # substitute placeholders
-                    inputs = self._substitute_dependency_placeholders(step["inputs"], wf)
+                    inputs = self._substitute_dependency_placeholders(
+                        step["inputs"], wf
+                    )
                     self.logger.info(f"Dispatching task '{sid}' with inputs: {inputs}")
                     try:
                         res = await agent.process_task(inputs)
@@ -167,12 +177,16 @@ class BabyShieldRouterLogic:
 
                             ts.update({"status": "COMPLETED", "result": agent_result})
                             wf["completed_tasks"].add(sid)
-                            self.logger.info(f"Task '{sid}' COMPLETED with result: {agent_result}")
+                            self.logger.info(
+                                f"Task '{sid}' COMPLETED with result: {agent_result}"
+                            )
 
                             # --- START OF NEW CONFIDENCE CHECK LOGIC ---
                             if sid == "step0_visual_search":
                                 confidence = (
-                                    agent_result.get("confidence", 0.0) if agent_result else 0.0
+                                    agent_result.get("confidence", 0.0)
+                                    if agent_result
+                                    else 0.0
                                 )
                                 if confidence < 0.7:
                                     self.logger.warning(
@@ -226,7 +240,9 @@ class BabyShieldRouterLogic:
             error_summary = f"Workflow stalled: {len(wf['completed_tasks'])}/{len(plan['steps'])} tasks completed"
             self.logger.warning(error_summary)
 
-        self.logger.info(f"--- Workflow finished for: {wf_id} with status: {wf['status']} ---")
+        self.logger.info(
+            f"--- Workflow finished for: {wf_id} with status: {wf['status']} ---"
+        )
         last = plan["steps"][-1]["step_id"]
 
         result = {

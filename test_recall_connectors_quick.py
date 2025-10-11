@@ -30,7 +30,14 @@ async def quick_test():
     print()
 
     # Test each operational connector (limit to 5 recalls each for speed)
-    operational_connectors = ["CPSC", "FDA", "NHTSA", "Health_Canada", "EU_RAPEX", "USDA_FSIS"]
+    operational_connectors = [
+        "CPSC",
+        "FDA",
+        "NHTSA",
+        "Health_Canada",
+        "EU_RAPEX",
+        "USDA_FSIS",
+    ]
 
     print("Testing operational connectors (fetching 5 recalls each)...")
     print("-" * 80)

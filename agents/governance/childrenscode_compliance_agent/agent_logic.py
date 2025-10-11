@@ -36,7 +36,9 @@ class ChildrensCode_ComplianceAgentLogic:
                 "message": "UK Children's Code does not apply to this user.",
             }
 
-        self.logger.info(f"User {user_id} is under 18 in the UK. Verifying default settings...")
+        self.logger.info(
+            f"User {user_id} is under 18 in the UK. Verifying default settings..."
+        )
 
         required_defaults = {
             "geo_location_sharing": False,

@@ -130,13 +130,13 @@ python scripts/verify_ci_ready.py
 
 When GitHub Actions runs on commit `7580e1a`:
 
-| Workflow | Expected Result | Reason |
-|----------|----------------|---------|
-| Code Quality | ✅ PASS | All 342 files formatted with Black |
-| Test Coverage | ✅ PASS | recalls_enhanced table will be created |
-| API Contract | ✅ PASS | Independent of these issues |
-| Security Scan | ✅ PASS | Independent of these issues |
-| API Smoke | ✅ PASS | Independent of these issues |
+| Workflow      | Expected Result | Reason                                 |
+| ------------- | --------------- | -------------------------------------- |
+| Code Quality  | ✅ PASS          | All 342 files formatted with Black     |
+| Test Coverage | ✅ PASS          | recalls_enhanced table will be created |
+| API Contract  | ✅ PASS          | Independent of these issues            |
+| Security Scan | ✅ PASS          | Independent of these issues            |
+| API Smoke     | ✅ PASS          | Independent of these issues            |
 
 ## Monitoring
 

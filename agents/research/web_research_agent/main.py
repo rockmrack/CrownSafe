@@ -11,7 +11,9 @@ from typing import Optional, Dict, Any
 from dotenv import load_dotenv
 
 # Ensure project root is in sys.path for core_infra imports
-project_root_main = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+project_root_main = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..")
+)
 if project_root_main not in sys.path:
     sys.path.insert(0, project_root_main)
 
@@ -90,7 +92,9 @@ class WebResearchAgentManager:
             correlation_id = header.correlation_id
 
             # Reduced logging to avoid duplication with logic
-            logger.debug(f"Processing {message_type} from {sender_id} (CorrID: {correlation_id})")
+            logger.debug(
+                f"Processing {message_type} from {sender_id} (CorrID: {correlation_id})"
+            )
 
             # Convert message to dict format expected by logic
             message_dict = message.model_dump()
@@ -111,7 +115,9 @@ class WebResearchAgentManager:
             logger.error(f"Error processing message: {e}", exc_info=True)
             await self._handle_message_error(message, e)
 
-    async def _handle_logic_response(self, response: Dict[str, Any], original_header: MCPHeader):
+    async def _handle_logic_response(
+        self, response: Dict[str, Any], original_header: MCPHeader
+    ):
         """Handle response from logic with proper validation"""
         try:
             # Validate response structure
@@ -128,7 +134,9 @@ class WebResearchAgentManager:
                 return
 
             if not isinstance(response_payload, dict):
-                logger.error(f"Logic response payload is not dict: {type(response_payload)}")
+                logger.error(
+                    f"Logic response payload is not dict: {type(response_payload)}"
+                )
                 return
 
             # Determine target and correlation ID
@@ -187,7 +195,9 @@ class WebResearchAgentManager:
                 }
 
                 # Remove None values
-                error_payload = {k: v for k, v in error_payload.items() if v is not None}
+                error_payload = {
+                    k: v for k, v in error_payload.items() if v is not None
+                }
 
                 await self.mcp_client.send_message(
                     payload=error_payload,
@@ -225,14 +235,18 @@ class WebResearchAgentManager:
                 message_handler=self.handle_incoming_message,
             )
 
-            logger.info(f"WebResearchAgent components initialized (Version: {AGENT_VERSION})")
+            logger.info(
+                f"WebResearchAgent components initialized (Version: {AGENT_VERSION})"
+            )
             logger.info(f"Environment loaded from: {env_source}")
             logger.info(f"MCP Server URL: {base_mcp_server_url}")
 
             return True
 
         except Exception as e:
-            logger.critical(f"Failed to initialize WebResearchAgent components: {e}", exc_info=True)
+            logger.critical(
+                f"Failed to initialize WebResearchAgent components: {e}", exc_info=True
+            )
             return False
 
     def setup_signal_handlers(self):
@@ -250,7 +264,9 @@ class WebResearchAgentManager:
                     loop.add_signal_handler(sig, lambda s=sig: signal_handler(s))
                     logger.debug(f"Added signal handler for {signal.Signals(sig).name}")
                 except (NotImplementedError, OSError) as e:
-                    logger.warning(f"Cannot add signal handler for {signal.Signals(sig).name}: {e}")
+                    logger.warning(
+                        f"Cannot add signal handler for {signal.Signals(sig).name}: {e}"
+                    )
 
         except RuntimeError as e:
             logger.warning(f"Could not setup signal handlers: {e}")

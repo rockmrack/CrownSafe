@@ -81,7 +81,9 @@ def main():
     if migration_file.exists():
         try:
             content = migration_file.read_text(encoding="utf-8")
-            creates_table = '"recalls_enhanced"' in content and "op.create_table" in content
+            creates_table = (
+                '"recalls_enhanced"' in content and "op.create_table" in content
+            )
             all_passed &= check(
                 creates_table,
                 "Migration creates recalls_enhanced table",
@@ -117,7 +119,10 @@ def main():
         import subprocess
 
         result = subprocess.run(
-            ["git", "status", "--porcelain"], capture_output=True, text=True, cwd=str(project_root)
+            ["git", "status", "--porcelain"],
+            capture_output=True,
+            text=True,
+            cwd=str(project_root),
         )
         is_clean = len(result.stdout.strip()) == 0
         all_passed &= check(
@@ -136,7 +141,10 @@ def main():
 
         # Get local main commit
         local_result = subprocess.run(
-            ["git", "rev-parse", "main"], capture_output=True, text=True, cwd=str(project_root)
+            ["git", "rev-parse", "main"],
+            capture_output=True,
+            text=True,
+            cwd=str(project_root),
         )
         local_commit = local_result.stdout.strip()
 

@@ -82,7 +82,9 @@ async def main():
             summary = final_result["data"].get("summary", "")
             if risk_level and "allergen" in summary.lower():
                 print("\n" + "=" * 50)
-                print("✅✅✅ TEST PASSED: Correctly identified product, recall, and hazard summary.")
+                print(
+                    "✅✅✅ TEST PASSED: Correctly identified product, recall, and hazard summary."
+                )
             else:
                 print("\n" + "=" * 50)
                 print(

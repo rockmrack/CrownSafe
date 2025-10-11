@@ -24,7 +24,9 @@ async def main():
     logger.info("--- Starting CommunityAlertAgent Test ---")
 
     # 1. Load the mock HTML file from our test fixtures.
-    fixture_path = os.path.join(project_root, "tests", "fixtures", "mock_forum_page.html")
+    fixture_path = os.path.join(
+        project_root, "tests", "fixtures", "mock_forum_page.html"
+    )
     try:
         with open(fixture_path, "r") as f:
             mock_html = f.read()
@@ -35,7 +37,9 @@ async def main():
 
     try:
         # 2. Initialize the real CommunityAlertAgentLogic.
-        agent_logic = CommunityAlertAgentLogic(agent_id="test_ca_001", logger_instance=logger)
+        agent_logic = CommunityAlertAgentLogic(
+            agent_id="test_ca_001", logger_instance=logger
+        )
         logger.info("Agent logic initialized.")
 
         # 3. Define the task payload.

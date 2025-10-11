@@ -25,7 +25,9 @@ async def main():
 
     try:
         # 1. Initialize the real AlternativesAgentLogic.
-        agent_logic = AlternativesAgentLogic(agent_id="test_alt_001", logger_instance=logger)
+        agent_logic = AlternativesAgentLogic(
+            agent_id="test_alt_001", logger_instance=logger
+        )
         logger.info("Agent logic initialized.")
 
         # 2. Define the task payload for a known category.
@@ -48,7 +50,9 @@ async def main():
             alternatives_found = result.get("result", {}).get("alternatives_found", 0)
             if alternatives_found > 0:
                 print("\n" + "=" * 50)
-                print(f"✅✅✅ TEST PASSED: Successfully found {alternatives_found} alternatives.")
+                print(
+                    f"✅✅✅ TEST PASSED: Successfully found {alternatives_found} alternatives."
+                )
             else:
                 print("\n" + "=" * 50)
                 print(

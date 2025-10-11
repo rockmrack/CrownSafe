@@ -30,10 +30,16 @@ enhanced_barcode_router = APIRouter(
 class EnhancedScanRequest(BaseModel):
     """Request model for enhanced barcode scanning"""
 
-    barcode: str = Field(..., min_length=1, max_length=100, description="Barcode to scan")
+    barcode: str = Field(
+        ..., min_length=1, max_length=100, description="Barcode to scan"
+    )
     user_id: int = Field(..., ge=1, description="User ID")
-    include_recommendations: bool = Field(True, description="Include scan recommendations")
-    include_validation_details: bool = Field(True, description="Include detailed validation info")
+    include_recommendations: bool = Field(
+        True, description="Include scan recommendations"
+    )
+    include_validation_details: bool = Field(
+        True, description="Include detailed validation info"
+    )
 
 
 class EnhancedScanResponse(BaseModel):
@@ -157,7 +163,9 @@ async def validate_barcode_format(
     """
     try:
         # Perform validation
-        validation_result = enhanced_barcode_service.validator.validate_barcode(request.barcode)
+        validation_result = enhanced_barcode_service.validator.validate_barcode(
+            request.barcode
+        )
 
         # Build response
         response_data = {
@@ -234,7 +242,9 @@ async def _basic_scan_fallback(request: EnhancedScanRequest) -> EnhancedScanResp
     """Fallback for non-premium users - basic validation only"""
     try:
         # Basic validation only
-        validation_result = enhanced_barcode_service.validator.validate_barcode(request.barcode)
+        validation_result = enhanced_barcode_service.validator.validate_barcode(
+            request.barcode
+        )
 
         return EnhancedScanResponse(
             success=True,

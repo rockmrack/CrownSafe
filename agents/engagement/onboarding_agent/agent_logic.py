@@ -38,10 +38,14 @@ class OnboardingAgentLogic:
 
                 user.is_pregnant = is_pregnant
                 db.commit()
-                self.logger.info(f"Successfully updated profile for user_id: {user_id}.")
+                self.logger.info(
+                    f"Successfully updated profile for user_id: {user_id}."
+                )
                 return True
         except Exception as e:
-            self.logger.error(f"Database update failed for user {user_id}: {e}", exc_info=True)
+            self.logger.error(
+                f"Database update failed for user {user_id}: {e}", exc_info=True
+            )
             return False
 
     async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:

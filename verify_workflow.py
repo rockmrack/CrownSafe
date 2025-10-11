@@ -23,7 +23,9 @@ try:
 
     if recall_agent_loaded:
         print("   ✅ RecallDataAgent loaded in RouterAgent")
-        print(f"   ✅ Agent class: {AGENT_LOGIC_CLASSES['query_recalls_by_product'].__name__}")
+        print(
+            f"   ✅ Agent class: {AGENT_LOGIC_CLASSES['query_recalls_by_product'].__name__}"
+        )
     else:
         print("   ❌ RecallDataAgent NOT loaded in RouterAgent")
         sys.exit(1)
@@ -147,7 +149,11 @@ print()
 print("6. RECALLDATAAGENT MODELS")
 print("-" * 80)
 try:
-    from agents.recall_data_agent.models import Recall, RecallQueryRequest, RecallQueryResponse
+    from agents.recall_data_agent.models import (
+        Recall,
+        RecallQueryRequest,
+        RecallQueryResponse,
+    )
 
     print("   ✅ Recall model imported")
     print("   ✅ RecallQueryRequest model imported")

@@ -40,7 +40,9 @@ class SecurityHeadersMiddleware:
 
         # Force HTTPS (only in production)
         if self.strict_mode:
-            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+            response.headers[
+                "Strict-Transport-Security"
+            ] = "max-age=31536000; includeSubDomains"
 
         # Content Security Policy
         csp_directives = [
@@ -97,8 +99,12 @@ class CORSSecurityMiddleware:
             response = await call_next(request)
             response.headers["Access-Control-Allow-Origin"] = origin
             response.headers["Access-Control-Allow-Credentials"] = "true"
-            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-            response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+            response.headers[
+                "Access-Control-Allow-Methods"
+            ] = "GET, POST, PUT, DELETE, OPTIONS"
+            response.headers[
+                "Access-Control-Allow-Headers"
+            ] = "Content-Type, Authorization"
             response.headers["Access-Control-Max-Age"] = "3600"
         else:
             response = await call_next(request)

@@ -33,10 +33,14 @@ async def verify_database_before_test():
     with SessionLocal() as db:
         test_recall = db.query(RecallDB).filter_by(upc=TEST_BARCODE).first()
         if test_recall:
-            logger.info(f"✅ Pre-test verification: Found recall with UPC {TEST_BARCODE}")
+            logger.info(
+                f"✅ Pre-test verification: Found recall with UPC {TEST_BARCODE}"
+            )
             return True
         else:
-            logger.error(f"❌ Pre-test verification: No recall found with UPC {TEST_BARCODE}")
+            logger.error(
+                f"❌ Pre-test verification: No recall found with UPC {TEST_BARCODE}"
+            )
             all_recalls = db.query(RecallDB).all()
             logger.info(f"Total recalls in DB: {len(all_recalls)}")
             for r in all_recalls[:5]:  # Show first 5
@@ -50,7 +54,9 @@ async def main():
 
     # Verify database first
     if not await verify_database_before_test():
-        logger.error("Database verification failed! Make sure to run seed_for_live_test.py first.")
+        logger.error(
+            "Database verification failed! Make sure to run seed_for_live_test.py first."
+        )
         return
 
     payload = {"barcode": TEST_BARCODE, "user_id": TEST_USER_ID}
@@ -82,7 +88,9 @@ async def main():
                         recalls = result.get("recalls", [])
                         if recalls:
                             print("\n" + "=" * 50)
-                            print("✅✅✅ TEST PASSED: The API successfully found recall(s):")
+                            print(
+                                "✅✅✅ TEST PASSED: The API successfully found recall(s):"
+                            )
                             for recall in recalls:
                                 print(f"\n  - Recall ID: {recall.get('recall_id')}")
                                 print(f"    Product: {recall.get('product_name')}")
@@ -90,11 +98,17 @@ async def main():
                                 print(f"    Hazard: {recall.get('hazard_description')}")
                         else:
                             print("\n" + "=" * 50)
-                            print("❌ TEST FAILED: API call succeeded, but no recalls found.")
-                            print(f"Expected to find recall for barcode: {TEST_BARCODE}")
+                            print(
+                                "❌ TEST FAILED: API call succeeded, but no recalls found."
+                            )
+                            print(
+                                f"Expected to find recall for barcode: {TEST_BARCODE}"
+                            )
                     else:
                         print("\n" + "=" * 50)
-                        print(f"❌ TEST FAILED: API returned status: {response_json.get('status')}")
+                        print(
+                            f"❌ TEST FAILED: API returned status: {response_json.get('status')}"
+                        )
                         if "error" in response_json:
                             print(f"Error: {response_json['error']}")
                 else:

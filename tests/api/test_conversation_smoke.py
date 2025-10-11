@@ -19,7 +19,9 @@ class DummyLLM:
             "summary": "Quick summary for testing.",
             "reasons": ["Test reason"],
             "checks": ["Check label"],
-            "flags": ["soft_cheese"] if "cheese" in str(kwargs.get("user", "")).lower() else [],
+            "flags": ["soft_cheese"]
+            if "cheese" in str(kwargs.get("user", "")).lower()
+            else [],
             "disclaimer": "Not medical advice.",
             "jurisdiction": {"code": "EU", "label": "EU Safety Gate"},
             "evidence": [],

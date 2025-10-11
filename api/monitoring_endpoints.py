@@ -75,7 +75,9 @@ async def add_product_to_monitoring(
         )
 
         # Schedule immediate check in background
-        background_tasks.add_task(ProductMonitoringScheduler.check_product_for_recalls, product, db)
+        background_tasks.add_task(
+            ProductMonitoringScheduler.check_product_for_recalls, product, db
+        )
 
         response = MonitoredProductResponse(
             id=product.id,
@@ -92,7 +94,9 @@ async def add_product_to_monitoring(
             created_at=product.created_at,
         )
 
-        return ok({"message": "Product added to monitoring", "product": response.model_dump()})
+        return ok(
+            {"message": "Product added to monitoring", "product": response.model_dump()}
+        )
 
     except Exception as e:
         logger.error(f"Error adding product to monitoring: {e}", exc_info=True)
@@ -109,7 +113,9 @@ async def get_monitored_products(
 ):
     """Get list of monitored products"""
     try:
-        query = db.query(MonitoredProduct).filter(MonitoredProduct.user_id == current_user.id)
+        query = db.query(MonitoredProduct).filter(
+            MonitoredProduct.user_id == current_user.id
+        )
 
         if active_only:
             query = query.filter(MonitoredProduct.is_active)
@@ -120,7 +126,10 @@ async def get_monitored_products(
         # Apply pagination
         offset = (page - 1) * page_size
         products = (
-            query.order_by(desc(MonitoredProduct.created_at)).offset(offset).limit(page_size).all()
+            query.order_by(desc(MonitoredProduct.created_at))
+            .offset(offset)
+            .limit(page_size)
+            .all()
         )
 
         # Build response
@@ -265,7 +274,9 @@ async def check_product_now(
 
         # Update product
         product.last_checked = datetime.utcnow()
-        product.next_check = datetime.utcnow() + timedelta(hours=product.check_frequency_hours)
+        product.next_check = datetime.utcnow() + timedelta(
+            hours=product.check_frequency_hours
+        )
 
         if result.get("recalls_found", 0) > 0:
             product.recall_status = "recalled"
@@ -372,7 +383,9 @@ async def get_monitoring_status(
         # Get user's monitoring stats
         total_products = (
             db.query(MonitoredProduct)
-            .filter(MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active)
+            .filter(
+                MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active
+            )
             .count()
         )
 
@@ -411,8 +424,11 @@ async def get_monitoring_status(
             "recalled_products": recalled_products,
             "safe_products": total_products - recalled_products,
             "products_due_check": due_soon,
-            "last_system_check": last_run.completed_at.isoformat() + "Z" if last_run else None,
-            "next_system_check": (datetime.utcnow() + timedelta(hours=1)).isoformat() + "Z",
+            "last_system_check": last_run.completed_at.isoformat() + "Z"
+            if last_run
+            else None,
+            "next_system_check": (datetime.utcnow() + timedelta(hours=1)).isoformat()
+            + "Z",
         }
 
         return ok(status)

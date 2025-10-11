@@ -40,7 +40,9 @@ logging.basicConfig(
 logging.getLogger("websockets.client").setLevel(logging.WARNING)
 logger = logging.getLogger("TestPlannerFlowScript")
 
-CONTROLLER_AGENT_ID = "controller_agent_002"  # Use a different ID than the previous test
+CONTROLLER_AGENT_ID = (
+    "controller_agent_002"  # Use a different ID than the previous test
+)
 TARGET_AGENT_ID = "planner_agent_01"  # Target the PlannerAgent
 TASK_NAME = "decompose_high_level_task"  # The capability name for the Planner
 TASK_TIMEOUT_SECONDS = 45.0  # Increase timeout slightly for multi-step process
@@ -99,7 +101,9 @@ async def run_planner_flow():
     global task_result, task_completion_event, task_correlation_id
     logger.info(f"Instantiating MCPClient for controller: {CONTROLLER_AGENT_ID}")
 
-    client = MCPClient(agent_id=CONTROLLER_AGENT_ID, message_handler=handle_controller_message)
+    client = MCPClient(
+        agent_id=CONTROLLER_AGENT_ID, message_handler=handle_controller_message
+    )
 
     subtask_id_to_send = str(uuid.uuid4())  # ID for the planning task itself
     task_correlation_id = str(uuid.uuid4())  # Correlation ID for the planning task
@@ -138,21 +142,30 @@ async def run_planner_flow():
         await client.send_message(task_message)
         logger.info("Planning task message sent.")
 
-        logger.info(f"Waiting up to {TASK_TIMEOUT_SECONDS} seconds for PLANNER task completion...")
+        logger.info(
+            f"Waiting up to {TASK_TIMEOUT_SECONDS} seconds for PLANNER task completion..."
+        )
         try:
-            await asyncio.wait_for(task_completion_event.wait(), timeout=TASK_TIMEOUT_SECONDS)
+            await asyncio.wait_for(
+                task_completion_event.wait(), timeout=TASK_TIMEOUT_SECONDS
+            )
             logger.info("Planner task completion event received.")
             if task_result:
                 logger.info(
                     f"Final PLANNER Task Result Message: {json.dumps(task_result, indent=2)}"
                 )
                 # Check if the planner succeeded and returned subtasks
-                if task_result.get("mcp_header", {}).get("message_type") == "TASK_COMPLETE":
+                if (
+                    task_result.get("mcp_header", {}).get("message_type")
+                    == "TASK_COMPLETE"
+                ):
                     logger.info("Planner successfully generated a plan.")
                     # In a real controller, we would now parse task_result['payload']['output_data']['subtasks']
                     # and likely send new TASK_ASSIGN messages for those subtasks via the RouterAgent.
                     # For this test, we just observe the logs of other agents.
-                    logger.info("Observe Router and WebResearchAgent logs for subtask execution...")
+                    logger.info(
+                        "Observe Router and WebResearchAgent logs for subtask execution..."
+                    )
                     await asyncio.sleep(10)  # Wait longer to see if subtask completes
                 else:
                     logger.error("Planner task failed.")
@@ -171,7 +184,9 @@ async def run_planner_flow():
     except MCPClientError as e:
         logger.error(f"MCP Client Error during planner flow test: {e}")
     except Exception as e:
-        logger.error(f"An unexpected error occurred in the planner flow test: {e}", exc_info=True)
+        logger.error(
+            f"An unexpected error occurred in the planner flow test: {e}", exc_info=True
+        )
     finally:
         logger.info("Controller disconnecting...")
         if client and client.is_connected:
@@ -191,7 +206,9 @@ if __name__ == "__main__":
     expected_dir_name = "RossNetAgents"
     current_working_dir = os.path.basename(os.getcwd())
     if current_working_dir != expected_dir_name:
-        print(f"\nERROR: This script must be run from the '{expected_dir_name}' directory.")
+        print(
+            f"\nERROR: This script must be run from the '{expected_dir_name}' directory."
+        )
         print(f"       Current directory: '{os.getcwd()}'")
         sys.exit(1)
 

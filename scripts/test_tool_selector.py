@@ -96,7 +96,9 @@ async def run_tool_selection():
     global task_result, task_completion_event, task_correlation_id
     logger.info(f"Instantiating MCPClient for controller: {CONTROLLER_AGENT_ID}")
 
-    client = MCPClient(agent_id=CONTROLLER_AGENT_ID, message_handler=handle_controller_message)
+    client = MCPClient(
+        agent_id=CONTROLLER_AGENT_ID, message_handler=handle_controller_message
+    )
 
     subtask_id_to_send = str(uuid.uuid4())  # ID for the tool selection task itself
     task_correlation_id = str(uuid.uuid4())  # Correlation ID for this request
@@ -144,13 +146,18 @@ async def run_tool_selection():
             f"Waiting up to {TASK_TIMEOUT_SECONDS} seconds for TOOL_SELECTOR task completion..."
         )
         try:
-            await asyncio.wait_for(task_completion_event.wait(), timeout=TASK_TIMEOUT_SECONDS)
+            await asyncio.wait_for(
+                task_completion_event.wait(), timeout=TASK_TIMEOUT_SECONDS
+            )
             logger.info("ToolSelector task completion event received.")
             if task_result:
                 logger.info(
                     f"Final TOOL_SELECTOR Task Result Message: {json.dumps(task_result, indent=2)}"
                 )
-                if task_result.get("mcp_header", {}).get("message_type") == "TASK_COMPLETE":
+                if (
+                    task_result.get("mcp_header", {}).get("message_type")
+                    == "TASK_COMPLETE"
+                ):
                     output_data = task_result.get("payload", {}).get("output_data", {})
                     if output_data.get("status") == "DELEGATED":
                         logger.info(
@@ -204,7 +211,9 @@ if __name__ == "__main__":
     expected_dir_name = "RossNetAgents"
     current_working_dir = os.path.basename(os.getcwd())
     if current_working_dir != expected_dir_name:
-        print(f"\nERROR: This script must be run from the '{expected_dir_name}' directory.")
+        print(
+            f"\nERROR: This script must be run from the '{expected_dir_name}' directory."
+        )
         print(f"       Current directory: '{os.getcwd()}'")
         sys.exit(1)
 

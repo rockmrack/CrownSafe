@@ -33,7 +33,9 @@ async def main():
     try:
         # 1. Initialize the real ProductIdentifierLogic.
         # It will load the API key from your .env file.
-        agent_logic = ProductIdentifierLogic(agent_id="test_pi_001", logger_instance=logger)
+        agent_logic = ProductIdentifierLogic(
+            agent_id="test_pi_001", logger_instance=logger
+        )
         logger.info("Agent logic initialized.")
 
         # 2. Define the task payload.
@@ -56,7 +58,9 @@ async def main():
             product_name = result.get("result", {}).get("product_name", "")
             if EXPECTED_PRODUCT_NAME_FRAGMENT.lower() in product_name.lower():
                 print("\n" + "=" * 50)
-                print(f"✅✅✅ TEST PASSED: Successfully identified '{product_name}' from barcode.")
+                print(
+                    f"✅✅✅ TEST PASSED: Successfully identified '{product_name}' from barcode."
+                )
             else:
                 print("\n" + "=" * 50)
                 print(

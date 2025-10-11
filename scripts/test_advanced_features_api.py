@@ -69,7 +69,9 @@ async def test_web_research():
                         print(f"     {finding['title']}")
                         print(f"     Relevance: {finding['relevance_score']:.2f}")
                         if finding.get("reported_by_count"):
-                            print(f"     Reported by: {finding['reported_by_count']} users")
+                            print(
+                                f"     Reported by: {finding['reported_by_count']} users"
+                            )
                         print(f"     Content: {finding['content'][:100]}...")
             else:
                 print(f"❌ Error: {response.status_code} - {response.text}")
@@ -109,7 +111,9 @@ async def test_guidelines():
 
                 if response.status_code == 200:
                     data = response.json()
-                    print(f"  Age Appropriate: {'✅ Yes' if data['age_appropriate'] else '❌ No'}")
+                    print(
+                        f"  Age Appropriate: {'✅ Yes' if data['age_appropriate'] else '❌ No'}"
+                    )
 
                     if data.get("weight_appropriate") is not None:
                         print(
@@ -222,10 +226,16 @@ async def test_visual_recognition():
 
                     if data["products_identified"]:
                         for product in data["products_identified"]:
-                            recall_emoji = "🔴" if product["recall_status"] == "RECALLED" else "🟢"
-                            print(f"    {recall_emoji} Identified: {product['product_name']}")
+                            recall_emoji = (
+                                "🔴" if product["recall_status"] == "RECALLED" else "🟢"
+                            )
+                            print(
+                                f"    {recall_emoji} Identified: {product['product_name']}"
+                            )
                             print(f"       Brand: {product.get('brand', 'Unknown')}")
-                            print(f"       Category: {product.get('category', 'Unknown')}")
+                            print(
+                                f"       Category: {product.get('category', 'Unknown')}"
+                            )
                             if product["recall_status"] == "RECALLED":
                                 print(
                                     f"       ⚠️ RECALL: {product.get('recall_reason', 'Check details')}"
@@ -248,7 +258,9 @@ async def test_visual_recognition():
                     print(f"    Processing Time: {data['processing_time_ms']}ms")
 
                 else:
-                    print(f"    ❌ Error: {response.status_code} - {response.text[:100]}")
+                    print(
+                        f"    ❌ Error: {response.status_code} - {response.text[:100]}"
+                    )
 
         except Exception as e:
             print(f"  ❌ Connection error: {e}")
@@ -310,7 +322,9 @@ async def test_monitoring():
                         print("  Recent Findings:")
                         for finding in status_data["findings"][:2]:
                             alert_emoji = "🔔" if finding["alert_sent"] else "📝"
-                            print(f"    {alert_emoji} {finding['source']}: {finding['summary']}")
+                            print(
+                                f"    {alert_emoji} {finding['source']}: {finding['summary']}"
+                            )
 
                 # Cancel monitoring
                 print("\n🛑 Cancelling monitoring...")

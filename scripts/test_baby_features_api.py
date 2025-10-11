@@ -30,7 +30,9 @@ async def test_alternatives_endpoint():
         }
 
         try:
-            response = await client.post(f"{BASE_URL}/api/v1/baby/alternatives", json=request_data)
+            response = await client.post(
+                f"{BASE_URL}/api/v1/baby/alternatives", json=request_data
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -206,7 +208,9 @@ async def test_onboarding():
             if response.status_code == 200:
                 data = response.json()
                 print("✅ Profile setup complete")
-                print(f"Recommended Categories: {', '.join(data['recommended_categories'])}")
+                print(
+                    f"Recommended Categories: {', '.join(data['recommended_categories'])}"
+                )
 
                 if data.get("safety_tips"):
                     print("\n💡 Safety Tips:")
@@ -251,7 +255,9 @@ async def test_hazard_analysis():
                 print(
                     f"Risk Level: {data['overall_risk_level']} {'🟢' if data['overall_risk_level'] == 'LOW' else '🔴' if data['overall_risk_level'] in ['HIGH', 'CRITICAL'] else '🟡'}"
                 )
-                print(f"Age Appropriate: {'Yes ✅' if data['age_appropriate'] else 'No ❌'}")
+                print(
+                    f"Age Appropriate: {'Yes ✅' if data['age_appropriate'] else 'No ❌'}"
+                )
 
                 if data["hazards_identified"]:
                     print("\n⚠️ Hazards Identified:")
@@ -326,7 +332,9 @@ async def test_integrated_safety_check():
         }
 
         try:
-            response = await client.post(f"{BASE_URL}/api/v1/safety-check", json=request_data)
+            response = await client.post(
+                f"{BASE_URL}/api/v1/safety-check", json=request_data
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -342,7 +350,9 @@ async def test_integrated_safety_check():
                         print(f"Risk Level: {result['risk_level']}")
 
                     if result.get("alternatives_suggested"):
-                        print(f"\n✅ Alternatives Suggested: {result['alternatives_suggested']}")
+                        print(
+                            f"\n✅ Alternatives Suggested: {result['alternatives_suggested']}"
+                        )
 
                     if data.get("alternatives"):
                         print("\n🔄 Safe Alternatives:")

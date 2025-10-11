@@ -103,7 +103,9 @@ def check_redis_for_workflow(workflow_id: str) -> Dict[str, Any]:
             if workflow_json:
                 workflow_data = json.loads(workflow_json)
                 result["workflow_data"] = workflow_data
-                result["workflow_id_field"] = workflow_data.get("workflow_id", "MISSING")
+                result["workflow_id_field"] = workflow_data.get(
+                    "workflow_id", "MISSING"
+                )
                 result["status"] = workflow_data.get("status", "UNKNOWN")
 
         # Check other matching keys
@@ -111,7 +113,9 @@ def check_redis_for_workflow(workflow_id: str) -> Dict[str, Any]:
             if key != expected_key:
                 try:
                     data = json.loads(r.get(key))
-                    logger.debug(f"Found related key {key} with status: {data.get('status')}")
+                    logger.debug(
+                        f"Found related key {key} with status: {data.get('status')}"
+                    )
                 except:
                     pass
 
@@ -165,7 +169,9 @@ def diagnose_api():
     ]
 
     for method, endpoint, expected in endpoints_to_check:
-        success, data, error = check_endpoint(method, endpoint, expected_status=expected)
+        success, data, error = check_endpoint(
+            method, endpoint, expected_status=expected
+        )
         if success or "Expected" in str(error):
             logger.info(f"   ✅ {method} {endpoint} - Accessible")
         else:
@@ -209,12 +215,16 @@ def diagnose_api():
                 redis_check = check_redis_for_workflow(workflow_id)
 
                 if redis_check.get("expected_key_exists"):
-                    logger.info(f"   ✅ Workflow found in Redis at: {redis_check['expected_key']}")
+                    logger.info(
+                        f"   ✅ Workflow found in Redis at: {redis_check['expected_key']}"
+                    )
                     if redis_check.get("workflow_id_field") == "MISSING":
                         logger.error(
                             "   ❌ ISSUE DETECTED: workflow_id field is missing in the stored data!"
                         )
-                        logger.error("   This is why the API returns 404 when checking status.")
+                        logger.error(
+                            "   This is why the API returns 404 when checking status."
+                        )
                         logger.error(
                             "   FIX: Restart the Router Agent with the updated agent_logic.py"
                         )
@@ -227,7 +237,9 @@ def diagnose_api():
                 else:
                     logger.warning("   ⚠️  Workflow not found at expected Redis key")
                     if redis_check.get("matching_keys"):
-                        logger.info(f"   Found {len(redis_check['matching_keys'])} related keys:")
+                        logger.info(
+                            f"   Found {len(redis_check['matching_keys'])} related keys:"
+                        )
                         for key in redis_check["matching_keys"][:3]:
                             logger.info(f"     - {key}")
 
@@ -246,11 +258,15 @@ def diagnose_api():
                 elif status_response.status_code == 404:
                     logger.error("   ❌ Status check failed: 404 - Workflow not found")
                     logger.error("   This typically means:")
-                    logger.error("   1. The workflow_id field is missing in Redis (most common)")
+                    logger.error(
+                        "   1. The workflow_id field is missing in Redis (most common)"
+                    )
                     logger.error("   2. The workflow hasn't been created yet")
                     logger.error("   3. The workflow key uses a different format")
                 else:
-                    logger.error(f"   ❌ Status check failed: {status_response.status_code}")
+                    logger.error(
+                        f"   ❌ Status check failed: {status_response.status_code}"
+                    )
 
         elif response.status_code == 500:
             logger.error("   ❌ Internal Server Error (500)")
@@ -345,7 +361,9 @@ def test_minimal_workflow():
             logger.info("\n📊 Polling status...")
             for i in range(10):
                 time.sleep(3)
-                status_response = requests.get(f"{API_BASE_URL}/api/v1/status/{workflow_id}")
+                status_response = requests.get(
+                    f"{API_BASE_URL}/api/v1/status/{workflow_id}"
+                )
 
                 if status_response.status_code == 200:
                     status_data = status_response.json()
@@ -353,7 +371,9 @@ def test_minimal_workflow():
                     logger.info(f"   Poll {i + 1}: {status}")
 
                     if status in ["COMPLETED", "FAILED"]:
-                        logger.info(f"\n✅ Final Result: {json.dumps(status_data, indent=2)}")
+                        logger.info(
+                            f"\n✅ Final Result: {json.dumps(status_data, indent=2)}"
+                        )
                         break
                 elif status_response.status_code == 404:
                     logger.error(f"   Poll {i + 1}: 404 - Workflow not found")
@@ -361,12 +381,18 @@ def test_minimal_workflow():
                     # Re-check Redis
                     redis_recheck = check_redis_for_workflow(workflow_id)
                     if redis_recheck.get("expected_key_exists"):
-                        logger.info("      → Workflow IS in Redis but API can't find it")
+                        logger.info(
+                            "      → Workflow IS in Redis but API can't find it"
+                        )
                         logger.info("      → This confirms the workflow_id field issue")
-                        logger.info("      → Solution: Restart Router Agent with the fix")
+                        logger.info(
+                            "      → Solution: Restart Router Agent with the fix"
+                        )
                         break
                 else:
-                    logger.error(f"   Poll {i + 1}: Error {status_response.status_code}")
+                    logger.error(
+                        f"   Poll {i + 1}: Error {status_response.status_code}"
+                    )
 
             else:
                 logger.warning("\n⚠️  Workflow did not complete within timeout")

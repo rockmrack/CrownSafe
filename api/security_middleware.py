@@ -27,7 +27,9 @@ class IPAllowlistMiddleware(BaseHTTPMiddleware):
     Middleware to restrict admin endpoints to specific IP addresses
     """
 
-    def __init__(self, app, admin_paths: List[str] = None, allowed_ips: List[str] = None):
+    def __init__(
+        self, app, admin_paths: List[str] = None, allowed_ips: List[str] = None
+    ):
         super().__init__(app)
         self.admin_paths = admin_paths or [
             "/admin",
@@ -68,7 +70,9 @@ class IPAllowlistMiddleware(BaseHTTPMiddleware):
     def _is_admin_path(self, path: str) -> bool:
         """Check if the path is an admin endpoint"""
         path_lower = path.lower()
-        return any(path_lower.startswith(admin_path.lower()) for admin_path in self.admin_paths)
+        return any(
+            path_lower.startswith(admin_path.lower()) for admin_path in self.admin_paths
+        )
 
     def _is_ip_allowed(self, client_ip: str) -> bool:
         """Check if the client IP is in the allowlist"""
@@ -133,7 +137,9 @@ class IPAllowlistMiddleware(BaseHTTPMiddleware):
                     },
                 )
 
-            logger.info(f"Allowed admin access from IP: {client_ip} to path: {request.url.path}")
+            logger.info(
+                f"Allowed admin access from IP: {client_ip} to path: {request.url.path}"
+            )
 
         # Process the request
         response = await call_next(request)
@@ -158,7 +164,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+        response.headers[
+            "Permissions-Policy"
+        ] = "geolocation=(), microphone=(), camera=()"
 
         # HSTS (only in production with HTTPS)
         if os.environ.get("ENVIRONMENT") == "production":
@@ -284,7 +292,9 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
         if not self.valid_api_keys and os.environ.get("ENVIRONMENT") == "development":
             default_key = secrets.token_urlsafe(32)
             self.valid_api_keys.add(default_key)
-            logger.warning(f"No API keys configured. Generated development key: {default_key}")
+            logger.warning(
+                f"No API keys configured. Generated development key: {default_key}"
+            )
 
     def _requires_api_key(self, path: str) -> bool:
         """Check if path requires API key"""
@@ -346,7 +356,9 @@ class HMACMiddleware(BaseHTTPMiddleware):
         """Check if path requires HMAC"""
         return any(path.startswith(p) for p in self.protected_paths)
 
-    def _validate_hmac(self, request_body: bytes, signature: str, timestamp: str) -> bool:
+    def _validate_hmac(
+        self, request_body: bytes, signature: str, timestamp: str
+    ) -> bool:
         """Validate HMAC signature"""
 
         # Check timestamp to prevent replay attacks

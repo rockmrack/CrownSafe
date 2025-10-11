@@ -71,7 +71,9 @@ async def fix_upc_data_with_product_identifier():
                 logger.info(f"🎯 Enhanced {enhanced_count} recalls with UPC data")
 
             # Check final UPC count
-            final_upc_count = db.query(RecallDB).filter(RecallDB.upc.isnot(None)).count()
+            final_upc_count = (
+                db.query(RecallDB).filter(RecallDB.upc.isnot(None)).count()
+            )
             total_recalls = db.query(RecallDB).count()
 
             logger.info(

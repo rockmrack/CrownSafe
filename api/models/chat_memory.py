@@ -23,7 +23,9 @@ JsonType = JSONB if os.getenv("DATABASE_URL", "").startswith("postgresql") else 
 
 # Use String for UUID in SQLite, UUID for PostgreSQL
 UuidType = (
-    UUID(as_uuid=True) if os.getenv("DATABASE_URL", "").startswith("postgresql") else String(36)
+    UUID(as_uuid=True)
+    if os.getenv("DATABASE_URL", "").startswith("postgresql")
+    else String(36)
 )
 
 
@@ -37,8 +39,12 @@ class UserProfile(Base):
     pregnancy_due_date = Column(Date, nullable=True)
     child_birthdate = Column(Date, nullable=True)
     erase_requested_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    created_at = Column(
+        DateTime(timezone=True), default=datetime.utcnow, nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True), default=datetime.utcnow, nullable=False
+    )
 
 
 class Conversation(Base):
@@ -46,8 +52,12 @@ class Conversation(Base):
     id = Column(UuidType, primary_key=True)
     user_id = Column(UuidType, nullable=True)
     scan_id = Column(String(64), nullable=True)
-    started_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
-    last_activity_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    started_at = Column(
+        DateTime(timezone=True), default=datetime.utcnow, nullable=False
+    )
+    last_activity_at = Column(
+        DateTime(timezone=True), default=datetime.utcnow, nullable=False
+    )
     messages = relationship(
         "ConversationMessage",
         back_populates="conversation",
@@ -61,7 +71,9 @@ class ConversationMessage(Base):
     conversation_id = Column(
         UuidType, ForeignKey("conversation.id", ondelete="CASCADE"), nullable=False
     )
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    created_at = Column(
+        DateTime(timezone=True), default=datetime.utcnow, nullable=False
+    )
     role = Column(String(16), nullable=False)  # 'user' | 'assistant'
     intent = Column(String(64), nullable=True)
     trace_id = Column(String(64), nullable=True)

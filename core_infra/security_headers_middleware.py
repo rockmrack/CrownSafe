@@ -47,7 +47,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
         # Cache control for security
         if request.url.path.startswith("/api/"):
-            response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private"
+            response.headers[
+                "Cache-Control"
+            ] = "no-store, no-cache, must-revalidate, private"
 
         return response
 
@@ -73,11 +75,17 @@ class EnhancedCORSMiddleware(BaseHTTPMiddleware):
 
             # Set CORS headers
             if origin in self.allowed_origins or "*" in self.allowed_origins:
-                response.headers["Access-Control-Allow-Origin"] = origin if origin != "*" else "*"
+                response.headers["Access-Control-Allow-Origin"] = (
+                    origin if origin != "*" else "*"
+                )
             else:
-                response.headers["Access-Control-Allow-Origin"] = self.allowed_origins[0]
+                response.headers["Access-Control-Allow-Origin"] = self.allowed_origins[
+                    0
+                ]
 
-            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+            response.headers[
+                "Access-Control-Allow-Methods"
+            ] = "GET, POST, PUT, DELETE, OPTIONS"
             response.headers[
                 "Access-Control-Allow-Headers"
             ] = "Content-Type, Authorization, X-API-Key"
@@ -94,13 +102,17 @@ class EnhancedCORSMiddleware(BaseHTTPMiddleware):
         # Add CORS headers to response
         origin = request.headers.get("origin", "*")
         if origin in self.allowed_origins or "*" in self.allowed_origins:
-            response.headers["Access-Control-Allow-Origin"] = origin if origin != "*" else "*"
+            response.headers["Access-Control-Allow-Origin"] = (
+                origin if origin != "*" else "*"
+            )
         else:
             response.headers["Access-Control-Allow-Origin"] = self.allowed_origins[0]
 
         if self.allow_credentials and origin != "*":
             response.headers["Access-Control-Allow-Credentials"] = "true"
 
-        response.headers["Access-Control-Expose-Headers"] = "X-API-Version, X-Total-Count"
+        response.headers[
+            "Access-Control-Expose-Headers"
+        ] = "X-API-Version, X-Total-Count"
 
         return response

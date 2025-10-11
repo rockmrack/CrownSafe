@@ -177,7 +177,9 @@ def require_admin(user: User) -> None:
         )
 
 
-def validate_pagination(limit: int, offset: int, max_limit: int = 100) -> tuple[int, int]:
+def validate_pagination(
+    limit: int, offset: int, max_limit: int = 100
+) -> tuple[int, int]:
     """
     Validate and normalize pagination parameters
 
@@ -246,7 +248,9 @@ def log_endpoint_call(
     logger.info(f"Endpoint called: {endpoint}", extra=log_data)
 
 
-def handle_db_error(e: Exception, operation: str = "database operation") -> HTTPException:
+def handle_db_error(
+    e: Exception, operation: str = "database operation"
+) -> HTTPException:
     """
     Convert database error to HTTP exception
 
@@ -263,14 +267,18 @@ def handle_db_error(e: Exception, operation: str = "database operation") -> HTTP
     error_msg = str(e).lower()
 
     if "unique constraint" in error_msg or "duplicate" in error_msg:
-        return HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Resource already exists")
+        return HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Resource already exists"
+        )
     elif "foreign key" in error_msg:
         return HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid reference to related resource",
         )
     elif "not found" in error_msg:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found")
+        return HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found"
+        )
     else:
         return HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

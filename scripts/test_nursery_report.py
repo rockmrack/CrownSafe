@@ -236,9 +236,13 @@ def create_nursery_scan_history(db_session, user_id=1):
 
         # Focus on critical items and safety equipment
         critical_products = [
-            p for p in nursery_products if p["category"] in ["Critical Safety", "Safety Equipment"]
+            p
+            for p in nursery_products
+            if p["category"] in ["Critical Safety", "Safety Equipment"]
         ]
-        product = random.choice(critical_products if critical_products else nursery_products)
+        product = random.choice(
+            critical_products if critical_products else nursery_products
+        )
 
         scan = ScanHistory(
             user_id=user_id,
@@ -327,28 +331,47 @@ def test_quarterly_nursery_report():
                 for word in ["crib", "car seat", "high chair", "bassinet"]
             ):
                 categories["Critical Safety"].append(scan)
-            elif any(word in product_name_lower for word in ["bottle", "formula", "food", "sippy"]):
+            elif any(
+                word in product_name_lower
+                for word in ["bottle", "formula", "food", "sippy"]
+            ):
                 categories["Feeding"].append(scan)
-            elif any(word in product_name_lower for word in ["toy", "play", "rattle", "teether"]):
+            elif any(
+                word in product_name_lower
+                for word in ["toy", "play", "rattle", "teether"]
+            ):
                 categories["Toys & Play"].append(scan)
             elif any(
-                word in product_name_lower for word in ["clothes", "blanket", "swaddle", "sheet"]
+                word in product_name_lower
+                for word in ["clothes", "blanket", "swaddle", "sheet"]
             ):
                 categories["Clothing & Textiles"].append(scan)
-            elif any(word in product_name_lower for word in ["dresser", "changing table", "shelf"]):
+            elif any(
+                word in product_name_lower
+                for word in ["dresser", "changing table", "shelf"]
+            ):
                 categories["Furniture"].append(scan)
-            elif any(word in product_name_lower for word in ["gate", "monitor", "lock", "guard"]):
+            elif any(
+                word in product_name_lower
+                for word in ["gate", "monitor", "lock", "guard"]
+            ):
                 categories["Safety Equipment"].append(scan)
-            elif any(word in product_name_lower for word in ["diaper", "wipe", "thermometer"]):
+            elif any(
+                word in product_name_lower for word in ["diaper", "wipe", "thermometer"]
+            ):
                 categories["Health & Hygiene"].append(scan)
-            elif any(word in product_name_lower for word in ["stroller", "carrier", "wrap"]):
+            elif any(
+                word in product_name_lower for word in ["stroller", "carrier", "wrap"]
+            ):
                 categories["Transportation"].append(scan)
 
         # Calculate statistics
         total_products = len(set(s.barcode for s in scan_history if s.barcode))
         categories_audited = sum(1 for cat in categories.values() if cat)
         total_recalls = sum(s.recalls_found or 0 for s in scan_history)
-        high_risk_items = sum(1 for s in scan_history if s.risk_level in ["high", "critical"])
+        high_risk_items = sum(
+            1 for s in scan_history if s.risk_level in ["high", "critical"]
+        )
 
         # Calculate compliance score
         compliance_score = 100.0
@@ -358,7 +381,9 @@ def test_quarterly_nursery_report():
             safety_bonus = min(
                 10, (len(categories["Safety Equipment"]) / max(1, total_products)) * 20
             )
-            compliance_score = max(0, min(100, 100 - recall_penalty - risk_penalty + safety_bonus))
+            compliance_score = max(
+                0, min(100, 100 - recall_penalty - risk_penalty + safety_bonus)
+            )
 
         print("\n📊 Quarterly Nursery Audit Statistics:")
         print(f"  Total Products: {total_products}")
@@ -374,9 +399,13 @@ def test_quarterly_nursery_report():
         print("\n📦 Products by Category:")
         for category_name, items in categories.items():
             if items:
-                unique_products = len(set(item.barcode for item in items if item.barcode))
+                unique_products = len(
+                    set(item.barcode for item in items if item.barcode)
+                )
                 recalls = sum(item.recalls_found or 0 for item in items)
-                high_risk = sum(1 for item in items if item.risk_level in ["high", "critical"])
+                high_risk = sum(
+                    1 for item in items if item.risk_level in ["high", "critical"]
+                )
 
                 status = "✅" if recalls == 0 and high_risk == 0 else "⚠️"
                 print(f"  {status} {category_name}: {unique_products} products")

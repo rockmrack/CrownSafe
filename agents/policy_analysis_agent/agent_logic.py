@@ -54,7 +54,9 @@ class PolicyAnalysisAgentLogic:
             from core_infra.enhanced_memory_manager import EnhancedMemoryManager
 
             self.memory_manager = EnhancedMemoryManager()
-            self.logger.info("EnhancedMemoryManager initialized for PolicyAnalysisAgent")
+            self.logger.info(
+                "EnhancedMemoryManager initialized for PolicyAnalysisAgent"
+            )
         except Exception as e:
             self.logger.warning(f"Could not initialize EnhancedMemoryManager: {e}")
 
@@ -170,7 +172,9 @@ class PolicyAnalysisAgentLogic:
         return normalized
 
     # Add this method to handle dynamic routing
-    def evaluate_if_patient_meets_pa_criteria_for_empagliflozin(self, **kwargs) -> Dict[str, Any]:
+    def evaluate_if_patient_meets_pa_criteria_for_empagliflozin(
+        self, **kwargs
+    ) -> Dict[str, Any]:
         """Dynamic method handler for PA criteria evaluation"""
         # Extract parameters from kwargs
         drug_name = kwargs.get("drug_name", "empagliflozin")
@@ -203,11 +207,15 @@ class PolicyAnalysisAgentLogic:
         self, drug_name: str, patient_evidence: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Public method to check coverage criteria - compatible with Gemini test"""
-        self.logger.info(f"Checking coverage criteria for '{drug_name}' based on patient evidence.")
+        self.logger.info(
+            f"Checking coverage criteria for '{drug_name}' based on patient evidence."
+        )
 
         # Handle string patient_evidence by converting to dict
         if isinstance(patient_evidence, str):
-            self.logger.warning("Received string patient_evidence, converting to dict format")
+            self.logger.warning(
+                "Received string patient_evidence, converting to dict format"
+            )
             # Parse the string to extract information
             patient_evidence = {
                 "age": 58,
@@ -308,7 +316,9 @@ class PolicyAnalysisAgentLogic:
                     # It's a multi-insurer format
                     self.policies = raw_data
 
-            self.logger.info(f"Successfully loaded policy data for {len(self.policies)} insurer(s)")
+            self.logger.info(
+                f"Successfully loaded policy data for {len(self.policies)} insurer(s)"
+            )
 
             # Store in memory if available - with error handling
             if self.memory_manager:
@@ -463,7 +473,9 @@ class PolicyAnalysisAgentLogic:
             raw_task_type = task_data.get("task_name", "").lower()
             task_type = self._normalize_task_name(raw_task_type)
 
-            self.logger.info(f"Processing task: '{raw_task_type}' -> normalized: '{task_type}'")
+            self.logger.info(
+                f"Processing task: '{raw_task_type}' -> normalized: '{task_type}'"
+            )
 
             # P0: Input validation - check required fields first
             validation_result = self._validate_task_inputs(task_type, task_data)
@@ -501,7 +513,9 @@ class PolicyAnalysisAgentLogic:
             self.logger.error(f"Error processing task: {e}", exc_info=True)
             return {"status": "FAILED", "error": str(e), "agent_id": self.agent_id}
 
-    def _validate_task_inputs(self, task_type: str, task_data: Dict[str, Any]) -> Dict[str, Any]:
+    def _validate_task_inputs(
+        self, task_type: str, task_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """P0: Validate required inputs and return RETRY status if missing"""
         required_fields = {
             "get_policy_for_drug": ["drug_name"],
@@ -522,7 +536,9 @@ class PolicyAnalysisAgentLogic:
                     missing_fields.append(field)
 
         if missing_fields:
-            self.logger.warning(f"Missing required fields for {task_type}: {missing_fields}")
+            self.logger.warning(
+                f"Missing required fields for {task_type}: {missing_fields}"
+            )
             return {
                 "status": "RETRY",
                 "missing": missing_fields,
@@ -540,7 +556,9 @@ class PolicyAnalysisAgentLogic:
         # Use default insurer if not specified
         if not insurer_id:
             insurer_id = (
-                list(self.policies.keys())[0] if self.policies else "Default Health Insurance"
+                list(self.policies.keys())[0]
+                if self.policies
+                else "Default Health Insurance"
             )
 
         try:
@@ -566,9 +584,9 @@ class PolicyAnalysisAgentLogic:
                 # P1: Extract structured PA criteria if available
                 # FIXED: Case-insensitive PA detection
                 if "prior authorization" in policy_info.get("status", "").lower():
-                    policy_info["structured_pa_criteria"] = self._extract_structured_pa_criteria(
-                        policy_info
-                    )
+                    policy_info[
+                        "structured_pa_criteria"
+                    ] = self._extract_structured_pa_criteria(policy_info)
 
                 # FIXED: Deep copy before caching to prevent mutation
                 cached_copy = deepcopy(policy_info)
@@ -599,7 +617,9 @@ class PolicyAnalysisAgentLogic:
         """Check if patient meets coverage criteria"""
         drug_name = task_data.get("drug_name", "").strip()
         patient_data = task_data.get("patient_evidence", {})
-        insurer = task_data.get("insurer", list(self.policies.keys())[0] if self.policies else None)
+        insurer = task_data.get(
+            "insurer", list(self.policies.keys())[0] if self.policies else None
+        )
 
         if not drug_name:
             return {
@@ -621,7 +641,9 @@ class PolicyAnalysisAgentLogic:
                 }
 
             # Check coverage criteria
-            decision = self._evaluate_coverage_criteria(drug_name, policy_info, patient_data)
+            decision = self._evaluate_coverage_criteria(
+                drug_name, policy_info, patient_data
+            )
 
             return {
                 "status": "COMPLETED",
@@ -639,7 +661,9 @@ class PolicyAnalysisAgentLogic:
         """Search formulary by various criteria"""
         search_query = task_data.get("query", "").strip()
         search_type = task_data.get("search_type", "name")  # name, class, tier
-        insurer = task_data.get("insurer", list(self.policies.keys())[0] if self.policies else None)
+        insurer = task_data.get(
+            "insurer", list(self.policies.keys())[0] if self.policies else None
+        )
 
         if not search_query and search_type != "all":
             return {
@@ -668,7 +692,9 @@ class PolicyAnalysisAgentLogic:
     def _handle_alternatives_request(self, task_data: Dict[str, Any]) -> Dict[str, Any]:
         """Get alternative drugs for a given medication"""
         drug_name = task_data.get("drug_name", "").strip()
-        insurer = task_data.get("insurer", list(self.policies.keys())[0] if self.policies else None)
+        insurer = task_data.get(
+            "insurer", list(self.policies.keys())[0] if self.policies else None
+        )
 
         if not drug_name:
             return {
@@ -722,7 +748,9 @@ class PolicyAnalysisAgentLogic:
             self.logger.error(f"Failed to compare policies: {e}")
             return {"status": "FAILED", "error": str(e), "agent_id": self.agent_id}
 
-    def _extract_structured_pa_criteria(self, policy_info: Dict[str, Any]) -> Dict[str, Any]:
+    def _extract_structured_pa_criteria(
+        self, policy_info: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """P1: Extract structured PA criteria from policy"""
         structured_criteria = {
             "clinical_requirements": [],
@@ -773,7 +801,9 @@ class PolicyAnalysisAgentLogic:
 
         # Add quantity limits if present
         if "quantity_limits" in policy_info:
-            structured_criteria["quantity_limits"].append(policy_info["quantity_limits"])
+            structured_criteria["quantity_limits"].append(
+                policy_info["quantity_limits"]
+            )
 
         return structured_criteria
 
@@ -794,7 +824,9 @@ class PolicyAnalysisAgentLogic:
         self.decision_cache[cache_key] = result
         self.cache_timestamps[cache_key] = datetime.now(timezone.utc)
 
-    def _get_drug_policy(self, drug_name: str, insurer: str) -> Optional[Dict[str, Any]]:
+    def _get_drug_policy(
+        self, drug_name: str, insurer: str
+    ) -> Optional[Dict[str, Any]]:
         """Get policy information for a specific drug"""
         if not insurer or insurer not in self.policies:
             # Try to find in policy_data first for compatibility
@@ -807,7 +839,9 @@ class PolicyAnalysisAgentLogic:
                         {
                             "drug_name": name,
                             "insurer": "Default Health Insurance",
-                            "policy_version": self.policy_data.get("policy_version", "Unknown"),
+                            "policy_version": self.policy_data.get(
+                                "policy_version", "Unknown"
+                            ),
                         }
                     )
                     return base
@@ -885,22 +919,32 @@ class PolicyAnalysisAgentLogic:
             # Create a synthetic criterion for quantity limits
             quantity_criterion = {
                 "type": "quantity_limit",
-                "max_quantity": policy_info["quantity_limits"].get("max_units_per_fill", 30),
+                "max_quantity": policy_info["quantity_limits"].get(
+                    "max_units_per_fill", 30
+                ),
                 "description": "Quantity limits per fill",
                 "required": True,  # Quantity limits are typically required
             }
-            is_met, details = self._check_quantity_limit_criterion(quantity_criterion, patient_data)
+            is_met, details = self._check_quantity_limit_criterion(
+                quantity_criterion, patient_data
+            )
 
             if is_met:
-                met_criteria.append({"criterion": quantity_criterion, "details": details})
+                met_criteria.append(
+                    {"criterion": quantity_criterion, "details": details}
+                )
             else:
-                unmet_criteria.append({"criterion": quantity_criterion, "details": details})
+                unmet_criteria.append(
+                    {"criterion": quantity_criterion, "details": details}
+                )
                 recommendations.append(
                     f"Reduce quantity to {quantity_criterion['max_quantity']} units or less per fill"
                 )
 
         # Determine if all required criteria are met
-        required_unmet = [c for c in unmet_criteria if c["criterion"].get("required", True)]
+        required_unmet = [
+            c for c in unmet_criteria if c["criterion"].get("required", True)
+        ]
         criteria_met = len(required_unmet) == 0
 
         # Add general recommendations
@@ -910,7 +954,9 @@ class PolicyAnalysisAgentLogic:
                 f"Prior authorization denied: {len(required_unmet)} required criteria not met",
             )
         else:
-            recommendations.insert(0, "Prior authorization approved: All required criteria met")
+            recommendations.insert(
+                0, "Prior authorization approved: All required criteria met"
+            )
 
         return CoverageDecision(
             drug_name=drug_name,
@@ -998,12 +1044,18 @@ class PolicyAnalysisAgentLogic:
 
                 if min_value is not None and patient_value < min_value:
                     is_met = False
-                    details["message"] = f"Value {patient_value} below minimum {min_value}"
+                    details[
+                        "message"
+                    ] = f"Value {patient_value} below minimum {min_value}"
                 elif max_value is not None and patient_value > max_value:
                     is_met = False
-                    details["message"] = f"Value {patient_value} above maximum {max_value}"
+                    details[
+                        "message"
+                    ] = f"Value {patient_value} above maximum {max_value}"
                 else:
-                    details["message"] = f"Value {patient_value} within acceptable range"
+                    details[
+                        "message"
+                    ] = f"Value {patient_value} within acceptable range"
             except ValueError:
                 details["message"] = "Could not parse patient lab value"
                 is_met = False
@@ -1099,9 +1151,7 @@ class PolicyAnalysisAgentLogic:
         criterion_type = criterion.get("type")
 
         if criterion_type == "diagnosis":
-            return (
-                f"Obtain documentation for one of: {', '.join(criterion.get('required_codes', []))}"
-            )
+            return f"Obtain documentation for one of: {', '.join(criterion.get('required_codes', []))}"
         elif criterion_type == "step_therapy":
             return f"Trial of {criterion.get('required_prior_drug')} for {criterion.get('duration_days', 90)} days required"
         elif criterion_type == "lab_value":
@@ -1111,7 +1161,9 @@ class PolicyAnalysisAgentLogic:
 
         return None
 
-    def _search_formulary(self, query: str, search_type: str, insurer: str) -> List[Dict[str, Any]]:
+    def _search_formulary(
+        self, query: str, search_type: str, insurer: str
+    ) -> List[Dict[str, Any]]:
         """Search formulary by various criteria"""
         if insurer not in self.policies:
             # Fallback to policy_data
@@ -1152,7 +1204,8 @@ class PolicyAnalysisAgentLogic:
                         "status": details.get("status", "Unknown"),
                         "tier": details.get("tier"),
                         "monthly_cost": details.get("monthly_cost"),
-                        "requires_pa": "prior authorization" in details.get("status", "").lower(),
+                        "requires_pa": "prior authorization"
+                        in details.get("status", "").lower(),
                     }
                 )
 
@@ -1161,13 +1214,17 @@ class PolicyAnalysisAgentLogic:
 
         # Use debug level for per-drug logging
         if len(results) > 10:
-            self.logger.debug(f"Found {len(results)} matching drugs for query '{query}'")
+            self.logger.debug(
+                f"Found {len(results)} matching drugs for query '{query}'"
+            )
         else:
             self.logger.info(f"Found {len(results)} matching drugs for query '{query}'")
 
         return results
 
-    def _get_drug_alternatives(self, drug_name: str, insurer: str) -> List[Dict[str, Any]]:
+    def _get_drug_alternatives(
+        self, drug_name: str, insurer: str
+    ) -> List[Dict[str, Any]]:
         """Get alternative medications"""
         policy_info = self._get_drug_policy(drug_name, insurer)
 
@@ -1214,9 +1271,13 @@ class PolicyAnalysisAgentLogic:
             names = [alt["drug_name"] for alt in preferred[:3]]
             return f"Consider preferred alternatives that don't require PA: {', '.join(names)}"
         else:
-            return f"All {len(alternatives)} alternatives also require prior authorization"
+            return (
+                f"All {len(alternatives)} alternatives also require prior authorization"
+            )
 
-    def _compare_drug_policies(self, drug_name: str, insurers: List[str]) -> Dict[str, Any]:
+    def _compare_drug_policies(
+        self, drug_name: str, insurers: List[str]
+    ) -> Dict[str, Any]:
         """Compare drug coverage across insurers"""
         comparison = {}
 
@@ -1303,7 +1364,9 @@ class PolicyAnalysisAgentLogic:
             # Cache each drug separately for better semantic search
             for insurer, policy in self.policies.items():
                 if not isinstance(policy, dict):
-                    self.logger.warning(f"Policy for {insurer} is not a dictionary, skipping")
+                    self.logger.warning(
+                        f"Policy for {insurer} is not a dictionary, skipping"
+                    )
                     continue
 
                 drugs = policy.get("drugs", {})
@@ -1324,9 +1387,13 @@ class PolicyAnalysisAgentLogic:
                                 {
                                     "insurer": str(insurer),
                                     "drug_name": drug_name,
-                                    "drug_class": drug_policy.get("drug_class", "Unknown"),
+                                    "drug_class": drug_policy.get(
+                                        "drug_class", "Unknown"
+                                    ),
                                     "status": drug_policy.get("status", "Unknown"),
-                                    "policy_version": policy.get("policy_version", "Unknown"),
+                                    "policy_version": policy.get(
+                                        "policy_version", "Unknown"
+                                    ),
                                     "cached_at": datetime.now(timezone.utc).isoformat(),
                                 }
                             ],

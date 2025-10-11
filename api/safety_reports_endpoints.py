@@ -20,7 +20,9 @@ from api.schemas.common import ApiResponse
 logger = logging.getLogger(__name__)
 
 # Create router
-safety_reports_router = APIRouter(prefix="/api/v1/safety-reports", tags=["safety-reports"])
+safety_reports_router = APIRouter(
+    prefix="/api/v1/safety-reports", tags=["safety-reports"]
+)
 
 
 class SafetyReportRequest(BaseModel):
@@ -31,9 +33,13 @@ class SafetyReportRequest(BaseModel):
         "90_day",
         description="Type of report (90_day, 30_day, weekly, quarterly_nursery)",
     )
-    include_details: bool = Field(True, description="Include detailed product information")
+    include_details: bool = Field(
+        True, description="Include detailed product information"
+    )
     generate_pdf: bool = Field(True, description="Generate PDF version")
-    nursery_id: Optional[int] = Field(None, description="Nursery ID for nursery-specific reports")
+    nursery_id: Optional[int] = Field(
+        None, description="Nursery ID for nursery-specific reports"
+    )
 
 
 class SafetySummaryStats(BaseModel):
@@ -130,7 +136,9 @@ async def generate_safety_report(
         if request.report_type == "90_day":
             return await generate_90_day_report(request, background_tasks, db)
         elif request.report_type == "quarterly_nursery":
-            return await generate_quarterly_nursery_report(request, background_tasks, db)
+            return await generate_quarterly_nursery_report(
+                request, background_tasks, db
+            )
         else:
             # Default to 90-day report
             return await generate_90_day_report(request, background_tasks, db)
@@ -139,7 +147,9 @@ async def generate_safety_report(
         raise
     except Exception as e:
         logger.error(f"Error generating safety report: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to generate safety report: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to generate safety report: {str(e)}"
+        )
 
 
 @safety_reports_router.post("/generate-90-day-dev", response_model=ApiResponse)
@@ -180,7 +190,9 @@ async def generate_90_day_report_dev(request: SafetyReportRequest) -> ApiRespons
         raise
     except Exception as e:
         logger.error(f"Error generating 90-day report: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to generate 90-day report: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to generate 90-day report: {str(e)}"
+        )
 
 
 @safety_reports_router.post("/generate-90-day", response_model=ApiResponse)
@@ -268,7 +280,9 @@ async def generate_90_day_report(
             if scan.brand:
                 brands[scan.brand] = brands.get(scan.brand, 0) + 1
 
-        most_scanned_category = max(categories, key=categories.get) if categories else None
+        most_scanned_category = (
+            max(categories, key=categories.get) if categories else None
+        )
         most_scanned_brand = max(brands, key=brands.get) if brands else None
 
         # Group products and create summaries
@@ -318,7 +332,9 @@ async def generate_90_day_report(
 
         # Sort products by risk level and scan count
         risk_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
-        product_summaries.sort(key=lambda p: (risk_order.get(p.risk_level, 4), -p.scan_count))
+        product_summaries.sort(
+            key=lambda p: (risk_order.get(p.risk_level, 4), -p.scan_count)
+        )
 
         # Generate report ID
         report_id = f"SR_{uuid.uuid4().hex[:8]}"
@@ -353,8 +369,12 @@ async def generate_90_day_report(
                         "period_start": start_date.isoformat(),
                         "period_end": end_date.isoformat(),
                         "statistics": statistics.dict(),
-                        "products": [p.dict() for p in product_summaries[:20]],  # Top 20 products
-                        "scan_history": [s.to_dict() for s in scan_history[:50]],  # Recent 50 scans
+                        "products": [
+                            p.dict() for p in product_summaries[:20]
+                        ],  # Top 20 products
+                        "scan_history": [
+                            s.to_dict() for s in scan_history[:50]
+                        ],  # Recent 50 scans
                     },
                     "workflow_id": report_id,
                 }
@@ -375,7 +395,8 @@ async def generate_90_day_report(
                         total_scans=total_scans,
                         unique_products=unique_products,
                         recalls_found=recalls_found,
-                        high_risk_products=risk_counts["high"] + risk_counts["critical"],
+                        high_risk_products=risk_counts["high"]
+                        + risk_counts["critical"],
                         report_data={
                             "statistics": statistics.dict(),
                             "products": [p.dict() for p in product_summaries],
@@ -470,7 +491,9 @@ async def get_user_reports_dev(
 
     except Exception as e:
         logger.error(f"Error fetching user reports: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch reports: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch reports: {str(e)}"
+        )
 
 
 @safety_reports_router.get("/my-reports", response_model=ApiResponse)
@@ -499,14 +522,18 @@ async def get_my_reports(
                     "period_start": report.period_start.isoformat()
                     if report.period_start
                     else None,
-                    "period_end": report.period_end.isoformat() if report.period_end else None,
+                    "period_end": report.period_end.isoformat()
+                    if report.period_end
+                    else None,
                     "total_scans": report.total_scans,
                     "recalls_found": report.recalls_found,
                     "pdf_available": bool(report.pdf_path or report.s3_url),
                 }
             )
 
-        return ApiResponse(success=True, data={"reports": report_list, "total": len(report_list)})
+        return ApiResponse(
+            success=True, data={"reports": report_list, "total": len(report_list)}
+        )
 
     except Exception as e:
         logger.error(f"Error fetching user reports: {e}")
@@ -551,7 +578,9 @@ async def get_report_details_dev(report_id: str, user_id: int) -> ApiResponse:
 
         # Check ownership (simulate 404 for other users' reports)
         if report_id == "999" or user_id != mock_report["user_id"]:
-            raise HTTPException(status_code=404, detail="Report not found or access denied")
+            raise HTTPException(
+                status_code=404, detail="Report not found or access denied"
+            )
 
         return ApiResponse(
             success=True,
@@ -563,16 +592,22 @@ async def get_report_details_dev(report_id: str, user_id: int) -> ApiResponse:
         raise
     except Exception as e:
         logger.error(f"Error fetching report details: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch report details: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch report details: {str(e)}"
+        )
 
 
 @safety_reports_router.get("/report/{report_id}", response_model=ApiResponse)
-async def get_report_details(report_id: str, db: Session = Depends(get_db)) -> ApiResponse:
+async def get_report_details(
+    report_id: str, db: Session = Depends(get_db)
+) -> ApiResponse:
     """
     Get detailed information about a specific safety report
     """
     try:
-        report = db.query(SafetyReport).filter(SafetyReport.report_id == report_id).first()
+        report = (
+            db.query(SafetyReport).filter(SafetyReport.report_id == report_id).first()
+        )
 
         if not report:
             raise HTTPException(status_code=404, detail="Report not found")
@@ -583,8 +618,12 @@ async def get_report_details(report_id: str, db: Session = Depends(get_db)) -> A
                 "report_id": report.report_id,
                 "report_type": report.report_type,
                 "generated_at": report.generated_at.isoformat(),
-                "period_start": report.period_start.isoformat() if report.period_start else None,
-                "period_end": report.period_end.isoformat() if report.period_end else None,
+                "period_start": report.period_start.isoformat()
+                if report.period_start
+                else None,
+                "period_end": report.period_end.isoformat()
+                if report.period_end
+                else None,
                 "statistics": {
                     "total_scans": report.total_scans,
                     "unique_products": report.unique_products,
@@ -592,7 +631,9 @@ async def get_report_details(report_id: str, db: Session = Depends(get_db)) -> A
                     "high_risk_products": report.high_risk_products,
                 },
                 "report_data": report.report_data,
-                "pdf_url": f"/api/v1/reports/download/{report_id}" if report.pdf_path else None,
+                "pdf_url": f"/api/v1/reports/download/{report_id}"
+                if report.pdf_path
+                else None,
             },
         )
 
@@ -604,7 +645,9 @@ async def get_report_details(report_id: str, db: Session = Depends(get_db)) -> A
 
 
 @safety_reports_router.post("/track-scan", response_model=ApiResponse)
-async def track_scan(scan_data: Dict[str, Any], db: Session = Depends(get_db)) -> ApiResponse:
+async def track_scan(
+    scan_data: Dict[str, Any], db: Session = Depends(get_db)
+) -> ApiResponse:
     """
     Track a product scan in user's history
     Called after each scan to build history for reports
@@ -645,7 +688,9 @@ async def track_scan(scan_data: Dict[str, Any], db: Session = Depends(get_db)) -
         db.commit()
         db.refresh(scan_history)
 
-        return ApiResponse(success=True, data={"scan_id": scan_history.scan_id, "tracked": True})
+        return ApiResponse(
+            success=True, data={"scan_id": scan_history.scan_id, "tracked": True}
+        )
 
     except HTTPException:
         raise
@@ -655,7 +700,9 @@ async def track_scan(scan_data: Dict[str, Any], db: Session = Depends(get_db)) -
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@safety_reports_router.post("/generate-quarterly-nursery-dev", response_model=ApiResponse)
+@safety_reports_router.post(
+    "/generate-quarterly-nursery-dev", response_model=ApiResponse
+)
 async def generate_quarterly_nursery_report_dev(
     request: SafetyReportRequest,
 ) -> ApiResponse:
@@ -675,7 +722,9 @@ async def generate_quarterly_nursery_report_dev(
             )
 
         # Mock report generation
-        report_id = f"report_nursery_{request.user_id}_{int(datetime.now().timestamp())}"
+        report_id = (
+            f"report_nursery_{request.user_id}_{int(datetime.now().timestamp())}"
+        )
 
         return ApiResponse(
             success=True,
@@ -855,7 +904,9 @@ async def generate_quarterly_nursery_report(
 
         # Calculate statistics
         total_products = len(product_groups)
-        categories_audited = sum(1 for cat in nursery_categories.values() if cat["products"])
+        categories_audited = sum(
+            1 for cat in nursery_categories.values() if cat["products"]
+        )
         critical_items = len(nursery_categories["Critical Safety"]["products"])
         feeding_items = len(nursery_categories["Feeding"]["products"])
         toy_items = len(nursery_categories["Toys & Play"]["products"])
@@ -876,16 +927,22 @@ async def generate_quarterly_nursery_report(
             # Bonus points for safety equipment
             safety_bonus = min(10, (safety_equipment / max(1, total_products)) * 20)
 
-            compliance_score = max(0, min(100, 100 - recall_penalty - risk_penalty + safety_bonus))
+            compliance_score = max(
+                0, min(100, 100 - recall_penalty - risk_penalty + safety_bonus)
+            )
 
         # Generate recommendations
         recommendations = []
 
         if nursery_categories["Critical Safety"]["recalls"] > 0:
-            recommendations.append("⚠️ URGENT: Replace recalled critical safety items immediately")
+            recommendations.append(
+                "⚠️ URGENT: Replace recalled critical safety items immediately"
+            )
 
         if nursery_categories["Critical Safety"]["high_risk"] > 0:
-            recommendations.append("Review and update critical safety items (cribs, car seats)")
+            recommendations.append(
+                "Review and update critical safety items (cribs, car seats)"
+            )
 
         if feeding_items == 0:
             recommendations.append(
@@ -896,13 +953,17 @@ async def generate_quarterly_nursery_report(
             recommendations.append("Add more safety equipment (gates, locks, monitors)")
 
         if total_recalls > 0:
-            recommendations.append(f"Remove {total_recalls} recalled items from nursery")
+            recommendations.append(
+                f"Remove {total_recalls} recalled items from nursery"
+            )
 
         if compliance_score < 70:
             recommendations.append("Schedule a comprehensive nursery safety review")
 
         if compliance_score >= 90:
-            recommendations.append("✅ Excellent nursery safety! Continue regular monitoring")
+            recommendations.append(
+                "✅ Excellent nursery safety! Continue regular monitoring"
+            )
 
         # Build category summaries
         category_summaries = []
@@ -913,7 +974,8 @@ async def generate_quarterly_nursery_report(
                 for product_key, product_group in product_groups.items():
                     # Check if this product belongs to this category
                     product_in_category = any(
-                        scan in category_data["products"] for scan in product_group["scans"]
+                        scan in category_data["products"]
+                        for scan in product_group["scans"]
                     )
                     if product_in_category:
                         scans = product_group["scans"]
@@ -993,7 +1055,9 @@ async def generate_quarterly_nursery_report(
                             if p.get("recalls_found")
                             else [],
                             "risk": {
-                                "level": p["risk_levels"][0] if p["risk_levels"] else "low",
+                                "level": p["risk_levels"][0]
+                                if p["risk_levels"]
+                                else "low",
                                 "score": 50 if "high" in p["risk_levels"] else 20,
                             },
                         }

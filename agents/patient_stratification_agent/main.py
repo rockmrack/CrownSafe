@@ -27,7 +27,9 @@ class PatientStratificationAgent:
         self.agent_id = AGENT_ID
         self.agent_name = AGENT_NAME
         self.agent_type = AGENT_TYPE
-        self.logic = PatientStratificationAgentLogic(agent_id=self.agent_id, logger_instance=logger)
+        self.logic = PatientStratificationAgentLogic(
+            agent_id=self.agent_id, logger_instance=logger
+        )
 
         # Define capabilities for discovery service
         self.capabilities = [
@@ -129,7 +131,9 @@ class PatientStratificationAgent:
         workflow_id = payload.get("workflow_id", "unknown")
         task_name = payload.get("task_name", "").lower()
 
-        logger.info(f"Processing task {task_id} ({task_name}) for workflow {workflow_id}")
+        logger.info(
+            f"Processing task {task_id} ({task_name}) for workflow {workflow_id}"
+        )
         self.request_count += 1
 
         try:
@@ -313,10 +317,13 @@ class PatientStratificationAgent:
             }
         elif info_type == "performance":
             info = {
-                "average_processing_time_ms": self.logic.metrics.get("average_processing_time", 0),
+                "average_processing_time_ms": self.logic.metrics.get(
+                    "average_processing_time", 0
+                ),
                 "cache_hit_rate": self.logic.metrics["cache_hits"]
                 / max(
-                    self.logic.metrics["cache_hits"] + self.logic.metrics["cache_misses"],
+                    self.logic.metrics["cache_hits"]
+                    + self.logic.metrics["cache_misses"],
                     1,
                 ),
                 "total_llm_tokens": self.logic.metrics["total_llm_tokens"],
@@ -355,7 +362,9 @@ class PatientStratificationAgent:
 
             logger.info(f"{self.agent_name} started successfully")
             logger.info(f"Configuration: {json.dumps(self.logic.config, indent=2)}")
-            logger.info(f"Evidence weights: {json.dumps(self.logic.evidence_weights, indent=2)}")
+            logger.info(
+                f"Evidence weights: {json.dumps(self.logic.evidence_weights, indent=2)}"
+            )
 
             # Keep running until stopped
             while self.running:

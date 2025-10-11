@@ -57,7 +57,9 @@ async def main():
         mock_session.url = "https://checkout.stripe.com/pay/cs_test_12345"
 
         with (
-            patch("stripe.Customer.create", return_value=mock_customer) as mock_customer_create,
+            patch(
+                "stripe.Customer.create", return_value=mock_customer
+            ) as mock_customer_create,
             patch(
                 "stripe.checkout.Session.create", return_value=mock_session
             ) as mock_session_create,
@@ -74,7 +76,9 @@ async def main():
             # 5. Verify the Stripe API was called correctly.
             mock_customer_create.assert_called_once()
             mock_session_create.assert_called_once()
-            logger.info("Verified that Stripe Customer.create and Session.create were both called.")
+            logger.info(
+                "Verified that Stripe Customer.create and Session.create were both called."
+            )
 
         # 6. Analyze and print the result.
         print("\n" + "=" * 50)

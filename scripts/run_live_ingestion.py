@@ -29,7 +29,9 @@ async def main():
     Base.metadata.create_all(bind=engine)
 
     # 2. Run the LIVE ingestion cycle.
-    recall_agent_logic = RecallDataAgentLogic(agent_id="live_ingestor_002", logger_instance=logger)
+    recall_agent_logic = RecallDataAgentLogic(
+        agent_id="live_ingestor_002", logger_instance=logger
+    )
     ingestion_result = await recall_agent_logic.run_ingestion_cycle()
 
     print("\n" + "=" * 50)

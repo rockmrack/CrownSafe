@@ -131,7 +131,9 @@ async def run_pregnancy_test():
     }
 
     # Initialize commander
-    commander = BabyShieldCommanderLogic(agent_id="test_commander", logger_instance=logger)
+    commander = BabyShieldCommanderLogic(
+        agent_id="test_commander", logger_instance=logger
+    )
 
     # Wait for initialization
     await asyncio.sleep(0.1)

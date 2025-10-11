@@ -139,7 +139,9 @@ async def test_guideline_agent():
             # Show top results
             print("\nTop Matching Sections:")
             for i, match in enumerate(result["results"][:3]):
-                print(f"\n--- Match {i + 1} (Relevance: {match.get('relevance_score', 0):.2f}) ---")
+                print(
+                    f"\n--- Match {i + 1} (Relevance: {match.get('relevance_score', 0):.2f}) ---"
+                )
                 print(f"Guideline: {match.get('guideline_name', 'Unknown')}")
                 print(f"Text preview: {match['text'][:300]}...")
 
@@ -198,7 +200,9 @@ if __name__ == "__main__":
     print("Starting GuidelineAgent tests...")
     print(f"Working directory: {os.getcwd()}")
     print(f"Script location: {__file__}")
-    print("Note: First run will download ~5MB PDF, subsequent runs will use cached data")
+    print(
+        "Note: First run will download ~5MB PDF, subsequent runs will use cached data"
+    )
     print("-" * 60)
 
     asyncio.run(main())

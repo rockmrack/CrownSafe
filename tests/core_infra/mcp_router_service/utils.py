@@ -142,7 +142,9 @@ def create_mcp_response(
         )
         return None
 
-    payload_copy = copy.deepcopy(response_payload)  # Deep copy to avoid modifying the input dict
+    payload_copy = copy.deepcopy(
+        response_payload
+    )  # Deep copy to avoid modifying the input dict
 
     if response_message_type == "DISCOVERY_RESPONSE" and isinstance(payload_copy, dict):
         results = payload_copy.get("results", [])
@@ -243,7 +245,9 @@ def create_mcp_error_response(
     logger.debug(
         f"Creating error response: Type='{error_message_type}', Sender='{sender_service}', Target='{target_agent_id}', CorrID='{correlation_id}'"
     )
-    logger.debug(f"Error payload content for CorrID '{correlation_id}': {error_payload}")
+    logger.debug(
+        f"Error payload content for CorrID '{correlation_id}': {error_payload}"
+    )
 
     safe_payload = copy.deepcopy(error_payload)
 
@@ -264,7 +268,9 @@ def safe_json_serialize(obj: Any, default_msg: str = "Object not serializable") 
     try:
         return json.dumps(obj)
     except (TypeError, ValueError, OverflowError) as e:  # Added OverflowError
-        logger.error(f"JSON serialization error: {e}. Object type: {type(obj)}", exc_info=True)
+        logger.error(
+            f"JSON serialization error: {e}. Object type: {type(obj)}", exc_info=True
+        )
 
         if isinstance(obj, dict):
             sanitized = {}
@@ -287,7 +293,9 @@ def safe_json_serialize(obj: Any, default_msg: str = "Object not serializable") 
                     json.dumps(item)
                     sanitized.append(item)
                 except Exception:
-                    sanitized.append(f"UNSERIALIZABLE_ITEM:{str(item)[:100]}")  # Truncate
+                    sanitized.append(
+                        f"UNSERIALIZABLE_ITEM:{str(item)[:100]}"
+                    )  # Truncate
             logger.warning(
                 f"Attempting to send sanitized list after serialization error. Length: {len(sanitized)}"
             )

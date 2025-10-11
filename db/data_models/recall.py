@@ -19,7 +19,9 @@ class Recall(BaseModel):
         None, description="Description of the hazard or reason for recall"
     )
     url: Optional[str] = Field(None, description="Link to the official recall notice")
-    source: Optional[str] = Field(None, description="Originating regulatory agency or data source")
+    source: Optional[str] = Field(
+        None, description="Originating regulatory agency or data source"
+    )
 
     class Config:
         # Enables population from ORM objects and attribute names

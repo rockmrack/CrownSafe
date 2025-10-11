@@ -32,7 +32,9 @@ class TestProductionDatabase:
 
         connection_time = (time.time() - start_time) * 1000  # ms
 
-        assert connection_time < 100, f"Connection took {connection_time}ms (should be < 100ms)"
+        assert (
+            connection_time < 100
+        ), f"Connection took {connection_time}ms (should be < 100ms)"
 
         db.close()
 
@@ -81,7 +83,9 @@ class TestProductionDatabase:
         try:
             pool_size = pool.size() if callable(pool.size) else pool.size
         except (TypeError, AttributeError):
-            pool_size = getattr(pool, "_pool", {}).qsize() if hasattr(pool, "_pool") else 5
+            pool_size = (
+                getattr(pool, "_pool", {}).qsize() if hasattr(pool, "_pool") else 5
+            )
 
         assert pool_size >= 0, f"Pool size should be non-negative: {pool_size}"
 
@@ -138,7 +142,9 @@ class TestProductionDatabase:
                 elif is_sqlite:
                     # SQLite syntax
                     result = db.execute(
-                        text("SELECT name FROM sqlite_master WHERE type='table' AND name = :table"),
+                        text(
+                            "SELECT name FROM sqlite_master WHERE type='table' AND name = :table"
+                        ),
                         {"table": table},
                     )
                 else:
@@ -153,7 +159,9 @@ class TestProductionDatabase:
                 if not exists and table in ["users", "alembic_version"]:
                     # Critical tables - but skip in development/SQLite
                     if is_sqlite:
-                        pytest.skip(f"Table '{table}' not found in SQLite (development mode)")
+                        pytest.skip(
+                            f"Table '{table}' not found in SQLite (development mode)"
+                        )
                     else:
                         pytest.fail(f"Critical table '{table}' does not exist")
                 elif not exists:
@@ -227,7 +235,9 @@ class TestProductionDatabase:
 
             # Read it back
             result = db.execute(
-                text("SELECT test_value FROM test_production_writes WHERE test_value = :val"),
+                text(
+                    "SELECT test_value FROM test_production_writes WHERE test_value = :val"
+                ),
                 {"val": test_value},
             )
             row = result.fetchone()
@@ -273,7 +283,9 @@ class TestProductionDatabase:
             unicode_test = "Hello 👶 世界 🍼 Здравствуй"
 
             # Try to use Unicode in a query
-            result = db.execute(text("SELECT :text as unicode_test"), {"text": unicode_test})
+            result = db.execute(
+                text("SELECT :text as unicode_test"), {"text": unicode_test}
+            )
             value = result.fetchone()[0]
 
             assert value == unicode_test, "Unicode should be preserved"
@@ -348,7 +360,9 @@ class TestProductionDatabaseHealth:
             # Check if we're using SQLite (for local development)
             db_url = str(engine.url)
             if "sqlite" in db_url.lower():
-                pytest.skip("Running with SQLite in development mode (DATABASE_URL not required)")
+                pytest.skip(
+                    "Running with SQLite in development mode (DATABASE_URL not required)"
+                )
             else:
                 assert False, "DATABASE_URL must be set for non-SQLite databases"
 
@@ -363,8 +377,12 @@ class TestProductionDatabaseHealth:
         # In production, we should be using production database
         if environment == "production":
             database_url = os.getenv("DATABASE_URL", "")
-            assert "localhost" not in database_url, "Production should not use localhost"
-            assert "127.0.0.1" not in database_url, "Production should not use 127.0.0.1"
+            assert (
+                "localhost" not in database_url
+            ), "Production should not use localhost"
+            assert (
+                "127.0.0.1" not in database_url
+            ), "Production should not use 127.0.0.1"
 
     def test_database_connection_limit_not_exceeded(self):
         """Test we're not near connection limits"""
@@ -386,7 +404,9 @@ class TestProductionDatabaseHealth:
 
             # Warn if we're using > 80% of typical connection limit
             # Most PostgreSQL instances have 100-200 max connections
-            assert conn_count < 80, f"High connection count: {conn_count} (should be < 80)"
+            assert (
+                conn_count < 80
+            ), f"High connection count: {conn_count} (should be < 80)"
 
         except Exception as e:
             pytest.skip(f"Connection limit check skipped: {e}")

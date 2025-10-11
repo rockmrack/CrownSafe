@@ -42,7 +42,9 @@ class SecurityLimitsTester:
         # Create large payload (200KB)
         large_data = {"product": "a" * 200000, "query": "test"}  # 200KB string
 
-        response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=large_data)
+        response = self.session.post(
+            f"{self.base_url}/api/v1/search/advanced", json=large_data
+        )
 
         self.test(
             response.status_code == 413,
@@ -154,7 +156,9 @@ class SecurityLimitsTester:
 
             if "access-control-allow-origin" in headers_lower:
                 allowed = headers_lower["access-control-allow-origin"]
-                self.test(allowed != origin, f"Evil origin NOT echoed: {allowed} != {origin}")
+                self.test(
+                    allowed != origin, f"Evil origin NOT echoed: {allowed} != {origin}"
+                )
             else:
                 self.test(True, "No Access-Control-Allow-Origin for evil origin")
 
@@ -263,7 +267,9 @@ class SecurityLimitsTester:
                     f"Large response compressed: {encoding}",
                 )
             else:
-                print(f"   ℹ️ Response size {content_length} bytes - may not be compressed")
+                print(
+                    f"   ℹ️ Response size {content_length} bytes - may not be compressed"
+                )
 
         return True
 
@@ -292,7 +298,9 @@ class SecurityLimitsTester:
 
         for header in optional_headers:
             if header.lower() in headers_lower:
-                self.test(True, f"{header} present: {headers_lower[header.lower()][:50]}")
+                self.test(
+                    True, f"{header} present: {headers_lower[header.lower()][:50]}"
+                )
 
         return True
 
@@ -334,7 +342,9 @@ class SecurityLimitsTester:
             headers={"User-Agent": "BabyShield/1.0 (iOS)"},
         )
 
-        self.test(response.status_code == 200, f"Normal UA allowed: {response.status_code}")
+        self.test(
+            response.status_code == 200, f"Normal UA allowed: {response.status_code}"
+        )
 
         return True
 

@@ -136,16 +136,24 @@ class RateLimiters:
     """
 
     # Heavy operations - 60 req/min
-    search = RateLimiter(times=RateLimitConfig.SEARCH_LIMIT, seconds=RateLimitConfig.WINDOW)
+    search = RateLimiter(
+        times=RateLimitConfig.SEARCH_LIMIT, seconds=RateLimitConfig.WINDOW
+    )
 
     # Light operations - 120 req/min
-    detail = RateLimiter(times=RateLimitConfig.DETAIL_LIMIT, seconds=RateLimitConfig.WINDOW)
+    detail = RateLimiter(
+        times=RateLimitConfig.DETAIL_LIMIT, seconds=RateLimitConfig.WINDOW
+    )
 
     # Health checks - 300 req/min
-    health = RateLimiter(times=RateLimitConfig.HEALTH_LIMIT, seconds=RateLimitConfig.WINDOW)
+    health = RateLimiter(
+        times=RateLimitConfig.HEALTH_LIMIT, seconds=RateLimitConfig.WINDOW
+    )
 
     # Default - 100 req/min
-    default = RateLimiter(times=RateLimitConfig.DEFAULT_LIMIT, seconds=RateLimitConfig.WINDOW)
+    default = RateLimiter(
+        times=RateLimitConfig.DEFAULT_LIMIT, seconds=RateLimitConfig.WINDOW
+    )
 
     # Strict - 10 req/min (for sensitive operations)
     strict = RateLimiter(times=10, seconds=RateLimitConfig.WINDOW)

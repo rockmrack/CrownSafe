@@ -112,7 +112,13 @@ class TestFileUploadSecurity:
             ("hack.js", "application/javascript"),
         ]
 
-        allowed_types = ["image/jpeg", "image/png", "image/gif", "application/pdf", "text/csv"]
+        allowed_types = [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "application/pdf",
+            "text/csv",
+        ]
 
         for filename, content_type in malicious_files:
             mock_file = mock_upload_file(filename, size_mb=1, content_type=content_type)
@@ -138,7 +144,12 @@ class TestFileUploadSecurity:
 
         for i in range(num_uploads):
             file = mock_upload_file(f"file_{i}.jpg", size_mb=2)
-            result = {"file_id": i, "filename": file.filename, "status": "success", "size_mb": 2}
+            result = {
+                "file_id": i,
+                "filename": file.filename,
+                "status": "success",
+                "size_mb": 2,
+            }
             upload_results.append(result)
 
         # Verify all uploads tracked
@@ -159,7 +170,11 @@ class TestFileUploadSecurity:
 
         # Mock virus scanner (not implemented yet, so we mock the function)
         mock_scanner = Mock()
-        mock_scanner.return_value = {"clean": True, "threats_found": 0, "scan_time_ms": 150}
+        mock_scanner.return_value = {
+            "clean": True,
+            "threats_found": 0,
+            "scan_time_ms": 150,
+        }
 
         # Simulate scan
         scan_result = mock_scanner()

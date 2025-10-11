@@ -19,7 +19,9 @@ from enum import Enum
 from dotenv import load_dotenv
 
 # Ensure project root is in sys.path for core_infra imports
-project_root_main = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+project_root_main = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..")
+)
 if project_root_main not in sys.path:
     sys.path.insert(0, project_root_main)
 
@@ -63,13 +65,17 @@ def setup_logging():
     log_dir = Path("logs")
     log_dir.mkdir(exist_ok=True)
 
-    log_file = log_dir / f"documentation_agent_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    log_file = (
+        log_dir / f"documentation_agent_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    )
 
     # Create formatters
     file_formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(funcName)s() - %(message)s"
     )
-    console_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    console_formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
 
     # File handler with rotation
     file_handler = logging.handlers.RotatingFileHandler(
@@ -110,7 +116,9 @@ class Config:
     ENABLE_METRICS = os.getenv("ENABLE_METRICS", "true").lower() == "true"
     ENABLE_HEALTH_CHECK = os.getenv("ENABLE_HEALTH_CHECK", "true").lower() == "true"
     MAX_CONCURRENT_TASKS = int(os.getenv("MAX_CONCURRENT_TASKS", "5"))
-    CONNECTION_HEALTH_CHECK_INTERVAL = int(os.getenv("DOCUMENTATION_HEALTH_CHECK", "30"))
+    CONNECTION_HEALTH_CHECK_INTERVAL = int(
+        os.getenv("DOCUMENTATION_HEALTH_CHECK", "30")
+    )
     STARTUP_DELAY = float(os.getenv("DOCUMENTATION_STARTUP_DELAY", "5.0"))
 
 
@@ -212,7 +220,9 @@ class DocumentationAgentManager:
     async def handle_incoming_message(self, message: MCPMessage):
         """Handle incoming messages with enhanced processing"""
         if not self.documentation_logic or not self.mcp_client:
-            logger.error("Logic/MCPClient instance missing in DocumentationAgent handler")
+            logger.error(
+                "Logic/MCPClient instance missing in DocumentationAgent handler"
+            )
             return
 
         try:
@@ -229,7 +239,9 @@ class DocumentationAgentManager:
                 )
                 logger.critical(f"[TASK] TASK_PAYLOAD: {message.payload}")
 
-            logger.debug(f"Processing {message_type} from {sender_id} (CorrID: {correlation_id})")
+            logger.debug(
+                f"Processing {message_type} from {sender_id} (CorrID: {correlation_id})"
+            )
 
             # Route based on message type
             if message_type == "TASK_ASSIGN":
@@ -291,7 +303,9 @@ class DocumentationAgentManager:
         return {
             "status": "success",
             "agent_status": self.status.value,
-            "uptime": (datetime.now() - self.start_time).total_seconds() if self.start_time else 0,
+            "uptime": (datetime.now() - self.start_time).total_seconds()
+            if self.start_time
+            else 0,
             "metrics": self.metrics,
             "active_tasks": len(self.active_tasks),
             "version": self.version,
@@ -357,7 +371,9 @@ class DocumentationAgentManager:
                     self._update_processing_time_metrics(processing_time)
                     self.active_tasks[task_id]["status"] = "completed"
 
-                    logger.info(f"Task {task_id} completed successfully in {processing_time:.2f}s")
+                    logger.info(
+                        f"Task {task_id} completed successfully in {processing_time:.2f}s"
+                    )
                 else:
                     self.metrics["failed_tasks"] += 1
                     self.error_count += 1
@@ -437,7 +453,9 @@ class DocumentationAgentManager:
             # Get current event loop tasks
             try:
                 loop = asyncio.get_running_loop()
-                active_tasks = len([task for task in asyncio.all_tasks(loop) if not task.done()])
+                active_tasks = len(
+                    [task for task in asyncio.all_tasks(loop) if not task.done()]
+                )
             except:
                 active_tasks = 0
 
@@ -465,7 +483,9 @@ class DocumentationAgentManager:
 
     def _get_health_status(self) -> str:
         """Determine agent health status"""
-        error_rate = (self.error_count / self.task_count * 100) if self.task_count > 0 else 0
+        error_rate = (
+            (self.error_count / self.task_count * 100) if self.task_count > 0 else 0
+        )
 
         if error_rate > 20:
             return "critical"
@@ -476,7 +496,9 @@ class DocumentationAgentManager:
         else:
             return "healthy"
 
-    async def _send_task_response(self, original_header: MCPHeader, result: Dict[str, Any]):
+    async def _send_task_response(
+        self, original_header: MCPHeader, result: Dict[str, Any]
+    ):
         """Send task response"""
         try:
             # Determine response type
@@ -621,7 +643,9 @@ class DocumentationAgentManager:
                 await self.mcp_client.connect()
 
                 if not self.mcp_client.is_connected:
-                    raise MCPConnectionError("Connection established but is_connected is False")
+                    raise MCPConnectionError(
+                        "Connection established but is_connected is False"
+                    )
 
                 # Register with discovery service
                 await self.mcp_client.register_self()
@@ -699,13 +723,19 @@ class DocumentationAgentManager:
                     )
 
                     if await self.connect_with_retry():
-                        logger.info(f"[SUCCESS] Reconnection successful for {self.agent_id}")
+                        logger.info(
+                            f"[SUCCESS] Reconnection successful for {self.agent_id}"
+                        )
                     else:
-                        logger.error(f"[CRITICAL] Reconnection failed for {self.agent_id}")
+                        logger.error(
+                            f"[CRITICAL] Reconnection failed for {self.agent_id}"
+                        )
                         self.stop_event.set()  # Trigger shutdown
                         break
                 else:
-                    logger.debug(f"[SUCCESS] Connection health check passed for {self.agent_id}")
+                    logger.debug(
+                        f"[SUCCESS] Connection health check passed for {self.agent_id}"
+                    )
 
                     # Send heartbeat with status
                     if hasattr(self.mcp_client, "send_heartbeat"):
@@ -873,7 +903,9 @@ class DocumentationAgentManager:
 
             self.status = AgentStatus.DISCONNECTED
 
-            logger.info(f"DocumentationAgent components initialized (Version: {self.version})")
+            logger.info(
+                f"DocumentationAgent components initialized (Version: {self.version})"
+            )
             logger.info(f"Environment loaded from: {env_source}")
             logger.info(f"MCP Server URL: {base_mcp_server_url}")
             logger.info(
@@ -905,7 +937,9 @@ class DocumentationAgentManager:
                     loop.add_signal_handler(sig, lambda s=sig: signal_handler(s))
                     logger.debug(f"Added signal handler for {signal.Signals(sig).name}")
                 except (NotImplementedError, OSError) as e:
-                    logger.warning(f"Cannot add signal handler for {signal.Signals(sig).name}: {e}")
+                    logger.warning(
+                        f"Cannot add signal handler for {signal.Signals(sig).name}: {e}"
+                    )
 
         except RuntimeError as e:
             logger.warning(f"Could not setup signal handlers: {e}")
@@ -929,7 +963,9 @@ class DocumentationAgentManager:
         try:
             # Log initial connection status
             if self.mcp_client and self.mcp_client.is_connected:
-                logger.info(f"[SUCCESS] {self.agent_id} main loop starting with active connection")
+                logger.info(
+                    f"[SUCCESS] {self.agent_id} main loop starting with active connection"
+                )
             else:
                 logger.warning(
                     f"[WARNING] {self.agent_id} main loop starting without active connection"
@@ -941,13 +977,17 @@ class DocumentationAgentManager:
             # Start health check server if enabled
             if Config.ENABLE_HEALTH_CHECK:
                 background_tasks.append(
-                    asyncio.create_task(self._health_check_server(), name="health_check")
+                    asyncio.create_task(
+                        self._health_check_server(), name="health_check"
+                    )
                 )
 
             # Start metrics export if enabled
             if Config.ENABLE_METRICS:
                 background_tasks.append(
-                    asyncio.create_task(self._metrics_export_loop(), name="metrics_export")
+                    asyncio.create_task(
+                        self._metrics_export_loop(), name="metrics_export"
+                    )
                 )
 
             self.status = AgentStatus.IDLE
@@ -992,7 +1032,9 @@ class DocumentationAgentManager:
 
             # Wait for active tasks to complete (with timeout)
             if self.active_tasks:
-                logger.info(f"Waiting for {len(self.active_tasks)} active tasks to complete...")
+                logger.info(
+                    f"Waiting for {len(self.active_tasks)} active tasks to complete..."
+                )
                 await asyncio.wait_for(self._wait_for_active_tasks(), timeout=30)
 
             # Export final metrics
@@ -1003,7 +1045,9 @@ class DocumentationAgentManager:
             self._save_final_state()
 
             # Shutdown DocumentationAgentLogic
-            if self.documentation_logic and hasattr(self.documentation_logic, "shutdown"):
+            if self.documentation_logic and hasattr(
+                self.documentation_logic, "shutdown"
+            ):
                 logger.debug("Shutting down DocumentationAgentLogic...")
                 await self.documentation_logic.shutdown()
                 logger.debug("DocumentationAgentLogic shutdown complete")
@@ -1038,7 +1082,9 @@ class DocumentationAgentManager:
                 "agent_id": self.agent_id,
                 "version": self.version,
                 "final_status": self.status.value,
-                "session_start": self.start_time.isoformat() if self.start_time else None,
+                "session_start": self.start_time.isoformat()
+                if self.start_time
+                else None,
                 "session_end": datetime.now().isoformat(),
                 "total_tasks": self.task_count,
                 "final_metrics": self.metrics,
@@ -1087,16 +1133,22 @@ async def main():
 
         # Enhanced startup delay to ensure MCP Router is ready
         if Config.STARTUP_DELAY > 0:
-            logger.info(f"[WAITING] Waiting {Config.STARTUP_DELAY}s for MCP Router to stabilize...")
+            logger.info(
+                f"[WAITING] Waiting {Config.STARTUP_DELAY}s for MCP Router to stabilize..."
+            )
             await asyncio.sleep(Config.STARTUP_DELAY)
 
         # Connect and register with retry logic
         logger.info("Attempting connection to MCP Router...")
         if not await agent_manager.connect_with_retry():
-            logger.critical("[FAILED] Failed to connect and register agent after all retries")
+            logger.critical(
+                "[FAILED] Failed to connect and register agent after all retries"
+            )
             return 1
 
-        logger.info(f"[SUCCESS] {Config.AGENT_ID} successfully connected and ready for tasks")
+        logger.info(
+            f"[SUCCESS] {Config.AGENT_ID} successfully connected and ready for tasks"
+        )
 
         # Run main loop
         await agent_manager.run_main_loop()

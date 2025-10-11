@@ -140,7 +140,9 @@ def get_document_content(doc_id: str, format: str = "markdown") -> tuple[str, st
     # Format conversion
     if format == "html":
         # Convert markdown to HTML
-        html_content = markdown.markdown(content, extensions=["extra", "codehilite", "toc"])
+        html_content = markdown.markdown(
+            content, extensions=["extra", "codehilite", "toc"]
+        )
         # Wrap in basic HTML template
         html_template = f"""
         <!DOCTYPE html>
@@ -285,7 +287,9 @@ async def get_legal_document(
         # Add headers for caching
         headers = {
             "Cache-Control": "public, max-age=86400",  # Cache for 24 hours
-            "X-Document-Version": LEGAL_DOCUMENTS.get(document_id, {}).get("version", "1.0.0"),
+            "X-Document-Version": LEGAL_DOCUMENTS.get(document_id, {}).get(
+                "version", "1.0.0"
+            ),
             "X-Document-Language": language,
         }
 
@@ -450,7 +454,9 @@ async def request_data_deletion(
 
     # Require explicit confirmation
     if not deletion.confirm:
-        raise HTTPException(status_code=400, detail="Deletion must be explicitly confirmed")
+        raise HTTPException(
+            status_code=400, detail="Deletion must be explicitly confirmed"
+        )
 
     request_id = hashlib.sha256(f"{user_id}{datetime.now()}".encode()).hexdigest()[:12]
 
@@ -527,7 +533,9 @@ async def get_compliance_status():
 
 
 @router.get("/agreements/{user_id}")
-async def get_user_agreements(user_id: str, requesting_user: str = Header(..., alias="X-User-ID")):
+async def get_user_agreements(
+    user_id: str, requesting_user: str = Header(..., alias="X-User-ID")
+):
     """Get user's legal agreement history"""
 
     # Users can only view their own agreements
@@ -599,7 +607,9 @@ async def accept_legal_agreement(
 
 
 @router.get("/cookies/preferences")
-async def get_cookie_preferences(session_id: Optional[str] = Header(None, alias="X-Session-ID")):
+async def get_cookie_preferences(
+    session_id: Optional[str] = Header(None, alias="X-Session-ID")
+):
     """Get cookie preferences (web only)"""
 
     return {

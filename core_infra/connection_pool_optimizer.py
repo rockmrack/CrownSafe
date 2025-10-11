@@ -84,7 +84,9 @@ class ConnectionPoolOptimizer:
                 db.commit()
 
             elapsed = time.time() - start_time
-            self.logger.info(f"🚀 Batch operations completed: {len(results)} ops in {elapsed:.3f}s")
+            self.logger.info(
+                f"🚀 Batch operations completed: {len(results)} ops in {elapsed:.3f}s"
+            )
 
             return results
 
@@ -121,12 +123,16 @@ class ConnectionPoolOptimizer:
 
                     if recalls:
                         elapsed = time.time() - start_time
-                        self.logger.info(f"⚡ Model number match found in {elapsed:.3f}s")
+                        self.logger.info(
+                            f"⚡ Model number match found in {elapsed:.3f}s"
+                        )
                         return [r.to_dict() for r in recalls]
 
                 # Priority 2: UPC (exact match)
                 if not recalls and upc:
-                    recalls = db.query(RecallDB).filter(RecallDB.upc == upc).limit(10).all()
+                    recalls = (
+                        db.query(RecallDB).filter(RecallDB.upc == upc).limit(10).all()
+                    )
 
                     if recalls:
                         elapsed = time.time() - start_time
@@ -146,14 +152,18 @@ class ConnectionPoolOptimizer:
                     elapsed = time.time() - start_time
                     # Use DEBUG level to reduce log noise in production
                     if self.logger.isEnabledFor(logging.DEBUG):
-                        self.logger.debug(f"🔍 Product name search completed in {elapsed:.3f}s")
+                        self.logger.debug(
+                            f"🔍 Product name search completed in {elapsed:.3f}s"
+                        )
                     return [r.to_dict() for r in recalls]
 
                 return []
 
         except Exception as e:
             elapsed = time.time() - start_time
-            self.logger.error(f"Optimized recall search failed after {elapsed:.3f}s: {e}")
+            self.logger.error(
+                f"Optimized recall search failed after {elapsed:.3f}s: {e}"
+            )
             return []
 
     def get_pooled_agent_instance(self, agent_class, agent_id: str):
@@ -188,7 +198,9 @@ class ConnectionPoolOptimizer:
                     # Execute the agent task
                     if hasattr(agent_instance, "process_task"):
                         if asyncio.iscoroutinefunction(agent_instance.process_task):
-                            result = await agent_instance.process_task(task_info["inputs"])
+                            result = await agent_instance.process_task(
+                                task_info["inputs"]
+                            )
                         else:
                             result = agent_instance.process_task(task_info["inputs"])
                     else:
@@ -232,7 +244,9 @@ class ConnectionPoolOptimizer:
 
         except Exception as e:
             elapsed = time.time() - start_time
-            self.logger.error(f"Parallel agent execution failed after {elapsed:.3f}s: {e}")
+            self.logger.error(
+                f"Parallel agent execution failed after {elapsed:.3f}s: {e}"
+            )
             return []
 
     def cleanup_connections(self):
@@ -267,7 +281,9 @@ connection_optimizer = ConnectionPoolOptimizer()
 # Convenience functions
 async def optimized_recall_search(upc=None, model_number=None, product_name=None):
     """Optimized recall search with connection pooling"""
-    return await connection_optimizer.optimized_recall_search(upc, model_number, product_name)
+    return await connection_optimizer.optimized_recall_search(
+        upc, model_number, product_name
+    )
 
 
 async def batch_db_operations(operations):

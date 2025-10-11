@@ -83,7 +83,9 @@ class SecurityScanner:
 
         for root, dirs, files in os.walk(self.base_path):
             # Skip certain directories
-            dirs[:] = [d for d in dirs if not any(skip in d for skip in self.skip_patterns)]
+            dirs[:] = [
+                d for d in dirs if not any(skip in d for skip in self.skip_patterns)
+            ]
 
             for file in files:
                 # Skip certain files
@@ -103,15 +105,20 @@ class SecurityScanner:
                                 # Check if it's an environment variable reference
                                 if (
                                     "os.environ"
-                                    in content[max(0, match.start() - 20) : match.end() + 20]
+                                    in content[
+                                        max(0, match.start() - 20) : match.end() + 20
+                                    ]
                                 ):
                                     continue
 
                                 secrets_found.append(
                                     {
                                         "type": secret_type,
-                                        "file": str(file_path.relative_to(self.base_path)),
-                                        "line": content[: match.start()].count("\n") + 1,
+                                        "file": str(
+                                            file_path.relative_to(self.base_path)
+                                        ),
+                                        "line": content[: match.start()].count("\n")
+                                        + 1,
                                         "preview": match.group()[:50] + "..."
                                         if len(match.group()) > 50
                                         else match.group(),
@@ -333,11 +340,19 @@ class SecurityScanner:
                     configs["authentication"] = True
                     print("✅ Authentication implemented")
 
-                if "authorize" in content or "permissions" in content or "roles" in content:
+                if (
+                    "authorize" in content
+                    or "permissions" in content
+                    or "roles" in content
+                ):
                     configs["authorization"] = True
                     print("✅ Authorization implemented")
 
-                if "validate" in content or "BaseModel" in content or "pydantic" in content:
+                if (
+                    "validate" in content
+                    or "BaseModel" in content
+                    or "pydantic" in content
+                ):
                     configs["input_validation"] = True
                     print("✅ Input validation implemented")
 
@@ -384,7 +399,8 @@ class SecurityScanner:
                     "CREATE ROLE" in content or "CREATE USER" in content,
                     "GRANT SELECT" in content,
                     "REVOKE" in content or "DENY" in content,
-                    "babyshield_readonly" in content.lower() or "readonly" in content.lower(),
+                    "babyshield_readonly" in content.lower()
+                    or "readonly" in content.lower(),
                 ]
 
                 if all(required_elements):
@@ -424,7 +440,9 @@ class SecurityScanner:
             with open(rotation_file, "r") as f:
                 content = f.read()
 
-                if "API" in content and ("key" in content.lower() or "token" in content.lower()):
+                if "API" in content and (
+                    "key" in content.lower() or "token" in content.lower()
+                ):
                     rotation_checks["api_keys"] = True
 
                 if "database" in content.lower() or "password" in content.lower():
@@ -455,7 +473,9 @@ class SecurityScanner:
 
         # Based on findings, generate recommendations
         if self.findings["secrets"]:
-            recommendations.append("Remove hardcoded secrets and use environment variables")
+            recommendations.append(
+                "Remove hardcoded secrets and use environment variables"
+            )
 
         if self.findings["dependencies"]:
             recommendations.append("Update vulnerable dependencies")
@@ -497,8 +517,12 @@ class SecurityScanner:
                 "no_email_storage": not self.findings.get("data_handling", {}).get(
                     "email_storage", True
                 ),
-                "user_id_only": self.findings.get("data_handling", {}).get("user_id_only", False),
-                "provider_sub": self.findings.get("data_handling", {}).get("provider_sub", False),
+                "user_id_only": self.findings.get("data_handling", {}).get(
+                    "user_id_only", False
+                ),
+                "provider_sub": self.findings.get("data_handling", {}).get(
+                    "provider_sub", False
+                ),
             },
         }
 

@@ -383,7 +383,9 @@ class TestGuidelineAgentLogic:
     @patch.object(GuidelineAgentLogic, "fetch_guideline_from_url")
     @patch.object(GuidelineAgentLogic, "fetch_guideline_from_file")
     @patch.object(GuidelineAgentLogic, "extract_text_from_pdf")
-    def test_ingest_guideline_success(self, mock_extract, mock_fetch_file, mock_fetch_url):
+    def test_ingest_guideline_success(
+        self, mock_extract, mock_fetch_file, mock_fetch_url
+    ):
         """Test ingest_guideline with success"""
         agent = GuidelineAgentLogic("test_agent")
 

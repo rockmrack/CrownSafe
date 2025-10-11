@@ -46,13 +46,17 @@ async def test_coppa_age_verification():
                 if response.status_code == 200:
                     data = response.json()
                     print(f"  ✅ Age: {data['age']} years")
-                    print(f"  COPPA Applies: {'Yes ⚠️' if data['coppa_applies'] else 'No ✅'}")
+                    print(
+                        f"  COPPA Applies: {'Yes ⚠️' if data['coppa_applies'] else 'No ✅'}"
+                    )
                     print(
                         f"  Parental Consent Required: {'Yes' if data['requires_parental_consent'] else 'No'}"
                     )
 
                     if data.get("verification_token"):
-                        print(f"  Token Generated: {data['verification_token'][:20]}...")
+                        print(
+                            f"  Token Generated: {data['verification_token'][:20]}..."
+                        )
 
                     if data.get("restrictions"):
                         print(f"  Restrictions: {len(data['restrictions'])} applied")
@@ -143,7 +147,9 @@ async def test_childrens_code():
                 if response.status_code == 200:
                     data = response.json()
                     print(f"  Compliant: {'✅ Yes' if data['compliant'] else '❌ No'}")
-                    print(f"  Age Appropriate: {'✅' if data['age_appropriate'] else '❌'}")
+                    print(
+                        f"  Age Appropriate: {'✅' if data['age_appropriate'] else '❌'}"
+                    )
                     print(
                         f"  Parental Controls Required: {'Yes' if data['parental_controls_required'] else 'No'}"
                     )
@@ -154,7 +160,9 @@ async def test_childrens_code():
                             print(f"    • {feature}")
 
                     if data.get("required_safeguards"):
-                        print(f"  🛡️ Required Safeguards: {len(data['required_safeguards'])}")
+                        print(
+                            f"  🛡️ Required Safeguards: {len(data['required_safeguards'])}"
+                        )
                         for safeguard in data["required_safeguards"][:2]:
                             print(f"    • {safeguard}")
 
@@ -254,7 +262,9 @@ async def test_legal_documents():
                     data = response.json()
                     print(f"  ✅ Document Type: {data['document_type']}")
                     print(f"  Version: {data['version']}")
-                    print(f"  Age Appropriate: {'✅' if data['age_appropriate'] else '❌'}")
+                    print(
+                        f"  Age Appropriate: {'✅' if data['age_appropriate'] else '❌'}"
+                    )
                     print(
                         f"  Requires Acceptance: {'Yes' if data['requires_acceptance'] else 'No'}"
                     )
@@ -282,7 +292,9 @@ async def test_privacy_dashboard():
 
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.get(f"{BASE_URL}/api/v1/compliance/privacy/dashboard/1")
+            response = await client.get(
+                f"{BASE_URL}/api/v1/compliance/privacy/dashboard/1"
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -301,7 +313,9 @@ async def test_privacy_dashboard():
                     print("\n👤 Age Verification:")
                     print(f"  Verified: {'✅' if age_data['verified'] else '❌'}")
                     print(f"  Age Group: {age_data.get('age_group', 'Unknown')}")
-                    print(f"  Parental Consent: {'✅' if age_data.get('parental_consent') else '❌'}")
+                    print(
+                        f"  Parental Consent: {'✅' if age_data.get('parental_consent') else '❌'}"
+                    )
 
                 # Privacy settings
                 if data.get("privacy_settings"):

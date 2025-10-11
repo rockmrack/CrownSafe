@@ -44,8 +44,12 @@ if ENABLE_DATAMATRIX:
         logging.getLogger().info("✅ DataMatrix scanning enabled and available")
         print("✅ DataMatrix scanning enabled and available")  # Force console output
     except ImportError:
-        logging.getLogger().warning("⚠️  DataMatrix requested but pylibdmtx not installed")
-        print("⚠️  DataMatrix requested but pylibdmtx not installed")  # Force console output
+        logging.getLogger().warning(
+            "⚠️  DataMatrix requested but pylibdmtx not installed"
+        )
+        print(
+            "⚠️  DataMatrix requested but pylibdmtx not installed"
+        )  # Force console output
 else:
     logging.getLogger().info("ℹ️  DataMatrix scanning disabled by config")
     print("ℹ️  DataMatrix scanning disabled by config")  # Force console output
@@ -113,7 +117,9 @@ class ScanResult:
                     "gtin": self.gtin,
                     "lot_number": self.lot_number,
                     "serial_number": self.serial_number,
-                    "expiry_date": self.expiry_date.isoformat() if self.expiry_date else None,
+                    "expiry_date": self.expiry_date.isoformat()
+                    if self.expiry_date
+                    else None,
                     "production_date": self.production_date.isoformat()
                     if self.production_date
                     else None,
@@ -211,7 +217,9 @@ class BarcodeScanner:
             # Try different scanning methods
             if PYZBAR_AVAILABLE:
                 results.extend(self._scan_with_pyzbar(image))
-            elif OPENCV_AVAILABLE and (self.opencv_qr_detector or self.opencv_barcode_detector):
+            elif OPENCV_AVAILABLE and (
+                self.opencv_qr_detector or self.opencv_barcode_detector
+            ):
                 # Use OpenCV as fallback when PyZbar is not available
                 results.extend(self._scan_with_opencv(image))
 
@@ -225,12 +233,16 @@ class BarcodeScanner:
             # If no results, return error
             if not results:
                 results.append(
-                    ScanResult(success=False, error_message="No barcodes detected in image")
+                    ScanResult(
+                        success=False, error_message="No barcodes detected in image"
+                    )
                 )
 
         except Exception as e:
             logger.error(f"Error scanning image: {e}")
-            results.append(ScanResult(success=False, error_message=f"Scan error: {str(e)}"))
+            results.append(
+                ScanResult(success=False, error_message=f"Scan error: {str(e)}")
+            )
 
         return results
 
@@ -367,7 +379,9 @@ class BarcodeScanner:
                 gray = img_array
             else:
                 # Unsupported format, skip preprocessing
-                logger.warning(f"Unsupported image format with shape: {img_array.shape}")
+                logger.warning(
+                    f"Unsupported image format with shape: {img_array.shape}"
+                )
                 return results
 
             # Try multiple preprocessing techniques
@@ -381,7 +395,9 @@ class BarcodeScanner:
                     gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
                 ),
                 # Blur and threshold
-                cv2.threshold(cv2.GaussianBlur(gray, (5, 5), 0), 127, 255, cv2.THRESH_BINARY)[1],
+                cv2.threshold(
+                    cv2.GaussianBlur(gray, (5, 5), 0), 127, 255, cv2.THRESH_BINARY
+                )[1],
             ]
 
             for processed in preprocessing_methods:
@@ -423,7 +439,9 @@ class BarcodeScanner:
     def _parse_barcode_data(self, data: str, barcode_type: str = None) -> ScanResult:
         """Parse barcode data based on type and format"""
 
-        result = ScanResult(success=True, raw_data=data, barcode_type=barcode_type, parsed_data={})
+        result = ScanResult(
+            success=True, raw_data=data, barcode_type=barcode_type, parsed_data={}
+        )
 
         # Check if it's a GS1 formatted barcode
         if self._is_gs1_format(data):
@@ -565,7 +583,9 @@ class BarcodeScanner:
             result.parsed_data = json_data
 
             # Map common fields
-            result.gtin = json_data.get("gtin") or json_data.get("upc") or json_data.get("ean")
+            result.gtin = (
+                json_data.get("gtin") or json_data.get("upc") or json_data.get("ean")
+            )
             result.lot_number = json_data.get("lot") or json_data.get("batch")
             result.serial_number = json_data.get("serial") or json_data.get("sn")
 
@@ -573,7 +593,9 @@ class BarcodeScanner:
             if "expiry" in json_data:
                 result.expiry_date = self._parse_date_string(json_data["expiry"])
             if "production_date" in json_data:
-                result.production_date = self._parse_date_string(json_data["production_date"])
+                result.production_date = self._parse_date_string(
+                    json_data["production_date"]
+                )
 
         except Exception as e:
             logger.warning(f"Error parsing JSON QR: {e}")

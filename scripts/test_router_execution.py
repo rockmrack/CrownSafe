@@ -35,7 +35,9 @@ class InstrumentedMockClient:
     def __init__(self):
         self.discoveries = {}
 
-    async def send_message(self, payload, message_type, target_agent_id, correlation_id):
+    async def send_message(
+        self, payload, message_type, target_agent_id, correlation_id
+    ):
         """Count messages by type"""
         if message_type == "TASK_ASSIGN":
             STATS["task_assigns"] += 1
@@ -106,7 +108,9 @@ async def test_router_success():
 
     # Connect to Redis
     try:
-        redis_conn = await redis.Redis(host="localhost", port=6379, decode_responses=False)
+        redis_conn = await redis.Redis(
+            host="localhost", port=6379, decode_responses=False
+        )
         await redis_conn.ping()
         print("✅ Redis connected\n")
     except:
@@ -166,7 +170,9 @@ async def test_router_success():
         print("\n📋 PHASE 3: Simulating worker completions...")
 
         # Complete the first 3 parallel tasks
-        for i, task_id in enumerate(["step1_patient_data", "step2_guidelines", "step3_policy"]):
+        for i, task_id in enumerate(
+            ["step1_patient_data", "step2_guidelines", "step3_policy"]
+        ):
             await router.process_message(
                 {
                     "mcp_header": {
@@ -215,7 +221,9 @@ async def test_router_success():
         print(f"\n✅ Discovery queries: {STATS['discoveries']} (Expected: 4)")
         print(f"✅ Tasks assigned: {STATS['task_assigns']} (Expected: 4)")
         print(f"✅ Task completions: {STATS['task_completes']} (Expected: 1+)")
-        print(f"✅ Messages to commander: {STATS['messages_to_commander']} (Expected: 1)")
+        print(
+            f"✅ Messages to commander: {STATS['messages_to_commander']} (Expected: 1)"
+        )
 
         # Validation
         success = (

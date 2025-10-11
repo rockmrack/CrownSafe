@@ -53,7 +53,9 @@ class IncidentSubmitRequest(BaseModel):
 
     title: str = Field(..., description="Brief title of the incident")
     description: str = Field(..., description="Detailed description of what happened")
-    product_barcode: Optional[str] = Field(None, description="Product barcode if available")
+    product_barcode: Optional[str] = Field(
+        None, description="Product barcode if available"
+    )
     product_name: Optional[str] = Field(None, description="Product name if known")
     brand_name: Optional[str] = Field(None, description="Brand name if known")
     model_number: Optional[str] = Field(None, description="Model number if available")
@@ -74,7 +76,9 @@ class IncidentAnalyzer:
     }
 
     @classmethod
-    async def analyze_incident(cls, incident: IncidentReport, db: Session) -> Dict[str, Any]:
+    async def analyze_incident(
+        cls, incident: IncidentReport, db: Session
+    ) -> Dict[str, Any]:
         """Analyze a new incident for patterns and clusters"""
 
         analysis_result = {
@@ -199,7 +203,9 @@ class IncidentAnalyzer:
         return None
 
     @classmethod
-    def _update_cluster_stats(cls, cluster: IncidentCluster, incident: IncidentReport, db: Session):
+    def _update_cluster_stats(
+        cls, cluster: IncidentCluster, incident: IncidentReport, db: Session
+    ):
         """Update cluster statistics with new incident"""
 
         cluster.incident_count += 1
@@ -279,7 +285,9 @@ class IncidentAnalyzer:
     async def _trigger_alert(cls, cluster: IncidentCluster, db: Session):
         """Trigger internal alert for cluster"""
 
-        logger.warning(f"ALERT: Cluster {cluster.id} has {cluster.incident_count} incidents")
+        logger.warning(
+            f"ALERT: Cluster {cluster.id} has {cluster.incident_count} incidents"
+        )
 
         # Mark cluster as alerted
         cluster.alert_triggered = True
@@ -344,7 +352,9 @@ def analyze_incident_background(incident_id: int):
     db = SessionLocal()
     try:
         # Fetch incident by ID
-        incident = db.query(IncidentReport).filter(IncidentReport.id == incident_id).first()
+        incident = (
+            db.query(IncidentReport).filter(IncidentReport.id == incident_id).first()
+        )
 
         if not incident:
             logger.warning(f"Incident {incident_id} not found for background analysis")
@@ -394,7 +404,9 @@ async def submit_incident_report(
 
     try:
         # Generate report ID
-        report_id = f"INC_{datetime.utcnow().strftime('%Y%m%d')}_{uuid.uuid4().hex[:6].upper()}"
+        report_id = (
+            f"INC_{datetime.utcnow().strftime('%Y%m%d')}_{uuid.uuid4().hex[:6].upper()}"
+        )
 
         # Upload photos to S3
         product_photo_urls = []
@@ -494,7 +506,11 @@ async def submit_incident_json(
             # Look for product in our database
             from core_infra.database import RecallDB
 
-            product = db.query(RecallDB).filter(RecallDB.barcode == request.product_barcode).first()
+            product = (
+                db.query(RecallDB)
+                .filter(RecallDB.barcode == request.product_barcode)
+                .first()
+            )
 
             if product:
                 product_id = product.id
@@ -508,9 +524,7 @@ async def submit_incident_json(
                 )
 
         # Generate report ID
-        report_id = (
-            f"INC-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
-        )
+        report_id = f"INC-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
 
         # Create incident report (tolerant of missing products)
         incident = IncidentReport(
@@ -633,7 +647,9 @@ async def get_incident_statistics(days: int = 30, db: Session = Depends(get_db))
 
     # Total incidents
     total_incidents = (
-        db.query(IncidentReport).filter(IncidentReport.created_at >= cutoff_date).count()
+        db.query(IncidentReport)
+        .filter(IncidentReport.created_at >= cutoff_date)
+        .count()
     )
 
     # By severity
@@ -680,9 +696,7 @@ async def submit_incident_dev(request: IncidentSubmitRequest):
     """
     try:
         # Generate report ID
-        report_id = (
-            f"INC-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
-        )
+        report_id = f"INC-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
 
         # Simulate product lookup
         product_found = False
@@ -693,9 +707,13 @@ async def submit_incident_dev(request: IncidentSubmitRequest):
         # Simulate PII stripping in response
         safe_description = request.description
         if "john.doe@example.com" in safe_description:
-            safe_description = safe_description.replace("john.doe@example.com", "[EMAIL_REDACTED]")
+            safe_description = safe_description.replace(
+                "john.doe@example.com", "[EMAIL_REDACTED]"
+            )
         if "555-123-4567" in safe_description:
-            safe_description = safe_description.replace("555-123-4567", "[PHONE_REDACTED]")
+            safe_description = safe_description.replace(
+                "555-123-4567", "[PHONE_REDACTED]"
+            )
 
         return ApiResponse(
             success=True,
@@ -714,7 +732,9 @@ async def submit_incident_dev(request: IncidentSubmitRequest):
 
 
 @incident_router.get("/clusters-dev", response_model=ApiResponse)
-async def get_incident_clusters_dev(trending_only: bool = False, min_incidents: int = 3):
+async def get_incident_clusters_dev(
+    trending_only: bool = False, min_incidents: int = 3
+):
     """
     DEV OVERRIDE: Get incident clusters without database dependencies
     """
@@ -756,7 +776,9 @@ async def get_incident_clusters_dev(trending_only: bool = False, min_incidents: 
         if trending_only:
             filtered_clusters = [c for c in filtered_clusters if c["trending"]]
 
-        filtered_clusters = [c for c in filtered_clusters if c["incident_count"] >= min_incidents]
+        filtered_clusters = [
+            c for c in filtered_clusters if c["incident_count"] >= min_incidents
+        ]
 
         return ApiResponse(success=True, data={"clusters": filtered_clusters})
 

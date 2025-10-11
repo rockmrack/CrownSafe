@@ -99,9 +99,15 @@ async def test_direct_database_search(model_number: str) -> Dict[str, Any]:
 
         with get_db_session() as db:
             # Search for exact model number match
-            recalls = db.query(RecallDB).filter(RecallDB.model_number.ilike(model_number)).all()
+            recalls = (
+                db.query(RecallDB)
+                .filter(RecallDB.model_number.ilike(model_number))
+                .all()
+            )
 
-            logger.info(f"Found {len(recalls)} recalls with model number '{model_number}'")
+            logger.info(
+                f"Found {len(recalls)} recalls with model number '{model_number}'"
+            )
 
             if recalls:
                 recall_data = []
@@ -161,7 +167,9 @@ async def test_recall_data_agent_directly(model_number: str) -> Dict[str, Any]:
     try:
         from agents.recall_data_agent.agent_logic import RecallDataAgentLogic
 
-        logger.info(f"Testing RecallDataAgent directly with model number: {model_number}")
+        logger.info(
+            f"Testing RecallDataAgent directly with model number: {model_number}"
+        )
 
         agent = RecallDataAgentLogic(agent_id="test_model_agent")
 
@@ -183,7 +191,9 @@ async def test_recall_data_agent_directly(model_number: str) -> Dict[str, Any]:
         return {"success": False, "error": str(e)}
 
 
-def run_comprehensive_test_suite(user_id: int, barcode: str, model_number: Optional[str] = None):
+def run_comprehensive_test_suite(
+    user_id: int, barcode: str, model_number: Optional[str] = None
+):
     """
     Run comprehensive test suite for model number scanning feature.
 
@@ -200,7 +210,9 @@ def run_comprehensive_test_suite(user_id: int, barcode: str, model_number: Optio
     # Test 1: Database availability and model number data
     logger.info("\n📊 Test 1: Database Model Number Data Check")
     if model_number:
-        test_results["database_search"] = asyncio.run(test_direct_database_search(model_number))
+        test_results["database_search"] = asyncio.run(
+            test_direct_database_search(model_number)
+        )
     else:
         logger.info("⚠️  No model number provided, skipping database search test")
         test_results["database_search"] = {
@@ -211,7 +223,9 @@ def run_comprehensive_test_suite(user_id: int, barcode: str, model_number: Optio
     # Test 2: RecallDataAgent direct test
     if model_number:
         logger.info("\n🤖 Test 2: RecallDataAgent Direct Test")
-        test_results["agent_direct"] = asyncio.run(test_recall_data_agent_directly(model_number))
+        test_results["agent_direct"] = asyncio.run(
+            test_recall_data_agent_directly(model_number)
+        )
     else:
         logger.info("⚠️  No model number provided, skipping agent direct test")
         test_results["agent_direct"] = {
@@ -227,7 +241,9 @@ def run_comprehensive_test_suite(user_id: int, barcode: str, model_number: Optio
 
     # Test 4: API endpoint without model number (baseline)
     logger.info("\n🌐 Test 4: API Endpoint without Model Number (Baseline)")
-    test_results["api_without_model"] = test_api_endpoint_with_model_number(user_id, barcode, None)
+    test_results["api_without_model"] = test_api_endpoint_with_model_number(
+        user_id, barcode, None
+    )
 
     # Summary
     logger.info("\n📋 Test Suite Summary")
@@ -264,7 +280,9 @@ def main():
     parser.add_argument("--user-id", type=int, default=1, help="User ID for API tests")
     parser.add_argument("--barcode", type=str, required=True, help="Product barcode")
     parser.add_argument("--model-number", type=str, help="Product model number to test")
-    parser.add_argument("--api-url", type=str, default="http://localhost:8001", help="Base API URL")
+    parser.add_argument(
+        "--api-url", type=str, default="http://localhost:8001", help="Base API URL"
+    )
 
     args = parser.parse_args()
 

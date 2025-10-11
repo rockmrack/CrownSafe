@@ -121,7 +121,9 @@ class CommanderAgentManager:
     async def handle_incoming_message(self, message: MCPMessage):
         """Handle incoming messages with proper error handling and response processing"""
         if not self.commander_logic:
-            logger.error("CommanderLogic instance not initialized. Cannot process message.")
+            logger.error(
+                "CommanderLogic instance not initialized. Cannot process message."
+            )
             return
 
         try:
@@ -166,7 +168,9 @@ class CommanderAgentManager:
             return True
 
         except Exception as e:
-            logger.critical(f"Failed to initialize CommanderAgent components: {e}", exc_info=True)
+            logger.critical(
+                f"Failed to initialize CommanderAgent components: {e}", exc_info=True
+            )
             return False
 
     def setup_signal_handlers(self):
@@ -185,7 +189,9 @@ class CommanderAgentManager:
                     loop.add_signal_handler(sig, lambda s=sig: signal_handler(s))
                     logger.debug(f"Added signal handler for {signal.Signals(sig).name}")
                 except (NotImplementedError, OSError) as e:
-                    logger.warning(f"Cannot add signal handler for {signal.Signals(sig).name}: {e}")
+                    logger.warning(
+                        f"Cannot add signal handler for {signal.Signals(sig).name}: {e}"
+                    )
 
         except RuntimeError as e:
             logger.warning(f"Could not setup signal handlers: {e}")

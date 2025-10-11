@@ -116,7 +116,9 @@ class Settings(BaseSettings):
         if (
             environment.lower() in ["production", "prod"] or is_production
         ) and v == "dev-secret-key":
-            raise ValueError("CRITICAL ERROR: Default secret key not allowed in production")
+            raise ValueError(
+                "CRITICAL ERROR: Default secret key not allowed in production"
+            )
 
         return v
 

@@ -7,10 +7,14 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 MOCK_INGREDIENTS_PATH = (
-    Path(__file__).parent.parent.parent.parent / "data" / "mock_product_ingredients.json"
+    Path(__file__).parent.parent.parent.parent
+    / "data"
+    / "mock_product_ingredients.json"
 )
 MOCK_SAFETY_DATA_PATH = (
-    Path(__file__).parent.parent.parent.parent / "data" / "mock_pregnancy_safety_data.json"
+    Path(__file__).parent.parent.parent.parent
+    / "data"
+    / "mock_pregnancy_safety_data.json"
 )
 
 
@@ -20,11 +24,15 @@ class PregnancyProductSafetyAgentLogic:
         self.logger = logger
 
         # Check if mock data is allowed in production
-        USE_MOCK_INGREDIENT_DB = os.getenv("USE_MOCK_INGREDIENT_DB", "false").lower() == "true"
+        USE_MOCK_INGREDIENT_DB = (
+            os.getenv("USE_MOCK_INGREDIENT_DB", "false").lower() == "true"
+        )
         ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 
         if ENVIRONMENT == "production" and USE_MOCK_INGREDIENT_DB:
-            raise RuntimeError("Production environment cannot use mock ingredient database")
+            raise RuntimeError(
+                "Production environment cannot use mock ingredient database"
+            )
 
         self._load_data(USE_MOCK_INGREDIENT_DB)
         self.logger.info("PregnancyProductSafetyAgentLogic initialized.")
@@ -47,12 +55,16 @@ class PregnancyProductSafetyAgentLogic:
                 self.safety_db = {}
         else:
             # Use real database for production
-            self.logger.info("Using real ingredient and pregnancy safety databases from database")
+            self.logger.info(
+                "Using real ingredient and pregnancy safety databases from database"
+            )
             # Database connections will be made per-request for better performance
             self.ingredient_db = None  # Will use database queries
             self.safety_db = None  # Will use database queries
 
-    def check_product_safety(self, product_upc: str, trimester: int = 1) -> Dict[str, Any]:
+    def check_product_safety(
+        self, product_upc: str, trimester: int = 1
+    ) -> Dict[str, Any]:
         """
         Checks a product's ingredients against the pregnancy safety database.
         The 'trimester' argument is included for future, more advanced logic.
@@ -113,7 +125,9 @@ class PregnancyProductSafetyAgentLogic:
         with get_db_session() as db:
             # 1. Get product ingredients from database
             product = (
-                db.query(ProductIngredient).filter(ProductIngredient.upc == product_upc).first()
+                db.query(ProductIngredient)
+                .filter(ProductIngredient.upc == product_upc)
+                .first()
             )
             if not product:
                 return {
@@ -135,7 +149,9 @@ class PregnancyProductSafetyAgentLogic:
                     "confidence_score": product.confidence_score,
                 }
 
-            product_ingredients = set(product.ingredients) if product.ingredients else set()
+            product_ingredients = (
+                set(product.ingredients) if product.ingredients else set()
+            )
 
             # 2. Cross-reference with unsafe ingredients list
             unsafe_ingredients_found = []
@@ -174,5 +190,7 @@ class PregnancyProductSafetyAgentLogic:
                 "total_ingredients_checked": len(product_ingredients),
                 "data_source": "database",
                 "confidence_score": product.confidence_score,
-                "last_updated": product.last_updated.isoformat() if product.last_updated else None,
+                "last_updated": product.last_updated.isoformat()
+                if product.last_updated
+                else None,
             }

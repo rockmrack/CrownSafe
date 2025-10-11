@@ -288,7 +288,9 @@ class TestSecurityAndValidation:
 
     def test_login_with_missing_email(self):
         """Test login with missing email"""
-        response = client.post("/api/v1/auth/login", json={"password": "testpassword123"})
+        response = client.post(
+            "/api/v1/auth/login", json={"password": "testpassword123"}
+        )
         assert response.status_code in [400, 404, 422, 500]
 
     def test_login_with_missing_password(self):
@@ -502,7 +504,9 @@ class TestSecurityAndValidation:
     def test_sql_injection_comment_attack(self):
         """Test SQL injection comment attack"""
         malicious = "admin'--"
-        response = client.post("/api/v1/auth/login", json={"email": malicious, "password": "test"})
+        response = client.post(
+            "/api/v1/auth/login", json={"email": malicious, "password": "test"}
+        )
         assert response.status_code in [400, 401, 404, 422, 500]
 
     def test_sql_injection_or_attack(self):
@@ -651,7 +655,9 @@ class TestSecurityAndValidation:
         """Test Content-Type header prevents XSS"""
         response = client.get("/api/v1/recalls")
         if response.status_code == 200:
-            assert "application/json" in response.headers.get("content-type", "").lower()
+            assert (
+                "application/json" in response.headers.get("content-type", "").lower()
+            )
 
     # ========================
     # CSRF PREVENTION TESTS (10 tests)
@@ -684,13 +690,17 @@ class TestSecurityAndValidation:
     def test_origin_header_validation(self):
         """Test Origin header validation"""
         headers = {"Origin": "https://malicious.com"}
-        response = client.post("/api/v1/feedback", json={"message": "test"}, headers=headers)
+        response = client.post(
+            "/api/v1/feedback", json={"message": "test"}, headers=headers
+        )
         assert response.status_code in [200, 201, 401, 403, 404, 422, 500]
 
     def test_referer_header_validation(self):
         """Test Referer header validation"""
         headers = {"Referer": "https://malicious.com"}
-        response = client.post("/api/v1/feedback", json={"message": "test"}, headers=headers)
+        response = client.post(
+            "/api/v1/feedback", json={"message": "test"}, headers=headers
+        )
         assert response.status_code in [200, 201, 401, 403, 404, 422, 500]
 
     def test_custom_header_requirement(self):

@@ -20,6 +20,14 @@ def dev_entitled(user_id: int, feature: str) -> bool:
     if os.getenv("ENTITLEMENTS_ALLOW_ALL", "").strip().lower() in {"1", "true", "yes"}:
         return True
 
-    allow = {s.strip() for s in os.getenv("ENTITLEMENTS_ALLOWLIST", "").split(",") if s.strip()}
-    feats = {s.strip() for s in os.getenv("ENTITLEMENTS_FEATURES", "").split(",") if s.strip()}
+    allow = {
+        s.strip()
+        for s in os.getenv("ENTITLEMENTS_ALLOWLIST", "").split(",")
+        if s.strip()
+    }
+    feats = {
+        s.strip()
+        for s in os.getenv("ENTITLEMENTS_FEATURES", "").split(",")
+        if s.strip()
+    }
     return str(user_id) in allow and (not feats or feature in feats)

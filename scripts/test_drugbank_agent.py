@@ -22,7 +22,9 @@ def test_drugbank_agent():
 
     print("\n1. Testing Drug ID lookup through drug_info task...")
     # Test drug info retrieval
-    result = logic.process_task({"task_name": "drug_info", "drug_name": "empagliflozin"})
+    result = logic.process_task(
+        {"task_name": "drug_info", "drug_name": "empagliflozin"}
+    )
 
     if result["status"] == "COMPLETED":
         drug_info = result.get("drug_info", {})
@@ -94,7 +96,9 @@ def test_drugbank_agent():
 
     print("\n5. Testing error handling with invalid drug...")
     # Test error handling
-    result = logic.process_task({"task_name": "drug_info", "drug_name": "nonexistent_drug_xyz"})
+    result = logic.process_task(
+        {"task_name": "drug_info", "drug_name": "nonexistent_drug_xyz"}
+    )
 
     if result["status"] == "FAILED":
         print(f"✓ Properly handled invalid drug: {result.get('error')}")

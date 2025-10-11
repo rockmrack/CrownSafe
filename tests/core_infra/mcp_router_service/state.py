@@ -109,7 +109,9 @@ def add_workflow(workflow_id: str, initial_state: Any):
         logger.error("State Error: add_workflow called with invalid workflow_id.")
         return
     if workflow_id in active_workflows:
-        logger.warning(f"State: Workflow ID '{workflow_id}' already exists. Overwriting state.")
+        logger.warning(
+            f"State: Workflow ID '{workflow_id}' already exists. Overwriting state."
+        )
     logger.debug(f"State: Adding workflow '{workflow_id}'.")
     active_workflows[workflow_id] = initial_state
 
@@ -123,7 +125,9 @@ def update_workflow(workflow_id: str, updated_state: Any):
         logger.debug(f"State: Updating workflow '{workflow_id}'.")
         active_workflows[workflow_id] = updated_state
     else:
-        logger.warning(f"State: Attempted to update non-existent workflow '{workflow_id}'.")
+        logger.warning(
+            f"State: Attempted to update non-existent workflow '{workflow_id}'."
+        )
 
 
 def get_workflow(workflow_id: str) -> Optional[Any]:
@@ -145,7 +149,9 @@ def remove_workflow(workflow_id: str):
         del active_workflows[workflow_id]
         logger.debug(f"State: Workflow '{workflow_id}' removed.")
     else:
-        logger.warning(f"State: Attempted to remove non-existent workflow '{workflow_id}'.")
+        logger.warning(
+            f"State: Attempted to remove non-existent workflow '{workflow_id}'."
+        )
 
 
 logger.info("State module loaded and functions defined.")

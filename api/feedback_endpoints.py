@@ -81,10 +81,14 @@ class FeedbackRequest(BaseModel):
 
     type: FeedbackType = Field(..., description="Type of feedback")
     subject: str = Field(..., min_length=3, max_length=200, description="Brief subject")
-    message: str = Field(..., min_length=10, max_length=5000, description="Detailed message")
+    message: str = Field(
+        ..., min_length=10, max_length=5000, description="Detailed message"
+    )
 
     # Optional user info
-    user_email: Optional[EmailStr] = Field(None, description="User's email for response")
+    user_email: Optional[EmailStr] = Field(
+        None, description="User's email for response"
+    )
     user_name: Optional[str] = Field(None, max_length=100, description="User's name")
     user_id: Optional[str] = Field(None, description="Authenticated user ID")
 
@@ -95,7 +99,9 @@ class FeedbackRequest(BaseModel):
     # Additional data
     screenshot: Optional[str] = Field(None, description="Base64 encoded screenshot")
     logs: Optional[str] = Field(None, description="App logs if applicable")
-    reproduction_steps: Optional[List[str]] = Field(None, description="Steps to reproduce issue")
+    reproduction_steps: Optional[List[str]] = Field(
+        None, description="Steps to reproduce issue"
+    )
 
     # Metadata
     locale: Optional[str] = Field("en-US", description="User's locale")
@@ -480,7 +486,9 @@ async def submit_feedback(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error(f"Failed to submit feedback: {e}")
-        raise HTTPException(status_code=500, detail="Failed to submit feedback. Please try again.")
+        raise HTTPException(
+            status_code=500, detail="Failed to submit feedback. Please try again."
+        )
 
 
 @router.get("/ticket/{ticket_number}", response_model=TicketStatus)

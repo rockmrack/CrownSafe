@@ -91,7 +91,9 @@ class DataIngestionRequest(BaseModel):
     sources: List[str] = Field(
         default=["CPSC", "EU_SAFETY_GATE"], description="Data sources to ingest"
     )
-    start_date: Optional[datetime] = Field(None, description="Start date for data range")
+    start_date: Optional[datetime] = Field(
+        None, description="Start date for data range"
+    )
     end_date: Optional[datetime] = Field(None, description="End date for data range")
     product_filter: Optional[str] = Field(None, description="Product category filter")
     full_sync: bool = Field(False, description="Perform full sync vs incremental")
@@ -101,7 +103,9 @@ class ProductSearchRequest(AppModel):
     """Request model for product search"""
 
     query: str = Field(..., description="Search query")
-    search_type: str = Field("name", description="Search type: name, upc, gtin, manufacturer")
+    search_type: str = Field(
+        "name", description="Search type: name, upc, gtin, manufacturer"
+    )
     limit: int = Field(10, ge=1, le=100)
     include_risk_score: bool = Field(True)
 
@@ -181,7 +185,11 @@ async def assess_product_risk(
             raise HTTPException(status_code=404, detail="Product not found")
 
         # Step 2: Fetch latest incident data
-        incidents = db.query(SafetyIncident).filter(SafetyIncident.product_id == product.id).all()
+        incidents = (
+            db.query(SafetyIncident)
+            .filter(SafetyIncident.product_id == product.id)
+            .all()
+        )
 
         # Step 3: Get company profile
         company_profile = None
@@ -193,11 +201,15 @@ async def assess_product_risk(
             )
 
         # Step 4: Calculate risk score
-        risk_components = risk_engine.calculate_risk_score(product, incidents, company_profile, db)
+        risk_components = risk_engine.calculate_risk_score(
+            product, incidents, company_profile, db
+        )
 
         # Step 5: Update or create risk profile
         risk_profile = (
-            db.query(ProductRiskProfile).filter(ProductRiskProfile.product_id == product.id).first()
+            db.query(ProductRiskProfile)
+            .filter(ProductRiskProfile.product_id == product.id)
+            .first()
         )
 
         if not risk_profile:
@@ -216,8 +228,12 @@ async def assess_product_risk(
 
         # Update incident counts
         risk_profile.total_incidents = len(incidents)
-        risk_profile.total_injuries = sum(1 for i in incidents if i.incident_type == "injury")
-        risk_profile.total_deaths = sum(1 for i in incidents if i.incident_type == "death")
+        risk_profile.total_injuries = sum(
+            1 for i in incidents if i.incident_type == "injury"
+        )
+        risk_profile.total_deaths = sum(
+            1 for i in incidents if i.incident_type == "death"
+        )
 
         db.commit()
 
@@ -256,7 +272,9 @@ async def assess_product_risk(
         recommendations = report_generator._generate_recommendations(risk_components)
 
         # Step 8: Trigger background data refresh
-        background_tasks.add_task(refresh_product_data, product.id, product.gtin or product.upc)
+        background_tasks.add_task(
+            refresh_product_data, product.id, product.gtin or product.upc
+        )
 
         # Return response
         return RiskAssessmentResponse(
@@ -414,14 +432,20 @@ async def get_risk_profile(
     """
     try:
         # Get product
-        product = db.query(ProductGoldenRecord).filter(ProductGoldenRecord.id == product_id).first()
+        product = (
+            db.query(ProductGoldenRecord)
+            .filter(ProductGoldenRecord.id == product_id)
+            .first()
+        )
 
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
 
         # Get risk profile
         risk_profile = (
-            db.query(ProductRiskProfile).filter(ProductRiskProfile.product_id == product_id).first()
+            db.query(ProductRiskProfile)
+            .filter(ProductRiskProfile.product_id == product_id)
+            .first()
         )
 
         if not risk_profile:
@@ -480,7 +504,11 @@ async def get_report(
     """
     try:
         # Get report record
-        report = db.query(RiskAssessmentReport).filter(RiskAssessmentReport.id == report_id).first()
+        report = (
+            db.query(RiskAssessmentReport)
+            .filter(RiskAssessmentReport.id == report_id)
+            .first()
+        )
 
         if not report:
             raise HTTPException(status_code=404, detail="Report not found")
@@ -530,7 +558,9 @@ async def trigger_data_ingestion(
             status="queued",
             scheduled_at=datetime.utcnow(),
             configuration={
-                "start_date": request.start_date.isoformat() if request.start_date else None,
+                "start_date": request.start_date.isoformat()
+                if request.start_date
+                else None,
                 "end_date": request.end_date.isoformat() if request.end_date else None,
                 "product_filter": request.product_filter,
             },
@@ -678,14 +708,18 @@ async def _find_or_create_product(
     # Try to find by identifiers
     if request.gtin:
         product = (
-            db.query(ProductGoldenRecord).filter(ProductGoldenRecord.gtin == request.gtin).first()
+            db.query(ProductGoldenRecord)
+            .filter(ProductGoldenRecord.gtin == request.gtin)
+            .first()
         )
         if product:
             return product
 
     if request.upc:
         product = (
-            db.query(ProductGoldenRecord).filter(ProductGoldenRecord.upc == request.upc).first()
+            db.query(ProductGoldenRecord)
+            .filter(ProductGoldenRecord.upc == request.upc)
+            .first()
         )
         if product:
             return product
@@ -702,7 +736,9 @@ async def _find_or_create_product(
             )
 
         if request.model_number:
-            query = query.filter(ProductGoldenRecord.model_number == request.model_number)
+            query = query.filter(
+                ProductGoldenRecord.model_number == request.model_number
+            )
 
         product = query.first()
         if product:
@@ -711,7 +747,8 @@ async def _find_or_create_product(
     # Create new product if we have enough information
     if request.product_name or request.upc or request.gtin:
         product = ProductGoldenRecord(
-            product_name=request.product_name or f"Unknown Product ({request.upc or request.gtin})",
+            product_name=request.product_name
+            or f"Unknown Product ({request.upc or request.gtin})",
             upc=request.upc,
             gtin=request.gtin,
             manufacturer=request.manufacturer,
@@ -743,8 +780,12 @@ async def enrich_product_data(product: ProductGoldenRecord, db: Session):
 
             if product_data:
                 # Update product with commercial data
-                if not product.product_name or product.product_name.startswith("Unknown"):
-                    product.product_name = product_data.get("product_name", product.product_name)
+                if not product.product_name or product.product_name.startswith(
+                    "Unknown"
+                ):
+                    product.product_name = product_data.get(
+                        "product_name", product.product_name
+                    )
 
                 if not product.brand:
                     product.brand = product_data.get("brand")

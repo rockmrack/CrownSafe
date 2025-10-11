@@ -63,7 +63,12 @@ def invalidate_cache_task(pattern):
         dict: Invalidation result
     """
     # Stub implementation
-    return {"success": True, "pattern": pattern, "keys_invalidated": 150, "time_taken_ms": 25}
+    return {
+        "success": True,
+        "pattern": pattern,
+        "keys_invalidated": 150,
+        "time_taken_ms": 25,
+    }
 
 
 @app.task(name="refresh_cache")

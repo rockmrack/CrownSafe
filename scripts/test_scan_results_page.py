@@ -52,7 +52,9 @@ def test_scan_results_page():
     assert (
         result_safe.verdict == VerdictType.NO_RECALLS_FOUND
     ), "Verdict should be 'No Recalls Found'"
-    assert result_safe.verdict_color == "green", "Color should be green for safe products"
+    assert (
+        result_safe.verdict_color == "green"
+    ), "Color should be green for safe products"
     assert result_safe.verdict_icon == "checkmark", "Icon should be checkmark"
     assert (
         result_safe.sub_text == "No recalls or allergen issues found in our database."
@@ -61,7 +63,8 @@ def test_scan_results_page():
         "39+ (No recalls found)" in result_safe.safety_check.agencies_checked
     ), "Should show 39+ agencies"
     assert (
-        result_safe.barcode_detection.quality_badge == "Best Quality: 014292998228 (ean13)"
+        result_safe.barcode_detection.quality_badge
+        == "Best Quality: 014292998228 (ean13)"
     ), "Should show quality badge"
 
     print(f"✅ Verdict: {result_safe.verdict}")
@@ -108,10 +111,14 @@ def test_scan_results_page():
     result_recall = create_scan_results(scan_data_recall, recall_data, None)
 
     # Verify the response
-    assert result_recall.verdict == VerdictType.RECALL_FOUND, "Verdict should be 'Recall Alert'"
+    assert (
+        result_recall.verdict == VerdictType.RECALL_FOUND
+    ), "Verdict should be 'Recall Alert'"
     assert result_recall.verdict_color == "red", "Color should be red for recalls"
     assert result_recall.verdict_icon == "warning", "Icon should be warning"
-    assert "2 recall(s) found" in result_recall.sub_text, "Sub-text should show recall count"
+    assert (
+        "2 recall(s) found" in result_recall.sub_text
+    ), "Sub-text should show recall count"
     assert (
         "39+ (2 recalls found)" in result_recall.safety_check.agencies_checked
     ), "Should show recall count in agencies"
@@ -142,8 +149,12 @@ def test_scan_results_page():
     json_output = result_safe.model_dump_json(indent=2)
     parsed = json.loads(json_output)
 
-    assert parsed["verdict"] == "No Recalls Found", "JSON should contain correct verdict"
-    assert parsed["safety_check"]["status"] == "All checks complete", "Should show complete status"
+    assert (
+        parsed["verdict"] == "No Recalls Found"
+    ), "JSON should contain correct verdict"
+    assert (
+        parsed["safety_check"]["status"] == "All checks complete"
+    ), "Should show complete status"
 
     print("✅ JSON serialization successful")
 
@@ -152,10 +163,14 @@ def test_scan_results_page():
 
     # For safe products
     assert "safe" not in result_safe.verdict.lower(), "Should not use 'safe' in verdict"
-    assert "guarantee" not in result_safe.sub_text.lower(), "Should not use 'guarantee' language"
+    assert (
+        "guarantee" not in result_safe.sub_text.lower()
+    ), "Should not use 'guarantee' language"
 
     # Check that agencies are never shown as 0
-    assert "0" not in result_safe.safety_check.agencies_checked, "Should never show 0 agencies"
+    assert (
+        "0" not in result_safe.safety_check.agencies_checked
+    ), "Should never show 0 agencies"
 
     print("✅ No contradictory messaging found")
     print("✅ Legally defensible language used throughout")

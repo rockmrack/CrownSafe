@@ -15,7 +15,9 @@ from typing import Dict, Any
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -73,9 +75,13 @@ async def test_high_confidence_visual_workflow():
             # Check that NO warning was added (confidence > 0.95)
             summary = result.get("data", {}).get("summary", "")
             assert "Warning:" not in summary, "High confidence should not add warning"
-            logger.info("✅ Test 1 PASSED: High confidence workflow completed without warnings")
+            logger.info(
+                "✅ Test 1 PASSED: High confidence workflow completed without warnings"
+            )
         else:
-            logger.info("✅ Test 1 PASSED: Workflow returned INCONCLUSIVE (no recalls found)")
+            logger.info(
+                "✅ Test 1 PASSED: Workflow returned INCONCLUSIVE (no recalls found)"
+            )
 
         logger.info(f"Result: {json.dumps(result, indent=2)}")
 
@@ -152,10 +158,14 @@ async def test_medium_confidence_visual_workflow():
         if result["status"] == "COMPLETED":
             summary = result.get("data", {}).get("summary", "")
             if "82% confidence" in summary:
-                logger.info("✅ Test 2 PASSED: Medium confidence warning added correctly")
+                logger.info(
+                    "✅ Test 2 PASSED: Medium confidence warning added correctly"
+                )
                 logger.info(f"Summary with warning: {summary[:200]}...")
             else:
-                logger.warning("⚠️ Warning not found in summary (may be due to workflow path)")
+                logger.warning(
+                    "⚠️ Warning not found in summary (may be due to workflow path)"
+                )
 
     except Exception as e:
         logger.error(f"❌ Test 2 FAILED: {e}", exc_info=True)
@@ -209,7 +219,9 @@ async def test_low_confidence_visual_workflow():
                 {
                     "step_id": "step2_check_recalls",
                     "agent_capability_required": "query_recalls_by_product",
-                    "inputs": {"product_name": "{{step0_visual_search.result.product_name}}"},
+                    "inputs": {
+                        "product_name": "{{step0_visual_search.result.product_name}}"
+                    },
                     "dependencies": ["step0_visual_search"],
                 },
             ],
@@ -220,14 +232,18 @@ async def test_low_confidence_visual_workflow():
         result = await router.execute_plan(test_plan)
 
         # Should fail due to low confidence
-        assert result["status"] == "FAILED", f"Expected FAILED status, got {result['status']}"
+        assert (
+            result["status"] == "FAILED"
+        ), f"Expected FAILED status, got {result['status']}"
 
         error_msg = result.get("error", "") or result.get("error_message", "")
         if "confidence too low" in error_msg.lower():
             logger.info("✅ Test 3 PASSED: Low confidence correctly halted workflow")
             logger.info(f"Error message: {error_msg}")
         else:
-            logger.warning(f"⚠️ Workflow failed but not explicitly for confidence: {error_msg}")
+            logger.warning(
+                f"⚠️ Workflow failed but not explicitly for confidence: {error_msg}"
+            )
 
     except Exception as e:
         logger.error(f"❌ Test 3 FAILED: {e}", exc_info=True)
@@ -314,7 +330,9 @@ async def test_visual_agent_modes():
 
         # Test suggestion mode (Phase 2 backward compatibility)
         logger.info("Testing suggestion mode...")
-        result = await visual_agent.process_task({"image_url": "https://example.com/test.jpg"})
+        result = await visual_agent.process_task(
+            {"image_url": "https://example.com/test.jpg"}
+        )
         assert result["status"] == "COMPLETED"
         assert "suggestions" in result["result"]
         assert len(result["result"]["suggestions"]) == 3
@@ -347,9 +365,15 @@ async def main():
     results = []
 
     # Run all tests
-    results.append(("High Confidence Workflow", await test_high_confidence_visual_workflow()))
-    results.append(("Medium Confidence Workflow", await test_medium_confidence_visual_workflow()))
-    results.append(("Low Confidence Workflow", await test_low_confidence_visual_workflow()))
+    results.append(
+        ("High Confidence Workflow", await test_high_confidence_visual_workflow())
+    )
+    results.append(
+        ("Medium Confidence Workflow", await test_medium_confidence_visual_workflow())
+    )
+    results.append(
+        ("Low Confidence Workflow", await test_low_confidence_visual_workflow())
+    )
     results.append(("Visual Agent Dual Mode", await test_visual_agent_modes()))
 
     # Summary
@@ -365,7 +389,9 @@ async def main():
             all_passed = False
 
     if all_passed:
-        logger.info("\n🎉 All Phase 3 tests PASSED! Full Visual Workflow is ready for deployment.")
+        logger.info(
+            "\n🎉 All Phase 3 tests PASSED! Full Visual Workflow is ready for deployment."
+        )
         logger.info("\nKey Features Validated:")
         logger.info("  ✅ Visual agent provides single best guess with confidence")
         logger.info("  ✅ Router halts workflow if confidence < 0.7")

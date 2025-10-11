@@ -213,7 +213,9 @@ class Message:
 
 # Fixed Memory Manager with Proper Redis Key Structure
 class UnifiedMemoryManager:
-    def __init__(self, redis_client: redis.Redis = None, chroma_client: chromadb.Client = None):
+    def __init__(
+        self, redis_client: redis.Redis = None, chroma_client: chromadb.Client = None
+    ):
         self.redis_client = redis_client
         self.chroma_client = chroma_client
         self.collection = None
@@ -257,7 +259,9 @@ class UnifiedMemoryManager:
                         # Use the most recent session
                         session_data = []
                         for sess in sessions:
-                            last_activity = self.redis_client.hget(sess, "last_activity")
+                            last_activity = self.redis_client.hget(
+                                sess, "last_activity"
+                            )
                             if last_activity:
                                 session_data.append((sess, float(last_activity)))
 
@@ -398,7 +402,9 @@ class UnifiedMemoryManager:
             except Exception as e:
                 st.error(f"ChromaDB storage error: {e}")
 
-    def get_full_conversation_context(self, current_query: str, model_type: str = "claude") -> str:
+    def get_full_conversation_context(
+        self, current_query: str, model_type: str = "claude"
+    ) -> str:
         """Get comprehensive context with proper token management"""
         max_tokens = self.token_limits.get(model_type, 30000)
         # Reserve tokens for response
@@ -500,7 +506,9 @@ class UnifiedMemoryManager:
 
         message_count = 0
         for msg in sorted_messages:
-            role_name = "User" if msg["role"] == "user" else msg.get("model", "Assistant")
+            role_name = (
+                "User" if msg["role"] == "user" else msg.get("model", "Assistant")
+            )
             msg_text = f"\n{role_name}: {msg['content']}"
 
             msg_tokens = len(self.encoder.encode(msg_text))
@@ -515,7 +523,9 @@ class UnifiedMemoryManager:
         context_parts.append(f"\n=== CURRENT QUERY ===\nUser: {current_query}")
 
         if st.session_state.get("debug_mode", False):
-            st.sidebar.write(f"Context: {message_count} messages, {current_tokens} tokens")
+            st.sidebar.write(
+                f"Context: {message_count} messages, {current_tokens} tokens"
+            )
 
         return "\n".join(context_parts)
 
@@ -527,7 +537,9 @@ class UnifiedMemoryManager:
             return messages
 
         try:
-            message_ids = self.redis_client.zrevrange(f"timeline:{self.session_id}", 0, limit - 1)
+            message_ids = self.redis_client.zrevrange(
+                f"timeline:{self.session_id}", 0, limit - 1
+            )
 
             for msg_id in message_ids:
                 message_key = f"message:{self.session_id}:{msg_id}"
@@ -536,7 +548,9 @@ class UnifiedMemoryManager:
                 if msg_data:
                     if "attachments" in msg_data:
                         try:
-                            msg_data["attachments"] = json.loads(msg_data["attachments"])
+                            msg_data["attachments"] = json.loads(
+                                msg_data["attachments"]
+                            )
                         except:
                             msg_data["attachments"] = []
                     else:
@@ -661,7 +675,9 @@ class UnifiedMemoryManager:
 
             summary = "\n".join(summary_parts)
 
-            self.redis_client.set(f"summary:{self.session_id}", summary, ex=86400 * 90)  # 90 days
+            self.redis_client.set(
+                f"summary:{self.session_id}", summary, ex=86400 * 90
+            )  # 90 days
         except Exception:
             pass
 
@@ -761,7 +777,9 @@ class ConnectionManager:
     def _init_memory(self):
         """Initialize memory manager when storage is available"""
         if self.redis_client or self.chroma_client:
-            self.memory_manager = UnifiedMemoryManager(self.redis_client, self.chroma_client)
+            self.memory_manager = UnifiedMemoryManager(
+                self.redis_client, self.chroma_client
+            )
             if self.chroma_client:
                 self.memory_manager.initialize_chromadb_collection()
 
@@ -888,7 +906,9 @@ Continue the response, completing any unfinished thoughts or code blocks."""
         # Get full context from memory
         context = ""
         if self.cm.memory_manager:
-            context = self.cm.memory_manager.get_full_conversation_context(prompt, "claude")
+            context = self.cm.memory_manager.get_full_conversation_context(
+                prompt, "claude"
+            )
             if st.session_state.get("debug_mode", False):
                 st.sidebar.info(f"Context loaded: {len(context)} chars")
         else:
@@ -957,7 +977,9 @@ Reference our previous discussions and maintain continuity.""",
         # Get full context from memory
         context = ""
         if self.cm.memory_manager:
-            context = self.cm.memory_manager.get_full_conversation_context(prompt, "gemini")
+            context = self.cm.memory_manager.get_full_conversation_context(
+                prompt, "gemini"
+            )
             if st.session_state.get("debug_mode", False):
                 st.sidebar.info(f"Context loaded: {len(context)} chars")
         else:
@@ -1015,7 +1037,9 @@ Context about our project:
         # Get full context from memory
         context = ""
         if self.cm.memory_manager:
-            context = self.cm.memory_manager.get_full_conversation_context(prompt, "gpt")
+            context = self.cm.memory_manager.get_full_conversation_context(
+                prompt, "gpt"
+            )
             if st.session_state.get("debug_mode", False):
                 st.sidebar.info(f"Context loaded: {len(context)} chars")
         else:
@@ -1123,9 +1147,13 @@ def display_message_with_code(content: str, container):
             with container.container():
                 col1, col2 = st.columns([3, 1])
                 with col1:
-                    st.markdown(f"**📄 Code Block {code_block_counter} ({language.upper()})**")
+                    st.markdown(
+                        f"**📄 Code Block {code_block_counter} ({language.upper()})**"
+                    )
                 with col2:
-                    if st.button("📋 Copy", key=f"copy_{code_block_counter}_{hash(code_content)}"):
+                    if st.button(
+                        "📋 Copy", key=f"copy_{code_block_counter}_{hash(code_content)}"
+                    ):
                         st.code(code_content, language=language)
                         st.success("Code ready to copy!")
 
@@ -1163,7 +1191,9 @@ def process_uploaded_file(uploaded_file) -> Dict[str, Any]:
                 file_details["type"] = "pdf"
                 file_details["pages"] = len(pdf_reader.pages)
             else:
-                file_details["content"] = "PDF support not available. Install PyPDF2 to read PDFs."
+                file_details[
+                    "content"
+                ] = "PDF support not available. Install PyPDF2 to read PDFs."
                 file_details["type"] = "pdf"
 
         elif uploaded_file.type.startswith("image/"):
@@ -1207,7 +1237,9 @@ def export_conversation_to_pdf(messages: List[Message]) -> bytes:
     story.append(Spacer(1, 12))
 
     story.append(
-        Paragraph(f"Exported: {datetime.now().strftime('%Y-%m-%d %H:%M')}", styles["Normal"])
+        Paragraph(
+            f"Exported: {datetime.now().strftime('%Y-%m-%d %H:%M')}", styles["Normal"]
+        )
     )
     story.append(Spacer(1, 12))
 
@@ -1220,7 +1252,9 @@ def export_conversation_to_pdf(messages: List[Message]) -> bytes:
                 fontSize=12,
                 spaceAfter=6,
             )
-            story.append(Paragraph(f"<b>You</b> - {msg.timestamp.strftime('%H:%M')}", role_style))
+            story.append(
+                Paragraph(f"<b>You</b> - {msg.timestamp.strftime('%H:%M')}", role_style)
+            )
         else:
             role_style = ParagraphStyle(
                 "AssistantStyle",
@@ -1256,7 +1290,9 @@ def export_conversation_to_pdf(messages: List[Message]) -> bytes:
                 italic=True,
                 leftIndent=20,
             )
-            story.append(Paragraph(f"📎 {len(msg.attachments)} file(s) attached", att_style))
+            story.append(
+                Paragraph(f"📎 {len(msg.attachments)} file(s) attached", att_style)
+            )
 
         story.append(Spacer(1, 12))
 
@@ -1270,7 +1306,9 @@ if "connection_manager" not in st.session_state:
     st.session_state.connection_manager = ConnectionManager()
 
 if "executor" not in st.session_state:
-    st.session_state.executor = MemoryAwareModelExecutor(st.session_state.connection_manager)
+    st.session_state.executor = MemoryAwareModelExecutor(
+        st.session_state.connection_manager
+    )
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -1279,7 +1317,10 @@ if "messages_loaded" not in st.session_state:
     st.session_state.messages_loaded = False
 
 # Load conversation history on first run
-if not st.session_state.messages_loaded and st.session_state.connection_manager.memory_manager:
+if (
+    not st.session_state.messages_loaded
+    and st.session_state.connection_manager.memory_manager
+):
     with st.spinner("Loading conversation history..."):
         loaded_messages = (
             st.session_state.connection_manager.memory_manager.load_conversation_history()
@@ -1301,12 +1342,16 @@ with st.sidebar:
     st.caption("Unified Memory System v6.0 FINAL")
 
     # Debug mode toggle
-    debug_mode = st.checkbox("Debug Mode", value=st.session_state.get("debug_mode", False))
+    debug_mode = st.checkbox(
+        "Debug Mode", value=st.session_state.get("debug_mode", False)
+    )
     st.session_state.debug_mode = debug_mode
 
     # Session Info
     if st.session_state.connection_manager.memory_manager:
-        st.info(f"Session: {st.session_state.connection_manager.memory_manager.session_id[:8]}...")
+        st.info(
+            f"Session: {st.session_state.connection_manager.memory_manager.session_id[:8]}..."
+        )
 
     # File Upload Section
     st.header("Upload Files")
@@ -1420,7 +1465,9 @@ with st.sidebar:
         redis_host = st.text_input("Host", value="localhost")
         redis_port = st.number_input("Port", value=6379)
         if st.button("Connect Redis"):
-            if st.session_state.connection_manager.connect_redis(redis_host, redis_port):
+            if st.session_state.connection_manager.connect_redis(
+                redis_host, redis_port
+            ):
                 st.success("Connected!")
                 if st.session_state.connection_manager.memory_manager:
                     loaded_messages = (
@@ -1487,7 +1534,9 @@ with chat_container:
         if message.role == "user":
             content = message.content
             if message.attachments:
-                content = f"{content}\n\n📎 Attachments: {len(message.attachments)} file(s)"
+                content = (
+                    f"{content}\n\n📎 Attachments: {len(message.attachments)} file(s)"
+                )
 
             st.markdown(
                 f"""
@@ -1541,7 +1590,9 @@ with st.form("chat_form", clear_on_submit=True):
     col1, col2 = st.columns([4, 1])
     with col1:
         if st.session_state.pending_attachments:
-            st.info(f"📎 {len(st.session_state.pending_attachments)} file(s) will be sent")
+            st.info(
+                f"📎 {len(st.session_state.pending_attachments)} file(s) will be sent"
+            )
 
     with col2:
         submit = st.form_submit_button("Send", type="primary", use_container_width=True)
@@ -1568,12 +1619,16 @@ if submit and user_input:
     with st.spinner(f"🤖 {st.session_state.current_model.value} is thinking..."):
         if st.session_state.current_model == ModelType.CLAUDE:
             response = asyncio.run(
-                st.session_state.executor.execute_claude(user_input, attachments_to_send)
+                st.session_state.executor.execute_claude(
+                    user_input, attachments_to_send
+                )
             )
             model_name = "Claude"
         elif st.session_state.current_model == ModelType.GEMINI:
             response = asyncio.run(
-                st.session_state.executor.execute_gemini(user_input, attachments_to_send)
+                st.session_state.executor.execute_gemini(
+                    user_input, attachments_to_send
+                )
             )
             model_name = "Gemini"
         else:
@@ -1590,7 +1645,9 @@ if submit and user_input:
 
         # Store in memory
         if st.session_state.connection_manager.memory_manager:
-            st.session_state.connection_manager.memory_manager.store_message(assistant_message)
+            st.session_state.connection_manager.memory_manager.store_message(
+                assistant_message
+            )
 
     st.rerun()
 
@@ -1683,7 +1740,9 @@ if not PDF_EXPORT_SUPPORT:
 if st.session_state.get("debug_mode", False):
     with st.expander("Debug Information", expanded=True):
         st.write("**Session Info:**")
-        st.write(f"- Session ID: {st.session_state.get('persistent_session_id', 'None')}")
+        st.write(
+            f"- Session ID: {st.session_state.get('persistent_session_id', 'None')}"
+        )
         st.write(f"- Messages in memory: {len(st.session_state.messages)}")
         st.write(f"- Current model: {st.session_state.current_model.value}")
 
@@ -1693,7 +1752,9 @@ if st.session_state.get("debug_mode", False):
 
         if st.session_state.connection_manager.redis_client:
             try:
-                session_id = st.session_state.connection_manager.memory_manager.session_id
+                session_id = (
+                    st.session_state.connection_manager.memory_manager.session_id
+                )
                 message_count = st.session_state.connection_manager.redis_client.zcard(
                     f"timeline:{session_id}"
                 )

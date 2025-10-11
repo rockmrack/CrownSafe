@@ -34,7 +34,9 @@ def _rules(scan: Dict[str, Any], profile: Dict[str, Any]) -> List[AlternativeIte
                 reason="Hard cheeses are lower moisture; generally safer in pregnancy.",
                 tags=["pregnancy"],
                 pregnancy_safe=True,
-                evidence=regulatory_to_evidence("FDA", "Pregnancy food safety guidelines"),
+                evidence=regulatory_to_evidence(
+                    "FDA", "Pregnancy food safety guidelines"
+                ),
             )
         )
 
@@ -107,7 +109,9 @@ def _rules(scan: Dict[str, Any], profile: Dict[str, Any]) -> List[AlternativeIte
                     reason="Same play value but with pieces too large to swallow.",
                     tags=["no-small-parts", "age-appropriate"],
                     age_min_months=0,
-                    evidence=regulatory_to_evidence("CPSC", "Small parts test guidelines"),
+                    evidence=regulatory_to_evidence(
+                        "CPSC", "Small parts test guidelines"
+                    ),
                 )
             )
 

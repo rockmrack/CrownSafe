@@ -161,12 +161,18 @@ class ClinicalTrialsAgentLogic:
                 )
         except (ValueError, TypeError):
             return False, "max_trials not int.", validated_max_trials, query_params
-        drug_name_s = drug_name.strip() if drug_name and isinstance(drug_name, str) else None
+        drug_name_s = (
+            drug_name.strip() if drug_name and isinstance(drug_name, str) else None
+        )
         disease_name_s = (
-            disease_name.strip() if disease_name and isinstance(disease_name, str) else None
+            disease_name.strip()
+            if disease_name and isinstance(disease_name, str)
+            else None
         )
         search_terms_s = (
-            search_terms.strip() if search_terms and isinstance(search_terms, str) else None
+            search_terms.strip()
+            if search_terms and isinstance(search_terms, str)
+            else None
         )
         if drug_name_s and len(drug_name_s) > 500:
             return False, "drug_name too long.", validated_max_trials, query_params
@@ -206,14 +212,18 @@ class ClinicalTrialsAgentLogic:
 
         last_exception: Optional[Exception] = None
 
-        for attempt in range(self.max_retries + 1):  # Initial attempt + self.max_retries
+        for attempt in range(
+            self.max_retries + 1
+        ):  # Initial attempt + self.max_retries
             try:
                 # Rate limiting is handled in the async _fetch_clinical_trials_data before calling this sync method via executor
                 self.logger.info(
                     f"ClinicalTrials API request (attempt {attempt + 1}/{self.max_retries + 1}) using 'requests'"
                 )
                 self.logger.info(f"  Target URL (constructed): {log_url}")
-                self.logger.debug(f"  Parameters: {api_params}, Headers: {self.working_headers}")
+                self.logger.debug(
+                    f"  Parameters: {api_params}, Headers: {self.working_headers}"
+                )
 
                 response = requests.get(
                     studies_endpoint,
@@ -222,8 +232,12 @@ class ClinicalTrialsAgentLogic:
                     timeout=self.request_timeout_seconds,
                 )
 
-                self.logger.info(f"  Response Status: {response.status_code} from {response.url}")
-                self.logger.debug(f"  Response Headers Received: {dict(response.headers)}")
+                self.logger.info(
+                    f"  Response Status: {response.status_code} from {response.url}"
+                )
+                self.logger.debug(
+                    f"  Response Headers Received: {dict(response.headers)}"
+                )
                 # Log actual request headers sent by 'requests' library
                 if response.request and response.request.headers:
                     self.logger.debug(
@@ -232,12 +246,16 @@ class ClinicalTrialsAgentLogic:
 
                 response.raise_for_status()  # Raises requests.exceptions.HTTPError for 4xx/5xx
 
-                json_response = response.json()  # Can raise requests.exceptions.JSONDecodeError
+                json_response = (
+                    response.json()
+                )  # Can raise requests.exceptions.JSONDecodeError
                 self.logger.info(f"API request successful (attempt {attempt + 1}).")
                 return json_response
 
             except requests.exceptions.Timeout as e:
-                last_exception = TimeoutError(f"Request Timeout on attempt {attempt + 1}: {e}")
+                last_exception = TimeoutError(
+                    f"Request Timeout on attempt {attempt + 1}: {e}"
+                )
                 self.logger.error(str(last_exception))
             except requests.exceptions.HTTPError as e:  # Catches 4xx and 5xx errors
                 err_msg_detail = (
@@ -249,11 +267,17 @@ class ClinicalTrialsAgentLogic:
                 if e.response.status_code == 400:
                     current_exception = ValueError(err_msg_detail)
                 elif e.response.status_code == 401:
-                    current_exception = PermissionError(f"Unauthorized (401): {err_msg_detail}")
+                    current_exception = PermissionError(
+                        f"Unauthorized (401): {err_msg_detail}"
+                    )
                 elif e.response.status_code == 403:
-                    current_exception = PermissionError(f"Forbidden (403): {err_msg_detail}")
+                    current_exception = PermissionError(
+                        f"Forbidden (403): {err_msg_detail}"
+                    )
                 elif e.response.status_code == 404:
-                    current_exception = FileNotFoundError(f"Not Found (404): {err_msg_detail}")
+                    current_exception = FileNotFoundError(
+                        f"Not Found (404): {err_msg_detail}"
+                    )
                 elif e.response.status_code == 429:
                     current_exception = ConnectionError(
                         f"Too Many Requests (429): {err_msg_detail}"
@@ -272,8 +296,12 @@ class ClinicalTrialsAgentLogic:
                     e.response.status_code == 429 or e.response.status_code >= 500
                 ):  # Don't retry non-server/non-rate-limit client errors
                     raise last_exception  # Fail fast
-            except requests.exceptions.ConnectionError as e:  # Includes DNS, refused, etc.
-                last_exception = ConnectionError(f"Connection Error on attempt {attempt + 1}: {e}")
+            except (
+                requests.exceptions.ConnectionError
+            ) as e:  # Includes DNS, refused, etc.
+                last_exception = ConnectionError(
+                    f"Connection Error on attempt {attempt + 1}: {e}"
+                )
                 self.logger.error(str(last_exception))
             except requests.exceptions.JSONDecodeError as e:
                 last_exception = ValueError(
@@ -312,7 +340,9 @@ class ClinicalTrialsAgentLogic:
                 )
 
         # Fallback, should not be reached
-        critical_fallback_error = "All API request attempts failed after retries (sync)."
+        critical_fallback_error = (
+            "All API request attempts failed after retries (sync)."
+        )
         self.logger.critical(critical_fallback_error)
         if last_exception:
             raise last_exception
@@ -339,23 +369,31 @@ class ClinicalTrialsAgentLogic:
             )
             overall_status = status_module.get("overallStatus", "N/A")
             trial_url = f"https://clinicaltrials.gov/study/{nct_id}"
-            conditions_list = protocol_section.get("conditionsModule", {}).get("conditions", [])
+            conditions_list = protocol_section.get("conditionsModule", {}).get(
+                "conditions", []
+            )
             condition_str = "; ".join(conditions_list) if conditions_list else "N/A"
-            arms_interventions_module = protocol_section.get("armsInterventionsModule", {})
+            arms_interventions_module = protocol_section.get(
+                "armsInterventionsModule", {}
+            )
             interventions_list = arms_interventions_module.get("interventions", [])
             intervention_names = []
             if isinstance(interventions_list, list):
                 for item in interventions_list:
                     if isinstance(item, dict) and item.get("name"):
                         intervention_names.append(item.get("name"))
-            intervention_str = "; ".join(intervention_names) if intervention_names else "N/A"
+            intervention_str = (
+                "; ".join(intervention_names) if intervention_names else "N/A"
+            )
             start_date_struct = status_module.get("startDateStruct", {})
             start_date = (
                 start_date_struct.get("date", "N/A")
                 if isinstance(start_date_struct, dict)
                 else "N/A"
             )
-            completion_date_struct = status_module.get("primaryCompletionDateStruct", {})
+            completion_date_struct = status_module.get(
+                "primaryCompletionDateStruct", {}
+            )
             completion_date = (
                 completion_date_struct.get("date", "N/A")
                 if isinstance(completion_date_struct, dict)
@@ -414,7 +452,9 @@ class ClinicalTrialsAgentLogic:
                 )
 
             api_total_count = (
-                api_response_json.get("totalCount", 0) if isinstance(api_response_json, dict) else 0
+                api_response_json.get("totalCount", 0)
+                if isinstance(api_response_json, dict)
+                else 0
             )
             search_time_ms = (time.perf_counter_ns() - start_time_ns) // 1_000_000
 
@@ -439,10 +479,10 @@ class ClinicalTrialsAgentLogic:
             FileNotFoundError,
             RuntimeError,
         ) as e:
-            search_time_ms_on_error = (time.perf_counter_ns() - start_time_ns) // 1_000_000
-            error_message = (
-                f"API Error (requests) for {query_params_str}: {type(e).__name__} - {str(e)}"
-            )
+            search_time_ms_on_error = (
+                time.perf_counter_ns() - start_time_ns
+            ) // 1_000_000
+            error_message = f"API Error (requests) for {query_params_str}: {type(e).__name__} - {str(e)}"
             self.logger.error(error_message)
             return TrialsQueryResult(
                 query_used_for_api=query_params_str,
@@ -453,7 +493,9 @@ class ClinicalTrialsAgentLogic:
                 search_time_ms=search_time_ms_on_error,
             )
         except Exception as e_unhandled:  # Fallback for truly unexpected errors
-            search_time_ms_on_error = (time.perf_counter_ns() - start_time_ns) // 1_000_000
+            search_time_ms_on_error = (
+                time.perf_counter_ns() - start_time_ns
+            ) // 1_000_000
             error_message = f"Unexpected failure processing clinical trials for {query_params_str}: {type(e_unhandled).__name__} - {str(e_unhandled)}"
             self.logger.error(error_message, exc_info=True)
             return TrialsQueryResult(
@@ -465,13 +507,19 @@ class ClinicalTrialsAgentLogic:
                 search_time_ms=search_time_ms_on_error,
             )
 
-    def _validate_message_structure(self, message_data: Any) -> tuple[bool, Optional[str]]:
+    def _validate_message_structure(
+        self, message_data: Any
+    ) -> tuple[bool, Optional[str]]:
         # ... (This method remains the same) ...
         if not isinstance(message_data, dict):
             return False, f"Msg not dict: {type(message_data).__name__}"
-        if "mcp_header" not in message_data or not isinstance(message_data["mcp_header"], dict):
+        if "mcp_header" not in message_data or not isinstance(
+            message_data["mcp_header"], dict
+        ):
             return False, "Missing/invalid mcp_header"
-        if "payload" not in message_data or not isinstance(message_data["payload"], dict):
+        if "payload" not in message_data or not isinstance(
+            message_data["payload"], dict
+        ):
             return False, "Missing/invalid payload"
         return True, None
 
@@ -481,7 +529,9 @@ class ClinicalTrialsAgentLogic:
         # ... (This method remains largely the same, ensuring it calls the updated _fetch_clinical_trials_data) ...
         is_valid_msg, msg_err = self._validate_message_structure(message_data)
         if not is_valid_msg:
-            self.logger.error(f"Invalid msg structure: {msg_err}. Msg: {str(message_data)[:500]}")
+            self.logger.error(
+                f"Invalid msg structure: {msg_err}. Msg: {str(message_data)[:500]}"
+            )
             return None
         header = message_data["mcp_header"]
         payload = message_data["payload"]
@@ -542,7 +592,9 @@ class ClinicalTrialsAgentLogic:
                 param_err_msg,
                 validated_max_trials,
                 query_params_dict,
-            ) = self._validate_parameters(drug_name, disease_name, search_terms, max_trials_param)
+            ) = self._validate_parameters(
+                drug_name, disease_name, search_terms, max_trials_param
+            )
             if not is_valid_params:
                 self.logger.error(f"Invalid params for task {task_id}: {param_err_msg}")
                 return {
@@ -597,7 +649,9 @@ class ClinicalTrialsAgentLogic:
             f"ClinicalTrialsAgentLogic (requests version) shutting down for agent {self.agent_id}"
         )
         # No aiohttp session to close
-        self.logger.info(f"ClinicalTrialsAgentLogic shutdown complete for agent {self.agent_id}")
+        self.logger.info(
+            f"ClinicalTrialsAgentLogic shutdown complete for agent {self.agent_id}"
+        )
 
     def get_status(self) -> Dict[str, Any]:
         return {

@@ -63,7 +63,9 @@ class Subscription(Base):
 
     # Subscription details
     plan = Column(SQLEnum(SubscriptionPlan), nullable=False)  # monthly or annual
-    status = Column(SQLEnum(SubscriptionStatus), nullable=False, default=SubscriptionStatus.PENDING)
+    status = Column(
+        SQLEnum(SubscriptionStatus), nullable=False, default=SubscriptionStatus.PENDING
+    )
     provider = Column(SQLEnum(PaymentProvider), nullable=False)  # apple or google
 
     # Product IDs from app stores
@@ -105,7 +107,10 @@ class Subscription(Base):
 
     def is_active(self) -> bool:
         """Check if subscription is currently active"""
-        return self.status == SubscriptionStatus.ACTIVE and self.expires_at > datetime.utcnow()
+        return (
+            self.status == SubscriptionStatus.ACTIVE
+            and self.expires_at > datetime.utcnow()
+        )
 
     def calculate_expiry(self) -> DateTime:
         """Calculate expiry date based on plan"""
@@ -126,7 +131,9 @@ class Subscription(Base):
             "product_id": self.product_id,
             "started_at": self.started_at.isoformat() if self.started_at else None,
             "expires_at": self.expires_at.isoformat() if self.expires_at else None,
-            "cancelled_at": self.cancelled_at.isoformat() if self.cancelled_at else None,
+            "cancelled_at": self.cancelled_at.isoformat()
+            if self.cancelled_at
+            else None,
             "auto_renew": self.auto_renew,
             "is_active": self.is_active(),
         }

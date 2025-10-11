@@ -41,15 +41,21 @@ class ToolSelectorLogic:
             await self._handle_discovery_result(payload)
             return None  # Discovery result handling sends its own response
         else:
-            self.logger.warning(f"Received unhandled message type '{message_type}'. Ignoring.")
+            self.logger.warning(
+                f"Received unhandled message type '{message_type}'. Ignoring."
+            )
             return None
 
-    async def _handle_selection_request(self, payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    async def _handle_selection_request(
+        self, payload: Dict[str, Any]
+    ) -> Optional[Dict[str, Any]]:
         """Handles a TASK_ASSIGN request to select a tool/agent."""
         required_capabilities = payload.get("required_capabilities")
         task_description = payload.get("task_description")  # Alternative input
         correlation_id = payload.get("correlation_id")  # ID for this selection task
-        original_requester_id = payload.get("original_requester_id")  # Who asked for the selection
+        original_requester_id = payload.get(
+            "original_requester_id"
+        )  # Who asked for the selection
 
         if not correlation_id or not original_requester_id:
             self.logger.error(

@@ -110,11 +110,17 @@ def list_recalls(
         min_length=2,
         description="Free text search over name/brand/description/hazard/category",
     ),
-    agency: Optional[str] = Query(None, description="Filter by source agency (e.g., CPSC, FDA)"),
+    agency: Optional[str] = Query(
+        None, description="Filter by source agency (e.g., CPSC, FDA)"
+    ),
     country: Optional[str] = Query(None, description="Filter by country"),
     category: Optional[str] = Query(None, description="Filter by product category"),
-    hazard_category: Optional[str] = Query(None, description="Filter by hazard category"),
-    date_from: Optional[date] = Query(None, description="Filter recalls from this date"),
+    hazard_category: Optional[str] = Query(
+        None, description="Filter by hazard category"
+    ),
+    date_from: Optional[date] = Query(
+        None, description="Filter recalls from this date"
+    ),
     date_to: Optional[date] = Query(None, description="Filter recalls to this date"),
     sort: str = Query(
         "recent",
@@ -258,7 +264,9 @@ def list_recalls(
     next_cursor = None
     if has_more and rows:
         last_row = rows[-1]
-        next_cursor = encode_cursor(last_row.recall_id or "", last_row.recall_date, last_row.id)
+        next_cursor = encode_cursor(
+            last_row.recall_id or "", last_row.recall_date, last_row.id
+        )
 
     payload = RecallListResponse(
         items=items,
@@ -281,8 +289,12 @@ def search_recalls_dev(
     agency: Optional[str] = Query(None, description="Filter by source agency"),
     country: Optional[str] = Query(None, description="Filter by country"),
     category: Optional[str] = Query(None, description="Filter by product category"),
-    hazard_category: Optional[str] = Query(None, description="Filter by hazard category"),
-    date_from: Optional[date] = Query(None, description="Filter recalls from this date"),
+    hazard_category: Optional[str] = Query(
+        None, description="Filter by hazard category"
+    ),
+    date_from: Optional[date] = Query(
+        None, description="Filter recalls from this date"
+    ),
     date_to: Optional[date] = Query(None, description="Filter recalls to this date"),
     sort: str = Query("recent", pattern="^(recent|oldest)$", description="Sort order"),
     limit: int = Query(20, ge=1, le=100, description="Number of results per page"),
@@ -365,11 +377,14 @@ def search_recalls_dev(
             filtered_recalls = [
                 r
                 for r in filtered_recalls
-                if q.lower() in r["product_name"].lower() or q.lower() in r["brand"].lower()
+                if q.lower() in r["product_name"].lower()
+                or q.lower() in r["brand"].lower()
             ]
 
         if agency:
-            filtered_recalls = [r for r in filtered_recalls if agency.upper() in r["agency"]]
+            filtered_recalls = [
+                r for r in filtered_recalls if agency.upper() in r["agency"]
+            ]
 
         if category:
             filtered_recalls = [
@@ -492,7 +507,9 @@ def get_recall_stats(db: Session = Depends(get_db)):
         from datetime import datetime, timedelta, timezone
 
         thirty_days_ago = datetime.now(timezone.utc).date() - timedelta(days=30)
-        recent_recalls = db.query(RecallDB).filter(RecallDB.recall_date >= thirty_days_ago).count()
+        recent_recalls = (
+            db.query(RecallDB).filter(RecallDB.recall_date >= thirty_days_ago).count()
+        )
 
         # Top agencies
         agency_counts = (
@@ -519,10 +536,12 @@ def get_recall_stats(db: Session = Depends(get_db)):
                 "total_recalls": total_recalls,
                 "recent_recalls_30_days": recent_recalls,
                 "top_agencies": [
-                    {"agency": agency, "count": count} for agency, count in agency_counts
+                    {"agency": agency, "count": count}
+                    for agency, count in agency_counts
                 ],
                 "top_hazard_categories": [
-                    {"category": category, "count": count} for category, count in hazard_counts
+                    {"category": category, "count": count}
+                    for category, count in hazard_counts
                 ],
             },
         }

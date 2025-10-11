@@ -18,7 +18,9 @@ class ChildrensCode_ComplianceAgent:
         self.mcp_client = MCPClient(agent_id=self.agent_id, server_url=MCP_SERVER_URL)
         self.logic = ChildrensCode_ComplianceAgentLogic(agent_id=self.agent_id)
 
-        self.mcp_client.register_capability("verify_uk_defaults", self.handle_verify_defaults)
+        self.mcp_client.register_capability(
+            "verify_uk_defaults", self.handle_verify_defaults
+        )
 
     async def handle_verify_defaults(self, task_payload: dict) -> dict:
         user_profile = task_payload.get("user_profile")

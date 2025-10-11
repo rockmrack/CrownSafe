@@ -12,7 +12,9 @@ class TestMetricsWithPrometheus:
 
         inc_req("conversation", "pregnancy_risk", ok=True, circuit=False)
 
-        mock_chat_req.labels.assert_called_once_with("conversation", "pregnancy_risk", "1", "0")
+        mock_chat_req.labels.assert_called_once_with(
+            "conversation", "pregnancy_risk", "1", "0"
+        )
         mock_labels.inc.assert_called_once()
 
     @patch("core.metrics.PROM", True)
@@ -131,7 +133,9 @@ class TestNewMetrics:
 
         inc_fallback("conversation", "synth_fallback")
 
-        mock_chat_fallback.labels.assert_called_once_with("conversation", "synth_fallback")
+        mock_chat_fallback.labels.assert_called_once_with(
+            "conversation", "synth_fallback"
+        )
         mock_labels.inc.assert_called_once()
 
     @patch("core.metrics.PROM", True)

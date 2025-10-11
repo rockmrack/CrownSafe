@@ -71,7 +71,9 @@ class DrugSafetyAgentLogic:
         self.api_base_url = os.getenv(
             "OPENFDA_API_URL", "https://api.fda.gov/drug/event.json"
         ).rstrip("/")
-        self.user_agent = f"CureViaX/{self.version} (DrugSafetyAgent; mailto:contact@example.com)"
+        self.user_agent = (
+            f"CureViaX/{self.version} (DrugSafetyAgent; mailto:contact@example.com)"
+        )
 
         self.working_headers = {"User-Agent": self.user_agent}
         self.max_retries = 2
@@ -150,7 +152,9 @@ class DrugSafetyAgentLogic:
                 validated_max_reactions,
             )
         try:
-            validated_max_reactions = int(max_reactions) if max_reactions is not None else 5
+            validated_max_reactions = (
+                int(max_reactions) if max_reactions is not None else 5
+            )
             if not 1 <= validated_max_reactions <= 20:
                 return (
                     False,
@@ -183,7 +187,9 @@ class DrugSafetyAgentLogic:
             raise ValueError(err_msg)  # Fail fast
 
         # Construct the base search term using the drug name for the medicinalproduct field
-        search_term_value = f"patient.drug.medicinalproduct:{drug_name_for_search_term.upper()}"
+        search_term_value = (
+            f"patient.drug.medicinalproduct:{drug_name_for_search_term.upper()}"
+        )
 
         # Combine with other API specific params like limit, count
         # The caller (_fetch_adverse_event_data) will now prepare the full api_params dict
@@ -204,7 +210,9 @@ class DrugSafetyAgentLogic:
                 self.logger.info(
                     f"openFDA API request (attempt {attempt + 1}/{self.max_retries + 1}) using 'requests'"
                 )
-                self.logger.info(f"  Target URL (constructed): {log_url}")  # Log full URL
+                self.logger.info(
+                    f"  Target URL (constructed): {log_url}"
+                )  # Log full URL
                 self.logger.debug(
                     f"  Final Parameters: {final_api_params}, Headers: {self.working_headers}"
                 )
@@ -215,7 +223,9 @@ class DrugSafetyAgentLogic:
                     headers=self.working_headers,
                     timeout=self.request_timeout_seconds,
                 )
-                self.logger.info(f"  Response Status: {response.status_code} from {response.url}")
+                self.logger.info(
+                    f"  Response Status: {response.status_code} from {response.url}"
+                )
                 if response.request and response.request.headers:
                     self.logger.debug(
                         f"  ACTUAL REQUEST HEADERS SENT by 'requests': {dict(response.request.headers)}"
@@ -223,11 +233,15 @@ class DrugSafetyAgentLogic:
 
                 response.raise_for_status()
                 json_response = response.json()
-                self.logger.info(f"openFDA API request successful (attempt {attempt + 1}).")
+                self.logger.info(
+                    f"openFDA API request successful (attempt {attempt + 1})."
+                )
                 return json_response
 
             except requests.exceptions.Timeout as e:
-                last_exception = TimeoutError(f"Request Timeout on attempt {attempt + 1}: {e}")
+                last_exception = TimeoutError(
+                    f"Request Timeout on attempt {attempt + 1}: {e}"
+                )
             except requests.exceptions.HTTPError as e:
                 err_msg = (
                     f"HTTP {e.response.status_code} from openFDA. URL: {e.request.url}. "
@@ -247,7 +261,9 @@ class DrugSafetyAgentLogic:
                     last_exception = ConnectionError(err_msg)
                     raise last_exception
             except requests.exceptions.ConnectionError as e:
-                last_exception = ConnectionError(f"Connection Error on attempt {attempt + 1}: {e}")
+                last_exception = ConnectionError(
+                    f"Connection Error on attempt {attempt + 1}: {e}"
+                )
             except requests.exceptions.JSONDecodeError as e:
                 last_exception = ValueError(
                     f"JSONDecodeError on attempt {attempt + 1}: {e}. Response: {response.text[:200] if 'response' in locals() else 'N/A'}"
@@ -278,7 +294,9 @@ class DrugSafetyAgentLogic:
                     f"All {self.max_retries + 1} attempts failed with an unspecified error."
                 )
 
-        critical_fallback_error = "All openFDA API request attempts failed after retries (sync)."
+        critical_fallback_error = (
+            "All openFDA API request attempts failed after retries (sync)."
+        )
         self.logger.critical(critical_fallback_error)
         if last_exception:
             raise last_exception
@@ -297,10 +315,14 @@ class DrugSafetyAgentLogic:
             and "results" in response_json_for_reactions
             and isinstance(response_json_for_reactions["results"], list)
         ):
-            for item in response_json_for_reactions["results"][:max_reactions_to_return]:
+            for item in response_json_for_reactions["results"][
+                :max_reactions_to_return
+            ]:
                 if isinstance(item, dict) and "term" in item and "count" in item:
                     top_reactions_list.append(
-                        AdverseReaction(term=str(item["term"]), count=int(item["count"]))
+                        AdverseReaction(
+                            term=str(item["term"]), count=int(item["count"])
+                        )
                     )
                 else:
                     self.logger.warning(
@@ -344,7 +366,9 @@ class DrugSafetyAgentLogic:
                 and "meta" in response_total_json
                 and "results" in response_total_json["meta"]
             ):
-                total_reports_for_drug = response_total_json["meta"]["results"].get("total", 0)
+                total_reports_for_drug = response_total_json["meta"]["results"].get(
+                    "total", 0
+                )
             self.logger.info(
                 f"Total adverse event reports found for '{drug_name_validated}': {total_reports_for_drug}"
             )
@@ -402,13 +426,19 @@ class DrugSafetyAgentLogic:
             error=final_error,
         )
 
-    def _validate_message_structure(self, message_data: Any) -> tuple[bool, Optional[str]]:
+    def _validate_message_structure(
+        self, message_data: Any
+    ) -> tuple[bool, Optional[str]]:
         # ... (same as V2.0.0) ...
         if not isinstance(message_data, dict):
             return False, f"Msg not dict: {type(message_data).__name__}"
-        if "mcp_header" not in message_data or not isinstance(message_data["mcp_header"], dict):
+        if "mcp_header" not in message_data or not isinstance(
+            message_data["mcp_header"], dict
+        ):
             return False, "Missing/invalid mcp_header"
-        if "payload" not in message_data or not isinstance(message_data["payload"], dict):
+        if "payload" not in message_data or not isinstance(
+            message_data["payload"], dict
+        ):
             return False, "Missing/invalid payload"
         return True, None
 
@@ -418,7 +448,9 @@ class DrugSafetyAgentLogic:
         # ... (same as V2.0.0, with PONG/ACK handling) ...
         is_valid_msg, msg_err = self._validate_message_structure(message_data)
         if not is_valid_msg:
-            self.logger.error(f"Invalid msg structure: {msg_err}. Msg: {str(message_data)[:500]}")
+            self.logger.error(
+                f"Invalid msg structure: {msg_err}. Msg: {str(message_data)[:500]}"
+            )
             return None
         header = message_data["mcp_header"]
         payload = message_data["payload"]
@@ -530,7 +562,9 @@ class DrugSafetyAgentLogic:
         self.logger.info(
             f"DrugSafetyAgentLogic (requests version) shutting down for agent {self.agent_id}"
         )
-        self.logger.info(f"DrugSafetyAgentLogic shutdown complete for agent {self.agent_id}")
+        self.logger.info(
+            f"DrugSafetyAgentLogic shutdown complete for agent {self.agent_id}"
+        )
 
     def get_status(self) -> Dict[str, Any]:
         # ... (same as V2.0.0) ...

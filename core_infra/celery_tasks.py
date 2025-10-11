@@ -368,7 +368,9 @@ def extract_labels(job_id: str, image_data: bytes) -> Dict[str, Any]:
     # Run label extraction
     loop = asyncio.new_event_loop()
     labels_result = loop.run_until_complete(
-        image_processor._extract_labels(image_data, image_processor._auto_select_providers())
+        image_processor._extract_labels(
+            image_data, image_processor._auto_select_providers()
+        )
     )
     loop.close()
 
@@ -440,7 +442,9 @@ def save_extraction(self, job_id: str, results: Dict[str, Any]):
             # Calculate confidence
             confidence = ocr.get("confidence", 0.0)
             if barcodes:
-                confidence = max(confidence, max(b.get("confidence", 0) for b in barcodes))
+                confidence = max(
+                    confidence, max(b.get("confidence", 0) for b in barcodes)
+                )
 
             job.confidence_score = confidence
 
@@ -583,12 +587,16 @@ def ingest_safety_articles():
                     logger.debug(f"Updated existing article: {article_data['title']}")
 
             except Exception as e:
-                logger.error(f"Error processing article {article_data.get('article_id')}: {e}")
+                logger.error(
+                    f"Error processing article {article_data.get('article_id')}: {e}"
+                )
                 continue
 
         db.commit()
 
-    logger.info(f"[Celery Task] Ingestion complete. Upserted {upserted_count} new safety articles.")
+    logger.info(
+        f"[Celery Task] Ingestion complete. Upserted {upserted_count} new safety articles."
+    )
     return {
         "status": "success",
         "message": f"Ingestion complete. Upserted {upserted_count} new articles.",

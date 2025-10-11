@@ -41,7 +41,9 @@ def main(barcode: str):
 
     except requests.exceptions.RequestException as e:
         print(f"\n❌ TEST FAILED: Could not connect to the API at {API_URL}.")
-        print("Please ensure your Docker containers are running with 'docker-compose up -d'.")
+        print(
+            "Please ensure your Docker containers are running with 'docker-compose up -d'."
+        )
         print(f"Error: {e}")
 
 

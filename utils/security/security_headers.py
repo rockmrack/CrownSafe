@@ -123,7 +123,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
         # 9. Cache-Control for sensitive endpoints
         if request.url.path.startswith(("/api/v1/auth", "/api/v1/user")):
-            response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+            response.headers[
+                "Cache-Control"
+            ] = "no-store, no-cache, must-revalidate, max-age=0"
             response.headers["Pragma"] = "no-cache"
 
         # 10. Remove server header (security through obscurity)
@@ -218,7 +220,9 @@ class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
             try:
                 size = int(content_length)
                 if size > self.max_body_size:
-                    logger.warning(f"Request too large: {size} bytes (max {self.max_body_size})")
+                    logger.warning(
+                        f"Request too large: {size} bytes (max {self.max_body_size})"
+                    )
                     return Response(
                         content=f"Request body too large (max {self.max_body_size} bytes)",
                         status_code=413,
@@ -241,7 +245,9 @@ def configure_security_middleware(app, environment: str = "production"):
     is_production = environment == "production"
 
     # 1. Request size limiting (always enabled)
-    app.add_middleware(RequestSizeLimitMiddleware, max_body_size=10 * 1024 * 1024)  # 10MB
+    app.add_middleware(
+        RequestSizeLimitMiddleware, max_body_size=10 * 1024 * 1024
+    )  # 10MB
 
     # 2. Security headers (stricter in production)
     app.add_middleware(

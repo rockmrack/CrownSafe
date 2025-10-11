@@ -24,7 +24,9 @@ from core_infra.database import get_db_session, User
 logger = logging.getLogger(__name__)
 
 # Feature flag for receipt validation (disabled by default - requires Google service account key)
-ENABLE_RECEIPT_VALIDATION = os.getenv("ENABLE_RECEIPT_VALIDATION", "false").lower() == "true"
+ENABLE_RECEIPT_VALIDATION = (
+    os.getenv("ENABLE_RECEIPT_VALIDATION", "false").lower() == "true"
+)
 
 # Google imports - optional
 GOOGLE_API_AVAILABLE = False
@@ -37,7 +39,9 @@ if ENABLE_RECEIPT_VALIDATION:
         GOOGLE_API_AVAILABLE = True
         logger.info("Receipt validation enabled - Google API libraries available")
     except ImportError:
-        logger.error("Receipt validation enabled but Google API libraries not available")
+        logger.error(
+            "Receipt validation enabled but Google API libraries not available"
+        )
         if os.getenv("ENVIRONMENT") == "production":
             raise RuntimeError(
                 "Receipt validation enabled in production but Google API libraries missing"
@@ -68,7 +72,9 @@ class AppleReceiptValidator:
 
             # Send validation request
             async with httpx.AsyncClient() as client:
-                response = await client.post(self.verify_url, json=payload, timeout=10.0)
+                response = await client.post(
+                    self.verify_url, json=payload, timeout=10.0
+                )
                 result = response.json()
 
             # Check status
@@ -125,7 +131,9 @@ class AppleReceiptValidator:
             "purchase_date": parse_date(latest.get("purchase_date_ms")),
             "expires_date": parse_date(latest.get("expires_date_ms")),
             "is_trial": latest.get("is_trial_period") == "true",
-            "auto_renew": receipt_data.get("pending_renewal_info", [{}])[0].get("auto_renew_status")
+            "auto_renew": receipt_data.get("pending_renewal_info", [{}])[0].get(
+                "auto_renew_status"
+            )
             == "1",
         }
 
@@ -141,11 +149,15 @@ class GoogleReceiptValidator:
         """Initialize Google Play API service"""
         try:
             if not ENABLE_RECEIPT_VALIDATION:
-                logger.info("Receipt validation disabled - skipping Google service initialization")
+                logger.info(
+                    "Receipt validation disabled - skipping Google service initialization"
+                )
                 return None
 
             if not GOOGLE_API_AVAILABLE:
-                logger.error("Receipt validation enabled but Google API libraries not available")
+                logger.error(
+                    "Receipt validation enabled but Google API libraries not available"
+                )
                 return None
 
             # Try to get service account key from environment variable (ECS Secrets Manager)
@@ -183,7 +195,9 @@ class GoogleReceiptValidator:
             logger.error(f"Failed to initialize Google Play service: {e}")
             return None
 
-    async def validate(self, purchase_token: str, product_id: str) -> Tuple[bool, Optional[Dict]]:
+    async def validate(
+        self, purchase_token: str, product_id: str
+    ) -> Tuple[bool, Optional[Dict]]:
         """
         Validate Google Play receipt
         Returns: (is_valid, receipt_info)
@@ -209,7 +223,9 @@ class GoogleReceiptValidator:
             if purchase.get("purchaseState") == 0:  # 0 = Purchased
                 return True, self._parse_purchase(purchase, product_id)
 
-            logger.warning(f"Google purchase invalid state: {purchase.get('purchaseState')}")
+            logger.warning(
+                f"Google purchase invalid state: {purchase.get('purchaseState')}"
+            )
             return False, None
 
         except Exception as e:
@@ -228,7 +244,9 @@ class GoogleReceiptValidator:
         return {
             "product_id": product_id,
             "transaction_id": purchase.get("orderId"),
-            "original_transaction_id": purchase.get("linkedPurchaseToken", purchase.get("orderId")),
+            "original_transaction_id": purchase.get(
+                "linkedPurchaseToken", purchase.get("orderId")
+            ),
             "purchase_date": parse_date(purchase.get("startTimeMillis")),
             "expires_date": parse_date(purchase.get("expiryTimeMillis")),
             "is_trial": purchase.get("paymentState") == 2,  # 2 = Free trial
@@ -265,7 +283,9 @@ class ReceiptValidationService:
         try:
             # Validate based on provider
             if provider.lower() == "apple":
-                is_valid, receipt_info = await self.apple_validator.validate(receipt_data)
+                is_valid, receipt_info = await self.apple_validator.validate(
+                    receipt_data
+                )
                 provider_enum = PaymentProvider.APPLE
             elif provider.lower() == "google":
                 if not product_id:
@@ -369,7 +389,8 @@ class ReceiptValidationService:
                 db.query(Subscription)
                 .filter(
                     Subscription.user_id == user_id,
-                    Subscription.original_transaction_id == receipt_info["original_transaction_id"],
+                    Subscription.original_transaction_id
+                    == receipt_info["original_transaction_id"],
                 )
                 .first()
             )

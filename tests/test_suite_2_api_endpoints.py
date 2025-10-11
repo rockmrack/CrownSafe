@@ -211,12 +211,16 @@ class TestAPIEndpoints:
 
     def test_barcode_with_ean_format(self):
         """Test barcode with EAN format"""
-        response = client.post("/api/v1/barcode/scan", json={"barcode": "5901234123457"})
+        response = client.post(
+            "/api/v1/barcode/scan", json={"barcode": "5901234123457"}
+        )
         assert response.status_code in [200, 400, 401, 404, 422, 500]
 
     def test_barcode_with_gtin_format(self):
         """Test barcode with GTIN format"""
-        response = client.post("/api/v1/barcode/scan", json={"barcode": "10012345678906"})
+        response = client.post(
+            "/api/v1/barcode/scan", json={"barcode": "10012345678906"}
+        )
         assert response.status_code in [200, 400, 401, 404, 422, 500]
 
     def test_barcode_history_endpoint(self):
@@ -226,7 +230,9 @@ class TestAPIEndpoints:
 
     def test_barcode_batch_lookup(self):
         """Test barcode batch lookup"""
-        response = client.post("/api/v1/barcode/batch", json={"barcodes": ["123", "456"]})
+        response = client.post(
+            "/api/v1/barcode/batch", json={"barcodes": ["123", "456"]}
+        )
         assert response.status_code in [200, 400, 401, 404, 422, 500]
 
     def test_barcode_validate_endpoint(self):
@@ -334,7 +340,9 @@ class TestAPIEndpoints:
 
     def test_resend_verification_endpoint(self):
         """Test resend verification endpoint"""
-        response = client.post("/api/v1/auth/resend-verification", json={"email": "test@test.com"})
+        response = client.post(
+            "/api/v1/auth/resend-verification", json={"email": "test@test.com"}
+        )
         assert response.status_code in [200, 400, 404, 422, 500]
 
     def test_delete_account_endpoint(self):
@@ -368,7 +376,9 @@ class TestAPIEndpoints:
 
     def test_update_notification_settings(self):
         """Test update notification settings"""
-        response = client.put("/api/v1/notifications/settings", json={"email_enabled": True})
+        response = client.put(
+            "/api/v1/notifications/settings", json={"email_enabled": True}
+        )
         assert response.status_code in [200, 401, 404, 405, 422, 500]
 
     def test_delete_notification_endpoint(self):
@@ -383,12 +393,16 @@ class TestAPIEndpoints:
 
     def test_notification_subscribe_endpoint(self):
         """Test notification subscription endpoint"""
-        response = client.post("/api/v1/notifications/subscribe", json={"topic": "recalls"})
+        response = client.post(
+            "/api/v1/notifications/subscribe", json={"topic": "recalls"}
+        )
         assert response.status_code in [200, 401, 404, 405, 422, 500]
 
     def test_notification_unsubscribe_endpoint(self):
         """Test notification unsubscription endpoint"""
-        response = client.post("/api/v1/notifications/unsubscribe", json={"topic": "recalls"})
+        response = client.post(
+            "/api/v1/notifications/unsubscribe", json={"topic": "recalls"}
+        )
         assert response.status_code in [200, 401, 404, 405, 422, 500]
 
     def test_push_notification_token_endpoint(self):
@@ -404,7 +418,9 @@ class TestAPIEndpoints:
 
     def test_submit_feedback_endpoint(self):
         """Test submit feedback endpoint"""
-        response = client.post("/api/v1/feedback", json={"message": "Test feedback", "rating": 5})
+        response = client.post(
+            "/api/v1/feedback", json={"message": "Test feedback", "rating": 5}
+        )
         assert response.status_code in [200, 201, 401, 404, 422, 500]
 
     def test_list_feedback_endpoint(self):
@@ -419,7 +435,9 @@ class TestAPIEndpoints:
 
     def test_update_feedback_endpoint(self):
         """Test update feedback endpoint"""
-        response = client.put("/api/v1/feedback/1", json={"message": "Updated feedback"})
+        response = client.put(
+            "/api/v1/feedback/1", json={"message": "Updated feedback"}
+        )
         assert response.status_code in [200, 401, 404, 422, 500]
 
     def test_delete_feedback_endpoint(self):

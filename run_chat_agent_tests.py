@@ -293,7 +293,11 @@ def test_chat_agent():
                     "checks": ["Call now"],
                     "flags": ["emergency"],
                     "disclaimer": "Emergency",
-                    "emergency": {"level": "red", "reason": "Critical", "cta": "Call 911"},
+                    "emergency": {
+                        "level": "red",
+                        "reason": "Critical",
+                        "cta": "Call 911",
+                    },
                 }
 
         agent = ChatAgentLogic(llm=MockLLM())

@@ -29,7 +29,9 @@ def upgrade():
         sa.Column("expires_at", sa.DateTime(), nullable=False),
         sa.Column("used_at", sa.DateTime(), nullable=True),
     )
-    op.create_index("ix_password_reset_tokens_user_id", "password_reset_tokens", ["user_id"])
+    op.create_index(
+        "ix_password_reset_tokens_user_id", "password_reset_tokens", ["user_id"]
+    )
 
     # Create device_tokens table
     op.create_table(
@@ -79,8 +81,12 @@ def upgrade():
         sa.Column("related_product_id", sa.String(200), nullable=True),
         sa.Column("related_recall_id", sa.String(200), nullable=True),
     )
-    op.create_index("ix_notification_history_user_id", "notification_history", ["user_id"])
-    op.create_index("ix_notification_history_sent_at", "notification_history", ["sent_at"])
+    op.create_index(
+        "ix_notification_history_user_id", "notification_history", ["user_id"]
+    )
+    op.create_index(
+        "ix_notification_history_sent_at", "notification_history", ["sent_at"]
+    )
 
     # Create monitored_products table
     op.create_table(
@@ -106,7 +112,9 @@ def upgrade():
         sa.Column("metadata", sa.JSON(), nullable=True),
     )
     op.create_index("ix_monitored_products_user_id", "monitored_products", ["user_id"])
-    op.create_index("ix_monitored_products_upc_code", "monitored_products", ["upc_code"])
+    op.create_index(
+        "ix_monitored_products_upc_code", "monitored_products", ["upc_code"]
+    )
 
     # Create monitoring_runs table
     op.create_table(

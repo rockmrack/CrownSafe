@@ -24,7 +24,9 @@ def seed_users():
         # Create roles if they don't exist
         admin_role = db.query(Role).filter(Role.name == "admin").first()
         if not admin_role:
-            admin_role = Role(name="admin", description="Administrator with full access.")
+            admin_role = Role(
+                name="admin", description="Administrator with full access."
+            )
             db.add(admin_role)
             db.commit()
             db.refresh(admin_role)
@@ -39,7 +41,9 @@ def seed_users():
         # Create a default admin user
         admin_email = "admin@babyshield.com"
         if not db.query(User).filter(User.email == admin_email).first():
-            create_user(db, email=admin_email, password="adminpassword", role_id=admin_role.id)
+            create_user(
+                db, email=admin_email, password="adminpassword", role_id=admin_role.id
+            )
             print(f"   ✔ Created admin user: {admin_email}")
         else:
             print(f"   ✔ Admin user already exists: {admin_email}")
@@ -48,7 +52,9 @@ def seed_users():
         for i in range(1, 10):
             user_email = f"testuser{i}@babyshield.com"
             if not db.query(User).filter(User.email == user_email).first():
-                create_user(db, email=user_email, password="password", role_id=user_role.id)
+                create_user(
+                    db, email=user_email, password="password", role_id=user_role.id
+                )
                 print(f"   ✔ Created test user: {user_email}")
             else:
                 print(f"   ✔ Test user already exists: {user_email}")

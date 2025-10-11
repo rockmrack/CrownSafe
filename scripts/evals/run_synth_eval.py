@@ -40,17 +40,22 @@ def get_llm_client(dummy: bool = False):
                 checks = []
                 out_flags = flags.copy()
                 if "soft_cheese" in flags or scan_data.get("category") == "cheese":
-                    reasons.append("Soft cheeses may be risky in pregnancy unless pasteurised.")
+                    reasons.append(
+                        "Soft cheeses may be risky in pregnancy unless pasteurised."
+                    )
                     checks.append("Check the label for pasteurisation.")
                 if (
                     "peanut" in ingredients
                     or "peanuts" in ingredients
                     or (
                         "profile" in scan_data
-                        and "peanut" in (scan_data.get("profile") or {}).get("allergies", [])
+                        and "peanut"
+                        in (scan_data.get("profile") or {}).get("allergies", [])
                     )
                 ):
-                    reasons.append("Contains or may contain peanuts; consider allergy risk.")
+                    reasons.append(
+                        "Contains or may contain peanuts; consider allergy risk."
+                    )
                     if "contains_peanuts" not in out_flags:
                         out_flags.append("contains_peanuts")
                 if scan_data.get("power_source") == "button_battery":
@@ -58,7 +63,9 @@ def get_llm_client(dummy: bool = False):
                     if "button_battery_risk" not in out_flags:
                         out_flags.append("button_battery_risk")
                 if int(scan_data.get("recalls_found", 0)) > 0:
-                    reasons.append("A recall was found; stop use and follow recall instructions.")
+                    reasons.append(
+                        "A recall was found; stop use and follow recall instructions."
+                    )
                 if scan_data.get("category") in ("cosmetic", "topical"):
                     checks.append("Verify batch/lot and expiry on the label.")
                 checks = list(dict.fromkeys(checks))
@@ -82,7 +89,9 @@ def get_llm_client(dummy: bool = False):
 
             return OpenAILLMClient()
         except Exception:
-            print("Falling back to dummy LLM (no infra.openai_client).", file=sys.stderr)
+            print(
+                "Falling back to dummy LLM (no infra.openai_client).", file=sys.stderr
+            )
             return get_llm_client(dummy=True)
 
 
@@ -115,7 +124,9 @@ def check_case(resp: Dict[str, Any], expect: Dict[str, Any]) -> Tuple[bool, List
 
     # Must include any of substrings in checks
     for s in expect.get("must_checks_any", []):
-        if not any(any(x in c.lower() for x in [s.lower()]) for c in resp.get("checks", [])):
+        if not any(
+            any(x in c.lower() for x in [s.lower()]) for c in resp.get("checks", [])
+        ):
             ok, errors = False, errors + [f"missing one-of checks contains: {s}"]
 
     # Flags
@@ -153,7 +164,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--cases", default="evals/golden/cases.jsonl")
     ap.add_argument("--max", type=int, default=0, help="limit cases")
-    ap.add_argument("--dummy", action="store_true", help="use deterministic dummy LLM (CI-safe)")
+    ap.add_argument(
+        "--dummy", action="store_true", help="use deterministic dummy LLM (CI-safe)"
+    )
     args = ap.parse_args()
 
     llm = get_llm_client(dummy=args.dummy)
@@ -177,9 +190,13 @@ def main():
             elapsed_ms = int((time.time() - t0) * 1000)
             ok, errs = check_case(resp, c.get("expect", {}))
             passed += 1 if ok else 0
-            results.append({"id": cid, "ok": ok, "ms": elapsed_ms, "errors": errs, "resp": resp})
+            results.append(
+                {"id": cid, "ok": ok, "ms": elapsed_ms, "errors": errs, "resp": resp}
+            )
             status = "OK" if ok else "FAIL"
-            print(f"[{status}] {cid}  ({elapsed_ms} ms)" + ("" if ok else f"  -> {errs}"))
+            print(
+                f"[{status}] {cid}  ({elapsed_ms} ms)" + ("" if ok else f"  -> {errs}")
+            )
         except Exception as e:
             results.append({"id": cid, "ok": False, "ms": None, "errors": [str(e)]})
             print(f"[ERR ] {cid} -> {e}")

@@ -18,7 +18,9 @@ for key in workflow_keys:
             data = json.loads(value)
             print(f"  Status: {data.get('status')}")
             print(f"  Workflow ID in data: {data.get('workflow_id')}")
-            print(f"  Controller Correlation ID: {data.get('controller_correlation_id')}")
+            print(
+                f"  Controller Correlation ID: {data.get('controller_correlation_id')}"
+            )
             print(f"  Original Requester: {data.get('original_requester_id')}")
 
             # Extract workflow ID from key

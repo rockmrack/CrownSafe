@@ -18,8 +18,12 @@ class COPPA_ComplianceAgent:
         self.mcp_client = MCPClient(agent_id=self.agent_id, server_url=MCP_SERVER_URL)
         self.logic = COPPA_ComplianceAgentLogic(agent_id=self.agent_id)
 
-        self.mcp_client.register_capability("check_coppa_consent", self.handle_check_consent)
-        self.mcp_client.register_capability("plan_data_deletion", self.handle_plan_deletion)
+        self.mcp_client.register_capability(
+            "check_coppa_consent", self.handle_check_consent
+        )
+        self.mcp_client.register_capability(
+            "plan_data_deletion", self.handle_plan_deletion
+        )
 
     async def handle_check_consent(self, task_payload: dict) -> dict:
         user_profile = task_payload.get("user_profile")

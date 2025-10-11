@@ -17,7 +17,9 @@ from collections import deque
 import queue
 
 # Suppress coroutine warnings during testing
-warnings.filterwarnings("ignore", category=RuntimeWarning, message=".*coroutine.*was never awaited")
+warnings.filterwarnings(
+    "ignore", category=RuntimeWarning, message=".*coroutine.*was never awaited"
+)
 
 # Configure logging with precise formatting
 logger = logging.getLogger(__name__)
@@ -85,7 +87,9 @@ class EvidenceItem:
     weight: float
     supports_approval: bool
     confidence: float
-    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp: str = field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
 
     def __post_init__(self):
         """Validate evidence item constraints"""
@@ -373,7 +377,9 @@ class MockPolicyAnalysisAgentLogic:
             return {
                 "meets_criteria": False,
                 "reason": "Drug not in formulary",
-                "unmet_criteria": [{"criterion": "Formulary", "description": "Drug not covered"}],
+                "unmet_criteria": [
+                    {"criterion": "Formulary", "description": "Drug not covered"}
+                ],
             }
 
         unmet_criteria = []
@@ -605,7 +611,10 @@ class MockDrugBankAgentLogic:
                         }
                     )
 
-                if any("insulin" in d.lower() or "glipizide" in d.lower() for d in drug_names):
+                if any(
+                    "insulin" in d.lower() or "glipizide" in d.lower()
+                    for d in drug_names
+                ):
                     interactions.append(
                         {
                             "severity": "moderate",
@@ -617,7 +626,9 @@ class MockDrugBankAgentLogic:
             return {
                 "status": "COMPLETED",
                 "interactions": interactions,
-                "highest_severity": max([i["severity"] for i in interactions], default="none"),
+                "highest_severity": max(
+                    [i["severity"] for i in interactions], default="none"
+                ),
                 "drug_count": len(drug_names),
             }
 
@@ -683,7 +694,10 @@ class MockLLMClient:
 
                 elif "patient-002" in prompt:
                     # Clear denial case
-                    if 'medication_history": []' in prompt or 'medication_history":[]' in prompt:
+                    if (
+                        'medication_history": []' in prompt
+                        or 'medication_history":[]' in prompt
+                    ):
                         response_data = {
                             "approval_likelihood_percent": 8,
                             "decision_prediction": "Deny",
@@ -833,7 +847,9 @@ class PatientStratificationAgentLogic:
         # Track latencies for percentile calculations - FIXED: Use thread-safe deque
         self._latency_history = deque(maxlen=1000)
 
-        self.logger.info(f"PatientStratificationAgentLogic initialized successfully for {agent_id}")
+        self.logger.info(
+            f"PatientStratificationAgentLogic initialized successfully for {agent_id}"
+        )
 
     def _initialize_agents(self) -> None:
         """Initialize dependent agents with comprehensive fallback logic"""
@@ -876,7 +892,9 @@ class PatientStratificationAgentLogic:
                 self.logger.info(f"Successfully initialized {class_name}")
             except (ImportError, AttributeError) as e:
                 self.logger.warning(f"Using mock {class_name} due to: {e}")
-                setattr(self, attr_name, mock_class(agent_id=f"{self.agent_id}_{attr_name}"))
+                setattr(
+                    self, attr_name, mock_class(agent_id=f"{self.agent_id}_{attr_name}")
+                )
 
     def _initialize_llm_clients(self) -> None:
         """Initialize LLM clients with fallback chain"""
@@ -884,7 +902,9 @@ class PatientStratificationAgentLogic:
             from core_infra.llm_service import get_llm_client, LLMConfig
 
             self.primary_llm = get_llm_client(
-                LLMConfig(model="gpt-4-turbo", temperature=0.1, max_tokens=2000, top_p=0.95)
+                LLMConfig(
+                    model="gpt-4-turbo", temperature=0.1, max_tokens=2000, top_p=0.95
+                )
             )
             self.fallback_llm = get_llm_client(
                 LLMConfig(model="gpt-3.5-turbo", temperature=0.1, max_tokens=1500)
@@ -950,7 +970,9 @@ class PatientStratificationAgentLogic:
                 self._create_audit_entry("data_gathering_start", {"urgency": urgency})
             )
 
-            context = await self._gather_all_data(patient_id, drug_name, insurer_id, audit_trail)
+            context = await self._gather_all_data(
+                patient_id, drug_name, insurer_id, audit_trail
+            )
 
             if not self._validate_context(context):
                 raise ValueError("Insufficient data gathered for analysis")
@@ -974,8 +996,12 @@ class PatientStratificationAgentLogic:
                     "analysis_complete",
                     {
                         "evidence_items": len(evidence_items),
-                        "supporting": sum(1 for e in evidence_items if e.supports_approval),
-                        "opposing": sum(1 for e in evidence_items if not e.supports_approval),
+                        "supporting": sum(
+                            1 for e in evidence_items if e.supports_approval
+                        ),
+                        "opposing": sum(
+                            1 for e in evidence_items if not e.supports_approval
+                        ),
                     },
                 )
             )
@@ -1044,13 +1070,17 @@ class PatientStratificationAgentLogic:
             }
 
         except Exception as e:
-            self.logger.error(f"Error in PA prediction {decision_id}: {e}", exc_info=True)
+            self.logger.error(
+                f"Error in PA prediction {decision_id}: {e}", exc_info=True
+            )
             with self._metrics_lock:
                 self.metrics["failed_predictions"] += 1
 
             error_response = self._create_error_response(str(e), audit_trail)
             error_response["decision_id"] = decision_id
-            error_response["processing_time_ms"] = int((time.perf_counter() - start_time) * 1000)
+            error_response["processing_time_ms"] = int(
+                (time.perf_counter() - start_time) * 1000
+            )
 
             return error_response
 
@@ -1067,7 +1097,9 @@ class PatientStratificationAgentLogic:
             "drug": self._get_drug_info(drug_name),
             "policy": self._get_policy_info(drug_name, insurer_id),
             "guidelines": self._get_guideline_data(drug_name),
-            "criteria_check": self._check_coverage_criteria(patient_id, drug_name, insurer_id),
+            "criteria_check": self._check_coverage_criteria(
+                patient_id, drug_name, insurer_id
+            ),
             "drug_safety": self._get_drug_safety(drug_name),  # ADDED
         }
 
@@ -1088,7 +1120,9 @@ class PatientStratificationAgentLogic:
                     return name, {}
 
             # Create all tasks
-            gather_tasks = [gather_with_timeout(name, coro) for name, coro in tasks.items()]
+            gather_tasks = [
+                gather_with_timeout(name, coro) for name, coro in tasks.items()
+            ]
 
             # Wait for all to complete
             completed = await asyncio.gather(*gather_tasks, return_exceptions=True)
@@ -1122,7 +1156,9 @@ class PatientStratificationAgentLogic:
             if med_history:
                 try:
                     all_medications = med_history + [drug_name]
-                    interaction_check = await self._check_drug_interactions(all_medications)
+                    interaction_check = await self._check_drug_interactions(
+                        all_medications
+                    )
                 except Exception as e:
                     self.logger.warning(f"Failed to check interactions: {e}")
                     interaction_check["status"] = "FAILED"
@@ -1194,7 +1230,9 @@ class PatientStratificationAgentLogic:
                     }.get(severity, 0.15)
 
                     # FIXED: Handle quantity limit criteria
-                    criterion_type = unmet.get("type", unmet.get("criterion", "").lower())
+                    criterion_type = unmet.get(
+                        "type", unmet.get("criterion", "").lower()
+                    )
                     if (
                         criterion_type == "quantity_limit"
                         or "quantity" in unmet.get("criterion", "").lower()
@@ -1203,7 +1241,9 @@ class PatientStratificationAgentLogic:
                             EvidenceItem(
                                 source="policy_analysis",
                                 type="quantity_limit",
-                                content=unmet.get("description", "Quantity limit exceeded"),
+                                content=unmet.get(
+                                    "description", "Quantity limit exceeded"
+                                ),
                                 weight=0.15,
                                 supports_approval=False,
                                 confidence=0.9,
@@ -1231,19 +1271,25 @@ class PatientStratificationAgentLogic:
             evidence_items.extend(guideline_evidence)
 
         # 3. Drug Interaction Analysis
-        interaction_evidence = self._analyze_drug_interactions(context.interaction_check)
+        interaction_evidence = self._analyze_drug_interactions(
+            context.interaction_check
+        )
         if interaction_evidence:
             evidence_items.append(interaction_evidence)
 
         # 4. ADDED: Drug Safety Analysis
         if context.drug_safety:
-            safety_evidence = self._analyze_drug_safety(context.drug_safety, context.patient_record)
+            safety_evidence = self._analyze_drug_safety(
+                context.drug_safety, context.patient_record
+            )
             if safety_evidence:
                 evidence_items.append(safety_evidence)
 
         # 5. Patient History Analysis
         if context.patient_record and context.drug_info:
-            history_score = self._analyze_patient_history(context.patient_record, context.drug_info)
+            history_score = self._analyze_patient_history(
+                context.patient_record, context.drug_info
+            )
 
             evidence_items.append(
                 EvidenceItem(
@@ -1370,8 +1416,12 @@ class PatientStratificationAgentLogic:
         # FIXED: Check token count and truncate if needed
         estimated_tokens = len(prompt.split()) * 1.3  # Rough estimate
         if estimated_tokens > self.config["max_prompt_tokens"]:
-            self.logger.warning(f"Prompt too long ({estimated_tokens} tokens), truncating...")
-            prompt = self._build_simplified_prompt(context, evidence_items, preliminary_score)
+            self.logger.warning(
+                f"Prompt too long ({estimated_tokens} tokens), truncating..."
+            )
+            prompt = self._build_simplified_prompt(
+                context, evidence_items, preliminary_score
+            )
 
         # Try primary LLM
         for attempt in range(self.config["max_retries"]):
@@ -1382,7 +1432,9 @@ class PatientStratificationAgentLogic:
                     response["model"] = "primary"
                     return response
 
-                self.logger.warning(f"Primary LLM attempt {attempt + 1} failed validation")
+                self.logger.warning(
+                    f"Primary LLM attempt {attempt + 1} failed validation"
+                )
 
             except Exception as e:
                 self.logger.warning(f"Primary LLM attempt {attempt + 1} failed: {e}")
@@ -1407,9 +1459,13 @@ class PatientStratificationAgentLogic:
 
         # Last resort: rule-based decision
         self.logger.warning("Using rule-based decision as last resort")
-        return self._generate_rule_based_decision(context, evidence_items, preliminary_score)
+        return self._generate_rule_based_decision(
+            context, evidence_items, preliminary_score
+        )
 
-    async def _call_llm_safely(self, llm_client, prompt: str) -> Optional[Dict[str, Any]]:
+    async def _call_llm_safely(
+        self, llm_client, prompt: str
+    ) -> Optional[Dict[str, Any]]:
         """
         Safely call LLM with proper error handling and response parsing.
         """
@@ -1478,10 +1534,14 @@ class PatientStratificationAgentLogic:
         decision = DecisionType.from_string(decision_str)
 
         # Calculate processing time
-        processing_time = int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000)
+        processing_time = int(
+            (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+        )
 
         # Generate targeted recommendations
-        recommendations = self._generate_recommendations(decision, evidence_items, context)
+        recommendations = self._generate_recommendations(
+            decision, evidence_items, context
+        )
 
         # Find alternatives if denied
         alternatives = []
@@ -1491,13 +1551,17 @@ class PatientStratificationAgentLogic:
         # Identify gaps
         identified_gaps = llm_result.get("identified_gaps", [])
         if not identified_gaps and decision != DecisionType.APPROVE:
-            identified_gaps = self._identify_missing_information(evidence_items, context)
+            identified_gaps = self._identify_missing_information(
+                evidence_items, context
+            )
 
         # Get final scores
         approval_likelihood = max(
             0, min(100, int(llm_result.get("approval_likelihood_percent", 50)))
         )
-        confidence_score = max(0.0, min(1.0, float(llm_result.get("confidence_score", 0.5))))
+        confidence_score = max(
+            0.0, min(1.0, float(llm_result.get("confidence_score", 0.5)))
+        )
 
         # Add final audit entry
         audit_trail.append(
@@ -1545,7 +1609,9 @@ class PatientStratificationAgentLogic:
 
                 # ADDED: Check for recent updates and invalidate cache if needed
                 if patient_data and "last_updated" in patient_data:
-                    self._check_and_invalidate_cache(patient_id, patient_data["last_updated"])
+                    self._check_and_invalidate_cache(
+                        patient_id, patient_data["last_updated"]
+                    )
 
                 return patient_data
             self.logger.warning(f"Patient data retrieval unsuccessful: {result}")
@@ -1732,8 +1798,11 @@ class PatientStratificationAgentLogic:
                 EvidenceItem(
                     source=f"clinical_guideline_{source}",
                     type="clinical_guideline",
-                    content=(f"{source} (relevance: {relevance_score:.0%}): {truncated_text}"),
-                    weight=self.evidence_weights["guideline_support"] / min(len(guidelines), 3),
+                    content=(
+                        f"{source} (relevance: {relevance_score:.0%}): {truncated_text}"
+                    ),
+                    weight=self.evidence_weights["guideline_support"]
+                    / min(len(guidelines), 3),
                     supports_approval=supports,
                     confidence=adjusted_confidence,
                     timestamp=timestamp,
@@ -1892,7 +1961,9 @@ class PatientStratificationAgentLogic:
 
         return min(score, 1.0)  # Cap at 1.0
 
-    def _assess_clinical_appropriateness(self, context: AnalysisContext) -> Dict[str, Any]:
+    def _assess_clinical_appropriateness(
+        self, context: AnalysisContext
+    ) -> Dict[str, Any]:
         """Comprehensive clinical appropriateness assessment"""
         score = 0.5
         factors = []
@@ -1941,7 +2012,9 @@ class PatientStratificationAgentLogic:
                 factors.append("no contraindications identified")
 
         # 3. Provider type consideration
-        provider_type = patient_record.get("provider_type", "") if patient_record else ""
+        provider_type = (
+            patient_record.get("provider_type", "") if patient_record else ""
+        )
         if "specialist" in provider_type.lower() or "endocrin" in provider_type.lower():
             score += 0.15
             factors.append("specialist management")
@@ -2010,7 +2083,9 @@ class PatientStratificationAgentLogic:
             return 0.1
 
         # 1. Evidence quality (40%)
-        avg_evidence_confidence = sum(e.confidence for e in evidence_items) / len(evidence_items)
+        avg_evidence_confidence = sum(e.confidence for e in evidence_items) / len(
+            evidence_items
+        )
 
         # 2. Data completeness (40%)
         completeness_checks = [
@@ -2019,7 +2094,9 @@ class PatientStratificationAgentLogic:
             bool(context.policy_info),
             bool(context.guideline_results),
             bool(context.criteria_check),
-            context.patient_record.get("labs") is not None if context.patient_record else False,
+            context.patient_record.get("labs") is not None
+            if context.patient_record
+            else False,
             bool(context.drug_safety),  # ADDED
         ]
         data_completeness = sum(completeness_checks) / len(completeness_checks)
@@ -2032,7 +2109,11 @@ class PatientStratificationAgentLogic:
         consensus_score = 1.0 - (2 * abs(0.5 - consensus_ratio))  # U-shaped curve
 
         # Combined confidence
-        confidence = avg_evidence_confidence * 0.4 + data_completeness * 0.4 + consensus_score * 0.2
+        confidence = (
+            avg_evidence_confidence * 0.4
+            + data_completeness * 0.4
+            + consensus_score * 0.2
+        )
 
         return min(confidence, 0.95)  # Never claim 100% confidence
 
@@ -2053,7 +2134,9 @@ class PatientStratificationAgentLogic:
             else "unknown"
         )
         drug_name = (
-            context.drug_info.get("drug_name", "Unknown") if context.drug_info else "Unknown"
+            context.drug_info.get("drug_name", "Unknown")
+            if context.drug_info
+            else "Unknown"
         )
 
         # Structure evidence by category
@@ -2131,7 +2214,9 @@ class PatientStratificationAgentLogic:
         )
 
         drug_name = (
-            context.drug_info.get("drug_name", "Unknown") if context.drug_info else "Unknown"
+            context.drug_info.get("drug_name", "Unknown")
+            if context.drug_info
+            else "Unknown"
         )
 
         prompt = f"""Prior Authorization Decision Required:
@@ -2170,15 +2255,11 @@ Based on the evidence, provide a PA decision as JSON:
         if score > 0.75:
             decision = "Approve"
             likelihood = int(score * 100)
-            rationale = (
-                f"Strong evidence supports approval with {len(supporting)} positive factors."
-            )
+            rationale = f"Strong evidence supports approval with {len(supporting)} positive factors."
         elif score < 0.25:
             decision = "Deny"
             likelihood = int(score * 100)
-            rationale = (
-                f"Insufficient evidence for approval with {len(opposing)} concerns identified."
-            )
+            rationale = f"Insufficient evidence for approval with {len(opposing)} concerns identified."
         else:
             decision = "Pend for More Info"
             likelihood = 50
@@ -2237,7 +2318,9 @@ Based on the evidence, provide a PA decision as JSON:
         elif decision == DecisionType.DENY:
             # Denial recommendations
             unmet_criteria = [
-                e for e in evidence_items if not e.supports_approval and e.type == "unmet_criterion"
+                e
+                for e in evidence_items
+                if not e.supports_approval and e.type == "unmet_criterion"
             ]
 
             for criterion in unmet_criteria[:3]:
@@ -2246,7 +2329,9 @@ Based on the evidence, provide a PA decision as JSON:
                         "Complete 3-month trial of metformin at therapeutic dose"
                     )
                 elif "diagnosis" in criterion.content.lower():
-                    recommendations.append("Provide documentation of Type 2 Diabetes diagnosis")
+                    recommendations.append(
+                        "Provide documentation of Type 2 Diabetes diagnosis"
+                    )
                 elif "hba1c" in criterion.content.lower():
                     recommendations.append("Document HbA1c > 7.5% on current therapy")
 
@@ -2255,7 +2340,9 @@ Based on the evidence, provide a PA decision as JSON:
                 alts = context.policy_info["alternatives"][:2]
                 if alts:
                     alt_names = [a["drug"] for a in alts if "drug" in a]
-                    recommendations.append(f"Consider covered alternatives: {', '.join(alt_names)}")
+                    recommendations.append(
+                        f"Consider covered alternatives: {', '.join(alt_names)}"
+                    )
 
         elif decision == DecisionType.PEND:
             # Pending recommendations
@@ -2269,14 +2356,20 @@ Based on the evidence, provide a PA decision as JSON:
 
             # General documentation needs
             if not context.patient_record.get("labs"):
-                recommendations.append("Include recent lab results (HbA1c, renal function)")
+                recommendations.append(
+                    "Include recent lab results (HbA1c, renal function)"
+                )
 
             if not context.patient_record.get("notes"):
-                recommendations.append("Provide clinical notes documenting treatment failure")
+                recommendations.append(
+                    "Provide clinical notes documenting treatment failure"
+                )
 
         return recommendations[:5]  # Limit to 5 most important
 
-    def _find_alternative_options(self, context: AnalysisContext) -> List[Dict[str, Any]]:
+    def _find_alternative_options(
+        self, context: AnalysisContext
+    ) -> List[Dict[str, Any]]:
         """Find and format alternative treatment options"""
         alternatives = []
 
@@ -2339,7 +2432,10 @@ Based on the evidence, provide a PA decision as JSON:
         if context.criteria_check and not context.criteria_check.get("meets_criteria"):
             unmet = context.criteria_check.get("unmet_criteria", [])
             for criterion in unmet[:2]:
-                if isinstance(criterion, dict) and criterion.get("severity") == "critical":
+                if (
+                    isinstance(criterion, dict)
+                    and criterion.get("severity") == "critical"
+                ):
                     gaps.append(
                         f"Documentation for: {criterion.get('description', 'policy requirement')}"
                     )
@@ -2368,7 +2464,10 @@ Based on the evidence, provide a PA decision as JSON:
             count += 1
         if context.guideline_results:
             count += 1
-        if context.interaction_check and context.interaction_check.get("status") == "COMPLETED":
+        if (
+            context.interaction_check
+            and context.interaction_check.get("status") == "COMPLETED"
+        ):
             count += 1
         if context.criteria_check:
             count += 1
@@ -2409,7 +2508,9 @@ Based on the evidence, provide a PA decision as JSON:
 
         return response
 
-    def _generate_cache_key(self, patient_id: str, drug_name: str, insurer_id: str) -> str:
+    def _generate_cache_key(
+        self, patient_id: str, drug_name: str, insurer_id: str
+    ) -> str:
         """Generate deterministic cache key"""
         key_components = f"{patient_id}:{drug_name.lower()}:{insurer_id}"
         return hashlib.sha256(key_components.encode()).hexdigest()
@@ -2443,7 +2544,9 @@ Based on the evidence, provide a PA decision as JSON:
 
             self.decision_cache[cache_key] = (result, time.time())
 
-    def _update_metrics(self, result: AnalysisResult, processing_time_ms: float) -> None:
+    def _update_metrics(
+        self, result: AnalysisResult, processing_time_ms: float
+    ) -> None:
         """Update performance metrics with thread safety"""
         with self._metrics_lock:
             self.metrics["total_predictions"] += 1
@@ -2465,10 +2568,13 @@ Based on the evidence, provide a PA decision as JSON:
 
             # Update error rate
             total_attempts = (
-                self.metrics["successful_predictions"] + self.metrics["failed_predictions"]
+                self.metrics["successful_predictions"]
+                + self.metrics["failed_predictions"]
             )
             if total_attempts > 0:
-                self.metrics["error_rate"] = self.metrics["failed_predictions"] / total_attempts
+                self.metrics["error_rate"] = (
+                    self.metrics["failed_predictions"] / total_attempts
+                )
 
         # Track latency percentiles - FIXED: Thread-safe deque operations
         with self._latency_lock:
@@ -2541,7 +2647,9 @@ Based on the evidence, provide a PA decision as JSON:
         }
 
         for optional_field, expected_type in optional_fields.items():
-            if optional_field in output and not isinstance(output[optional_field], expected_type):
+            if optional_field in output and not isinstance(
+                output[optional_field], expected_type
+            ):
                 self.logger.warning(f"Invalid type for optional field {optional_field}")
                 # Don't fail on optional fields, just log
 
@@ -2624,7 +2732,9 @@ Based on the evidence, provide a PA decision as JSON:
 
         return "\n".join(parts)
 
-    def _format_evidence_summary(self, evidence_by_type: Dict[str, List[EvidenceItem]]) -> str:
+    def _format_evidence_summary(
+        self, evidence_by_type: Dict[str, List[EvidenceItem]]
+    ) -> str:
         """Format evidence summary for prompt"""
         if not evidence_by_type:
             return "No evidence available"
@@ -2640,12 +2750,16 @@ Based on the evidence, provide a PA decision as JSON:
             if supporting:
                 parts.append("  Supporting:")
                 for item in supporting[:2]:  # Limit to avoid token bloat
-                    parts.append(f"    • {item.content[:80]} (conf: {item.confidence:.0%})")
+                    parts.append(
+                        f"    • {item.content[:80]} (conf: {item.confidence:.0%})"
+                    )
 
             if opposing:
                 parts.append("  Opposing:")
                 for item in opposing[:2]:  # Limit to avoid token bloat
-                    parts.append(f"    • {item.content[:80]} (conf: {item.confidence:.0%})")
+                    parts.append(
+                        f"    • {item.content[:80]} (conf: {item.confidence:.0%})"
+                    )
 
         return "\n".join(parts)
 
@@ -2661,7 +2775,9 @@ Based on the evidence, provide a PA decision as JSON:
         # Drug safety
         if context.drug_safety:
             parts.append("\nDrug Safety Profile:")
-            parts.append(f"  Profile: {context.drug_safety.get('safety_profile', 'Unknown')}")
+            parts.append(
+                f"  Profile: {context.drug_safety.get('safety_profile', 'Unknown')}"
+            )
 
             warnings = context.drug_safety.get("warnings", [])
             if warnings:
@@ -2683,11 +2799,15 @@ Based on the evidence, provide a PA decision as JSON:
             return "No drug interactions identified"
 
         parts = [f"Interactions found: {len(interactions)}"]
-        parts.append(f"Highest severity: {interaction_check.get('highest_severity', 'unknown')}")
+        parts.append(
+            f"Highest severity: {interaction_check.get('highest_severity', 'unknown')}"
+        )
 
         for interaction in interactions[:3]:
             if isinstance(interaction, dict):
-                parts.append(f"  • {interaction.get('description', 'Unknown interaction')}")
+                parts.append(
+                    f"  • {interaction.get('description', 'Unknown interaction')}"
+                )
 
         return "\n".join(parts)
 
@@ -2751,7 +2871,9 @@ Based on the evidence, provide a PA decision as JSON:
                     # Running in existing loop (e.g., Jupyter)
                     import concurrent.futures
 
-                    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    with concurrent.futures.ThreadPoolExecutor(
+                        max_workers=1
+                    ) as executor:
                         future = executor.submit(asyncio.run, run_prediction())
                         return future.result(timeout=self.config["timeout_seconds"])
                 else:
@@ -2863,7 +2985,10 @@ def main():
 
                 # Extract decision from string representation
                 decision_value = prediction["decision"]
-                if isinstance(decision_value, str) and "DecisionType." in decision_value:
+                if (
+                    isinstance(decision_value, str)
+                    and "DecisionType." in decision_value
+                ):
                     actual_decision = decision_value.split(".")[-1].upper()
                 else:
                     actual_decision = str(decision_value).split(".")[-1].upper()
@@ -2874,7 +2999,9 @@ def main():
 
                 # Display results
                 status_icon = "✅" if passed else "❌"
-                print(f"\n{status_icon} Test Result: {'PASSED' if passed else 'FAILED'}")
+                print(
+                    f"\n{status_icon} Test Result: {'PASSED' if passed else 'FAILED'}"
+                )
                 print(f"   Expected: {expected}, Got: {actual_decision}")
                 print("\n📊 Decision Details:")
                 print(f"   • Decision: {actual_decision}")
@@ -2889,7 +3016,9 @@ def main():
 
                 print("\n🔍 Evidence Summary:")
                 print(f"   • Total Evidence Items: {len(prediction['evidence_items'])}")
-                supporting = sum(1 for e in prediction["evidence_items"] if e["supports_approval"])
+                supporting = sum(
+                    1 for e in prediction["evidence_items"] if e["supports_approval"]
+                )
                 print(
                     f"   • Supporting: {supporting}, Opposing: {len(prediction['evidence_items']) - supporting}"
                 )
@@ -2960,7 +3089,9 @@ def main():
     print(f"Failed: {failed_tests} ({failed_tests / total_tests * 100:.0f}%)")
 
     # Performance analysis
-    successful_times = [r["time_ms"] for r in test_results if r.get("passed") and "time_ms" in r]
+    successful_times = [
+        r["time_ms"] for r in test_results if r.get("passed") and "time_ms" in r
+    ]
     if successful_times:
         avg_time = sum(successful_times) / len(successful_times)
         min_time = min(successful_times)

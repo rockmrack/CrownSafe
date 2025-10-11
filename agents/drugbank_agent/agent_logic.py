@@ -26,8 +26,12 @@ CAPABILITIES = [
 ]
 
 # P0: Rate limiting configuration - ENHANCED: Allow env override
-RATE_LIMIT_REQUESTS = int(os.getenv("DRUGBANK_RATE_LIMIT_REQUESTS", "5"))  # requests per second
-RATE_LIMIT_WINDOW = float(os.getenv("DRUGBANK_RATE_LIMIT_WINDOW", "1.0"))  # window in seconds
+RATE_LIMIT_REQUESTS = int(
+    os.getenv("DRUGBANK_RATE_LIMIT_REQUESTS", "5")
+)  # requests per second
+RATE_LIMIT_WINDOW = float(
+    os.getenv("DRUGBANK_RATE_LIMIT_WINDOW", "1.0")
+)  # window in seconds
 
 
 class DrugBankAgentLogic:
@@ -126,7 +130,9 @@ class DrugBankAgentLogic:
 
         self.logger.info(f"DrugBankAgentLogic initialized for {agent_id}")
         self.logger.info(f"Advertising capabilities: {CAPABILITIES}")
-        self.logger.info(f"Rate limiting: {RATE_LIMIT_REQUESTS} requests per {RATE_LIMIT_WINDOW}s")
+        self.logger.info(
+            f"Rate limiting: {RATE_LIMIT_REQUESTS} requests per {RATE_LIMIT_WINDOW}s"
+        )
 
     def get_capabilities(self) -> List[str]:
         """Return agent capabilities for discovery"""
@@ -173,7 +179,8 @@ class DrugBankAgentLogic:
             current_time = time.time()
             # Remove calls older than the window
             while (
-                self.last_api_calls and current_time - self.last_api_calls[0] >= RATE_LIMIT_WINDOW
+                self.last_api_calls
+                and current_time - self.last_api_calls[0] >= RATE_LIMIT_WINDOW
             ):
                 self.last_api_calls.popleft()
 
@@ -193,7 +200,9 @@ class DrugBankAgentLogic:
             with self.rate_limit_lock:
                 if self.last_api_calls:
                     # Calculate time until oldest call expires
-                    time_to_reset = self.last_api_calls[0] + RATE_LIMIT_WINDOW - time.time()
+                    time_to_reset = (
+                        self.last_api_calls[0] + RATE_LIMIT_WINDOW - time.time()
+                    )
                     if time_to_reset > 0:
                         # Sleep for the exact time needed (with small buffer)
                         time.sleep(max(0.05, min(time_to_reset + 0.01, 0.5)))
@@ -216,7 +225,9 @@ class DrugBankAgentLogic:
             import csv
 
             # FIXED: Handle UTF-8 edge cases
-            with open(self.fallback_csv_path, "r", encoding="utf-8", errors="replace") as f:
+            with open(
+                self.fallback_csv_path, "r", encoding="utf-8", errors="replace"
+            ) as f:
                 reader = csv.DictReader(f)
                 for row in reader:
                     drug_name = row.get("name", "").lower()  # Store in lowercase
@@ -227,7 +238,9 @@ class DrugBankAgentLogic:
                             "indications": row.get("indications", "").split("|")
                             if row.get("indications")
                             else [],
-                            "contraindications": row.get("contraindications", "").split("|")
+                            "contraindications": row.get("contraindications", "").split(
+                                "|"
+                            )
                             if row.get("contraindications")
                             else [],
                         }
@@ -248,14 +261,18 @@ class DrugBankAgentLogic:
             with open(self.mock_data_path, "r") as f:
                 self.mock_data = json.load(f)
 
-            self.logger.info(f"Successfully loaded mock data from {self.mock_data_path}")
+            self.logger.info(
+                f"Successfully loaded mock data from {self.mock_data_path}"
+            )
 
             # Validate mock data structure
             required_keys = ["drug_search", "drug_interactions", "drug_details"]
             for key in required_keys:
                 if key not in self.mock_data:
                     self.mock_data[key] = {}
-                    self.logger.warning(f"Missing '{key}' in mock data, initialized as empty")
+                    self.logger.warning(
+                        f"Missing '{key}' in mock data, initialized as empty"
+                    )
 
         except json.JSONDecodeError as e:
             self.logger.error(f"Failed to parse JSON from {self.mock_data_path}: {e}")
@@ -473,7 +490,9 @@ class DrugBankAgentLogic:
             raw_task_type = task_data.get("task_name", "").lower()
             task_type = self._normalize_task_name(raw_task_type)
 
-            self.logger.info(f"Processing task: '{raw_task_type}' -> normalized: '{task_type}'")
+            self.logger.info(
+                f"Processing task: '{raw_task_type}' -> normalized: '{task_type}'"
+            )
 
             # FIXED: Route drug_safety_lookup and check_drug_safety to safety handler
             if task_type in ("drug_safety_lookup", "check_drug_safety"):
@@ -588,7 +607,9 @@ class DrugBankAgentLogic:
                 return {
                     "status": "COMPLETED",
                     "drug_name": drug_name,
-                    "drug_class": self.fallback_data[fallback_key].get("drug_class", "Unknown"),
+                    "drug_class": self.fallback_data[fallback_key].get(
+                        "drug_class", "Unknown"
+                    ),
                     "source": "fallback",
                     "agent_id": self.agent_id,
                 }
@@ -626,7 +647,9 @@ class DrugBankAgentLogic:
 
         try:
             # P0: Use LRU cache - FIXED: Deep copy to avoid mutation
-            cached_result = copy.deepcopy(self._handle_drug_info_request_cached(drug_name))
+            cached_result = copy.deepcopy(
+                self._handle_drug_info_request_cached(drug_name)
+            )
             if cached_result["status"] == "COMPLETED":
                 cached_result["source"] = "cache"
 
@@ -726,7 +749,9 @@ class DrugBankAgentLogic:
 
         try:
             # P2: Normalize all drug names
-            drug_names = [self._normalize_drug_name(name.strip()) for name in drug_names]
+            drug_names = [
+                self._normalize_drug_name(name.strip()) for name in drug_names
+            ]
 
             # Get drug IDs for all drugs
             drug_ids = {}
@@ -797,14 +822,18 @@ class DrugBankAgentLogic:
                 checked_pairs.add(pair)
 
                 # Check drug1 -> drug2
-                drug1_interactions = self.mock_data.get("drug_interactions", {}).get(drug1_id, [])
+                drug1_interactions = self.mock_data.get("drug_interactions", {}).get(
+                    drug1_id, []
+                )
                 for interaction in drug1_interactions:
                     if interaction.get("drugbank_id") == drug2_id:
                         # FIXED: Use management from data or default
                         management = interaction.get("management")
                         if not management:
                             severity = interaction.get("severity", "unknown")
-                            management = self.default_management.get(severity, "Monitor therapy")
+                            management = self.default_management.get(
+                                severity, "Monitor therapy"
+                            )
 
                         interactions.append(
                             {
@@ -820,9 +849,9 @@ class DrugBankAgentLogic:
                         break
                 else:
                     # If not found, check drug2 -> drug1
-                    drug2_interactions = self.mock_data.get("drug_interactions", {}).get(
-                        drug2_id, []
-                    )
+                    drug2_interactions = self.mock_data.get(
+                        "drug_interactions", {}
+                    ).get(drug2_id, [])
                     for interaction in drug2_interactions:
                         if interaction.get("drugbank_id") == drug1_id:
                             # FIXED: Use management from data or default
@@ -882,12 +911,16 @@ class DrugBankAgentLogic:
                 for name_lower, drug_data in self.fallback_data.items():
                     if search_query.lower() in name_lower:  # Both are lowercase now
                         # Check if not already in results
-                        if not any(r["drug_name"].lower() == name_lower for r in results):
+                        if not any(
+                            r["drug_name"].lower() == name_lower for r in results
+                        ):
                             results.append(
                                 {
                                     "drug_name": name_lower.title(),  # Capitalize for display
                                     "drug_id": drug_data.get("drugbank_id", "Unknown"),
-                                    "drug_class": drug_data.get("drug_class", "Unknown"),
+                                    "drug_class": drug_data.get(
+                                        "drug_class", "Unknown"
+                                    ),
                                     "source": "fallback",
                                 }
                             )
@@ -907,12 +940,16 @@ class DrugBankAgentLogic:
                 # Search fallback data by class
                 for name_lower, drug_data in self.fallback_data.items():
                     if search_query.lower() in drug_data.get("drug_class", "").lower():
-                        if not any(r["drug_name"].lower() == name_lower for r in results):
+                        if not any(
+                            r["drug_name"].lower() == name_lower for r in results
+                        ):
                             results.append(
                                 {
                                     "drug_name": name_lower.title(),
                                     "drug_id": drug_data.get("drugbank_id", "Unknown"),
-                                    "drug_class": drug_data.get("drug_class", "Unknown"),
+                                    "drug_class": drug_data.get(
+                                        "drug_class", "Unknown"
+                                    ),
                                     "source": "fallback",
                                 }
                             )
@@ -936,12 +973,18 @@ class DrugBankAgentLogic:
                 for name_lower, drug_data in self.fallback_data.items():
                     for indication in drug_data.get("indications", []):
                         if search_query.lower() in indication.lower():
-                            if not any(r["drug_name"].lower() == name_lower for r in results):
+                            if not any(
+                                r["drug_name"].lower() == name_lower for r in results
+                            ):
                                 results.append(
                                     {
                                         "drug_name": name_lower.title(),
-                                        "drug_id": drug_data.get("drugbank_id", "Unknown"),
-                                        "drug_class": drug_data.get("drug_class", "Unknown"),
+                                        "drug_id": drug_data.get(
+                                            "drugbank_id", "Unknown"
+                                        ),
+                                        "drug_class": drug_data.get(
+                                            "drug_class", "Unknown"
+                                        ),
                                         "matching_indication": indication,
                                         "source": "fallback",
                                     }
@@ -950,9 +993,13 @@ class DrugBankAgentLogic:
 
             # Use debug level for large result sets
             if len(results) > 10:
-                self.logger.debug(f"Found {len(results)} drugs matching '{search_query}'")
+                self.logger.debug(
+                    f"Found {len(results)} drugs matching '{search_query}'"
+                )
             else:
-                self.logger.info(f"Found {len(results)} drugs matching '{search_query}'")
+                self.logger.info(
+                    f"Found {len(results)} drugs matching '{search_query}'"
+                )
 
             return {
                 "status": "COMPLETED",
@@ -994,7 +1041,9 @@ class DrugBankAgentLogic:
                     pa_criteria = {
                         "drug_name": drug_name,
                         "drug_class": fallback_info.get("drug_class", "Unknown"),
-                        "fda_approved_indications": fallback_info.get("indications", []),
+                        "fda_approved_indications": fallback_info.get(
+                            "indications", []
+                        ),
                         "contraindications": fallback_info.get("contraindications", []),
                         "source": "fallback",
                         "pa_recommendations": [
@@ -1048,13 +1097,19 @@ class DrugBankAgentLogic:
         # First try exact match
         for name, dbid in self.mock_data.get("drug_search", {}).items():
             if name.lower() == drug_name_lower:
-                self.logger.debug(f"Found DrugBank ID '{dbid}' for '{drug_name}' (exact match)")
+                self.logger.debug(
+                    f"Found DrugBank ID '{dbid}' for '{drug_name}' (exact match)"
+                )
                 return dbid
 
         # Then try prefix match (safer than substring)
         for name, dbid in self.mock_data.get("drug_search", {}).items():
-            if name.lower().startswith(drug_name_lower) or drug_name_lower.startswith(name.lower()):
-                self.logger.debug(f"Found DrugBank ID '{dbid}' for '{drug_name}' (prefix match)")
+            if name.lower().startswith(drug_name_lower) or drug_name_lower.startswith(
+                name.lower()
+            ):
+                self.logger.debug(
+                    f"Found DrugBank ID '{dbid}' for '{drug_name}' (prefix match)"
+                )
                 return dbid
 
         self.logger.warning(f"No DrugBank ID found for '{drug_name}'")
@@ -1078,7 +1133,9 @@ class DrugBankAgentLogic:
             "data_completeness": "basic",
         }
 
-    def _analyze_interaction_severity(self, interactions: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _analyze_interaction_severity(
+        self, interactions: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """Analyze the severity of drug interactions - FIXED: Proper none handling"""
         if not interactions:
             return {
@@ -1103,11 +1160,15 @@ class DrugBankAgentLogic:
 
         # Determine clinical significance
         if highest_severity in ["contraindicated", "major"]:
-            clinical_significance = "Clinically significant - May require therapy modification"
+            clinical_significance = (
+                "Clinically significant - May require therapy modification"
+            )
         elif highest_severity == "moderate":
             clinical_significance = "Potentially significant - Monitor therapy closely"
         else:
-            clinical_significance = "Minor clinical significance - Monitor as appropriate"
+            clinical_significance = (
+                "Minor clinical significance - Monitor as appropriate"
+            )
 
         return {
             "highest_severity": highest_severity,
@@ -1116,7 +1177,9 @@ class DrugBankAgentLogic:
             "clinical_significance": clinical_significance,
         }
 
-    def _extract_pa_criteria(self, drug_details: Dict[str, Any], indication: str) -> Dict[str, Any]:
+    def _extract_pa_criteria(
+        self, drug_details: Dict[str, Any], indication: str
+    ) -> Dict[str, Any]:
         """Extract PA-relevant criteria from drug details"""
         pa_criteria = {
             "drug_name": drug_details.get("name", ""),
@@ -1144,7 +1207,9 @@ class DrugBankAgentLogic:
             # Try to find indication-specific dosing
             for dosing_key, dosing_info in common_dosing.items():
                 if indication.lower() in dosing_key.lower():
-                    pa_criteria["dosing_information"]["indication_specific"] = dosing_info
+                    pa_criteria["dosing_information"][
+                        "indication_specific"
+                    ] = dosing_info
                     break
 
             # Include all dosing as fallback
@@ -1154,7 +1219,9 @@ class DrugBankAgentLogic:
             pa_criteria["dosing_information"] = common_dosing
 
         # Generate PA recommendations
-        pa_criteria["pa_recommendations"] = self._generate_pa_recommendations(pa_criteria)
+        pa_criteria["pa_recommendations"] = self._generate_pa_recommendations(
+            pa_criteria
+        )
 
         return pa_criteria
 
@@ -1171,8 +1238,12 @@ class DrugBankAgentLogic:
         # Check for contraindications that might affect PA
         high_risk_contraindications = ["pregnancy", "renal", "hepatic", "dialysis"]
         for contraindication in pa_criteria.get("contraindications", []):
-            if any(risk in contraindication.lower() for risk in high_risk_contraindications):
-                recommendations.append(f"Verify patient does not have: {contraindication}")
+            if any(
+                risk in contraindication.lower() for risk in high_risk_contraindications
+            ):
+                recommendations.append(
+                    f"Verify patient does not have: {contraindication}"
+                )
 
         # Check for monitoring requirements
         if pa_criteria.get("monitoring_requirements"):
@@ -1190,7 +1261,9 @@ class DrugBankAgentLogic:
             recommendations.append(
                 "Verify no personal/family history of medullary thyroid carcinoma"
             )
-            recommendations.append("Document previous diabetes therapy trials if applicable")
+            recommendations.append(
+                "Document previous diabetes therapy trials if applicable"
+            )
 
         return recommendations
 

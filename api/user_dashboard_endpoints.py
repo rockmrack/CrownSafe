@@ -61,18 +61,24 @@ async def get_dashboard_overview(
         month_ago = now - timedelta(days=30)
 
         # Get scan statistics
-        total_scans = db.query(ImageJob).filter(ImageJob.user_id == current_user.id).count()
+        total_scans = (
+            db.query(ImageJob).filter(ImageJob.user_id == current_user.id).count()
+        )
 
         scans_this_month = (
             db.query(ImageJob)
-            .filter(ImageJob.user_id == current_user.id, ImageJob.created_at >= month_ago)
+            .filter(
+                ImageJob.user_id == current_user.id, ImageJob.created_at >= month_ago
+            )
             .count()
         )
 
         # Get monitoring statistics
         active_monitors = (
             db.query(MonitoredProduct)
-            .filter(MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active)
+            .filter(
+                MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active
+            )
             .count()
         )
 
@@ -242,7 +248,9 @@ async def get_product_categories(
                     category = "Nursery"
                 elif any(word in product_lower for word in ["car seat", "stroller"]):
                     category = "Travel"
-                elif any(word in product_lower for word in ["bath", "shampoo", "lotion"]):
+                elif any(
+                    word in product_lower for word in ["bath", "shampoo", "lotion"]
+                ):
                     category = "Bath & Body"
 
             categories[category] = categories.get(category, 0) + 1
@@ -259,7 +267,9 @@ async def get_product_categories(
                 ).model_dump()
             )
 
-        return ok({"categories": category_stats[:10], "total_products": total})  # Top 10 categories
+        return ok(
+            {"categories": category_stats[:10], "total_products": total}
+        )  # Top 10 categories
 
     except Exception as e:
         logger.error(f"Error fetching product categories: {e}", exc_info=True)
@@ -286,7 +296,9 @@ async def get_safety_insights(
 
         monitored = (
             db.query(MonitoredProduct)
-            .filter(MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active)
+            .filter(
+                MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active
+            )
             .count()
         )
 
@@ -375,7 +387,9 @@ async def get_safety_insights(
                 }
             )
 
-        return ok({"insights": insights, "generated_at": datetime.utcnow().isoformat() + "Z"})
+        return ok(
+            {"insights": insights, "generated_at": datetime.utcnow().isoformat() + "Z"}
+        )
 
     except Exception as e:
         logger.error(f"Error fetching safety insights: {e}", exc_info=True)
@@ -397,7 +411,9 @@ async def get_recent_recalls(
         # From monitored products
         monitored = (
             db.query(MonitoredProduct)
-            .filter(MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active)
+            .filter(
+                MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active
+            )
             .all()
         )
 
@@ -457,7 +473,9 @@ async def get_recent_recalls(
                             "brand": recall.brand,
                             "product": recall.product_name,
                             "hazard": recall.hazard_description,
-                            "date": recall.recall_date.isoformat() if recall.recall_date else None,
+                            "date": recall.recall_date.isoformat()
+                            if recall.recall_date
+                            else None,
                             "relevant": relevant,
                         }
                     )
@@ -481,7 +499,9 @@ async def get_user_achievements(
         achievements = []
 
         # Scan milestones
-        total_scans = db.query(ImageJob).filter(ImageJob.user_id == current_user.id).count()
+        total_scans = (
+            db.query(ImageJob).filter(ImageJob.user_id == current_user.id).count()
+        )
 
         scan_milestones = [1, 10, 25, 50, 100, 250, 500, 1000]
         for milestone in scan_milestones:
@@ -500,7 +520,9 @@ async def get_user_achievements(
         # Monitoring achievements
         monitored = (
             db.query(MonitoredProduct)
-            .filter(MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active)
+            .filter(
+                MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active
+            )
             .count()
         )
 
