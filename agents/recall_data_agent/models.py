@@ -90,6 +90,19 @@ class Recall(BaseModel):
                 data[date_field] = data[date_field].isoformat()
         return data
 
+    @property
+    def hazard_description(self) -> Optional[str]:
+        """Compatibility alias for older code/tests that expect 'hazard_description'.
+
+        Returns the primary `hazard` field when available.
+        """
+        return self.hazard
+
+    @property
+    def agency(self) -> Optional[str]:
+        """Compatibility alias for older code/tests expecting `agency`."""
+        return self.source_agency
+
 
 class RecallQueryRequest(BaseModel):
     """Request model for recall queries"""

@@ -66,30 +66,95 @@ def test_recall_agent_initialization():
 
 
 @pytest.mark.integration
-@pytest.mark.asyncio
-async def test_recall_agent_cpsc_live_api():
-    """Test 2: RecallDataAgent with live CPSC API"""
-    print("\n[TEST 2] Testing RecallDataAgent with LIVE CPSC API...")
-    print("  Connecting to CPSC SaferProducts.gov API...")
+def test_recall_agent_database_query():
+    """Test 2: RecallDataAgent with local database (deterministic test data)
 
-    connector = CPSCConnector()
-    recalls = await connector.fetch_recent_recalls()
+    This test validates database queries work correctly using test data.
+    To test against production 130k+ recalls, set DATABASE_URL environment variable
+    to your production PostgreSQL connection string before running tests.
+    """
+    from datetime import date
 
-    assert recalls is not None
-    assert len(recalls) > 0
+    from core_infra.database import Base, LegacyRecallDB, SessionLocal, engine
 
-    print("✓ CPSC API call SUCCESSFUL!")
-    print(f"  - Fetched {len(recalls)} real recalls from government database")
+    print("\n[TEST 2] Testing RecallDataAgent with local recall database...")
+    print("  Creating database schema...")
 
-    # Display sample recall
-    if recalls:
-        sample = recalls[0]
-        print("\n  === SAMPLE REAL RECALL DATA ===")
-        print(f"  Product: {sample.product_name}")
-        print(f"  Recall ID: {sample.recall_id}")
-        print(f"  Date: {sample.recall_date}")
-    print(f"  Hazard: {sample.hazard_description}")  # type: ignore[attr-defined]
-    print(f"  Agency: {sample.agency}")  # type: ignore[attr-defined]
+    # Create only the recalls table (avoid SQLite UUID compatibility issues with other tables)
+    LegacyRecallDB.__table__.create(bind=engine, checkfirst=True)
+
+    print("  Setting up test data...")
+
+    session = SessionLocal()
+    try:
+        # Seed test recall data
+        test_recalls = [
+            LegacyRecallDB(
+                recall_id="TEST-001",
+                product_name="Baby Monitor X100",
+                brand="SafeBaby",
+                recall_date=date(2024, 10, 1),
+                hazard_description="Overheating battery risk",
+            ),
+            LegacyRecallDB(
+                recall_id="TEST-002",
+                product_name="Infant Car Seat Pro",
+                brand="TravelSafe",
+                recall_date=date(2024, 9, 15),
+                hazard_description="Harness buckle failure",
+            ),
+            LegacyRecallDB(
+                recall_id="TEST-003",
+                product_name="Baby Food Puree Organic",
+                brand="HealthyStart",
+                recall_date=date(2024, 8, 20),
+                hazard_description="Potential contamination",
+            ),
+        ]
+
+        # Add test data
+        for recall in test_recalls:
+            session.add(recall)
+        session.commit()
+
+        # Query total recall count
+        total_count = session.query(LegacyRecallDB).count()
+        print("✓ Database connection SUCCESSFUL!")
+        print(f"  - Total recalls in test database: {total_count:,}")
+
+        # Validate we have recalls
+        assert total_count >= 3, "Database should contain test recall records"
+
+        # Get a sample recall
+        sample = session.query(LegacyRecallDB).filter(LegacyRecallDB.recall_id == "TEST-001").first()
+        if sample:
+            print("\n  === SAMPLE RECALL DATA ===")
+            print(f"  Product: {sample.product_name}")
+            print(f"  Recall ID: {sample.recall_id}")
+            print(f"  Date: {sample.recall_date}")
+            print(f"  Hazard: {sample.hazard_description or 'N/A'}")
+            print(f"  Brand: {sample.brand or 'N/A'}")
+
+        # Test query by product name
+        search_results = (
+            session.query(LegacyRecallDB).filter(LegacyRecallDB.product_name.ilike("%baby%")).limit(5).all()
+        )
+        print(f"\n  - Sample 'baby' product search: {len(search_results)} results")
+        assert len(search_results) >= 2, "Should find baby-related products"
+
+        # Test query by recall_id
+        recall_result = session.query(LegacyRecallDB).filter(LegacyRecallDB.recall_id == "TEST-002").first()
+        assert recall_result is not None, "Should find recall by recall_id"
+        print(f"  - Recall ID lookup successful: {recall_result.product_name}")
+
+    finally:
+        # Cleanup test data
+        try:
+            session.query(LegacyRecallDB).filter(LegacyRecallDB.recall_id.like("TEST-%")).delete()
+            session.commit()
+        except Exception:
+            session.rollback()
+        session.close()
 
 
 @pytest.mark.unit
@@ -368,7 +433,11 @@ async def test_multiple_connectors_parallel():
     fda = FDAConnector()
 
     # Run both in parallel
-    results = await asyncio.gather(cpsc.fetch_recent_recalls(), fda.fetch_recent_recalls(), return_exceptions=True)
+    results = await asyncio.gather(
+        cpsc.fetch_recent_recalls(),
+        fda.fetch_recent_recalls(),
+        return_exceptions=True,
+    )
 
     cpsc_recalls = results[0] if not isinstance(results[0], Exception) else []
     fda_recalls = results[1] if not isinstance(results[1], Exception) else []
