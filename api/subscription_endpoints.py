@@ -27,9 +27,7 @@ class ActivateSubscriptionRequest(BaseModel):
     """Request to activate subscription with receipt"""
 
     provider: str = Field(..., pattern="^(apple|google)$", description="Payment provider")
-    receipt_data: str = Field(
-        ..., description="Receipt data (base64 for Apple, purchase token for Google)"
-    )
+    receipt_data: str = Field(..., description="Receipt data (base64 for Apple, purchase token for Google)")
     product_id: Optional[str] = Field(None, description="Product ID (required for Google)")
 
 
@@ -108,9 +106,7 @@ async def activate_subscription(
         if result["success"]:
             logger.info(f"Successfully activated subscription for user {current_user.id}")
         else:
-            logger.warning(
-                f"Failed to activate subscription for user {current_user.id}: {result.get('error')}"
-            )
+            logger.warning(f"Failed to activate subscription for user {current_user.id}: {result.get('error')}")
 
         return ActivateSubscriptionResponse(**result)
 
@@ -133,9 +129,7 @@ async def get_subscription_status(
     """
     try:
         # Use user_id parameter if provided (for testing), otherwise use authenticated user
-        target_user_id = (
-            user_id if user_id is not None else (current_user.id if current_user else None)
-        )
+        target_user_id = user_id if user_id is not None else (current_user.id if current_user else None)
 
         if target_user_id is None:
             return SubscriptionStatusResponse(
@@ -263,9 +257,7 @@ async def check_entitlement(
     except Exception as e:
         logger.error(f"Error checking entitlement: {e}", exc_info=True)
         # Return safe fallback response
-        payload = EntitlementData(
-            feature=feature, entitled=False, subscription=None, user_id=user_id
-        )
+        payload = EntitlementData(feature=feature, entitled=False, subscription=None, user_id=user_id)
         return EntitlementEnvelope(success=True, data=payload)
 
 
@@ -304,9 +296,7 @@ async def cancel_subscription(request: Request, current_user: User = Depends(get
 
 
 @router.get("/history")
-async def get_subscription_history(
-    request: Request, limit: int = 10, current_user: User = Depends(get_current_user)
-):
+async def get_subscription_history(request: Request, limit: int = 10, current_user: User = Depends(get_current_user)):
     """
     Get subscription history for the authenticated user
 
@@ -447,9 +437,7 @@ async def get_available_products(request: Request):
 
 # Admin endpoints (protected separately)
 @router.get("/admin/metrics", include_in_schema=False)
-async def get_subscription_metrics(
-    request: Request, current_user: User = Depends(get_current_user)
-):
+async def get_subscription_metrics(request: Request, current_user: User = Depends(get_current_user)):
     """
     Get subscription metrics (admin only)
 
@@ -465,9 +453,7 @@ async def get_subscription_metrics(
 
 
 @router.post("/admin/cleanup", include_in_schema=False)
-async def cleanup_expired_subscriptions(
-    request: Request, current_user: User = Depends(get_current_user)
-):
+async def cleanup_expired_subscriptions(request: Request, current_user: User = Depends(get_current_user)):
     """
     Clean up expired subscriptions (admin only)
 

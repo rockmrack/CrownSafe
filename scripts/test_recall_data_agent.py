@@ -35,9 +35,7 @@ from agents.recall_data_agent.agent_logic import RecallDataAgentLogic
 from agents.recall_data_agent.models import Recall
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # --- Test Configuration ---
@@ -103,9 +101,7 @@ async def main():
             if read_result.get("status") == "COMPLETED":
                 recalls = read_result["result"]["recalls"]
                 if len(recalls) == 1 and recalls[0]["recall_id"] == MOCK_CPSC_RECALL.recall_id:
-                    print(
-                        Fore.GREEN + Style.BRIGHT + f"✔ READ succeeded: {recalls[0]['recall_id']}"
-                    )
+                    print(Fore.GREEN + Style.BRIGHT + f"✔ READ succeeded: {recalls[0]['recall_id']}")
                 else:
                     print(Fore.RED + Style.BRIGHT + "✖ READ mismatch.")
             else:

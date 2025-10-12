@@ -289,9 +289,7 @@ class SubmissionValidator:
                     for screenshot in screenshots[:3]:  # Check first 3
                         size_mb = screenshot.stat().st_size / (1024 * 1024)
                         if size_mb > 10:
-                            self.warnings.append(
-                                f"Large screenshot: {screenshot.name} ({size_mb:.1f}MB)"
-                            )
+                            self.warnings.append(f"Large screenshot: {screenshot.name} ({size_mb:.1f}MB)")
             else:
                 self.print_result(f"{platform} screenshots", False, "Directory not found")
                 all_valid = False

@@ -3756,6 +3756,171 @@ async def mobile_performance_stats():
         return {"status": "error", "error": str(e), "agencies": 39}
 
 
+# --- REPORT UNSAFE PRODUCT ENDPOINT ---
+
+
+@app.post("/api/v1/report-unsafe-product", tags=["safety-reports"], status_code=201)
+async def report_unsafe_product(request: Request):
+    """
+    🛡️ Community Safety Reporting: Report Unsafe Products
+
+    Allows users to report dangerous products that may not yet be in the official
+    recall database. This helps protect the community by identifying potential hazards early.
+
+    **Rate Limit:** 10 reports per hour per user
+
+    **Required Fields:**
+    - user_id: ID of the user submitting the report
+    - product_name: Name of the unsafe product (min 3 characters)
+    - hazard_description: Detailed description of the hazard (min 10 characters)
+
+    **Optional Fields:**
+    - barcode, model_number, lot_number: Product identifiers
+    - brand, manufacturer: Product details
+    - severity: HIGH, MEDIUM (default), or LOW
+    - category: Product category (e.g., "Cribs", "Toys", "Bottles")
+    - reporter_name, reporter_email, reporter_phone: Contact info for follow-up
+    - incident_date, incident_description: Details about what happened
+    - photos: Array of photo URLs (max 10)
+
+    **Response:**
+    - 201: Report created successfully
+    - 400: Invalid request data
+    - 429: Rate limit exceeded
+    - 500: Server error
+    """
+    from datetime import datetime, timedelta
+
+    from api.models.user_report import UserReport
+    from api.schemas.user_report_schema import (
+        ReportUnsafeProductRequest,
+        ReportUnsafeProductResponse,
+    )
+
+    logger_inst = logging.getLogger(__name__)
+
+    try:
+        # Parse request body
+        body = await request.json()
+        req = ReportUnsafeProductRequest(**body)
+
+        # Rate limiting: Check submissions in last hour for this user
+        with get_db_session() as db:
+            one_hour_ago = datetime.utcnow() - timedelta(hours=1)
+            recent_reports = (
+                db.query(UserReport)
+                .filter(UserReport.user_id == req.user_id, UserReport.created_at >= one_hour_ago)
+                .count()
+            )
+
+            if recent_reports >= 10:
+                raise HTTPException(
+                    status_code=429,
+                    detail=("Rate limit exceeded. Maximum 10 reports per hour. Please try again later."),
+                )
+
+            # Create new report
+            new_report = UserReport(
+                user_id=req.user_id,
+                product_name=req.product_name,
+                hazard_description=req.hazard_description,
+                barcode=req.barcode,
+                model_number=req.model_number,
+                lot_number=req.lot_number,
+                brand=req.brand,
+                manufacturer=req.manufacturer,
+                severity=req.severity,
+                category=req.category,
+                status="PENDING",
+                reporter_name=req.reporter_name,
+                reporter_email=req.reporter_email,
+                reporter_phone=req.reporter_phone,
+                incident_date=req.incident_date,
+                incident_description=req.incident_description,
+                photos=req.photos,
+                created_at=datetime.utcnow(),
+            )
+
+            db.add(new_report)
+            db.commit()
+            db.refresh(new_report)
+
+            # Extract values after refresh (type: ignore for SQLAlchemy columns)
+            report_id_value = new_report.report_id  # type: ignore
+            created_at_value = new_report.created_at  # type: ignore
+
+            logger_inst.info(
+                f"🛡️ New unsafe product report: report_id={report_id_value}, "
+                f"user={req.user_id}, product='{req.product_name}', "
+                f"severity={req.severity}"
+            )
+
+            return ReportUnsafeProductResponse(
+                report_id=report_id_value,  # type: ignore
+                status="PENDING",
+                message=(
+                    "Thank you for reporting this unsafe product. "
+                    "Our safety team will review your report within 24-48 hours. "
+                    "You are helping keep the community safe!"
+                ),
+                created_at=created_at_value,  # type: ignore
+            )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger_inst.error(f"Failed to create unsafe product report: {e}")
+        raise HTTPException(status_code=500, detail="Failed to submit report. Please try again later.") from e
+
+
+@app.get("/api/v1/user-reports/{user_id}", tags=["safety-reports"])
+async def get_user_reports(
+    user_id: int,
+    status: Optional[str] = Query(None, description="Filter by status"),
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+):
+    """
+    Get all safety reports submitted by a specific user
+
+    **Parameters:**
+    - user_id: User ID
+    - status: Optional filter (PENDING, REVIEWING, VERIFIED, REJECTED, DUPLICATE)
+    - limit: Maximum results (1-100)
+    - offset: Pagination offset
+
+    **Response:**
+    Returns array of user reports with status and review information
+    """
+    from api.models.user_report import UserReport
+
+    logger_inst = logging.getLogger(__name__)
+
+    try:
+        with get_db_session() as db:
+            query = db.query(UserReport).filter(UserReport.user_id == user_id)
+
+            if status:
+                query = query.filter(UserReport.status == status.upper())
+
+            # Get total count
+            total_count = query.count()
+
+            # Get paginated results
+            reports = query.order_by(UserReport.created_at.desc()).offset(offset).limit(limit).all()
+
+            return {
+                "total": total_count,
+                "limit": limit,
+                "offset": offset,
+                "reports": [report.to_dict() for report in reports],
+            }
+
+    except Exception as e:
+        logger_inst.error(f"Failed to fetch user reports: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve reports") from e
+
+
 # --- CRITICAL UPC DATA FIX ENDPOINT ---
 
 

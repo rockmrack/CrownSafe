@@ -102,9 +102,7 @@ class WorkflowMonitor:
             logger.debug(f"PONG from {sender}")
         else:
             # Log other message types for debugging
-            logger.debug(
-                f"Message type {msg_type} from {sender}: {json.dumps(message.payload, indent=2)[:200]}..."
-            )
+            logger.debug(f"Message type {msg_type} from {sender}: {json.dumps(message.payload, indent=2)[:200]}...")
 
 
 async def run_test():

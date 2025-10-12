@@ -153,13 +153,9 @@ class CommanderAgentManager:
 
             # Initialize CommanderLogic with dedicated logger
             logic_logger = logging.getLogger(f"{AGENT_ID}.logic")
-            self.commander_logic = CommanderLogic(
-                agent_id=AGENT_ID, mcp_client=self.mcp_client, logger=logic_logger
-            )
+            self.commander_logic = CommanderLogic(agent_id=AGENT_ID, mcp_client=self.mcp_client, logger=logic_logger)
 
-            logger.info(
-                f"CommanderAgent components initialized successfully (Version: {AGENT_VERSION})"
-            )
+            logger.info(f"CommanderAgent components initialized successfully (Version: {AGENT_VERSION})")
             logger.info(f"Environment loaded from: {env_source}")
             logger.info(f"MCP Server URL: {MCP_SERVER_URL}")
 

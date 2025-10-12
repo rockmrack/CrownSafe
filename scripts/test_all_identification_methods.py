@@ -50,9 +50,7 @@ async def test_method_1_camera_scan():
             user_id = 1  # Use default test user
 
         # Test the safety-check endpoint with barcode
-        response = client.post(
-            "/api/v1/safety-check", json={"user_id": user_id, "barcode": test_barcode}
-        )
+        response = client.post("/api/v1/safety-check", json={"user_id": user_id, "barcode": test_barcode})
 
         if response.status_code in [200, 201]:
             logger.info("✅ Method 1 PASSED: Camera scan (barcode) endpoint works")
@@ -174,9 +172,7 @@ async def test_method_4_search_by_name():
         test_product = "Baby Monitor"
 
         # Test the updated safety-check endpoint with product_name
-        response = client.post(
-            "/api/v1/safety-check", json={"user_id": 1, "product_name": test_product}
-        )
+        response = client.post("/api/v1/safety-check", json={"user_id": 1, "product_name": test_product})
 
         if response.status_code in [200, 201, 403]:  # 403 if subscription required
             logger.info("✅ Method 4 PASSED: Product name search endpoint works")
@@ -302,9 +298,7 @@ All methods are now supported by the backend!
     )
 
     if all_passed:
-        logger.info(
-            "\n🎉 All 4 identification methods are WORKING and ready for frontend integration!"
-        )
+        logger.info("\n🎉 All 4 identification methods are WORKING and ready for frontend integration!")
     else:
         logger.error("\n⚠️ Some methods need configuration. Review the errors above.")
 

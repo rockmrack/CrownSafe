@@ -235,9 +235,7 @@ def create_nursery_scan_history(db_session, user_id=1):
         scan_date = datetime.utcnow() - timedelta(days=days_ago)
 
         # Focus on critical items and safety equipment
-        critical_products = [
-            p for p in nursery_products if p["category"] in ["Critical Safety", "Safety Equipment"]
-        ]
+        critical_products = [p for p in nursery_products if p["category"] in ["Critical Safety", "Safety Equipment"]]
         product = random.choice(critical_products if critical_products else nursery_products)
 
         scan = ScanHistory(
@@ -322,18 +320,13 @@ def test_quarterly_nursery_report():
         for scan in scan_history:
             product_name_lower = (scan.product_name or "").lower()
 
-            if any(
-                word in product_name_lower
-                for word in ["crib", "car seat", "high chair", "bassinet"]
-            ):
+            if any(word in product_name_lower for word in ["crib", "car seat", "high chair", "bassinet"]):
                 categories["Critical Safety"].append(scan)
             elif any(word in product_name_lower for word in ["bottle", "formula", "food", "sippy"]):
                 categories["Feeding"].append(scan)
             elif any(word in product_name_lower for word in ["toy", "play", "rattle", "teether"]):
                 categories["Toys & Play"].append(scan)
-            elif any(
-                word in product_name_lower for word in ["clothes", "blanket", "swaddle", "sheet"]
-            ):
+            elif any(word in product_name_lower for word in ["clothes", "blanket", "swaddle", "sheet"]):
                 categories["Clothing & Textiles"].append(scan)
             elif any(word in product_name_lower for word in ["dresser", "changing table", "shelf"]):
                 categories["Furniture"].append(scan)
@@ -355,9 +348,7 @@ def test_quarterly_nursery_report():
         if total_products > 0:
             recall_penalty = (total_recalls / total_products) * 30
             risk_penalty = (high_risk_items / total_products) * 20
-            safety_bonus = min(
-                10, (len(categories["Safety Equipment"]) / max(1, total_products)) * 20
-            )
+            safety_bonus = min(10, (len(categories["Safety Equipment"]) / max(1, total_products)) * 20)
             compliance_score = max(0, min(100, 100 - recall_penalty - risk_penalty + safety_bonus))
 
         print("\n📊 Quarterly Nursery Audit Statistics:")

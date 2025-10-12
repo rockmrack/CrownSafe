@@ -32,9 +32,7 @@ def upgrade():
             primary_key=True,
             server_default=sa.text("gen_random_uuid()"),
         ),
-        sa.Column(
-            "kind", sa.String(16), nullable=False
-        ),  # "export" | "delete" | "rectify" | "access"
+        sa.Column("kind", sa.String(16), nullable=False),  # "export" | "delete" | "rectify" | "access"
         sa.Column("email", sa.String(320), nullable=False),  # Max email length per RFC
         sa.Column("email_hash", sa.String(64), nullable=False),  # SHA-256 hash for searching
         sa.Column(
@@ -43,9 +41,7 @@ def upgrade():
         sa.Column("submitted_at", sa.DateTime(timezone=True), server_default=sa.text("NOW()")),
         sa.Column("verified_at", sa.DateTime(timezone=True), nullable=True),  # Added
         sa.Column("completed_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column(
-            "expires_at", sa.DateTime(timezone=True), nullable=True
-        ),  # Added for data export links
+        sa.Column("expires_at", sa.DateTime(timezone=True), nullable=True),  # Added for data export links
         sa.Column("notes", sa.Text, nullable=True),
         sa.Column("rejection_reason", sa.Text, nullable=True),  # Added
         sa.Column("trace_id", sa.String(64), nullable=True),
@@ -53,9 +49,7 @@ def upgrade():
         sa.Column("source", sa.String(32), nullable=True),  # ios|android|web|email|api
         sa.Column("ip_address", sa.String(45), nullable=True),  # Added for audit
         sa.Column("user_agent", sa.Text, nullable=True),  # Added for audit
-        sa.Column(
-            "verification_token", sa.String(128), nullable=True
-        ),  # Added for email verification
+        sa.Column("verification_token", sa.String(128), nullable=True),  # Added for email verification
         sa.Column("export_url", sa.Text, nullable=True),  # Added for download links
         sa.Column("metadata_json", postgresql.JSONB, nullable=True),  # Added for flexibility
     )

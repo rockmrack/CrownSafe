@@ -114,9 +114,7 @@ class ScanResult:
                     "lot_number": self.lot_number,
                     "serial_number": self.serial_number,
                     "expiry_date": self.expiry_date.isoformat() if self.expiry_date else None,
-                    "production_date": self.production_date.isoformat()
-                    if self.production_date
-                    else None,
+                    "production_date": self.production_date.isoformat() if self.production_date else None,
                     "batch_code": self.batch_code,
                     "parsed_data": self.parsed_data or {},
                 }
@@ -224,9 +222,7 @@ class BarcodeScanner:
 
             # If no results, return error
             if not results:
-                results.append(
-                    ScanResult(success=False, error_message="No barcodes detected in image")
-                )
+                results.append(ScanResult(success=False, error_message="No barcodes detected in image"))
 
         except Exception as e:
             logger.error(f"Error scanning image: {e}")
@@ -377,9 +373,7 @@ class BarcodeScanner:
                 # Threshold
                 cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)[1],
                 # Adaptive threshold
-                cv2.adaptiveThreshold(
-                    gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
-                ),
+                cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2),
                 # Blur and threshold
                 cv2.threshold(cv2.GaussianBlur(gray, (5, 5), 0), 127, 255, cv2.THRESH_BINARY)[1],
             ]

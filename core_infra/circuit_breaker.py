@@ -285,9 +285,7 @@ def check_circuits_health() -> Dict[str, Any]:
     """Check health of all circuit breakers"""
     all_status = get_all_circuit_status()
 
-    open_circuits = [
-        service for service, status in all_status.items() if status.get("state") == "open"
-    ]
+    open_circuits = [service for service, status in all_status.items() if status.get("state") == "open"]
 
     health = {
         "healthy": len(open_circuits) == 0,

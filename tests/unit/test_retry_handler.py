@@ -169,17 +169,13 @@ class TestRetryConfig:
 
     def test_should_retry_non_retryable_takes_precedence(self):
         """Test that non-retryable exceptions take precedence"""
-        config = RetryConfig(
-            retryable_exceptions=[Exception], non_retryable_exceptions=[ValueError]
-        )
+        config = RetryConfig(retryable_exceptions=[Exception], non_retryable_exceptions=[ValueError])
 
         assert config.should_retry(ValueError("test")) is False
 
     def test_should_retry_unknown_exception(self):
         """Test should_retry with unknown exception"""
-        config = RetryConfig(
-            retryable_exceptions=[ValueError], non_retryable_exceptions=[TypeError]
-        )
+        config = RetryConfig(retryable_exceptions=[ValueError], non_retryable_exceptions=[TypeError])
 
         assert config.should_retry(RuntimeError("test")) is False
 

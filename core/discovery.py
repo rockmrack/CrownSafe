@@ -35,9 +35,7 @@ def _get_agent_capabilities(agent_info: Dict[str, Any]) -> Set[str]:
     """Extracts and normalizes capability names from agent registration info."""
     capabilities = set()
     if not isinstance(agent_info, dict):
-        discovery_logger.warning(
-            f"_get_agent_capabilities: agent_info is not a dict. Got: {type(agent_info)}"
-        )
+        discovery_logger.warning(f"_get_agent_capabilities: agent_info is not a dict. Got: {type(agent_info)}")
         return capabilities
 
     agent_caps_list = agent_info.get("capabilities", [])
@@ -92,9 +90,7 @@ async def handle_discovery_message(message: Dict[str, Any], sender_id: str):
     message_type = header.get("message_type", "UNKNOWN_TYPE")
     correlation_id = header.get("correlation_id")
 
-    discovery_logger.info(
-        f"Discovery received '{message_type}' from '{sender_id}' (CorrID: {correlation_id})"
-    )
+    discovery_logger.info(f"Discovery received '{message_type}' from '{sender_id}' (CorrID: {correlation_id})")
 
     # *** ROBUSTIFIED LOGGING FOR PAYLOAD ***
     if isinstance(payload, dict):
@@ -109,9 +105,7 @@ async def handle_discovery_message(message: Dict[str, Any], sender_id: str):
                 # Attempt to convert log_value to string for logging to be safe, truncate if too long
                 try:
                     val_str = str(log_value)
-                    temp_log_payload_dict[log_key] = (
-                        val_str[:100] + "..." if len(val_str) > 100 else val_str
-                    )
+                    temp_log_payload_dict[log_key] = val_str[:100] + "..." if len(val_str) > 100 else val_str
                 except Exception:
                     temp_log_payload_dict[log_key] = "<unloggable_value>"
         payload_str_snippet = str(temp_log_payload_dict)  # Convert the constructed dict to string
@@ -134,9 +128,7 @@ async def handle_discovery_message(message: Dict[str, Any], sender_id: str):
                 "error_code": "E003",
                 "error_message": f"Unsupported message type '{message_type}'",
             }
-            response_message = create_mcp_error_response(
-                sender_id, correlation_id, "MCP_DISCOVERY", error_payload
-            )
+            response_message = create_mcp_error_response(sender_id, correlation_id, "MCP_DISCOVERY", error_payload)
     except Exception as e:
         discovery_logger.error(
             f"Error processing message type '{message_type}' from '{sender_id}' (CorrID: {correlation_id}): {e}",
@@ -146,9 +138,7 @@ async def handle_discovery_message(message: Dict[str, Any], sender_id: str):
             "error_code": "E999",
             "error_message": f"Internal error processing message: {str(e)}",
         }
-        response_message = create_mcp_error_response(
-            sender_id, correlation_id, "MCP_DISCOVERY", error_payload
-        )
+        response_message = create_mcp_error_response(sender_id, correlation_id, "MCP_DISCOVERY", error_payload)
 
     if response_message:
         sender_ws = get_connection(sender_id)
@@ -159,9 +149,7 @@ async def handle_discovery_message(message: Dict[str, Any], sender_id: str):
                     if response_msg_type == "DISCOVERY_RESPONSE":
                         status_in_payload = response_message["payload"].get("status")
                         results_in_payload = response_message["payload"].get("results", [])
-                        results_count = (
-                            len(results_in_payload) if isinstance(results_in_payload, list) else -1
-                        )
+                        results_count = len(results_in_payload) if isinstance(results_in_payload, list) else -1
                         discovery_logger.info(
                             f"Final check before sending DISCOVERY_RESPONSE (CorrID: {correlation_id}): status='{status_in_payload}', results_count={results_count}"
                         )
@@ -170,9 +158,7 @@ async def handle_discovery_message(message: Dict[str, Any], sender_id: str):
                 try:
                     response_json = safe_json_serialize(response_to_send)
                 except (NameError, AttributeError):
-                    discovery_logger.warning(
-                        "safe_json_serialize not available, falling back to standard json.dumps"
-                    )
+                    discovery_logger.warning("safe_json_serialize not available, falling back to standard json.dumps")
                     response_json = json.dumps(response_to_send)
 
                 await sender_ws.send_text(response_json)
@@ -181,9 +167,7 @@ async def handle_discovery_message(message: Dict[str, Any], sender_id: str):
                     f"Sent response (Type: {sent_msg_type}) to '{sender_id}' (CorrID: {correlation_id})"
                 )
 
-                log_snippet = (
-                    response_json[:250] + "..." if len(response_json) > 250 else response_json
-                )
+                log_snippet = response_json[:250] + "..." if len(response_json) > 250 else response_json
                 discovery_logger.debug(f"Response sent (CorrID: {correlation_id}): {log_snippet}")
             except Exception as e:
                 discovery_logger.error(
@@ -201,11 +185,7 @@ async def handle_registration(
 ) -> Optional[Dict[str, Any]]:
     """Handles agent registration, updating the agent_registry."""
     agent_id_from_payload = payload.get("agent_id")
-    if (
-        not agent_id_from_payload
-        or not isinstance(agent_id_from_payload, str)
-        or agent_id_from_payload != sender_id
-    ):
+    if not agent_id_from_payload or not isinstance(agent_id_from_payload, str) or agent_id_from_payload != sender_id:
         discovery_logger.warning(
             f"Registration failed for sender '{sender_id}' (CorrID: {correlation_id}): Invalid/mismatched agent_id '{agent_id_from_payload}' in payload."
         )
@@ -251,14 +231,10 @@ async def handle_registration(
     )
 
     ack_payload = {"status": "registered", "agent_id": agent_id_from_payload}
-    return create_mcp_response(
-        sender_id, correlation_id, "MCP_DISCOVERY", "DISCOVERY_ACK", ack_payload
-    )
+    return create_mcp_response(sender_id, correlation_id, "MCP_DISCOVERY", "DISCOVERY_ACK", ack_payload)
 
 
-async def handle_query(
-    payload: Dict[str, Any], sender_id: str, correlation_id: Optional[str]
-) -> Dict[str, Any]:
+async def handle_query(payload: Dict[str, Any], sender_id: str, correlation_id: Optional[str]) -> Dict[str, Any]:
     """Handles discovery queries for finding agents."""
     discovery_logger.info(f"Processing query from '{sender_id}' (CorrID: {correlation_id})")
 
@@ -289,9 +265,7 @@ async def handle_query(
         if query_by_agent_id_val:
             if not isinstance(query_by_agent_id_val, str):
                 raise ValueError("'query_by_agent_id' must be a string")
-            discovery_logger.info(
-                f"Query by ID: '{query_by_agent_id_val}' (CorrID: {correlation_id})"
-            )
+            discovery_logger.info(f"Query by ID: '{query_by_agent_id_val}' (CorrID: {correlation_id})")
             agent_info = registry_snapshot.get(query_by_agent_id_val)
             if agent_info:
                 is_connected = get_connection(query_by_agent_id_val) is not None
@@ -299,9 +273,7 @@ async def handle_query(
                 discovery_logger.debug(
                     f"  Agent '{query_by_agent_id_val}': Connected={is_connected}, Status='{agent_status}' (Required: '{required_status_val}')"
                 )
-                if (
-                    required_status_val == "any" or agent_status == required_status_val
-                ) and is_connected:
+                if (required_status_val == "any" or agent_status == required_status_val) and is_connected:
                     # Fixed variable names in dictionary comprehension
                     clean_info = {
                         key_item: value_item
@@ -315,9 +287,7 @@ async def handle_query(
                         f"  Agent '{query_by_agent_id_val}' found but did not meet status/connection criteria."
                     )
             else:
-                discovery_logger.info(
-                    f"  Agent '{query_by_agent_id_val}' not found in registry snapshot."
-                )
+                discovery_logger.info(f"  Agent '{query_by_agent_id_val}' not found in registry snapshot.")
 
         elif query_by_capability_list_val:
             if not isinstance(query_by_capability_list_val, list):
@@ -335,35 +305,23 @@ async def handle_query(
                     )
 
             if not required_caps_set:
-                raise ValueError(
-                    "Effective 'query_by_capability_list' is empty after processing non-string items."
-                )
+                raise ValueError("Effective 'query_by_capability_list' is empty after processing non-string items.")
 
-            discovery_logger.info(
-                f"Query by capabilities: {required_caps_set} (CorrID: {correlation_id})"
-            )
-            discovery_logger.info(
-                f"Checking {len(registry_snapshot)} registered agents (CorrID: {correlation_id})..."
-            )
+            discovery_logger.info(f"Query by capabilities: {required_caps_set} (CorrID: {correlation_id})")
+            discovery_logger.info(f"Checking {len(registry_snapshot)} registered agents (CorrID: {correlation_id})...")
 
             for (
                 agent_id_key,
                 agent_info_val,
             ) in registry_snapshot.items():  # Fixed variable names in loop
-                discovery_logger.debug(
-                    f"  Evaluating agent '{agent_id_key}' (CorrID: {correlation_id}):"
-                )
+                discovery_logger.debug(f"  Evaluating agent '{agent_id_key}' (CorrID: {correlation_id}):")
                 is_connected = get_connection(agent_id_key) is not None
                 agent_status_val = (agent_info_val.get("status", "")).lower()
 
                 discovery_logger.debug(f"    Connected: {is_connected}")
-                discovery_logger.debug(
-                    f"    Status: '{agent_status_val}' (Required: '{required_status_val.upper()}')"
-                )
+                discovery_logger.debug(f"    Status: '{agent_status_val}' (Required: '{required_status_val.upper()}')")
 
-                if is_connected and (
-                    required_status_val == "any" or agent_status_val == required_status_val
-                ):
+                if is_connected and (required_status_val == "any" or agent_status_val == required_status_val):
                     agent_capabilities_set = _get_agent_capabilities(agent_info_val)
                     discovery_logger.debug(f"    Agent capabilities: {agent_capabilities_set}")
                     discovery_logger.debug(f"    Required capabilities: {required_caps_set}")
@@ -403,9 +361,7 @@ async def handle_query(
 
         if query_results:
             result_ids = [res.get("agent_id", "unknown_id_in_result") for res in query_results]
-            discovery_logger.debug(
-                f"Results for CorrID '{correlation_id}' include agent IDs: {result_ids}"
-            )
+            discovery_logger.debug(f"Results for CorrID '{correlation_id}' include agent IDs: {result_ids}")
 
         return create_mcp_response(
             sender_id,

@@ -81,19 +81,13 @@ class UserAgentBlocker(BaseHTTPMiddleware):
             self.blocked_patterns = blocked_patterns or self.DEFAULT_BLOCKED_PATTERNS
 
         self.allowed_patterns = allowed_patterns or self.ALLOWED_PATTERNS
-        self.block_empty_ua = (
-            block_empty_ua or os.getenv("BLOCK_EMPTY_USER_AGENT", "false").lower() == "true"
-        )
+        self.block_empty_ua = block_empty_ua or os.getenv("BLOCK_EMPTY_USER_AGENT", "false").lower() == "true"
         self.case_sensitive = case_sensitive
 
         # Compile regex patterns for efficiency
         flags = 0 if case_sensitive else re.IGNORECASE
-        self.blocked_regex = [
-            re.compile(re.escape(pattern), flags) for pattern in self.blocked_patterns
-        ]
-        self.allowed_regex = [
-            re.compile(re.escape(pattern), flags) for pattern in self.allowed_patterns
-        ]
+        self.blocked_regex = [re.compile(re.escape(pattern), flags) for pattern in self.blocked_patterns]
+        self.allowed_regex = [re.compile(re.escape(pattern), flags) for pattern in self.allowed_patterns]
 
         logger.info(f"UA blocker configured with {len(self.blocked_patterns)} blocked patterns")
 

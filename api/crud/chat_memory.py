@@ -12,9 +12,7 @@ def get_profile(db: Session, user_id: Optional[UUID]):
     return None
 
 
-def get_or_create_conversation(
-    db: Session, conversation_id: Optional[UUID], user_id: Optional[UUID], scan_id: str
-):
+def get_or_create_conversation(db: Session, conversation_id: Optional[UUID], user_id: Optional[UUID], scan_id: str):
     """Get or create conversation record"""
 
     # Return a simple object with an id

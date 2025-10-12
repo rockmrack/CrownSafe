@@ -117,9 +117,7 @@ async def generate_safety_report(
     This is the main report generation endpoint that handles all report types.
     """
     try:
-        logger.info(
-            f"Generating safety report for user {request.user_id}, type: {request.report_type}"
-        )
+        logger.info(f"Generating safety report for user {request.user_id}, type: {request.report_type}")
 
         # Check if user exists
         user = db.query(User).filter(User.id == request.user_id).first()
@@ -341,9 +339,7 @@ async def generate_90_day_report(
         if request.generate_pdf:
             # Use the report builder agent to generate PDF
             try:
-                report_agent = ReportBuilderAgentLogic(
-                    agent_id=f"report_builder_{report_id}", version="2.1"
-                )
+                report_agent = ReportBuilderAgentLogic(agent_id=f"report_builder_{report_id}", version="2.1")
 
                 # Prepare data for safety summary report
                 report_data = {
@@ -474,9 +470,7 @@ async def get_user_reports_dev(
 
 
 @safety_reports_router.get("/my-reports", response_model=ApiResponse)
-async def get_my_reports(
-    user_id: int, limit: int = 10, db: Session = Depends(get_db)
-) -> ApiResponse:
+async def get_my_reports(user_id: int, limit: int = 10, db: Session = Depends(get_db)) -> ApiResponse:
     """
     Get list of user's generated safety reports
     """
@@ -496,9 +490,7 @@ async def get_my_reports(
                     "report_id": report.report_id,
                     "report_type": report.report_type,
                     "generated_at": report.generated_at.isoformat(),
-                    "period_start": report.period_start.isoformat()
-                    if report.period_start
-                    else None,
+                    "period_start": report.period_start.isoformat() if report.period_start else None,
                     "period_end": report.period_end.isoformat() if report.period_end else None,
                     "total_scans": report.total_scans,
                     "recalls_found": report.recalls_found,
@@ -888,9 +880,7 @@ async def generate_quarterly_nursery_report(
             recommendations.append("Review and update critical safety items (cribs, car seats)")
 
         if feeding_items == 0:
-            recommendations.append(
-                "Consider tracking feeding products for complete safety coverage"
-            )
+            recommendations.append("Consider tracking feeding products for complete safety coverage")
 
         if safety_equipment < 3:
             recommendations.append("Add more safety equipment (gates, locks, monitors)")
@@ -912,9 +902,7 @@ async def generate_quarterly_nursery_report(
                 cat_products = []
                 for product_key, product_group in product_groups.items():
                     # Check if this product belongs to this category
-                    product_in_category = any(
-                        scan in category_data["products"] for scan in product_group["scans"]
-                    )
+                    product_in_category = any(scan in category_data["products"] for scan in product_group["scans"])
                     if product_in_category:
                         scans = product_group["scans"]
                         risk_level = "low"
@@ -972,9 +960,7 @@ async def generate_quarterly_nursery_report(
         pdf_url = None
         if request.generate_pdf:
             try:
-                report_agent = ReportBuilderAgentLogic(
-                    agent_id=f"report_builder_{report_id}", version="2.1"
-                )
+                report_agent = ReportBuilderAgentLogic(agent_id=f"report_builder_{report_id}", version="2.1")
 
                 # Prepare data for nursery quarterly report
                 report_data = {
@@ -1001,9 +987,7 @@ async def generate_quarterly_nursery_report(
                     ]
                 }
 
-                result = report_agent._build_nursery_quarterly_report(
-                    report_data, workflow_id=report_id
-                )
+                result = report_agent._build_nursery_quarterly_report(report_data, workflow_id=report_id)
 
                 if result.get("status") == "success" and result.get("pdf_path"):
                     pdf_url = f"/api/v1/reports/download/{report_id}"

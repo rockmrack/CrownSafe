@@ -348,9 +348,7 @@ class S3BackupExporter:
 
                     # Calculate duration
                     if task.get("TaskStartTime") and task.get("TaskEndTime"):
-                        duration = (
-                            task["TaskEndTime"] - task["TaskStartTime"]
-                        ).total_seconds() / 60
+                        duration = (task["TaskEndTime"] - task["TaskStartTime"]).total_seconds() / 60
                         durations.append(duration)
 
                 elif status == "FAILED":
@@ -365,9 +363,7 @@ class S3BackupExporter:
                         "status": status,
                         "progress": task.get("PercentProgress", 0),
                         "size_gb": task.get("TotalExtractedDataInGB", 0),
-                        "start_time": task.get("TaskStartTime").isoformat()
-                        if task.get("TaskStartTime")
-                        else None,
+                        "start_time": task.get("TaskStartTime").isoformat() if task.get("TaskStartTime") else None,
                     }
                 )
 
@@ -465,9 +461,7 @@ def main():
     exporter = S3BackupExporter()
 
     # Get export configuration
-    tables_to_export = (
-        os.environ.get("EXPORT_TABLES", "").split(",") if os.environ.get("EXPORT_TABLES") else None
-    )
+    tables_to_export = os.environ.get("EXPORT_TABLES", "").split(",") if os.environ.get("EXPORT_TABLES") else None
 
     # Start export
     task_id = exporter.export_latest_snapshot(tables=tables_to_export)

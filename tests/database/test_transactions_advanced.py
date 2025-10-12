@@ -120,9 +120,7 @@ class TestDatabaseTransactions:
             db_session = SessionLocal()
 
             # Verify conversation does not exist (full rollback occurred)
-            conversations = (
-                db_session.query(Conversation).filter_by(user_id=sample_user.user_id).all()
-            )
+            conversations = db_session.query(Conversation).filter_by(user_id=sample_user.user_id).all()
 
             # In SQLAlchemy, nested rollbacks affect the entire transaction
             assert len(conversations) == 0, "Rollback should remove all changes"
@@ -160,9 +158,7 @@ class TestDatabaseTransactions:
 
         # Execute concurrent updates
         thread1 = threading.Thread(target=update_user_transaction, args=(sample_user.user_id, True))
-        thread2 = threading.Thread(
-            target=update_user_transaction, args=(sample_user.user_id, False)
-        )
+        thread2 = threading.Thread(target=update_user_transaction, args=(sample_user.user_id, False))
 
         thread1.start()
         thread2.start()
@@ -292,16 +288,10 @@ class TestDatabaseTransactions:
             db_session.commit()
 
             # Verify conversation exists but message doesn't
-            conversations = (
-                db_session.query(Conversation).filter_by(user_id=sample_user.user_id).all()
-            )
+            conversations = db_session.query(Conversation).filter_by(user_id=sample_user.user_id).all()
             assert len(conversations) == 1
 
-            messages = (
-                db_session.query(ConversationMessage)
-                .filter_by(conversation_id=conversations[0].id)
-                .all()
-            )
+            messages = db_session.query(ConversationMessage).filter_by(conversation_id=conversations[0].id).all()
             assert len(messages) == 0, "Message should have been rolled back"
 
         except Exception:
@@ -384,9 +374,7 @@ class TestDatabaseTransactions:
         db_session.commit()
 
         # Verify count
-        count = (
-            db_session.query(ConversationMessage).filter_by(conversation_id=conversation.id).count()
-        )
+        count = db_session.query(ConversationMessage).filter_by(conversation_id=conversation.id).count()
         assert count == 1000, "All messages should be inserted atomically"
 
     def test_long_running_transaction_timeout(self, db_session):

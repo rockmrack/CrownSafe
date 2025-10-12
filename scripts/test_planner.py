@@ -58,9 +58,7 @@ async def main():
         step1_inputs = plan.get("steps", [{}])[0].get("inputs", {})
         if step1_inputs.get("barcode") == "0123456789123":
             print("\n" + "=" * 50)
-            print(
-                "✅ TEST PASSED: The plan was generated successfully and the barcode was correctly substituted."
-            )
+            print("✅ TEST PASSED: The plan was generated successfully and the barcode was correctly substituted.")
         else:
             print("\n" + "=" * 50)
             print("❌ TEST FAILED: The barcode was not substituted correctly in the plan.")

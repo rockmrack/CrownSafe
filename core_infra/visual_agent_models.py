@@ -87,9 +87,7 @@ class ImageJob(Base):
     confidence_level = Column(SQLEnum(ConfidenceLevel))
 
     # Relationships
-    extractions = relationship(
-        "ImageExtraction", back_populates="job", cascade="all, delete-orphan"
-    )
+    extractions = relationship("ImageExtraction", back_populates="job", cascade="all, delete-orphan")
     review = relationship("ReviewQueue", back_populates="job", uselist=False)
 
     def __repr__(self):

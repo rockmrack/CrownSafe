@@ -114,9 +114,7 @@ def allergy_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
     return {"allergy": out.model_dump()}
 
 
-def _check_pregnancy_safety_from_scan(
-    agent: PregnancyProductSafetyAgent, scan: Dict[str, Any]
-) -> Dict[str, Any]:
+def _check_pregnancy_safety_from_scan(agent: PregnancyProductSafetyAgent, scan: Dict[str, Any]) -> Dict[str, Any]:
     """
     Helper to check pregnancy safety based on scan data rather than UPC.
     This is a simplified adapter until we have full ingredient database integration.
@@ -348,10 +346,7 @@ def ingredient_info_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
         ingredient_lower = ingredient.lower()
 
         # Pregnancy concerns
-        if any(
-            term in ingredient_lower
-            for term in ["retinol", "salicylic acid", "hydroquinone", "tretinoin"]
-        ):
+        if any(term in ingredient_lower for term in ["retinol", "salicylic acid", "hydroquinone", "tretinoin"]):
             highlighted.append(ingredient)
             notes.append(f"{ingredient}: Check with healthcare provider during pregnancy")
 
@@ -360,10 +355,7 @@ def ingredient_info_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
             highlighted.append(ingredient)
 
         # Preservatives
-        if any(
-            term in ingredient_lower
-            for term in ["formaldehyde", "methylisothiazolinone", "benzalkonium"]
-        ):
+        if any(term in ingredient_lower for term in ["formaldehyde", "methylisothiazolinone", "benzalkonium"]):
             highlighted.append(ingredient)
             notes.append(f"{ingredient}: Potential skin sensitizer")
 

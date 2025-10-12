@@ -58,9 +58,7 @@ class ProductIdentifierLogic:
                     text = await response.text()
 
                     # Log full response for debugging
-                    self.logger.debug(
-                        f"UPCitemdb response for {barcode} (status {response.status}):\n{text}"
-                    )
+                    self.logger.debug(f"UPCitemdb response for {barcode} (status {response.status}):\n{text}")
 
                     if response.status != 200:
                         self.logger.error(f"UPCitemdb HTTP {response.status} for barcode {barcode}")
@@ -69,9 +67,7 @@ class ProductIdentifierLogic:
                     data = json.loads(text)
 
                     # Debug: log parsed JSON
-                    self.logger.debug(
-                        f"Parsed UPCitemdb JSON for {barcode}:\n{json.dumps(data, indent=2)}"
-                    )
+                    self.logger.debug(f"Parsed UPCitemdb JSON for {barcode}:\n{json.dumps(data, indent=2)}")
 
                     if data.get("code") == "OK" and data.get("items"):
                         item = data["items"][0]
@@ -83,18 +79,12 @@ class ProductIdentifierLogic:
                             "description": item.get("description"),
                             "source": "upcitemdb.com (trial)",
                         }
-                        self.logger.info(
-                            f"Extracted product details for {barcode}: {product_details['product_name']}"
-                        )
+                        self.logger.info(f"Extracted product details for {barcode}: {product_details['product_name']}")
                         # Debug: full details
-                        self.logger.debug(
-                            f"Product details dict:\n{json.dumps(product_details, indent=2)}"
-                        )
+                        self.logger.debug(f"Product details dict:\n{json.dumps(product_details, indent=2)}")
                         return product_details
                     else:
-                        self.logger.warning(
-                            f"UPCitemdb returned OK but no items for {barcode}: {data}"
-                        )
+                        self.logger.warning(f"UPCitemdb returned OK but no items for {barcode}: {data}")
                         return None
 
         except aiohttp.ClientError as e:
@@ -165,9 +155,7 @@ class ProductIdentifierLogic:
             return {"status": "COMPLETED", "result": product_details}
 
         # 2) Enhanced fallback to RecallDB with better logic
-        self.logger.warning(
-            f"Live UPC lookup failed for {barcode}, attempting enhanced RecallDB fallback..."
-        )
+        self.logger.warning(f"Live UPC lookup failed for {barcode}, attempting enhanced RecallDB fallback...")
         try:
             with get_db_session() as db:
                 # Try to find a recall with matching UPC first
@@ -181,11 +169,9 @@ class ProductIdentifierLogic:
                     fallback = {
                         "product_name": recall_row.product_name or f"Product {barcode}",
                         "upc": barcode,
-                        "manufacturer": getattr(recall_row, "manufacturer", None)
-                        or "Unknown Manufacturer",
+                        "manufacturer": getattr(recall_row, "manufacturer", None) or "Unknown Manufacturer",
                         "category": "Consumer Product",
-                        "description": recall_row.reason
-                        or "Product information from recall database",
+                        "description": recall_row.reason or "Product information from recall database",
                         "source": "recall-db-fallback",
                         "recall_info": {
                             "recall_id": recall_row.recall_id,
@@ -193,9 +179,7 @@ class ProductIdentifierLogic:
                             "date": str(recall_row.date) if recall_row.date else None,
                         },
                     }
-                    self.logger.info(
-                        f"Enhanced RecallDB fallback for {barcode}: '{fallback['product_name']}'"
-                    )
+                    self.logger.info(f"Enhanced RecallDB fallback for {barcode}: '{fallback['product_name']}'")
                     return {"status": "COMPLETED", "result": fallback}
                 else:
                     # Create a basic mock product if no recalls exist
@@ -207,9 +191,7 @@ class ProductIdentifierLogic:
                         "description": "Mock product for testing purposes",
                         "source": "mock-fallback",
                     }
-                    self.logger.info(
-                        f"Using mock fallback for {barcode}: '{fallback['product_name']}'"
-                    )
+                    self.logger.info(f"Using mock fallback for {barcode}: '{fallback['product_name']}'")
                     return {"status": "COMPLETED", "result": fallback}
         except Exception as e:
             self.logger.error(f"Enhanced RecallDB fallback error: {e}", exc_info=True)

@@ -42,9 +42,7 @@ class Settings(BaseSettings):
 
     # Logging
     log_level: str = Field(default="INFO", env="LOG_LEVEL")
-    log_format: str = Field(
-        default="%(asctime)s - %(name)s - %(levelname)s - %(message)s", env="LOG_FORMAT"
-    )
+    log_format: str = Field(default="%(asctime)s - %(name)s - %(levelname)s - %(message)s", env="LOG_FORMAT")
 
     @root_validator(pre=False, skip_on_failure=True)
     def construct_database_url(cls, values):
@@ -92,9 +90,14 @@ class Settings(BaseSettings):
                 raise ValueError(error_msg)
 
         # Default to SQLite for development if no URL provided
+        # Production must explicitly set DATABASE_URL to PostgreSQL
         if not database_url:
             database_url = "sqlite:///./babyshield_dev.db"
             values["database_url"] = database_url
+            logging.warning(
+                "No DATABASE_URL provided - using SQLite (development only). "
+                "Production requires postgresql+psycopg://..."
+            )
 
         logging.info(f"[DEBUG] AFTER: database_url={database_url}")
         return values
@@ -113,9 +116,7 @@ class Settings(BaseSettings):
         environment = values.get("environment", "development")
         is_production = values.get("is_production", False)
 
-        if (
-            environment.lower() in ["production", "prod"] or is_production
-        ) and v == "dev-secret-key":
+        if (environment.lower() in ["production", "prod"] or is_production) and v == "dev-secret-key":
             raise ValueError("CRITICAL ERROR: Default secret key not allowed in production")
 
         return v

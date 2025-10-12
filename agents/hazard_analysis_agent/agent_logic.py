@@ -31,9 +31,7 @@ class HazardAnalysisLogic:
         self.agent_id = agent_id
         self.logger = logger_instance or logger
         if not API_KEY:
-            self.logger.critical(
-                "OPENAI_API_KEY not found in environment variables. The agent cannot function."
-            )
+            self.logger.critical("OPENAI_API_KEY not found in environment variables. The agent cannot function.")
             raise ValueError("OPENAI_API_KEY is not set.")
         self.logger.info(f"HazardAnalysisLogic initialized for agent {self.agent_id}.")
 

@@ -32,9 +32,7 @@ class EncryptionManager:
         if key:
             self.key = key.encode() if isinstance(key, str) else key
         else:
-            self.key = (
-                ENCRYPTION_KEY.encode() if isinstance(ENCRYPTION_KEY, str) else ENCRYPTION_KEY
-            )
+            self.key = ENCRYPTION_KEY.encode() if isinstance(ENCRYPTION_KEY, str) else ENCRYPTION_KEY
 
         self.cipher = Fernet(self.key)
 
@@ -199,9 +197,7 @@ def anonymize_data(data: dict, fields_to_anonymize: list) -> dict:
         if field in anonymized:
             if isinstance(anonymized[field], str):
                 # Generate consistent anonymous value
-                anonymized[
-                    field
-                ] = f"anon_{hashlib.md5(anonymized[field].encode()).hexdigest()[:8]}"
+                anonymized[field] = f"anon_{hashlib.md5(anonymized[field].encode()).hexdigest()[:8]}"
             elif isinstance(anonymized[field], (int, float)):
                 # Randomize numeric values
                 anonymized[field] = hash(str(anonymized[field])) % 1000000

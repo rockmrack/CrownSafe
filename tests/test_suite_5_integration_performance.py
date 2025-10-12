@@ -208,9 +208,7 @@ class TestIntegrationAndPerformance:
     def test_password_reset_flow(self):
         """Test complete password reset flow"""
         # Step 1: Request reset
-        response1 = client.post(
-            "/api/v1/auth/password-reset/request", json={"email": "test@test.com"}
-        )
+        response1 = client.post("/api/v1/auth/password-reset/request", json={"email": "test@test.com"})
         assert response1.status_code in [200, 400, 404, 422, 500]
 
         # Step 2: Confirm reset (with invalid token for testing)
@@ -410,9 +408,7 @@ class TestIntegrationAndPerformance:
         assert response1.status_code in [200, 201, 400, 404, 422, 500]
 
         # 2. Login
-        response2 = client.post(
-            "/api/v1/auth/login", json={"email": email, "password": "testpassword123"}
-        )
+        response2 = client.post("/api/v1/auth/login", json={"email": email, "password": "testpassword123"})
         assert response2.status_code in [200, 400, 401, 404, 422, 500]
 
     def test_e2e_recall_search_journey(self):

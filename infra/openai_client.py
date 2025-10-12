@@ -36,9 +36,7 @@ class OpenAILLMClient:
         if OPENAI_AVAILABLE and self.api_key:
             try:
                 # Configure HTTP client with aggressive IPv4-only settings
-                OPENAI_TIMEOUT = float(
-                    os.getenv("OPENAI_TIMEOUT", "10")
-                )  # Shorter timeout for faster fallback
+                OPENAI_TIMEOUT = float(os.getenv("OPENAI_TIMEOUT", "10"))  # Shorter timeout for faster fallback
 
                 # Force IPv4 by binding the local address to 0.0.0.0
                 transport = httpx.HTTPTransport(
@@ -50,9 +48,7 @@ class OpenAILLMClient:
                     transport=transport,  # Force IPv4
                     timeout=httpx.Timeout(OPENAI_TIMEOUT, connect=5.0, read=OPENAI_TIMEOUT),
                     http2=False,  # Disable HTTP/2 - h2 package not installed
-                    limits=httpx.Limits(
-                        max_connections=1, max_keepalive_connections=0
-                    ),  # Minimal connections
+                    limits=httpx.Limits(max_connections=1, max_keepalive_connections=0),  # Minimal connections
                 )
 
                 self.client = openai.OpenAI(

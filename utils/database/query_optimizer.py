@@ -205,9 +205,7 @@ def track_queries():
     query_monitor.reset()
     yield query_monitor
     stats = query_monitor.get_stats()
-    logger.info(
-        f"Query block executed {stats['total_queries']} queries ({stats['slow_queries']} slow)"
-    )
+    logger.info(f"Query block executed {stats['total_queries']} queries ({stats['slow_queries']} slow)")
 
 
 def batch_load(db: Session, model: type, ids: List[int], batch_size: int = 100) -> List[Any]:
@@ -314,9 +312,7 @@ def get_user_with_subscriptions(db: Session, user_id: int):
     )
 
 
-def get_recalls_with_products(
-    db: Session, limit: int = 20, offset: int = 0, filters: Optional[dict] = None
-):
+def get_recalls_with_products(db: Session, limit: int = 20, offset: int = 0, filters: Optional[dict] = None):
     """
     Get recalls with related product data (optimized)
 

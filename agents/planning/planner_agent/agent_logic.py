@@ -53,9 +53,7 @@ try:
         # product_identifier_value: str
         steps: List[PlanStep]
         template_name: str
-        created_timestamp: str = Field(
-            default_factory=lambda: datetime.now(timezone.utc).isoformat()
-        )
+        created_timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     PYDANTIC_AVAILABLE = True
 except ImportError:
@@ -105,9 +103,7 @@ class BabyShieldPlannerLogic:
         self.agent_id = agent_id
         self.logger = logger_instance or logging.getLogger(__name__)
         if not PYDANTIC_AVAILABLE:
-            self.logger.critical(
-                "Pydantic is not installed. The Planner Agent cannot function without it."
-            )
+            self.logger.critical("Pydantic is not installed. The Planner Agent cannot function without it.")
             raise ImportError("Pydantic is required for the Planner Agent to operate.")
         self._load_plan_templates()
 
@@ -132,9 +128,7 @@ class BabyShieldPlannerLogic:
             except Exception as e:
                 self.logger.error(f"Failed to load template {template_file}: {e}")
 
-    def _generate_plan_from_template(
-        self, template_name: str, task_payload: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _generate_plan_from_template(self, template_name: str, task_payload: Dict[str, Any]) -> Dict[str, Any]:
         """
         Generates a structured plan by loading a JSON template and substituting placeholders.
         """
@@ -166,27 +160,21 @@ class BabyShieldPlannerLogic:
 
         # Filter out visual search step if no image URL is provided
         if not params["image_url"]:
-            plan_steps_template = [
-                step for step in plan_steps_template if step.get("step_id") != "step0_visual_search"
-            ]
+            plan_steps_template = [step for step in plan_steps_template if step.get("step_id") != "step0_visual_search"]
             self.logger.info("Filtered out visual search step (no image URL provided)")
 
             # Update dependencies and inputs that reference the removed visual search step
             for step in plan_steps_template:
                 # Remove step0_visual_search from dependencies
                 if "dependencies" in step and "step0_visual_search" in step["dependencies"]:
-                    step["dependencies"] = [
-                        dep for dep in step["dependencies"] if dep != "step0_visual_search"
-                    ]
+                    step["dependencies"] = [dep for dep in step["dependencies"] if dep != "step0_visual_search"]
 
                 # Update inputs that reference step0_visual_search
                 if "inputs" in step:
                     for key, value in step["inputs"].items():
                         if isinstance(value, str) and "step0_visual_search" in value:
                             # Replace step0_visual_search references with step1_identify_product
-                            step["inputs"][key] = value.replace(
-                                "step0_visual_search", "step1_identify_product"
-                            )
+                            step["inputs"][key] = value.replace("step0_visual_search", "step1_identify_product")
 
         # Substitute placeholders in the plan steps.
         substituted_steps = substitute_placeholders(plan_steps_template, params)
@@ -197,11 +185,7 @@ class BabyShieldPlannerLogic:
                 for key, value in step["inputs"].items():
                     if isinstance(value, str):
                         # Remove curly braces from values like "{850016249012}" to "850016249012"
-                        if (
-                            value.startswith("{")
-                            and value.endswith("}")
-                            and not value.startswith("{{")
-                        ):
+                        if value.startswith("{") and value.endswith("}") and not value.startswith("{{"):
                             step["inputs"][key] = value.strip("{}")
                         # Also handle empty placeholders
                         elif value in ["{}", ""]:
@@ -221,13 +205,9 @@ class BabyShieldPlannerLogic:
         # Validate the final plan against our Pydantic model.
         try:
             # We use the template's plan_name as the workflow_goal if not provided
-            final_plan_data["workflow_goal"] = final_plan_data.get("workflow_goal") or template.get(
-                "plan_name"
-            )
+            final_plan_data["workflow_goal"] = final_plan_data.get("workflow_goal") or template.get("plan_name")
             validated_plan = BabyShieldPlan(**final_plan_data)
-            self.logger.info(
-                f"Successfully generated and validated plan '{validated_plan.plan_id}' from template."
-            )
+            self.logger.info(f"Successfully generated and validated plan '{validated_plan.plan_id}' from template.")
             return validated_plan.model_dump()
         except Exception as e:
             self.logger.error(f"Pydantic validation failed for the generated plan: {e}")

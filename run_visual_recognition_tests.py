@@ -76,9 +76,7 @@ class MockAsyncOpenAI:
                 return MockResponse(response_json)
 
         # Default response
-        return MockResponse(
-            '{"product_name": "Unknown", "brand": "Unknown", "model_number": null, "confidence": 0.5}'
-        )
+        return MockResponse('{"product_name": "Unknown", "brand": "Unknown", "model_number": null, "confidence": 0.5}')
 
 
 class MockHttpx:
@@ -185,9 +183,7 @@ def run_tests():
         agent = VisualSearchAgentLogic(agent_id="test-suggestions")
         agent.llm_client = MockAsyncOpenAI()
 
-        result = asyncio.run(
-            agent.suggest_products_from_image("https://example.com/baby-product.jpg")
-        )
+        result = asyncio.run(agent.suggest_products_from_image("https://example.com/baby-product.jpg"))
 
         assert result.get("status") == "COMPLETED"
         assert "result" in result
@@ -215,9 +211,7 @@ def run_tests():
         agent = VisualSearchAgentLogic(agent_id="test-identification")
         agent.llm_client = MockAsyncOpenAI()
 
-        result = asyncio.run(
-            agent.identify_product_from_image("https://example.com/baby-product.jpg")
-        )
+        result = asyncio.run(agent.identify_product_from_image("https://example.com/baby-product.jpg"))
 
         assert result.get("status") == "COMPLETED"
         assert "result" in result
@@ -247,9 +241,7 @@ def run_tests():
         agent.llm_client = MockAsyncOpenAI()
 
         # Test with identify mode
-        result = asyncio.run(
-            agent.process_task({"image_url": "https://example.com/product.jpg", "mode": "identify"})
-        )
+        result = asyncio.run(agent.process_task({"image_url": "https://example.com/product.jpg", "mode": "identify"}))
 
         assert result.get("status") == "COMPLETED"
         assert "result" in result

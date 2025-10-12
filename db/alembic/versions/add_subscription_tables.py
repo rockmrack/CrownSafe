@@ -67,9 +67,7 @@ def upgrade():
     # Create indexes
     op.create_index("idx_user_active", "subscriptions", ["user_id", "status"], unique=False)
     op.create_index("idx_expires_at", "subscriptions", ["expires_at"], unique=False)
-    op.create_index(
-        "idx_transaction_id", "subscriptions", ["original_transaction_id"], unique=False
-    )
+    op.create_index("idx_transaction_id", "subscriptions", ["original_transaction_id"], unique=False)
     op.create_index(op.f("ix_subscriptions_user_id"), "subscriptions", ["user_id"], unique=False)
 
     # Create receipt_validations table

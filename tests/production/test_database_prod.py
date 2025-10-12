@@ -130,9 +130,7 @@ class TestProductionDatabase:
                 if is_postgres:
                     # PostgreSQL syntax
                     result = db.execute(
-                        text(
-                            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = :table)"
-                        ),
+                        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = :table)"),
                         {"table": table},
                     )
                 elif is_sqlite:
@@ -176,9 +174,7 @@ class TestProductionDatabase:
         try:
             # Check alembic_version table exists
             result = db.execute(
-                text(
-                    "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'alembic_version')"
-                )
+                text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'alembic_version')")
             )
             has_alembic = result.fetchone()[0]
 
@@ -189,9 +185,7 @@ class TestProductionDatabase:
             result = db.execute(text("SELECT version_num FROM alembic_version"))
             version = result.fetchone()
 
-            assert (
-                version is not None
-            ), "No migration version found - database may not be initialized"
+            assert version is not None, "No migration version found - database may not be initialized"
             assert len(version[0]) > 0, "Migration version should not be empty"
 
         except Exception as e:
@@ -352,9 +346,7 @@ class TestProductionDatabaseHealth:
             else:
                 assert False, "DATABASE_URL must be set for non-SQLite databases"
 
-        assert (
-            "://" in database_url
-        ), "DATABASE_URL should have protocol (postgresql://, sqlite://, etc.)"
+        assert "://" in database_url, "DATABASE_URL should have protocol (postgresql://, sqlite://, etc.)"
 
     def test_database_production_mode(self):
         """Test database is in production mode"""

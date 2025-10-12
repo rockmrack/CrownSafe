@@ -88,9 +88,7 @@ class RiskAssessmentResponse(BaseModel):
 class DataIngestionRequest(BaseModel):
     """Request model for data ingestion"""
 
-    sources: List[str] = Field(
-        default=["CPSC", "EU_SAFETY_GATE"], description="Data sources to ingest"
-    )
+    sources: List[str] = Field(default=["CPSC", "EU_SAFETY_GATE"], description="Data sources to ingest")
     start_date: Optional[datetime] = Field(None, description="Start date for data range")
     end_date: Optional[datetime] = Field(None, description="End date for data range")
     product_filter: Optional[str] = Field(None, description="Product category filter")
@@ -196,9 +194,7 @@ async def assess_product_risk(
         risk_components = risk_engine.calculate_risk_score(product, incidents, company_profile, db)
 
         # Step 5: Update or create risk profile
-        risk_profile = (
-            db.query(ProductRiskProfile).filter(ProductRiskProfile.product_id == product.id).first()
-        )
+        risk_profile = db.query(ProductRiskProfile).filter(ProductRiskProfile.product_id == product.id).first()
 
         if not risk_profile:
             risk_profile = ProductRiskProfile(product_id=product.id)
@@ -342,9 +338,7 @@ async def assess_by_barcode(
             raise HTTPException(status_code=400, detail="Invalid barcode")
 
         # Extract product identifiers from ScanResult
-        request = RiskAssessmentRequest(
-            upc=scan_result.raw_data, gtin=scan_result.gtin, include_report=True
-        )
+        request = RiskAssessmentRequest(upc=scan_result.raw_data, gtin=scan_result.gtin, include_report=True)
 
         # Perform assessment
         return await assess_product_risk(request, background_tasks, db)
@@ -392,9 +386,7 @@ async def assess_by_image(
             )
 
         # Found barcode, assess immediately
-        request = RiskAssessmentRequest(
-            upc=scan_result.raw_data, gtin=scan_result.gtin, include_report=True
-        )
+        request = RiskAssessmentRequest(upc=scan_result.raw_data, gtin=scan_result.gtin, include_report=True)
 
         return await assess_product_risk(request, background_tasks, db)
 
@@ -420,9 +412,7 @@ async def get_risk_profile(
             raise HTTPException(status_code=404, detail="Product not found")
 
         # Get risk profile
-        risk_profile = (
-            db.query(ProductRiskProfile).filter(ProductRiskProfile.product_id == product_id).first()
-        )
+        risk_profile = db.query(ProductRiskProfile).filter(ProductRiskProfile.product_id == product_id).first()
 
         if not risk_profile:
             raise HTTPException(status_code=404, detail="Risk profile not found")
@@ -495,11 +485,7 @@ async def get_report(
             }
         else:
             # Regenerate report (reserved for regeneration logic)
-            _ = (
-                db.query(ProductGoldenRecord)
-                .filter(ProductGoldenRecord.id == report.product_id)
-                .first()
-            )
+            _ = db.query(ProductGoldenRecord).filter(ProductGoldenRecord.id == report.product_id).first()
 
             # ... regeneration logic ...
 
@@ -540,9 +526,7 @@ async def trigger_data_ingestion(
 
         # Queue ingestion tasks
         for source in request.sources:
-            background_tasks.add_task(
-                ingest_from_source, source, job.id, request.start_date, request.end_date
-            )
+            background_tasks.add_task(ingest_from_source, source, job.id, request.start_date, request.end_date)
 
         return {
             "job_id": job.id,
@@ -669,24 +653,18 @@ async def get_risk_statistics(db: Session = Depends(get_db)):
 
 
 # Helper functions
-async def _find_or_create_product(
-    request: RiskAssessmentRequest, db: Session
-) -> Optional[ProductGoldenRecord]:
+async def _find_or_create_product(request: RiskAssessmentRequest, db: Session) -> Optional[ProductGoldenRecord]:
     """
     Find existing product or create new golden record
     """
     # Try to find by identifiers
     if request.gtin:
-        product = (
-            db.query(ProductGoldenRecord).filter(ProductGoldenRecord.gtin == request.gtin).first()
-        )
+        product = db.query(ProductGoldenRecord).filter(ProductGoldenRecord.gtin == request.gtin).first()
         if product:
             return product
 
     if request.upc:
-        product = (
-            db.query(ProductGoldenRecord).filter(ProductGoldenRecord.upc == request.upc).first()
-        )
+        product = db.query(ProductGoldenRecord).filter(ProductGoldenRecord.upc == request.upc).first()
         if product:
             return product
 
@@ -697,9 +675,7 @@ async def _find_or_create_product(
         )
 
         if request.manufacturer:
-            query = query.filter(
-                ProductGoldenRecord.manufacturer.ilike(f"%{request.manufacturer}%")
-            )
+            query = query.filter(ProductGoldenRecord.manufacturer.ilike(f"%{request.manufacturer}%"))
 
         if request.model_number:
             query = query.filter(ProductGoldenRecord.model_number == request.model_number)

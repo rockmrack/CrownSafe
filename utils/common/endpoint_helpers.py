@@ -40,9 +40,7 @@ class PaginatedResponse(BaseModel):
     timestamp: str = datetime.utcnow().isoformat()
 
 
-def success_response(
-    data: Any = None, message: Optional[str] = None, trace_id: Optional[str] = None
-) -> Dict[str, Any]:
+def success_response(data: Any = None, message: Optional[str] = None, trace_id: Optional[str] = None) -> Dict[str, Any]:
     """
     Create a standardized success response
 
@@ -63,9 +61,7 @@ def success_response(
     }
 
 
-def error_response(
-    error: str, status_code: int = 500, trace_id: Optional[str] = None
-) -> Dict[str, Any]:
+def error_response(error: str, status_code: int = 500, trace_id: Optional[str] = None) -> Dict[str, Any]:
     """
     Create a standardized error response
 
@@ -138,9 +134,7 @@ def get_user_or_404(user_id: int, db: Session) -> User:
     """
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=f"User {user_id} not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User {user_id} not found")
     return user
 
 
@@ -172,9 +166,7 @@ def require_admin(user: User) -> None:
         HTTPException: If user is not admin
     """
     if not getattr(user, "is_admin", False):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Admin privileges required"
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin privileges required")
 
 
 def validate_pagination(limit: int, offset: int, max_limit: int = 100) -> tuple[int, int]:
@@ -338,11 +330,7 @@ class EndpointWrapper:
                     log_endpoint_call(endpoint_name, params=kwargs, trace_id=trace_id)
 
                 # Execute function
-                result = (
-                    await func(*args, **kwargs)
-                    if asyncio.iscoroutinefunction(func)
-                    else func(*args, **kwargs)
-                )
+                result = await func(*args, **kwargs) if asyncio.iscoroutinefunction(func) else func(*args, **kwargs)
 
                 # Return standardized response
                 if isinstance(result, dict) and "success" in result:

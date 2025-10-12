@@ -21,7 +21,7 @@ import pytest
 
 
 os.environ.setdefault("TEST_MODE", "true")
-os.environ.setdefault("DATABASE_URL", "sqlite:///babyshield_e2e.sqlite")
+os.environ.setdefault("TEST_DATABASE_URL", "sqlite:///babyshield_e2e.sqlite")
 os.environ.setdefault("ENVIRONMENT", "development")
 os.environ.setdefault("DEBUG", "false")
 

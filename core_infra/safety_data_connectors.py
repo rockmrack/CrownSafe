@@ -148,9 +148,7 @@ class CPSCDataConnector:
 
         return records
 
-    async def fetch_violations(
-        self, company_name: Optional[str] = None, limit: int = 1000
-    ) -> List[SafetyDataRecord]:
+    async def fetch_violations(self, company_name: Optional[str] = None, limit: int = 1000) -> List[SafetyDataRecord]:
         """
         Fetch violation data from CPSC
         """
@@ -231,9 +229,7 @@ class CPSCDataConnector:
                                 }
                             )
 
-                        logger.info(
-                            f"Successfully fetched {len(articles)} safety articles from CPSC."
-                        )
+                        logger.info(f"Successfully fetched {len(articles)} safety articles from CPSC.")
                     else:
                         logger.error(f"CPSC News API returned status {response.status}")
 
@@ -338,9 +334,7 @@ class EUSafetyGateConnector:
         data = {
             "id": entry.id,
             "product": entry.title,
-            "date": datetime(*entry.published_parsed[:6])
-            if hasattr(entry, "published_parsed")
-            else None,
+            "date": datetime(*entry.published_parsed[:6]) if hasattr(entry, "published_parsed") else None,
             "risk_description": entry.summary if hasattr(entry, "summary") else None,
         }
 

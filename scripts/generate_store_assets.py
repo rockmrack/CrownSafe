@@ -110,9 +110,7 @@ DESIGN GUIDELINES:
                 path = self.assets_path / "screenshots" / "ios" / filename
 
                 if not path.exists():
-                    self.create_placeholder_image(
-                        path, specs["size"], f"iOS {device} - {name.title()} Screen"
-                    )
+                    self.create_placeholder_image(path, specs["size"], f"iOS {device} - {name.title()} Screen")
                     self.report["created"].append(str(path))
                     print(f"  ✓ Created: {filename}")
                 else:
@@ -177,27 +175,19 @@ DESIGN GUIDELINES:
             print("  ✓ App Icon present")
 
         # Check required iOS screenshots
-        iphone67_count = len(
-            list((self.assets_path / "screenshots" / "ios").glob("iphone67-*.png"))
-        )
-        iphone65_count = len(
-            list((self.assets_path / "screenshots" / "ios").glob("iphone65-*.png"))
-        )
+        iphone67_count = len(list((self.assets_path / "screenshots" / "ios").glob("iphone67-*.png")))
+        iphone65_count = len(list((self.assets_path / "screenshots" / "ios").glob("iphone65-*.png")))
 
         if iphone67_count < 3:
             print(f'  ❌ iPhone 6.7" screenshots: {iphone67_count}/3 minimum')
-            self.report["missing"].append(
-                f'iPhone 6.7" screenshots ({3 - iphone67_count} more needed)'
-            )
+            self.report["missing"].append(f'iPhone 6.7" screenshots ({3 - iphone67_count} more needed)')
             all_valid = False
         else:
             print(f'  ✓ iPhone 6.7" screenshots: {iphone67_count}')
 
         if iphone65_count < 3:
             print(f'  ❌ iPhone 6.5" screenshots: {iphone65_count}/3 minimum')
-            self.report["missing"].append(
-                f'iPhone 6.5" screenshots ({3 - iphone65_count} more needed)'
-            )
+            self.report["missing"].append(f'iPhone 6.5" screenshots ({3 - iphone65_count} more needed)')
             all_valid = False
         else:
             print(f'  ✓ iPhone 6.5" screenshots: {iphone65_count}')
@@ -221,9 +211,7 @@ DESIGN GUIDELINES:
         phone_count = len(list((self.assets_path / "screenshots" / "android").glob("phone-*.png")))
         if phone_count < 2:
             print(f"  ❌ Phone screenshots: {phone_count}/2 minimum")
-            self.report["missing"].append(
-                f"Android phone screenshots ({2 - phone_count} more needed)"
-            )
+            self.report["missing"].append(f"Android phone screenshots ({2 - phone_count} more needed)")
             all_valid = False
         else:
             print(f"  ✓ Phone screenshots: {phone_count}")

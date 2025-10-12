@@ -81,9 +81,7 @@ async def test_search_advanced():
                 print(f"  Total Results: {data.get('total', 0)}")
                 print(f"  Agencies: {data.get('agencies', 0)}")
                 if data.get("recalls"):
-                    print(
-                        f"  First Result: {data['recalls'][0].get('product_name', 'Unknown')[:50]}..."
-                    )
+                    print(f"  First Result: {data['recalls'][0].get('product_name', 'Unknown')[:50]}...")
             else:
                 print(f"❌ Advanced search failed: {response.status_code}")
                 print(f"  Error: {response.text[:200]}")

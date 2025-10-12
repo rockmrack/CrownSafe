@@ -787,9 +787,7 @@ def get_llm_client():
     return _llm_client_instance
 
 
-def get_chat_agent(
-    llm_client=Depends(get_llm_client), db: Session = Depends(get_db)
-) -> ChatAgentLogic:
+def get_chat_agent(llm_client=Depends(get_llm_client), db: Session = Depends(get_db)) -> ChatAgentLogic:
     """Dependency to get chat agent"""
     return ChatAgentLogic(llm_client=llm_client, db=db)
 
@@ -885,9 +883,7 @@ async def chat_explain_result(
         # Try to get chat agent, fallback to simple response if unavailable
         try:
             chat_agent = get_chat_agent(llm_client=get_llm_client(), db=db)
-            response = await chat_agent.explain_scan_result(
-                scan_result=scan.analysis_result, user_query=user_query
-            )
+            response = await chat_agent.explain_scan_result(scan_result=scan.analysis_result, user_query=user_query)
 
             return JSONResponse({"success": True, "data": response.dict(), "traceId": trace_id})
         except Exception as agent_error:
@@ -931,9 +927,7 @@ async def chat_conversation(request: Request, chat_request: ChatRequest) -> JSON
 
         # Feature flag check
         if not chat_enabled_for(chat_request.user_id):
-            return JSONResponse(
-                status_code=403, content={"error": True, "message": "chat_disabled"}
-            )
+            return JSONResponse(status_code=403, content={"error": True, "message": "chat_disabled"})
 
         # Emergency check
         if looks_emergency(chat_request.message):
@@ -954,9 +948,7 @@ async def chat_conversation(request: Request, chat_request: ChatRequest) -> JSON
         # Try to generate response with LLM
         try:
             llm_client = get_llm_client()
-            response = llm_client.chat_json(
-                user=chat_request.message, conversation_id=chat_request.conversation_id
-            )
+            response = llm_client.chat_json(user=chat_request.message, conversation_id=chat_request.conversation_id)
 
             # Format response
             conversation_id = chat_request.conversation_id or str(uuid4())

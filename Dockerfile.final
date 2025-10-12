@@ -32,12 +32,13 @@ RUN pip install --no-cache-dir weasyprint
 COPY . .
 
 # Environment variables (non-sensitive only)
+# NOTE: DATABASE_URL should be set at runtime via environment variables
+# Example: DATABASE_URL=postgresql+psycopg://user:pass@host:5432/dbname
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONPATH=/app \
     API_HOST=0.0.0.0 \
     API_PORT=8001 \
-    DATABASE_URL=sqlite:///./babyshield.db \
     DISABLE_REDIS_WARNING=true \
     TEST_MODE=false \
     HTML_RENDERER=weasyprint

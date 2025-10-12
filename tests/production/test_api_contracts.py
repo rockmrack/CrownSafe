@@ -44,16 +44,12 @@ class TestAPIContracts:
                     print("✅ Recall list uses wrapped response structure")
                     has_items = True
 
-            assert (
-                has_items
-            ), f"Response should have items/results/recalls. Got: {list(data.keys())}"
+            assert has_items, f"Response should have items/results/recalls. Got: {list(data.keys())}"
 
             print("✅ Recall list response schema valid")
 
             # Check for total in either top level or data object
-            total_count = (
-                data.get("total") or (data.get("data", {}).get("total")) or (data.get("count"))
-            )
+            total_count = data.get("total") or (data.get("data", {}).get("total")) or (data.get("count"))
             if total_count is not None:
                 assert isinstance(total_count, int)
                 print(f"  Total count: {total_count}")
@@ -108,11 +104,7 @@ class TestAPIContracts:
             print(f"✅ Pagination working: returned {len(items)} items")
 
             # Check for pagination info
-            pagination_keys = [
-                k
-                for k in data.keys()
-                if k in ["total", "limit", "offset", "next", "previous", "page"]
-            ]
+            pagination_keys = [k for k in data.keys() if k in ["total", "limit", "offset", "next", "previous", "page"]]
             if pagination_keys:
                 print(f"  Pagination metadata: {pagination_keys}")
 

@@ -353,9 +353,7 @@ async def submit_parental_consent(
             logger.info(f"Verification email sent to {request.parent_email}")
 
             # Schedule email sending in background
-            background_tasks.add_task(
-                logger.info, f"Sending consent email to {request.parent_email}"
-            )
+            background_tasks.add_task(logger.info, f"Sending consent email to {request.parent_email}")
 
         # Generate consent ID
         consent_id = f"consent_{uuid.uuid4().hex[:12]}"
@@ -415,9 +413,7 @@ async def get_consent_status(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/childrens-code/assess", response_model=ChildrenCodeAssessmentResponse)
-async def assess_childrens_code_compliance(
-    request: ChildrenCodeAssessmentRequest, db: Session = Depends(get_db)
-):
+async def assess_childrens_code_compliance(request: ChildrenCodeAssessmentRequest, db: Session = Depends(get_db)):
     """
     Assess compliance with Age Appropriate Design Code (Children's Code).
 
@@ -570,9 +566,7 @@ async def submit_data_request(
             message = "Your deletion request has been received. Your data will be permanently deleted within 72 hours."
 
             # Schedule deletion in background
-            background_tasks.add_task(
-                logger.info, f"Scheduling deletion for user {request.user_id}"
-            )
+            background_tasks.add_task(logger.info, f"Scheduling deletion for user {request.user_id}")
 
         elif request.request_type == PrivacyRight.PORTABILITY:
             estimated_completion = datetime.now() + timedelta(hours=48)
@@ -580,7 +574,9 @@ async def submit_data_request(
 
         else:
             estimated_completion = datetime.now() + timedelta(hours=72)
-            message = f"Your {request.request_type.value} request has been received and will be processed within 72 hours."
+            message = (
+                f"Your {request.request_type.value} request has been received and will be processed within 72 hours."
+            )
 
         # In production, store request in database
 
@@ -752,9 +748,7 @@ async def get_legal_document(request: LegalDocumentRequest, db: Session = Depend
                 <p>We do not sell your personal information...</p>
                 <h2>Your Rights</h2>
                 <p>You have the right to access, correct, and delete your data...</p>
-                """.format(
-                    date=datetime.now().strftime("%B %d, %Y")
-                )
+                """.format(date=datetime.now().strftime("%B %d, %Y"))
 
                 summary_points = [
                     "We collect minimal data necessary for safety services",

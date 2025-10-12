@@ -55,9 +55,7 @@ def test_product_safety_report():
         },
     }
 
-    result = report_builder._build_product_safety_report(
-        low_risk_data, f"WF_{uuid.uuid4().hex[:8]}"
-    )
+    result = report_builder._build_product_safety_report(low_risk_data, f"WF_{uuid.uuid4().hex[:8]}")
 
     if result.get("status") == "success":
         print(f"✅ LOW RISK report generated: {result.get('pdf_path')}")
@@ -114,9 +112,7 @@ def test_product_safety_report():
         },
     }
 
-    result = report_builder._build_product_safety_report(
-        high_risk_data, f"WF_{uuid.uuid4().hex[:8]}"
-    )
+    result = report_builder._build_product_safety_report(high_risk_data, f"WF_{uuid.uuid4().hex[:8]}")
 
     if result.get("status") == "success":
         print(f"✅ HIGH RISK report generated: {result.get('pdf_path')}")
@@ -149,9 +145,7 @@ def test_product_safety_report():
         ]
     }
 
-    result = report_builder._build_nursery_quarterly_report(
-        quarterly_data, f"WF_{uuid.uuid4().hex[:8]}"
-    )
+    result = report_builder._build_nursery_quarterly_report(quarterly_data, f"WF_{uuid.uuid4().hex[:8]}")
 
     if result.get("status") == "success":
         print(f"✅ Nursery Quarterly report generated: {result.get('pdf_path')}")

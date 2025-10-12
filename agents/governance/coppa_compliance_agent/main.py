@@ -3,9 +3,7 @@ import logging
 from core_infra.mcp_client_library.client import MCPClient
 from .agent_logic import COPPA_ComplianceAgentLogic
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "coppa_compliance_agent_01"

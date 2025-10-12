@@ -115,9 +115,7 @@ class MemoryStrategyTester:
         try:
             # Find latest planner log
             planner_logs = [
-                f
-                for f in os.listdir(self.logs_dir)
-                if f.startswith("planner_agent_") and f.endswith(".log")
+                f for f in os.listdir(self.logs_dir) if f.startswith("planner_agent_") and f.endswith(".log")
             ]
             if not planner_logs:
                 return None
@@ -163,9 +161,7 @@ class MemoryStrategyTester:
         """Extract workflow ID from commander logs"""
         try:
             commander_logs = [
-                f
-                for f in os.listdir(self.logs_dir)
-                if f.startswith("commander_agent_") and f.endswith(".log")
+                f for f in os.listdir(self.logs_dir) if f.startswith("commander_agent_") and f.endswith(".log")
             ]
             if not commander_logs:
                 return None
@@ -305,9 +301,7 @@ async def main():
         custom_scenario = {
             "name": "Custom_Test",
             "query": custom_query,
-            "expected_strategy": input(
-                "Expected strategy (comprehensive/focused/update): "
-            ).strip(),
+            "expected_strategy": input("Expected strategy (comprehensive/focused/update): ").strip(),
             "rationale": "Custom test scenario",
         }
         await tester.run_all_tests([custom_scenario])

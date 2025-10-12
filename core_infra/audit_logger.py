@@ -384,12 +384,7 @@ class AuditQuery:
 
         cutoff = datetime.utcnow() - timedelta(hours=hours)
 
-        return (
-            self.db.query(AuditLog)
-            .filter(AuditLog.timestamp >= cutoff)
-            .order_by(AuditLog.timestamp.desc())
-            .all()
-        )
+        return self.db.query(AuditLog).filter(AuditLog.timestamp >= cutoff).order_by(AuditLog.timestamp.desc()).all()
 
     def search_logs(
         self,

@@ -68,9 +68,7 @@ class AdminToolsTester:
         """Test 2: Data freshness endpoint"""
         print("\n📝 Test 2: Data Freshness")
 
-        response = self.session.get(
-            f"{self.base_url}/api/v1/admin/freshness", headers=self.admin_headers
-        )
+        response = self.session.get(f"{self.base_url}/api/v1/admin/freshness", headers=self.admin_headers)
 
         if response.status_code == 503:
             print("   ⚠️ Admin not configured, skipping")
@@ -102,9 +100,7 @@ class AdminToolsTester:
         """Test 3: List ingestion runs"""
         print("\n📝 Test 3: List Ingestion Runs")
 
-        response = self.session.get(
-            f"{self.base_url}/api/v1/admin/runs", headers=self.admin_headers
-        )
+        response = self.session.get(f"{self.base_url}/api/v1/admin/runs", headers=self.admin_headers)
 
         if response.status_code == 503:
             print("   ⚠️ Admin not configured, skipping")
@@ -195,9 +191,7 @@ class AdminToolsTester:
 
         # Test with non-existent UUID
         fake_id = str(uuid.uuid4())
-        response = self.session.get(
-            f"{self.base_url}/api/v1/admin/runs/{fake_id}", headers=self.admin_headers
-        )
+        response = self.session.get(f"{self.base_url}/api/v1/admin/runs/{fake_id}", headers=self.admin_headers)
 
         self.test(
             response.status_code == 404,
@@ -210,9 +204,7 @@ class AdminToolsTester:
         """Test 6: Admin statistics endpoint"""
         print("\n📝 Test 6: Admin Statistics")
 
-        response = self.session.get(
-            f"{self.base_url}/api/v1/admin/stats", headers=self.admin_headers
-        )
+        response = self.session.get(f"{self.base_url}/api/v1/admin/stats", headers=self.admin_headers)
 
         if response.status_code == 503:
             print("   ⚠️ Admin not configured, skipping")
@@ -262,9 +254,7 @@ class AdminToolsTester:
         """Test 8: Trace ID in admin responses"""
         print("\n📝 Test 8: Trace ID Presence")
 
-        response = self.session.get(
-            f"{self.base_url}/api/v1/admin/freshness", headers=self.admin_headers
-        )
+        response = self.session.get(f"{self.base_url}/api/v1/admin/freshness", headers=self.admin_headers)
 
         if response.status_code in (200, 401, 403):
             data = response.json()

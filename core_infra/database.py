@@ -32,38 +32,56 @@ from contextlib import contextmanager
 # Load environment variables
 # -------------------------------------------------------------------
 load_dotenv()
+# Test mode and explicit test DB URL support
 TEST_MODE = os.getenv("TEST_MODE", "false").lower() == "true"
-DEFAULT_DATABASE_URL = "sqlite:///:memory:"
-DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL)
+DEFAULT_DATABASE_URL = os.getenv("DEFAULT_DATABASE_URL", "")
 
-if TEST_MODE and DATABASE_URL == DEFAULT_DATABASE_URL:
-    DATABASE_URL = "sqlite:///test_db.sqlite"
+# Prefer an explicitly configured DATABASE_URL for production.
+# For local tests, TEST_DATABASE_URL or TEST_MODE may enable SQLite.
+DATABASE_URL = os.getenv("DATABASE_URL") or ""
+TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
+
+if TEST_MODE:
+    # Allow explicit test database URL, fallback to in-memory SQLite
+    if TEST_DATABASE_URL:
+        DATABASE_URL = TEST_DATABASE_URL
+    elif not DATABASE_URL:
+        DATABASE_URL = "sqlite:///:memory:"
     print(f"TEST_MODE active: using {DATABASE_URL}")
+
+if not DATABASE_URL:
+    # In production/staging we require DATABASE_URL to be set to a PostgreSQL DSN
+    logger.warning("DATABASE_URL not set. Application may fail to connect to a production database.")
 
 # -------------------------------------------------------------------
 # Engine & Session setup
 # -------------------------------------------------------------------
-connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+connect_args = {}
 
+# If using SQLite (only expected for TEST_MODE), we need check_same_thread
 if DATABASE_URL.startswith("sqlite"):
-    engine = create_engine(
-        DATABASE_URL,
-        connect_args=connect_args,
-        echo=False,
-        pool_pre_ping=True,
-        future=True,
+    connect_args = {"check_same_thread": False}
+
+# Create engine. For production, DATABASE_URL should be a postgres+psycopg URL.
+# Build engine kwargs conditionally based on database type
+engine_kwargs = {
+    "connect_args": connect_args,
+    "echo": False,
+    "pool_pre_ping": True,
+    "future": True,
+}
+
+# Only add pool settings for non-SQLite databases (PostgreSQL supports pooling)
+if not DATABASE_URL.startswith("sqlite"):
+    engine_kwargs.update(
+        {
+            "pool_size": int(os.getenv("DB_POOL_SIZE", 10)),
+            "max_overflow": int(os.getenv("DB_MAX_OVERFLOW", 20)),
+            "pool_timeout": int(os.getenv("DB_POOL_TIMEOUT", 30)),
+        }
     )
-else:
-    engine = create_engine(
-        DATABASE_URL,
-        connect_args=connect_args,
-        echo=False,
-        pool_pre_ping=True,
-        pool_size=int(os.getenv("DB_POOL_SIZE", 10)),
-        max_overflow=int(os.getenv("DB_MAX_OVERFLOW", 20)),
-        pool_timeout=int(os.getenv("DB_POOL_TIMEOUT", 30)),
-        future=True,
-    )
+
+engine = create_engine(DATABASE_URL or "sqlite:///:memory:", **engine_kwargs)
 
 SessionLocal = sessionmaker(
     autocommit=False,
@@ -128,9 +146,7 @@ class User(Base):
     is_active = Column(Boolean, default=True, nullable=False)  # Account status
 
     # Relationship to family members
-    family_members = relationship(
-        "FamilyMember", back_populates="user", cascade="all, delete-orphan"
-    )
+    family_members = relationship("FamilyMember", back_populates="user", cascade="all, delete-orphan")
 
     def to_dict(self) -> dict:
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -151,9 +167,7 @@ class FamilyMember(Base):
 
     # Relationships
     user = relationship("User", back_populates="family_members")
-    allergies = relationship(
-        "Allergy", back_populates="family_member", cascade="all, delete-orphan"
-    )
+    allergies = relationship("Allergy", back_populates="family_member", cascade="all, delete-orphan")
 
     def to_dict(self) -> dict:
         return {
@@ -383,9 +397,7 @@ def ensure_test_users():
             print(f"Error creating test users: {e}")
 
 
-def create_or_update_test_user(
-    user_id: int, email: str, is_subscribed: bool = False, is_pregnant: bool = False
-):
+def create_or_update_test_user(user_id: int, email: str, is_subscribed: bool = False, is_pregnant: bool = False):
     """Helper to create or update a single test user."""
     with get_db_session() as db:
         try:
@@ -482,18 +494,14 @@ class SafetyArticle(Base):
     __tablename__ = "safety_articles"
 
     id = Column(Integer, primary_key=True, index=True)
-    article_id = Column(
-        String, unique=True, index=True, nullable=False
-    )  # A unique ID we create or get from the source
+    article_id = Column(String, unique=True, index=True, nullable=False)  # A unique ID we create or get from the source
     title = Column(String, nullable=False)
     summary = Column(Text, nullable=False)
     source_agency = Column(String, index=True, nullable=False)  # e.g., "CPSC", "AAP"
     publication_date = Column(Date, nullable=False)
     image_url = Column(String, nullable=True)  # URL for the article's main image
     article_url = Column(String, nullable=False)  # The direct URL to the original article
-    is_featured = Column(
-        Boolean, default=False, index=True
-    )  # A flag to feature an article on the home screen
+    is_featured = Column(Boolean, default=False, index=True)  # A flag to feature an article on the home screen
 
 
 # -------------------------------------------------------------------

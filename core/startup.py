@@ -9,9 +9,7 @@ import sys
 import logging
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -33,9 +31,7 @@ def log_feature_status():
 
     # Receipt Validation
     receipt_validation_enabled = os.getenv("ENABLE_RECEIPT_VALIDATION", "false").lower() == "true"
-    logger.info(
-        f"  🧾 Receipt Validation: {'✅ Enabled' if receipt_validation_enabled else '❌ Disabled'}"
-    )
+    logger.info(f"  🧾 Receipt Validation: {'✅ Enabled' if receipt_validation_enabled else '❌ Disabled'}")
 
     # API Keys
     openai_available = bool(os.getenv("OPENAI_API_KEY"))
@@ -43,9 +39,7 @@ def log_feature_status():
 
     # Database
     db_url = os.getenv("DATABASE_URL", "")
-    db_type = (
-        "PostgreSQL" if "postgresql" in db_url else "SQLite" if "sqlite" in db_url else "Unknown"
-    )
+    db_type = "PostgreSQL" if "postgresql" in db_url else "SQLite" if "sqlite" in db_url else "Unknown"
     logger.info(f"  🗄️  Database: {db_type}")
 
     logger.info("🚀 BabyShield startup configuration complete!")
@@ -71,13 +65,18 @@ def check_environment():
 
     # Check for database URL
     if "DATABASE_URL" not in os.environ:
-        # Use SQLite for development/testing
+        # Use SQLite for development/testing only
         if os.environ.get("TEST_MODE", "false").lower() == "true":
             os.environ["DATABASE_URL"] = "sqlite:///./babyshield_test.db"
             logger.warning("Using SQLite database for TEST_MODE")
         else:
-            logger.warning("DATABASE_URL not set - using PostgreSQL default")
-            os.environ["DATABASE_URL"] = "postgresql://postgres:postgres@localhost/babyshield"
+            logger.error("DATABASE_URL not set - required for production")
+            # For production, DATABASE_URL must be explicitly set to PostgreSQL
+            # Do not provide a default that would silently use PostgreSQL without credentials
+            logger.info("Please set DATABASE_URL=postgresql+psycopg://user:pass@host:5432/dbname")
+            # For local development fallback only (will fail if PostgreSQL not available)
+            os.environ["DATABASE_URL"] = "postgresql+psycopg://postgres:postgres@localhost/babyshield"
+            logger.warning("Using default PostgreSQL connection (DEV ONLY - will fail if not available)")
 
     # Check for optional service keys
     if "OPENAI_API_KEY" not in os.environ:

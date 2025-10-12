@@ -40,9 +40,7 @@ def record_honeypot_hit(request: Request, honeypot_type: str):
 
     # Auto-block after multiple hits
     if honeypot_hits[client_ip] >= 3:
-        logger.error(
-            f"🚨 AUTO-BLOCKING IP {client_ip} after {honeypot_hits[client_ip]} honeypot hits"
-        )
+        logger.error(f"🚨 AUTO-BLOCKING IP {client_ip} after {honeypot_hits[client_ip]} honeypot hits")
         # In production, this would add to IP blocklist
 
 

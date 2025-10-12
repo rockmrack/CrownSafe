@@ -53,12 +53,8 @@ def upgrade():
 
     # Create indexes
     op.create_index(op.f("ix_share_tokens_token"), "share_tokens", ["token"], unique=True)
-    op.create_index(
-        op.f("ix_share_tokens_created_by"), "share_tokens", ["created_by"], unique=False
-    )
-    op.create_index(
-        op.f("ix_share_tokens_content_id"), "share_tokens", ["content_id"], unique=False
-    )
+    op.create_index(op.f("ix_share_tokens_created_by"), "share_tokens", ["created_by"], unique=False)
+    op.create_index(op.f("ix_share_tokens_content_id"), "share_tokens", ["content_id"], unique=False)
 
 
 def downgrade():

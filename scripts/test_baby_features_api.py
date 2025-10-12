@@ -71,9 +71,7 @@ async def test_notification_endpoint():
         }
 
         try:
-            response = await client.post(
-                f"{BASE_URL}/api/v1/baby/notifications/send", json=request_data
-            )
+            response = await client.post(f"{BASE_URL}/api/v1/baby/notifications/send", json=request_data)
 
             if response.status_code == 200:
                 data = response.json()
@@ -109,9 +107,7 @@ async def test_bulk_notification():
         }
 
         try:
-            response = await client.post(
-                f"{BASE_URL}/api/v1/baby/notifications/bulk", json=request_data
-            )
+            response = await client.post(f"{BASE_URL}/api/v1/baby/notifications/bulk", json=request_data)
 
             if response.status_code == 200:
                 data = response.json()
@@ -143,9 +139,7 @@ async def test_report_generation():
         }
 
         try:
-            response = await client.post(
-                f"{BASE_URL}/api/v1/baby/reports/generate", json=request_data
-            )
+            response = await client.post(f"{BASE_URL}/api/v1/baby/reports/generate", json=request_data)
 
             if response.status_code == 200:
                 data = response.json()
@@ -199,9 +193,7 @@ async def test_onboarding():
         }
 
         try:
-            response = await client.post(
-                f"{BASE_URL}/api/v1/baby/onboarding/setup", json=request_data
-            )
+            response = await client.post(f"{BASE_URL}/api/v1/baby/onboarding/setup", json=request_data)
 
             if response.status_code == 200:
                 data = response.json()
@@ -240,9 +232,7 @@ async def test_hazard_analysis():
         }
 
         try:
-            response = await client.post(
-                f"{BASE_URL}/api/v1/baby/hazards/analyze", json=request_data
-            )
+            response = await client.post(f"{BASE_URL}/api/v1/baby/hazards/analyze", json=request_data)
 
             if response.status_code == 200:
                 data = response.json()

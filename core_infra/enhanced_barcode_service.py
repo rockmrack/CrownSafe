@@ -147,17 +147,11 @@ class EnhancedBarcodeService:
                         "ean_code": product.ean_code,
                         "gtin": product.gtin,
                         "recall_status": product.recall_status,
-                        "recall_date": product.recall_date.isoformat()
-                        if product.recall_date
-                        else None,
+                        "recall_date": product.recall_date.isoformat() if product.recall_date else None,
                         "hazard_description": product.hazard_description,
                         "risk_level": product.risk_level,
-                        "match_type": self._determine_match_type(
-                            normalized_barcode, product, barcode_type
-                        ),
-                        "match_confidence": self._calculate_match_confidence(
-                            normalized_barcode, product, barcode_type
-                        ),
+                        "match_type": self._determine_match_type(normalized_barcode, product, barcode_type),
+                        "match_confidence": self._calculate_match_confidence(normalized_barcode, product, barcode_type),
                     }
                     matches.append(match)
 
@@ -206,9 +200,7 @@ class EnhancedBarcodeService:
         # Combine with OR logic
         return or_(*conditions)
 
-    def _determine_match_type(
-        self, normalized_barcode: str, product: RecallDB, barcode_type: BarcodeType
-    ) -> str:
+    def _determine_match_type(self, normalized_barcode: str, product: RecallDB, barcode_type: BarcodeType) -> str:
         """Determine the type of match found"""
         if product.barcode == normalized_barcode:
             return "exact_barcode"

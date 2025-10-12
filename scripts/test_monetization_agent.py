@@ -16,9 +16,7 @@ sys.path.insert(0, project_root)
 from core_infra.database import Base, engine, SessionLocal, User
 from agents.business.monetization_agent.agent_logic import MonetizationAgentLogic
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 # --- Test Configuration ---
 TEST_USER_ID = 1
@@ -36,9 +34,7 @@ async def main():
     Base.metadata.create_all(bind=engine)
     with SessionLocal() as db:
         # Create a fake user for the test with required fields
-        test_user = User(
-            id=TEST_USER_ID, email=TEST_USER_EMAIL, hashed_password="fakehashedpassword"
-        )
+        test_user = User(id=TEST_USER_ID, email=TEST_USER_EMAIL, hashed_password="fakehashedpassword")
         db.add(test_user)
         db.commit()
     logger.info(f"Database seeded with test user ID: {TEST_USER_ID}")
@@ -58,17 +54,11 @@ async def main():
 
         with (
             patch("stripe.Customer.create", return_value=mock_customer) as mock_customer_create,
-            patch(
-                "stripe.checkout.Session.create", return_value=mock_session
-            ) as mock_session_create,
+            patch("stripe.checkout.Session.create", return_value=mock_session) as mock_session_create,
         ):
             # 4. Call the agent's primary logic function.
-            logger.info(
-                "Calling agent_logic.create_subscription_checkout_session (Stripe API is mocked)..."
-            )
-            result = agent_logic.create_subscription_checkout_session(
-                user_id=TEST_USER_ID, tier="family_tier"
-            )
+            logger.info("Calling agent_logic.create_subscription_checkout_session (Stripe API is mocked)...")
+            result = agent_logic.create_subscription_checkout_session(user_id=TEST_USER_ID, tier="family_tier")
             logger.info("Task processing finished.")
 
             # 5. Verify the Stripe API was called correctly.
@@ -93,9 +83,7 @@ async def main():
                 print("❌ TEST FAILED: The checkout URL was not in the expected format.")
         else:
             print("\n" + "=" * 50)
-            print(
-                f"❌ TEST FAILED: The agent returned an error status. Message: {result.get('message')}"
-            )
+            print(f"❌ TEST FAILED: The agent returned an error status. Message: {result.get('message')}")
 
     except Exception as e:
         print("\n" + "=" * 50)

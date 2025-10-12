@@ -274,9 +274,7 @@ async def reset_settings(
         },
     )
 
-    return SettingsResponse(
-        ok=True, settings=settings_store[identifier], updated_at=datetime.utcnow()
-    )
+    return SettingsResponse(ok=True, settings=settings_store[identifier], updated_at=datetime.utcnow())
 
 
 # ========================= ERROR RECOVERY =========================

@@ -145,9 +145,7 @@ class SearchService:
                 try:
                     use_pg_trgm = self.check_pg_trgm_enabled()
                     if not use_pg_trgm:
-                        logger.warning(
-                            "[WARN] pg_trgm extension not enabled, falling back to LIKE search"
-                        )
+                        logger.warning("[WARN] pg_trgm extension not enabled, falling back to LIKE search")
                 except Exception as e:
                     logger.warning(f"[WARN] pg_trgm check failed: {e}, falling back to LIKE search")
 
@@ -302,9 +300,7 @@ class SearchService:
                     cursor_data = json.loads(base64.b64decode(cursor).decode())
                     actual_offset = cursor_data.get("offset", 0)
                     use_cursor_pagination = True
-                    logger.info(
-                        f"Cursor decoded: offset={actual_offset}, cursor_data={cursor_data}"
-                    )
+                    logger.info(f"Cursor decoded: offset={actual_offset}, cursor_data={cursor_data}")
                 except Exception as e:
                     logger.warning(f"Invalid cursor: {e}, falling back to offset")
                     actual_offset = offset or 0
@@ -438,9 +434,7 @@ class SearchService:
             # Only check on PostgreSQL
             if self.db.bind.dialect.name != "postgresql":
                 return False
-            result = self.db.execute(
-                text("SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')")
-            )
+            result = self.db.execute(text("SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')"))
             return result.scalar()
         except:
             return False

@@ -5,15 +5,17 @@ app:
   name: "BabyShield Backend (Staging)"
   debug: false
   reload: false
-  log_level: "DEBUG"  # More verbose for testing
+  log_level: "DEBUG" # More verbose for testing
 
 server:
   host: "0.0.0.0"
   port: 8000
 
 database:
-  url: "${DATABASE_URL:-sqlite:///./babyshield_staging.db}"
-  echo: true  # Show queries for debugging
+  # Staging should use PostgreSQL like production
+  # Fallback uses psycopg v3 driver
+  url: "${DATABASE_URL:-postgresql+psycopg://postgres:postgres@localhost:5432/babyshield_staging}"
+  echo: true # Show queries for debugging
 
 security:
   secret_key: "${SECRET_KEY:-staging-secret-key-change-me}"
@@ -23,7 +25,7 @@ cors:
   origins:
     - "https://staging.yourdomain.com"
     - "https://staging-api.yourdomain.com"
-    - "http://localhost:3000"  # For testing
+    - "http://localhost:3000" # For testing
 
 uploads:
   directory: "/app/uploads_staging"
@@ -35,7 +37,7 @@ ai:
 
 rate_limiting:
   enabled: true
-  requests_per_minute: 200  # More relaxed for testing
+  requests_per_minute: 200 # More relaxed for testing
   period_seconds: 60
 
 monitoring:
@@ -47,7 +49,7 @@ workers:
   result_backend: "${CELERY_RESULT_BACKEND:-redis://redis:6379/1}"
 
 security_headers:
-  ssl_redirect: false  # May not have SSL in staging
+  ssl_redirect: false # May not have SSL in staging
   hsts_seconds: 0
   hsts_include_subdomains: false
   frame_deny: true

@@ -109,9 +109,7 @@ class ReportBuilderAgentManager:
 
             # Log TASK_ASSIGN reception immediately for debugging
             if message_type == "TASK_ASSIGN":
-                logger.critical(
-                    f"🎯 TASK_ASSIGN RECEIVED: From {sender_id}, CorrID: {correlation_id}"
-                )
+                logger.critical(f"🎯 TASK_ASSIGN RECEIVED: From {sender_id}, CorrID: {correlation_id}")
                 logger.critical(f"🎯 TASK_PAYLOAD: {message.payload}")
 
             logger.debug(f"Processing {message_type} from {sender_id} (CorrID: {correlation_id})")
@@ -120,9 +118,7 @@ class ReportBuilderAgentManager:
             message_dict = message.model_dump()
 
             # Process through logic
-            response_from_logic = await self.report_builder_logic.process_message(
-                message_dict, self.mcp_client
-            )
+            response_from_logic = await self.report_builder_logic.process_message(message_dict, self.mcp_client)
 
             # Handle response if present
             if response_from_logic is not None:
@@ -163,9 +159,7 @@ class ReportBuilderAgentManager:
                 logger.error("Cannot send response: original sender_id is missing")
                 return
 
-            logger.info(
-                f"Sending {response_message_type} response to {target_agent_id} (CorrID: {correlation_id})"
-            )
+            logger.info(f"Sending {response_message_type} response to {target_agent_id} (CorrID: {correlation_id})")
 
             await self.mcp_client.send_message(
                 payload=response_payload,
@@ -245,9 +239,7 @@ class ReportBuilderAgentManager:
                 # Success!
                 self.connection_retry_count = 0
                 self.last_successful_connection = asyncio.get_event_loop().time()
-                logger.info(
-                    f"✅ {AGENT_ID} connected and registered successfully on attempt {attempt}"
-                )
+                logger.info(f"✅ {AGENT_ID} connected and registered successfully on attempt {attempt}")
 
                 # Start health monitoring
                 await self._start_health_monitoring()
@@ -267,16 +259,12 @@ class ReportBuilderAgentManager:
                         await asyncio.wait_for(self.stop_event.wait(), timeout=delay)
                         # If stop_event is set during delay, abort retry attempts
                         if self.stop_event.is_set():
-                            logger.info(
-                                "Stop event set during retry delay, aborting connection attempts"
-                            )
+                            logger.info("Stop event set during retry delay, aborting connection attempts")
                             return False
                     except asyncio.TimeoutError:
                         pass  # Normal timeout, continue to next attempt
                 else:
-                    logger.critical(
-                        f"💥 All {MAX_CONNECT_RETRIES} connection attempts failed for {AGENT_ID}"
-                    )
+                    logger.critical(f"💥 All {MAX_CONNECT_RETRIES} connection attempts failed for {AGENT_ID}")
 
         return False
 
@@ -301,9 +289,7 @@ class ReportBuilderAgentManager:
 
                 # Check connection status
                 if not self.mcp_client or not self.mcp_client.is_connected:
-                    logger.warning(
-                        f"🚨 Connection health check failed for {AGENT_ID} - attempting reconnection"
-                    )
+                    logger.warning(f"🚨 Connection health check failed for {AGENT_ID} - attempting reconnection")
 
                     if await self.connect_with_retry():
                         logger.info(f"✅ Reconnection successful for {AGENT_ID}")

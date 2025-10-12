@@ -67,21 +67,15 @@ class Subscription(Base):
     provider = Column(SQLEnum(PaymentProvider), nullable=False)  # apple or google
 
     # Product IDs from app stores
-    product_id = Column(
-        String(100), nullable=False
-    )  # e.g., "babyshield_monthly" or "babyshield_annual"
+    product_id = Column(String(100), nullable=False)  # e.g., "babyshield_monthly" or "babyshield_annual"
 
     # Subscription periods
     started_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     expires_at = Column(DateTime, nullable=False)
-    cancelled_at = Column(
-        DateTime, nullable=True
-    )  # When user cancelled (may still be active until expires_at)
+    cancelled_at = Column(DateTime, nullable=True)  # When user cancelled (may still be active until expires_at)
 
     # Receipt data
-    original_transaction_id = Column(
-        String(200), index=True
-    )  # Apple's original_transaction_id or Google's orderId
+    original_transaction_id = Column(String(200), index=True)  # Apple's original_transaction_id or Google's orderId
     latest_receipt = Column(String(5000))  # Store latest receipt for revalidation
     receipt_data = Column(String(10000))  # Full receipt JSON for debugging
 

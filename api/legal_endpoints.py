@@ -269,9 +269,7 @@ async def list_legal_documents(language: Optional[str] = "en"):
 
 
 @router.get("/{document_id}")
-async def get_legal_document(
-    document_id: str, format: Optional[str] = "html", language: Optional[str] = "en"
-):
+async def get_legal_document(document_id: str, format: Optional[str] = "html", language: Optional[str] = "en"):
     """
     Get a specific legal document
 
@@ -439,9 +437,7 @@ async def request_data_export(user_id: str = Header(..., alias="X-User-ID")):
 
 
 @router.post("/privacy/delete-data")
-async def request_data_deletion(
-    deletion: DataDeletionRequest, user_id: str = Header(..., alias="X-User-ID")
-):
+async def request_data_deletion(deletion: DataDeletionRequest, user_id: str = Header(..., alias="X-User-ID")):
     """Request deletion of user's data (GDPR Article 17)"""
 
     # Validate user

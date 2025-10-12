@@ -127,9 +127,7 @@ class TestChatFeatureGating:
             }
             mock_agent_class.return_value = mock_agent
 
-            response = self.client.post(
-                "/api/v1/chat/explain-result", json={"scan_id": "test-scan-123"}
-            )
+            response = self.client.post("/api/v1/chat/explain-result", json={"scan_id": "test-scan-123"})
 
             # Should succeed even when chat is disabled
             assert response.status_code == 200

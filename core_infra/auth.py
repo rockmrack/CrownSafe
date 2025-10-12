@@ -21,10 +21,7 @@ logger = logging.getLogger(__name__)
 
 # Configuration (unify secret sources)
 SECRET_KEY = (
-    os.getenv("JWT_SECRET")
-    or os.getenv("SECRET_KEY")
-    or os.getenv("JWT_SECRET_KEY")
-    or secrets.token_urlsafe(32)
+    os.getenv("JWT_SECRET") or os.getenv("SECRET_KEY") or os.getenv("JWT_SECRET_KEY") or secrets.token_urlsafe(32)
 )
 ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
@@ -110,9 +107,7 @@ def decode_token(token: str) -> Dict[str, Any]:
         return None
 
 
-async def get_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
-) -> Optional[User]:
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Optional[User]:
     """Get the current authenticated user"""
     if not token:
         return None
@@ -189,9 +184,7 @@ async def get_current_active_user(
     return current_user
 
 
-async def optional_auth(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
-) -> Optional[User]:
+async def optional_auth(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Optional[User]:
     """Optional authentication - returns user if authenticated, None otherwise"""
     if not token:
         return None

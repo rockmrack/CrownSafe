@@ -52,9 +52,7 @@ class RedisSearchCache:
         if self.redis:
             await self.redis.close()
 
-    def _make_cache_key(
-        self, filters_hash: str, as_of: str, after_tuple: Optional[tuple] = None
-    ) -> str:
+    def _make_cache_key(self, filters_hash: str, as_of: str, after_tuple: Optional[tuple] = None) -> str:
         """
         Generate cache key for search results
 
@@ -85,9 +83,7 @@ class RedisSearchCache:
 
         return ":".join(components)
 
-    async def get(
-        self, filters_hash: str, as_of: str, after_tuple: Optional[tuple] = None
-    ) -> Optional[Dict[str, Any]]:
+    async def get(self, filters_hash: str, as_of: str, after_tuple: Optional[tuple] = None) -> Optional[Dict[str, Any]]:
         """
         Get cached search results
 

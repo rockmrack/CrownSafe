@@ -15,7 +15,8 @@ services:
       - ENVIRONMENT=development
       - DEBUG=true
       - RELOAD=true
-      - DATABASE_URL=sqlite:///./babyshield_dev.db
+      # Use PostgreSQL from postgres-dev service (psycopg v3 driver)
+      - DATABASE_URL=postgresql+psycopg://babyshield_user:dev_password_change_me@postgres-dev:5432/babyshield_dev
       - SECRET_KEY=dev-secret-key-not-for-production
       - LOG_LEVEL=DEBUG
     volumes:

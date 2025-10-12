@@ -39,9 +39,7 @@ class SerialVerification(Base):
 
     # Metadata
     manufacturer = Column(String(256), nullable=True)
-    status = Column(
-        String(32), nullable=False, default="unknown"
-    )  # verified | invalid | unknown | error
+    status = Column(String(32), nullable=False, default="unknown")  # verified | invalid | unknown | error
     source = Column(String(64), nullable=True)  # e.g., mock, oem_api, registry_sync
     message = Column(Text, nullable=True)
     trace_id = Column(String(64), nullable=True)

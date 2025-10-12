@@ -413,9 +413,7 @@ def track_feedback_metrics(feedback: FeedbackRequest, priority: Priority):
 
 
 @router.post("/submit", response_model=FeedbackResponse)
-async def submit_feedback(
-    feedback: FeedbackRequest, background_tasks: BackgroundTasks, request: Request
-):
+async def submit_feedback(feedback: FeedbackRequest, background_tasks: BackgroundTasks, request: Request):
     """
     Submit user feedback
 
@@ -433,9 +431,7 @@ async def submit_feedback(
         logger.info(f"Feedback submitted from IP: {client_ip}")
 
         # Send email notification to support team
-        background_tasks.add_task(
-            send_email_notification, feedback, ticket_id, ticket_number, priority
-        )
+        background_tasks.add_task(send_email_notification, feedback, ticket_id, ticket_number, priority)
 
         # Send auto-reply to user if email provided
         if feedback.user_email:
@@ -508,9 +504,7 @@ async def get_ticket_status(ticket_number: int):
 
 
 @router.post("/ticket/{ticket_number}/satisfy")
-async def mark_satisfaction(
-    ticket_number: int, satisfied: bool = True, comments: Optional[str] = None
-):
+async def mark_satisfaction(ticket_number: int, satisfied: bool = True, comments: Optional[str] = None):
     """
     Mark customer satisfaction
 

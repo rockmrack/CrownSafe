@@ -34,9 +34,7 @@ except ImportError as e:
     sys.exit(1)
 
 # --- Configuration ---
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logging.getLogger("websockets.client").setLevel(logging.WARNING)
 logger = logging.getLogger("TestPlannerFlowScript")
 
@@ -68,9 +66,7 @@ async def handle_controller_message(message: Dict[str, Any]):
     # Check if this message corresponds to the planning task we sent
     if correlation_id == task_correlation_id:
         if message_type in ["TASK_COMPLETE", "TASK_FAIL"]:
-            logger.info(
-                f"Received final PLANNER task status: {message_type} for correlation_id: {correlation_id}"
-            )
+            logger.info(f"Received final PLANNER task status: {message_type} for correlation_id: {correlation_id}")
             task_result = message  # Store the planner's result message
             task_completion_event.set()  # Signal that the planning task is done
         elif message_type == "TASK_ACKNOWLEDGE":
@@ -78,9 +74,7 @@ async def handle_controller_message(message: Dict[str, Any]):
                 f"Received TASK_ACKNOWLEDGE for planning task (CorrID: {correlation_id}), Status: {payload.get('status')}"
             )
         else:
-            logger.debug(
-                f"Received other message type {message_type} with matching correlation ID."
-            )
+            logger.debug(f"Received other message type {message_type} with matching correlation ID.")
     else:
         # We might receive messages related to subtasks (like TASK_COMPLETE from WebResearchAgent)
         # routed back to the original sender (this controller). Log them for now.
@@ -143,9 +137,7 @@ async def run_planner_flow():
             await asyncio.wait_for(task_completion_event.wait(), timeout=TASK_TIMEOUT_SECONDS)
             logger.info("Planner task completion event received.")
             if task_result:
-                logger.info(
-                    f"Final PLANNER Task Result Message: {json.dumps(task_result, indent=2)}"
-                )
+                logger.info(f"Final PLANNER Task Result Message: {json.dumps(task_result, indent=2)}")
                 # Check if the planner succeeded and returned subtasks
                 if task_result.get("mcp_header", {}).get("message_type") == "TASK_COMPLETE":
                     logger.info("Planner successfully generated a plan.")
@@ -157,9 +149,7 @@ async def run_planner_flow():
                 else:
                     logger.error("Planner task failed.")
             else:
-                logger.error(
-                    "Completion event received, but no result was stored for planner task."
-                )
+                logger.error("Completion event received, but no result was stored for planner task.")
 
         except asyncio.TimeoutError:
             logger.error(

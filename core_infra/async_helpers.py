@@ -153,9 +153,7 @@ class AsyncBatchProcessor:
             batch_results = await self._process_batch(batch, process_func)
             results.extend(batch_results)
 
-            logger.info(
-                f"Processed batch {i // self.batch_size + 1}, Total: {len(results)}/{len(items)}"
-            )
+            logger.info(f"Processed batch {i // self.batch_size + 1}, Total: {len(results)}/{len(items)}")
 
         return results
 
@@ -277,9 +275,7 @@ class AsyncTaskQueue:
     async def start(self):
         """Start processing tasks"""
         self.running = True
-        self.workers = [
-            asyncio.create_task(self._worker(f"worker-{i}")) for i in range(self.max_workers)
-        ]
+        self.workers = [asyncio.create_task(self._worker(f"worker-{i}")) for i in range(self.max_workers)]
 
     async def stop(self):
         """Stop processing tasks"""

@@ -67,9 +67,7 @@ class SubmissionValidator:
             self.log_error(f"Error reading {path.name}: {e}")
             return False
 
-    def validate_text_file(
-        self, path: Path, max_length: int = None, required_content: List[str] = None
-    ) -> bool:
+    def validate_text_file(self, path: Path, max_length: int = None, required_content: List[str] = None) -> bool:
         """Validate a text file"""
         if not path.exists():
             self.log_error(f"Missing file: {path}")
@@ -261,9 +259,7 @@ class SubmissionValidator:
             else:
                 self.log_error("Medical disclaimer missing")
 
-            if "privacy" in content and (
-                "gdpr" in content or "ccpa" in content or "privacy" in content
-            ):
+            if "privacy" in content and ("gdpr" in content or "ccpa" in content or "privacy" in content):
                 self.log_success("Privacy information present")
             else:
                 self.log_warning("Privacy compliance info should be mentioned")
@@ -315,9 +311,7 @@ class SubmissionValidator:
             if apple_data.get("bundleId") == bundle_id:
                 self.log_success(f"Apple bundle ID correct: {bundle_id}")
             else:
-                self.log_error(
-                    f"Apple bundle ID mismatch: {apple_data.get('bundleId')} != {bundle_id}"
-                )
+                self.log_error(f"Apple bundle ID mismatch: {apple_data.get('bundleId')} != {bundle_id}")
 
         # Check in Google metadata
         google_meta_path = self.base_path / "docs/store/google/listing.json"
@@ -328,9 +322,7 @@ class SubmissionValidator:
             if google_data.get("packageName") == bundle_id:
                 self.log_success(f"Google package name correct: {bundle_id}")
             else:
-                self.log_error(
-                    f"Google package name mismatch: {google_data.get('packageName')} != {bundle_id}"
-                )
+                self.log_error(f"Google package name mismatch: {google_data.get('packageName')} != {bundle_id}")
 
     def generate_submission_report(self):
         """Generate a submission readiness report"""

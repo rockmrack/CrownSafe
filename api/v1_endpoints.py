@@ -60,9 +60,7 @@ class SafetyIssue(BaseModel):
     upc: Optional[str] = Field(None, description="UPC/barcode")
     hazard: Optional[str] = Field(None, description="Hazard description")
     riskCategory: Optional[str] = Field(None, description="Risk category")
-    severity: Optional[str] = Field(
-        None, description="Severity level", pattern="^(low|medium|high)$"
-    )
+    severity: Optional[str] = Field(None, description="Severity level", pattern="^(low|medium|high)$")
     status: Optional[str] = Field(None, description="Recall status", pattern="^(open|closed)$")
     imageUrl: Optional[str] = Field(None, description="Product image URL")
     affectedCountries: Optional[List[str]] = Field(None, description="Affected countries")
@@ -572,16 +570,8 @@ async def search_agency_upstream(agency_code: str, product: str, limit: int = 20
             filtered_recalls = []
             for recall in recalls[:limit]:  # Limit results
                 if (
-                    (
-                        product.lower() in recall.product_name.lower()
-                        if recall.product_name
-                        else False
-                    )
-                    or (
-                        product.lower() in recall.description.lower()
-                        if recall.description
-                        else False
-                    )
+                    (product.lower() in recall.product_name.lower() if recall.product_name else False)
+                    or (product.lower() in recall.description.lower() if recall.description else False)
                     or (product.lower() in (recall.brand or "").lower())
                 ):
                     filtered_recalls.append(recall)
@@ -632,9 +622,7 @@ async def search_agency_upstream(agency_code: str, product: str, limit: int = 20
         return get_empty_search_result()
 
 
-async def search_agency_recalls(
-    agency_code: str, product: str, limit: int = 20, cursor: Optional[str] = None
-) -> dict:
+async def search_agency_recalls(agency_code: str, product: str, limit: int = 20, cursor: Optional[str] = None) -> dict:
     """
     Search recalls for a specific agency with graceful table missing handling
 
@@ -643,9 +631,7 @@ async def search_agency_recalls(
 
     # 🚨 HOTFIX: Check if we should use upstream mode to bypass DB
     if SEARCH_BACKEND_MODE == "upstream":
-        logger.info(
-            f"🔄 HOTFIX MODE: Using upstream search for {agency_code} to bypass database issues"
-        )
+        logger.info(f"🔄 HOTFIX MODE: Using upstream search for {agency_code} to bypass database issues")
         return await search_agency_upstream(agency_code, product, limit)
 
     # Map API code to internal agency name
@@ -720,17 +706,13 @@ async def search_agency_recalls(
                     safety_issue = convert_recall_to_safety_issue(recall, agency_code)
                     items.append(safety_issue)
                 except Exception as e:
-                    logger.warning(
-                        f"Failed to convert recall {getattr(recall, 'recall_id', 'unknown')}: {e}"
-                    )
+                    logger.warning(f"Failed to convert recall {getattr(recall, 'recall_id', 'unknown')}: {e}")
                     continue
 
             # Get total count (optional, can be expensive)
             try:
                 total_query = (
-                    db.query(RecallDB)
-                    .filter(RecallDB.source_agency == internal_agency)
-                    .filter(search_conditions)
+                    db.query(RecallDB).filter(RecallDB.source_agency == internal_agency).filter(search_conditions)
                 )
                 total = total_query.count()
             except:
@@ -862,9 +844,7 @@ async def search_eu_safety_gate_v1(
 ):
     """Search EU Safety Gate (RAPEX) recalls (versioned)"""
     trace_id = generate_trace_id()
-    logger.info(
-        f"[{trace_id}] GET /api/v1/eu_safety_gate?product={product}&limit={limit}&cursor={cursor}"
-    )
+    logger.info(f"[{trace_id}] GET /api/v1/eu_safety_gate?product={product}&limit={limit}&cursor={cursor}")
 
     try:
         results = await search_agency_recalls("EU_SAFETY_GATE", product, limit, cursor)

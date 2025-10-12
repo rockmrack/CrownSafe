@@ -316,9 +316,7 @@ class BulletproofSecurityMiddleware:
         # Auto-block after 3 honeypot hits
         if self.honeypot_hits[client_ip] >= 3:
             self.blocked_ips.add(client_ip)
-            logger.error(
-                f"Auto-blocked IP {client_ip} after {self.honeypot_hits[client_ip]} honeypot hits"
-            )
+            logger.error(f"Auto-blocked IP {client_ip} after {self.honeypot_hits[client_ip]} honeypot hits")
 
     def _create_honeypot_response(self):
         """Return convincing honeypot response to waste attacker time"""
@@ -360,9 +358,7 @@ class BulletproofSecurityMiddleware:
             # Auto-block IPs with too many failed requests
             if self.suspicious_patterns[client_ip] >= 50:
                 self.blocked_ips.add(client_ip)
-                logger.error(
-                    f"Auto-blocked IP {client_ip} after {self.suspicious_patterns[client_ip]} failed requests"
-                )
+                logger.error(f"Auto-blocked IP {client_ip} after {self.suspicious_patterns[client_ip]} failed requests")
 
 
 # Global middleware instance

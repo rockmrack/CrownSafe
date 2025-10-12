@@ -107,11 +107,7 @@ async def get_scan_history(
                 # TODO: Check against recalls table
                 from core_infra.database import RecallDB
 
-                recalls = (
-                    db.query(RecallDB)
-                    .filter(RecallDB.upc_codes.contains([extraction.upc_code]))
-                    .count()
-                )
+                recalls = db.query(RecallDB).filter(RecallDB.upc_codes.contains([extraction.upc_code])).count()
                 if recalls > 0:
                     has_recalls = True
                     recall_count = recalls
@@ -163,11 +159,7 @@ async def get_scan_details(
     """
     try:
         # Get job ensuring it belongs to user
-        job = (
-            db.query(ImageJob)
-            .filter(and_(ImageJob.id == job_id, ImageJob.user_id == current_user.id))
-            .first()
-        )
+        job = db.query(ImageJob).filter(and_(ImageJob.id == job_id, ImageJob.user_id == current_user.id)).first()
 
         if not job:
             return fail("Scan not found", code="NOT_FOUND", status=404)
@@ -236,11 +228,7 @@ async def delete_scan(
     """
     try:
         # Get job ensuring it belongs to user
-        job = (
-            db.query(ImageJob)
-            .filter(and_(ImageJob.id == job_id, ImageJob.user_id == current_user.id))
-            .first()
-        )
+        job = db.query(ImageJob).filter(and_(ImageJob.id == job_id, ImageJob.user_id == current_user.id)).first()
 
         if not job:
             return fail("Scan not found", code="NOT_FOUND", status=404)
@@ -258,9 +246,7 @@ async def delete_scan(
 
 
 @router.get("/scan-statistics", response_model=ApiResponse)
-async def get_scan_statistics(
-    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
-):
+async def get_scan_statistics(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
     """
     Get user's scanning statistics
 
@@ -286,12 +272,7 @@ async def get_scan_statistics(
         month_scans = len([j for j in jobs if (now - j.created_at).days <= 30])
 
         # Get unique products scanned
-        extractions = (
-            db.query(ImageExtraction)
-            .join(ImageJob)
-            .filter(ImageJob.user_id == current_user.id)
-            .all()
-        )
+        extractions = db.query(ImageExtraction).join(ImageJob).filter(ImageJob.user_id == current_user.id).all()
 
         unique_products = set()
         unique_brands = set()
@@ -323,9 +304,7 @@ async def get_scan_statistics(
                 "unique_brands": len(unique_brands),
                 "top_brands": list(unique_brands)[:5],  # Top 5 brands
             },
-            "member_since": current_user.created_at.isoformat() + "Z"
-            if hasattr(current_user, "created_at")
-            else None,
+            "member_since": current_user.created_at.isoformat() + "Z" if hasattr(current_user, "created_at") else None,
         }
 
         return ok(stats)

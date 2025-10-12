@@ -12,7 +12,8 @@ server:
   port: 8001
 
 database:
-  url: "${DATABASE_URL:-postgresql://user:password@db:5432/babyshield}"
+  # Production MUST use PostgreSQL with psycopg v3
+  url: "${DATABASE_URL:-postgresql+psycopg://user:password@db:5432/babyshield}"
   echo: false
 
 security:

@@ -34,9 +34,7 @@ def upgrade():
         ),
         sa.Column("agency", sa.String(64), nullable=False),
         sa.Column("mode", sa.String(16), nullable=False),  # "delta" | "full"
-        sa.Column(
-            "status", sa.String(16), nullable=False
-        ),  # "queued"|"running"|"success"|"failed"|"cancelled"
+        sa.Column("status", sa.String(16), nullable=False),  # "queued"|"running"|"success"|"failed"|"cancelled"
         sa.Column("started_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("finished_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("items_inserted", sa.Integer, nullable=False, server_default="0"),

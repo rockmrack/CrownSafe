@@ -484,9 +484,7 @@ class PerformanceReporter:
         report.append("\nSYSTEM METRICS:")
         sys_metrics = summary["system"]
         report.append(f"  CPU: {sys_metrics['cpu']['percent']}%")
-        report.append(
-            f"  Memory: {sys_metrics['memory']['percent']}% ({sys_metrics['memory']['used_gb']:.1f}GB used)"
-        )
+        report.append(f"  Memory: {sys_metrics['memory']['percent']}% ({sys_metrics['memory']['used_gb']:.1f}GB used)")
         report.append(f"  Process Memory: {sys_metrics['process']['memory_mb']:.1f}MB")
 
         # Function metrics
@@ -502,9 +500,7 @@ class PerformanceReporter:
         if bottlenecks:
             report.append("\nBOTTLENECKS DETECTED:")
             for b in bottlenecks[:5]:  # Top 5
-                report.append(
-                    f"  {b['name']}: {b['max_time_ms']:.2f}ms (severity: {b['severity']})"
-                )
+                report.append(f"  {b['name']}: {b['max_time_ms']:.2f}ms (severity: {b['severity']})")
 
         # Counters
         if summary["counters"]:

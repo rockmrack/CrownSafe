@@ -33,9 +33,7 @@ ADMIN_KEYS = {
 api_key_header = APIKeyHeader(name="X-Admin-Key", auto_error=False)
 
 
-async def require_admin(
-    request: Request, x_admin_key: Optional[str] = Depends(api_key_header)
-) -> str:
+async def require_admin(request: Request, x_admin_key: Optional[str] = Depends(api_key_header)) -> str:
     """
     Require admin authentication via API key
 
@@ -112,9 +110,7 @@ async def require_admin(
     return "admin"
 
 
-async def optional_admin(
-    request: Request, x_admin_key: Optional[str] = Depends(api_key_header)
-) -> Optional[str]:
+async def optional_admin(request: Request, x_admin_key: Optional[str] = Depends(api_key_header)) -> Optional[str]:
     """
     Optional admin authentication
     Returns admin identifier if authenticated, None otherwise

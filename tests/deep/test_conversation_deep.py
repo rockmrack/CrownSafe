@@ -323,9 +323,7 @@ class TestConversationDeep:
         monkeypatch.setattr(
             chat_router,
             "fetch_scan_data",
-            lambda db, sid: _fake_scan(
-                flags=["high_sugar", "artificial_colors", "preservatives", "bpa_free"]
-            ),
+            lambda db, sid: _fake_scan(flags=["high_sugar", "artificial_colors", "preservatives", "bpa_free"]),
         )
 
         client = TestClient(app)

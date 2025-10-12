@@ -4,9 +4,7 @@ import json
 import logging
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 API_BASE_URL = "http://localhost:8000"  # The API is now running inside Docker, but the port is mapped to our host
@@ -64,9 +62,7 @@ def run_us_mvp_test():
     for i in range(max_polls):
         try:
             print(f"   Poll attempt {i + 1}/{max_polls}...")
-            status_response = requests.get(
-                f"{API_BASE_URL}/api/v1/status/{workflow_id}", timeout=10
-            )
+            status_response = requests.get(f"{API_BASE_URL}/api/v1/status/{workflow_id}", timeout=10)
 
             if status_response.status_code == 404:
                 print("      -> Workflow not yet found in Redis. Waiting...")
