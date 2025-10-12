@@ -506,21 +506,21 @@ export default SafetyAlertsScreen;
 ## API Endpoints Summary
 
 ### Section 1: Critical Alerts
-| Endpoint | Method | Purpose | Status |
-|----------|--------|---------|--------|
-| `/api/v1/recall/{id}` | GET | Get specific recall by ID | ✅ Working |
-| `/api/v1/search/advanced` | POST | Search critical recalls | ✅ Working |
+| Endpoint                  | Method | Purpose                   | Status    |
+| ------------------------- | ------ | ------------------------- | --------- |
+| `/api/v1/recall/{id}`     | GET    | Get specific recall by ID | ✅ Working |
+| `/api/v1/search/advanced` | POST   | Search critical recalls   | ✅ Working |
 
 ### Section 2: Verification Needed
-| Endpoint | Method | Purpose | Status |
-|----------|--------|---------|--------|
-| `/api/v1/safety-check` | POST | Real-time product verification | ✅ Working |
+| Endpoint               | Method | Purpose                        | Status    |
+| ---------------------- | ------ | ------------------------------ | --------- |
+| `/api/v1/safety-check` | POST   | Real-time product verification | ✅ Working |
 
 ### Section 3: Safety News
-| Endpoint | Method | Purpose | Status |
-|----------|--------|---------|--------|
-| `/api/v1/safety-hub/articles` | GET | Get safety news articles | ✅ Working |
-| `/api/v1/baby/community/alerts` | GET | Get community alerts | ✅ Working |
+| Endpoint                        | Method | Purpose                  | Status    |
+| ------------------------------- | ------ | ------------------------ | --------- |
+| `/api/v1/safety-hub/articles`   | GET    | Get safety news articles | ✅ Working |
+| `/api/v1/baby/community/alerts` | GET    | Get community alerts     | ✅ Working |
 
 ---
 
@@ -588,21 +588,21 @@ export default SafetyAlertsScreen;
 
 ### API Response Times (Production)
 
-| Endpoint | Average | P95 | P99 |
-|----------|---------|-----|-----|
-| POST /api/v1/search/advanced | 0.8s | 1.5s | 2.5s |
-| POST /api/v1/safety-check | 1.2s | 2.1s | 3.5s |
-| GET /api/v1/safety-hub/articles | 0.3s | 0.5s | 0.8s |
-| GET /api/v1/baby/community/alerts | 0.4s | 0.7s | 1.2s |
+| Endpoint                          | Average | P95  | P99  |
+| --------------------------------- | ------- | ---- | ---- |
+| POST /api/v1/search/advanced      | 0.8s    | 1.5s | 2.5s |
+| POST /api/v1/safety-check         | 1.2s    | 2.1s | 3.5s |
+| GET /api/v1/safety-hub/articles   | 0.3s    | 0.5s | 0.8s |
+| GET /api/v1/baby/community/alerts | 0.4s    | 0.7s | 1.2s |
 
 ### Database Query Performance
 
-| Query Type | Records Searched | Time |
-|------------|------------------|------|
-| Critical recalls search | 131,743 | 0.8s |
-| Safety verification | 131,743 | 1.2s |
-| Safety news articles | Variable | 0.3s |
-| Community alerts | Variable | 0.4s |
+| Query Type              | Records Searched | Time |
+| ----------------------- | ---------------- | ---- |
+| Critical recalls search | 131,743          | 0.8s |
+| Safety verification     | 131,743          | 1.2s |
+| Safety news articles    | Variable         | 0.3s |
+| Community alerts        | Variable         | 0.4s |
 
 ---
 
@@ -626,14 +626,14 @@ export default SafetyAlertsScreen;
 
 ### Common Response Codes
 
-| Code | Meaning | Action |
-|------|---------|--------|
-| 200 | Success | Display data |
-| 400 | Bad Request | Check payload format |
-| 401 | Unauthorized | Prompt user to login |
-| 404 | Not Found | Show "no results" message |
-| 429 | Rate Limit | Retry after delay |
-| 500 | Server Error | Show error page |
+| Code | Meaning      | Action                    |
+| ---- | ------------ | ------------------------- |
+| 200  | Success      | Display data              |
+| 400  | Bad Request  | Check payload format      |
+| 401  | Unauthorized | Prompt user to login      |
+| 404  | Not Found    | Show "no results" message |
+| 429  | Rate Limit   | Retry after delay         |
+| 500  | Server Error | Show error page           |
 
 ### Example Error Response
 

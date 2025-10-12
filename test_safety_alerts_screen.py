@@ -3,7 +3,7 @@ Test "Safety Alerts" Screen from Mobile App Screenshot
 
 Tests three main sections:
 1. Critical Alerts - "View Full Report" button
-2. Verification Needed - "Verify Now" button  
+2. Verification Needed - "Verify Now" button
 3. Safety News - Latest safety articles
 """
 
@@ -58,13 +58,10 @@ print(f"Recall ID: {recall_id}")
 print()
 
 try:
-    response = requests.get(
-        f"{BASE_URL}/api/v1/recall/{recall_id}",
-        timeout=10
-    )
-    
+    response = requests.get(f"{BASE_URL}/api/v1/recall/{recall_id}", timeout=10)
+
     print(f"Status Code: {response.status_code}")
-    
+
     if response.status_code == 200:
         data = response.json()
         print("✅ Recall details retrieved successfully!")
@@ -76,7 +73,7 @@ try:
         print("   Note: Testing with alternative approach...")
     else:
         print(f"⚠️  Unexpected status: {response.status_code}")
-        
+
 except Exception as e:
     print(f"❌ Error: {e}")
 
@@ -90,11 +87,7 @@ print("API Endpoint: POST /api/v1/search/advanced")
 print("Purpose: Find critical/high-risk recalls")
 print()
 
-search_payload = {
-    "product": "Fisher-Price Rock n Play",
-    "agency": "CPSC",
-    "limit": 5
-}
+search_payload = {"product": "Fisher-Price Rock n Play", "agency": "CPSC", "limit": 5}
 
 print(f"Request: POST {BASE_URL}/api/v1/search/advanced")
 print("Payload:")
@@ -102,26 +95,22 @@ print(json.dumps(search_payload, indent=2))
 print()
 
 try:
-    response = requests.post(
-        f"{BASE_URL}/api/v1/search/advanced",
-        json=search_payload,
-        timeout=10
-    )
-    
+    response = requests.post(f"{BASE_URL}/api/v1/search/advanced", json=search_payload, timeout=10)
+
     print(f"Status Code: {response.status_code}")
-    
+
     if response.status_code == 200:
         data = response.json()
         print("✅ Critical recalls found!")
-        
+
         if data.get("success") and data.get("data"):
             results = data["data"]
             total = results.get("total", 0)
             recalls = results.get("recalls", [])
-            
+
             print(f"   Total matching recalls: {total}")
             print(f"   Returned: {len(recalls)}")
-            
+
             if recalls:
                 print()
                 print("   First Critical Alert:")
@@ -131,12 +120,12 @@ try:
                 print(f"     Agency: {first.get('agency', 'N/A')}")
                 print(f"     Date: {first.get('recall_date', 'N/A')}")
                 print(f"     Recall ID: {first.get('recall_number', 'N/A')}")
-        
+
         print()
         print("✅ 'View Full Report' button would work with this data")
     else:
         print(f"⚠️  Status: {response.status_code}")
-        
+
 except Exception as e:
     print(f"❌ Error: {e}")
 
@@ -163,7 +152,7 @@ verify_payload = {
     "product_name": "Baby Einstein Activity Jumper",
     "brand": "Baby Einstein",
     "model_number": "90564",
-    "scan_method": "manual_entry"
+    "scan_method": "manual_entry",
 }
 
 print(f"Request: POST {BASE_URL}/api/v1/safety-check")
@@ -172,18 +161,14 @@ print(json.dumps(verify_payload, indent=2))
 print()
 
 try:
-    response = requests.post(
-        f"{BASE_URL}/api/v1/safety-check",
-        json=verify_payload,
-        timeout=15
-    )
-    
+    response = requests.post(f"{BASE_URL}/api/v1/safety-check", json=verify_payload, timeout=15)
+
     print(f"Status Code: {response.status_code}")
-    
+
     if response.status_code == 200:
         data = response.json()
         print("✅ Product verification completed!")
-        
+
         if data.get("success") and data.get("data"):
             result = data["data"]
             print()
@@ -193,7 +178,7 @@ try:
             print(f"   Confidence: {result.get('confidence_score', 'N/A')}")
             print(f"   Agencies Checked: {result.get('agencies_checked', [])}")
             print(f"   Recalls Found: {result.get('recalls_found', 0)}")
-            
+
         print()
         print("✅ 'Verify Now' button is fully functional")
     elif response.status_code == 401:
@@ -202,7 +187,7 @@ try:
         print("✅ 'Verify Now' button endpoint is accessible")
     else:
         print(f"⚠️  Status: {response.status_code}")
-        
+
 except Exception as e:
     print(f"❌ Error: {e}")
 
@@ -227,7 +212,7 @@ print()
 params = {
     "limit": 10,
     "category": None,  # All categories
-    "language": "en"
+    "language": "en",
 }
 
 print(f"Request: GET {BASE_URL}/api/v1/safety-hub/articles")
@@ -235,26 +220,22 @@ print("Params: limit=10, language=en")
 print()
 
 try:
-    response = requests.get(
-        f"{BASE_URL}/api/v1/safety-hub/articles",
-        params=params,
-        timeout=10
-    )
-    
+    response = requests.get(f"{BASE_URL}/api/v1/safety-hub/articles", params=params, timeout=10)
+
     print(f"Status Code: {response.status_code}")
-    
+
     if response.status_code == 200:
         data = response.json()
         print("✅ Safety news articles retrieved!")
-        
+
         if data.get("success") and data.get("data"):
             articles_data = data["data"]
             articles = articles_data.get("articles", [])
             pagination = articles_data.get("pagination", {})
-            
+
             print(f"   Total articles: {pagination.get('total', 0)}")
             print(f"   Returned: {len(articles)}")
-            
+
             if articles:
                 print()
                 print("   Recent Safety News:")
@@ -264,14 +245,14 @@ try:
                     print(f"      Agency: {article.get('source_agency', 'N/A')}")
                     print(f"      Date: {article.get('publication_date', 'N/A')}")
                     print(f"      Summary: {article.get('summary', 'N/A')[:100]}...")
-                    if article.get('is_featured'):
+                    if article.get("is_featured"):
                         print("      ⭐ Featured Article")
-        
+
         print()
         print("✅ Safety News section is fully operational")
     else:
         print(f"⚠️  Status: {response.status_code}")
-        
+
 except Exception as e:
     print(f"❌ Error: {e}")
 
@@ -285,35 +266,28 @@ print("API Endpoint: GET /api/v1/baby/community/alerts")
 print("Purpose: Community-reported safety concerns")
 print()
 
-community_params = {
-    "user_id": 1,
-    "limit": 5
-}
+community_params = {"user_id": 1, "limit": 5}
 
 print(f"Request: GET {BASE_URL}/api/v1/baby/community/alerts")
 print("Params: user_id=1, limit=5")
 print()
 
 try:
-    response = requests.get(
-        f"{BASE_URL}/api/v1/baby/community/alerts",
-        params=community_params,
-        timeout=10
-    )
-    
+    response = requests.get(f"{BASE_URL}/api/v1/baby/community/alerts", params=community_params, timeout=10)
+
     print(f"Status Code: {response.status_code}")
-    
+
     if response.status_code == 200:
         data = response.json()
         print("✅ Community alerts retrieved!")
-        
+
         if data.get("status") == "success":
             alerts = data.get("alerts", [])
             sources = data.get("sources_monitored", [])
-            
+
             print(f"   Total alerts: {data.get('alerts_count', 0)}")
             print(f"   Sources monitored: {len(sources)}")
-            
+
             if alerts:
                 print()
                 print("   Recent Community Alerts:")
@@ -323,12 +297,12 @@ try:
                     print(f"      Product: {alert.get('product', 'N/A')}")
                     print(f"      Severity: {alert.get('severity', 'N/A')}")
                     print(f"      Reported by: {alert.get('reported_by', 'N/A')}")
-        
+
         print()
         print("✅ Community alerts available as supplemental news source")
     else:
         print(f"⚠️  Status: {response.status_code}")
-        
+
 except Exception as e:
     print(f"❌ Error: {e}")
 
