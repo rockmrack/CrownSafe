@@ -31,11 +31,15 @@ class ProductIdentifierLogic:
         self.logger = logger_instance or logger
 
         # Check if trial endpoint is allowed in production
-        USE_TRIAL_UPCITEMDB = os.getenv("USE_TRIAL_UPCITEMDB", "false").lower() == "true"
+        USE_TRIAL_UPCITEMDB = (
+            os.getenv("USE_TRIAL_UPCITEMDB", "false").lower() == "true"
+        )
         ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 
         if ENVIRONMENT == "production" and USE_TRIAL_UPCITEMDB:
-            raise RuntimeError("Production environment cannot use trial UPCitemdb endpoint")
+            raise RuntimeError(
+                "Production environment cannot use trial UPCitemdb endpoint"
+            )
 
         if USE_TRIAL_UPCITEMDB:
             self.logger.info(
@@ -54,47 +58,68 @@ class ProductIdentifierLogic:
         self.logger.info(f"Performing live UPCitemdb lookup for barcode: {barcode}")
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(API_BASE_URL, params={"upc": barcode}) as response:
+                async with session.get(
+                    API_BASE_URL, params={"upc": barcode}
+                ) as response:
                     text = await response.text()
 
                     # Log full response for debugging
-                    self.logger.debug(f"UPCitemdb response for {barcode} (status {response.status}):\n{text}")
+                    self.logger.debug(
+                        f"UPCitemdb response for {barcode} (status {response.status}):\n{text}"
+                    )
 
                     if response.status != 200:
-                        self.logger.error(f"UPCitemdb HTTP {response.status} for barcode {barcode}")
+                        self.logger.error(
+                            f"UPCitemdb HTTP {response.status} for barcode {barcode}"
+                        )
                         return None
 
                     data = json.loads(text)
 
                     # Debug: log parsed JSON
-                    self.logger.debug(f"Parsed UPCitemdb JSON for {barcode}:\n{json.dumps(data, indent=2)}")
+                    self.logger.debug(
+                        f"Parsed UPCitemdb JSON for {barcode}:\n{json.dumps(data, indent=2)}"
+                    )
 
                     if data.get("code") == "OK" and data.get("items"):
                         item = data["items"][0]
                         product_details = {
                             "product_name": item.get("title"),
                             "upc": item.get("upc"),
-                            "manufacturer": item.get("manufacturer") or item.get("brand"),
+                            "manufacturer": item.get("manufacturer")
+                            or item.get("brand"),
                             "category": item.get("category"),
                             "description": item.get("description"),
                             "source": "upcitemdb.com (trial)",
                         }
-                        self.logger.info(f"Extracted product details for {barcode}: {product_details['product_name']}")
+                        self.logger.info(
+                            f"Extracted product details for {barcode}: {product_details['product_name']}"
+                        )
                         # Debug: full details
-                        self.logger.debug(f"Product details dict:\n{json.dumps(product_details, indent=2)}")
+                        self.logger.debug(
+                            f"Product details dict:\n{json.dumps(product_details, indent=2)}"
+                        )
                         return product_details
                     else:
-                        self.logger.warning(f"UPCitemdb returned OK but no items for {barcode}: {data}")
+                        self.logger.warning(
+                            f"UPCitemdb returned OK but no items for {barcode}: {data}"
+                        )
                         return None
 
         except aiohttp.ClientError as e:
-            self.logger.error(f"Network error during UPC lookup for {barcode}: {e}", exc_info=True)
+            self.logger.error(
+                f"Network error during UPC lookup for {barcode}: {e}", exc_info=True
+            )
             return None
         except json.JSONDecodeError as e:
-            self.logger.error(f"Invalid JSON from UPCitemdb for {barcode}: {e}", exc_info=True)
+            self.logger.error(
+                f"Invalid JSON from UPCitemdb for {barcode}: {e}", exc_info=True
+            )
             return None
         except Exception as e:
-            self.logger.error(f"Unexpected error in UPC lookup for {barcode}: {e}", exc_info=True)
+            self.logger.error(
+                f"Unexpected error in UPC lookup for {barcode}: {e}", exc_info=True
+            )
             return None
 
     async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
@@ -155,7 +180,9 @@ class ProductIdentifierLogic:
             return {"status": "COMPLETED", "result": product_details}
 
         # 2) Enhanced fallback to RecallDB with better logic
-        self.logger.warning(f"Live UPC lookup failed for {barcode}, attempting enhanced RecallDB fallback...")
+        self.logger.warning(
+            f"Live UPC lookup failed for {barcode}, attempting enhanced RecallDB fallback..."
+        )
         try:
             with get_db_session() as db:
                 # Try to find a recall with matching UPC first
@@ -169,9 +196,11 @@ class ProductIdentifierLogic:
                     fallback = {
                         "product_name": recall_row.product_name or f"Product {barcode}",
                         "upc": barcode,
-                        "manufacturer": getattr(recall_row, "manufacturer", None) or "Unknown Manufacturer",
+                        "manufacturer": getattr(recall_row, "manufacturer", None)
+                        or "Unknown Manufacturer",
                         "category": "Consumer Product",
-                        "description": recall_row.reason or "Product information from recall database",
+                        "description": recall_row.reason
+                        or "Product information from recall database",
                         "source": "recall-db-fallback",
                         "recall_info": {
                             "recall_id": recall_row.recall_id,
@@ -179,7 +208,9 @@ class ProductIdentifierLogic:
                             "date": str(recall_row.date) if recall_row.date else None,
                         },
                     }
-                    self.logger.info(f"Enhanced RecallDB fallback for {barcode}: '{fallback['product_name']}'")
+                    self.logger.info(
+                        f"Enhanced RecallDB fallback for {barcode}: '{fallback['product_name']}'"
+                    )
                     return {"status": "COMPLETED", "result": fallback}
                 else:
                     # Create a basic mock product if no recalls exist
@@ -191,7 +222,9 @@ class ProductIdentifierLogic:
                         "description": "Mock product for testing purposes",
                         "source": "mock-fallback",
                     }
-                    self.logger.info(f"Using mock fallback for {barcode}: '{fallback['product_name']}'")
+                    self.logger.info(
+                        f"Using mock fallback for {barcode}: '{fallback['product_name']}'"
+                    )
                     return {"status": "COMPLETED", "result": fallback}
         except Exception as e:
             self.logger.error(f"Enhanced RecallDB fallback error: {e}", exc_info=True)

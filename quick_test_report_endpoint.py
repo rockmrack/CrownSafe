@@ -23,7 +23,9 @@ def test_report_unsafe_product():
     }
 
     try:
-        response = requests.post(f"{BASE_URL}/api/v1/report-unsafe-product", json=payload, timeout=10)
+        response = requests.post(
+            f"{BASE_URL}/api/v1/report-unsafe-product", json=payload, timeout=10
+        )
 
         print(f"Status Code: {response.status_code}")
         print(f"Response: {json.dumps(response.json(), indent=2)}")
@@ -32,10 +34,13 @@ def test_report_unsafe_product():
             print("✅ Report created successfully!")
             data = response.json()
             report_id = data.get("report_id")
+            print(f"Report ID: {report_id}")
 
             # Test retrieving the report
             print("\n🧪 Testing GET /api/v1/user-reports/99999...")
-            get_response = requests.get(f"{BASE_URL}/api/v1/user-reports/99999", timeout=10)
+            get_response = requests.get(
+                f"{BASE_URL}/api/v1/user-reports/99999", timeout=10
+            )
 
             print(f"Status Code: {get_response.status_code}")
             print(f"Response: {json.dumps(get_response.json(), indent=2)}")
@@ -56,7 +61,9 @@ def test_report_unsafe_product():
 
     except requests.exceptions.ConnectionError:
         print("❌ Connection error - is the API running?")
-        print("💡 Start the API with: uvicorn api.main_babyshield:app --reload --port 8001")
+        print(
+            "💡 Start the API with: uvicorn api.main_babyshield:app --reload --port 8001"
+        )
     except Exception as e:
         print(f"❌ Error: {e}")
 

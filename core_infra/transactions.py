@@ -207,7 +207,9 @@ class DistributedLock:
             self.redis.eval(lua_script, 1, self.lock_name, self.lock)
 
 
-def bulk_operation(db: Session, items: list, operation: Callable, batch_size: int = 100):
+def bulk_operation(
+    db: Session, items: list, operation: Callable, batch_size: int = 100
+):
     """
     Perform bulk operations with batching and transactions
     """

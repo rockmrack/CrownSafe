@@ -50,7 +50,9 @@ def validate_openapi_spec():
             validate_spec(spec)
             print("✅ OpenAPI spec fully validated with openapi-spec-validator")
         except ImportError:
-            print("⚠️  openapi-spec-validator not installed, skipping advanced validation")
+            print(
+                "⚠️  openapi-spec-validator not installed, skipping advanced validation"
+            )
             print("   Install with: pip install openapi-spec-validator")
         except Exception as e:
             print(f"❌ OpenAPI validation error: {e}")
@@ -142,9 +144,13 @@ def validate_examples():
                                 try:
                                     # Validate it's proper JSON structure
                                     json.dumps(value)
-                                    print(f"   ✅ {path} {method.upper()} - {example_name}")
+                                    print(
+                                        f"   ✅ {path} {method.upper()} - {example_name}"
+                                    )
                                 except:
-                                    print(f"   ❌ {path} {method.upper()} - {example_name} (invalid JSON)")
+                                    print(
+                                        f"   ❌ {path} {method.upper()} - {example_name} (invalid JSON)"
+                                    )
 
         print(f"   Total examples validated: {example_count}")
         return example_count > 0

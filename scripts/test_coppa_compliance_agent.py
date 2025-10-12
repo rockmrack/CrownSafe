@@ -43,7 +43,9 @@ def test_coppa_compliance_logic():
     assert result["status"] == "success"
     assert result["coppa_applies"] is True
     assert result["consent_obtained"] is False
-    print("   -> SUCCESS: Correctly identified that user is under 13 and requires consent.")
+    print(
+        "   -> SUCCESS: Correctly identified that user is under 13 and requires consent."
+    )
 
     print("\n4. Testing a user with no birth date provided...")
     user_no_birth_date = {"user_id": "user_unknown_01"}
@@ -51,7 +53,9 @@ def test_coppa_compliance_logic():
     assert result["status"] == "success"
     assert result["coppa_applies"] is True
     assert result["consent_obtained"] is False
-    print("   -> SUCCESS: Correctly and safely defaulted to requiring consent when age is unknown.")
+    print(
+        "   -> SUCCESS: Correctly and safely defaulted to requiring consent when age is unknown."
+    )
 
     print("\n5. Testing data deletion plan generation...")
     result = logic.generate_data_deletion_plan("user_child_01")
@@ -62,7 +66,9 @@ def test_coppa_compliance_logic():
     for step in result["deletion_plan"]:
         print(f"      - {step}")
 
-    print("\n--- All tests passed successfully! COPPA_ComplianceAgent is working correctly. ---")
+    print(
+        "\n--- All tests passed successfully! COPPA_ComplianceAgent is working correctly. ---"
+    )
 
 
 if __name__ == "__main__":

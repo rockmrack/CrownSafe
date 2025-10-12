@@ -42,7 +42,12 @@ def upgrade():
         sa.Column("incident_description", sa.Text(), nullable=True),
         sa.Column("photos", postgresql.JSONB(), nullable=True),
         sa.Column("metadata", postgresql.JSONB(), nullable=True),
-        sa.Column("created_at", sa.DateTime(), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP")),
+        sa.Column(
+            "created_at",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+        ),
         sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.Column("reviewed_at", sa.DateTime(), nullable=True),
         sa.Column("reviewed_by", sa.Integer(), nullable=True),

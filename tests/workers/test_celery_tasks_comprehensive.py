@@ -84,7 +84,9 @@ class TestCeleryTaskExecution:
         # Arrange
         with patch("workers.recall_tasks.RecallAgent") as mock_agent:
             # Simulate network failure
-            mock_agent.return_value.process_recall.side_effect = ConnectionError("Network unreachable")
+            mock_agent.return_value.process_recall.side_effect = ConnectionError(
+                "Network unreachable"
+            )
 
             # Act & Assert
             # Should raise Retry exception with exponential backoff
@@ -107,7 +109,9 @@ class TestCeleryTaskExecution:
         """
         # Arrange
         with patch("workers.recall_tasks.RecallAgent") as mock_agent:
-            mock_agent.return_value.process_recall.side_effect = Exception("Persistent error")
+            mock_agent.return_value.process_recall.side_effect = Exception(
+                "Persistent error"
+            )
 
             # Act
             # with pytest.raises(Exception) as exc_info:
@@ -156,7 +160,10 @@ class TestCeleryTaskExecution:
         - Returns batch summary
         """
         # Arrange
-        _notifications = [{"user_id": f"user_{i}", "message": f"Test {i}", "type": "recall_alert"} for i in range(100)]
+        _notifications = [
+            {"user_id": f"user_{i}", "message": f"Test {i}", "type": "recall_alert"}
+            for i in range(100)
+        ]
 
         with patch("workers.notification_tasks.FirebaseMessaging") as mock_fcm:
             mock_fcm.return_value.send.return_value = {"success": True}

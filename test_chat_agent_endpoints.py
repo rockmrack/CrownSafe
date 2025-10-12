@@ -54,7 +54,9 @@ print(json.dumps(conversation_payload, indent=2))
 print()
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/chat/conversation", json=conversation_payload, timeout=30)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/chat/conversation", json=conversation_payload, timeout=30
+    )
 
     print(f"Status Code: {response.status_code}")
 
@@ -109,7 +111,9 @@ print(json.dumps(emergency_payload, indent=2))
 print()
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/chat/conversation", json=emergency_payload, timeout=30)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/chat/conversation", json=emergency_payload, timeout=30
+    )
 
     print(f"Status Code: {response.status_code}")
 
@@ -153,7 +157,9 @@ print(json.dumps(product_payload, indent=2))
 print()
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/chat/conversation", json=product_payload, timeout=30)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/chat/conversation", json=product_payload, timeout=30
+    )
 
     print(f"Status Code: {response.status_code}")
 
@@ -198,7 +204,9 @@ print(json.dumps(explain_params, indent=2))
 print()
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/chat/explain-result", params=explain_params, timeout=30)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/chat/explain-result", params=explain_params, timeout=30
+    )
 
     print(f"Status Code: {response.status_code}")
 
@@ -260,8 +268,12 @@ try:
         if data.get("success"):
             flags_data = data.get("data", {})
             print("   Feature Flags:")
-            print(f"     Chat Enabled Globally: {flags_data.get('chat_enabled_global', False)}")
-            print(f"     Chat Rollout Percentage: {flags_data.get('chat_rollout_pct', 0)}%")
+            print(
+                f"     Chat Enabled Globally: {flags_data.get('chat_enabled_global', False)}"
+            )
+            print(
+                f"     Chat Rollout Percentage: {flags_data.get('chat_rollout_pct', 0)}%"
+            )
             print(f"     Trace ID: {data.get('traceId', 'N/A')}")
 
         print()
@@ -293,7 +305,9 @@ print(json.dumps(demo_params, indent=2))
 print()
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/chat/demo", params=demo_params, timeout=30)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/chat/demo", params=demo_params, timeout=30
+    )
 
     print(f"Status Code: {response.status_code}")
 
@@ -351,7 +365,9 @@ print(json.dumps(allergen_payload, indent=2))
 print()
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/chat/conversation", json=allergen_payload, timeout=30)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/chat/conversation", json=allergen_payload, timeout=30
+    )
 
     print(f"Status Code: {response.status_code}")
 
@@ -401,7 +417,9 @@ print(json.dumps(pregnancy_payload, indent=2))
 print()
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/chat/conversation", json=pregnancy_payload, timeout=30)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/chat/conversation", json=pregnancy_payload, timeout=30
+    )
 
     print(f"Status Code: {response.status_code}")
 

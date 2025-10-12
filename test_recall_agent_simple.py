@@ -45,7 +45,9 @@ try:
     print("✓ Statistics retrieved successfully")
     print(f"  Total connectors available: {stats.get('total_connectors', 0)}")
     if "connectors" in stats:
-        operational_count = sum(1 for c in stats["connectors"].values() if c.get("operational"))
+        operational_count = sum(
+            1 for c in stats["connectors"].values() if c.get("operational")
+        )
         print(f"  Operational connectors: {operational_count}")
 except Exception as e:
     print(f"✗ Statistics failed: {e}")

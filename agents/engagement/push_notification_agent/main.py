@@ -11,8 +11,12 @@ class PushNotificationAgent:
         # ... (Standard __init__) ...
         self.logic = PushNotificationAgentLogic(agent_id=self.agent_id)
 
-        self.mcp_client.register_capability("send_instant_alert", self.handle_send_alert)
-        self.mcp_client.register_capability("schedule_milestones", self.handle_schedule_milestones)
+        self.mcp_client.register_capability(
+            "send_instant_alert", self.handle_send_alert
+        )
+        self.mcp_client.register_capability(
+            "schedule_milestones", self.handle_schedule_milestones
+        )
 
     async def handle_send_alert(self, task_payload: dict) -> dict:
         # ... (Payload validation) ...
@@ -24,7 +28,9 @@ class PushNotificationAgent:
 
     async def handle_schedule_milestones(self, task_payload: dict) -> dict:
         # ... (Payload validation) ...
-        return self.logic.schedule_milestone_notifications(task_payload.get("user_profile"))
+        return self.logic.schedule_milestone_notifications(
+            task_payload.get("user_profile")
+        )
 
     # ... (Standard run method) ...
 

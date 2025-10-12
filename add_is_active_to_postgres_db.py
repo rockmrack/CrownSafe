@@ -33,39 +33,47 @@ def main():
             print(f"📍 Current schema: {schema}\n")
 
             # Check if is_active column exists
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT column_name 
                 FROM information_schema.columns 
                 WHERE table_name = 'users' 
                 AND table_schema = 'public'
                 AND column_name = 'is_active';
-            """)
+            """
+            )
             exists = cur.fetchone()
 
             if exists:
                 print("✅ is_active column already exists in users table!")
             else:
                 print("➕ Adding is_active column to users table...")
-                cur.execute("""
+                cur.execute(
+                    """
                     ALTER TABLE users 
                     ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT true;
-                """)
+                """
+                )
                 conn.commit()
                 print("✅ Column added successfully!\n")
 
             # Verify all columns
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT column_name, data_type, is_nullable, column_default 
                 FROM information_schema.columns 
                 WHERE table_name = 'users' AND table_schema = 'public'
                 ORDER BY ordinal_position;
-            """)
+            """
+            )
             columns = cur.fetchall()
 
             print("📋 Current columns in users table:")
             for col in columns:
                 indicator = "✅" if col[0] == "is_active" else "  "
-                print(f"{indicator} {col[0]}: {col[1]} (nullable: {col[2]}, default: {col[3]})")
+                print(
+                    f"{indicator} {col[0]}: {col[1]} (nullable: {col[2]}, default: {col[3]})"
+                )
 
             # Count records
             cur.execute("SELECT COUNT(*) FROM users;")

@@ -10,7 +10,9 @@ class TestChatFeatureGating:
 
     @patch("api.routers.chat.fetch_scan_data")
     @patch("api.routers.chat.get_llm_client")
-    def test_conversation_blocked_when_chat_disabled_globally(self, mock_llm, mock_fetch):
+    def test_conversation_blocked_when_chat_disabled_globally(
+        self, mock_llm, mock_fetch
+    ):
         """Test that conversation endpoint returns 403 when chat is globally disabled"""
         with patch("core.feature_flags.FEATURE_CHAT_ENABLED", False):
             response = self.client.post(
@@ -127,7 +129,9 @@ class TestChatFeatureGating:
             }
             mock_agent_class.return_value = mock_agent
 
-            response = self.client.post("/api/v1/chat/explain-result", json={"scan_id": "test-scan-123"})
+            response = self.client.post(
+                "/api/v1/chat/explain-result", json={"scan_id": "test-scan-123"}
+            )
 
             # Should succeed even when chat is disabled
             assert response.status_code == 200

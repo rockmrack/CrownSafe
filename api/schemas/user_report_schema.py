@@ -12,31 +12,59 @@ class ReportUnsafeProductRequest(BaseModel):
     """Request schema for reporting unsafe products"""
 
     user_id: int = Field(..., description="ID of the user submitting the report")
-    product_name: str = Field(..., min_length=3, max_length=255, description="Name of the unsafe product")
-    hazard_description: str = Field(..., min_length=10, description="Detailed description of the hazard")
+    product_name: str = Field(
+        ..., min_length=3, max_length=255, description="Name of the unsafe product"
+    )
+    hazard_description: str = Field(
+        ..., min_length=10, description="Detailed description of the hazard"
+    )
 
     # Optional product identifiers
-    barcode: Optional[str] = Field(None, max_length=50, description="Product barcode/UPC")
-    model_number: Optional[str] = Field(None, max_length=100, description="Model number")
-    lot_number: Optional[str] = Field(None, max_length=100, description="Lot/batch number")
+    barcode: Optional[str] = Field(
+        None, max_length=50, description="Product barcode/UPC"
+    )
+    model_number: Optional[str] = Field(
+        None, max_length=100, description="Model number"
+    )
+    lot_number: Optional[str] = Field(
+        None, max_length=100, description="Lot/batch number"
+    )
     brand: Optional[str] = Field(None, max_length=100, description="Product brand")
-    manufacturer: Optional[str] = Field(None, max_length=200, description="Manufacturer name")
+    manufacturer: Optional[str] = Field(
+        None, max_length=200, description="Manufacturer name"
+    )
 
     # Classification
-    severity: str = Field(default="MEDIUM", description="Hazard severity level", pattern="^(HIGH|MEDIUM|LOW)$")
-    category: Optional[str] = Field(None, max_length=100, description="Product category")
+    severity: str = Field(
+        default="MEDIUM",
+        description="Hazard severity level",
+        pattern="^(HIGH|MEDIUM|LOW)$",
+    )
+    category: Optional[str] = Field(
+        None, max_length=100, description="Product category"
+    )
 
     # Reporter information (optional, for follow-up)
-    reporter_name: Optional[str] = Field(None, max_length=100, description="Reporter's name")
-    reporter_email: Optional[str] = Field(None, max_length=255, description="Reporter's email")
-    reporter_phone: Optional[str] = Field(None, max_length=50, description="Reporter's phone")
+    reporter_name: Optional[str] = Field(
+        None, max_length=100, description="Reporter's name"
+    )
+    reporter_email: Optional[str] = Field(
+        None, max_length=255, description="Reporter's email"
+    )
+    reporter_phone: Optional[str] = Field(
+        None, max_length=50, description="Reporter's phone"
+    )
 
     # Incident details
     incident_date: Optional[date] = Field(None, description="Date of the incident")
-    incident_description: Optional[str] = Field(None, description="Detailed description of what happened")
+    incident_description: Optional[str] = Field(
+        None, description="Detailed description of what happened"
+    )
 
     # Evidence
-    photos: Optional[List[str]] = Field(None, description="Array of photo URLs or base64 encoded images")
+    photos: Optional[List[str]] = Field(
+        None, description="Array of photo URLs or base64 encoded images"
+    )
 
     @field_validator("photos")
     @classmethod
@@ -119,8 +147,14 @@ class UserReportDetail(BaseModel):
 class UpdateReportStatusRequest(BaseModel):
     """Request schema for updating report status (admin only)"""
 
-    status: str = Field(..., description="New status", pattern="^(PENDING|REVIEWING|VERIFIED|REJECTED|DUPLICATE)$")
-    review_notes: Optional[str] = Field(None, description="Admin notes about the review")
+    status: str = Field(
+        ...,
+        description="New status",
+        pattern="^(PENDING|REVIEWING|VERIFIED|REJECTED|DUPLICATE)$",
+    )
+    review_notes: Optional[str] = Field(
+        None, description="Admin notes about the review"
+    )
 
     class Config:
         json_schema_extra = {

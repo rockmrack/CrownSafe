@@ -27,7 +27,11 @@ for agent in agents:
             print("   First message:")
             print(f"     Type: {msg_type}")
             print(f"     From: {sender}")
-            print(f"     Correlation ID: {corr_id[:20]}..." if len(corr_id) > 20 else f"     Correlation ID: {corr_id}")
+            print(
+                f"     Correlation ID: {corr_id[:20]}..."
+                if len(corr_id) > 20
+                else f"     Correlation ID: {corr_id}"
+            )
 
             # Check payload for API messages
             if "api_gateway" in sender:

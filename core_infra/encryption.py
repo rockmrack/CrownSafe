@@ -20,7 +20,9 @@ ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY")
 if not ENCRYPTION_KEY:
     # Generate a key for development (DO NOT USE IN PRODUCTION)
     ENCRYPTION_KEY = Fernet.generate_key().decode()
-    print("⚠️ Generated development encryption key. Set ENCRYPTION_KEY env var for production!")
+    print(
+        "⚠️ Generated development encryption key. Set ENCRYPTION_KEY env var for production!"
+    )
 
 
 class EncryptionManager:
@@ -32,7 +34,11 @@ class EncryptionManager:
         if key:
             self.key = key.encode() if isinstance(key, str) else key
         else:
-            self.key = ENCRYPTION_KEY.encode() if isinstance(ENCRYPTION_KEY, str) else ENCRYPTION_KEY
+            self.key = (
+                ENCRYPTION_KEY.encode()
+                if isinstance(ENCRYPTION_KEY, str)
+                else ENCRYPTION_KEY
+            )
 
         self.cipher = Fernet(self.key)
 
@@ -171,7 +177,9 @@ def mask_pii(data: str, mask_char: str = "*", visible_chars: int = 4) -> str:
             username = parts[0]
             domain = parts[1]
             if len(username) > 2:
-                masked_username = username[0] + mask_char * (len(username) - 2) + username[-1]
+                masked_username = (
+                    username[0] + mask_char * (len(username) - 2) + username[-1]
+                )
             else:
                 masked_username = mask_char * len(username)
             return f"{masked_username}@{domain}"
@@ -197,7 +205,9 @@ def anonymize_data(data: dict, fields_to_anonymize: list) -> dict:
         if field in anonymized:
             if isinstance(anonymized[field], str):
                 # Generate consistent anonymous value
-                anonymized[field] = f"anon_{hashlib.md5(anonymized[field].encode()).hexdigest()[:8]}"
+                anonymized[
+                    field
+                ] = f"anon_{hashlib.md5(anonymized[field].encode()).hexdigest()[:8]}"
             elif isinstance(anonymized[field], (int, float)):
                 # Randomize numeric values
                 anonymized[field] = hash(str(anonymized[field])) % 1000000

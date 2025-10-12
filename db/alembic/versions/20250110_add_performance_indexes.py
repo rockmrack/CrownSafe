@@ -20,13 +20,25 @@ def upgrade():
     # Add indexes for recalls_enhanced table
     op.create_index("idx_recalls_enhanced_recall_id", "recalls_enhanced", ["recall_id"])
     op.create_index("idx_recalls_enhanced_upc", "recalls_enhanced", ["upc"])
-    op.create_index("idx_recalls_enhanced_model_number", "recalls_enhanced", ["model_number"])
-    op.create_index("idx_recalls_enhanced_source_agency", "recalls_enhanced", ["source_agency"])
+    op.create_index(
+        "idx_recalls_enhanced_model_number", "recalls_enhanced", ["model_number"]
+    )
+    op.create_index(
+        "idx_recalls_enhanced_source_agency", "recalls_enhanced", ["source_agency"]
+    )
     op.create_index("idx_recalls_enhanced_brand", "recalls_enhanced", ["brand"])
-    op.create_index("idx_recalls_enhanced_product_name", "recalls_enhanced", ["product_name"])
-    op.create_index("idx_recalls_enhanced_recall_date", "recalls_enhanced", ["recall_date"])
-    op.create_index("idx_recalls_enhanced_serial_number", "recalls_enhanced", ["serial_number"])
-    op.create_index("idx_recalls_enhanced_lot_number", "recalls_enhanced", ["lot_number"])
+    op.create_index(
+        "idx_recalls_enhanced_product_name", "recalls_enhanced", ["product_name"]
+    )
+    op.create_index(
+        "idx_recalls_enhanced_recall_date", "recalls_enhanced", ["recall_date"]
+    )
+    op.create_index(
+        "idx_recalls_enhanced_serial_number", "recalls_enhanced", ["serial_number"]
+    )
+    op.create_index(
+        "idx_recalls_enhanced_lot_number", "recalls_enhanced", ["lot_number"]
+    )
 
     # Add indexes for recalls table (legacy)
     op.create_index("idx_recalls_recall_id", "recalls", ["recall_id"])
@@ -48,7 +60,9 @@ def upgrade():
         "recalls_enhanced",
         ["brand", "model_number"],
     )
-    op.create_index("idx_recalls_enhanced_upc_serial", "recalls_enhanced", ["upc", "serial_number"])
+    op.create_index(
+        "idx_recalls_enhanced_upc_serial", "recalls_enhanced", ["upc", "serial_number"]
+    )
 
     # Add indexes for users table (if not already present)
     op.create_index("idx_users_email", "users", ["email"])

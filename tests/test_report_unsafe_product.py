@@ -101,7 +101,11 @@ def test_get_user_reports(client):
     """Test retrieving user reports"""
 
     # First, create a report
-    payload = {"user_id": 12345, "product_name": "Test Product", "hazard_description": "Test hazard description"}
+    payload = {
+        "user_id": 12345,
+        "product_name": "Test Product",
+        "hazard_description": "Test hazard description",
+    }
 
     create_response = client.post("/api/v1/report-unsafe-product", json=payload)
     assert create_response.status_code == 201
@@ -155,7 +159,11 @@ def test_get_user_reports_empty(client):
 def test_report_unsafe_product_rate_limiting(client):
     """Test that rate limiting prevents spam (10 reports per hour)"""
 
-    base_payload = {"user_id": 12345, "product_name": "Test Product", "hazard_description": "Test hazard description"}
+    base_payload = {
+        "user_id": 12345,
+        "product_name": "Test Product",
+        "hazard_description": "Test hazard description",
+    }
 
     # Submit 10 reports (should all succeed)
     for i in range(10):

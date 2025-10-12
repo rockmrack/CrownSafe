@@ -23,7 +23,9 @@ try:
 
     if recall_agent_loaded:
         print("   ✅ RecallDataAgent loaded in RouterAgent")
-        print(f"   ✅ Agent class: {AGENT_LOGIC_CLASSES['query_recalls_by_product'].__name__}")
+        print(
+            f"   ✅ Agent class: {AGENT_LOGIC_CLASSES['query_recalls_by_product'].__name__}"
+        )
     else:
         print("   ❌ RecallDataAgent NOT loaded in RouterAgent")
         sys.exit(1)

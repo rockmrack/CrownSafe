@@ -14,14 +14,22 @@ class SubscriptionConfig:
     """Centralized subscription configuration"""
 
     # Product IDs
-    APPLE_PRODUCT_ID_MONTHLY = os.getenv("APPLE_PRODUCT_ID_MONTHLY", "babyshield_monthly")
+    APPLE_PRODUCT_ID_MONTHLY = os.getenv(
+        "APPLE_PRODUCT_ID_MONTHLY", "babyshield_monthly"
+    )
     APPLE_PRODUCT_ID_ANNUAL = os.getenv("APPLE_PRODUCT_ID_ANNUAL", "babyshield_annual")
-    GOOGLE_PRODUCT_ID_MONTHLY = os.getenv("GOOGLE_PRODUCT_ID_MONTHLY", "babyshield_monthly")
-    GOOGLE_PRODUCT_ID_ANNUAL = os.getenv("GOOGLE_PRODUCT_ID_ANNUAL", "babyshield_annual")
+    GOOGLE_PRODUCT_ID_MONTHLY = os.getenv(
+        "GOOGLE_PRODUCT_ID_MONTHLY", "babyshield_monthly"
+    )
+    GOOGLE_PRODUCT_ID_ANNUAL = os.getenv(
+        "GOOGLE_PRODUCT_ID_ANNUAL", "babyshield_annual"
+    )
 
     # Apple Configuration
     APPLE_SHARED_SECRET = os.getenv("APPLE_SHARED_SECRET", "")
-    APPLE_ENVIRONMENT = os.getenv("APPLE_ENVIRONMENT", "sandbox")  # sandbox or production
+    APPLE_ENVIRONMENT = os.getenv(
+        "APPLE_ENVIRONMENT", "sandbox"
+    )  # sandbox or production
     APPLE_VERIFY_URL_SANDBOX = "https://sandbox.itunes.apple.com/verifyReceipt"
     APPLE_VERIFY_URL_PRODUCTION = "https://buy.itunes.apple.com/verifyReceipt"
 

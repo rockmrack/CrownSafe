@@ -172,9 +172,11 @@ def test_manual_model_number_entry_with_recall():
             print(f"📝 Summary: {response_data.get('summary', 'N/A')[:100]}...")
 
             # Validate high-risk fields
-            assert response_data.get("risk_level") in ["High", "Medium", "Low"], (
-                "Risk level should be High, Medium, or Low"
-            )
+            assert response_data.get("risk_level") in [
+                "High",
+                "Medium",
+                "Low",
+            ], "Risk level should be High, Medium, or Low"
 
             assert "summary" in response_data, "Response missing summary"
             assert "match_metadata" in response_data, "Response missing match_metadata"
@@ -195,7 +197,9 @@ def test_manual_model_number_entry_with_recall():
                 print(f"   Agency: {first_recall.get('source_agency', 'N/A')}")
         else:
             print("✅ No recalls found for this model number")
-            pytest.skip("Model number not found in database - adjust test with real model number")
+            pytest.skip(
+                "Model number not found in database - adjust test with real model number"
+            )
 
     print("\n" + "=" * 80)
     print("TEST 1: PASSED ✓")
@@ -259,7 +263,12 @@ def test_manual_model_number_entry_no_recall():
     risk_level = response_data.get("risk_level", "")
     print(f"✅ Risk Level: {risk_level}")
 
-    assert risk_level in ["Safe", "Low", "Unknown", ""], f"Expected Safe/Low/Unknown for no recalls, got {risk_level}"
+    assert risk_level in [
+        "Safe",
+        "Low",
+        "Unknown",
+        "",
+    ], f"Expected Safe/Low/Unknown for no recalls, got {risk_level}"
 
     print("\n" + "=" * 80)
     print("TEST 2: PASSED ✓")

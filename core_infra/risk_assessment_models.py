@@ -83,7 +83,9 @@ class ProductGoldenRecord(Base):
     # Product attributes
     description = Column(Text)
     country_of_origin = Column(String(100))
-    manufacturing_date_range = Column(JSON)  # {"start": "2020-01-01", "end": "2023-12-31"}
+    manufacturing_date_range = Column(
+        JSON
+    )  # {"start": "2020-01-01", "end": "2023-12-31"}
 
     # Digital assets
     primary_image_url = Column(String(500))
@@ -96,7 +98,9 @@ class ProductGoldenRecord(Base):
     age_grading = Column(String(50))  # "3+ years", "0-12 months"
 
     # Entity resolution metadata
-    confidence_score = Column(Float, default=0.0)  # How confident we are this is accurate
+    confidence_score = Column(
+        Float, default=0.0
+    )  # How confident we are this is accurate
     source_records = Column(JSON)  # Array of source record IDs that were merged
     resolution_method = Column(String(50))  # "exact_match", "fuzzy_match", "ml_model"
 
@@ -106,7 +110,9 @@ class ProductGoldenRecord(Base):
     last_verified = Column(DateTime)
 
     # Relationships
-    risk_profile = relationship("ProductRiskProfile", back_populates="product", uselist=False)
+    risk_profile = relationship(
+        "ProductRiskProfile", back_populates="product", uselist=False
+    )
     data_sources = relationship("ProductDataSource", back_populates="product")
     incidents = relationship("SafetyIncident", back_populates="product")
 
@@ -126,7 +132,9 @@ class ProductRiskProfile(Base):
     __tablename__ = "product_risk_profiles"
 
     id = Column(Integer, primary_key=True)
-    product_id = Column(String(36), ForeignKey("product_golden_records.id"), unique=True)
+    product_id = Column(
+        String(36), ForeignKey("product_golden_records.id"), unique=True
+    )
 
     # Overall risk score (0-100)
     risk_score = Column(Float, default=0.0, index=True)
@@ -208,7 +216,11 @@ class ProductDataSource(Base):
     product = relationship("ProductGoldenRecord", back_populates="data_sources")
 
     # Unique constraint to prevent duplicates
-    __table_args__ = (UniqueConstraint("product_id", "source_type", "source_id", name="uq_product_source"),)
+    __table_args__ = (
+        UniqueConstraint(
+            "product_id", "source_type", "source_id", name="uq_product_source"
+        ),
+    )
 
 
 class SafetyIncident(Base):
@@ -399,4 +411,6 @@ class DataIngestionJob(Base):
     processing_time_seconds = Column(Integer)
 
     # Index for queries
-    __table_args__ = (Index("idx_ingestion_status", "source_type", "status", "scheduled_at"),)
+    __table_args__ = (
+        Index("idx_ingestion_status", "source_type", "status", "scheduled_at"),
+    )

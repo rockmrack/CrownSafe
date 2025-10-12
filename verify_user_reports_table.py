@@ -6,18 +6,22 @@ import os
 import psycopg
 
 # Connect to production database
-DATABASE_URL = os.environ["DATABASE_URL"].replace("postgresql+psycopg://", "postgresql://")
+DATABASE_URL = os.environ["DATABASE_URL"].replace(
+    "postgresql+psycopg://", "postgresql://"
+)
 conn = psycopg.connect(DATABASE_URL)
 cur = conn.cursor()
 
 print("🔍 Checking if user_reports table exists...")
-cur.execute("""
+cur.execute(
+    """
     SELECT EXISTS (
         SELECT FROM information_schema.tables 
         WHERE table_schema = 'public'
         AND table_name = 'user_reports'
     );
-""")
+"""
+)
 table_exists = cur.fetchone()[0]
 
 if table_exists:
@@ -33,7 +37,8 @@ else:
     print("🔨 Creating user_reports table...")
 
     # Create the table
-    cur.execute("""
+    cur.execute(
+        """
         CREATE TABLE user_reports (
             report_id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL,
@@ -60,7 +65,8 @@ else:
             reviewed_by INTEGER,
             review_notes TEXT
         );
-    """)
+    """
+    )
 
     # Create indexes
     print("🔨 Creating indexes...")
@@ -69,7 +75,9 @@ else:
     cur.execute("CREATE INDEX idx_user_reports_severity ON user_reports(severity);")
     cur.execute("CREATE INDEX idx_user_reports_created_at ON user_reports(created_at);")
     cur.execute("CREATE INDEX idx_user_reports_barcode ON user_reports(barcode);")
-    cur.execute("CREATE INDEX idx_user_reports_model_number ON user_reports(model_number);")
+    cur.execute(
+        "CREATE INDEX idx_user_reports_model_number ON user_reports(model_number);"
+    )
 
     conn.commit()
     print("✅ user_reports table created successfully!")

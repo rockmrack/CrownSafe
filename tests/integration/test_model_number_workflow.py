@@ -21,7 +21,9 @@ client = TestClient(app)
 
 # Create in-memory test database
 TEST_DATABASE_URL = "sqlite:///:memory:"
-test_engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
+test_engine = create_engine(
+    TEST_DATABASE_URL, connect_args={"check_same_thread": False}
+)
 TestSession = sessionmaker(bind=test_engine)
 
 
@@ -105,7 +107,11 @@ def test_model_number_entry_with_known_model(test_db):
 
     # For now, just verify the endpoint exists and responds
     # (We may get 200, 404, or 500 depending on current implementation)
-    assert response.status_code in [200, 404, 500], f"Unexpected status code: {response.status_code}"
+    assert response.status_code in [
+        200,
+        404,
+        500,
+    ], f"Unexpected status code: {response.status_code}"
 
     if response.status_code == 200:
         data = response.json()

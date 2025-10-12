@@ -3,7 +3,9 @@ import logging
 from core_infra.mcp_client_library.client import MCPClient
 from .agent_logic import OnboardingAgentLogic
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "onboarding_agent_01"
@@ -16,8 +18,12 @@ class OnboardingAgent:
         self.mcp_client = MCPClient(agent_id=self.agent_id, server_url=MCP_SERVER_URL)
         self.logic = OnboardingAgentLogic(agent_id=self.agent_id)
 
-        self.mcp_client.register_capability("create_user_profile", self.handle_create_profile)
-        self.mcp_client.register_capability("update_onboarding_info", self.handle_update_info)
+        self.mcp_client.register_capability(
+            "create_user_profile", self.handle_create_profile
+        )
+        self.mcp_client.register_capability(
+            "update_onboarding_info", self.handle_update_info
+        )
 
     async def handle_create_profile(self, task_payload: dict) -> dict:
         email = task_payload.get("email")

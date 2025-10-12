@@ -185,7 +185,9 @@ class SuperSmartLLMClient:
             },
         }
 
-    def _analyze_context(self, query: str, conversation_id: Optional[str] = None) -> Dict[str, Any]:
+    def _analyze_context(
+        self, query: str, conversation_id: Optional[str] = None
+    ) -> Dict[str, Any]:
         """Deep context analysis with pattern recognition"""
         query_lower = query.lower()
 
@@ -204,8 +206,12 @@ class SuperSmartLLMClient:
 
         # Add conversation history context if available
         if conversation_id and conversation_id in self.conversation_memory:
-            context["previous_topics"] = self.conversation_memory[conversation_id].get("topics", [])
-            context["interaction_count"] = self.conversation_memory[conversation_id].get("count", 0)
+            context["previous_topics"] = self.conversation_memory[conversation_id].get(
+                "topics", []
+            )
+            context["interaction_count"] = self.conversation_memory[
+                conversation_id
+            ].get("count", 0)
 
         return context
 
@@ -227,11 +233,19 @@ class SuperSmartLLMClient:
 
     def _detect_emotion(self, query: str) -> str:
         """Detect emotional state from query"""
-        if any(word in query for word in ["worried", "scared", "anxious", "concerned", "afraid"]):
+        if any(
+            word in query
+            for word in ["worried", "scared", "anxious", "concerned", "afraid"]
+        ):
             return "anxious"
-        elif any(word in query for word in ["urgent", "immediately", "now", "asap", "quickly"]):
+        elif any(
+            word in query
+            for word in ["urgent", "immediately", "now", "asap", "quickly"]
+        ):
             return "urgent"
-        elif any(word in query for word in ["confused", "don't understand", "help", "unsure"]):
+        elif any(
+            word in query for word in ["confused", "don't understand", "help", "unsure"]
+        ):
             return "confused"
         return "neutral"
 
@@ -289,9 +303,13 @@ class SuperSmartLLMClient:
             return "age_appropriateness"
         elif any(word in query for word in ["safe", "safety", "danger", "risk"]):
             return "safety"
-        elif any(word in query for word in ["nutrition", "vitamin", "nutrient", "healthy"]):
+        elif any(
+            word in query for word in ["nutrition", "vitamin", "nutrient", "healthy"]
+        ):
             return "nutrition"
-        elif any(word in query for word in ["sleep", "schedule", "routine", "feeding time"]):
+        elif any(
+            word in query for word in ["sleep", "schedule", "routine", "feeding time"]
+        ):
             return "schedule"
         return "general"
 
@@ -313,7 +331,9 @@ class SuperSmartLLMClient:
         complex_topics = ["allergen", "preparation", "schedule", "nutrition"]
         return self._categorize_topic(query) in complex_topics
 
-    def _generate_smart_response(self, query: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _generate_smart_response(
+        self, query: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate intelligent response based on context"""
 
         # FIXED: Emergency response with proper structure
@@ -375,7 +395,9 @@ class SuperSmartLLMClient:
         # Add specific emergency guidance
         query_lower = query.lower()
         if "choking" in query_lower:
-            response["checks"].insert(0, "For infant: 5 back blows, 5 chest thrusts, repeat")
+            response["checks"].insert(
+                0, "For infant: 5 back blows, 5 chest thrusts, repeat"
+            )
         elif "poison" in query_lower:
             response["checks"].insert(0, "Call Poison Control: 1-800-222-1222")
         elif "allergic" in query_lower:
@@ -417,7 +439,9 @@ class SuperSmartLLMClient:
             ],
         }
 
-    def _preparation_response(self, query: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _preparation_response(
+        self, query: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate preparation/mixing response"""
         return {
             "summary": "Proper formula preparation is essential for baby's health and safety.",
@@ -507,7 +531,9 @@ class SuperSmartLLMClient:
             ],
         }
 
-    def _nutrition_response(self, query: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _nutrition_response(
+        self, query: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate nutrition response"""
         return {
             "summary": "Proper nutrition is crucial for your baby's growth and development.",
@@ -604,11 +630,15 @@ class SuperSmartLLMClient:
             "flags": ["general_guidance", "safety_first", "professional_consultation"],
             "disclaimer": "For specific concerns, consult your pediatrician.",
             "jurisdiction": {"code": "US", "label": "General Guidelines"},
-            "evidence": [{"type": "guideline", "source": "AAP", "id": "general_infant_care"}],
+            "evidence": [
+                {"type": "guideline", "source": "AAP", "id": "general_infant_care"}
+            ],
             "suggested_questions": self._get_contextual_suggestions(query, context),
         }
 
-    def _get_contextual_suggestions(self, query: str, context: Dict[str, Any]) -> List[str]:
+    def _get_contextual_suggestions(
+        self, query: str, context: Dict[str, Any]
+    ) -> List[str]:
         """Generate smart follow-up suggestions based on context"""
         suggestions = []
 
@@ -688,7 +718,9 @@ class SuperSmartLLMClient:
 
             # Update conversation memory
             if conversation_id:
-                self._update_conversation_memory(conversation_id, user, response, context)
+                self._update_conversation_memory(
+                    conversation_id, user, response, context
+                )
 
             # Apply language translation if needed
             if context.get("language") != "en":
@@ -704,7 +736,9 @@ class SuperSmartLLMClient:
             logger.error(f"Error in chat_json: {e}")
             return self._fallback_response()
 
-    def _translate_response(self, response: Dict[str, Any], language: str) -> Dict[str, Any]:
+    def _translate_response(
+        self, response: Dict[str, Any], language: str
+    ) -> Dict[str, Any]:
         """Basic translation for common languages"""
         if language == "es":
             # Spanish translations
@@ -787,7 +821,9 @@ def get_llm_client():
     return _llm_client_instance
 
 
-def get_chat_agent(llm_client=Depends(get_llm_client), db: Session = Depends(get_db)) -> ChatAgentLogic:
+def get_chat_agent(
+    llm_client=Depends(get_llm_client), db: Session = Depends(get_db)
+) -> ChatAgentLogic:
     """Dependency to get chat agent"""
     return ChatAgentLogic(llm_client=llm_client, db=db)
 
@@ -808,7 +844,9 @@ def build_suggested_questions(category: str, profile: dict) -> List[str]:
         "food": ["Allergen information?", "Age recommendation?"],
     }
 
-    questions.extend(category_questions.get(category, ["Is this safe?", "Age appropriate?"]))
+    questions.extend(
+        category_questions.get(category, ["Is this safe?", "Age appropriate?"])
+    )
 
     if profile.get("allergies"):
         questions.insert(0, "Safe for allergies?")
@@ -821,7 +859,9 @@ def build_suggested_questions(category: str, profile: dict) -> List[str]:
 # Request/Response Models
 class ChatRequest(BaseModel):
     message: str = Field(..., description="User's question or message")
-    conversation_id: Optional[str] = Field(None, description="Conversation ID for context")
+    conversation_id: Optional[str] = Field(
+        None, description="Conversation ID for context"
+    )
     user_id: Optional[str] = Field(None, description="User ID for personalization")
 
 
@@ -883,9 +923,13 @@ async def chat_explain_result(
         # Try to get chat agent, fallback to simple response if unavailable
         try:
             chat_agent = get_chat_agent(llm_client=get_llm_client(), db=db)
-            response = await chat_agent.explain_scan_result(scan_result=scan.analysis_result, user_query=user_query)
+            response = await chat_agent.explain_scan_result(
+                scan_result=scan.analysis_result, user_query=user_query
+            )
 
-            return JSONResponse({"success": True, "data": response.dict(), "traceId": trace_id})
+            return JSONResponse(
+                {"success": True, "data": response.dict(), "traceId": trace_id}
+            )
         except Exception as agent_error:
             logger.warning(f"Chat agent unavailable, using fallback: {agent_error}")
             # Fallback response
@@ -909,11 +953,15 @@ async def chat_explain_result(
         raise
     except Exception as e:
         logger.error(f"Explain error: {e}", exc_info=True)
-        return JSONResponse(status_code=500, content={"success": False, "error": str(e)})
+        return JSONResponse(
+            status_code=500, content={"success": False, "error": str(e)}
+        )
 
 
 @router.post("/conversation")
-async def chat_conversation(request: Request, chat_request: ChatRequest) -> JSONResponse:
+async def chat_conversation(
+    request: Request, chat_request: ChatRequest
+) -> JSONResponse:
     """Main conversation endpoint"""
     try:
         trace_id = getattr(request.state, "trace_id", str(uuid4()))
@@ -927,7 +975,9 @@ async def chat_conversation(request: Request, chat_request: ChatRequest) -> JSON
 
         # Feature flag check
         if not chat_enabled_for(chat_request.user_id):
-            return JSONResponse(status_code=403, content={"error": True, "message": "chat_disabled"})
+            return JSONResponse(
+                status_code=403, content={"error": True, "message": "chat_disabled"}
+            )
 
         # Emergency check
         if looks_emergency(chat_request.message):
@@ -948,7 +998,9 @@ async def chat_conversation(request: Request, chat_request: ChatRequest) -> JSON
         # Try to generate response with LLM
         try:
             llm_client = get_llm_client()
-            response = llm_client.chat_json(user=chat_request.message, conversation_id=chat_request.conversation_id)
+            response = llm_client.chat_json(
+                user=chat_request.message, conversation_id=chat_request.conversation_id
+            )
 
             # Format response
             conversation_id = chat_request.conversation_id or str(uuid4())
@@ -957,7 +1009,9 @@ async def chat_conversation(request: Request, chat_request: ChatRequest) -> JSON
                 {
                     "success": True,
                     "data": {
-                        "answer": response.get("summary", "I can help with baby safety questions."),
+                        "answer": response.get(
+                            "summary", "I can help with baby safety questions."
+                        ),
                         "conversation_id": conversation_id,
                         "suggested_questions": response.get("suggested_questions", []),
                         "emergency": response.get("emergency"),
@@ -988,7 +1042,9 @@ async def chat_conversation(request: Request, chat_request: ChatRequest) -> JSON
 
     except Exception as e:
         logger.error(f"Conversation error: {e}", exc_info=True)
-        return JSONResponse(status_code=500, content={"success": False, "error": str(e)})
+        return JSONResponse(
+            status_code=500, content={"success": False, "error": str(e)}
+        )
 
 
 @router.get("/flags")
@@ -1017,7 +1073,9 @@ async def chat_flags(request: Request) -> JSONResponse:
 
     except Exception as e:
         logger.error(f"Flags error: {e}")
-        return JSONResponse(status_code=500, content={"success": False, "error": str(e)})
+        return JSONResponse(
+            status_code=500, content={"success": False, "error": str(e)}
+        )
 
 
 @router.post("/demo")
@@ -1044,7 +1102,9 @@ async def chat_demo(request: Request, user_query: str) -> JSONResponse:
                     "success": True,
                     "data": {
                         "summary": "Demo response: I can help you understand product safety information.",
-                        "reasons": ["This is a demo endpoint showing chat functionality"],
+                        "reasons": [
+                            "This is a demo endpoint showing chat functionality"
+                        ],
                         "checks": [
                             "Always check product labels",
                             "Verify expiration dates",
@@ -1098,7 +1158,9 @@ def fetch_scan_data(db, scan_id: int):
                 "product_name": getattr(scan, "product_name", None),
                 "risk_level": getattr(scan, "risk_level", "Unknown"),
                 "result": getattr(scan, "result", {}),
-                "created_at": scan.created_at.isoformat() if hasattr(scan, "created_at") else None,
+                "created_at": scan.created_at.isoformat()
+                if hasattr(scan, "created_at")
+                else None,
             }
         return None
     except Exception as e:

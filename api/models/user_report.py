@@ -31,7 +31,9 @@ class UserReport(Base):
     manufacturer = Column(String(200), nullable=True)
 
     # Classification
-    severity = Column(String(20), nullable=False, default="MEDIUM", index=True)  # HIGH, MEDIUM, LOW
+    severity = Column(
+        String(20), nullable=False, default="MEDIUM", index=True
+    )  # HIGH, MEDIUM, LOW
     category = Column(String(100), nullable=True)  # Crib, Toy, Bottle, etc.
     # PENDING, REVIEWING, VERIFIED, REJECTED, DUPLICATE
     status = Column(String(50), nullable=False, default="PENDING", index=True)
@@ -47,7 +49,8 @@ class UserReport(Base):
 
     # Evidence
     photos = Column(JSON, nullable=True)  # Array of photo URLs
-    metadata = Column(JSON, nullable=True)  # Additional data
+    # Additional data (renamed from 'metadata' to avoid SQLAlchemy reserved attribute)
+    report_metadata = Column(JSON, nullable=True)
 
     # Timestamps
     created_at = Column(DateTime, nullable=False, server_default=func.now(), index=True)
@@ -80,10 +83,20 @@ class UserReport(Base):
             "severity": self.severity,
             "category": self.category,
             "status": self.status,
-            "incident_date": (self.incident_date.isoformat() if self.incident_date is not None else None),
+            "incident_date": (
+                self.incident_date.isoformat()
+                if self.incident_date is not None
+                else None
+            ),
             "incident_description": self.incident_description,
             "photos": self.photos,
-            "created_at": (self.created_at.isoformat() if self.created_at is not None else None),
-            "updated_at": (self.updated_at.isoformat() if self.updated_at is not None else None),
-            "reviewed_at": (self.reviewed_at.isoformat() if self.reviewed_at is not None else None),
+            "created_at": (
+                self.created_at.isoformat() if self.created_at is not None else None
+            ),
+            "updated_at": (
+                self.updated_at.isoformat() if self.updated_at is not None else None
+            ),
+            "reviewed_at": (
+                self.reviewed_at.isoformat() if self.reviewed_at is not None else None
+            ),
         }

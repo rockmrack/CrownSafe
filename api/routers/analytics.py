@@ -15,7 +15,9 @@ class ExplainFeedbackPayload(BaseModel):
     scan_id: str = Field(..., min_length=1, max_length=64)
     helpful: bool
     trace_id: Optional[str] = Field(None, max_length=64)
-    reason: Optional[str] = Field(None, max_length=256)  # e.g., "unclear","incorrect","irrelevant"
+    reason: Optional[str] = Field(
+        None, max_length=256
+    )  # e.g., "unclear","incorrect","irrelevant"
     comment: Optional[str] = Field(None, max_length=500)
     platform: Optional[str] = Field(None, max_length=32)
     app_version: Optional[str] = Field(None, max_length=32)
@@ -29,7 +31,9 @@ class ExplainFeedbackResponse(BaseModel):
 
 
 @router.post("/explain-feedback", response_model=ExplainFeedbackResponse)
-def explain_feedback(payload: ExplainFeedbackPayload, request: Request, db: Session = Depends(get_db)):
+def explain_feedback(
+    payload: ExplainFeedbackPayload, request: Request, db: Session = Depends(get_db)
+):
     """
     Record user feedback on explain-result responses.
     Captures thumbs up/down from the mobile UI.

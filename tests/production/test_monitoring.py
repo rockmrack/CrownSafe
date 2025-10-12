@@ -34,7 +34,10 @@ class TestMonitoring:
         trace_headers = [
             k
             for k in headers.keys()
-            if any(x in k.lower() for x in ["request-id", "trace-id", "correlation-id", "x-request"])
+            if any(
+                x in k.lower()
+                for x in ["request-id", "trace-id", "correlation-id", "x-request"]
+            )
         ]
 
         if trace_headers:
@@ -70,7 +73,9 @@ class TestMonitoring:
         print(f"✅ Health check status: {data['status']}")
 
         # Check for additional info
-        info_keys = [k for k in data.keys() if k in ["version", "timestamp", "uptime", "checks"]]
+        info_keys = [
+            k for k in data.keys() if k in ["version", "timestamp", "uptime", "checks"]
+        ]
         if info_keys:
             print(f"  Additional info: {info_keys}")
 
@@ -81,7 +86,9 @@ class TestMonitoring:
 
         if response.status_code == 200:
             print("✅ API documentation available at /docs")
-            assert "swagger" in response.text.lower() or "openapi" in response.text.lower()
+            assert (
+                "swagger" in response.text.lower() or "openapi" in response.text.lower()
+            )
         else:
             print(f"⚠️ API docs returned {response.status_code}")
 

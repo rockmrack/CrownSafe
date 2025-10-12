@@ -31,7 +31,9 @@ conn = sqlite3.connect(DB)
 cur = conn.cursor()
 
 # Ensure table exists minimally
-cur.execute("CREATE TABLE IF NOT EXISTS scan_history (id INTEGER PRIMARY KEY, scan_id TEXT)")
+cur.execute(
+    "CREATE TABLE IF NOT EXISTS scan_history (id INTEGER PRIMARY KEY, scan_id TEXT)"
+)
 conn.commit()
 
 # Current columns

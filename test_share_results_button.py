@@ -49,7 +49,9 @@ print(json.dumps(share_payload, indent=2))
 print()
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/share/create", json=share_payload, timeout=10)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/share/create", json=share_payload, timeout=10
+    )
 
     print(f"Status Code: {response.status_code}")
 
@@ -64,7 +66,9 @@ try:
             print(f"   Token: {share_data.get('token', 'N/A')[:40]}...")
             print(f"   Share URL: {share_data.get('share_url', 'N/A')}")
             print(f"   Expires: {share_data.get('expires_at', 'N/A')}")
-            print(f"   QR Code: {'Available' if share_data.get('qr_code_url') else 'Not generated'}")
+            print(
+                f"   QR Code: {'Available' if share_data.get('qr_code_url') else 'Not generated'}"
+            )
 
             # Store token for next test
             share_token = share_data.get("token")
@@ -105,7 +109,9 @@ print(json.dumps(email_payload, indent=2))
 print()
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/share/email", json=email_payload, timeout=10)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/share/email", json=email_payload, timeout=10
+    )
 
     print(f"Status Code: {response.status_code}")
 
@@ -222,7 +228,9 @@ try:
     response = requests.get(f"{BASE_URL}/openapi.json", timeout=10)
     if response.status_code == 200:
         openapi_spec = response.json()
-        share_endpoints = [path for path in openapi_spec.get("paths", {}).keys() if "/share" in path]
+        share_endpoints = [
+            path for path in openapi_spec.get("paths", {}).keys() if "/share" in path
+        ]
         if share_endpoints:
             print(f"\n✅ Found {len(share_endpoints)} share endpoints in API spec:")
             for endpoint in share_endpoints[:10]:  # Show first 10
@@ -241,7 +249,8 @@ print("=" * 80)
 print("📊 TEST SUMMARY - 'SHARE RESULTS' BUTTON")
 print("=" * 80)
 
-print("""
+print(
+    """
 Mobile App Share Button Functionality:
 
 1. ✅ CREATE SHAREABLE LINK
@@ -289,7 +298,8 @@ Complete Share Features:
 - ✅ HTML previews
 
 The 'Share Results' button in your mobile app has full backend support! ✅
-""")
+"""
+)
 
 print("=" * 80)
 print("✅ 'SHARE RESULTS' BUTTON FULLY VERIFIED")

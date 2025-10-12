@@ -63,7 +63,9 @@ def create_search_endpoint_v2(app: FastAPI):
     """
 
     @app.post("/api/v2/search/advanced")
-    async def search_advanced_v2(request: Request, payload: Dict[str, Any], db: Session = Depends(get_db)):
+    async def search_advanced_v2(
+        request: Request, payload: Dict[str, Any], db: Session = Depends(get_db)
+    ):
         """
         Enhanced search with cursor pagination and HTTP caching
 
@@ -118,12 +120,17 @@ def create_search_endpoint_v2(app: FastAPI):
 
             if cached_result:
                 # Generate ETag for cached result
-                result_ids = [item["id"] for item in cached_result.get("data", {}).get("items", [])][:5]
+                result_ids = [
+                    item["id"]
+                    for item in cached_result.get("data", {}).get("items", [])
+                ][:5]
                 etag = make_search_etag(filters_hash, as_of_str, result_ids)
 
                 # Check If-None-Match
                 if check_if_none_match(request, etag):
-                    return create_not_modified_response(etag=etag, cache_control="private, max-age=60")
+                    return create_not_modified_response(
+                        etag=etag, cache_control="private, max-age=60"
+                    )
 
                 # Return cached result with headers
                 response = JSONResponse(cached_result)
@@ -150,15 +157,21 @@ def create_search_endpoint_v2(app: FastAPI):
             result["traceId"] = trace_id
 
             # Cache the result
-            await cache.set(filters_hash, as_of_str, after_tuple, result, ttl=60)  # 60 seconds
+            await cache.set(
+                filters_hash, as_of_str, after_tuple, result, ttl=60
+            )  # 60 seconds
 
             # Generate ETag
-            result_ids = [item["id"] for item in result.get("data", {}).get("items", [])][:5]
+            result_ids = [
+                item["id"] for item in result.get("data", {}).get("items", [])
+            ][:5]
             etag = make_search_etag(filters_hash, as_of_str, result_ids)
 
             # Check If-None-Match
             if check_if_none_match(request, etag):
-                return create_not_modified_response(etag=etag, cache_control="private, max-age=60")
+                return create_not_modified_response(
+                    etag=etag, cache_control="private, max-age=60"
+                )
 
             # Return with cache headers
             response = JSONResponse(result)
@@ -187,7 +200,9 @@ def enhance_recall_detail_endpoint(app: FastAPI):
     # Or define a new one:
 
     @app.get("/api/v2/recall/{recall_id}")
-    async def get_recall_detail_v2(recall_id: str, request: Request, db: Session = Depends(get_db)):
+    async def get_recall_detail_v2(
+        recall_id: str, request: Request, db: Session = Depends(get_db)
+    ):
         """
         Get recall detail with HTTP caching support
 
@@ -199,7 +214,11 @@ def enhance_recall_detail_endpoint(app: FastAPI):
         """
         try:
             # Query database
-            recall = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.recall_id == recall_id).first()
+            recall = (
+                db.query(EnhancedRecallDB)
+                .filter(EnhancedRecallDB.recall_id == recall_id)
+                .first()
+            )
 
             if not recall:
                 raise HTTPException(status_code=404, detail="Recall not found")
@@ -237,12 +256,16 @@ def enhance_recall_detail_endpoint(app: FastAPI):
                     "description": recall.description,
                     "severity": recall.severity,
                     "riskCategory": recall.risk_category,
-                    "recallDate": recall.recall_date.isoformat() if recall.recall_date else None,
+                    "recallDate": recall.recall_date.isoformat()
+                    if recall.recall_date
+                    else None,
                     "lastUpdated": last_updated.isoformat() if last_updated else None,
                     "sourceAgency": recall.source_agency,
                     "url": recall.url,
                     "imageUrl": recall.image_url,
-                    "affectedCountries": recall.regions_affected or [recall.country] if recall.country else [],
+                    "affectedCountries": recall.regions_affected or [recall.country]
+                    if recall.country
+                    else [],
                     "status": recall.status,
                 },
                 "traceId": getattr(request.state, "trace_id", None),
@@ -345,7 +368,9 @@ class PaginationConfig:
         if len(cls.CURSOR_SIGNING_KEY) < 32:
             logger.warning("Cursor signing key should be at least 32 bytes")
 
-        logger.info(f"Pagination config: TTL={cls.CURSOR_TTL_HOURS}h, Cache={cls.SEARCH_CACHE_TTL}s")
+        logger.info(
+            f"Pagination config: TTL={cls.CURSOR_TTL_HOURS}h, Cache={cls.SEARCH_CACHE_TTL}s"
+        )
 
 
 # Validate config on import

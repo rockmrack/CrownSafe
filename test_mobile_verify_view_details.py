@@ -38,7 +38,9 @@ print(f"Payload: {json.dumps(verify_payload, indent=2)}")
 print()
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/safety-check", json=verify_payload, timeout=30)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/safety-check", json=verify_payload, timeout=30
+    )
 
     print(f"Status Code: {response.status_code}")
 
@@ -190,7 +192,8 @@ print("=" * 80)
 print("📊 TEST SUMMARY")
 print("=" * 80)
 
-print("""
+print(
+    """
 Mobile App Buttons Status:
 
 1. ✅ "VERIFY NOW" BUTTON
@@ -215,7 +218,8 @@ Mobile App Buttons Status:
    - Returns: PDF file
 
 All three buttons in your mobile app have working backend endpoints! ✅
-""")
+"""
+)
 
 print("=" * 80)
 print("✅ ALL MOBILE APP BUTTONS VERIFIED")
