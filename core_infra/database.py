@@ -1,32 +1,29 @@
 # core_infra/database.py
 # Version 5.2 – Single subscription model with family profiles and allergies
 
-import os
 import logging
+import os
+from contextlib import contextmanager
 from datetime import date
+
 from dotenv import load_dotenv
+from sqlalchemy import (
+    Boolean,
+    Column,
+    Date,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    create_engine,
+    inspect,
+    text,
+)
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 # Initialize logger
 logger = logging.getLogger(__name__)
-from sqlalchemy import (
-    create_engine,
-    Column,
-    Integer,
-    String,
-    Date,
-    Text,
-    Boolean,
-    text,
-    inspect,
-    ForeignKey,  # Added for relationships
-)
-from sqlalchemy.orm import (
-    sessionmaker,
-    declarative_base,
-    relationship,
-)  # Added relationship
-from sqlalchemy.exc import IntegrityError
-from contextlib import contextmanager
 
 # -------------------------------------------------------------------
 # Load environment variables
@@ -51,15 +48,20 @@ if TEST_MODE:
 
 if not DATABASE_URL:
     # In production/staging we require DATABASE_URL to be set to a PostgreSQL DSN
-    logger.warning("DATABASE_URL not set. Application may fail to connect to a production database.")
+    logger.warning(
+        "DATABASE_URL not set. Application may fail to connect to a production database."
+    )
 
 # -------------------------------------------------------------------
 # Engine & Session setup
 # -------------------------------------------------------------------
 connect_args = {}
 
+# Determine the actual database URL to use (with fallback)
+actual_db_url = DATABASE_URL or "sqlite:///:memory:"
+
 # If using SQLite (only expected for TEST_MODE), we need check_same_thread
-if DATABASE_URL.startswith("sqlite"):
+if actual_db_url.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
 
 # Create engine. For production, DATABASE_URL should be a postgres+psycopg URL.
@@ -72,7 +74,8 @@ engine_kwargs = {
 }
 
 # Only add pool settings for non-SQLite databases (PostgreSQL supports pooling)
-if not DATABASE_URL.startswith("sqlite"):
+# Check the ACTUAL URL being used, not just DATABASE_URL which might be empty
+if not actual_db_url.startswith("sqlite"):
     engine_kwargs.update(
         {
             "pool_size": int(os.getenv("DB_POOL_SIZE", 10)),
@@ -81,7 +84,7 @@ if not DATABASE_URL.startswith("sqlite"):
         }
     )
 
-engine = create_engine(DATABASE_URL or "sqlite:///:memory:", **engine_kwargs)
+engine = create_engine(actual_db_url, **engine_kwargs)
 
 SessionLocal = sessionmaker(
     autocommit=False,
@@ -146,7 +149,9 @@ class User(Base):
     is_active = Column(Boolean, default=True, nullable=False)  # Account status
 
     # Relationship to family members
-    family_members = relationship("FamilyMember", back_populates="user", cascade="all, delete-orphan")
+    family_members = relationship(
+        "FamilyMember", back_populates="user", cascade="all, delete-orphan"
+    )
 
     def to_dict(self) -> dict:
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -167,7 +172,9 @@ class FamilyMember(Base):
 
     # Relationships
     user = relationship("User", back_populates="family_members")
-    allergies = relationship("Allergy", back_populates="family_member", cascade="all, delete-orphan")
+    allergies = relationship(
+        "Allergy", back_populates="family_member", cascade="all, delete-orphan"
+    )
 
     def to_dict(self) -> dict:
         return {
