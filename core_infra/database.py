@@ -48,9 +48,7 @@ if TEST_MODE:
 
 if not DATABASE_URL:
     # In production/staging we require DATABASE_URL to be set to a PostgreSQL DSN
-    logger.warning(
-        "DATABASE_URL not set. Application may fail to connect to a production database."
-    )
+    logger.warning("DATABASE_URL not set. Application may fail to connect to a production database.")
 
 # -------------------------------------------------------------------
 # Engine & Session setup
@@ -149,9 +147,7 @@ class User(Base):
     is_active = Column(Boolean, default=True, nullable=False)  # Account status
 
     # Relationship to family members
-    family_members = relationship(
-        "FamilyMember", back_populates="user", cascade="all, delete-orphan"
-    )
+    family_members = relationship("FamilyMember", back_populates="user", cascade="all, delete-orphan")
 
     def to_dict(self) -> dict:
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -172,9 +168,7 @@ class FamilyMember(Base):
 
     # Relationships
     user = relationship("User", back_populates="family_members")
-    allergies = relationship(
-        "Allergy", back_populates="family_member", cascade="all, delete-orphan"
-    )
+    allergies = relationship("Allergy", back_populates="family_member", cascade="all, delete-orphan")
 
     def to_dict(self) -> dict:
         return {
