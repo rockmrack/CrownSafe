@@ -2064,6 +2064,46 @@ def readyz():
         raise HTTPException(status_code=503, detail="Service not ready")
 
 
+@app.get("/debug/db-info", tags=["system"], operation_id="debug_db_info")
+def debug_db_info():
+    """Debug endpoint to check database connection and schema"""
+    try:
+        with get_db_session() as db:
+            # Get current database info
+            result = db.execute(text("SELECT current_database(), current_schema(), version()"))
+            row = result.fetchone()
+
+            # Check if is_active column exists in users table
+            columns_result = db.execute(
+                text("""
+                SELECT column_name, data_type, is_nullable, column_default 
+                FROM information_schema.columns 
+                WHERE table_name = 'users' AND table_schema = 'public'
+                ORDER BY ordinal_position
+            """)
+            )
+            columns = [
+                {"name": r[0], "type": r[1], "nullable": r[2], "default": r[3]}
+                for r in columns_result
+            ]
+
+            is_active_exists = any(col["name"] == "is_active" for col in columns)
+
+            return {
+                "status": "ok",
+                "current_database": row[0] if row else None,
+                "current_schema": row[1] if row else None,
+                "postgres_version": row[2] if row else None,
+                "users_table_columns_count": len(columns),
+                "is_active_column_exists": is_active_exists,
+                "users_columns": columns,
+            }
+    except Exception as e:
+        logger = logging.getLogger(__name__)
+        logger.error(f"Debug db-info failed: {e}", exc_info=True)
+        return {"status": "error", "error": str(e), "error_type": type(e).__name__}
+
+
 @app.get("/test", tags=["system"])
 def test_endpoint():
     """Simple test endpoint to verify deployment"""
