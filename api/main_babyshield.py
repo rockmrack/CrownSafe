@@ -2082,10 +2082,7 @@ def debug_db_info():
                 ORDER BY ordinal_position
             """)
             )
-            columns = [
-                {"name": r[0], "type": r[1], "nullable": r[2], "default": r[3]}
-                for r in columns_result
-            ]
+            columns = [{"name": r[0], "type": r[1], "nullable": r[2], "default": r[3]} for r in columns_result]
 
             is_active_exists = any(col["name"] == "is_active" for col in columns)
 
