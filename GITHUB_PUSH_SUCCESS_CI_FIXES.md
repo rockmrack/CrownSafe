@@ -241,8 +241,8 @@ import os
 import logging
 from datetime import date
 from dotenv import load_dotenv
-logger = logging.getLogger(__name__)
 from sqlalchemy import (...)
+logger = logging.getLogger(__name__)
 ```
 
 **After**:
