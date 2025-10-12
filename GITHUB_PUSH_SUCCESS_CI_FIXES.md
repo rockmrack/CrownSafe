@@ -109,7 +109,7 @@ from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 ### 3. Code Formatting ✅
 
-**Problem**: 448 files would be reformatted (cached error)
+**Problem**: Code formatter (Ruff) detected 448 files with formatting issues (from cached analysis results)
 
 **Fix**: 
 - Ran `ruff format .` 
