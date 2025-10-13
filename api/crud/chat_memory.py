@@ -267,16 +267,16 @@ def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
         ConversationMessage.conversation_id.in_(conversation_ids)
     ).delete(synchronize_session=False)
 
-    # Delete conversations with same logic for type compatibility
-    # Try UUID first (for PostgreSQL), then string (for SQLite)
+    # Delete conversations with same UUID/String fallback logic
+    # First try UUID (for PostgreSQL)
     deleted_count = (
         db.query(Conversation)
         .filter(Conversation.user_id == user_id_uuid)
         .delete(synchronize_session=False)
     )
-
-    # If UUID delete found nothing but we had conversation_ids, try string
-    if deleted_count == 0 and conversation_ids:
+    
+    # If UUID delete didn't work, try string (for SQLite)
+    if deleted_count == 0:
         deleted_count = (
             db.query(Conversation)
             .filter(Conversation.user_id == user_id_str)

@@ -837,21 +837,33 @@ def build_suggested_questions(category: str, profile: dict) -> List[str]:
     """Build contextual suggestions"""
     questions = []
 
+    # Normalize category names to handle variants
+    category_lower = category.lower()
+    if category_lower in ["cheese", "dairy", "milk"]:
+        category_lower = "dairy"
+
     category_questions = {
-        "dairy": ["Is this pasteurized?", "Lactose-free options?"],
-        "toy": ["Age appropriate?", "Choking hazard?"],
-        "cosmetic": ["Baby-safe ingredients?", "Allergen-free?"],
-        "food": ["Allergen information?", "Age recommendation?"],
+        "dairy": ["Is this safe in pregnancy?", "Check pasteurisation?"],
+        "toy": ["What age is this for?", "Any small parts?"],
+        "cosmetic": ["Safe during pregnancy?", "Any harsh ingredients?"],
+        "food": ["Any allergen concerns?", "Safe for kids?"],
     }
 
+    # Get category-specific questions or defaults
+    default_questions = [
+        "Is this safe in pregnancy?",
+        "Any allergy concerns?",
+        "What age is this for?",
+    ]
     questions.extend(
-        category_questions.get(category, ["Is this safe?", "Age appropriate?"])
+        category_questions.get(category_lower, default_questions)
     )
 
+    # Add profile-based questions at the beginning
     if profile.get("allergies"):
-        questions.insert(0, "Safe for allergies?")
+        questions.insert(0, "Safe for my allergies?")
     if profile.get("is_pregnant"):
-        questions.insert(0, "Pregnancy safe?")
+        questions.insert(0, "Safe in pregnancy?")
 
     return list(dict.fromkeys(questions))[:4]
 
