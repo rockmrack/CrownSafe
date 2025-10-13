@@ -199,14 +199,14 @@ def mark_erase_requested(db: Session, user_id: Union[UUID, str]):
         db: Database session
         user_id: UUID or string representation of the user to mark for erasure
     """
-    # Convert to string to ensure compatibility with both String and UuidType columns
-    user_id_str = str(user_id) if isinstance(user_id, UUID) else user_id
-    profile = db.query(UserProfile).filter(UserProfile.user_id == user_id_str).first()
+    # Normalize UUID based on the actual column type in the database
+    user_id_value = _normalize_uuid_for_column(UserProfile.user_id, user_id)
+    profile = db.query(UserProfile).filter(UserProfile.user_id == user_id_value).first()
 
     if not profile:
         # Create new profile with erase request
         profile = UserProfile(
-            user_id=user_id_str,
+            user_id=user_id_value,
             erase_requested_at=datetime.utcnow(),
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
@@ -231,14 +231,14 @@ def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
     Returns:
         int: Number of conversations deleted
     """
-    # Convert to string to ensure compatibility with both String and UuidType columns
-    user_id_str = str(user_id) if isinstance(user_id, UUID) else user_id
+    # Normalize UUID based on the actual column type in the database
+    user_id_value = _normalize_uuid_for_column(Conversation.user_id, user_id)
 
     # First, get all conversation IDs for this user
     conversation_ids = [
         row[0]
         for row in db.query(Conversation.id)
-        .filter(Conversation.user_id == user_id_str)
+        .filter(Conversation.user_id == user_id_value)
         .all()
     ]
 
@@ -253,7 +253,7 @@ def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
     # Then delete conversations
     deleted_count = (
         db.query(Conversation)
-        .filter(Conversation.user_id == user_id_str)
+        .filter(Conversation.user_id == user_id_value)
         .delete(synchronize_session=False)
     )
 
