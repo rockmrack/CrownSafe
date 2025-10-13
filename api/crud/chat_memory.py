@@ -231,45 +231,51 @@ def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
     Returns:
         int: Number of conversations deleted
     """
-    # Convert UUID to string - works for both String and UuidType columns
-    # SQLAlchemy will handle the conversion based on the actual column type
-    user_id_str = str(user_id) if isinstance(user_id, UUID) else user_id
-    print(f"DEBUG: user_id input={user_id}, type={type(user_id)}")
-    print(f"DEBUG: user_id_str after convert={user_id_str}, type={type(user_id_str)}")
+    # Convert string to UUID object for proper type handling
+    # SQLAlchemy expects UUID objects for UUID-typed columns
+    if isinstance(user_id, str):
+        user_id_value = UUID(user_id)
+    else:
+        user_id_value = user_id
 
-    # First, get all conversation IDs for this user
+    # For compatibility with test databases that use String columns,
+    # also keep string representation for OR query
+    user_id_str = str(user_id_value)
+
+    # Try both UUID and string comparison for database compatibility
+    # Test DBs use String columns, production uses UuidType
     conversation_ids = [
         row[0]
         for row in db.query(Conversation.id)
-        .filter(Conversation.user_id == user_id_str)
+        .filter(
+            (Conversation.user_id == user_id_value)
+            | (Conversation.user_id == user_id_str)
+        )
         .all()
     ]
-    print(f"DEBUG: Found {len(conversation_ids)} conversation_ids={conversation_ids}")
 
     if not conversation_ids:
         return 0
 
     # Delete messages first (explicit delete for test compatibility)
-    msg_deleted = (
-        db.query(ConversationMessage)
-        .filter(ConversationMessage.conversation_id.in_(conversation_ids))
-        .delete(synchronize_session=False)
-    )
-    print(f"DEBUG: Deleted {msg_deleted} messages")
+    db.query(ConversationMessage).filter(
+        ConversationMessage.conversation_id.in_(conversation_ids)
+    ).delete(synchronize_session=False)
 
-    # Then delete conversations
+    # Then delete conversations - use OR for database compatibility
     deleted_count = (
         db.query(Conversation)
-        .filter(Conversation.user_id == user_id_str)
+        .filter(
+            (Conversation.user_id == user_id_value)
+            | (Conversation.user_id == user_id_str)
+        )
         .delete(synchronize_session=False)
     )
-    print(f"DEBUG: Delete returned deleted_count={deleted_count}")
 
     db.commit()
 
     # Return the actual count if database reported it
     if deleted_count:
-        print(f"DEBUG: Returning deleted_count={deleted_count}")
         return deleted_count
 
     # Some database backends (notably older SQLite builds) return 0 for bulk deletes
@@ -278,9 +284,5 @@ def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
     remaining = (
         db.query(Conversation).filter(Conversation.id.in_(conversation_ids)).count()
     )
-    print(
-        f"DEBUG: Fallback - conversation_ids={len(conversation_ids)}, remaining={remaining}"
-    )
-    result = max(len(conversation_ids) - remaining, 0)
-    print(f"DEBUG: Returning fallback result={result}")
-    return result
+    return max(len(conversation_ids) - remaining, 0)
+
