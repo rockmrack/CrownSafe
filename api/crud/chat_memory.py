@@ -38,9 +38,7 @@ def _normalize_uuid_for_column(
         except ValueError as exc:
             raise ValueError(f"Invalid UUID string provided: {uuid_value!r}") from exc
     else:
-        raise TypeError(
-            f"uuid_value must be a UUID, string, or None. Got {type(uuid_value).__name__}: {uuid_value!r}"
-        )
+        raise TypeError(f"uuid_value must be a UUID, string, or None. Got {type(uuid_value).__name__}: {uuid_value!r}")
 
     column_python_type = _get_column_python_type(column)
     if column_python_type is UUID:
@@ -54,9 +52,7 @@ def get_profile(db: Session, user_id: Optional[UUID]):
     if user_id is None:
         return None
     normalized_user_id = _normalize_uuid_for_column(UserProfile.user_id, user_id)
-    return (
-        db.query(UserProfile).filter(UserProfile.user_id == normalized_user_id).first()
-    )
+    return db.query(UserProfile).filter(UserProfile.user_id == normalized_user_id).first()
 
 
 def get_or_create_conversation(
@@ -71,12 +67,8 @@ def get_or_create_conversation(
     """
     # If conversation_id provided, try to get existing
     if conversation_id:
-        normalized_conv_id = _normalize_uuid_for_column(
-            Conversation.id, conversation_id
-        )
-        conv = (
-            db.query(Conversation).filter(Conversation.id == normalized_conv_id).first()
-        )
+        normalized_conv_id = _normalize_uuid_for_column(Conversation.id, conversation_id)
+        conv = db.query(Conversation).filter(Conversation.id == normalized_conv_id).first()
         if conv:
             return conv
 
@@ -233,36 +225,29 @@ def purge_conversations_for_user(db: Session, user_id: UUID):
     user_id_value = _normalize_uuid_for_column(Conversation.user_id, user_id)
 
     # First, get all conversation IDs for this user
-    conversation_ids = [
-        row[0]
-        for row in db.query(Conversation.id)
-        .filter(Conversation.user_id == user_id_value)
-        .all()
-    ]
+    conversation_ids = [row[0] for row in db.query(Conversation.id).filter(Conversation.user_id == user_id_value).all()]
 
     if not conversation_ids:
         return 0
 
     # Delete messages first (explicit delete for test compatibility)
-    db.query(ConversationMessage).filter(
-        ConversationMessage.conversation_id.in_(conversation_ids)
-    ).delete(synchronize_session=False)
+    db.query(ConversationMessage).filter(ConversationMessage.conversation_id.in_(conversation_ids)).delete(
+        synchronize_session=False
+    )
 
     # Then delete conversations
     deleted_count = (
-        db.query(Conversation)
-        .filter(Conversation.user_id == user_id_value)
-        .delete(synchronize_session=False)
+        db.query(Conversation).filter(Conversation.user_id == user_id_value).delete(synchronize_session=False)
     )
 
     db.commit()
+
+    # Return the actual count if database reported it
     if deleted_count:
         return deleted_count
 
     # Some database backends (notably older SQLite builds) return 0 for bulk deletes
     # even when rows were removed. Fall back to the number of conversations we
     # targeted minus any that still remain.
-    remaining = (
-        db.query(Conversation).filter(Conversation.id.in_(conversation_ids)).count()
-    )
+    remaining = db.query(Conversation).filter(Conversation.id.in_(conversation_ids)).count()
     return max(len(conversation_ids) - remaining, 0)
