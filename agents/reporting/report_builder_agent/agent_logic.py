@@ -79,6 +79,7 @@ except ImportError:
     Environment = None
     FileSystemLoader = None
 
+
 # ====== Configuration ======
 # Fallback version constant if package metadata is unavailable
 def get_fallback_version():
@@ -89,6 +90,8 @@ def get_fallback_version():
         except (OSError, IOError, UnicodeDecodeError):
             pass
     return "unknown"
+
+
 FALLBACK_VERSION = get_fallback_version()
 
 # Try to derive version from package metadata, fallback to constant
