@@ -38,7 +38,9 @@ def _normalize_uuid_for_column(
         except ValueError as exc:
             raise ValueError(f"Invalid UUID string provided: {uuid_value!r}") from exc
     else:
-        raise TypeError(f"uuid_value must be a UUID, string, or None. Got {type(uuid_value).__name__}: {uuid_value!r}")
+        raise TypeError(
+            f"uuid_value must be a UUID, string, or None. Got {type(uuid_value).__name__}: {uuid_value!r}"
+        )
 
     column_python_type = _get_column_python_type(column)
     if column_python_type is UUID:
@@ -52,7 +54,9 @@ def get_profile(db: Session, user_id: Optional[UUID]):
     if user_id is None:
         return None
     normalized_user_id = _normalize_uuid_for_column(UserProfile.user_id, user_id)
-    return db.query(UserProfile).filter(UserProfile.user_id == normalized_user_id).first()
+    return (
+        db.query(UserProfile).filter(UserProfile.user_id == normalized_user_id).first()
+    )
 
 
 def get_or_create_conversation(
@@ -67,8 +71,12 @@ def get_or_create_conversation(
     """
     # If conversation_id provided, try to get existing
     if conversation_id:
-        normalized_conv_id = _normalize_uuid_for_column(Conversation.id, conversation_id)
-        conv = db.query(Conversation).filter(Conversation.id == normalized_conv_id).first()
+        normalized_conv_id = _normalize_uuid_for_column(
+            Conversation.id, conversation_id
+        )
+        conv = (
+            db.query(Conversation).filter(Conversation.id == normalized_conv_id).first()
+        )
         if conv:
             return conv
 
@@ -223,13 +231,19 @@ def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
     Returns:
         int: Number of conversations deleted
     """
-    # Normalize UUID based on the actual column type in the database
-    user_id_value = _normalize_uuid_for_column(Conversation.user_id, user_id)
+    # Convert UUID to string - works for both String and UuidType columns
+    # SQLAlchemy will handle the conversion based on the actual column type
+    user_id_str = str(user_id) if isinstance(user_id, UUID) else user_id
     print(f"DEBUG: user_id input={user_id}, type={type(user_id)}")
-    print(f"DEBUG: user_id_value after normalize={user_id_value}, type={type(user_id_value)}")
+    print(f"DEBUG: user_id_str after convert={user_id_str}, type={type(user_id_str)}")
 
     # First, get all conversation IDs for this user
-    conversation_ids = [row[0] for row in db.query(Conversation.id).filter(Conversation.user_id == user_id_value).all()]
+    conversation_ids = [
+        row[0]
+        for row in db.query(Conversation.id)
+        .filter(Conversation.user_id == user_id_str)
+        .all()
+    ]
     print(f"DEBUG: Found {len(conversation_ids)} conversation_ids={conversation_ids}")
 
     if not conversation_ids:
@@ -245,7 +259,9 @@ def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
 
     # Then delete conversations
     deleted_count = (
-        db.query(Conversation).filter(Conversation.user_id == user_id_value).delete(synchronize_session=False)
+        db.query(Conversation)
+        .filter(Conversation.user_id == user_id_str)
+        .delete(synchronize_session=False)
     )
     print(f"DEBUG: Delete returned deleted_count={deleted_count}")
 
@@ -259,8 +275,12 @@ def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
     # Some database backends (notably older SQLite builds) return 0 for bulk deletes
     # even when rows were removed. Fall back to the number of conversations we
     # targeted minus any that still remain.
-    remaining = db.query(Conversation).filter(Conversation.id.in_(conversation_ids)).count()
-    print(f"DEBUG: Fallback - conversation_ids={len(conversation_ids)}, remaining={remaining}")
+    remaining = (
+        db.query(Conversation).filter(Conversation.id.in_(conversation_ids)).count()
+    )
+    print(
+        f"DEBUG: Fallback - conversation_ids={len(conversation_ids)}, remaining={remaining}"
+    )
     result = max(len(conversation_ids) - remaining, 0)
     print(f"DEBUG: Returning fallback result={result}")
     return result
