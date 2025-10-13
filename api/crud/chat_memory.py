@@ -231,28 +231,33 @@ def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
     Returns:
         int: Number of conversations deleted
     """
-    # Convert string to UUID object for proper type handling
-    # SQLAlchemy expects UUID objects for UUID-typed columns
+    # Normalize user_id to handle both UUID and string types
+    # Try UUID first (for PostgreSQL), then string (for SQLite compatibility)
     if isinstance(user_id, str):
-        user_id_value = UUID(user_id)
+        user_id_uuid = UUID(user_id)
+        user_id_str = user_id
     else:
-        user_id_value = user_id
+        user_id_uuid = user_id
+        user_id_str = str(user_id)
 
-    # For compatibility with test databases that use String columns,
-    # also keep string representation for OR query
-    user_id_str = str(user_id_value)
-
-    # Try both UUID and string comparison for database compatibility
-    # Test DBs use String columns, production uses UuidType
+    # Try querying with both formats to handle different column types
+    # PostgreSQL uses UUID type, SQLite tests use String type
+    # First try UUID (for PostgreSQL)
     conversation_ids = [
         row[0]
         for row in db.query(Conversation.id)
-        .filter(
-            (Conversation.user_id == user_id_value)
-            | (Conversation.user_id == user_id_str)
-        )
+        .filter(Conversation.user_id == user_id_uuid)
         .all()
     ]
+
+    # If UUID query found nothing, try string query (for SQLite)
+    if not conversation_ids:
+        conversation_ids = [
+            row[0]
+            for row in db.query(Conversation.id)
+            .filter(Conversation.user_id == user_id_str)
+            .all()
+        ]
 
     if not conversation_ids:
         return 0
@@ -262,15 +267,21 @@ def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
         ConversationMessage.conversation_id.in_(conversation_ids)
     ).delete(synchronize_session=False)
 
-    # Then delete conversations - use OR for database compatibility
+    # Delete conversations with same logic for type compatibility
+    # Try UUID first (for PostgreSQL), then string (for SQLite)
     deleted_count = (
         db.query(Conversation)
-        .filter(
-            (Conversation.user_id == user_id_value)
-            | (Conversation.user_id == user_id_str)
-        )
+        .filter(Conversation.user_id == user_id_uuid)
         .delete(synchronize_session=False)
     )
+
+    # If UUID delete found nothing but we had conversation_ids, try string
+    if deleted_count == 0 and conversation_ids:
+        deleted_count = (
+            db.query(Conversation)
+            .filter(Conversation.user_id == user_id_str)
+            .delete(synchronize_session=False)
+        )
 
     db.commit()
 
@@ -285,4 +296,3 @@ def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
         db.query(Conversation).filter(Conversation.id.in_(conversation_ids)).count()
     )
     return max(len(conversation_ids) - remaining, 0)
-

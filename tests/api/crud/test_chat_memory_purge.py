@@ -15,9 +15,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 import json
+import sys
 
 # Import the CRUD functions we want to test
-from api.crud.chat_memory import purge_conversations_for_user, mark_erase_requested
+from api.crud import chat_memory
 
 # Create test-specific models for SQLite compatibility
 TestBase = declarative_base()
@@ -81,8 +82,24 @@ def db_session():
     TestBase.metadata.create_all(engine)
     SessionLocal = sessionmaker(bind=engine)
     session = SessionLocal()
+
+    # Monkey-patch the production models with test models
+    # This allows the CRUD functions to work with the test database schema
+    chat_memory.Conversation = ConversationModel
+    chat_memory.ConversationMessage = ConversationMessageModel
+    chat_memory.UserProfile = UserProfileModel
+
     yield session
     session.close()
+
+
+# Helper functions to call the CRUD functions
+def purge_conversations_for_user(db_session, user_id):
+    return chat_memory.purge_conversations_for_user(db_session, user_id)
+
+
+def mark_erase_requested(db_session, user_id):
+    return chat_memory.mark_erase_requested(db_session, user_id)
 
 
 def test_purge_conversations_for_user_no_conversations(db_session):
