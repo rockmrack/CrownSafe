@@ -178,22 +178,21 @@ class TestEmergencyEndToEnd:
         response = client.post(
             "/api/v1/chat/conversation",
             json={
-                "scan_id": "test_scan_123",
-                "user_query": "My baby swallowed a battery",
+                "message": "My baby swallowed a battery",
+                "conversation_id": None,
+                "user_id": str(mock_user.id),
             },
         )
 
         assert response.status_code == 200
         body = response.json()
 
-        # Should have emergency block
-        assert "emergency" in body["message"]
-        assert body["message"]["emergency"]["level"] == "red"
-        assert (
-            body["message"]["emergency"]["reason"]
-            == "Possible urgent situation reported."
-        )
-        assert body["message"]["emergency"]["cta"] == "Open Emergency Guidance"
+        # Should have emergency block in data
+        assert body["success"] is True
+        assert "emergency" in body["data"]
+        assert body["data"]["emergency"]["level"] == "critical"
+        assert body["data"]["emergency"]["action"] == "call_911"
+        assert "911" in body["data"]["answer"]
 
     @patch("api.routers.chat.get_llm_client")
     @patch("api.routers.chat.fetch_scan_data")

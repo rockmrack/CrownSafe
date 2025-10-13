@@ -274,7 +274,7 @@ def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
         .filter(Conversation.user_id == user_id_uuid)
         .delete(synchronize_session=False)
     )
-    
+
     # If UUID delete didn't work, try string (for SQLite)
     if deleted_count == 0:
         deleted_count = (

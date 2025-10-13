@@ -855,9 +855,7 @@ def build_suggested_questions(category: str, profile: dict) -> List[str]:
         "Any allergy concerns?",
         "What age is this for?",
     ]
-    questions.extend(
-        category_questions.get(category_lower, default_questions)
-    )
+    questions.extend(category_questions.get(category_lower, default_questions))
 
     # Add profile-based questions at the beginning
     if profile.get("allergies"):
