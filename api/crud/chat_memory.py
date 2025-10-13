@@ -182,14 +182,14 @@ def upsert_profile(db: Session, user_id: UUID, profile_data: Dict[str, Any]):
     return profile
 
 
-def mark_erase_requested(db: Session, user_id: UUID):
+def mark_erase_requested(db: Session, user_id: Union[UUID, str]):
     """Mark user data for erasure
 
     Creates profile if it doesn't exist.
 
     Args:
         db: Database session
-        user_id: UUID of the user to mark for erasure
+        user_id: UUID or string representation of the user to mark for erasure
     """
     user_id_value = _normalize_uuid_for_column(UserProfile.user_id, user_id)
     profile = db.query(UserProfile).filter(UserProfile.user_id == user_id_value).first()
@@ -209,7 +209,7 @@ def mark_erase_requested(db: Session, user_id: UUID):
     db.commit()
 
 
-def purge_conversations_for_user(db: Session, user_id: UUID):
+def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
     """Purge all conversations for user
 
     Deletes all conversations and their associated messages (via cascade).
@@ -217,7 +217,7 @@ def purge_conversations_for_user(db: Session, user_id: UUID):
 
     Args:
         db: Database session
-        user_id: UUID of the user whose conversations to purge
+        user_id: UUID or string UUID of the user whose conversations to purge
 
     Returns:
         int: Number of conversations deleted
