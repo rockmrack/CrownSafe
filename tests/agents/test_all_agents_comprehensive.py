@@ -40,19 +40,33 @@ except ImportError:
 
 try:
     from agents.product_identifier_agent.agent_logic import ProductIdentifierAgentLogic
+
+    _PRODUCT_IDENTIFIER_AVAILABLE = True
 except ImportError:
     ProductIdentifierAgentLogic = None
+    _PRODUCT_IDENTIFIER_AVAILABLE = False
 
 try:
     from agents.routing.router_agent.agent_logic import RouterAgentLogic
+
+    _ROUTER_AVAILABLE = True
 except ImportError:
     RouterAgentLogic = None
+    _ROUTER_AVAILABLE = False
+
+
+def _get_skip_reason(error: Exception | None, agent_name: str) -> str:
+    """Generate a readable skip reason for missing agent dependencies."""
+    if error is None:
+        return f"{agent_name} is unavailable (unknown reason)."
+    error_type = type(error).__name__
+    error_msg = str(error)
+    return f"{agent_name} dependencies unavailable: {error_type}: {error_msg}"
+
 
 if not _REPORT_BUILDER_AVAILABLE:
     pytestmark = pytest.mark.skip(  # type: ignore[var-annotated]
-        reason=(
-            f"ReportBuilderAgent dependencies unavailable: {_REPORT_BUILDER_IMPORT_ERROR}"
-        )
+        reason=_get_skip_reason(_REPORT_BUILDER_IMPORT_ERROR, "ReportBuilderAgent")
     )
 
 
@@ -64,13 +78,21 @@ class TestResults:
         self.start_time = datetime.now()
 
     def add_result(
-        self, agent_name: str, test_name: str, status: str, details: str = ""
+        self,
+        agent_name: str,
+        test_name: str,
+        status: str,
+        details: str = "",
     ):
         if agent_name not in self.results:
             self.results[agent_name] = {"tests": [], "passed": 0, "failed": 0}
 
         self.results[agent_name]["tests"].append(
-            {"name": test_name, "status": status, "details": details}
+            {
+                "name": test_name,
+                "status": status,
+                "details": details,
+            }
         )
 
         if status == "PASSED":
@@ -500,6 +522,10 @@ async def test_alternatives_agent_find_alternatives():
 
 
 @pytest.mark.unit
+@pytest.mark.skipif(
+    not _PRODUCT_IDENTIFIER_AVAILABLE,
+    reason="ProductIdentifierAgent not available",
+)
 def test_product_identifier_initialization():
     """Test ProductIdentifierAgent initialization"""
     agent_name = "ProductIdentifierAgent"
@@ -519,6 +545,10 @@ def test_product_identifier_initialization():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skipif(
+    not _PRODUCT_IDENTIFIER_AVAILABLE,
+    reason="ProductIdentifierAgent not available",
+)
 async def test_product_identifier_process():
     """Test ProductIdentifierAgent processing"""
     agent_name = "ProductIdentifierAgent"
@@ -547,6 +577,7 @@ async def test_product_identifier_process():
 
 
 @pytest.mark.unit
+@pytest.mark.skipif(not _ROUTER_AVAILABLE, reason="RouterAgent not available")
 def test_router_agent_initialization():
     """Test RouterAgent initialization"""
     agent_name = "RouterAgent"
@@ -565,6 +596,7 @@ def test_router_agent_initialization():
 
 
 @pytest.mark.integration
+@pytest.mark.skipif(not _ROUTER_AVAILABLE, reason="RouterAgent not available")
 def test_router_agent_capabilities():
     """Test RouterAgent capabilities mapping"""
     agent_name = "RouterAgent"

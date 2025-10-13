@@ -39,14 +39,16 @@ jobs:
     runs-on: windows-latest
     env:
       BASE: https://babyshield.cureviax.ai
+      SMOKE_TEST_EMAIL: ${{ secrets.SMOKE_TEST_EMAIL }}
+      SMOKE_TEST_PASSWORD: ${{ secrets.SMOKE_TEST_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Verify secrets present
         shell: pwsh
         run: |
-          if (-not "${{ secrets.SMOKE_TEST_EMAIL }}") { Write-Error "Missing SMOKE_TEST_EMAIL"; exit 1 }
-          if (-not "${{ secrets.SMOKE_TEST_PASSWORD }}") { Write-Error "Missing SMOKE_TEST_PASSWORD"; exit 1 }
+          if (-not "$env:SMOKE_TEST_EMAIL") { Write-Error "Missing SMOKE_TEST_EMAIL"; exit 1 }
+          if (-not "$env:SMOKE_TEST_PASSWORD") { Write-Error "Missing SMOKE_TEST_PASSWORD"; exit 1 }
 
       # Skip authentication for CI - use public endpoints only
       - name: Skip authentication

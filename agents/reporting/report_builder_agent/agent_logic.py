@@ -80,6 +80,33 @@ except ImportError:
     FileSystemLoader = None
 
 # ====== Configuration ======
+# Fallback version constant if package metadata is unavailable
+def get_fallback_version():
+    version_file = Path(__file__).parent.parent.parent / "VERSION"
+    if version_file.exists():
+        try:
+            return version_file.read_text(encoding="utf-8").strip()
+        except (OSError, IOError, UnicodeDecodeError):
+            pass
+    return "unknown"
+FALLBACK_VERSION = get_fallback_version()
+
+# Try to derive version from package metadata, fallback to constant
+try:
+    # Python 3.8+
+    from importlib.metadata import version, PackageNotFoundError
+
+    DEFAULT_REPORT_BUILDER_VERSION = version("report_builder_agent")
+except (ImportError, PackageNotFoundError):
+    try:
+        # Fallback for older Python versions
+        import pkg_resources
+
+        DEFAULT_REPORT_BUILDER_VERSION = pkg_resources.get_distribution(
+            "report_builder_agent"
+        ).version
+    except Exception:
+        DEFAULT_REPORT_BUILDER_VERSION = FALLBACK_VERSION
 COMPANY_NAME = "CureViaX"
 TAGLINE = "Intelligent Biomedical Research, Verified by AI"
 CONTACT_EMAIL = "support@cureviax.com"
@@ -428,11 +455,11 @@ class ReportBuilderAgentLogic:
     def __init__(
         self,
         agent_id: str,
-        version: str,
+        version: Optional[str] = None,
         logger_instance: Optional[logging.Logger] = None,
     ):
         self.agent_id = agent_id
-        self.version = version
+        self.version = version or DEFAULT_REPORT_BUILDER_VERSION
         self.logger = logger_instance if logger_instance else logger_rb_logic_default
         self.logger.info(
             f"ReportBuilderAgentLogic initialized. Agent ID: {self.agent_id}, Version: {self.version}."
