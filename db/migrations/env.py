@@ -17,7 +17,11 @@ from core_infra.enhanced_database_schema import Base
 from core_infra.database import User, FamilyMember, Allergy
 
 # Import incident reporting models
-from db.models.incident_report import IncidentReport, IncidentCluster, AgencyNotification
+from db.models.incident_report import (
+    IncidentReport,
+    IncidentCluster,
+    AgencyNotification,
+)
 
 # Import visual agent models
 from core_infra.visual_agent_models import (
