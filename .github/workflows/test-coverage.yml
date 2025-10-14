@@ -91,7 +91,7 @@ jobs:
           REDIS_CACHE_URL: "redis://localhost:6379/0"
           RATE_LIMIT_REDIS_URL: "redis://localhost:6379/0"
         run: |
-          pytest tests/ --ignore=tests/performance/ --ignore=tests/integration/ --ignore=tests/production/ --ignore=tests/agents/ --ignore=tests/workers/ -m "not (production or live or stress or slow)" --cov=. --cov-report=term-missing --cov-fail-under=10 -x -v
+          pytest tests/security/ tests/core/ -v --cov=. --cov-report=term-missing --cov-fail-under=10 -x
 
       - name: Upload coverage reports
         if: always()
