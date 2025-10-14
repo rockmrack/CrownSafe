@@ -86,7 +86,9 @@ async def test_submit_incident(incident_data):
         }
 
         try:
-            response = await client.post(f"{BASE_URL}/api/v1/incidents/submit", data=form_data, timeout=10.0)
+            response = await client.post(
+                f"{BASE_URL}/api/v1/incidents/submit", data=form_data, timeout=10.0
+            )
 
             if response.status_code == 200:
                 result = response.json()
@@ -107,7 +109,9 @@ async def test_check_clusters():
 
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.get(f"{BASE_URL}/api/v1/incidents/clusters", params={"min_incidents": 2})
+            response = await client.get(
+                f"{BASE_URL}/api/v1/incidents/clusters", params={"min_incidents": 2}
+            )
 
             if response.status_code == 200:
                 result = response.json()
@@ -116,10 +120,14 @@ async def test_check_clusters():
                 if clusters:
                     print(f"\n📊 Found {len(clusters)} incident clusters:")
                     for cluster in clusters:
-                        print(f"  - {cluster['product_name']} ({cluster['brand_name']})")
+                        print(
+                            f"  - {cluster['product_name']} ({cluster['brand_name']})"
+                        )
                         print(f"    Type: {cluster['incident_type']}")
                         print(f"    Incidents: {cluster['incident_count']}")
-                        print(f"    Risk Level: {cluster['risk_level']} (Score: {cluster['risk_score']:.1f})")
+                        print(
+                            f"    Risk Level: {cluster['risk_level']} (Score: {cluster['risk_score']:.1f})"
+                        )
                         print(f"    Alert Triggered: {cluster['alert_triggered']}")
                         print(f"    CPSC Notified: {cluster['cpsc_notified']}")
                 else:
@@ -140,7 +148,9 @@ async def test_get_statistics():
 
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.get(f"{BASE_URL}/api/v1/incidents/stats", params={"days": 7})
+            response = await client.get(
+                f"{BASE_URL}/api/v1/incidents/stats", params={"days": 7}
+            )
 
             if response.status_code == 200:
                 result = response.json()

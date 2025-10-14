@@ -13,7 +13,9 @@ sys.path.insert(0, project_root)
 from agents.recall_data_agent.agent_logic import RecallDataAgentLogic
 from core_infra.database import Base, engine
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 
 async def main():
@@ -27,13 +29,17 @@ async def main():
     Base.metadata.create_all(bind=engine)
 
     # 2. Run the LIVE ingestion cycle.
-    recall_agent_logic = RecallDataAgentLogic(agent_id="live_ingestor_002", logger_instance=logger)
+    recall_agent_logic = RecallDataAgentLogic(
+        agent_id="live_ingestor_002", logger_instance=logger
+    )
     ingestion_result = await recall_agent_logic.run_ingestion_cycle()
 
     print("\n" + "=" * 50)
     print("          LIVE INGESTION RESULT")
     print("=" * 50)
-    print(f"Live ingestion complete. Added {ingestion_result.get('total_upserted', 0)} new recalls to the database.")
+    print(
+        f"Live ingestion complete. Added {ingestion_result.get('total_upserted', 0)} new recalls to the database."
+    )
     print("The database is now populated with the latest recall data.")
     print("=" * 50)
 

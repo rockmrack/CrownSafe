@@ -15,9 +15,9 @@ import sys
 from datetime import datetime, timedelta
 
 # Force production database
-os.environ["DATABASE_URL"] = (
-    "postgresql+psycopg://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
-)
+os.environ[
+    "DATABASE_URL"
+] = "postgresql+psycopg://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
 
 print("\n" + "=" * 80)
 print("📊 SAFETY REPORTS - FULL VERIFICATION")
@@ -76,7 +76,11 @@ print("Testing 90-day data availability...\n")
 
 # Test 1: Check recalls in last 90 days
 print("1. Recalls in Last 90 Days:")
-recent_90_days = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.recall_date >= ninety_days_ago.date()).count()
+recent_90_days = (
+    db.query(EnhancedRecallDB)
+    .filter(EnhancedRecallDB.recall_date >= ninety_days_ago.date())
+    .count()
+)
 
 print(f"   Total: {recent_90_days:,} recalls")
 
@@ -200,7 +204,9 @@ for category, keywords in nursery_products.items():
     count = 0
     for keyword in keywords:
         count += (
-            db.query(EnhancedRecallDB).filter(func.lower(EnhancedRecallDB.product_name).like(f"%{keyword}%")).count()
+            db.query(EnhancedRecallDB)
+            .filter(func.lower(EnhancedRecallDB.product_name).like(f"%{keyword}%"))
+            .count()
         )
 
     nursery_summary[category] = count
@@ -241,7 +247,11 @@ print()
 
 # Test 3: Quarterly time period
 print("3. Quarterly Data (Last 3 Months):")
-ninety_days_count = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.recall_date >= ninety_days_ago.date()).count()
+ninety_days_count = (
+    db.query(EnhancedRecallDB)
+    .filter(EnhancedRecallDB.recall_date >= ninety_days_ago.date())
+    .count()
+)
 
 print(f"   Last 90 days: {ninety_days_count:,} recalls")
 print("   ✅ Quarterly report data available")

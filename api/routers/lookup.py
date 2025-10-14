@@ -18,7 +18,9 @@ router = APIRouter(prefix="/api/v1/lookup", tags=["lookup"])
 
 @router.get("/barcode")
 def barcode_lookup(
-    code: str = Query(..., min_length=6, max_length=32, description="Barcode to lookup"),
+    code: str = Query(
+        ..., min_length=6, max_length=32, description="Barcode to lookup"
+    ),
     limit: int = Query(5, ge=1, le=50, description="Maximum number of results"),
     db: Session = Depends(get_db),
 ):

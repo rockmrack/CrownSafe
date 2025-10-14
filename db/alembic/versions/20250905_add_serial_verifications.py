@@ -26,7 +26,9 @@ def upgrade() -> None:
         sa.Column("serial_number", sa.String(length=128), nullable=True),
         sa.Column("expiry_date", sa.Date(), nullable=True),
         sa.Column("manufacturer", sa.String(length=256), nullable=True),
-        sa.Column("status", sa.String(length=32), nullable=False, server_default="unknown"),
+        sa.Column(
+            "status", sa.String(length=32), nullable=False, server_default="unknown"
+        ),
         sa.Column("source", sa.String(length=64), nullable=True),
         sa.Column("message", sa.Text(), nullable=True),
         sa.Column("trace_id", sa.String(length=64), nullable=True),
@@ -44,7 +46,9 @@ def upgrade() -> None:
         ),
     )
 
-    op.create_index("ix_serial_verifications_gtin", "serial_verifications", ["gtin"], unique=False)
+    op.create_index(
+        "ix_serial_verifications_gtin", "serial_verifications", ["gtin"], unique=False
+    )
     op.create_index(
         "ix_serial_verifications_lot_number",
         "serial_verifications",
@@ -72,9 +76,15 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ix_serial_verifications_gtin_serial", table_name="serial_verifications")
+    op.drop_index(
+        "ix_serial_verifications_gtin_serial", table_name="serial_verifications"
+    )
     op.drop_index("ix_serial_verifications_gtin_lot", table_name="serial_verifications")
-    op.drop_index("ix_serial_verifications_serial_number", table_name="serial_verifications")
-    op.drop_index("ix_serial_verifications_lot_number", table_name="serial_verifications")
+    op.drop_index(
+        "ix_serial_verifications_serial_number", table_name="serial_verifications"
+    )
+    op.drop_index(
+        "ix_serial_verifications_lot_number", table_name="serial_verifications"
+    )
     op.drop_index("ix_serial_verifications_gtin", table_name="serial_verifications")
     op.drop_table("serial_verifications")

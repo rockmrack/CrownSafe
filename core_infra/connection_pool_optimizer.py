@@ -84,7 +84,9 @@ class ConnectionPoolOptimizer:
                 db.commit()
 
             elapsed = time.time() - start_time
-            self.logger.info(f"🚀 Batch operations completed: {len(results)} ops in {elapsed:.3f}s")
+            self.logger.info(
+                f"🚀 Batch operations completed: {len(results)} ops in {elapsed:.3f}s"
+            )
 
             return results
 
@@ -113,17 +115,24 @@ class ConnectionPoolOptimizer:
                 # Priority 1: Model number (most precise)
                 if model_number and len(model_number) > 2:
                     recalls = (
-                        db.query(RecallDB).filter(RecallDB.model_number.ilike(f"%{model_number}%")).limit(20).all()
+                        db.query(RecallDB)
+                        .filter(RecallDB.model_number.ilike(f"%{model_number}%"))
+                        .limit(20)
+                        .all()
                     )
 
                     if recalls:
                         elapsed = time.time() - start_time
-                        self.logger.info(f"⚡ Model number match found in {elapsed:.3f}s")
+                        self.logger.info(
+                            f"⚡ Model number match found in {elapsed:.3f}s"
+                        )
                         return [r.to_dict() for r in recalls]
 
                 # Priority 2: UPC (exact match)
                 if not recalls and upc:
-                    recalls = db.query(RecallDB).filter(RecallDB.upc == upc).limit(10).all()
+                    recalls = (
+                        db.query(RecallDB).filter(RecallDB.upc == upc).limit(10).all()
+                    )
 
                     if recalls:
                         elapsed = time.time() - start_time
@@ -134,20 +143,27 @@ class ConnectionPoolOptimizer:
                 if not recalls and product_name and len(product_name) > 3:
                     # First try exact substring
                     recalls = (
-                        db.query(RecallDB).filter(RecallDB.product_name.ilike(f"%{product_name}%")).limit(15).all()
+                        db.query(RecallDB)
+                        .filter(RecallDB.product_name.ilike(f"%{product_name}%"))
+                        .limit(15)
+                        .all()
                     )
 
                     elapsed = time.time() - start_time
                     # Use DEBUG level to reduce log noise in production
                     if self.logger.isEnabledFor(logging.DEBUG):
-                        self.logger.debug(f"🔍 Product name search completed in {elapsed:.3f}s")
+                        self.logger.debug(
+                            f"🔍 Product name search completed in {elapsed:.3f}s"
+                        )
                     return [r.to_dict() for r in recalls]
 
                 return []
 
         except Exception as e:
             elapsed = time.time() - start_time
-            self.logger.error(f"Optimized recall search failed after {elapsed:.3f}s: {e}")
+            self.logger.error(
+                f"Optimized recall search failed after {elapsed:.3f}s: {e}"
+            )
             return []
 
     def get_pooled_agent_instance(self, agent_class, agent_id: str):
@@ -163,7 +179,9 @@ class ConnectionPoolOptimizer:
 
         return self.agent_instance_pool[pool_key]
 
-    async def parallel_agent_execution(self, agent_tasks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    async def parallel_agent_execution(
+        self, agent_tasks: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
         """
         Execute multiple agent tasks in parallel for massive speedup
         """
@@ -173,12 +191,16 @@ class ConnectionPoolOptimizer:
             # Create async tasks for parallel execution
             async def execute_agent_task(task_info):
                 try:
-                    agent_instance = self.get_pooled_agent_instance(task_info["agent_class"], task_info["agent_id"])
+                    agent_instance = self.get_pooled_agent_instance(
+                        task_info["agent_class"], task_info["agent_id"]
+                    )
 
                     # Execute the agent task
                     if hasattr(agent_instance, "process_task"):
                         if asyncio.iscoroutinefunction(agent_instance.process_task):
-                            result = await agent_instance.process_task(task_info["inputs"])
+                            result = await agent_instance.process_task(
+                                task_info["inputs"]
+                            )
                         else:
                             result = agent_instance.process_task(task_info["inputs"])
                     else:
@@ -209,7 +231,8 @@ class ConnectionPoolOptimizer:
                 [
                     r
                     for r in results
-                    if not isinstance(r, Exception) and r.get("result", {}).get("status") == "COMPLETED"
+                    if not isinstance(r, Exception)
+                    and r.get("result", {}).get("status") == "COMPLETED"
                 ]
             )
 
@@ -221,7 +244,9 @@ class ConnectionPoolOptimizer:
 
         except Exception as e:
             elapsed = time.time() - start_time
-            self.logger.error(f"Parallel agent execution failed after {elapsed:.3f}s: {e}")
+            self.logger.error(
+                f"Parallel agent execution failed after {elapsed:.3f}s: {e}"
+            )
             return []
 
     def cleanup_connections(self):
@@ -256,7 +281,9 @@ connection_optimizer = ConnectionPoolOptimizer()
 # Convenience functions
 async def optimized_recall_search(upc=None, model_number=None, product_name=None):
     """Optimized recall search with connection pooling"""
-    return await connection_optimizer.optimized_recall_search(upc, model_number, product_name)
+    return await connection_optimizer.optimized_recall_search(
+        upc, model_number, product_name
+    )
 
 
 async def batch_db_operations(operations):

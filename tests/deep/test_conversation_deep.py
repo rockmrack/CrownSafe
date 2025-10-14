@@ -56,7 +56,9 @@ class TestConversationDeep:
     def test_conversation_with_empty_message(self, monkeypatch):
         """Test that empty message is rejected"""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
-        monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
+        monkeypatch.setattr(
+            chat_router, "fetch_scan_data", lambda db, sid: _fake_scan()
+        )
 
         client = TestClient(app)
         r = client.post(
@@ -69,7 +71,9 @@ class TestConversationDeep:
     def test_conversation_with_missing_message_field(self, monkeypatch):
         """Test that missing message field is rejected"""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
-        monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
+        monkeypatch.setattr(
+            chat_router, "fetch_scan_data", lambda db, sid: _fake_scan()
+        )
 
         client = TestClient(app)
         r = client.post(
@@ -82,7 +86,9 @@ class TestConversationDeep:
     def test_conversation_with_very_long_message(self, monkeypatch):
         """Test handling of extremely long messages"""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
-        monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
+        monkeypatch.setattr(
+            chat_router, "fetch_scan_data", lambda db, sid: _fake_scan()
+        )
 
         client = TestClient(app)
         long_message = "Is this safe? " * 1000  # 15000 characters
@@ -100,7 +106,9 @@ class TestConversationDeep:
     def test_conversation_with_special_characters(self, monkeypatch):
         """Test handling of special characters in message"""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
-        monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
+        monkeypatch.setattr(
+            chat_router, "fetch_scan_data", lambda db, sid: _fake_scan()
+        )
 
         client = TestClient(app)
         special_message = "Is this safe? 🍼👶 <script>alert('test')</script> ' OR '1'='1"
@@ -119,7 +127,9 @@ class TestConversationDeep:
     def test_conversation_with_unicode_message(self, monkeypatch):
         """Test handling of Unicode characters"""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
-        monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
+        monkeypatch.setattr(
+            chat_router, "fetch_scan_data", lambda db, sid: _fake_scan()
+        )
 
         client = TestClient(app)
         unicode_message = "这个产品安全吗？ Это безопасно? هل هذا آمن؟"
@@ -138,7 +148,9 @@ class TestConversationDeep:
     def test_conversation_response_structure(self, monkeypatch):
         """Test that response has all required fields"""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
-        monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
+        monkeypatch.setattr(
+            chat_router, "fetch_scan_data", lambda db, sid: _fake_scan()
+        )
 
         client = TestClient(app)
         r = client.post(
@@ -231,7 +243,9 @@ class TestConversationDeep:
         monkeypatch.setattr(
             chat_router,
             "fetch_scan_data",
-            lambda db, sid: _fake_scan(age_min_months=6, age_max_months=36, category="solid_food"),
+            lambda db, sid: _fake_scan(
+                age_min_months=6, age_max_months=36, category="solid_food"
+            ),
         )
 
         client = TestClient(app)
@@ -250,7 +264,9 @@ class TestConversationDeep:
     def test_conversation_headers_presence(self, monkeypatch):
         """Test that all required headers are present"""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
-        monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
+        monkeypatch.setattr(
+            chat_router, "fetch_scan_data", lambda db, sid: _fake_scan()
+        )
 
         client = TestClient(app)
         r = client.post(
@@ -272,7 +288,9 @@ class TestConversationDeep:
     def test_conversation_trace_id_format(self, monkeypatch):
         """Test that X-Trace-Id has valid UUID format"""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
-        monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
+        monkeypatch.setattr(
+            chat_router, "fetch_scan_data", lambda db, sid: _fake_scan()
+        )
 
         client = TestClient(app)
         r = client.post(
@@ -323,7 +341,9 @@ class TestConversationDeep:
         monkeypatch.setattr(
             chat_router,
             "fetch_scan_data",
-            lambda db, sid: _fake_scan(flags=["high_sugar", "artificial_colors", "preservatives", "bpa_free"]),
+            lambda db, sid: _fake_scan(
+                flags=["high_sugar", "artificial_colors", "preservatives", "bpa_free"]
+            ),
         )
 
         client = TestClient(app)
@@ -342,7 +362,9 @@ class TestConversationDeep:
     def test_conversation_content_type(self, monkeypatch):
         """Test response content type is correct"""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
-        monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
+        monkeypatch.setattr(
+            chat_router, "fetch_scan_data", lambda db, sid: _fake_scan()
+        )
 
         client = TestClient(app)
         r = client.post(
@@ -359,7 +381,9 @@ class TestConversationDeep:
     def test_conversation_idempotency(self, monkeypatch):
         """Test that multiple identical requests produce consistent results"""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
-        monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
+        monkeypatch.setattr(
+            chat_router, "fetch_scan_data", lambda db, sid: _fake_scan()
+        )
 
         client = TestClient(app)
         request_data = {

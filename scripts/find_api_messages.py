@@ -24,7 +24,11 @@ for i in range(min(queue_len, 10)):  # Check up to 10 messages
         print(f"Message {i + 1}:")
         print(f"  Type: {msg_type}")
         print(f"  From: {sender}")
-        print(f"  Correlation ID: {corr_id[:8]}..." if corr_id else "  Correlation ID: None")
+        print(
+            f"  Correlation ID: {corr_id[:8]}..."
+            if corr_id
+            else "  Correlation ID: None"
+        )
 
         if "api_gateway" in sender:
             print("  ✅ This is from API Gateway!")
@@ -51,6 +55,8 @@ for key in all_workflows:
             print(f"\n✅ Found API-created workflow: {wf_id}")
             print(f"   Status: {data.get('status')}")
             print(f"   workflow_id field: {data.get('workflow_id', 'MISSING')}")
-            print(f"   controller_correlation_id: {data.get('controller_correlation_id', 'None')}")
+            print(
+                f"   controller_correlation_id: {data.get('controller_correlation_id', 'None')}"
+            )
     except:
         pass

@@ -96,11 +96,15 @@ class BabyShieldCacheManager:
     def _generate_cache_key(self, prefix: str, identifier: str, **kwargs) -> str:
         """Generate deterministic cache key with additional parameters"""
         # Create a hash of the identifier and any additional params
-        key_data = f"{identifier}:{json.dumps(sorted(kwargs.items()), separators=(',', ':'))}"
+        key_data = (
+            f"{identifier}:{json.dumps(sorted(kwargs.items()), separators=(',', ':'))}"
+        )
         key_hash = hashlib.md5(key_data.encode()).hexdigest()[:12]
         return f"{prefix}{key_hash}:{identifier}"
 
-    def get(self, cache_type: str, identifier: str, **kwargs) -> Optional[Dict[str, Any]]:
+    def get(
+        self, cache_type: str, identifier: str, **kwargs
+    ) -> Optional[Dict[str, Any]]:
         """Get cached data with automatic JSON deserialization"""
         if not self.cache_enabled or not self.redis_client:
             return None
@@ -209,11 +213,15 @@ class BabyShieldCacheManager:
                 "keyspace_hits": info.get("keyspace_hits", 0),
                 "keyspace_misses": info.get("keyspace_misses", 0),
                 "total_keys": sum(
-                    db.get("keys", 0) for db in info.get("keyspace", {}).values() if isinstance(db, dict)
+                    db.get("keys", 0)
+                    for db in info.get("keyspace", {}).values()
+                    if isinstance(db, dict)
                 ),
                 "hit_rate": round(
                     info.get("keyspace_hits", 0)
-                    / max(1, info.get("keyspace_hits", 0) + info.get("keyspace_misses", 0))
+                    / max(
+                        1, info.get("keyspace_hits", 0) + info.get("keyspace_misses", 0)
+                    )
                     * 100,
                     2,
                 ),
@@ -244,7 +252,9 @@ def get_cached(cache_type: str, identifier: str, **kwargs) -> Optional[Dict[str,
     return result.get("data") if result else None
 
 
-def set_cached(cache_type: str, identifier: str, data: Any, ttl: Optional[int] = None, **kwargs) -> bool:
+def set_cached(
+    cache_type: str, identifier: str, data: Any, ttl: Optional[int] = None, **kwargs
+) -> bool:
     """Set cached data"""
     return cache_manager.set(cache_type, identifier, data, ttl, **kwargs)
 
@@ -290,7 +300,9 @@ def cache_result(cache_type: str, ttl: Optional[int] = None, key_func=None):
             if key_func:
                 cache_key = key_func(*args, **kwargs)
             else:
-                cache_key = f"{func.__name__}_{hash(str(args) + str(sorted(kwargs.items())))}"
+                cache_key = (
+                    f"{func.__name__}_{hash(str(args) + str(sorted(kwargs.items())))}"
+                )
 
             # Try to get from cache first
             cached_result = get_cached(cache_type, cache_key)

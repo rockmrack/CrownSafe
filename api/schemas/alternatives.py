@@ -8,9 +8,13 @@ class AlternativeItem(BaseModel):
     brand: Optional[str] = None
     category: Optional[str] = None
     reason: str  # why safer/better (plain language)
-    tags: List[str] = Field(default_factory=list)  # e.g. ["pasteurised","peanut-free","flat-sleep"]
+    tags: List[str] = Field(
+        default_factory=list
+    )  # e.g. ["pasteurised","peanut-free","flat-sleep"]
     pregnancy_safe: Optional[bool] = None
-    allergy_safe_for: List[str] = Field(default_factory=list)  # subset of user allergies
+    allergy_safe_for: List[str] = Field(
+        default_factory=list
+    )  # subset of user allergies
     age_min_months: Optional[int] = None
     link_url: Optional[str] = None  # product page or gov list (optional)
     evidence: List[dict] = Field(default_factory=list)  # EvidenceItem dicts

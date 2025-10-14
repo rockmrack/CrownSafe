@@ -102,7 +102,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
         # 4. Strict-Transport-Security (HSTS)
         if self.enable_hsts:
-            response.headers["Strict-Transport-Security"] = f"max-age={self.hsts_max_age}; includeSubDomains; preload"
+            response.headers[
+                "Strict-Transport-Security"
+            ] = f"max-age={self.hsts_max_age}; includeSubDomains; preload"
 
         # 5. X-XSS-Protection (legacy, but still useful for older browsers)
         if self.enable_xss_protection:
@@ -112,21 +114,27 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
         # 7. Permissions-Policy (feature restrictions)
-        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+        response.headers[
+            "Permissions-Policy"
+        ] = "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
 
         # 8. X-Permitted-Cross-Domain-Policies (Adobe products)
         response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
 
         # 9. Cache-Control for sensitive endpoints
         if request.url.path.startswith(("/api/v1/auth", "/api/v1/user")):
-            response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+            response.headers[
+                "Cache-Control"
+            ] = "no-store, no-cache, must-revalidate, max-age=0"
             response.headers["Pragma"] = "no-cache"
 
         # 10. Remove server header (security through obscurity)
         if "Server" in response.headers:
             del response.headers["Server"]
 
-        logger.info(f"✅ SecurityHeadersMiddleware completed. Total headers in response: {len(response.headers)}")
+        logger.info(
+            f"✅ SecurityHeadersMiddleware completed. Total headers in response: {len(response.headers)}"
+        )
         return response
 
 
@@ -158,7 +166,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         # Clean old entries (older than 1 minute)
         current_time = time.time()
         if client_ip in self._request_counts:
-            self._request_counts[client_ip] = [ts for ts in self._request_counts[client_ip] if current_time - ts < 60]
+            self._request_counts[client_ip] = [
+                ts for ts in self._request_counts[client_ip] if current_time - ts < 60
+            ]
         else:
             self._request_counts[client_ip] = []
 
@@ -184,7 +194,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         # Add rate limit headers
         response.headers["X-RateLimit-Limit"] = str(self.requests_per_minute)
-        response.headers["X-RateLimit-Remaining"] = str(self.requests_per_minute - len(self._request_counts[client_ip]))
+        response.headers["X-RateLimit-Remaining"] = str(
+            self.requests_per_minute - len(self._request_counts[client_ip])
+        )
 
         return response
 
@@ -208,7 +220,9 @@ class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
             try:
                 size = int(content_length)
                 if size > self.max_body_size:
-                    logger.warning(f"Request too large: {size} bytes (max {self.max_body_size})")
+                    logger.warning(
+                        f"Request too large: {size} bytes (max {self.max_body_size})"
+                    )
                     return Response(
                         content=f"Request body too large (max {self.max_body_size} bytes)",
                         status_code=413,
@@ -231,7 +245,9 @@ def configure_security_middleware(app, environment: str = "production"):
     is_production = environment == "production"
 
     # 1. Request size limiting (always enabled)
-    app.add_middleware(RequestSizeLimitMiddleware, max_body_size=10 * 1024 * 1024)  # 10MB
+    app.add_middleware(
+        RequestSizeLimitMiddleware, max_body_size=10 * 1024 * 1024
+    )  # 10MB
 
     # 2. Security headers (stricter in production)
     app.add_middleware(

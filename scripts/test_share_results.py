@@ -154,7 +154,9 @@ def test_share_results():
         print("✅ Share 2 correctly invalidated after max views")
 
         # Test password verification
-        assert pwd_context.verify(password, share3.password_hash), "Password should verify"
+        assert pwd_context.verify(
+            password, share3.password_hash
+        ), "Password should verify"
         print("✅ Password verification works")
 
         # Test 5: Revoke a share
@@ -173,7 +175,11 @@ def test_share_results():
         print(f"✅ Found {len(user_shares)} shares for user 1")
         for share in user_shares:
             status = "Active" if share.is_active else "Revoked"
-            views = f"{share.view_count}/{share.max_views}" if share.max_views else f"{share.view_count}/∞"
+            views = (
+                f"{share.view_count}/{share.max_views}"
+                if share.max_views
+                else f"{share.view_count}/∞"
+            )
             print(f"   - {share.token[:10]}... | {status} | Views: {views}")
 
         # Test 7: Share types

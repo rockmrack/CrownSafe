@@ -168,7 +168,9 @@ class RetryHandler:
 
                 # Check if should retry
                 if not self.config.should_retry(e):
-                    logger.error(f"{func.__name__} failed with non-retryable error: {e}")
+                    logger.error(
+                        f"{func.__name__} failed with non-retryable error: {e}"
+                    )
                     raise
 
                 if attempt == self.config.max_attempts:
@@ -176,7 +178,9 @@ class RetryHandler:
                     if self.config.on_failure:
                         self.config.on_failure(e, attempt)
 
-                    logger.error(f"{func.__name__} failed after {attempt} attempts: {e}")
+                    logger.error(
+                        f"{func.__name__} failed after {attempt} attempts: {e}"
+                    )
                     raise
 
                 # Calculate delay
@@ -186,7 +190,9 @@ class RetryHandler:
                 if self.config.on_retry:
                     self.config.on_retry(e, attempt, delay)
 
-                logger.warning(f"{func.__name__} failed on attempt {attempt}, retrying in {delay:.2f}s: {e}")
+                logger.warning(
+                    f"{func.__name__} failed on attempt {attempt}, retrying in {delay:.2f}s: {e}"
+                )
 
                 # Wait before retry
                 time.sleep(delay)
@@ -215,7 +221,9 @@ class RetryHandler:
 
                 # Check if should retry
                 if not self.config.should_retry(e):
-                    logger.error(f"{func.__name__} failed with non-retryable error: {e}")
+                    logger.error(
+                        f"{func.__name__} failed with non-retryable error: {e}"
+                    )
                     raise
 
                 if attempt == self.config.max_attempts:
@@ -226,7 +234,9 @@ class RetryHandler:
                         else:
                             self.config.on_failure(e, attempt)
 
-                    logger.error(f"{func.__name__} failed after {attempt} attempts: {e}")
+                    logger.error(
+                        f"{func.__name__} failed after {attempt} attempts: {e}"
+                    )
                     raise
 
                 # Calculate delay
@@ -239,7 +249,9 @@ class RetryHandler:
                     else:
                         self.config.on_retry(e, attempt, delay)
 
-                logger.warning(f"{func.__name__} failed on attempt {attempt}, retrying in {delay:.2f}s: {e}")
+                logger.warning(
+                    f"{func.__name__} failed on attempt {attempt}, retrying in {delay:.2f}s: {e}"
+                )
 
                 # Wait before retry
                 await asyncio.sleep(delay)
@@ -322,7 +334,9 @@ class CircuitBreakerRetry:
 
         if self.failure_count >= self.failure_threshold:
             self.state = "open"
-            logger.warning(f"Circuit breaker opened after {self.failure_count} failures")
+            logger.warning(
+                f"Circuit breaker opened after {self.failure_count} failures"
+            )
 
     def execute_with_circuit_breaker(self, func: Callable, *args, **kwargs):
         """Execute with circuit breaker and retry"""
@@ -363,7 +377,9 @@ class BulkRetry:
 
                 try:
                     if asyncio.iscoroutinefunction(process_func):
-                        result = await handler._async_execute_with_retry(process_func, (item,), {})
+                        result = await handler._async_execute_with_retry(
+                            process_func, (item,), {}
+                        )
                     else:
                         result = handler._execute_with_retry(process_func, (item,), {})
 
@@ -395,7 +411,9 @@ class FallbackRetry:
         try:
             handler = RetryHandler(RetryConfig(max_attempts=2))
             if asyncio.iscoroutinefunction(self.primary_func):
-                return await handler._async_execute_with_retry(self.primary_func, args, kwargs)
+                return await handler._async_execute_with_retry(
+                    self.primary_func, args, kwargs
+                )
             else:
                 return handler._execute_with_retry(self.primary_func, args, kwargs)
         except Exception as primary_error:
@@ -412,7 +430,9 @@ class FallbackRetry:
                         return fallback(*args, **kwargs)
 
                 except Exception as fallback_error:
-                    logger.warning(f"Fallback {fallback.__name__} failed: {fallback_error}")
+                    logger.warning(
+                        f"Fallback {fallback.__name__} failed: {fallback_error}"
+                    )
 
             # All fallbacks failed
             raise Exception(f"All fallbacks failed. Primary error: {primary_error}")

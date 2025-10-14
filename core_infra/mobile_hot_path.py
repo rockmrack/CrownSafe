@@ -33,7 +33,9 @@ class MobileHotPath:
             "aggressive_caching": True,  # Use all caching layers
         }
 
-    async def ultra_fast_barcode_check(self, barcode: str, user_id: int) -> Dict[str, Any]:
+    async def ultra_fast_barcode_check(
+        self, barcode: str, user_id: int
+    ) -> Dict[str, Any]:
         """
         Ultra-fast barcode check optimized for <100ms mobile responses
         """
@@ -90,7 +92,9 @@ class MobileHotPath:
                     "safe": False,
                     "level": "DANGER",
                     "summary": f"⚠️ RECALL: {first_recall.get('product_name', 'Product')[:50]}...",
-                    "details": first_recall.get("hazard_description", "Safety concern identified")[:100],
+                    "details": first_recall.get(
+                        "hazard_description", "Safety concern identified"
+                    )[:100],
                     "agencies": 39,
                     "recall_count": len(recalls),
                 }
@@ -133,13 +137,17 @@ class MobileHotPath:
                     for key in oldest_keys:
                         del self.hot_cache[key]
 
-            self.logger.info(f"📱 Mobile check for {barcode}: {elapsed_ms}ms, Safe: {safety_response['safe']}")
+            self.logger.info(
+                f"📱 Mobile check for {barcode}: {elapsed_ms}ms, Safe: {safety_response['safe']}"
+            )
 
             return safety_response
 
         except Exception as e:
             elapsed_ms = int((time.time() - start_time) * 1000)
-            self.logger.error(f"Ultra-fast barcode check failed after {elapsed_ms}ms: {e}")
+            self.logger.error(
+                f"Ultra-fast barcode check failed after {elapsed_ms}ms: {e}"
+            )
 
             # Return safe default on error
             return {
@@ -187,7 +195,9 @@ class MobileHotPath:
                     try:
                         # Pre-compute safety check for this product
                         if upc:
-                            _ = await self.ultra_fast_barcode_check(upc, user_id=1)  # result (Use default user)
+                            _ = await self.ultra_fast_barcode_check(
+                                upc, user_id=1
+                            )  # result (Use default user)
                             precomputed += 1
 
                         # Limit to prevent overload
@@ -195,10 +205,14 @@ class MobileHotPath:
                             break
 
                     except Exception as e:
-                        self.logger.warning(f"Pre-computation failed for {product_name}: {e}")
+                        self.logger.warning(
+                            f"Pre-computation failed for {product_name}: {e}"
+                        )
 
                 elapsed = time.time() - start_time
-                self.logger.info(f"🔥 Pre-computed {precomputed} popular products in {elapsed:.3f}s")
+                self.logger.info(
+                    f"🔥 Pre-computed {precomputed} popular products in {elapsed:.3f}s"
+                )
 
                 return precomputed
 

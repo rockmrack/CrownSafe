@@ -92,7 +92,9 @@ class TestAuthenticationFlow:
 class TestBarcodeScanningFlow:
     """Test suite for barcode scanning workflow"""
 
-    def test_complete_barcode_scan_and_safety_check_flow(self, client, authenticated_user, sample_barcode_image):
+    def test_complete_barcode_scan_and_safety_check_flow(
+        self, client, authenticated_user, sample_barcode_image
+    ):
         """
         Test complete barcode scan to safety check workflow.
 
@@ -115,7 +117,9 @@ class TestBarcodeScanningFlow:
 
         # Step 3: Check safety
         safety_request = {"barcode": barcode, "user_id": authenticated_user["user_id"]}
-        safety_response = client.post("/api/v1/safety/check", headers=headers, json=safety_request)
+        safety_response = client.post(
+            "/api/v1/safety/check", headers=headers, json=safety_request
+        )
         assert safety_response.status_code == 200
         assert "verdict" in safety_response.json()
 
@@ -184,7 +188,9 @@ class TestSubscriptionFlow:
 
         # Upgrade subscription (mock payment)
         upgrade_request = {"tier": "premium", "payment_method": "stripe_token_mock"}
-        upgrade_response = client.post("/api/v1/subscription/upgrade", headers=headers, json=upgrade_request)
+        upgrade_response = client.post(
+            "/api/v1/subscription/upgrade", headers=headers, json=upgrade_request
+        )
         assert upgrade_response.status_code == 200
 
         # Verify upgrade

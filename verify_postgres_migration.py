@@ -54,7 +54,9 @@ def check_database_url():
         if "psycopg" in db_url and "psycopg2" not in db_url:
             print("✅ Using psycopg v3 driver (recommended)")
         elif "psycopg2" in db_url:
-            print("⚠️  WARNING: Using psycopg2 (legacy). Recommend upgrading to psycopg v3")
+            print(
+                "⚠️  WARNING: Using psycopg2 (legacy). Recommend upgrading to psycopg v3"
+            )
         else:
             print("⚠️  WARNING: PostgreSQL driver not specified. Default may be used.")
 
@@ -128,7 +130,9 @@ def check_extensions(engine):
     try:
         with engine.connect() as conn:
             # Check pg_trgm extension
-            result = conn.execute(text("SELECT extname FROM pg_extension WHERE extname='pg_trgm'"))
+            result = conn.execute(
+                text("SELECT extname FROM pg_extension WHERE extname='pg_trgm'")
+            )
             extensions = [row[0] for row in result]
 
             if "pg_trgm" in extensions:
@@ -138,7 +142,9 @@ def check_extensions(engine):
                 print("⚠️  WARNING: pg_trgm extension NOT installed")
                 print("   This extension is required for optimal recall matching.")
                 print("\n   To fix, run:")
-                print('   psql "$DATABASE_URL" -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"')
+                print(
+                    '   psql "$DATABASE_URL" -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"'
+                )
                 print("   Or run Alembic migration:")
                 print("   alembic -c db/alembic.ini upgrade head")
 
@@ -293,7 +299,9 @@ def main():
     else:
         print("⚠️  Not using PostgreSQL (using SQLite)")
         print("   For production, set DATABASE_URL to PostgreSQL:")
-        print('   export DATABASE_URL="postgresql+psycopg://user:pass@host:5432/dbname"')
+        print(
+            '   export DATABASE_URL="postgresql+psycopg://user:pass@host:5432/dbname"'
+        )
 
     print()
     print("✅ Verification script completed successfully!")

@@ -36,7 +36,9 @@ def _build_limiter() -> Limiter:
     if REDIS_URL:
         try:
             # Probe Redis quickly; if it fails, we will fall back to memory
-            r = redis.from_url(REDIS_URL, socket_connect_timeout=0.5, socket_timeout=0.5)
+            r = redis.from_url(
+                REDIS_URL, socket_connect_timeout=0.5, socket_timeout=0.5
+            )
             r.ping()
             storage_uri = REDIS_URL
         except Exception:
@@ -54,7 +56,9 @@ limiter = _build_limiter()
 
 
 # Custom rate limit exceeded handler
-async def custom_rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded) -> Response:
+async def custom_rate_limit_exceeded_handler(
+    request: Request, exc: RateLimitExceeded
+) -> Response:
     """Custom handler for rate limit exceeded"""
     response = JSONResponse(
         status_code=429,
@@ -68,12 +72,18 @@ async def custom_rate_limit_exceeded_handler(request: Request, exc: RateLimitExc
     )
 
     # Add retry-after header
-    response.headers["Retry-After"] = str(exc.retry_after) if hasattr(exc, "retry_after") else "60"
+    response.headers["Retry-After"] = (
+        str(exc.retry_after) if hasattr(exc, "retry_after") else "60"
+    )
 
     # Add rate limit headers
-    response.headers["X-RateLimit-Limit"] = str(exc.limit) if hasattr(exc, "limit") else "100"
+    response.headers["X-RateLimit-Limit"] = (
+        str(exc.limit) if hasattr(exc, "limit") else "100"
+    )
     response.headers["X-RateLimit-Remaining"] = "0"
-    response.headers["X-RateLimit-Reset"] = str(exc.reset) if hasattr(exc, "reset") else ""
+    response.headers["X-RateLimit-Reset"] = (
+        str(exc.reset) if hasattr(exc, "reset") else ""
+    )
 
     return response
 

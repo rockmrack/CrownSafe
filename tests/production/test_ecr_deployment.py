@@ -51,7 +51,9 @@ class TestProductionDeployment:
     def test_production_cors_headers(self):
         """Verify CORS is configured correctly"""
         headers = {"Origin": "https://babyshield.cureviax.ai"}
-        response = requests.options(f"{BASE_URL}/api/v1/recalls", headers=headers, timeout=10)
+        response = requests.options(
+            f"{BASE_URL}/api/v1/recalls", headers=headers, timeout=10
+        )
         print(f"CORS response headers: {dict(response.headers)}")
         # Accept 204 (No Content) which is correct for OPTIONS preflight
         assert response.status_code in [200, 204, 404, 405]

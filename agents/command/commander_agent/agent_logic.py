@@ -66,11 +66,19 @@ class BabyShieldCommanderLogic:
         """
         self.agent_id = agent_id
         self.logger = logger_instance or logging.getLogger(__name__)
-        self.planner = BabyShieldPlannerLogic(agent_id="planner_for_commander", logger_instance=self.logger)
-        self.router = BabyShieldRouterLogic(agent_id="router_for_commander", logger_instance=self.logger)
-        self.logger.info("BabyShieldCommanderLogic initialized. It now directly controls the Planner and Router.")
+        self.planner = BabyShieldPlannerLogic(
+            agent_id="planner_for_commander", logger_instance=self.logger
+        )
+        self.router = BabyShieldRouterLogic(
+            agent_id="router_for_commander", logger_instance=self.logger
+        )
+        self.logger.info(
+            "BabyShieldCommanderLogic initialized. It now directly controls the Planner and Router."
+        )
 
-    async def start_safety_check_workflow(self, user_request: Dict[str, Any]) -> Dict[str, Any]:
+    async def start_safety_check_workflow(
+        self, user_request: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         The primary method that executes the entire end-to-end safety check.
 
@@ -95,10 +103,14 @@ class BabyShieldCommanderLogic:
                 return {"status": "FAILED", "error": error_msg}
 
             plan = planner_result.get("plan")
-            self.logger.info(f"Step 1 Complete. Plan '{plan.get('plan_id')}' created successfully.")
+            self.logger.info(
+                f"Step 1 Complete. Plan '{plan.get('plan_id')}' created successfully."
+            )
 
             # --- Step 2: Delegate to Router ---
-            self.logger.info(f"Step 2: Calling Router to execute plan '{plan.get('plan_id')}'...")
+            self.logger.info(
+                f"Step 2: Calling Router to execute plan '{plan.get('plan_id')}'..."
+            )
             router_result = await self.router.execute_plan(plan)
 
             if router_result.get("status") != "COMPLETED":
@@ -117,12 +129,22 @@ class BabyShieldCommanderLogic:
 
                     recall = None
                     if model_number:
-                        self.logger.info(f"Attempting DB fallback with model_number: {model_number}")
-                        recall = db.query(RecallDB).filter(RecallDB.model_number.ilike(model_number)).first()
+                        self.logger.info(
+                            f"Attempting DB fallback with model_number: {model_number}"
+                        )
+                        recall = (
+                            db.query(RecallDB)
+                            .filter(RecallDB.model_number.ilike(model_number))
+                            .first()
+                        )
 
                     if not recall and barcode:
-                        self.logger.info(f"Attempting DB fallback with barcode: {barcode}")
-                        recall = db.query(RecallDB).filter(RecallDB.upc == barcode).first()
+                        self.logger.info(
+                            f"Attempting DB fallback with barcode: {barcode}"
+                        )
+                        recall = (
+                            db.query(RecallDB).filter(RecallDB.upc == barcode).first()
+                        )
 
                     db.close()
                     if recall:
@@ -135,7 +157,9 @@ class BabyShieldCommanderLogic:
                                 "recall_id": recall.recall_id,
                                 "product_name": recall.product_name,
                                 "model_number": recall.model_number,
-                                "recall_date": recall.recall_date.isoformat() if recall.recall_date else None,
+                                "recall_date": recall.recall_date.isoformat()
+                                if recall.recall_date
+                                else None,
                                 "source_agency": recall.source_agency,
                                 "description": recall.description,
                                 "hazard": recall.hazard,
@@ -145,7 +169,9 @@ class BabyShieldCommanderLogic:
                             }
                         return {"status": "COMPLETED", "data": recall_data}
                     else:
-                        self.logger.error("Recall not found even with direct DB fallback.")
+                        self.logger.error(
+                            "Recall not found even with direct DB fallback."
+                        )
                 except Exception as fallback_exc:
                     self.logger.error(f"DB fallback failed: {fallback_exc}")
                 # --------- END DB FALLBACK -----------
@@ -158,7 +184,9 @@ class BabyShieldCommanderLogic:
             # --- START OF NEW LOGIC ---
             # Check if the workflow completed but produced an empty or inconclusive result.
             # This happens if a product isn't identified or no recalls are found.
-            if router_result.get("status") == "COMPLETED" and (not final_result or not final_result.get("risk_level")):
+            if router_result.get("status") == "COMPLETED" and (
+                not final_result or not final_result.get("risk_level")
+            ):
                 self.logger.warning(
                     "Workflow completed but resulted in an inconclusive analysis. Returning an 'UNKNOWN' status."
                 )

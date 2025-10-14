@@ -292,7 +292,9 @@ class TestAsyncConverter:
             mock_client.request.return_value = mock_response
             mock_client_class.return_value.__aenter__.return_value = mock_client
 
-            result = await AsyncConverter.convert_requests_to_async("https://example.com")
+            result = await AsyncConverter.convert_requests_to_async(
+                "https://example.com"
+            )
             assert result == {"data": "test"}
 
 

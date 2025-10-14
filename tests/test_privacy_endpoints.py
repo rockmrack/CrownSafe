@@ -49,12 +49,18 @@ class PrivacyEndpointTester:
         all_ok = True
         for path, expected_title in pages:
             response = self.session.get(f"{self.base_url}{path}")
-            self.test(response.status_code == 200, f"{path} returns {response.status_code}")
+            self.test(
+                response.status_code == 200, f"{path} returns {response.status_code}"
+            )
 
             if response.status_code == 200:
                 content = response.text
-                self.test(expected_title in content, f"{path} contains '{expected_title}'")
-                self.test("BabyShield" in content, f"{path} contains BabyShield branding")
+                self.test(
+                    expected_title in content, f"{path} contains '{expected_title}'"
+                )
+                self.test(
+                    "BabyShield" in content, f"{path} contains BabyShield branding"
+                )
             else:
                 all_ok = False
 
@@ -185,13 +191,17 @@ class PrivacyEndpointTester:
         )
 
         # Test with auth
-        response = self.session.get(f"{self.base_url}/api/v1/admin/privacy/requests", headers=self.admin_headers)
+        response = self.session.get(
+            f"{self.base_url}/api/v1/admin/privacy/requests", headers=self.admin_headers
+        )
 
         if response.status_code == 503:
             print("   ⚠️ Admin not configured, skipping")
             return True
 
-        self.test(response.status_code == 200, f"Admin list returns {response.status_code}")
+        self.test(
+            response.status_code == 200, f"Admin list returns {response.status_code}"
+        )
 
         if response.status_code == 200:
             data = response.json()
@@ -206,7 +216,9 @@ class PrivacyEndpointTester:
                 first = items[0]
                 self.test("id" in first, "Request has ID")
                 self.test("kind" in first, f"Request has kind: {first.get('kind')}")
-                self.test("status" in first, f"Request has status: {first.get('status')}")
+                self.test(
+                    "status" in first, f"Request has status: {first.get('status')}"
+                )
                 self.test(
                     "email_masked" in first,
                     f"Email is masked: {first.get('email_masked')}",
@@ -257,7 +269,9 @@ class PrivacyEndpointTester:
             print("   ⚠️ Admin not configured, skipping")
             return True
 
-        self.test(response.status_code == 200, f"Valid update returns {response.status_code}")
+        self.test(
+            response.status_code == 200, f"Valid update returns {response.status_code}"
+        )
 
         if response.status_code == 200:
             data = response.json()
@@ -283,10 +297,14 @@ class PrivacyEndpointTester:
             )
 
             if create_response.status_code == 200:
-                self.export_request_id = create_response.json().get("data", {}).get("request_id")
+                self.export_request_id = (
+                    create_response.json().get("data", {}).get("request_id")
+                )
 
         if self.export_request_id:
-            response = self.session.get(f"{self.base_url}/api/v1/user/privacy/status/{self.export_request_id}")
+            response = self.session.get(
+                f"{self.base_url}/api/v1/user/privacy/status/{self.export_request_id}"
+            )
 
             self.test(
                 response.status_code == 200,
@@ -334,7 +352,9 @@ class PrivacyEndpointTester:
 
         all_ok = True
         for email in invalid_emails:
-            response = self.session.post(f"{self.base_url}/api/v1/user/data/export", json={"email": email})
+            response = self.session.post(
+                f"{self.base_url}/api/v1/user/data/export", json={"email": email}
+            )
 
             self.test(
                 response.status_code in (400, 422),
@@ -384,7 +404,9 @@ class PrivacyEndpointTester:
 
         all_ok = True
         for endpoint, right in endpoints:
-            response = self.session.post(f"{self.base_url}{endpoint}", json={"email": test_email})
+            response = self.session.post(
+                f"{self.base_url}{endpoint}", json={"email": test_email}
+            )
 
             self.test(
                 response.status_code == 200,

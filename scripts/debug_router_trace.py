@@ -62,7 +62,9 @@ class DebugMockClient:
         self.discoveries = {}
         print("🔍 DebugMockClient created")
 
-    async def send_message(self, payload, message_type, target_agent_id, correlation_id):
+    async def send_message(
+        self, payload, message_type, target_agent_id, correlation_id
+    ):
         msg = {
             "payload": payload,
             "message_type": message_type,
@@ -219,7 +221,9 @@ async def debug_router():
 
     # Show trace of client calls
     print("\n📜 Client method calls:")
-    client_calls = [log for log in TRACE_LOG if "send_message" in log or "query_discovery" in log]
+    client_calls = [
+        log for log in TRACE_LOG if "send_message" in log or "query_discovery" in log
+    ]
     for call in client_calls:
         print(f"  {call}")
 
@@ -253,7 +257,9 @@ async def simple_trace_test():
             if callable(attr):
 
                 def wrapper(*args, **kwargs):
-                    call_log.append(f"CLIENT.{name} called with args={args}, kwargs={kwargs}")
+                    call_log.append(
+                        f"CLIENT.{name} called with args={args}, kwargs={kwargs}"
+                    )
                     if asyncio.iscoroutinefunction(attr):
                         return attr(*args, **kwargs)
                     return attr(*args, **kwargs)
@@ -281,7 +287,9 @@ async def simple_trace_test():
     router = RouterLogic("test", client, logger)
 
     # Check if client is still our mock
-    print(f"Router client is TrackedClient: {isinstance(router.mcp_client, TrackedClient)}")
+    print(
+        f"Router client is TrackedClient: {isinstance(router.mcp_client, TrackedClient)}"
+    )
     print(f"Router client: {router.mcp_client}")
 
     print("\nCall log:")

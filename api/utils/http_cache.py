@@ -64,7 +64,9 @@ def make_etag(content: str, weak: bool = False) -> str:
         ETag string with quotes (e.g., '"abc123"' or 'W/"abc123"')
     """
     # Generate hash
-    hash_value = hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]  # Use first 16 chars for brevity
+    hash_value = hashlib.sha256(content.encode("utf-8")).hexdigest()[
+        :16
+    ]  # Use first 16 chars for brevity
 
     # Format as ETag
     if weak:
@@ -218,7 +220,9 @@ def add_cache_headers(
             response.headers["Cache-Control"] = ", ".join(directives)
 
 
-def create_not_modified_response(etag: Optional[str] = None, cache_control: Optional[str] = None) -> Response:
+def create_not_modified_response(
+    etag: Optional[str] = None, cache_control: Optional[str] = None
+) -> Response:
     """
     Create a 304 Not Modified response
 
@@ -262,7 +266,9 @@ class CacheableResponse:
 
         # Check conditional request
         if check_if_none_match(request, etag):
-            return create_not_modified_response(etag=etag, cache_control=f"private, max-age={max_age}")
+            return create_not_modified_response(
+                etag=etag, cache_control=f"private, max-age={max_age}"
+            )
 
         # Create full response
         response = JSONResponse(content)
@@ -286,10 +292,14 @@ class CacheableResponse:
 
         # Check conditional requests
         if check_if_none_match(request, etag):
-            return create_not_modified_response(etag=etag, cache_control=f"public, max-age={max_age}")
+            return create_not_modified_response(
+                etag=etag, cache_control=f"public, max-age={max_age}"
+            )
 
         if check_if_modified_since(request, last_updated):
-            return create_not_modified_response(etag=etag, cache_control=f"public, max-age={max_age}")
+            return create_not_modified_response(
+                etag=etag, cache_control=f"public, max-age={max_age}"
+            )
 
         # Create full response
         response = JSONResponse(content)

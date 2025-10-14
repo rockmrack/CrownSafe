@@ -24,7 +24,9 @@ def upgrade():
     # Add provider_id column (hashed provider + subject)
     op.add_column(
         "users",
-        sa.Column("provider_id", sa.String(255), nullable=True, unique=True, index=True),
+        sa.Column(
+            "provider_id", sa.String(255), nullable=True, unique=True, index=True
+        ),
     )
 
     # Add provider_type column (apple, google, email)

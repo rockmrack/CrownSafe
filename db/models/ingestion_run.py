@@ -28,12 +28,16 @@ class IngestionRun(Base):
     # Core fields
     agency = Column(String(64), nullable=False, index=True)
     mode = Column(String(16), nullable=False)  # delta, full, incremental
-    status = Column(String(16), nullable=False, index=True)  # queued, running, success, failed, cancelled, partial
+    status = Column(
+        String(16), nullable=False, index=True
+    )  # queued, running, success, failed, cancelled, partial
 
     # Timestamps
     started_at = Column(DateTime(timezone=True), nullable=True)
     finished_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.current_timestamp(), nullable=False)
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.current_timestamp(), nullable=False
+    )
 
     # Metrics
     items_inserted = Column(Integer, default=0, nullable=False)
@@ -61,7 +65,9 @@ class IngestionRun(Base):
     )
 
     def __repr__(self):
-        return f"<IngestionRun(id={self.id}, agency={self.agency}, status={self.status})>"
+        return (
+            f"<IngestionRun(id={self.id}, agency={self.agency}, status={self.status})>"
+        )
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
@@ -93,7 +99,10 @@ class IngestionRun(Base):
             return (self.finished_at - self.started_at).total_seconds()
         elif self.started_at:
             # Still running
-            return (datetime.utcnow().replace(tzinfo=self.started_at.tzinfo) - self.started_at).total_seconds()
+            return (
+                datetime.utcnow().replace(tzinfo=self.started_at.tzinfo)
+                - self.started_at
+            ).total_seconds()
         return None
 
     @property

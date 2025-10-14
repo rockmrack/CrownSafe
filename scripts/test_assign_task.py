@@ -16,7 +16,9 @@ try:
     project_root = os.path.dirname(script_dir)  # RossNetAgents directory
     if project_root not in sys.path:
         sys.path.insert(0, project_root)
-        print(f"Added {project_root} to sys.path")  # Add print statement for verification
+        print(
+            f"Added {project_root} to sys.path"
+        )  # Add print statement for verification
     # Verify core_infra exists
     core_infra_path = os.path.join(project_root, "core_infra")
     if not os.path.isdir(core_infra_path):
@@ -38,14 +40,18 @@ except ImportError as e:
     sys.exit(1)
 
 # --- Configuration ---
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 # Set higher level for noisy libraries if needed
 logging.getLogger("websockets.client").setLevel(logging.WARNING)
 logger = logging.getLogger("TestTaskAssignScript")
 
 CONTROLLER_AGENT_ID = "controller_agent_001"  # ID for this test script client
 TARGET_AGENT_ID = "web_research_agent_01"  # The agent we want to send the task to
-TASK_NAME = "perform_web_search"  # The capability name defined in the agent's CAPABILITIES
+TASK_NAME = (
+    "perform_web_search"  # The capability name defined in the agent's CAPABILITIES
+)
 TASK_TIMEOUT_SECONDS = 30.0  # How long to wait for the task result
 
 # --- Shared State for Response Handling ---
@@ -72,7 +78,9 @@ async def handle_controller_message(message: Dict[str, Any]):
     # Check if this message corresponds to the task we sent using correlation_id
     if correlation_id == task_correlation_id:
         if message_type in ["TASK_COMPLETE", "TASK_FAIL"]:
-            logger.info(f"Received final task status: {message_type} for correlation_id: {correlation_id}")
+            logger.info(
+                f"Received final task status: {message_type} for correlation_id: {correlation_id}"
+            )
             task_result = message  # Store the whole message
             task_completion_event.set()  # Signal that the task is done
         elif message_type == "TASK_ACKNOWLEDGE":
@@ -84,7 +92,9 @@ async def handle_controller_message(message: Dict[str, Any]):
                 f"Received STATUS_UPDATE for correlation_id: {correlation_id}, Description: {payload.get('status_description')}"
             )
         else:
-            logger.debug(f"Received message type {message_type} with matching correlation ID, but not final status.")
+            logger.debug(
+                f"Received message type {message_type} with matching correlation ID, but not final status."
+            )
     else:
         logger.debug(
             f"Received message with non-matching correlation ID: {correlation_id} (Expected: {task_correlation_id})"
@@ -99,7 +109,9 @@ async def run_task_assignment():
     global task_result, task_completion_event, task_correlation_id
     logger.info(f"Instantiating MCPClient for controller: {CONTROLLER_AGENT_ID}")
 
-    client = MCPClient(agent_id=CONTROLLER_AGENT_ID, message_handler=handle_controller_message)
+    client = MCPClient(
+        agent_id=CONTROLLER_AGENT_ID, message_handler=handle_controller_message
+    )
 
     subtask_id_to_send = str(uuid.uuid4())
     task_correlation_id = str(uuid.uuid4())
@@ -137,17 +149,25 @@ async def run_task_assignment():
         await client.send_message(task_message)
         logger.info("Task message sent.")
 
-        logger.info(f"Waiting up to {TASK_TIMEOUT_SECONDS} seconds for task completion...")
+        logger.info(
+            f"Waiting up to {TASK_TIMEOUT_SECONDS} seconds for task completion..."
+        )
         try:
-            await asyncio.wait_for(task_completion_event.wait(), timeout=TASK_TIMEOUT_SECONDS)
+            await asyncio.wait_for(
+                task_completion_event.wait(), timeout=TASK_TIMEOUT_SECONDS
+            )
             logger.info("Task completion event received.")
             if task_result:
-                logger.info(f"Final Task Result Message: {json.dumps(task_result, indent=2)}")
+                logger.info(
+                    f"Final Task Result Message: {json.dumps(task_result, indent=2)}"
+                )
             else:
                 logger.error("Completion event received, but no result was stored.")
 
         except asyncio.TimeoutError:
-            logger.error(f"Timeout: Did not receive task completion message within {TASK_TIMEOUT_SECONDS} seconds.")
+            logger.error(
+                f"Timeout: Did not receive task completion message within {TASK_TIMEOUT_SECONDS} seconds."
+            )
 
     except ConnectionError as e:
         logger.error(f"Connection error during task assignment test: {e}")
@@ -178,7 +198,9 @@ if __name__ == "__main__":
     expected_dir_name = "RossNetAgents"
     current_working_dir = os.path.basename(os.getcwd())
     if current_working_dir != expected_dir_name:
-        print(f"\nERROR: This script must be run from the '{expected_dir_name}' directory.")
+        print(
+            f"\nERROR: This script must be run from the '{expected_dir_name}' directory."
+        )
         print(f"       Current directory: '{os.getcwd()}'")
         sys.exit(1)
 

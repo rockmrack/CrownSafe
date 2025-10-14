@@ -87,7 +87,9 @@ class TestMultiTenancyDataIsolation:
         db_session.refresh(conversation)
         return conversation
 
-    def test_user_cannot_access_another_user_conversations(self, db_session, user_a, user_b, user_a_conversation):
+    def test_user_cannot_access_another_user_conversations(
+        self, db_session, user_a, user_b, user_a_conversation
+    ):
         """
         Test User B cannot access User A's conversations
 
@@ -98,7 +100,9 @@ class TestMultiTenancyDataIsolation:
         - Audit log entry created for access attempt
         """
         # User B attempts to query conversations
-        user_b_conversations = db_session.query(Conversation).filter_by(user_id=user_b.user_id).all()
+        user_b_conversations = (
+            db_session.query(Conversation).filter_by(user_id=user_b.user_id).all()
+        )
 
         # Verify User B has no conversations
         assert len(user_b_conversations) == 0
@@ -108,12 +112,16 @@ class TestMultiTenancyDataIsolation:
 
         # Attempt direct access by ID (should fail or return None)
         attempted_access = (
-            db_session.query(Conversation).filter_by(id=user_a_conversation.id, user_id=user_b.user_id).first()
+            db_session.query(Conversation)
+            .filter_by(id=user_a_conversation.id, user_id=user_b.user_id)
+            .first()
         )
 
         assert attempted_access is None, "User B should not access User A's data"
 
-    def test_api_endpoint_enforces_user_id_filtering(self, db_session, user_a, user_b, user_a_conversation):
+    def test_api_endpoint_enforces_user_id_filtering(
+        self, db_session, user_a, user_b, user_a_conversation
+    ):
         """
         Test API endpoints enforce user_id filtering
 
@@ -139,7 +147,9 @@ class TestMultiTenancyDataIsolation:
                 403,
             ], "Should not allow access to other user's data"
 
-    def test_database_query_row_level_security(self, db_session, user_a, user_b, user_a_conversation):
+    def test_database_query_row_level_security(
+        self, db_session, user_a, user_b, user_a_conversation
+    ):
         """
         Test database row-level security policies
 
@@ -156,7 +166,9 @@ class TestMultiTenancyDataIsolation:
 
         # Query as User B
         start_time = time.time()
-        conversations = db_session.query(Conversation).filter_by(user_id=user_b.user_id).all()
+        conversations = (
+            db_session.query(Conversation).filter_by(user_id=user_b.user_id).all()
+        )
         query_time = (time.time() - start_time) * 1000  # Convert to ms
 
         # Verify isolation
@@ -164,7 +176,9 @@ class TestMultiTenancyDataIsolation:
         assert query_time < 100, "Query should be fast (relaxed from 10ms to 100ms)"
 
         # Verify User A's data is isolated
-        user_a_data = db_session.query(Conversation).filter_by(user_id=user_a.user_id).all()
+        user_a_data = (
+            db_session.query(Conversation).filter_by(user_id=user_a.user_id).all()
+        )
         assert len(user_a_data) == 1
         assert user_a_data[0].id == user_a_conversation.id
 
@@ -179,23 +193,33 @@ class TestMultiTenancyDataIsolation:
         - Conversations are user-specific
         """
         # Create conversations for both users
-        conv_a = Conversation(id=str(uuid.uuid4()), user_id=user_a.user_id, started_at=datetime.utcnow())
-        conv_b = Conversation(id=str(uuid.uuid4()), user_id=user_b.user_id, started_at=datetime.utcnow())
+        conv_a = Conversation(
+            id=str(uuid.uuid4()), user_id=user_a.user_id, started_at=datetime.utcnow()
+        )
+        conv_b = Conversation(
+            id=str(uuid.uuid4()), user_id=user_b.user_id, started_at=datetime.utcnow()
+        )
         db_session.add(conv_a)
         db_session.add(conv_b)
         db_session.commit()
 
         # User A should only see their own conversations
-        user_a_convs = db_session.query(Conversation).filter_by(user_id=user_a.user_id).all()
+        user_a_convs = (
+            db_session.query(Conversation).filter_by(user_id=user_a.user_id).all()
+        )
         assert len(user_a_convs) == 1
         assert user_a_convs[0].user_id == user_a.user_id
 
         # User B should only see their own conversations
-        user_b_convs = db_session.query(Conversation).filter_by(user_id=user_b.user_id).all()
+        user_b_convs = (
+            db_session.query(Conversation).filter_by(user_id=user_b.user_id).all()
+        )
         assert len(user_b_convs) == 1
         assert user_b_convs[0].user_id == user_b.user_id
 
-    def test_bulk_operations_respect_tenant_boundaries(self, db_session, user_a, user_b, user_a_conversation):
+    def test_bulk_operations_respect_tenant_boundaries(
+        self, db_session, user_a, user_b, user_a_conversation
+    ):
         """
         Test bulk operations respect tenant boundaries
 
@@ -218,17 +242,23 @@ class TestMultiTenancyDataIsolation:
         db_session.commit()
 
         # User A bulk deletes conversations
-        deleted_count = db_session.query(Conversation).filter_by(user_id=user_a.user_id).delete()
+        deleted_count = (
+            db_session.query(Conversation).filter_by(user_id=user_a.user_id).delete()
+        )
         db_session.commit()
 
         # Verify only User A's conversations deleted
         assert deleted_count == 6  # Original + 5 new
 
         # Verify User B's data unaffected (if any existed)
-        user_b_conversations = db_session.query(Conversation).filter_by(user_id=user_b.user_id).count()
+        user_b_conversations = (
+            db_session.query(Conversation).filter_by(user_id=user_b.user_id).count()
+        )
         assert user_b_conversations == 0  # User B had no conversations
 
-    def test_cross_tenant_foreign_key_prevention(self, db_session, user_a, user_b, user_a_conversation):
+    def test_cross_tenant_foreign_key_prevention(
+        self, db_session, user_a, user_b, user_a_conversation
+    ):
         """
         Test prevention of cross-tenant foreign key references
 
@@ -250,7 +280,11 @@ class TestMultiTenancyDataIsolation:
 
             # Application-level check (before DB commit)
             # In real implementation, this would be in the service layer
-            conversation = db_session.query(Conversation).filter_by(id=user_a_conversation.id).first()
+            conversation = (
+                db_session.query(Conversation)
+                .filter_by(id=user_a_conversation.id)
+                .first()
+            )
 
             if conversation.user_id != user_b.user_id:
                 raise HTTPException(
@@ -258,7 +292,9 @@ class TestMultiTenancyDataIsolation:
                     detail="Cannot add message to another user's conversation",
                 )
 
-    def test_cascade_delete_respects_tenant_isolation(self, db_session, user_a, user_a_conversation):
+    def test_cascade_delete_respects_tenant_isolation(
+        self, db_session, user_a, user_a_conversation
+    ):
         """
         Test cascade delete respects tenant isolation
 

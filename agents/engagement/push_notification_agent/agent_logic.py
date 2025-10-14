@@ -22,7 +22,9 @@ logger = logging.getLogger(__name__)
 if FIREBASE_AVAILABLE:
     try:
         if not firebase_admin._apps:
-            key_path = os.path.join(os.path.dirname(__file__), "../../../secrets/serviceAccountKey.json")
+            key_path = os.path.join(
+                os.path.dirname(__file__), "../../../secrets/serviceAccountKey.json"
+            )
             if os.path.exists(key_path):
                 cred = credentials.Certificate(key_path)
                 firebase_admin.initialize_app(cred)
@@ -34,7 +36,9 @@ if FIREBASE_AVAILABLE:
         logger.warning(f"Failed to initialize Firebase: {e}")
         FIREBASE_AVAILABLE = False
 else:
-    logger.warning("Firebase Admin SDK not available - push notifications will be mocked")
+    logger.warning(
+        "Firebase Admin SDK not available - push notifications will be mocked"
+    )
 
 
 class PushNotificationAgentLogic:
@@ -45,7 +49,9 @@ class PushNotificationAgentLogic:
     def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
-        self.logger.info(f"PushNotificationAgentLogic initialized for agent {self.agent_id}.")
+        self.logger.info(
+            f"PushNotificationAgentLogic initialized for agent {self.agent_id}."
+        )
 
     def send_notification(
         self,
@@ -99,7 +105,9 @@ class PushNotificationAgentLogic:
             }
 
         loop = asyncio.get_running_loop()
-        result = await loop.run_in_executor(None, self.send_notification, device_token, title, body, data)
+        result = await loop.run_in_executor(
+            None, self.send_notification, device_token, title, body, data
+        )
 
         if result.get("status") == "success":
             return {"status": "COMPLETED", "message_id": result.get("message_id")}

@@ -130,11 +130,15 @@ def migrate_memory_system():
         logger.error("Cannot proceed with migration - import failures")
         return False
 
-    logger.info("Starting migration from MemoryManager MVP-1.4 to EnhancedMemoryManager V2.0")
+    logger.info(
+        "Starting migration from MemoryManager MVP-1.4 to EnhancedMemoryManager V2.0"
+    )
 
     # Test basic memory manager first
     if not test_basic_memory_manager():
-        logger.error("Basic MemoryManager test failed - cannot proceed with enhanced version")
+        logger.error(
+            "Basic MemoryManager test failed - cannot proceed with enhanced version"
+        )
         return False
 
     try:
@@ -143,7 +147,9 @@ def migrate_memory_system():
         os.chdir(project_root)
 
         # Backup existing database
-        backup_path = f"chroma_db_data_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        backup_path = (
+            f"chroma_db_data_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        )
         if os.path.exists("chroma_db_data"):
             shutil.copytree("chroma_db_data", backup_path)
             logger.info(f"Backup created at: {backup_path}")
@@ -198,7 +204,9 @@ def migrate_memory_system():
                 logger.info(f"SUCCESS: Collection '{expected}' ready")
                 success_count += 1
             else:
-                logger.warning(f"Collection '{expected}' not found - may be created on demand")
+                logger.warning(
+                    f"Collection '{expected}' not found - may be created on demand"
+                )
 
         # Test enhanced features
         enhanced_features = [
@@ -253,17 +261,23 @@ def migrate_memory_system():
         os.chdir(original_cwd)
 
         # More lenient success criteria
-        if feature_count >= 2 and collection_count >= 2:  # At least some functionality should work
+        if (
+            feature_count >= 2 and collection_count >= 2
+        ):  # At least some functionality should work
             logger.info("Migration completed successfully!")
             logger.info("EnhancedMemoryManager V2.0 is ready")
             logger.info(f"  - Collections: {success_count}/5")
             logger.info(f"  - Features: {feature_count}/4")
             logger.info(f"  - Enhanced Collections: {collection_count}/4")
-            logger.info(f"  - Analytics: {'Working' if analytics_working else 'Limited'}")
+            logger.info(
+                f"  - Analytics: {'Working' if analytics_working else 'Limited'}"
+            )
             return True
         else:
             logger.error("Migration failed - insufficient functionality")
-            logger.error(f"Feature count: {feature_count}, Collection count: {collection_count}")
+            logger.error(
+                f"Feature count: {feature_count}, Collection count: {collection_count}"
+            )
             return False
 
     except Exception as e:
@@ -373,7 +387,9 @@ def cleanup_old_backups(keep_count=3):
                 logger.info(f"Removing old backup: {old_backup}")
                 shutil.rmtree(old_backup)
 
-        logger.info(f"Backup cleanup completed. Kept {min(len(backup_dirs), keep_count)} backups.")
+        logger.info(
+            f"Backup cleanup completed. Kept {min(len(backup_dirs), keep_count)} backups."
+        )
 
         # Restore original working directory
         os.chdir(original_cwd)
@@ -405,7 +421,9 @@ def simple_enhanced_test():
 
         # Try basic analytics
         analytics = enhanced_memory.get_document_usage_analytics()
-        logger.info(f"Basic analytics: SUCCESS - {analytics.get('total_documents', 0)} documents")
+        logger.info(
+            f"Basic analytics: SUCCESS - {analytics.get('total_documents', 0)} documents"
+        )
 
         # Try enhanced analytics if available
         if hasattr(enhanced_memory, "get_enhanced_analytics"):
@@ -440,7 +458,9 @@ if __name__ == "__main__":
         sys.exit(1)
 
     if not IMPORTS_SUCCESS:
-        print("ERROR: Cannot import required modules. Please check file structure and dependencies.")
+        print(
+            "ERROR: Cannot import required modules. Please check file structure and dependencies."
+        )
         sys.exit(1)
 
     # Run simple test first
@@ -475,7 +495,9 @@ if __name__ == "__main__":
             print("3. Test with a new workflow: python scripts/test_commander_flow.py")
             print("4. Run enhanced test suite: python scripts/test_enhanced_memory.py")
         else:
-            print("Migration verification had some issues, but core functionality appears to work.")
+            print(
+                "Migration verification had some issues, but core functionality appears to work."
+            )
             print("You can proceed with testing the enhanced features.")
     else:
         print("Migration failed. Check logs for details.")

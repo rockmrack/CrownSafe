@@ -38,7 +38,9 @@ class MCPHeader(BaseModel):
     sender_id: str = Field(..., description="Unique ID of the sending agent or service")
     message_type: str = Field(..., description="Type of the message")
     correlation_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp: str = Field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
     version: str = Field("1.0")
     target_agent_id: Optional[str] = Field(None)
     target_service: Optional[str] = Field(None)

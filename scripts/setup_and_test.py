@@ -52,7 +52,9 @@ def main():
         print("🗑️  Removed old database")
 
     # Step 2: Seed the database
-    if not run_command("python scripts/seed_for_live_test.py", "Seeding database with test data"):
+    if not run_command(
+        "python scripts/seed_for_live_test.py", "Seeding database with test data"
+    ):
         print("❌ Failed to seed database. Exiting.")
         return 1
 
@@ -79,7 +81,9 @@ def main():
         time.sleep(10)
 
     # Step 4: Run the live test
-    if not run_command("python scripts/run_live_http_test.py", "Running live HTTP test"):
+    if not run_command(
+        "python scripts/run_live_http_test.py", "Running live HTTP test"
+    ):
         print("❌ Live test failed")
         return 1
 

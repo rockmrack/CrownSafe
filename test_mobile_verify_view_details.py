@@ -38,7 +38,9 @@ print(f"Payload: {json.dumps(verify_payload, indent=2)}")
 print()
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/safety-check", json=verify_payload, timeout=30)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/safety-check", json=verify_payload, timeout=30
+    )
 
     print(f"Status Code: {response.status_code}")
 

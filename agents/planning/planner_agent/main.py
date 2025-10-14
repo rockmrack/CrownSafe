@@ -10,7 +10,9 @@ from typing import Optional, Dict, Any, List
 from dotenv import load_dotenv
 
 # Ensure project root is in sys.path for core_infra imports
-project_root_main = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+project_root_main = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..")
+)
 if project_root_main not in sys.path:
     sys.path.insert(0, project_root_main)
 
@@ -114,34 +116,48 @@ class PlannerAgentManager:
                 return
 
             # Reduced logging to avoid duplication with logic
-            logger.debug(f"Processing {message_type} from {sender_id} (CorrID: {correlation_id})")
+            logger.debug(
+                f"Processing {message_type} from {sender_id} (CorrID: {correlation_id})"
+            )
 
             # Convert message to dict format expected by logic
             message_dict = message.model_dump()
 
             # Process through logic - handle both async and sync versions
             try:
-                if hasattr(self.planner_logic, "process_message") and asyncio.iscoroutinefunction(
-                    self.planner_logic.process_message
-                ):
-                    response_from_logic = await self.planner_logic.process_message(message_dict, self.mcp_client)
+                if hasattr(
+                    self.planner_logic, "process_message"
+                ) and asyncio.iscoroutinefunction(self.planner_logic.process_message):
+                    response_from_logic = await self.planner_logic.process_message(
+                        message_dict, self.mcp_client
+                    )
                 else:
                     # Handle synchronous process_message or fallback to process_task
-                    if message_type == "TASK_ASSIGN" and hasattr(self.planner_logic, "process_task"):
+                    if message_type == "TASK_ASSIGN" and hasattr(
+                        self.planner_logic, "process_task"
+                    ):
                         task_data = message_dict.get("payload", {})
                         if asyncio.iscoroutinefunction(self.planner_logic.process_task):
-                            task_result_payload = await self.planner_logic.process_task(task_data)
+                            task_result_payload = await self.planner_logic.process_task(
+                                task_data
+                            )
                         else:
-                            task_result_payload = self.planner_logic.process_task(task_data)
+                            task_result_payload = self.planner_logic.process_task(
+                                task_data
+                            )
 
                         # Convert task result to message format
-                        if task_result_payload and isinstance(task_result_payload, dict):
+                        if task_result_payload and isinstance(
+                            task_result_payload, dict
+                        ):
                             if task_result_payload.get("status") == "COMPLETED":
                                 response_from_logic = {
                                     "message_type": "TASK_COMPLETE",
                                     "payload": task_result_payload,
                                 }
-                                logger.debug("Task completed successfully, sending TASK_COMPLETE")
+                                logger.debug(
+                                    "Task completed successfully, sending TASK_COMPLETE"
+                                )
                             else:
                                 response_from_logic = {
                                     "message_type": "TASK_FAIL",
@@ -151,7 +167,9 @@ class PlannerAgentManager:
                                     f"Task failed with status: {task_result_payload.get('status')}, sending TASK_FAIL"
                                 )
                         else:
-                            logger.error(f"Planner logic process_task returned invalid data: {task_result_payload}")
+                            logger.error(
+                                f"Planner logic process_task returned invalid data: {task_result_payload}"
+                            )
                             response_from_logic = {
                                 "message_type": "TASK_FAIL",
                                 "payload": {
@@ -164,12 +182,18 @@ class PlannerAgentManager:
                     else:
                         # For other message types, try process_message sync
                         if hasattr(self.planner_logic, "process_message"):
-                            response_from_logic = self.planner_logic.process_message(message_dict, self.mcp_client)
+                            response_from_logic = self.planner_logic.process_message(
+                                message_dict, self.mcp_client
+                            )
                         else:
-                            logger.warning(f"No handler for message type: {message_type}")
+                            logger.warning(
+                                f"No handler for message type: {message_type}"
+                            )
                             response_from_logic = None
             except Exception as process_error:
-                logger.error(f"Error in logic processing: {process_error}", exc_info=True)
+                logger.error(
+                    f"Error in logic processing: {process_error}", exc_info=True
+                )
                 if message_type == "TASK_ASSIGN":
                     response_from_logic = {
                         "message_type": "TASK_FAIL",
@@ -205,8 +229,14 @@ class PlannerAgentManager:
 
         # Check if this is a registration error
         error_str = str(payload).lower()
-        if "registration" in error_str or "capabilities" in error_str or "discovery_register" in error_str:
-            logger.critical("REGISTRATION FAILED - Server rejected our capabilities format!")
+        if (
+            "registration" in error_str
+            or "capabilities" in error_str
+            or "discovery_register" in error_str
+        ):
+            logger.critical(
+                "REGISTRATION FAILED - Server rejected our capabilities format!"
+            )
             logger.critical("Error payload: %s", payload)
             logger.critical("Shutting down due to registration failure...")
 
@@ -219,7 +249,9 @@ class PlannerAgentManager:
             # Log other errors but continue
             logger.error(f"Non-fatal error received: {payload}")
 
-    async def _handle_logic_response(self, response: Dict[str, Any], original_header: MCPHeader):
+    async def _handle_logic_response(
+        self, response: Dict[str, Any], original_header: MCPHeader
+    ):
         """Handle response from logic with proper validation"""
         try:
             if not isinstance(response, dict):
@@ -234,7 +266,9 @@ class PlannerAgentManager:
                 return
 
             if not isinstance(response_payload, dict):
-                logger.error(f"Logic response payload is not dict: {type(response_payload)}")
+                logger.error(
+                    f"Logic response payload is not dict: {type(response_payload)}"
+                )
                 return
 
             # Determine target and correlation ID
@@ -246,7 +280,9 @@ class PlannerAgentManager:
                 return
 
             # Send response
-            logger.info(f"Sending {response_message_type} response to {target_agent_id} (CorrID: {correlation_id})")
+            logger.info(
+                f"Sending {response_message_type} response to {target_agent_id} (CorrID: {correlation_id})"
+            )
 
             await self.mcp_client.send_message(
                 payload=response_payload,
@@ -325,7 +361,9 @@ class PlannerAgentManager:
         """Initialize PlannerLogic and MCPClient"""
         try:
             # Initialize PlannerLogic (MemoryAugmentedPlannerLogic)
-            self.planner_logic = PlannerLogic(agent_id=AGENT_ID, logger_instance=logic_logger)
+            self.planner_logic = PlannerLogic(
+                agent_id=AGENT_ID, logger_instance=logic_logger
+            )
 
             # FIXED: Get capabilities in correct format
             capabilities = self._get_capabilities_list()
@@ -345,7 +383,9 @@ class PlannerAgentManager:
                 message_handler=self.handle_incoming_message,
             )
 
-            logger.info(f"PlannerAgent components initialized (Version: {AGENT_VERSION})")
+            logger.info(
+                f"PlannerAgent components initialized (Version: {AGENT_VERSION})"
+            )
             logger.info(
                 f"Memory augmentation available: {any(cap.get('memory_augmented', False) for cap in capabilities)}"
             )
@@ -355,7 +395,9 @@ class PlannerAgentManager:
             return True
 
         except Exception as e:
-            logger.critical(f"Failed to initialize PlannerAgent components: {e}", exc_info=True)
+            logger.critical(
+                f"Failed to initialize PlannerAgent components: {e}", exc_info=True
+            )
             return False
 
     def setup_signal_handlers(self):
@@ -373,7 +415,9 @@ class PlannerAgentManager:
                     loop.add_signal_handler(sig, lambda s=sig: signal_handler(s))
                     logger.debug(f"Added signal handler for {signal.Signals(sig).name}")
                 except (NotImplementedError, OSError) as e:
-                    logger.warning(f"Cannot add signal handler for {signal.Signals(sig).name}: {e}")
+                    logger.warning(
+                        f"Cannot add signal handler for {signal.Signals(sig).name}: {e}"
+                    )
 
         except RuntimeError as e:
             logger.warning(f"Could not setup signal handlers: {e}")

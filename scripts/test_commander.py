@@ -16,7 +16,9 @@ sys.path.insert(0, project_root)
 from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
 from core_infra.database import Base, engine, SessionLocal, RecallDB
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # --- Test Configuration ---
 # Use a baby product UPC that the trial endpoint recognizes
@@ -27,7 +29,9 @@ TEST_BARCODE = "381370037248"
 
 async def main():
     logger = logging.getLogger(__name__)
-    logger.info("--- Starting Golden Master (Live End-to-End) Test for Baby Product ---")
+    logger.info(
+        "--- Starting Golden Master (Live End-to-End) Test for Baby Product ---"
+    )
 
     # 1. Set up in-memory test database and seed with matching recall
     logger.info("Setting up in-memory test database...")
@@ -50,7 +54,9 @@ async def main():
 
     try:
         # 2. Initialize the live Commander (with real sub-agents)
-        commander = BabyShieldCommanderLogic(agent_id="golden_master_commander", logger_instance=logger)
+        commander = BabyShieldCommanderLogic(
+            agent_id="golden_master_commander", logger_instance=logger
+        )
         logger.info("Commander initialized with live sub-agents.")
 
         # 3. Create the user request with our baby product barcode
@@ -73,10 +79,14 @@ async def main():
             risk_level = final_result.get("data", {}).get("risk_level")
             if risk_level and risk_level != "None":
                 print("\n" + "=" * 60)
-                print("✅✅✅ GOLDEN MASTER TEST PASSED: Live end-to-end baby product workflow succeeded.")
+                print(
+                    "✅✅✅ GOLDEN MASTER TEST PASSED: Live end-to-end baby product workflow succeeded."
+                )
             else:
                 print("\n" + "=" * 60)
-                print(f"❌ TEST FAILED: Workflow completed but risk_level was '{risk_level}'.")
+                print(
+                    f"❌ TEST FAILED: Workflow completed but risk_level was '{risk_level}'."
+                )
         else:
             print("\n" + "=" * 60)
             print(f"❌ TEST FAILED: Workflow failed with status '{status}'.")

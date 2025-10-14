@@ -35,17 +35,23 @@ except ImportError:
 logger_mm_default = logging.getLogger(__name__)
 
 # Default paths and settings
-DEFAULT_CHROMA_PATH = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), "chroma_db_data_v2")
+DEFAULT_CHROMA_PATH = os.path.join(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), "chroma_db_data_v2"
+)
 DEFAULT_COLLECTION_NAME = "cureviax_knowledge_base_v1"
 
 # Load environment variables
 if DOTENV_AVAILABLE:
     try:
-        project_root_for_env = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        project_root_for_env = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..")
+        )
         dotenv_path_for_env = os.path.join(project_root_for_env, ".env")
         if os.path.exists(dotenv_path_for_env):
             load_dotenv(dotenv_path_for_env)
-            logger_mm_default.debug(f"MemoryManager: Loaded .env from {dotenv_path_for_env}")
+            logger_mm_default.debug(
+                f"MemoryManager: Loaded .env from {dotenv_path_for_env}"
+            )
     except Exception as e_env:
         logger_mm_default.warning(f"MemoryManager: Error loading .env file: {e_env}")
 
@@ -84,7 +90,9 @@ class MemoryManager:
         if not self.logger.handlers:
             # Add basic handler if none exists
             handler = logging.StreamHandler()
-            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
             handler.setFormatter(formatter)
             self.logger.addHandler(handler)
             self.logger.setLevel(logging.INFO)
@@ -97,14 +105,22 @@ class MemoryManager:
             print(f"Logger test failed: {logger_test_error}. Creating fallback logger.")
             self.logger = logging.getLogger(f"{__name__}_{id(self)}")
             handler = logging.StreamHandler()
-            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
             handler.setFormatter(formatter)
             self.logger.addHandler(handler)
             self.logger.setLevel(logging.INFO)
 
         # Initialize paths and settings
-        self.db_path = chroma_db_path if chroma_db_path else os.getenv("CHROMA_DB_PATH", DEFAULT_CHROMA_PATH)
-        self.collection_name = collection_name if collection_name else DEFAULT_COLLECTION_NAME
+        self.db_path = (
+            chroma_db_path
+            if chroma_db_path
+            else os.getenv("CHROMA_DB_PATH", DEFAULT_CHROMA_PATH)
+        )
+        self.collection_name = (
+            collection_name if collection_name else DEFAULT_COLLECTION_NAME
+        )
 
         # Initialize components
         self.openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -114,19 +130,27 @@ class MemoryManager:
 
         # Check for OpenAI API key
         if not self.openai_api_key:
-            self.logger.warning("OPENAI_API_KEY not found. Will use default embedding function.")
+            self.logger.warning(
+                "OPENAI_API_KEY not found. Will use default embedding function."
+            )
 
         # Initialize OpenAI embedding function
         try:
             if self.openai_api_key:
-                self.embedding_function = chromadb.utils.embedding_functions.OpenAIEmbeddingFunction(
-                    api_key=self.openai_api_key, model_name="text-embedding-ada-002"
+                self.embedding_function = (
+                    chromadb.utils.embedding_functions.OpenAIEmbeddingFunction(
+                        api_key=self.openai_api_key, model_name="text-embedding-ada-002"
+                    )
                 )
-                self.logger.info("OpenAI EmbeddingFunction initialized with text-embedding-ada-002.")
+                self.logger.info(
+                    "OpenAI EmbeddingFunction initialized with text-embedding-ada-002."
+                )
             else:
                 self.logger.info("Using default ChromaDB embedding function.")
         except Exception as e_embed:
-            self.logger.error(f"Failed to initialize OpenAIEmbeddingFunction: {e_embed}")
+            self.logger.error(
+                f"Failed to initialize OpenAIEmbeddingFunction: {e_embed}"
+            )
             self.logger.warning("Falling back to default embedding function")
             self.embedding_function = None
 
@@ -142,10 +166,14 @@ class MemoryManager:
                 os.makedirs(self.db_path, exist_ok=True)
                 self.logger.info(f"Created ChromaDB directory: {self.db_path}")
             except Exception as e:
-                self.logger.error(f"Failed to create ChromaDB directory {self.db_path}: {e}")
+                self.logger.error(
+                    f"Failed to create ChromaDB directory {self.db_path}: {e}"
+                )
                 return
 
-        self.logger.info(f"Initializing MemoryManager with ChromaDB path: {self.db_path}")
+        self.logger.info(
+            f"Initializing MemoryManager with ChromaDB path: {self.db_path}"
+        )
 
         try:
             # Initialize ChromaDB client
@@ -158,17 +186,23 @@ class MemoryManager:
                     embedding_function=self.embedding_function,
                     metadata={"hnsw:space": "cosine"},
                 )
-                self.logger.info(f"ChromaDB collection '{self.collection_name}' created with OpenAI embeddings.")
+                self.logger.info(
+                    f"ChromaDB collection '{self.collection_name}' created with OpenAI embeddings."
+                )
             else:
                 # Use default embedding function
                 self.collection = self.chroma_client.get_or_create_collection(
                     name=self.collection_name, metadata={"hnsw:space": "cosine"}
                 )
-                self.logger.info(f"ChromaDB collection '{self.collection_name}' created with default embeddings.")
+                self.logger.info(
+                    f"ChromaDB collection '{self.collection_name}' created with default embeddings."
+                )
 
             # Get current document count
             current_count = self.collection.count()
-            self.logger.info(f"ChromaDB collection loaded successfully. Current document count: {current_count}")
+            self.logger.info(
+                f"ChromaDB collection loaded successfully. Current document count: {current_count}"
+            )
 
         except Exception as e:
             self.logger.error(f"Failed to initialize ChromaDB client/collection: {e}")
@@ -177,10 +211,18 @@ class MemoryManager:
 
     def _generate_canonical_id(self, document_type: str, identifier: str) -> str:
         """Generate canonical IDs for deduplication."""
-        clean_identifier = str(identifier).lower().replace(" ", "_").replace("/", "_").replace("-", "_")
+        clean_identifier = (
+            str(identifier)
+            .lower()
+            .replace(" ", "_")
+            .replace("/", "_")
+            .replace("-", "_")
+        )
         return f"{document_type}_{clean_identifier}"
 
-    def _safe_json_loads(self, json_string: Union[str, List, None], default_value: Optional[List] = None) -> List:
+    def _safe_json_loads(
+        self, json_string: Union[str, List, None], default_value: Optional[List] = None
+    ) -> List:
         """Safely parse JSON string to list."""
         if default_value is None:
             default_value = []
@@ -221,7 +263,9 @@ class MemoryManager:
         merged = existing_metadata.copy()
 
         # Track workflows
-        existing_workflows = self._safe_json_loads(merged.get("referenced_in_workflows"))
+        existing_workflows = self._safe_json_loads(
+            merged.get("referenced_in_workflows")
+        )
         new_workflow_id = new_context_metadata.get("workflow_id_source")
         if new_workflow_id and new_workflow_id not in existing_workflows:
             existing_workflows.append(new_workflow_id)
@@ -232,7 +276,9 @@ class MemoryManager:
         # Update timestamps
         merged["last_seen_timestamp"] = current_timestamp
         if "first_seen_timestamp" not in merged:
-            merged["first_seen_timestamp"] = new_context_metadata.get("timestamp_added_or_updated", current_timestamp)
+            merged["first_seen_timestamp"] = new_context_metadata.get(
+                "timestamp_added_or_updated", current_timestamp
+            )
 
         # Aggregate context lists
         def _aggregate_context_list(field_key: str, new_value: Any) -> str:
@@ -265,11 +311,17 @@ class MemoryManager:
                 and value is not None
             ):
                 if key not in merged or merged[key] is None:
-                    merged[key] = value if not isinstance(value, (list, dict)) else json.dumps(value)
+                    merged[key] = (
+                        value
+                        if not isinstance(value, (list, dict))
+                        else json.dumps(value)
+                    )
 
         return {k: v for k, v in merged.items() if v is not None}
 
-    def _get_existing_metadatas(self, ids_to_check: List[str]) -> Dict[str, Dict[str, Any]]:
+    def _get_existing_metadatas(
+        self, ids_to_check: List[str]
+    ) -> Dict[str, Dict[str, Any]]:
         """Check which documents already exist and return their metadata."""
         if not self.collection or not ids_to_check:
             return {}
@@ -288,7 +340,9 @@ class MemoryManager:
                     ):
                         found_metadatas[doc_id] = existing_docs["metadatas"][i]
 
-            self.logger.debug(f"Checked {len(ids_to_check)} IDs, found {len(found_metadatas)} existing documents.")
+            self.logger.debug(
+                f"Checked {len(ids_to_check)} IDs, found {len(found_metadatas)} existing documents."
+            )
             return found_metadatas
 
         except Exception as e:
@@ -314,9 +368,15 @@ class MemoryManager:
         safe_metadata["reference_count"] = 1
 
         # Initialize context lists
-        safe_metadata["user_goals_context"] = self._safe_json_dumps([user_goal] if user_goal else [])
-        safe_metadata["drug_names_context"] = self._safe_json_dumps([drug_name] if drug_name else [])
-        safe_metadata["disease_names_context"] = self._safe_json_dumps([disease_name] if disease_name else [])
+        safe_metadata["user_goals_context"] = self._safe_json_dumps(
+            [user_goal] if user_goal else []
+        )
+        safe_metadata["drug_names_context"] = self._safe_json_dumps(
+            [drug_name] if drug_name else []
+        )
+        safe_metadata["disease_names_context"] = self._safe_json_dumps(
+            [disease_name] if disease_name else []
+        )
 
         # Ensure all values are ChromaDB-safe
         final_metadata = {}
@@ -341,7 +401,9 @@ class MemoryManager:
     ) -> Dict[str, Any]:
         """Store workflow outputs with intelligent deduplication and metadata merging."""
         if not self.collection:
-            self.logger.error("Cannot store workflow outputs: ChromaDB collection not available.")
+            self.logger.error(
+                "Cannot store workflow outputs: ChromaDB collection not available."
+            )
             return {"status": "error", "message": "ChromaDB collection not available"}
 
         if completion_timestamp is None:
@@ -392,7 +454,9 @@ class MemoryManager:
         metadatas_to_prepare.append(workflow_metadata)
 
         # 2. PubMed Articles
-        if pubmed_results_payload and isinstance(pubmed_results_payload.get("articles"), list):
+        if pubmed_results_payload and isinstance(
+            pubmed_results_payload.get("articles"), list
+        ):
             for article in pubmed_results_payload.get("articles", []):
                 if not isinstance(article, dict) or not article.get("pmid"):
                     continue
@@ -409,7 +473,9 @@ class MemoryManager:
                     "document_type": "pubmed_article",
                     "pmid": pmid,
                     "title": title,
-                    "authors": json.dumps(article.get("authors")) if article.get("authors") else None,
+                    "authors": json.dumps(article.get("authors"))
+                    if article.get("authors")
+                    else None,
                     "journal": article.get("journal"),
                     "publication_date": article.get("publication_date"),
                     "abstract": abstract[:1000] if len(abstract) > 1000 else abstract,
@@ -453,7 +519,9 @@ class MemoryManager:
             num_new = len(ids_for_upsert) - len(existing_metadatas)
             num_updated = len(existing_metadatas)
 
-            self.logger.info(f"Upserting {len(docs_for_upsert)} documents. New: {num_new}, Updated: {num_updated}")
+            self.logger.info(
+                f"Upserting {len(docs_for_upsert)} documents. New: {num_new}, Updated: {num_updated}"
+            )
 
             self.collection.upsert(
                 ids=ids_for_upsert,
@@ -462,7 +530,9 @@ class MemoryManager:
             )
 
             total_count = self.collection.count()
-            self.logger.info(f"Successfully upserted documents. Collection total: {total_count}")
+            self.logger.info(
+                f"Successfully upserted documents. Collection total: {total_count}"
+            )
 
             return {
                 "status": "success",
@@ -473,7 +543,9 @@ class MemoryManager:
             }
 
         except Exception as e:
-            self.logger.error(f"Failed to upsert documents for workflow {workflow_id}: {e}")
+            self.logger.error(
+                f"Failed to upsert documents for workflow {workflow_id}: {e}"
+            )
             return {"status": "error", "message": str(e)}
 
     def find_similar_documents(
@@ -544,7 +616,9 @@ class MemoryManager:
             reference_counts = []
             workflow_docs = defaultdict(int)
             content_types = defaultdict(int)
-            drug_patterns = defaultdict(lambda: {"documents": 0, "workflows": set(), "types": set()})
+            drug_patterns = defaultdict(
+                lambda: {"documents": 0, "workflows": set(), "types": set()}
+            )
             cross_workflow_count = 0
 
             for metadata in all_docs["metadatas"]:
@@ -552,7 +626,9 @@ class MemoryManager:
                     continue
 
                 # Parse JSON fields
-                workflows = self._safe_json_loads(metadata.get("referenced_in_workflows"))
+                workflows = self._safe_json_loads(
+                    metadata.get("referenced_in_workflows")
+                )
                 drugs = self._safe_json_loads(metadata.get("drug_names_context"))
 
                 ref_count = len(workflows)
@@ -584,7 +660,9 @@ class MemoryManager:
             if reference_counts:
                 analytics["quality_metrics"] = {
                     "average_references": statistics.mean(reference_counts),
-                    "high_quality_documents": sum(1 for rc in reference_counts if rc >= 2),
+                    "high_quality_documents": sum(
+                        1 for rc in reference_counts if rc >= 2
+                    ),
                 }
 
             # Drug class patterns
@@ -597,7 +675,9 @@ class MemoryManager:
                 for drug, data in drug_patterns.items()
             }
 
-            self.logger.info(f"Generated analytics for {analytics['total_documents']} documents")
+            self.logger.info(
+                f"Generated analytics for {analytics['total_documents']} documents"
+            )
             return analytics
 
         except Exception as e:
@@ -615,11 +695,15 @@ class MemoryManager:
             print("Collection unavailable.")
             return
 
-        print(f"\n--- Sample Dump: {self.collection_name} (Limit: {limit}, Type: {document_type or 'Any'}) ---")
+        print(
+            f"\n--- Sample Dump: {self.collection_name} (Limit: {limit}, Type: {document_type or 'Any'}) ---"
+        )
 
         try:
             filter_dict = {"document_type": document_type} if document_type else None
-            results = self.collection.get(limit=limit, where=filter_dict, include=["metadatas", "documents"])
+            results = self.collection.get(
+                limit=limit, where=filter_dict, include=["metadatas", "documents"]
+            )
 
             if not results or not results.get("ids"):
                 print("No documents found.")

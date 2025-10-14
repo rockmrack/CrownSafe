@@ -3,7 +3,9 @@ import logging
 from core_infra.mcp_client_library.client import MCPClient
 from .agent_logic import ChildrensCode_ComplianceAgentLogic
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "childrenscode_compliance_agent_01"
@@ -16,7 +18,9 @@ class ChildrensCode_ComplianceAgent:
         self.mcp_client = MCPClient(agent_id=self.agent_id, server_url=MCP_SERVER_URL)
         self.logic = ChildrensCode_ComplianceAgentLogic(agent_id=self.agent_id)
 
-        self.mcp_client.register_capability("verify_uk_defaults", self.handle_verify_defaults)
+        self.mcp_client.register_capability(
+            "verify_uk_defaults", self.handle_verify_defaults
+        )
 
     async def handle_verify_defaults(self, task_payload: dict) -> dict:
         user_profile = task_payload.get("user_profile")

@@ -38,19 +38,27 @@ USER_RESEARCH_GOAL_STRING = os.getenv(
 USER_REQUEST_PAYLOAD = {"goal": USER_RESEARCH_GOAL_STRING}
 
 LOG_LEVEL_SCRIPT = os.getenv("LOG_LEVEL_SCRIPT", os.getenv("LOG_LEVEL", "INFO")).upper()
-MAX_WAIT_TIME_SECONDS = int(os.getenv("TEST_FLOW_MAX_WAIT_SECONDS", "600"))  # 10 minutes
+MAX_WAIT_TIME_SECONDS = int(
+    os.getenv("TEST_FLOW_MAX_WAIT_SECONDS", "600")
+)  # 10 minutes
 CHECK_INTERVAL_SECONDS = 10  # Check status every 10 seconds
 
 # --- Logging Setup ---
-log_format = f"%(asctime)s - {CONTROLLER_AGENT_ID} (%(name)s) - %(levelname)s - %(message)s"
-logging.basicConfig(stream=sys.stdout, level=LOG_LEVEL_SCRIPT, format=log_format, force=True)
+log_format = (
+    f"%(asctime)s - {CONTROLLER_AGENT_ID} (%(name)s) - %(levelname)s - %(message)s"
+)
+logging.basicConfig(
+    stream=sys.stdout, level=LOG_LEVEL_SCRIPT, format=log_format, force=True
+)
 logger = logging.getLogger(CONTROLLER_AGENT_NAME)
 
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
     logger.info(f"Loaded .env from {dotenv_path}")
 else:
-    logger.warning(f".env file not found at {dotenv_path}. Using environment variables if set.")
+    logger.warning(
+        f".env file not found at {dotenv_path}. Using environment variables if set."
+    )
 
 
 # --- Workflow Monitor ---
@@ -79,7 +87,9 @@ class WorkflowMonitor:
                     self.workflow_complete = True
                     # Try to extract PDF path from task summary
                     task_summary = payload.get("task_summary", {})
-                    report_result = task_summary.get("step3_compile_report", {}).get("result", {})
+                    report_result = task_summary.get("step3_compile_report", {}).get(
+                        "result", {}
+                    )
                     self.pdf_path = report_result.get("pdf_file_path")
                     logger.info(f"Workflow COMPLETED! PDF Path: {self.pdf_path}")
                 elif status == "FAILED":
@@ -96,13 +106,17 @@ class WorkflowMonitor:
                     "error": message.payload.get("error_message", "Unknown error"),
                 }
             )
-            logger.error(f"Task failed from {sender}: {message.payload.get('error_message')}")
+            logger.error(
+                f"Task failed from {sender}: {message.payload.get('error_message')}"
+            )
 
         elif msg_type == "PONG":
             logger.debug(f"PONG from {sender}")
         else:
             # Log other message types for debugging
-            logger.debug(f"Message type {msg_type} from {sender}: {json.dumps(message.payload, indent=2)[:200]}...")
+            logger.debug(
+                f"Message type {msg_type} from {sender}: {json.dumps(message.payload, indent=2)[:200]}..."
+            )
 
 
 async def run_test():
@@ -132,7 +146,9 @@ async def run_test():
         logger.info(f"Controller client initialized. Agent ID: {client.agent_id}")
 
         await client.connect()
-        logger.info(f"Controller client connected to MCP Router at {MCP_SERVER_URL_ENV}.")
+        logger.info(
+            f"Controller client connected to MCP Router at {MCP_SERVER_URL_ENV}."
+        )
 
         await asyncio.sleep(2)  # Give connection time to stabilize
 
@@ -150,7 +166,9 @@ async def run_test():
         start_time = datetime.now()
         timeout_time = start_time + timedelta(seconds=MAX_WAIT_TIME_SECONDS)
 
-        logger.info(f"Monitoring workflow progress (timeout: {MAX_WAIT_TIME_SECONDS}s)...")
+        logger.info(
+            f"Monitoring workflow progress (timeout: {MAX_WAIT_TIME_SECONDS}s)..."
+        )
 
         while datetime.now() < timeout_time:
             # Check if workflow completed or failed
@@ -163,7 +181,9 @@ async def run_test():
                         file_size = os.path.getsize(monitor.pdf_path)
                         logger.info(f"PDF file verified: {file_size:,} bytes")
                     else:
-                        logger.warning(f"PDF file not found at reported path: {monitor.pdf_path}")
+                        logger.warning(
+                            f"PDF file not found at reported path: {monitor.pdf_path}"
+                        )
                 break
 
             if monitor.workflow_failed:
@@ -175,7 +195,9 @@ async def run_test():
             logger.info(f"Workflow in progress... ({elapsed:.0f}s elapsed)")
 
             # Keep connection alive
-            if hasattr(client, "is_connected") and callable(getattr(client, "is_connected")):
+            if hasattr(client, "is_connected") and callable(
+                getattr(client, "is_connected")
+            ):
                 is_connected = client.is_connected()
             else:
                 is_connected = getattr(client, "is_connected", True)
@@ -196,7 +218,9 @@ async def run_test():
         logger.info(
             f"Status: {'COMPLETED' if monitor.workflow_complete else 'FAILED' if monitor.workflow_failed else 'TIMEOUT'}"
         )
-        logger.info(f"Duration: {(datetime.now() - start_time).total_seconds():.1f} seconds")
+        logger.info(
+            f"Duration: {(datetime.now() - start_time).total_seconds():.1f} seconds"
+        )
         logger.info(f"Task Updates: {len(monitor.task_updates)}")
         if monitor.pdf_path:
             logger.info(f"PDF Report: {monitor.pdf_path}")
@@ -223,7 +247,9 @@ async def run_test():
                         await client.disconnect()
                         logger.info("Controller client disconnected.")
                 else:
-                    logger.info("Client connection status unknown, attempting disconnect...")
+                    logger.info(
+                        "Client connection status unknown, attempting disconnect..."
+                    )
                     await client.disconnect()
             except Exception as e:
                 logger.warning(f"Error during disconnect: {e}")
