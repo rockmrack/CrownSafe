@@ -134,9 +134,7 @@ def main():
         description="BabyShield RecallDataAgent - Manual Ingestion Tool"
     )
     parser.add_argument(
-        "--test",
-        action="store_true",
-        help="Run in test query mode instead of ingestion",
+        "--test", action="store_true", help="Run in test query mode instead of ingestion"
     )
     args = parser.parse_args()
 

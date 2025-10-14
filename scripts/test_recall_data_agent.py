@@ -73,20 +73,16 @@ async def main():
     logger.info("In-memory tables created.")
 
     # 2. Patch connectors in the connectors module
-    with (
-        patch(
-            "agents.recall_data_agent.connectors.CPSCConnector", new=MockCPSCConnector
-        ),
-        patch("agents.recall_data_agent.connectors.FDAConnector", new=EmptyConnector),
-        patch(
-            "agents.recall_data_agent.connectors.EU_RAPEX_Connector", new=EmptyConnector
-        ),
-        patch(
-            "agents.recall_data_agent.connectors.UK_OPSS_Connector", new=EmptyConnector
-        ),
-        patch(
-            "agents.recall_data_agent.connectors.SG_CPSO_Connector", new=EmptyConnector
-        ),
+    with patch(
+        "agents.recall_data_agent.connectors.CPSCConnector", new=MockCPSCConnector
+    ), patch(
+        "agents.recall_data_agent.connectors.FDAConnector", new=EmptyConnector
+    ), patch(
+        "agents.recall_data_agent.connectors.EU_RAPEX_Connector", new=EmptyConnector
+    ), patch(
+        "agents.recall_data_agent.connectors.UK_OPSS_Connector", new=EmptyConnector
+    ), patch(
+        "agents.recall_data_agent.connectors.SG_CPSO_Connector", new=EmptyConnector
     ):
         try:
             # 3. Initialize agent logic
@@ -112,23 +108,14 @@ async def main():
             # 6. Validate
             if read_result.get("status") == "COMPLETED":
                 recalls = read_result["result"]["recalls"]
-                if (
-                    len(recalls) == 1
-                    and recalls[0]["recall_id"] == MOCK_CPSC_RECALL.recall_id
-                ):
+                if len(recalls) == 1 and recalls[0]["recall_id"] == MOCK_CPSC_RECALL.recall_id:
                     print(
-                        Fore.GREEN
-                        + Style.BRIGHT
-                        + f"✔ READ succeeded: {recalls[0]['recall_id']}"
+                        Fore.GREEN + Style.BRIGHT + f"✔ READ succeeded: {recalls[0]['recall_id']}"
                     )
                 else:
                     print(Fore.RED + Style.BRIGHT + "✖ READ mismatch.")
             else:
-                print(
-                    Fore.RED
-                    + Style.BRIGHT
-                    + f"✖ READ failed: {read_result.get('error')}"
-                )
+                print(Fore.RED + Style.BRIGHT + f"✖ READ failed: {read_result.get('error')}")
 
         finally:
             # Cleanup
