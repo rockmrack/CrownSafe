@@ -6,9 +6,7 @@ Provides helper functions to create properly formatted evidence items.
 from typing import List, Dict, Any, Optional
 
 
-def label_to_evidence(
-    evidence_id: str, url: Optional[str] = None
-) -> List[Dict[str, Any]]:
+def label_to_evidence(evidence_id: str, url: Optional[str] = None) -> List[Dict[str, Any]]:
     """
     Generate evidence items for product label information.
 
@@ -22,9 +20,7 @@ def label_to_evidence(
     return [{"type": "label", "source": "Product label", "id": evidence_id, "url": url}]
 
 
-def regulatory_to_evidence(
-    agency: str, title: Optional[str] = None, url: Optional[str] = None
-) -> Dict[str, Any]:
+def regulatory_to_evidence(agency: str, title: Optional[str] = None, url: Optional[str] = None) -> List[Dict[str, Any]]:
     """
     Generate evidence item for regulatory guidance.
 
@@ -34,9 +30,9 @@ def regulatory_to_evidence(
         url: Optional URL to the guidance
 
     Returns:
-        Evidence dictionary
+        List of evidence dictionaries
     """
-    return {"type": "regulation", "source": agency, "id": title, "url": url}
+    return [{"type": "regulatory", "source": agency, "id": title, "url": url}]
 
 
 def recalls_to_evidence(recalls: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -62,9 +58,7 @@ def recalls_to_evidence(recalls: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return evidence
 
 
-def datasheet_to_evidence(
-    source: str, product_id: str, url: Optional[str] = None
-) -> Dict[str, Any]:
+def datasheet_to_evidence(source: str, product_id: str, url: Optional[str] = None) -> List[Dict[str, Any]]:
     """
     Generate evidence item for product datasheet.
 
@@ -74,14 +68,12 @@ def datasheet_to_evidence(
         url: Optional URL to the datasheet
 
     Returns:
-        Evidence dictionary
+        List of evidence dictionaries
     """
-    return {"type": "datasheet", "source": source, "id": product_id, "url": url}
+    return [{"type": "datasheet", "source": source, "id": product_id, "url": url}]
 
 
-def guideline_to_evidence(
-    organization: str, guideline_name: str, url: Optional[str] = None
-) -> Dict[str, Any]:
+def guideline_to_evidence(organization: str, guideline_name: str, url: Optional[str] = None) -> List[Dict[str, Any]]:
     """
     Generate evidence item for safety guidelines.
 
@@ -91,11 +83,13 @@ def guideline_to_evidence(
         url: Optional URL to the guideline
 
     Returns:
-        Evidence dictionary
+        List of evidence dictionaries
     """
-    return {
-        "type": "guideline",
-        "source": organization,
-        "id": guideline_name,
-        "url": url,
-    }
+    return [
+        {
+            "type": "guideline",
+            "source": organization,
+            "id": guideline_name,
+            "url": url,
+        }
+    ]
