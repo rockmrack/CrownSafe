@@ -87,13 +87,71 @@ def auth_token(test_user):
     try:
         from core_infra.auth import create_access_token
 
-        token = create_access_token(
-            data={"sub": str(test_user.id), "email": test_user.email}
-        )
+        token = create_access_token(data={"sub": str(test_user.id), "email": test_user.email})
         return token
     except ImportError:
         # If auth module not available, return a mock token
         return "mock_token_for_testing"
+
+
+@pytest.fixture
+def valid_token():
+    """Generate valid authentication token"""
+    try:
+        from core_infra.auth import create_access_token
+
+        token = create_access_token(data={"sub": "999999", "email": "test_security@example.com"})
+        return token
+    except Exception as e:
+        # Return a mock token if anything fails
+        return "mock_token_for_testing"
+
+
+@pytest.fixture
+def expired_token():
+    """Generate an expired authentication token"""
+    try:
+        from core_infra.auth import create_access_token
+        from datetime import timedelta
+
+        # Create token that expired 1 hour ago
+        token = create_access_token(
+            data={"sub": "999", "email": "expired@example.com"},
+            expires_delta=timedelta(hours=-1),
+        )
+        return token
+    except Exception:
+        return "expired_mock_token"
+
+
+@pytest.fixture
+def user1_token():
+    """Generate token for user 1"""
+    try:
+        from core_infra.auth import create_access_token
+
+        token = create_access_token(data={"sub": "111111", "email": "user1@example.com"})
+        return token
+    except Exception:
+        return "user1_mock_token"
+
+
+@pytest.fixture
+def user2_id():
+    """Return a different user ID for authorization tests"""
+    return 9999  # Different from test_user.id (which is typically 1)
+
+
+@pytest.fixture
+def regular_user_token():
+    """Generate token for a regular (non-admin) user"""
+    try:
+        from core_infra.auth import create_access_token
+
+        token = create_access_token(data={"sub": "222222", "email": "regular@example.com", "is_admin": False})
+        return token
+    except Exception:
+        return "regular_user_mock_token"
 
 
 def pytest_collection_modifyitems(config, items):

@@ -81,7 +81,9 @@ class TestXSSProtection:
         ]
 
         for payload in xss_payloads:
-            response = client.post("/api/v1/product", headers=headers, json={"name": payload})
+            response = client.post(
+                "/api/v1/product", headers=headers, json={"name": payload}
+            )
             # Should sanitize or reject
             if response.status_code == 200:
                 assert "<script>" not in response.json().get("name", "")
@@ -176,7 +178,9 @@ class TestAuthorization:
         response = client.get(f"/api/v1/user/{user2_id}/profile", headers=headers)
         assert response.status_code == 403
 
-    def test_regular_user_cannot_access_admin_endpoints(self, client, regular_user_token):
+    def test_regular_user_cannot_access_admin_endpoints(
+        self, client, regular_user_token
+    ):
         """
         Test admin endpoint protection.
 
@@ -254,7 +258,7 @@ class TestInputValidation:
         headers = {"Authorization": f"Bearer {auth_token}"}
         files = {"file": ("malicious.exe", b"malicious content", "application/exe")}
 
-        response = client.post("/api/v1/scan", headers=headers, files=files)
+        response = client.post("/api/v1/barcode/scan", headers=headers, files=files)
         assert response.status_code == 400
 
     def test_file_upload_validates_file_size(self, client, auth_token):
@@ -269,7 +273,7 @@ class TestInputValidation:
         large_file = b"x" * (11 * 1024 * 1024)  # 11MB
         files = {"file": ("large.jpg", large_file, "image/jpeg")}
 
-        response = client.post("/api/v1/scan", headers=headers, files=files)
+        response = client.post("/api/v1/barcode/scan", headers=headers, files=files)
         assert response.status_code == 413
 
 
