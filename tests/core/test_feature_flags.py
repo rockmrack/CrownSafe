@@ -29,7 +29,7 @@ class TestEnvHelpers:
 
     def test_env_float_valid(self):
         with patch.dict(os.environ, {"TEST_VAR": "2.5"}):
-            assert env_float("TEST_VAR") == 2.5
+            assert env_float("TEST_VAR", 0.0) == 2.5
 
     def test_env_float_invalid_returns_default(self):
         with patch.dict(os.environ, {"TEST_VAR": "not_a_number"}):
