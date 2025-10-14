@@ -252,9 +252,14 @@ class TestProductionDatabase:
             with pytest.raises(Exception):
                 db.execute(text("SELECT * FROM nonexistent_table_xyz"))
 
-            # Session should still be usable after error
+            # Rollback the transaction so session can be reused
+            # In PostgreSQL, after a failed query, the transaction is in an aborted state
+            # and all subsequent commands are ignored until rollback
+            db.rollback()
+
+            # Session should now be usable after rollback
             result = db.execute(text("SELECT 1"))
-            assert result.fetchone()[0] == 1, "Session should recover from error"
+            assert result.fetchone()[0] == 1, "Session should recover from error after rollback"
 
         finally:
             db.close()
