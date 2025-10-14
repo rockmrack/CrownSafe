@@ -31,6 +31,13 @@ RUN pip install --no-cache-dir weasyprint
 # Copy application
 COPY . .
 
+# Create non-root user for security
+RUN useradd -m -u 1000 appuser && \
+    chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
+
 # Environment variables (non-sensitive only)
 # NOTE: DATABASE_URL should be set at runtime via environment variables
 # Example: DATABASE_URL=postgresql+psycopg://user:pass@host:5432/dbname

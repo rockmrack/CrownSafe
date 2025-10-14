@@ -121,6 +121,13 @@ RUN if [ ! -f startup.py ]; then \
     echo 'uvicorn.run(app, host="0.0.0.0", port=8001)' >> startup.py; \
     fi
 
+# Create non-root user for security
+RUN useradd -m -u 1000 appuser && \
+    chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
+
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
