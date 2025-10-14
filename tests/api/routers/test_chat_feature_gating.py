@@ -1,161 +1,139 @@
-import pytest
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import api.routers.chat as chat_router
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
+
 from api.main_babyshield import app
 
 
 class TestChatFeatureGating:
-    def setup_method(self):
+    def setup_method(self) -> None:
         self.client = TestClient(app)
 
-    @patch("api.routers.chat.fetch_scan_data")
-    @patch("api.routers.chat.get_llm_client")
-    def test_conversation_blocked_when_chat_disabled_globally(
-        self, mock_llm, mock_fetch
-    ):
-        """Test that conversation endpoint returns 403 when chat is globally disabled"""
-        with patch("core.feature_flags.FEATURE_CHAT_ENABLED", False):
+    def test_conversation_blocked_when_chat_disabled_globally(self) -> None:
+        with (
+            patch("api.routers.chat.chat_enabled_for", return_value=False) as mock_flag,
+            patch("api.routers.chat.get_llm_client") as mock_llm,
+        ):
             response = self.client.post(
                 "/api/v1/chat/conversation",
-                json={
-                    "scan_id": "test-scan-123",
-                    "user_query": "Is this safe for pregnancy?",
-                },
+                json={"user_id": "test-user-123"},
             )
 
-            assert response.status_code == 403
-            assert response.json()["detail"] == "chat_disabled"
+        assert response.status_code == 403
+        body = response.json()
+        assert body["error"] is True
+        assert body["message"] == "chat_disabled"
+        mock_flag.assert_called_once_with("test-user-123", None)
+        mock_llm.assert_not_called()
 
-            # Should not call downstream services
-            mock_fetch.assert_not_called()
-            mock_llm.assert_not_called()
-
-    @patch("api.routers.chat.fetch_scan_data")
-    @patch("api.routers.chat.get_llm_client")
-    def test_conversation_blocked_when_user_not_in_rollout(self, mock_llm, mock_fetch):
-        """Test that conversation endpoint returns 403 when user is not in rollout percentage"""
+    def test_conversation_blocked_when_user_not_in_rollout(self) -> None:
         with (
-            patch("core.feature_flags.FEATURE_CHAT_ENABLED", True),
-            patch("core.feature_flags.chat_enabled_for", return_value=False),
+            patch("api.routers.chat.chat_enabled_for", return_value=False) as mock_flag,
+            patch("api.routers.chat.get_llm_client") as mock_llm,
         ):
             response = self.client.post(
                 "/api/v1/chat/conversation",
                 json={
-                    "scan_id": "test-scan-123",
-                    "user_query": "Is this safe for pregnancy?",
+                    "message": "Is this safe for pregnancy?",
+                    "conversation_id": None,
+                    "user_id": "rolled-out-user",
                 },
             )
 
-            assert response.status_code == 403
-            assert response.json()["detail"] == "chat_disabled"
+        assert response.status_code == 403
+        body = response.json()
+        assert body["error"] is True
+        assert body["message"] == "chat_disabled"
+        mock_flag.assert_called_once_with("rolled-out-user", None)
+        mock_llm.assert_not_called()
 
-            # Should not call downstream services
-            mock_fetch.assert_not_called()
-            mock_llm.assert_not_called()
-
-    @patch("api.routers.chat.fetch_scan_data")
-    @patch("api.routers.chat.get_llm_client")
-    @patch("api.routers.chat.get_or_create_conversation")
-    @patch("api.routers.chat.get_profile")
-    @patch("api.routers.chat.log_message")
-    @patch("api.routers.chat.run_tool_for_intent")
-    def test_conversation_allowed_when_user_in_rollout(
-        self, mock_tool, mock_log, mock_profile, mock_conv, mock_llm, mock_fetch
-    ):
-        """Test that conversation endpoint works when user is in rollout"""
-        # Setup mocks
-        mock_fetch.return_value = {"product_name": "Test Product", "category": "food"}
-        mock_conv.return_value = MagicMock(id="conv-123")
-        mock_profile.return_value = {}
-        mock_tool.return_value = {"pregnancy": {"risks": [], "notes": ""}}
-
+    def test_conversation_allowed_when_user_in_rollout(self) -> None:
         mock_llm_client = MagicMock()
         mock_llm_client.chat_json.return_value = {
             "summary": "Test summary",
-            "reasons": ["Test reason"],
-            "checks": ["Check label"],
-            "flags": [],
-            "disclaimer": "Not medical advice",
-            "jurisdiction": {"code": "US", "label": "FDA"},
-            "evidence": [],
+            "suggested_questions": ["What else should I know?"],
+            "emergency": None,
         }
-        mock_llm.return_value = mock_llm_client
 
         with (
-            patch("core.feature_flags.FEATURE_CHAT_ENABLED", True),
-            patch("core.feature_flags.chat_enabled_for", return_value=True),
-            patch("api.routers.chat.ChatAgentLogic") as mock_agent_class,
+            patch("api.routers.chat.chat_enabled_for", return_value=True),
+            patch("api.routers.chat.get_llm_client", return_value=mock_llm_client),
         ):
-            mock_agent = MagicMock()
-            mock_agent.classify_intent.return_value = "pregnancy_risk"
-            mock_agent_class.return_value = mock_agent
-
             response = self.client.post(
                 "/api/v1/chat/conversation",
                 json={
-                    "scan_id": "test-scan-123",
-                    "user_query": "Is this safe for pregnancy?",
+                    "message": "Is this safe for pregnancy?",
+                    "conversation_id": None,
+                    "user_id": "test-user-123",
                 },
             )
 
-            # Should succeed
-            assert response.status_code == 200
-            data = response.json()
-            assert "intent" in data
-            assert "message" in data
-            assert "trace_id" in data
+        assert response.status_code == 200
+        body = response.json()
+        assert body["success"] is True
+        assert body["data"]["answer"] == "Test summary"
+        assert body["data"]["suggested_questions"]
+        assert body["data"]["emergency"] is None
+        assert "traceId" in body
 
-            # Should call downstream services
-            mock_fetch.assert_called_once()
-
-    @patch("api.routers.chat.fetch_scan_data")
-    def test_explain_result_not_gated(self, mock_fetch):
-        """Test that explain-result endpoint is not gated (for backward compatibility)"""
-        mock_fetch.return_value = {"product_name": "Test Product"}
+    def test_feature_gating_uses_user_and_device_ids(self) -> None:
+        mock_llm_client = MagicMock()
+        mock_llm_client.chat_json.return_value = {
+            "summary": "Test summary",
+            "suggested_questions": [],
+            "emergency": None,
+        }
 
         with (
-            patch("core.feature_flags.FEATURE_CHAT_ENABLED", False),
-            patch("api.routers.chat.ChatAgentLogic") as mock_agent_class,
+            patch("api.routers.chat.chat_enabled_for", return_value=True) as mock_flag,
+            patch("api.routers.chat.get_llm_client", return_value=mock_llm_client),
         ):
-            mock_agent = MagicMock()
-            mock_agent.synthesize_result.return_value = {
-                "summary": "Test summary",
-                "reasons": ["Test reason"],
-                "checks": ["Check label"],
-                "flags": [],
-                "disclaimer": "Not medical advice",
-                "jurisdiction": {"code": "US", "label": "FDA"},
-                "evidence": [],
-            }
-            mock_agent_class.return_value = mock_agent
-
-            response = self.client.post(
-                "/api/v1/chat/explain-result", json={"scan_id": "test-scan-123"}
-            )
-
-            # Should succeed even when chat is disabled
-            assert response.status_code == 200
-            data = response.json()
-            assert "summary" in data
-
-    def test_feature_gating_uses_user_and_device_ids(self):
-        """Test that feature gating correctly uses user_id and device_id"""
-        with (
-            patch("core.feature_flags.FEATURE_CHAT_ENABLED", True),
-            patch("core.feature_flags.chat_enabled_for") as mock_enabled,
-        ):
-            mock_enabled.return_value = False
-
             response = self.client.post(
                 "/api/v1/chat/conversation",
-                json={"scan_id": "test-scan-123", "user_query": "Is this safe?"},
+                json={
+                    "message": "Need advice",
+                    "device_id": "device-456",
+                },
             )
 
-            assert response.status_code == 403
+        assert response.status_code == 200
+        mock_flag.assert_called_once_with(None, "device-456")
+        assert response.json()["success"] is True
 
-            # Should have called chat_enabled_for with user_id_str and device_id
-            mock_enabled.assert_called_once()
-            args = mock_enabled.call_args[0]
-            assert len(args) == 2  # user_id_str, device_id
-            # user_id_str should be None or string (depends on auth system)
-            # device_id should be None (not implemented in this test)
+    def test_explain_result_not_gated(self) -> None:
+        mock_session = MagicMock()
+        mock_query = mock_session.query.return_value
+        mock_filter = mock_query.filter.return_value
+        mock_filter.first.return_value = MagicMock(analysis_result={"result": "ok"})
+
+        dummy_response = SimpleNamespace(dict=lambda: {"summary": "Test summary"})
+        mock_agent = MagicMock()
+        mock_agent.explain_scan_result = AsyncMock(return_value=dummy_response)
+
+        def _override_get_db():
+            yield mock_session
+
+        app.dependency_overrides[chat_router.get_db] = _override_get_db
+
+        try:
+            with (
+                patch("api.routers.chat.get_chat_agent", return_value=mock_agent),
+                patch("api.routers.chat.get_llm_client"),
+            ):
+                response = self.client.post(
+                    "/api/v1/chat/explain-result",
+                    params={
+                        "scan_id": "test-scan-123",
+                        "user_query": "What does this mean?",
+                    },
+                )
+        finally:
+            app.dependency_overrides.pop(chat_router.get_db, None)
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["success"] is True
+        assert body["data"]["summary"] == "Test summary"
+        mock_agent.explain_scan_result.assert_awaited_once()
