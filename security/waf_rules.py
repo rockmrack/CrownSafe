@@ -41,9 +41,7 @@ class WAFRulesGenerator:
                             "ByteMatchStatement": {
                                 "SearchString": "/api/",
                                 "FieldToMatch": {"UriPath": {}},
-                                "TextTransformations": [
-                                    {"Priority": 0, "Type": "LOWERCASE"}
-                                ],
+                                "TextTransformations": [{"Priority": 0, "Type": "LOWERCASE"}],
                                 "PositionalConstraint": "STARTS_WITH",
                             }
                         },
@@ -152,9 +150,7 @@ class WAFRulesGenerator:
                                 "ByteMatchStatement": {
                                     "SearchString": "../",
                                     "FieldToMatch": {"UriPath": {}},
-                                    "TextTransformations": [
-                                        {"Priority": 0, "Type": "URL_DECODE"}
-                                    ],
+                                    "TextTransformations": [{"Priority": 0, "Type": "URL_DECODE"}],
                                     "PositionalConstraint": "CONTAINS",
                                 }
                             },
@@ -162,9 +158,7 @@ class WAFRulesGenerator:
                                 "ByteMatchStatement": {
                                     "SearchString": "%2e%2e/",
                                     "FieldToMatch": {"UriPath": {}},
-                                    "TextTransformations": [
-                                        {"Priority": 0, "Type": "LOWERCASE"}
-                                    ],
+                                    "TextTransformations": [{"Priority": 0, "Type": "LOWERCASE"}],
                                     "PositionalConstraint": "CONTAINS",
                                 }
                             },

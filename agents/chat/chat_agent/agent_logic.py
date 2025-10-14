@@ -7,9 +7,7 @@ from pydantic import BaseModel, Field, ValidationError
 
 
 class EvidenceItem(BaseModel):
-    type: Literal[
-        "recall", "regulation", "guideline", "datasheet", "label"
-    ] = "regulation"
+    type: Literal["recall", "regulation", "guideline", "datasheet", "label"] = "regulation"
     source: str  # e.g., "EU Safety Gate", "CPSC", "FDA"
     id: Optional[str] = None
     url: Optional[str] = None
@@ -87,8 +85,7 @@ class LLMClient(Protocol):
         user: str,
         response_schema: Dict[str, Any],
         timeout: float = 8.0,
-    ) -> Dict[str, Any]:
-        ...
+    ) -> Dict[str, Any]: ...
 
 
 _PHASE0_SYSTEM_PROMPT = (

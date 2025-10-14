@@ -37,9 +37,7 @@ class TestExplainFeedbackEndpoint:
                 "jurisdiction_code": "US",
             }
 
-            response = self.client.post(
-                "/api/v1/analytics/explain-feedback", json=payload
-            )
+            response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
 
             # Verify response
             assert response.status_code == 200
@@ -73,9 +71,7 @@ class TestExplainFeedbackEndpoint:
             # Minimal payload
             payload = {"scan_id": "minimal_scan_456", "helpful": False}
 
-            response = self.client.post(
-                "/api/v1/analytics/explain-feedback", json=payload
-            )
+            response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
 
             assert response.status_code == 200
             data = response.json()
@@ -227,9 +223,7 @@ class TestExplainFeedbackEndpoint:
 
             payload = {"scan_id": "auth_test_scan", "helpful": True}
 
-            response = self.client.post(
-                "/api/v1/analytics/explain-feedback", json=payload
-            )
+            response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
 
             assert response.status_code == 200
 
@@ -250,9 +244,7 @@ class TestExplainFeedbackEndpoint:
             # No auth mocking - should handle gracefully
             payload = {"scan_id": "unauth_test_scan", "helpful": False}
 
-            response = self.client.post(
-                "/api/v1/analytics/explain-feedback", json=payload
-            )
+            response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
 
             assert response.status_code == 200
 
@@ -274,9 +266,7 @@ class TestExplainFeedbackEndpoint:
 
             payload = {"scan_id": "error_test_scan", "helpful": True}
 
-            response = self.client.post(
-                "/api/v1/analytics/explain-feedback", json=payload
-            )
+            response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
 
             assert response.status_code == 500
             assert response.json()["detail"] == "failed_to_record_feedback"
@@ -298,9 +288,7 @@ class TestExplainFeedbackEndpoint:
                 "reason": "very_clear",
             }
 
-            response = self.client.post(
-                "/api/v1/analytics/explain-feedback", json=payload
-            )
+            response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
 
             assert response.status_code == 200
 
@@ -324,9 +312,7 @@ class TestExplainFeedbackEndpoint:
             ):
                 payload = {"scan_id": "no_metrics_scan", "helpful": False}
 
-                response = self.client.post(
-                    "/api/v1/analytics/explain-feedback", json=payload
-                )
+                response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
 
                 # Should still succeed
                 assert response.status_code == 200
@@ -385,9 +371,7 @@ class TestExplainFeedbackValidation:
                 "jurisdiction_code": None,
             }
 
-            response = self.client.post(
-                "/api/v1/analytics/explain-feedback", json=payload
-            )
+            response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
 
             assert response.status_code == 200
 

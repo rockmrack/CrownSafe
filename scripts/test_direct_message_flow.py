@@ -95,17 +95,13 @@ def verify_router_is_running():
         # Windows
         try:
             result = subprocess.run(["tasklist"], capture_output=True, text=True)
-            router_running = (
-                "python" in result.stdout and "router" in result.stdout.lower()
-            )
+            router_running = "python" in result.stdout and "router" in result.stdout.lower()
 
             if router_running:
                 print("✅ Router Agent likely running")
             else:
                 print("⚠️  Cannot confirm Router Agent is running")
-                print(
-                    "   Check manually and start with: python -m agents.routing.router_agent.main"
-                )
+                print("   Check manually and start with: python -m agents.routing.router_agent.main")
 
             return True  # Can't be sure on Windows
         except:

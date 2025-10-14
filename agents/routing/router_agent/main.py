@@ -11,9 +11,7 @@ from typing import Optional, Dict, Any
 from dotenv import load_dotenv
 
 # Ensure project root is in sys.path for core_infra imports
-project_root_main = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..")
-)
+project_root_main = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 if project_root_main not in sys.path:
     sys.path.insert(0, project_root_main)
 
@@ -95,9 +93,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(f"{AGENT_ID}.main")
-logic_logger = logging.getLogger(
-    f"{AGENT_ID}.logic"
-)  # Separate logger for logic module
+logic_logger = logging.getLogger(f"{AGENT_ID}.logic")  # Separate logger for logic module
 
 # Global instances (for potential direct access if needed, though manager is preferred)
 # These are less critical now with the AgentManager pattern but kept for context if any part relies on them.
@@ -117,9 +113,7 @@ class RouterAgentManager:
     async def handle_incoming_message(self, message: MCPMessage):
         """Handle incoming messages with proper response processing"""
         if not self.router_logic or not self.mcp_client:
-            logger.error(
-                "Logic/MCPClient instance missing in RouterAgent handler during message processing."
-            )
+            logger.error("Logic/MCPClient instance missing in RouterAgent handler during message processing.")
             return
 
         try:
@@ -128,9 +122,7 @@ class RouterAgentManager:
             sender_id = header.sender_id
             correlation_id = header.correlation_id
 
-            logger.debug(
-                f"MAIN_HANDLER: Processing {message_type} from {sender_id} (CorrID: {correlation_id})"
-            )
+            logger.debug(f"MAIN_HANDLER: Processing {message_type} from {sender_id} (CorrID: {correlation_id})")
 
             message_dict = message.model_dump()  # Pass the full message dict to logic
 
@@ -145,9 +137,7 @@ class RouterAgentManager:
             # unless process_message was redesigned to return something for main.py to send.
             # Based on RouterLogic's current design, it sends its own messages.
 
-            logger.debug(
-                f"MAIN_HANDLER: Logic processing complete for {message_type} from {sender_id}"
-            )
+            logger.debug(f"MAIN_HANDLER: Logic processing complete for {message_type} from {sender_id}")
 
         except Exception as e:
             logger.error(f"MAIN_HANDLER: Error processing message: {e}", exc_info=True)
@@ -181,18 +171,14 @@ class RouterAgentManager:
                 agent_id=AGENT_ID, mcp_client=self.mcp_client, logger=logic_logger
             )
 
-            logger.info(
-                f"RouterAgent components initialized (Version: {AGENT_VERSION})"
-            )
+            logger.info(f"RouterAgent components initialized (Version: {AGENT_VERSION})")
             logger.info(f"Environment loaded from: {env_source}")
             logger.info(f"MCP Server URL: {base_mcp_url}")
 
             return True
 
         except Exception as e:
-            logger.critical(
-                f"Failed to initialize RouterAgent components: {e}", exc_info=True
-            )
+            logger.critical(f"Failed to initialize RouterAgent components: {e}", exc_info=True)
             return False
 
     def setup_signal_handlers(self):
@@ -202,21 +188,15 @@ class RouterAgentManager:
 
             def signal_handler_callback(signum):  # Renamed to avoid conflict
                 signal_name = signal.Signals(signum).name
-                logger.info(
-                    f"Received shutdown signal: {signal_name}. Setting stop event."
-                )
+                logger.info(f"Received shutdown signal: {signal_name}. Setting stop event.")
                 self.stop_event.set()
 
             for sig_name in ["SIGINT", "SIGTERM"]:
                 sig = getattr(signal, sig_name, None)
                 if sig is not None:
                     try:
-                        loop.add_signal_handler(
-                            sig, lambda s=sig: signal_handler_callback(s)
-                        )
-                        logger.debug(
-                            f"Added signal handler for {signal.Signals(sig).name}"
-                        )
+                        loop.add_signal_handler(sig, lambda s=sig: signal_handler_callback(s))
+                        logger.debug(f"Added signal handler for {signal.Signals(sig).name}")
                     except (
                         NotImplementedError,
                         OSError,
@@ -228,12 +208,8 @@ class RouterAgentManager:
                 else:
                     logger.warning(f"Signal {sig_name} not available on this platform.")
 
-        except (
-            RuntimeError
-        ) as e:  # e.g. "Cannot add signal handler" if not in main thread
-            logger.warning(
-                f"Could not setup signal handlers: {e}. This might be normal if not running in main thread."
-            )
+        except RuntimeError as e:  # e.g. "Cannot add signal handler" if not in main thread
+            logger.warning(f"Could not setup signal handlers: {e}. This might be normal if not running in main thread.")
 
     async def connect_and_register(self):
         """Connect to MCP server and register agent"""
@@ -252,9 +228,7 @@ class RouterAgentManager:
             logger.critical(f"MCP Connection Error during connect/register: {e}")
             return False
         except Exception as e:
-            logger.critical(
-                f"Unexpected error during connection/registration: {e}", exc_info=True
-            )
+            logger.critical(f"Unexpected error during connection/registration: {e}", exc_info=True)
             return False
 
     async def run_main_loop(self):
@@ -346,12 +320,8 @@ if __name__ == "__main__":
         exit_code = asyncio.run(main_async_runner())
         logger.info(f"{AGENT_NAME} exiting with code {exit_code}.")
         sys.exit(exit_code)
-    except (
-        KeyboardInterrupt
-    ):  # Catch KeyboardInterrupt here if asyncio.run is interrupted
-        logger.info(
-            f"{AGENT_NAME} main process interrupted by KeyboardInterrupt before or during asyncio.run."
-        )
+    except KeyboardInterrupt:  # Catch KeyboardInterrupt here if asyncio.run is interrupted
+        logger.info(f"{AGENT_NAME} main process interrupted by KeyboardInterrupt before or during asyncio.run.")
         sys.exit(0)
     except Exception as e:  # Catch any other unexpected errors at the top level
         logger.critical(f"Fatal error at {AGENT_NAME} entry point: {e}", exc_info=True)

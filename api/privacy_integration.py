@@ -50,9 +50,7 @@ def setup_privacy_compliance(app: FastAPI):
 
     # Mount legal pages
     try:
-        app.mount(
-            "/legal", StaticFiles(directory="static/legal", html=True), name="legal"
-        )
+        app.mount("/legal", StaticFiles(directory="static/legal", html=True), name="legal")
         logger.info("✅ Legal pages mounted at /legal/*")
     except RuntimeError as e:
         logger.warning(f"⚠️ Could not mount legal pages: {e}")
@@ -85,9 +83,7 @@ def configure_privacy_logging():
 
     # Apply to all handlers
     root_logger = logging.getLogger()
-    formatter = PIIMaskingFormatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
+    formatter = PIIMaskingFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
     for handler in root_logger.handlers:
         handler.setFormatter(formatter)

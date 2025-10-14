@@ -43,9 +43,7 @@ class CPSCConnector:
         """Fetch recalls from CPSC SaferProducts API"""
         logger.info("Fetching recent recalls from CPSC...")
         recalls: List[Recall] = []
-        start_date = (datetime.now() - timedelta(days=365 * 5)).strftime(
-            "%Y-%m-%d"
-        )  # 5 years
+        start_date = (datetime.now() - timedelta(days=365 * 5)).strftime("%Y-%m-%d")  # 5 years
 
         params = {"format": "json", "RecallDateStart": start_date}
 
@@ -55,9 +53,7 @@ class CPSCConnector:
             timeout = aiohttp.ClientTimeout(total=60)
 
             async with aiohttp.ClientSession(connector=connector) as session:
-                async with session.get(
-                    self.BASE_URL, params=params, timeout=timeout
-                ) as resp:
+                async with session.get(self.BASE_URL, params=params, timeout=timeout) as resp:
                     resp.raise_for_status()
                     data = await resp.json()
 
@@ -79,16 +75,10 @@ class CPSCConnector:
                                 brand=product.get("Brand"),
                                 model_number=product.get("Model"),
                                 upc=product.get("UPC"),
-                                recall_date=datetime.strptime(
-                                    recall_date_str, "%Y-%m-%d"
-                                ).date(),
-                                hazard=item.get("Hazards", [{}])[0].get("Name")
-                                if item.get("Hazards")
-                                else None,
+                                recall_date=datetime.strptime(recall_date_str, "%Y-%m-%d").date(),
+                                hazard=item.get("Hazards", [{}])[0].get("Name") if item.get("Hazards") else None,
                                 recall_reason=item.get("Description"),
-                                remedy=item.get("Remedies", [{}])[0].get("Name")
-                                if item.get("Remedies")
-                                else None,
+                                remedy=item.get("Remedies", [{}])[0].get("Name") if item.get("Remedies") else None,
                                 url=item.get("URL"),
                                 source_agency="CPSC",
                                 country="US",
@@ -146,14 +136,10 @@ class FDAConnector:
                                 recalls.append(
                                     Recall(
                                         recall_id=f"FDA-{item.get('recall_number')}",
-                                        product_name=item.get(
-                                            "product_description", "Unknown Product"
-                                        ),
+                                        product_name=item.get("product_description", "Unknown Product"),
                                         brand=item.get("recalling_firm"),
                                         lot_number=item.get("code_info"),
-                                        recall_date=datetime.strptime(
-                                            recall_date_str, "%Y%m%d"
-                                        ).date(),
+                                        recall_date=datetime.strptime(recall_date_str, "%Y%m%d").date(),
                                         recall_reason=item.get("reason_for_recall"),
                                         recall_class=item.get("classification"),
                                         country=item.get("country"),
@@ -197,9 +183,7 @@ class NHTSAConnector:
                     params = {"modelYear": year}
 
                     try:
-                        async with session.get(
-                            self.BASE_URL, params=params, timeout=30
-                        ) as resp:
+                        async with session.get(self.BASE_URL, params=params, timeout=30) as resp:
                             resp.raise_for_status()
                             data = await resp.json()
 
@@ -212,9 +196,7 @@ class NHTSAConnector:
                                         vehicle_model=item.get("Model"),
                                         model_year=str(item.get("ModelYear")),
                                         manufacturer=item.get("Manufacturer"),
-                                        recall_date=datetime.strptime(
-                                            item.get("ReportReceivedDate"), "%Y%m%d"
-                                        ).date(),
+                                        recall_date=datetime.strptime(item.get("ReportReceivedDate"), "%Y%m%d").date(),
                                         hazard=item.get("Consequence"),
                                         recall_reason=item.get("Summary"),
                                         remedy=item.get("Remedy"),
@@ -226,9 +208,7 @@ class NHTSAConnector:
                                 )
 
                     except Exception as e:
-                        logger.error(
-                            f"Error fetching NHTSA recalls for year {year}: {e}"
-                        )
+                        logger.error(f"Error fetching NHTSA recalls for year {year}: {e}")
 
             logger.info(f"Successfully fetched {len(recalls)} NHTSA recalls")
 
@@ -265,14 +245,10 @@ class USDA_FSIS_Connector:
                                 product_name=item.get("product_description", "Unknown"),
                                 brand=item.get("brand_name"),
                                 lot_number=item.get("case_lot_code"),
-                                production_date=datetime.strptime(
-                                    item.get("production_date"), "%Y-%m-%d"
-                                ).date()
+                                production_date=datetime.strptime(item.get("production_date"), "%Y-%m-%d").date()
                                 if item.get("production_date")
                                 else None,
-                                recall_date=datetime.strptime(
-                                    recall_date_str, "%Y-%m-%d"
-                                ).date(),
+                                recall_date=datetime.strptime(recall_date_str, "%Y-%m-%d").date(),
                                 recall_reason=item.get("reason"),
                                 hazard_category="food",
                                 url=item.get("url"),
@@ -309,9 +285,7 @@ class HealthCanadaConnector:
             async with aiohttp.ClientSession() as session:
                 params = {"lang": "en", "type": "consumer"}
 
-                async with session.get(
-                    self.BASE_URL, params=params, timeout=30
-                ) as resp:
+                async with session.get(self.BASE_URL, params=params, timeout=30) as resp:
                     resp.raise_for_status()
                     data = await resp.json()
 
@@ -323,9 +297,7 @@ class HealthCanadaConnector:
                                 brand=item.get("brand_name"),
                                 model_number=item.get("model_number"),
                                 upc=item.get("upc"),
-                                recall_date=datetime.strptime(
-                                    item.get("date_published"), "%Y-%m-%d"
-                                ).date(),
+                                recall_date=datetime.strptime(item.get("date_published"), "%Y-%m-%d").date(),
                                 hazard=item.get("hazard"),
                                 recall_reason=item.get("issue"),
                                 remedy=item.get("what_to_do"),
@@ -359,17 +331,13 @@ class CFIAConnector:
 class TransportCanadaConnector:
     """Transport Canada - Vehicle Recalls"""
 
-    BASE_URL = (
-        "https://wwwapps.tc.gc.ca/Saf-Sec-Sur/7/VRDB-BDRV/search-recherche/menu.aspx"
-    )
+    BASE_URL = "https://wwwapps.tc.gc.ca/Saf-Sec-Sur/7/VRDB-BDRV/search-recherche/menu.aspx"
 
     async def fetch_recent_recalls(self) -> List[Recall]:
         """Fetch vehicle recalls from Transport Canada"""
         logger.info("Fetching recent recalls from Transport Canada...")
         # Note: Requires web scraping - placeholder implementation
-        logger.warning(
-            "Transport Canada connector requires web scraping - not yet implemented"
-        )
+        logger.warning("Transport Canada connector requires web scraping - not yet implemented")
         return []
 
 
@@ -393,9 +361,7 @@ class EU_RAPEX_Connector:
 
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    self.ENDPOINT, params=params, timeout=30
-                ) as resp:
+                async with session.get(self.ENDPOINT, params=params, timeout=30) as resp:
                     resp.raise_for_status()
                     payload = await resp.json()
 
@@ -413,9 +379,7 @@ class EU_RAPEX_Connector:
                                 brand=fields.get("brand"),
                                 model_number=fields.get("model_type"),
                                 ean_code=fields.get("ean"),
-                                recall_date=datetime.strptime(
-                                    recall_date_str, "%Y-%m-%d"
-                                ).date(),
+                                recall_date=datetime.strptime(recall_date_str, "%Y-%m-%d").date(),
                                 hazard=fields.get("risk_type"),
                                 hazard_category=fields.get("product_category"),
                                 country=fields.get("country_of_origin"),
@@ -485,9 +449,7 @@ class CommerceCommissionNZConnector:
         """Fetch recalls from NZ Commerce Commission"""
         logger.info("Fetching recent recalls from NZ Commerce Commission...")
         # Note: Requires web scraping - placeholder implementation
-        logger.warning(
-            "NZ Commerce Commission connector requires web scraping - not yet implemented"
-        )
+        logger.warning("NZ Commerce Commission connector requires web scraping - not yet implemented")
         return []
 
 
@@ -505,9 +467,7 @@ class SG_CPSO_Connector:
         """Fetch recalls from Singapore CPSO"""
         logger.info("Fetching recent recalls from Singapore CPSO...")
         # Note: Requires web scraping - placeholder implementation
-        logger.warning(
-            "Singapore CPSO connector requires web scraping - not yet implemented"
-        )
+        logger.warning("Singapore CPSO connector requires web scraping - not yet implemented")
         return []
 
 
@@ -650,13 +610,9 @@ class ConnectorRegistry:
 
     async def fetch_all_recalls(self) -> List[Recall]:
         """Fetch recalls from all enabled connectors concurrently"""
-        logger.info(
-            f"Starting to fetch recalls from {len(self.connectors)} connectors..."
-        )
+        logger.info(f"Starting to fetch recalls from {len(self.connectors)} connectors...")
 
-        fetch_tasks = [
-            connector.fetch_recent_recalls() for connector in self.connectors.values()
-        ]
+        fetch_tasks = [connector.fetch_recent_recalls() for connector in self.connectors.values()]
         results = await asyncio.gather(*fetch_tasks, return_exceptions=True)
 
         all_recalls = []

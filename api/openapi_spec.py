@@ -54,9 +54,7 @@ def custom_openapi(app: FastAPI):
     )
 
     # Add response examples
-    openapi_schema["paths"]["/api/v1/agencies"]["get"]["responses"]["200"]["content"][
-        "application/json"
-    ]["example"] = {
+    openapi_schema["paths"]["/api/v1/agencies"]["get"]["responses"]["200"]["content"]["application/json"]["example"] = {
         "success": True,
         "data": [
             {
@@ -118,15 +116,15 @@ def custom_openapi(app: FastAPI):
     # Mark deprecated user_id fields in premium/alternatives/report requests
     def deprecate_param(path_key: str, method: str, param_name: str):
         try:
-            params = openapi_schema["paths"][path_key][method]["requestBody"][
-                "content"
-            ]["application/json"]["schema"]["properties"]
+            params = openapi_schema["paths"][path_key][method]["requestBody"]["content"]["application/json"]["schema"][
+                "properties"
+            ]
             if param_name in params:
                 params[param_name]["deprecated"] = True
                 # Not required
-                required = openapi_schema["paths"][path_key][method]["requestBody"][
-                    "content"
-                ]["application/json"]["schema"].get("required", [])
+                required = openapi_schema["paths"][path_key][method]["requestBody"]["content"]["application/json"][
+                    "schema"
+                ].get("required", [])
                 if param_name in required:
                     required.remove(param_name)
         except Exception:

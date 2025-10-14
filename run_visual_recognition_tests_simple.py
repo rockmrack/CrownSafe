@@ -54,9 +54,7 @@ def run_tests():
 
         print("PASS - Agent initialized successfully")
         print(f"  - Agent ID: {agent.agent_id}")
-        print(
-            f"  - LLM Client: {'Available' if agent.llm_client else 'Not configured'}"
-        )
+        print(f"  - LLM Client: {'Available' if agent.llm_client else 'Not configured'}")
         print("  - Methods: 5 core methods available")
         tests_passed += 1
         test_results.append(("Agent Initialization", True))
@@ -233,9 +231,7 @@ def run_tests():
         import logging
 
         custom_logger = logging.getLogger("test-visual-logger")
-        agent = VisualSearchAgentLogic(
-            agent_id="test-logger", logger_instance=custom_logger
-        )
+        agent = VisualSearchAgentLogic(agent_id="test-logger", logger_instance=custom_logger)
 
         assert agent.logger is not None
         assert agent.logger.name == "test-visual-logger"
@@ -317,9 +313,7 @@ def run_tests():
         print("PASS - All agent attributes present")
         print(f"  - agent_id: {agent.agent_id}")
         print(f"  - logger: {type(agent.logger).__name__}")
-        print(
-            f"  - llm_client: {type(agent.llm_client).__name__ if agent.llm_client else 'None'}"
-        )
+        print(f"  - llm_client: {type(agent.llm_client).__name__ if agent.llm_client else 'None'}")
         tests_passed += 1
         test_results.append(("Agent Attributes", True))
     except Exception as e:

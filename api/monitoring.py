@@ -82,9 +82,7 @@ http_response_size_bytes = Summary(
 )
 
 # Error metrics
-error_total = Counter(
-    "error_total", "Total number of errors", ["type", "endpoint"], registry=REGISTRY
-)
+error_total = Counter("error_total", "Total number of errors", ["type", "endpoint"], registry=REGISTRY)
 
 # Rate limiting metrics
 rate_limit_hits_total = Counter(
@@ -124,13 +122,9 @@ recalls_found_total = Counter(
 )
 
 # System metrics
-system_memory_usage = Gauge(
-    "system_memory_usage_bytes", "System memory usage in bytes", registry=REGISTRY
-)
+system_memory_usage = Gauge("system_memory_usage_bytes", "System memory usage in bytes", registry=REGISTRY)
 
-system_cpu_usage = Gauge(
-    "system_cpu_usage_percent", "System CPU usage percentage", registry=REGISTRY
-)
+system_cpu_usage = Gauge("system_cpu_usage_percent", "System CPU usage percentage", registry=REGISTRY)
 
 database_connections_active = Gauge(
     "database_connections_active",
@@ -146,9 +140,7 @@ database_query_duration_seconds = Histogram(
 )
 
 # Cache metrics
-cache_hits_total = Counter(
-    "cache_hits_total", "Total number of cache hits", ["cache_type"], registry=REGISTRY
-)
+cache_hits_total = Counter("cache_hits_total", "Total number of cache hits", ["cache_type"], registry=REGISTRY)
 
 cache_misses_total = Counter(
     "cache_misses_total",
@@ -157,9 +149,7 @@ cache_misses_total = Counter(
     registry=REGISTRY,
 )
 
-cache_size = Gauge(
-    "cache_size_items", "Number of items in cache", ["cache_type"], registry=REGISTRY
-)
+cache_size = Gauge("cache_size_items", "Number of items in cache", ["cache_type"], registry=REGISTRY)
 
 # Application info
 app_info = Info("app", "Application information", registry=REGISTRY)
@@ -198,9 +188,7 @@ async def track_metrics(request: Request, call_next):
     # Get request size
     content_length = request.headers.get("content-length")
     if content_length:
-        http_request_size_bytes.labels(
-            method=request.method, endpoint=request.url.path
-        ).observe(int(content_length))
+        http_request_size_bytes.labels(method=request.method, endpoint=request.url.path).observe(int(content_length))
 
     # Process request
     response = await call_next(request)
@@ -209,13 +197,9 @@ async def track_metrics(request: Request, call_next):
     duration = time.time() - start_time
 
     # Track metrics
-    http_requests_total.labels(
-        method=request.method, endpoint=request.url.path, status=response.status_code
-    ).inc()
+    http_requests_total.labels(method=request.method, endpoint=request.url.path, status=response.status_code).inc()
 
-    http_request_duration_seconds.labels(
-        method=request.method, endpoint=request.url.path
-    ).observe(duration)
+    http_request_duration_seconds.labels(method=request.method, endpoint=request.url.path).observe(duration)
 
     # Track errors
     if response.status_code >= 400:
@@ -224,9 +208,9 @@ async def track_metrics(request: Request, call_next):
 
     # Track response size
     if hasattr(response, "headers") and "content-length" in response.headers:
-        http_response_size_bytes.labels(
-            method=request.method, endpoint=request.url.path
-        ).observe(int(response.headers["content-length"]))
+        http_response_size_bytes.labels(method=request.method, endpoint=request.url.path).observe(
+            int(response.headers["content-length"])
+        )
 
     return response
 
@@ -413,9 +397,7 @@ class SLOTracker:
 
         # Keep only last 10000 measurements
         if len(self.data["latency_p95"]["measurements"]) > 10000:
-            self.data["latency_p95"]["measurements"] = self.data["latency_p95"][
-                "measurements"
-            ][-10000:]
+            self.data["latency_p95"]["measurements"] = self.data["latency_p95"]["measurements"][-10000:]
 
     def record_request(self, is_error: bool):
         """Record request and error status"""
@@ -462,9 +444,7 @@ class SLOTracker:
                 "total_requests": total_req,
                 "error_requests": error_req,
             },
-            "overall_status": "OK"
-            if (uptime_ok and latency_ok and error_ok)
-            else "VIOLATION",
+            "overall_status": "OK" if (uptime_ok and latency_ok and error_ok) else "VIOLATION",
             "evaluation_window": "30 days",
             "last_updated": datetime.now().isoformat(),
         }
@@ -528,9 +508,7 @@ class SyntheticProbe:
                 if probe["method"] == "GET":
                     response = await client.get(probe["url"])
                 elif probe["method"] == "POST":
-                    response = await client.post(
-                        probe["url"], json=probe.get("data", {})
-                    )
+                    response = await client.post(probe["url"], json=probe.get("data", {}))
                 else:
                     return {"error": f"Unsupported method: {probe['method']}"}
 

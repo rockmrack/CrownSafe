@@ -31,21 +31,15 @@ def upgrade() -> None:
 
     # Add updated_at column if it doesn't exist
     try:
-        op.add_column(
-            "subscriptions", sa.Column("updated_at", sa.DateTime(), nullable=True)
-        )
-        op.execute(
-            "UPDATE subscriptions SET updated_at = created_at WHERE updated_at IS NULL"
-        )
+        op.add_column("subscriptions", sa.Column("updated_at", sa.DateTime(), nullable=True))
+        op.execute("UPDATE subscriptions SET updated_at = created_at WHERE updated_at IS NULL")
     except:
         pass  # Column might already exist
 
     # Add updated_at column to recalls if it doesn't exist
     try:
         op.add_column("recalls", sa.Column("updated_at", sa.DateTime(), nullable=True))
-        op.execute(
-            "UPDATE recalls SET updated_at = CURRENT_TIMESTAMP WHERE updated_at IS NULL"
-        )
+        op.execute("UPDATE recalls SET updated_at = CURRENT_TIMESTAMP WHERE updated_at IS NULL")
     except:
         pass  # Column might already exist
 
@@ -54,9 +48,7 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     """Remove unique constraint"""
-    op.drop_constraint(
-        "uq_subscription_user_transaction", "subscriptions", type_="unique"
-    )
+    op.drop_constraint("uq_subscription_user_transaction", "subscriptions", type_="unique")
 
     # Optionally remove updated_at columns
     # op.drop_column('subscriptions', 'updated_at')

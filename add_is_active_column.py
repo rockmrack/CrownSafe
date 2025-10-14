@@ -8,11 +8,7 @@ from sqlalchemy import text
 try:
     with engine.connect() as conn:
         # Add the column if it doesn't exist
-        conn.execute(
-            text(
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT true"
-            )
-        )
+        conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT true"))
         conn.commit()
         print("✅ Column 'is_active' added successfully to users table")
 

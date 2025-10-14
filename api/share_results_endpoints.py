@@ -110,20 +110,14 @@ class ShareRequest(BaseModel):
         ...,
         description="Type of content (scan_result, report, safety_summary, nursery_quarterly)",
     )
-    content_id: Union[str, int] = Field(
-        ..., description="ID of the content to share (numeric ID or UUID)"
-    )
+    content_id: Union[str, int] = Field(..., description="ID of the content to share (numeric ID or UUID)")
     user_id: int = Field(..., description="User creating the share")
 
     # Optional UUID field for reports
-    report_uuid: Optional[str] = Field(
-        None, description="Report UUID (alternative to content_id for reports)"
-    )
+    report_uuid: Optional[str] = Field(None, description="Report UUID (alternative to content_id for reports)")
 
     # Share settings
-    expires_in_hours: Optional[int] = Field(
-        24, description="Hours until expiration (default 24)"
-    )
+    expires_in_hours: Optional[int] = Field(24, description="Hours until expiration (default 24)")
     max_views: Optional[int] = Field(None, description="Maximum number of views")
     password: Optional[str] = Field(None, description="Optional password protection")
     allow_download: bool = Field(True, description="Allow downloading PDFs")
@@ -226,15 +220,11 @@ async def create_share_link_dev(request: ShareRequest) -> ApiResponse:
         raise
     except Exception as e:
         logger.error(f"Error creating share link: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to create share link: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to create share link: {str(e)}")
 
 
 @share_router.post("/create", response_model=ApiResponse)
-async def create_share_link(
-    request: ShareRequest, db: Session = Depends(get_db)
-) -> ApiResponse:
+async def create_share_link(request: ShareRequest, db: Session = Depends(get_db)) -> ApiResponse:
     """
     Create a shareable link for scan results or reports
 
@@ -297,9 +287,7 @@ async def create_share_link(
 
         if request.content_type == "scan_result":
             # Get scan history (numeric ID only)
-            if not isinstance(request.content_id, (int, str)) or _is_uuid(
-                str(request.content_id)
-            ):
+            if not isinstance(request.content_id, (int, str)) or _is_uuid(str(request.content_id)):
                 raise HTTPException(
                     status_code=400,
                     detail="Scan results require numeric scan_id, not UUID",
@@ -326,9 +314,7 @@ async def create_share_link(
                 "product_name": scan.product_name,
                 "brand": scan.brand,
                 "barcode": scan.barcode,
-                "scan_timestamp": scan.scan_timestamp.isoformat()
-                if scan.scan_timestamp
-                else None,
+                "scan_timestamp": scan.scan_timestamp.isoformat() if scan.scan_timestamp else None,
                 "verdict": scan.verdict,
                 "risk_level": scan.risk_level,
                 "recalls_found": scan.recalls_found,
@@ -352,9 +338,7 @@ async def create_share_link(
             if _is_uuid(report_uuid):
                 # UUID path - check if S3 object exists
                 try:
-                    s3_key = _guess_s3_key(
-                        request.user_id, report_uuid, request.content_type
-                    )
+                    s3_key = _guess_s3_key(request.user_id, report_uuid, request.content_type)
 
                     # Check if S3 object exists
                     s3_client.head_object(Bucket=S3_BUCKET, Key=s3_key)
@@ -370,9 +354,7 @@ async def create_share_link(
                     content_id_to_store = report_uuid
 
                 except Exception as e:
-                    logger.warning(
-                        f"S3 object not found for report UUID {report_uuid}: {e}"
-                    )
+                    logger.warning(f"S3 object not found for report UUID {report_uuid}: {e}")
                     raise HTTPException(
                         status_code=404,
                         detail=f"Report not found for UUID: {report_uuid}. The report may not exist or may have been deleted.",
@@ -401,12 +383,8 @@ async def create_share_link(
                     content_snapshot = {
                         "report_id": report.report_id,
                         "report_type": report.report_type,
-                        "period_start": report.period_start.isoformat()
-                        if report.period_start
-                        else None,
-                        "period_end": report.period_end.isoformat()
-                        if report.period_end
-                        else None,
+                        "period_start": report.period_start.isoformat() if report.period_start else None,
+                        "period_end": report.period_end.isoformat() if report.period_end else None,
                         "total_scans": report.total_scans,
                         "unique_products": report.unique_products,
                         "recalls_found": report.recalls_found,
@@ -513,12 +491,8 @@ async def view_share_link_dev(token: str) -> ApiResponse:
             "report_type": share_data["share_type"],
             "title": f"Safety Report: {share_data['share_type']}",
             "summary": "This is a mock safety report for testing purposes",
-            "created_at": share_data[
-                "expires_at"
-            ].isoformat(),  # Using expires_at as created_at for simplicity
-            "expires_at": share_data["expires_at"].isoformat()
-            if share_data["expires_at"]
-            else None,
+            "created_at": share_data["expires_at"].isoformat(),  # Using expires_at as created_at for simplicity
+            "expires_at": share_data["expires_at"].isoformat() if share_data["expires_at"] else None,
             "pdf_available": True,
             "created_via": "dev_override",
         }
@@ -537,9 +511,7 @@ async def view_share_link_dev(token: str) -> ApiResponse:
         raise
     except Exception as e:
         logger.error(f"Error viewing share link: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to view share link: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to view share link: {str(e)}")
 
 
 @share_router.get("/view/{token}", response_model=ApiResponse)
@@ -564,9 +536,7 @@ async def view_shared_content(
 
         # Validate token
         if not share_token.is_valid():
-            raise HTTPException(
-                status_code=410, detail="Share link has expired or reached view limit"
-            )
+            raise HTTPException(status_code=410, detail="Share link has expired or reached view limit")
 
         # Check password if required
         if share_token.password_protected:
@@ -608,9 +578,7 @@ async def view_shared_content(
 
 
 @share_router.post("/email", response_model=ApiResponse)
-async def share_via_email(
-    request: EmailShareRequest, db: Session = Depends(get_db)
-) -> ApiResponse:
+async def share_via_email(request: EmailShareRequest, db: Session = Depends(get_db)) -> ApiResponse:
     """
     Share results via email
 
@@ -618,9 +586,7 @@ async def share_via_email(
     """
     try:
         # Get share token to validate it exists
-        share_token = (
-            db.query(ShareToken).filter(ShareToken.token == request.share_token).first()
-        )
+        share_token = db.query(ShareToken).filter(ShareToken.token == request.share_token).first()
 
         if not share_token:
             raise HTTPException(status_code=404, detail="Share link not found")
@@ -693,9 +659,7 @@ async def share_via_email(
             # If SMTP not configured, just return the share URL
             message = f"Share link: {share_url} (Email service not configured)"
 
-        return ApiResponse(
-            success=True, data={"message": message, "share_url": share_url}
-        )
+        return ApiResponse(success=True, data={"message": message, "share_url": share_url})
 
     except HTTPException:
         raise
@@ -719,15 +683,11 @@ async def revoke_share_link_dev(
         share_data = create_share_link_dev.mock_shares.get(token)
 
         if not share_data:
-            raise HTTPException(
-                status_code=404, detail="Share link not found or unauthorized"
-            )
+            raise HTTPException(status_code=404, detail="Share link not found or unauthorized")
 
         # Check authorization
         if share_data["created_by"] != user_id:
-            raise HTTPException(
-                status_code=404, detail="Share link not found or unauthorized"
-            )
+            raise HTTPException(status_code=404, detail="Share link not found or unauthorized")
 
         # Revoke the token
         share_data["is_active"] = False
@@ -742,9 +702,7 @@ async def revoke_share_link_dev(
         raise
     except Exception as e:
         logger.error(f"Error revoking share link: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to revoke share link: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to revoke share link: {str(e)}")
 
 
 @share_router.delete("/revoke/{token}", response_model=ApiResponse)
@@ -760,25 +718,17 @@ async def revoke_share_link(
     """
     try:
         # Get share token
-        share_token = (
-            db.query(ShareToken)
-            .filter(ShareToken.token == token, ShareToken.created_by == user_id)
-            .first()
-        )
+        share_token = db.query(ShareToken).filter(ShareToken.token == token, ShareToken.created_by == user_id).first()
 
         if not share_token:
-            raise HTTPException(
-                status_code=404, detail="Share link not found or unauthorized"
-            )
+            raise HTTPException(status_code=404, detail="Share link not found or unauthorized")
 
         # Revoke the token
         share_token.is_active = False
         share_token.revoked_at = datetime.utcnow()
         db.commit()
 
-        return ApiResponse(
-            success=True, data={"message": "Share link revoked successfully"}
-        )
+        return ApiResponse(success=True, data={"message": "Share link revoked successfully"})
 
     except HTTPException:
         raise
@@ -811,9 +761,7 @@ async def get_my_share_links(
             share_data["is_valid"] = share.is_valid()
             share_list.append(share_data)
 
-        return ApiResponse(
-            success=True, data={"shares": share_list, "total": len(share_list)}
-        )
+        return ApiResponse(success=True, data={"shares": share_list, "total": len(share_list)})
 
     except Exception as e:
         logger.error(f"Error fetching user shares: {e}")
@@ -916,15 +864,11 @@ async def preview_share_link_dev(token: str) -> HTMLResponse:
         raise
     except Exception as e:
         logger.error(f"Error previewing share link: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to preview share link: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to preview share link: {str(e)}")
 
 
 @share_router.get("/preview/{token}")
-async def preview_shared_content(
-    token: str, db: Session = Depends(get_db)
-) -> HTMLResponse:
+async def preview_shared_content(token: str, db: Session = Depends(get_db)) -> HTMLResponse:
     """
     Generate a preview page for shared content
 
@@ -951,7 +895,9 @@ async def preview_shared_content(
 
         if share_token.share_type == "scan_result":
             title = f"Product Safety: {content.get('product_name', 'Unknown Product')}"
-            description = f"Risk Level: {content.get('risk_level', 'Unknown')} | Verdict: {content.get('verdict', 'No data')}"
+            description = (
+                f"Risk Level: {content.get('risk_level', 'Unknown')} | Verdict: {content.get('verdict', 'No data')}"
+            )
         else:
             title = f"Safety Report: {content.get('report_type', 'Unknown Type')}"
             description = f"Products: {content.get('unique_products', 0)} | Recalls: {content.get('recalls_found', 0)}"

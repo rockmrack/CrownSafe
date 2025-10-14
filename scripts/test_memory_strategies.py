@@ -115,9 +115,7 @@ class MemoryStrategyTester:
         try:
             # Find latest planner log
             planner_logs = [
-                f
-                for f in os.listdir(self.logs_dir)
-                if f.startswith("planner_agent_") and f.endswith(".log")
+                f for f in os.listdir(self.logs_dir) if f.startswith("planner_agent_") and f.endswith(".log")
             ]
             if not planner_logs:
                 return None
@@ -135,16 +133,12 @@ class MemoryStrategyTester:
                 import re
 
                 # Memory insights pattern
-                match = re.search(
-                    r"Memory insights gathered: (\w+) strategy recommended", content
-                )
+                match = re.search(r"Memory insights gathered: (\w+) strategy recommended", content)
                 if match:
                     return match.group(1)
 
                 # Plan creation pattern
-                match = re.search(
-                    r"plan created successfully with (\w+) strategy", content
-                )
+                match = re.search(r"plan created successfully with (\w+) strategy", content)
                 if match:
                     return match.group(1)
 
@@ -167,9 +161,7 @@ class MemoryStrategyTester:
         """Extract workflow ID from commander logs"""
         try:
             commander_logs = [
-                f
-                for f in os.listdir(self.logs_dir)
-                if f.startswith("commander_agent_") and f.endswith(".log")
+                f for f in os.listdir(self.logs_dir) if f.startswith("commander_agent_") and f.endswith(".log")
             ]
             if not commander_logs:
                 return None
@@ -226,12 +218,8 @@ class MemoryStrategyTester:
         strategy_matches = sum(1 for r in self.results if r["strategy_match"])
 
         print(f"\nTotal Tests: {total_tests}")
-        print(
-            f"Successful: {successful_tests} ({successful_tests / total_tests * 100:.1f}%)"
-        )
-        print(
-            f"Strategy Matches: {strategy_matches} ({strategy_matches / total_tests * 100:.1f}%)"
-        )
+        print(f"Successful: {successful_tests} ({successful_tests / total_tests * 100:.1f}%)")
+        print(f"Strategy Matches: {strategy_matches} ({strategy_matches / total_tests * 100:.1f}%)")
 
         print("\nDetailed Results:")
         print("-" * 60)
@@ -259,9 +247,7 @@ class MemoryStrategyTester:
                         "total_tests": total_tests,
                         "successful": successful_tests,
                         "strategy_matches": strategy_matches,
-                        "accuracy": strategy_matches / total_tests * 100
-                        if total_tests > 0
-                        else 0,
+                        "accuracy": strategy_matches / total_tests * 100 if total_tests > 0 else 0,
                     },
                     "results": self.results,
                     "test_completed": datetime.now().isoformat(),
@@ -286,9 +272,7 @@ class MemoryStrategyTester:
             print("✓ Excellent strategy selection accuracy!")
 
         # Check for specific patterns
-        update_tests = [
-            r for r in self.results if r["scenario"]["expected_strategy"] == "update"
-        ]
+        update_tests = [r for r in self.results if r["scenario"]["expected_strategy"] == "update"]
         update_correct = sum(1 for r in update_tests if r["strategy_match"])
         if update_tests and update_correct < len(update_tests):
             print("\n⚠ Update strategy detection needs improvement")
@@ -317,9 +301,7 @@ async def main():
         custom_scenario = {
             "name": "Custom_Test",
             "query": custom_query,
-            "expected_strategy": input(
-                "Expected strategy (comprehensive/focused/update): "
-            ).strip(),
+            "expected_strategy": input("Expected strategy (comprehensive/focused/update): ").strip(),
             "rationale": "Custom test scenario",
         }
         await tester.run_all_tests([custom_scenario])

@@ -71,9 +71,7 @@ def main():
             print("📋 Current columns in users table:")
             for col in columns:
                 indicator = "✅" if col[0] == "is_active" else "  "
-                print(
-                    f"{indicator} {col[0]}: {col[1]} (nullable: {col[2]}, default: {col[3]})"
-                )
+                print(f"{indicator} {col[0]}: {col[1]} (nullable: {col[2]}, default: {col[3]})")
 
             # Count records
             cur.execute("SELECT COUNT(*) FROM users;")

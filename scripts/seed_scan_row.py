@@ -9,9 +9,7 @@ barcode = "079400751508"
 conn = sqlite3.connect(db)
 c = conn.cursor()
 # upsert
-row = c.execute(
-    "SELECT 1 FROM scan_history WHERE scan_id=? LIMIT 1", (scan_id,)
-).fetchone()
+row = c.execute("SELECT 1 FROM scan_history WHERE scan_id=? LIMIT 1", (scan_id,)).fetchone()
 values = dict(
     scan_id=scan_id,
     product_name=None,
@@ -37,9 +35,7 @@ values = dict(
 )
 if row:
     sets = ",".join([f"{k}=?" for k in values.keys()])
-    c.execute(
-        f"UPDATE scan_history SET {sets} WHERE scan_id=?", [*values.values(), scan_id]
-    )
+    c.execute(f"UPDATE scan_history SET {sets} WHERE scan_id=?", [*values.values(), scan_id])
 else:
     cols = ",".join(values.keys())
     qs = ",".join(["?"] * len(values))

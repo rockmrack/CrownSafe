@@ -213,9 +213,7 @@ def format_search_response(result):
     if response["brand"] and response["productName"]:
         response["title"] = f"{response['brand']} - {response['productName']}"
     else:
-        response["title"] = (
-            response["productName"] or response["brand"] or "Unknown Product"
-        )
+        response["title"] = response["productName"] or response["brand"] or "Unknown Product"
 
     # Determine affected countries based on agency
     agency = response["agencyCode"]

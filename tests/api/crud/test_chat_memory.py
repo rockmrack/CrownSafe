@@ -37,12 +37,8 @@ class TestUserProfile(TestBase):
     pregnancy_due_date = Column(Date, nullable=True)
     child_birthdate = Column(Date, nullable=True)
     erase_requested_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(
-        DateTime(timezone=True), default=datetime.utcnow, nullable=False
-    )
-    updated_at = Column(
-        DateTime(timezone=True), default=datetime.utcnow, nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
 
 
 class TestConversation(TestBase):
@@ -50,12 +46,8 @@ class TestConversation(TestBase):
     id = Column(String(36), primary_key=True)
     user_id = Column(String(36), nullable=True)
     scan_id = Column(String(64), nullable=True)
-    started_at = Column(
-        DateTime(timezone=True), default=datetime.utcnow, nullable=False
-    )
-    last_activity_at = Column(
-        DateTime(timezone=True), default=datetime.utcnow, nullable=False
-    )
+    started_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    last_activity_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     messages = relationship(
         "TestConversationMessage",
         back_populates="conversation",
@@ -66,12 +58,8 @@ class TestConversation(TestBase):
 class TestConversationMessage(TestBase):
     __tablename__ = "conversation_message"
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    conversation_id = Column(
-        String(36), ForeignKey("conversation.id", ondelete="CASCADE"), nullable=False
-    )
-    created_at = Column(
-        DateTime(timezone=True), default=datetime.utcnow, nullable=False
-    )
+    conversation_id = Column(String(36), ForeignKey("conversation.id", ondelete="CASCADE"), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     role = Column(String(16), nullable=False)  # 'user' | 'assistant'
     intent = Column(String(64), nullable=True)
     trace_id = Column(String(64), nullable=True)
@@ -151,9 +139,7 @@ def test_upsert_profile_update_existing(db_session):
         }
         profile2 = upsert_profile(db_session, user_id, update_data)
 
-    assert str(profile2.user_id) == str(
-        user_id
-    ), f"User ID mismatch: got {profile2.user_id}, expected {user_id}"
+    assert str(profile2.user_id) == str(user_id), f"User ID mismatch: got {profile2.user_id}, expected {user_id}"
     assert profile2.consent_personalization
     assert profile2.allergies == ["peanuts", "milk", "soy"]
     assert profile2.pregnancy_trimester == 3
@@ -238,11 +224,7 @@ def test_log_message(db_session):
     )
 
     # Verify messages were logged
-    messages = (
-        db_session.query(TestConversationMessage)
-        .filter_by(conversation_id=conv.id)
-        .all()
-    )
+    messages = db_session.query(TestConversationMessage).filter_by(conversation_id=conv.id).all()
     assert len(messages) == 2
 
     user_msg = messages[0]

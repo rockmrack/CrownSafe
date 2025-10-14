@@ -157,9 +157,7 @@ class BarcodeValidator:
             BarcodeType.EAN_13,
             BarcodeType.EAN_8,
         ]:
-            check_digit_valid, check_digit = self._validate_check_digit(
-                cleaned_barcode, barcode_type
-            )
+            check_digit_valid, check_digit = self._validate_check_digit(cleaned_barcode, barcode_type)
             if not check_digit_valid:
                 return BarcodeValidationResult(
                     is_valid=False,
@@ -171,9 +169,7 @@ class BarcodeValidator:
                 )
 
         # Calculate confidence score
-        confidence = self._calculate_confidence(
-            cleaned_barcode, barcode_type, check_digit_valid
-        )
+        confidence = self._calculate_confidence(cleaned_barcode, barcode_type, check_digit_valid)
 
         return BarcodeValidationResult(
             is_valid=True,
@@ -190,9 +186,7 @@ class BarcodeValidator:
         cleaned = re.sub(r"[\s\-\.]", "", barcode.strip())
 
         # Remove common prefixes/suffixes
-        cleaned = re.sub(
-            r"^(UPC|EAN|GTIN|GS1)[\s\-]*", "", cleaned, flags=re.IGNORECASE
-        )
+        cleaned = re.sub(r"^(UPC|EAN|GTIN|GS1)[\s\-]*", "", cleaned, flags=re.IGNORECASE)
 
         return cleaned
 
@@ -249,11 +243,7 @@ class BarcodeValidator:
     def _is_data_matrix(self, barcode: str) -> bool:
         """Check if barcode looks like DataMatrix content"""
         # DataMatrix often contains binary-like data or specific patterns
-        return (
-            len(barcode) > 20
-            and not barcode.isalnum()
-            and any(ord(c) > 127 for c in barcode)
-        )
+        return len(barcode) > 20 and not barcode.isalnum() and any(ord(c) > 127 for c in barcode)
 
     def _is_gs1_128(self, barcode: str) -> bool:
         """Check if barcode follows GS1-128 format"""
@@ -292,9 +282,7 @@ class BarcodeValidator:
         else:
             return actual_length == length_req
 
-    def _validate_check_digit(
-        self, barcode: str, barcode_type: BarcodeType
-    ) -> Tuple[bool, Optional[str]]:
+    def _validate_check_digit(self, barcode: str, barcode_type: BarcodeType) -> Tuple[bool, Optional[str]]:
         """Validate check digit for numeric barcodes"""
         if barcode_type == BarcodeType.UPC_A:
             return self._validate_upc_a_check_digit(barcode)
@@ -351,9 +339,7 @@ class BarcodeValidator:
         # UPC-E is more complex - for now, just check if it's numeric
         return barcode.isdigit(), None
 
-    def _calculate_confidence(
-        self, barcode: str, barcode_type: BarcodeType, check_digit_valid: bool
-    ) -> float:
+    def _calculate_confidence(self, barcode: str, barcode_type: BarcodeType, check_digit_valid: bool) -> float:
         """Calculate confidence score for validation"""
         confidence = 0.5  # Base confidence
 
@@ -362,10 +348,7 @@ class BarcodeValidator:
             length_req = self.lengths[barcode_type]
             if isinstance(length_req, int) and len(barcode) == length_req:
                 confidence += 0.2
-            elif (
-                isinstance(length_req, tuple)
-                and length_req[0] <= len(barcode) <= length_req[1]
-            ):
+            elif isinstance(length_req, tuple) and length_req[0] <= len(barcode) <= length_req[1]:
                 confidence += 0.1
 
         # Increase confidence for valid check digits
@@ -396,22 +379,16 @@ class BarcodeValidator:
         recommendations = []
 
         if result.validation_result == ValidationResult.INVALID_FORMAT:
-            recommendations.append(
-                "Check barcode format and ensure it matches the expected type"
-            )
+            recommendations.append("Check barcode format and ensure it matches the expected type")
 
         if result.validation_result == ValidationResult.INVALID_LENGTH:
-            recommendations.append(
-                "Verify barcode length matches the expected number of characters"
-            )
+            recommendations.append("Verify barcode length matches the expected number of characters")
 
         if result.validation_result == ValidationResult.INVALID_CHECK_DIGIT:
             recommendations.append("Recalculate and verify the check digit")
 
         if result.validation_result == ValidationResult.INVALID_CHARACTERS:
-            recommendations.append(
-                "Remove invalid characters and ensure only valid symbols are used"
-            )
+            recommendations.append("Remove invalid characters and ensure only valid symbols are used")
 
         if result.validation_result == ValidationResult.UNKNOWN_TYPE:
             recommendations.append("Try scanning again or manually enter the barcode")

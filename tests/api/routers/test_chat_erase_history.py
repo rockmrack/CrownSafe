@@ -9,8 +9,7 @@ client = TestClient(app)
 
 
 @pytest.mark.skip(
-    reason="Erase history endpoint not yet implemented in api.routers.chat. "
-    "This test suite is for a planned feature."
+    reason="Erase history endpoint not yet implemented in api.routers.chat. This test suite is for a planned feature."
 )
 def test_erase_history_without_auth():
     """Test erase history endpoint without authentication"""
@@ -20,8 +19,7 @@ def test_erase_history_without_auth():
 
 
 @pytest.mark.skip(
-    reason="Erase history endpoint not yet implemented in api.routers.chat. "
-    "This test suite is for a planned feature."
+    reason="Erase history endpoint not yet implemented in api.routers.chat. This test suite is for a planned feature."
 )
 @patch("api.routers.chat.get_db")
 @patch("api.routers.chat.mark_erase_requested")
@@ -56,8 +54,7 @@ def test_erase_history_sync_mode(mock_purge, mock_mark_erase, mock_get_db):
 
 
 @pytest.mark.skip(
-    reason="Erase history endpoint not yet implemented in api.routers.chat. "
-    "This test suite is for a planned feature."
+    reason="Erase history endpoint not yet implemented in api.routers.chat. This test suite is for a planned feature."
 )
 @patch("api.routers.chat.get_db")
 @patch("api.routers.chat.mark_erase_requested")
@@ -91,8 +88,7 @@ def test_erase_history_with_celery_task(mock_task, mock_mark_erase, mock_get_db)
 
 
 @pytest.mark.skip(
-    reason="Erase history endpoint not yet implemented in api.routers.chat. "
-    "This test suite is for a planned feature."
+    reason="Erase history endpoint not yet implemented in api.routers.chat. This test suite is for a planned feature."
 )
 @patch("api.routers.chat.get_db")
 @patch("api.routers.chat.mark_erase_requested")
@@ -129,8 +125,7 @@ def test_erase_history_fallback_to_sync(mock_purge, mock_mark_erase, mock_get_db
 
 
 @pytest.mark.skip(
-    reason="Erase history endpoint not yet implemented in api.routers.chat. "
-    "This test suite is for a planned feature."
+    reason="Erase history endpoint not yet implemented in api.routers.chat. This test suite is for a planned feature."
 )
 @patch("api.routers.chat.get_db")
 @patch("api.routers.chat.mark_erase_requested")
@@ -159,8 +154,7 @@ def test_erase_history_no_conversations(mock_mark_erase, mock_get_db):
 
 
 @pytest.mark.skip(
-    reason="Erase history endpoint not yet implemented in api.routers.chat. "
-    "This test suite is for a planned feature."
+    reason="Erase history endpoint not yet implemented in api.routers.chat. This test suite is for a planned feature."
 )
 def test_erase_history_trace_id_header():
     """Test that erase history endpoint returns trace ID in header"""

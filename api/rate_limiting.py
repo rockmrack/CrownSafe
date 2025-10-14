@@ -112,9 +112,7 @@ async def rate_limit_exceeded_handler(request: Request, exc) -> JSONResponse:
     )
 
 
-def get_rate_limiter(
-    times: int = 100, seconds: int = 60, key_func: Optional[callable] = None
-) -> RateLimiter:
+def get_rate_limiter(times: int = 100, seconds: int = 60, key_func: Optional[callable] = None) -> RateLimiter:
     """
     Factory function to create rate limiter dependencies
 
@@ -136,24 +134,16 @@ class RateLimiters:
     """
 
     # Heavy operations - 60 req/min
-    search = RateLimiter(
-        times=RateLimitConfig.SEARCH_LIMIT, seconds=RateLimitConfig.WINDOW
-    )
+    search = RateLimiter(times=RateLimitConfig.SEARCH_LIMIT, seconds=RateLimitConfig.WINDOW)
 
     # Light operations - 120 req/min
-    detail = RateLimiter(
-        times=RateLimitConfig.DETAIL_LIMIT, seconds=RateLimitConfig.WINDOW
-    )
+    detail = RateLimiter(times=RateLimitConfig.DETAIL_LIMIT, seconds=RateLimitConfig.WINDOW)
 
     # Health checks - 300 req/min
-    health = RateLimiter(
-        times=RateLimitConfig.HEALTH_LIMIT, seconds=RateLimitConfig.WINDOW
-    )
+    health = RateLimiter(times=RateLimitConfig.HEALTH_LIMIT, seconds=RateLimitConfig.WINDOW)
 
     # Default - 100 req/min
-    default = RateLimiter(
-        times=RateLimitConfig.DEFAULT_LIMIT, seconds=RateLimitConfig.WINDOW
-    )
+    default = RateLimiter(times=RateLimitConfig.DEFAULT_LIMIT, seconds=RateLimitConfig.WINDOW)
 
     # Strict - 10 req/min (for sensitive operations)
     strict = RateLimiter(times=10, seconds=RateLimitConfig.WINDOW)

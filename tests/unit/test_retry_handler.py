@@ -102,9 +102,7 @@ class TestRetryConfig:
 
     def test_calculate_delay_fibonacci(self):
         """Test fibonacci backoff delay calculation"""
-        config = RetryConfig(
-            strategy=RetryStrategy.FIBONACCI_BACKOFF, initial_delay=1.0
-        )
+        config = RetryConfig(strategy=RetryStrategy.FIBONACCI_BACKOFF, initial_delay=1.0)
 
         assert config.calculate_delay(1) == 1.0
         assert config.calculate_delay(2) == 1.0
@@ -127,9 +125,7 @@ class TestRetryConfig:
 
     def test_calculate_delay_jitter(self):
         """Test jitter application"""
-        config = RetryConfig(
-            strategy=RetryStrategy.FIXED_DELAY, initial_delay=10.0, jitter=True
-        )
+        config = RetryConfig(strategy=RetryStrategy.FIXED_DELAY, initial_delay=10.0, jitter=True)
 
         delays = [config.calculate_delay(1) for _ in range(20)]
 
@@ -140,9 +136,7 @@ class TestRetryConfig:
 
     def test_calculate_delay_no_jitter(self):
         """Test no jitter"""
-        config = RetryConfig(
-            strategy=RetryStrategy.FIXED_DELAY, initial_delay=10.0, jitter=False
-        )
+        config = RetryConfig(strategy=RetryStrategy.FIXED_DELAY, initial_delay=10.0, jitter=False)
 
         delays = [config.calculate_delay(1) for _ in range(10)]
 
@@ -175,17 +169,13 @@ class TestRetryConfig:
 
     def test_should_retry_non_retryable_takes_precedence(self):
         """Test that non-retryable exceptions take precedence"""
-        config = RetryConfig(
-            retryable_exceptions=[Exception], non_retryable_exceptions=[ValueError]
-        )
+        config = RetryConfig(retryable_exceptions=[Exception], non_retryable_exceptions=[ValueError])
 
         assert config.should_retry(ValueError("test")) is False
 
     def test_should_retry_unknown_exception(self):
         """Test should_retry with unknown exception"""
-        config = RetryConfig(
-            retryable_exceptions=[ValueError], non_retryable_exceptions=[TypeError]
-        )
+        config = RetryConfig(retryable_exceptions=[ValueError], non_retryable_exceptions=[TypeError])
 
         assert config.should_retry(RuntimeError("test")) is False
 
@@ -282,9 +272,7 @@ class TestRetryHandler:
 
     def test_execute_with_retry_non_retryable_exception(self):
         """Test retry with non-retryable exception"""
-        handler = RetryHandler(
-            RetryConfig(max_attempts=3, non_retryable_exceptions=[TypeError])
-        )
+        handler = RetryHandler(RetryConfig(max_attempts=3, non_retryable_exceptions=[TypeError]))
 
         def test_func():
             raise TypeError("Non-retryable error")
@@ -545,9 +533,7 @@ class TestBulkRetry:
             return item * 2
 
         items = [1, 2, 3]
-        result = await bulk_retry.process_batch_with_retry(
-            items, process_func, batch_size=10
-        )
+        result = await bulk_retry.process_batch_with_retry(items, process_func, batch_size=10)
 
         assert len(result["success"]) == 3
         assert len(result["failed"]) == 0
@@ -567,9 +553,7 @@ class TestBulkRetry:
             return item * 2
 
         items = [1, 2, 3]
-        result = await bulk_retry.process_batch_with_retry(
-            items, process_func, batch_size=10
-        )
+        result = await bulk_retry.process_batch_with_retry(items, process_func, batch_size=10)
 
         assert len(result["success"]) == 2
         assert len(result["failed"]) == 1
@@ -588,9 +572,7 @@ class TestBulkRetry:
             return item * 2
 
         items = [1, 2, 3]
-        result = await bulk_retry.process_batch_with_retry(
-            items, process_func, batch_size=10
-        )
+        result = await bulk_retry.process_batch_with_retry(items, process_func, batch_size=10)
 
         assert len(result["success"]) == 3
         assert len(result["failed"]) == 0

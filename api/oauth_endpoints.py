@@ -34,13 +34,9 @@ GOOGLE_ISSUER = "https://accounts.google.com"
 class OAuthLoginRequest(BaseModel):
     """OAuth login request with provider token"""
 
-    provider: str = Field(
-        ..., pattern="^(apple|google)$", description="OAuth provider (apple or google)"
-    )
+    provider: str = Field(..., pattern="^(apple|google)$", description="OAuth provider (apple or google)")
     id_token: str = Field(..., description="ID token from provider")
-    authorization_code: Optional[str] = Field(
-        None, description="Authorization code (for Apple)"
-    )
+    authorization_code: Optional[str] = Field(None, description="Authorization code (for Apple)")
     device_id: Optional[str] = Field(None, description="Device ID for tracking")
     app_version: Optional[str] = Field(None, description="App version")
 
@@ -129,9 +125,7 @@ class GoogleOAuth(OAuthProvider):
         try:
             # Verify token with Google
             async with httpx.AsyncClient() as client:
-                response = await client.get(
-                    GOOGLE_TOKEN_INFO_URL, params={"id_token": id_token}
-                )
+                response = await client.get(GOOGLE_TOKEN_INFO_URL, params={"id_token": id_token})
 
                 if response.status_code != 200:
                     raise HTTPException(
@@ -317,9 +311,7 @@ async def oauth_login(
 
 
 @router.post("/logout")
-async def oauth_logout(
-    request: Request, user_id: Optional[str] = None, device_id: Optional[str] = None
-):
+async def oauth_logout(request: Request, user_id: Optional[str] = None, device_id: Optional[str] = None):
     """
     OAuth logout
 
@@ -364,9 +356,7 @@ async def revoke_token(request: Request, token: str, token_type: str = "access_t
         # 2. Add to blacklist with expiration
         # 3. Log the revocation
 
-        logger.info(
-            "Token revoked", extra={"token_type": token_type, "trace_id": trace_id}
-        )
+        logger.info("Token revoked", extra={"token_type": token_type, "trace_id": trace_id})
 
         return JSONResponse(
             content={

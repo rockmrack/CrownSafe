@@ -28,9 +28,7 @@ def init_database():
         logger.warning("DATABASE_URL not set, skipping database initialization")
         return
 
-    logger.info(
-        f"Initializing database at {database_url.split('@')[1] if '@' in database_url else database_url}"
-    )
+    logger.info(f"Initializing database at {database_url.split('@')[1] if '@' in database_url else database_url}")
 
     try:
         # First, run Alembic migrations to ensure all tables are created
@@ -107,35 +105,19 @@ def init_database():
         if "recalls_enhanced" in tables:
             columns = [col["name"] for col in inspector.get_columns("recalls_enhanced")]
             if "severity" not in columns:
-                logger.warning(
-                    "⚠ 'severity' column missing from recalls_enhanced, adding it now"
-                )
+                logger.warning("⚠ 'severity' column missing from recalls_enhanced, adding it now")
                 try:
                     with engine.connect() as conn:
+                        conn.execute(text("ALTER TABLE recalls_enhanced ADD COLUMN IF NOT EXISTS severity VARCHAR(50)"))
                         conn.execute(
-                            text(
-                                "ALTER TABLE recalls_enhanced ADD COLUMN IF NOT EXISTS severity VARCHAR(50)"
-                            )
+                            text("ALTER TABLE recalls_enhanced ADD COLUMN IF NOT EXISTS risk_category VARCHAR(100)")
                         )
+                        conn.execute(text("UPDATE recalls_enhanced SET severity = 'medium' WHERE severity IS NULL"))
                         conn.execute(
-                            text(
-                                "ALTER TABLE recalls_enhanced ADD COLUMN IF NOT EXISTS risk_category VARCHAR(100)"
-                            )
-                        )
-                        conn.execute(
-                            text(
-                                "UPDATE recalls_enhanced SET severity = 'medium' WHERE severity IS NULL"
-                            )
-                        )
-                        conn.execute(
-                            text(
-                                "UPDATE recalls_enhanced SET risk_category = 'general' WHERE risk_category IS NULL"
-                            )
+                            text("UPDATE recalls_enhanced SET risk_category = 'general' WHERE risk_category IS NULL")
                         )
                         conn.commit()
-                        logger.info(
-                            "✓ Added missing severity and risk_category columns"
-                        )
+                        logger.info("✓ Added missing severity and risk_category columns")
                 except Exception as e:
                     logger.warning(f"Could not add severity column: {e}")
             else:

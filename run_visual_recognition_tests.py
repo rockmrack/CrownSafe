@@ -76,9 +76,7 @@ class MockAsyncOpenAI:
                 return MockResponse(response_json)
 
         # Default response
-        return MockResponse(
-            '{"product_name": "Unknown", "brand": "Unknown", "model_number": null, "confidence": 0.5}'
-        )
+        return MockResponse('{"product_name": "Unknown", "brand": "Unknown", "model_number": null, "confidence": 0.5}')
 
 
 class MockHttpx:
@@ -185,9 +183,7 @@ def run_tests():
         agent = VisualSearchAgentLogic(agent_id="test-suggestions")
         agent.llm_client = MockAsyncOpenAI()
 
-        result = asyncio.run(
-            agent.suggest_products_from_image("https://example.com/baby-product.jpg")
-        )
+        result = asyncio.run(agent.suggest_products_from_image("https://example.com/baby-product.jpg"))
 
         assert result.get("status") == "COMPLETED"
         assert "result" in result
@@ -215,9 +211,7 @@ def run_tests():
         agent = VisualSearchAgentLogic(agent_id="test-identification")
         agent.llm_client = MockAsyncOpenAI()
 
-        result = asyncio.run(
-            agent.identify_product_from_image("https://example.com/baby-product.jpg")
-        )
+        result = asyncio.run(agent.identify_product_from_image("https://example.com/baby-product.jpg"))
 
         assert result.get("status") == "COMPLETED"
         assert "result" in result
@@ -247,11 +241,7 @@ def run_tests():
         agent.llm_client = MockAsyncOpenAI()
 
         # Test with identify mode
-        result = asyncio.run(
-            agent.process_task(
-                {"image_url": "https://example.com/product.jpg", "mode": "identify"}
-            )
-        )
+        result = asyncio.run(agent.process_task({"image_url": "https://example.com/product.jpg", "mode": "identify"}))
 
         assert result.get("status") == "COMPLETED"
         assert "result" in result
@@ -292,16 +282,11 @@ def run_tests():
         agent = VisualSearchAgentLogic(agent_id="test-no-api-key")
         # Agent should have None llm_client when API key is mock
 
-        result = asyncio.run(
-            agent.suggest_products_from_image("https://example.com/product.jpg")
-        )
+        result = asyncio.run(agent.suggest_products_from_image("https://example.com/product.jpg"))
 
         assert result.get("status") == "FAILED"
         assert "error" in result
-        assert (
-            "api_key" in result["error"].lower()
-            or "unavailable" in result["error"].lower()
-        )
+        assert "api_key" in result["error"].lower() or "unavailable" in result["error"].lower()
 
         print("PASS - No API key error handled correctly")
         tests_passed += 1
@@ -318,9 +303,7 @@ def run_tests():
         agent = VisualSearchAgentLogic(agent_id="test-validation")
         agent.llm_client = MockAsyncOpenAI()
 
-        result = asyncio.run(
-            agent.identify_product_from_image("https://example.com/product.jpg")
-        )
+        result = asyncio.run(agent.identify_product_from_image("https://example.com/product.jpg"))
 
         assert result.get("status") == "COMPLETED"
         best_match = result["result"]
@@ -350,18 +333,14 @@ def run_tests():
         agent.llm_client = MockAsyncOpenAI()
 
         # Test identification
-        result = asyncio.run(
-            agent.identify_product_from_image("https://example.com/product.jpg")
-        )
+        result = asyncio.run(agent.identify_product_from_image("https://example.com/product.jpg"))
 
         confidence = result["result"]["confidence"]
         assert isinstance(confidence, (int, float))
         assert 0.0 <= confidence <= 1.0
 
         # Test suggestions
-        result = asyncio.run(
-            agent.suggest_products_from_image("https://example.com/product.jpg")
-        )
+        result = asyncio.run(agent.suggest_products_from_image("https://example.com/product.jpg"))
 
         for suggestion in result["result"]["suggestions"]:
             conf = suggestion["confidence"]
@@ -382,9 +361,7 @@ def run_tests():
         agent = VisualSearchAgentLogic(agent_id="test-ordering")
         agent.llm_client = MockAsyncOpenAI()
 
-        result = asyncio.run(
-            agent.suggest_products_from_image("https://example.com/product.jpg")
-        )
+        result = asyncio.run(agent.suggest_products_from_image("https://example.com/product.jpg"))
 
         suggestions = result["result"]["suggestions"]
         assert len(suggestions) >= 2
@@ -428,9 +405,7 @@ def run_tests():
         agent = VisualSearchAgentLogic(agent_id="test-extraction")
         agent.llm_client = MockAsyncOpenAI()
 
-        result = asyncio.run(
-            agent.identify_product_from_image("https://example.com/product.jpg")
-        )
+        result = asyncio.run(agent.identify_product_from_image("https://example.com/product.jpg"))
 
         product_name = result["result"]["product_name"]
         assert isinstance(product_name, str)
@@ -451,9 +426,7 @@ def run_tests():
         agent = VisualSearchAgentLogic(agent_id="test-brand")
         agent.llm_client = MockAsyncOpenAI()
 
-        result = asyncio.run(
-            agent.identify_product_from_image("https://example.com/product.jpg")
-        )
+        result = asyncio.run(agent.identify_product_from_image("https://example.com/product.jpg"))
 
         brand = result["result"]["brand"]
         assert isinstance(brand, str)
@@ -473,9 +446,7 @@ def run_tests():
         agent = VisualSearchAgentLogic(agent_id="test-model")
         agent.llm_client = MockAsyncOpenAI()
 
-        result = asyncio.run(
-            agent.identify_product_from_image("https://example.com/product.jpg")
-        )
+        result = asyncio.run(agent.identify_product_from_image("https://example.com/product.jpg"))
 
         model_number = result["result"]["model_number"]
         # Model number can be None if not visible, or a string if detected

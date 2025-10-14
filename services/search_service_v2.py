@@ -29,9 +29,7 @@ class SearchServiceV2:
 
     def __init__(self, db_session: Session):
         self.db = db_session
-        self.signing_key = os.getenv(
-            "CURSOR_SIGNING_KEY", "default-dev-key-change-in-production"
-        )
+        self.signing_key = os.getenv("CURSOR_SIGNING_KEY", "default-dev-key-change-in-production")
 
     def _normalize_text(self, s: str) -> str:
         """Normalize text for search"""
@@ -72,9 +70,7 @@ class SearchServiceV2:
 
                 # Validate cursor version
                 if cursor_data.get("v") != 1:
-                    raise ValueError(
-                        f"Unsupported cursor version: {cursor_data.get('v')}"
-                    )
+                    raise ValueError(f"Unsupported cursor version: {cursor_data.get('v')}")
 
                 # Extract snapshot time
                 as_of_str = cursor_data.get("as_of")
@@ -147,9 +143,7 @@ class SearchServiceV2:
         params = {}
 
         # Snapshot isolation - filter out newer updates
-        where_conditions.append(
-            f"COALESCE({table}.last_updated, {table}.recall_date) <= :as_of"
-        )
+        where_conditions.append(f"COALESCE({table}.last_updated, {table}.recall_date) <= :as_of")
         params["as_of"] = as_of
 
         # Exact ID lookup (highest priority)
@@ -198,9 +192,7 @@ class SearchServiceV2:
                 # Only check on PostgreSQL
                 if self.db.bind.dialect.name == "postgresql":
                     trgm_check = self.db.execute(
-                        text(
-                            "SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')"
-                        )
+                        text("SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')")
                     )
                     has_trgm = trgm_check.scalar()
                 else:
@@ -243,9 +235,7 @@ class SearchServiceV2:
 
         # Keyword AND logic
         if keywords:
-            normalized_keywords = [
-                k.strip().lower() for k in keywords if k and k.strip()
-            ]
+            normalized_keywords = [k.strip().lower() for k in keywords if k and k.strip()]
             for i, keyword in enumerate(normalized_keywords):
                 keyword_conditions = [
                     f"lower({table}.product_name) LIKE :keyword_{i}",
@@ -360,9 +350,7 @@ class SearchServiceV2:
                     "description": row.description,
                     "url": row.url,
                     "country": row.country,
-                    "lastUpdated": row.last_updated.isoformat()
-                    if row.last_updated
-                    else None,
+                    "lastUpdated": row.last_updated.isoformat() if row.last_updated else None,
                 }
 
                 # Add score if available
@@ -420,9 +408,7 @@ class SearchServiceV2:
                 "ok": True,
                 "data": {
                     "items": items,
-                    "total": len(
-                        items
-                    ),  # Note: exact total requires separate count query
+                    "total": len(items),  # Note: exact total requires separate count query
                     "limit": limit,
                     "nextCursor": next_cursor_token,
                     "asOf": as_of.isoformat().replace("+00:00", "Z"),

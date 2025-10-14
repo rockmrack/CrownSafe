@@ -58,9 +58,7 @@ class PaginationCacheTester:
             else:
                 payload.pop("nextCursor", None)
 
-            response = self.session.post(
-                f"{self.base_url}/api/v1/search/advanced", json=payload
-            )
+            response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=payload)
 
             if response.status_code != 200:
                 self.test(False, f"Search failed with status {response.status_code}")
@@ -100,9 +98,7 @@ class PaginationCacheTester:
         )
 
         # Verify ordering (each page should have consistent order)
-        self.test(
-            pages_fetched > 0, f"Successfully paginated through {pages_fetched} pages"
-        )
+        self.test(pages_fetched > 0, f"Successfully paginated through {pages_fetched} pages")
 
         return len(all_ids) == len(unique_ids)
 
@@ -116,9 +112,7 @@ class PaginationCacheTester:
         # Get first page with snapshot time
         payload1 = {"product": "bottle", "limit": 3}
 
-        response1 = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json=payload1
-        )
+        response1 = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=payload1)
 
         if response1.status_code != 200:
             self.test(False, f"First search failed with status {response1.status_code}")
@@ -134,14 +128,10 @@ class PaginationCacheTester:
         # Get second page using cursor (should use same snapshot)
         payload2 = {"product": "bottle", "limit": 3, "nextCursor": cursor1}
 
-        response2 = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json=payload2
-        )
+        response2 = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=payload2)
 
         if response2.status_code != 200:
-            self.test(
-                False, f"Second search failed with status {response2.status_code}"
-            )
+            self.test(False, f"Second search failed with status {response2.status_code}")
             return False
 
         data2 = response2.json()
@@ -159,14 +149,10 @@ class PaginationCacheTester:
         # Get a valid cursor first
         payload = {"product": "test", "limit": 2}
 
-        response = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json=payload
-        )
+        response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=payload)
 
         if response.status_code != 200:
-            self.test(
-                False, f"Initial search failed with status {response.status_code}"
-            )
+            self.test(False, f"Initial search failed with status {response.status_code}")
             return False
 
         data = response.json()
@@ -183,9 +169,7 @@ class PaginationCacheTester:
             "nextCursor": "INVALID_CURSOR_STRING",
         }
 
-        response = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json=invalid_payload
-        )
+        response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=invalid_payload)
 
         self.test(
             response.status_code in [400, 422],
@@ -213,9 +197,7 @@ class PaginationCacheTester:
                     "nextCursor": tampered,
                 }
 
-                response = self.session.post(
-                    f"{self.base_url}/api/v1/search/advanced", json=tampered_payload
-                )
+                response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=tampered_payload)
 
                 self.test(
                     response.status_code in [400, 422],
@@ -229,9 +211,7 @@ class PaginationCacheTester:
             "nextCursor": valid_cursor,  # Cursor from different search
         }
 
-        response = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json=different_payload
-        )
+        response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=different_payload)
 
         if response.status_code in [400, 422]:
             error_data = response.json()
@@ -250,9 +230,7 @@ class PaginationCacheTester:
         # First request
         payload = {"product": "pacifier", "agencies": ["FDA"], "limit": 5}
 
-        response1 = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json=payload
-        )
+        response1 = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=payload)
 
         if response1.status_code != 200:
             self.test(False, f"First search failed with status {response1.status_code}")
@@ -271,9 +249,7 @@ class PaginationCacheTester:
             headers = HEADERS.copy()
             headers["If-None-Match"] = etag
 
-            response2 = self.session.post(
-                f"{self.base_url}/api/v1/search/advanced", json=payload, headers=headers
-            )
+            response2 = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=payload, headers=headers)
 
             self.test(
                 response2.status_code == 304,
@@ -317,9 +293,7 @@ class PaginationCacheTester:
             return True
 
         if response1.status_code != 200:
-            self.test(
-                False, f"Detail request failed with status {response1.status_code}"
-            )
+            self.test(False, f"Detail request failed with status {response1.status_code}")
             return False
 
         # Check for cache headers
@@ -334,9 +308,7 @@ class PaginationCacheTester:
         # Test If-None-Match
         if etag:
             headers = {"If-None-Match": etag}
-            response2 = self.session.get(
-                f"{self.base_url}/api/v1/recall/{recall_id}", headers=headers
-            )
+            response2 = self.session.get(f"{self.base_url}/api/v1/recall/{recall_id}", headers=headers)
 
             self.test(
                 response2.status_code == 304,
@@ -346,9 +318,7 @@ class PaginationCacheTester:
         # Test If-Modified-Since
         if last_modified:
             headers = {"If-Modified-Since": last_modified}
-            response3 = self.session.get(
-                f"{self.base_url}/api/v1/recall/{recall_id}", headers=headers
-            )
+            response3 = self.session.get(f"{self.base_url}/api/v1/recall/{recall_id}", headers=headers)
 
             self.test(
                 response3.status_code == 304,
@@ -381,9 +351,7 @@ class PaginationCacheTester:
         if health_response.status_code == 200:
             health_cache = health_response.headers.get("Cache-Control", "")
             self.test(
-                "no-cache" in health_cache
-                or "no-store" in health_cache
-                or "max-age=0" in health_cache,
+                "no-cache" in health_cache or "no-store" in health_cache or "max-age=0" in health_cache,
                 f"Health endpoint not cached: {health_cache}",
             )
 
@@ -406,9 +374,7 @@ class PaginationCacheTester:
                 payload.pop("nextCursor", None)
 
             start_time = time.time()
-            response = self.session.post(
-                f"{self.base_url}/api/v1/search/advanced", json=payload
-            )
+            response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=payload)
             elapsed = (time.time() - start_time) * 1000  # Convert to ms
 
             if response.status_code == 200:

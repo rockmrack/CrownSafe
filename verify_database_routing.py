@@ -10,9 +10,9 @@ import os
 import sys
 
 # Set production DATABASE_URL
-os.environ[
-    "DATABASE_URL"
-] = "postgresql+psycopg://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
+os.environ["DATABASE_URL"] = (
+    "postgresql+psycopg://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
+)
 os.environ["TEST_MODE"] = "false"
 
 print("\n" + "=" * 80)
@@ -96,9 +96,7 @@ client = TestClient(app)
 
 # Test 1: Advanced Search Endpoint
 print("\nTest 1: /api/v1/search/advanced")
-response = client.post(
-    "/api/v1/search/advanced", json={"product": "stroller", "limit": 3}
-)
+response = client.post("/api/v1/search/advanced", json={"product": "stroller", "limit": 3})
 print(f"  Status: {response.status_code}")
 
 if response.status_code == 200:
@@ -122,9 +120,7 @@ print("\nTest 2: /api/v1/safety-check")
 db = SessionLocal()
 sample_with_model = (
     db.query(EnhancedRecallDB)
-    .filter(
-        EnhancedRecallDB.model_number.isnot(None), EnhancedRecallDB.model_number != ""
-    )
+    .filter(EnhancedRecallDB.model_number.isnot(None), EnhancedRecallDB.model_number != "")
     .first()
 )
 
@@ -132,9 +128,7 @@ if sample_with_model:
     test_model = sample_with_model.model_number
     print(f"  Testing with model: {test_model}")
 
-    response = client.post(
-        "/api/v1/safety-check", json={"user_id": 1, "model_number": test_model}
-    )
+    response = client.post("/api/v1/safety-check", json={"user_id": 1, "model_number": test_model})
     print(f"  Status: {response.status_code}")
 
     if response.status_code in [200, 403]:  # 403 = subscription required
@@ -168,36 +162,18 @@ try:
     print("\nSimulating agent database queries...")
 
     # Query by model number
-    model_recalls = (
-        db.query(EnhancedRecallDB)
-        .filter(EnhancedRecallDB.model_number.isnot(None))
-        .limit(5)
-        .all()
-    )
+    model_recalls = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.model_number.isnot(None)).limit(5).all()
     print(f"  ✓ Model number search: {len(model_recalls)} results")
 
     # Query by UPC/barcode
-    upc_recalls = (
-        db.query(EnhancedRecallDB)
-        .filter(EnhancedRecallDB.upc.isnot(None))
-        .limit(5)
-        .all()
-    )
+    upc_recalls = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.upc.isnot(None)).limit(5).all()
     print(f"  ✓ UPC/barcode search: {len(upc_recalls)} results")
 
     # Query by agency
-    cpsc_recalls = (
-        db.query(EnhancedRecallDB)
-        .filter(EnhancedRecallDB.source_agency == "CPSC")
-        .count()
-    )
+    cpsc_recalls = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.source_agency == "CPSC").count()
     print(f"  ✓ CPSC recalls: {cpsc_recalls:,} results")
 
-    fda_recalls = (
-        db.query(EnhancedRecallDB)
-        .filter(EnhancedRecallDB.source_agency == "FDA")
-        .count()
-    )
+    fda_recalls = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.source_agency == "FDA").count()
     print(f"  ✓ FDA recalls: {fda_recalls:,} results")
 
     db.close()
