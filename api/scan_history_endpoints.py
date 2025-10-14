@@ -350,3 +350,190 @@ async def get_scan_statistics(
     except Exception as e:
         logger.error(f"Error fetching scan statistics: {e}", exc_info=True)
         return fail(f"Failed to fetch statistics: {str(e)}", status=500)
+
+
+# ============================================================================
+# USER PROFILE ENDPOINTS
+# ============================================================================
+
+
+class UserProfileResponse(AppModel):
+    """User profile information"""
+
+    id: int
+    email: str
+    username: Optional[str] = None
+    full_name: Optional[str] = None
+    is_active: bool
+    is_premium: bool = False
+    created_at: datetime
+    last_login: Optional[datetime] = None
+    scan_count: int = 0
+    notification_preferences: dict = {}
+
+
+class UserProfileUpdateRequest(AppModel):
+    """User profile update request"""
+
+    username: Optional[str] = None
+    full_name: Optional[str] = None
+    notification_preferences: Optional[dict] = None
+
+
+@router.get("/profile", response_model=ApiResponse)
+async def get_user_profile(
+    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
+):
+    """
+    Get current user's profile information.
+
+    Returns:
+        User profile data including account details and preferences
+    """
+    try:
+        # Count user's scans
+        scan_count = (
+            db.query(ImageJob).filter(ImageJob.user_id == current_user.id).count()
+        )
+
+        profile_data = {
+            "id": current_user.id,
+            "email": current_user.email,
+            "username": getattr(current_user, "username", None),
+            "full_name": getattr(current_user, "full_name", None),
+            "is_active": getattr(current_user, "is_active", True),
+            "is_premium": getattr(current_user, "is_premium", False),
+            "created_at": current_user.created_at.isoformat() + "Z"
+            if hasattr(current_user, "created_at")
+            else datetime.utcnow().isoformat() + "Z",
+            "last_login": current_user.last_login.isoformat() + "Z"
+            if hasattr(current_user, "last_login") and current_user.last_login
+            else None,
+            "scan_count": scan_count,
+            "notification_preferences": getattr(
+                current_user, "notification_preferences", {}
+            ),
+        }
+
+        return ok(profile_data)
+
+    except Exception as e:
+        logger.error(f"Error fetching user profile: {e}", exc_info=True)
+        return fail(f"Failed to fetch profile: {str(e)}", status=500)
+
+
+@router.put("/profile", response_model=ApiResponse)
+async def update_user_profile(
+    profile_update: UserProfileUpdateRequest,
+    current_user=Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Update current user's profile information.
+
+    Args:
+        profile_update: Profile fields to update
+
+    Returns:
+        Updated user profile data
+    """
+    try:
+        # Update allowed fields
+        if profile_update.username is not None:
+            if hasattr(current_user, "username"):
+                current_user.username = profile_update.username
+
+        if profile_update.full_name is not None:
+            if hasattr(current_user, "full_name"):
+                current_user.full_name = profile_update.full_name
+
+        if profile_update.notification_preferences is not None:
+            if hasattr(current_user, "notification_preferences"):
+                current_user.notification_preferences = (
+                    profile_update.notification_preferences
+                )
+
+        # Update last_modified timestamp if exists
+        if hasattr(current_user, "updated_at"):
+            current_user.updated_at = datetime.utcnow()
+
+        db.commit()
+        db.refresh(current_user)
+
+        # Return updated profile
+        profile_data = {
+            "id": current_user.id,
+            "email": current_user.email,
+            "username": getattr(current_user, "username", None),
+            "full_name": getattr(current_user, "full_name", None),
+            "is_active": getattr(current_user, "is_active", True),
+            "is_premium": getattr(current_user, "is_premium", False),
+            "created_at": current_user.created_at.isoformat() + "Z"
+            if hasattr(current_user, "created_at")
+            else datetime.utcnow().isoformat() + "Z",
+            "notification_preferences": getattr(
+                current_user, "notification_preferences", {}
+            ),
+        }
+
+        return ok(profile_data, message="Profile updated successfully")
+
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error updating user profile: {e}", exc_info=True)
+        return fail(f"Failed to update profile: {str(e)}", status=500)
+
+
+@router.get("/{user_id}/profile", response_model=ApiResponse)
+async def get_other_user_profile(
+    user_id: int,
+    current_user=Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Attempt to get another user's profile.
+    This endpoint is intentionally restricted to test authorization boundaries.
+
+    Args:
+        user_id: The ID of the user to fetch
+
+    Returns:
+        403 Forbidden if trying to access another user's data
+    """
+    # Authorization check: Users can only access their own profile
+    if user_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="Access denied. You can only view your own profile.",
+        )
+
+    # If accessing own profile, return it
+    try:
+        from core_infra.database import User
+
+        user = db.query(User).filter(User.id == user_id).first()
+
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        scan_count = db.query(ImageJob).filter(ImageJob.user_id == user.id).count()
+
+        profile_data = {
+            "id": user.id,
+            "email": user.email,
+            "username": getattr(user, "username", None),
+            "full_name": getattr(user, "full_name", None),
+            "is_active": getattr(user, "is_active", True),
+            "created_at": user.created_at.isoformat() + "Z"
+            if hasattr(user, "created_at")
+            else None,
+            "scan_count": scan_count,
+        }
+
+        return ok(profile_data)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching user profile: {e}", exc_info=True)
+        return fail(f"Failed to fetch profile: {str(e)}", status=500)
