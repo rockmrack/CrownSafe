@@ -108,14 +108,23 @@ async def main():
             # 6. Validate
             if read_result.get("status") == "COMPLETED":
                 recalls = read_result["result"]["recalls"]
-                if len(recalls) == 1 and recalls[0]["recall_id"] == MOCK_CPSC_RECALL.recall_id:
+                if (
+                    len(recalls) == 1
+                    and recalls[0]["recall_id"] == MOCK_CPSC_RECALL.recall_id
+                ):
                     print(
-                        Fore.GREEN + Style.BRIGHT + f"✔ READ succeeded: {recalls[0]['recall_id']}"
+                        Fore.GREEN
+                        + Style.BRIGHT
+                        + f"✔ READ succeeded: {recalls[0]['recall_id']}"
                     )
                 else:
                     print(Fore.RED + Style.BRIGHT + "✖ READ mismatch.")
             else:
-                print(Fore.RED + Style.BRIGHT + f"✖ READ failed: {read_result.get('error')}")
+                print(
+                    Fore.RED
+                    + Style.BRIGHT
+                    + f"✖ READ failed: {read_result.get('error')}"
+                )
 
         finally:
             # Cleanup

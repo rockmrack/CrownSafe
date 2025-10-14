@@ -163,8 +163,8 @@ async def login(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Authentication service temporarily unavailable",
         )
-    except (UnknownHashError, ValueError) as e:
-        logger.warning("Password verify failed: %s", e)
+    except (UnknownHashError, ValueError):
+        logger.warning("Password verification failed")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",

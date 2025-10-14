@@ -85,7 +85,9 @@ class RecallDataAgentLogic:
         )
 
         # Validate inputs
-        if not any([product_name, model_number, upc, ean_code, gtin, lot_number, brand]):
+        if not any(
+            [product_name, model_number, upc, ean_code, gtin, lot_number, brand]
+        ):
             return {
                 "status": "FAILED",
                 "error": "At least one product identifier is required (name, model, UPC, EAN, GTIN, lot, or brand).",
@@ -148,7 +150,9 @@ class RecallDataAgentLogic:
                         recall_obj = Recall.model_validate(db_recall)
                         found_recalls.append(recall_obj.model_dump())
                     except Exception as e:
-                        self.logger.error(f"Error converting recall {db_recall.id}: {e}")
+                        self.logger.error(
+                            f"Error converting recall {db_recall.id}: {e}"
+                        )
                         continue
 
                 return {
@@ -163,7 +167,9 @@ class RecallDataAgentLogic:
                 db.close()
 
         except Exception as e:
-            self.logger.error(f"[{self.agent_id}] Database query failed: {e}", exc_info=True)
+            self.logger.error(
+                f"[{self.agent_id}] Database query failed: {e}", exc_info=True
+            )
             return {"status": "FAILED", "error": f"Database query failed: {str(e)}"}
 
     async def run_ingestion_cycle(self) -> Dict[str, Any]:
@@ -193,7 +199,9 @@ class RecallDataAgentLogic:
             all_recalls = await self.connector_registry.fetch_all_recalls()
 
             if not all_recalls:
-                self.logger.warning(f"[{self.agent_id}] No new recalls found in this cycle.")
+                self.logger.warning(
+                    f"[{self.agent_id}] No new recalls found in this cycle."
+                )
                 return {
                     "status": "success",
                     "total_fetched": 0,
@@ -239,7 +247,9 @@ class RecallDataAgentLogic:
                             db.commit()
 
                     except Exception as e:
-                        error_msg = f"Error upserting recall {recall_data.recall_id}: {e}"
+                        error_msg = (
+                            f"Error upserting recall {recall_data.recall_id}: {e}"
+                        )
                         self.logger.error(error_msg)
                         errors.append(error_msg)
                         db.rollback()
