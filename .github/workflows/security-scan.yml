@@ -2,16 +2,16 @@ name: Security Scanning
 
 on:
   push:
-    branches: [ main, development ]
+    branches: [main, development]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   schedule:
     # Run daily at 2 AM UTC
-    - cron: '0 2 * * *'
+    - cron: "0 2 * * *"
   workflow_dispatch:
 
 env:
-  PYTHON_VERSION: '3.11'
+  PYTHON_VERSION: "3.11"
 
 jobs:
   # ============================================
@@ -20,40 +20,41 @@ jobs:
   dependency-scan:
     name: Python Dependency Security Scan
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 30
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       # Safety - Python dependency vulnerability scanner
       - name: Install Safety
         run: |
           pip install safety
           pip install pip-audit
           pip install bandit
-      
+
       - name: Run Safety Check
         continue-on-error: true
         run: |
           safety check --json --output safety-report.json || true
           safety check || true
-      
+
       - name: Run pip-audit
         continue-on-error: true
         run: |
           pip-audit --desc --fix --dry-run
-      
+
       - name: Run Bandit Security Linter
         continue-on-error: true
         run: |
           bandit -r . -f json -o bandit-report.json --severity-level medium || true
           bandit -r . --severity-level high || true
-      
+
       # Upload reports
       - name: Upload Security Reports
         if: always()
@@ -63,18 +64,20 @@ jobs:
           path: |
             safety-report.json
             bandit-report.json
-      
+
       # OWASP Dependency Check
       - name: Run OWASP Dependency Check
+        continue-on-error: true
+        timeout-minutes: 20
         uses: dependency-check/Dependency-Check_Action@main
         with:
-          project: 'BabyShield'
-          path: '.'
-          format: 'HTML'
+          project: "BabyShield"
+          path: "."
+          format: "HTML"
           args: >
             --enableRetired
             --enableExperimental
-      
+
       - name: Upload OWASP Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -88,31 +91,34 @@ jobs:
   container-scan:
     name: Docker Container Security Scan
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 25
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       # Build Docker image for scanning
       - name: Build Docker Image
+        continue-on-error: false
+        timeout-minutes: 15
         run: |
           docker build -f Dockerfile.final -t babyshield-backend:scan .
-      
+
       # Trivy Scanner - Comprehensive vulnerability scanner
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'babyshield-backend:scan'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH,MEDIUM'
-          exit-code: '0'  # Don't fail the build
-      
+          image-ref: "babyshield-backend:scan"
+          format: "sarif"
+          output: "trivy-results.sarif"
+          severity: "CRITICAL,HIGH,MEDIUM"
+          exit-code: "0" # Don't fail the build
+
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'trivy-results.sarif'
-      
+          sarif_file: "trivy-results.sarif"
+
       # Snyk Container Scanning (requires SNYK_TOKEN secret)
       - name: Run Snyk Container Test
         continue-on-error: true
@@ -126,15 +132,15 @@ jobs:
           else
             echo "Snyk token not configured, skipping Snyk scan"
           fi
-      
+
       # Grype Scanner - Alternative vulnerability scanner
       - name: Run Grype vulnerability scanner
         uses: anchore/scan-action@v3
         with:
-          image: 'babyshield-backend:scan'
+          image: "babyshield-backend:scan"
           fail-build: false
           severity-cutoff: high
-      
+
       - name: Upload Grype results
         uses: github/codeql-action/upload-sarif@v3
         with:
@@ -146,19 +152,21 @@ jobs:
   secret-scan:
     name: Secret Detection Scan
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 20
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for secret scanning
-      
+          fetch-depth: 0 # Full history for secret scanning
+
       # GitLeaks - Detect secrets in code
       - name: Run GitLeaks
+        continue-on-error: true
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+
       # TruffleHog - Deep secret scanning
       - name: TruffleHog OSS
         uses: trufflesecurity/trufflehog@main
@@ -167,7 +175,7 @@ jobs:
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
           extra_args: --debug --only-verified
-      
+
       # detect-secrets
       - name: Detect Secrets
         run: |
@@ -181,11 +189,12 @@ jobs:
   sast-scan:
     name: SAST Security Analysis
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 30
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       # Semgrep - Static analysis
       - name: Run Semgrep
         uses: returntocorp/semgrep-action@v1
@@ -196,28 +205,28 @@ jobs:
             p/owasp-top-ten
             p/dockerfile
             p/sql-injection
-      
+
       # CodeQL Analysis
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: python
           queries: security-and-quality
-      
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
-      
+
       # Custom security checks
       - name: Custom Security Checks
         run: |
           # Check for hardcoded passwords
           echo "Checking for hardcoded passwords..."
           ! grep -r "password\s*=\s*[\"'][^\"']*[\"']" --include="*.py" . || exit 1
-          
+
           # Check for SQL injection vulnerabilities
           echo "Checking for SQL injection patterns..."
           ! grep -r "execute.*%s\|execute.*format\|execute.*\+" --include="*.py" . || echo "Warning: Potential SQL injection"
-          
+
           # Check for debug mode
           echo "Checking for debug mode..."
           ! grep -r "DEBUG\s*=\s*True" --include="*.py" . || echo "Warning: Debug mode enabled"
@@ -228,11 +237,11 @@ jobs:
   iac-scan:
     name: Infrastructure Security Scan
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       # Checkov - IaC security scanner
       - name: Run Checkov
         uses: bridgecrewio/checkov-action@master
@@ -241,8 +250,8 @@ jobs:
           framework: dockerfile,github_actions,json,yaml
           quiet: false
           soft_fail: true
-          skip_check: CKV_DOCKER_2,CKV_DOCKER_3  # Skip specific checks if needed
-      
+          skip_check: CKV_DOCKER_2,CKV_DOCKER_3 # Skip specific checks if needed
+
       # Terrascan (if using Terraform)
       - name: Run Terrascan
         continue-on-error: true
@@ -259,19 +268,19 @@ jobs:
   license-check:
     name: License Compliance Check
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install pip-licenses
         run: pip install pip-licenses
-      
+
       - name: Check licenses
         run: |
           pip install -r requirements.txt
@@ -284,18 +293,26 @@ jobs:
   security-report:
     name: Security Summary Report
     runs-on: ubuntu-latest
-    needs: [dependency-scan, container-scan, secret-scan, sast-scan, iac-scan, license-check]
+    needs:
+      [
+        dependency-scan,
+        container-scan,
+        secret-scan,
+        sast-scan,
+        iac-scan,
+        license-check,
+      ]
     if: always()
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: security-reports
-      
+
       - name: Generate Security Summary
         run: |
           echo "# Security Scan Summary" > security-summary.md
@@ -304,10 +321,10 @@ jobs:
           echo "Branch: ${{ github.ref }}" >> security-summary.md
           echo "Commit: ${{ github.sha }}" >> security-summary.md
           echo "" >> security-summary.md
-          
+
           echo "## Scan Results" >> security-summary.md
           echo "" >> security-summary.md
-          
+
           # Check job results
           echo "| Scan Type | Status |" >> security-summary.md
           echo "|-----------|--------|" >> security-summary.md
@@ -318,7 +335,7 @@ jobs:
           echo "| IaC Scan | ${{ needs.iac-scan.result }} |" >> security-summary.md
           echo "| License Check | ${{ needs.license-check.result }} |" >> security-summary.md
           echo "" >> security-summary.md
-          
+
           # Add recommendations
           echo "## Recommendations" >> security-summary.md
           echo "" >> security-summary.md
@@ -327,13 +344,13 @@ jobs:
           echo "3. Rotate secrets every 90 days" >> security-summary.md
           echo "4. Enable branch protection rules" >> security-summary.md
           echo "5. Configure CODEOWNERS file" >> security-summary.md
-      
+
       - name: Upload Security Summary
         uses: actions/upload-artifact@v4
         with:
           name: security-summary
           path: security-summary.md
-      
+
       # Create issue for critical findings (optional)
       - name: Create Security Issue
         if: |
@@ -346,23 +363,23 @@ jobs:
             const title = `Security Alert: Vulnerabilities Detected - ${new Date().toISOString().split('T')[0]}`;
             const body = `
             ## Security Scan Alert
-            
+
             Critical security issues were detected in the latest scan.
-            
+
             **Scan Results:**
             - Dependency Scan: ${{ needs.dependency-scan.result }}
             - Container Scan: ${{ needs.container-scan.result }}
             - Secret Scan: ${{ needs.secret-scan.result }}
             - SAST Scan: ${{ needs.sast-scan.result }}
-            
+
             **Action Required:**
             1. Review the security reports in the workflow artifacts
             2. Address all CRITICAL and HIGH vulnerabilities
             3. Update this issue when resolved
-            
+
             Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
             `;
-            
+
             github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,

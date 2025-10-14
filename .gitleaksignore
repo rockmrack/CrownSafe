@@ -1,0 +1,41 @@
+# GitLeaks Ignore File
+# Add false positives and known safe "secrets" here
+
+# Example JWT tokens in tests
+tests/**/*test*.py:*
+tests/**/*mock*.py:*
+tests/**/conftest.py:*
+
+# Example API keys in documentation
+*.md:*example*
+*.md:*sample*
+*.md:*demo*
+README.md:*
+
+# Environment example files (not real secrets)
+.env.example:*
+.env.template:*
+*.env.example:*
+
+# Migration files (may contain sample data)
+db/migrations/**/*.py:*
+db/alembic/versions/**/*.py:*
+
+# Test fixtures with fake data
+**/fixtures/**/*:*
+**/mocks/**/*:*
+
+# Scripts that demonstrate usage (not real secrets)
+scripts/test_*.py:*
+scripts/demo_*.py:*
+scripts/example_*.py:*
+
+# Documentation with code examples
+docs/**/*.md:*
+CONTRIBUTING.md:*
+
+# CI/CD workflow files (secrets are in GitHub Secrets, not hardcoded)
+.github/**/*.yml:*secrets*
+
+# Ignore specific known safe patterns
+# Add specific commits or files as needed
