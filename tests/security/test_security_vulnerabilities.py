@@ -81,9 +81,7 @@ class TestXSSProtection:
         ]
 
         for payload in xss_payloads:
-            response = client.post(
-                "/api/v1/product", headers=headers, json={"name": payload}
-            )
+            response = client.post("/api/v1/product", headers=headers, json={"name": payload})
             # Should sanitize or reject
             if response.status_code == 200:
                 assert "<script>" not in response.json().get("name", "")
@@ -128,7 +126,7 @@ class TestAuthentication:
         response = client.get("/api/v1/user/profile", headers=headers)
         assert response.status_code == 401
 
-    def test_tampered_token_rejected(self, client, valid_token):
+    def test_tampered_token_rejected(self, client, auth_token):
         """
         Test token tampering detection.
 
@@ -136,7 +134,7 @@ class TestAuthentication:
         When: Request with tampered token
         Then: 401 Unauthorized
         """
-        tampered_token = valid_token[:-10] + "tampered123"
+        tampered_token = auth_token[:-10] + "tampered123"
         headers = {"Authorization": f"Bearer {tampered_token}"}
         response = client.get("/api/v1/user/profile", headers=headers)
         assert response.status_code == 401
@@ -179,9 +177,7 @@ class TestAuthorization:
         response = client.get(f"/api/v1/user/{user2_id}/profile", headers=headers)
         assert response.status_code == 403
 
-    def test_regular_user_cannot_access_admin_endpoints(
-        self, client, regular_user_token
-    ):
+    def test_regular_user_cannot_access_admin_endpoints(self, client, regular_user_token):
         """
         Test admin endpoint protection.
 
