@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from uuid import UUID
 from sqlalchemy.orm import Session
@@ -15,14 +15,20 @@ class ExplainFeedbackPayload(BaseModel):
     scan_id: str = Field(..., min_length=1, max_length=64)
     helpful: bool
     trace_id: Optional[str] = Field(None, max_length=64)
-    reason: Optional[str] = Field(
-        None, max_length=256
-    )  # e.g., "unclear","incorrect","irrelevant"
+    reason: Optional[str] = Field(None, max_length=256)  # e.g., "unclear","incorrect","irrelevant"
     comment: Optional[str] = Field(None, max_length=500)
     platform: Optional[str] = Field(None, max_length=32)
     app_version: Optional[str] = Field(None, max_length=32)
     locale: Optional[str] = Field(None, max_length=16)
     jurisdiction_code: Optional[str] = Field(None, max_length=8)
+
+    @field_validator("helpful", mode="before")
+    @classmethod
+    def validate_helpful_is_bool(cls, v):
+        """Ensure helpful field is a strict boolean, not coerced from string/int"""
+        if not isinstance(v, bool):
+            raise ValueError("helpful field must be a boolean (true/false), not a string or number")
+        return v
 
 
 class ExplainFeedbackResponse(BaseModel):
@@ -31,9 +37,7 @@ class ExplainFeedbackResponse(BaseModel):
 
 
 @router.post("/explain-feedback", response_model=ExplainFeedbackResponse)
-def explain_feedback(
-    payload: ExplainFeedbackPayload, request: Request, db: Session = Depends(get_db)
-):
+def explain_feedback(payload: ExplainFeedbackPayload, request: Request, db: Session = Depends(get_db)):
     """
     Record user feedback on explain-result responses.
     Captures thumbs up/down from the mobile UI.
