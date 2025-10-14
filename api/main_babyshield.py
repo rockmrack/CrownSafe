@@ -617,7 +617,14 @@ class HealthCheckWrapper:
     async def __call__(self, scope, receive, send):
         if scope["path"] == "/healthz" and scope["type"] == "http":
             # Direct response, bypass everything
-            response = StarletteJSONResponse({"status": "ok"})
+            # Create response with security headers
+            response = StarletteJSONResponse(
+                {"status": "ok"},
+                headers={
+                    "X-Content-Type-Options": "nosniff",
+                    "Content-Security-Policy": "default-src 'self'",
+                },
+            )
             await response(scope, receive, send)
         else:
             await self.app(scope, receive, send)

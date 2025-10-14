@@ -87,7 +87,9 @@ def auth_token(test_user):
     try:
         from core_infra.auth import create_access_token
 
-        token = create_access_token(data={"sub": str(test_user.id), "email": test_user.email})
+        token = create_access_token(
+            data={"sub": str(test_user.id), "email": test_user.email}
+        )
         return token
     except ImportError:
         # If auth module not available, return a mock token
