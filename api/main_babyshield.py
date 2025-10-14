@@ -735,7 +735,7 @@ async def serve_account_deletion():
         return HTMLResponse(content=content)
     except Exception as e:
         logging.error(f"Could not serve account deletion page: {e}")
-        raise HTTPException(status_code=500, detail="Could not serve page")
+        raise HTTPException(status_code=500, detail="Could not serve page") from e
 
 
 @app.get("/legal/privacy", include_in_schema=False)
@@ -752,7 +752,7 @@ async def serve_privacy():
         return HTMLResponse(content=content)
     except Exception as e:
         logging.error(f"Could not serve privacy page: {e}")
-        raise HTTPException(status_code=500, detail="Could not serve page")
+        raise HTTPException(status_code=500, detail="Could not serve page") from e
 
 
 @app.get("/legal/terms", include_in_schema=False)
@@ -769,7 +769,7 @@ async def serve_terms():
         return HTMLResponse(content=content)
     except Exception as e:
         logging.error(f"Could not serve terms page: {e}")
-        raise HTTPException(status_code=500, detail="Could not serve page")
+        raise HTTPException(status_code=500, detail="Could not serve page") from e
 
 
 # Register error handlers
@@ -2271,7 +2271,7 @@ def readyz():
     except Exception as e:
         logger = logging.getLogger(__name__)
         logger.error(f"Readiness check failed: {e}")
-        raise HTTPException(status_code=503, detail="Service not ready")
+        raise HTTPException(status_code=503, detail="Service not ready") from e
 
 
 @app.get("/debug/db-info", tags=["system"], operation_id="debug_db_info")
