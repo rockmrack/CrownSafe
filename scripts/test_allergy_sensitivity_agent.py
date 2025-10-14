@@ -87,7 +87,9 @@ def test_allergy_logic():
     assert len(result["alerts"]) == 0
     print("   -> SUCCESS: Correctly identified the product as safe for the family.")
 
-    print("\n--- All tests passed successfully! AllergySensitivityAgent is working. ---")
+    print(
+        "\n--- All tests passed successfully! AllergySensitivityAgent is working. ---"
+    )
 
 
 if __name__ == "__main__":

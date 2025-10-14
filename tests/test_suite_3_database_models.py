@@ -448,7 +448,9 @@ class TestDatabaseAndModels:
 
         try:
             with get_db_session() as session:
-                recalls = session.query(RecallDB).filter(RecallDB.brand == "TestBrand").all()
+                recalls = (
+                    session.query(RecallDB).filter(RecallDB.brand == "TestBrand").all()
+                )
                 assert isinstance(recalls, list)
         except Exception:
             pytest.skip("Database not available")
@@ -561,7 +563,11 @@ class TestDatabaseAndModels:
 
         try:
             with get_db_session() as session:
-                recalls = session.query(RecallDB).filter(RecallDB.product_name.like("%baby%")).all()
+                recalls = (
+                    session.query(RecallDB)
+                    .filter(RecallDB.product_name.like("%baby%"))
+                    .all()
+                )
                 assert isinstance(recalls, list)
         except Exception:
             pytest.skip("Database not available")
@@ -572,7 +578,11 @@ class TestDatabaseAndModels:
 
         try:
             with get_db_session() as session:
-                recalls = session.query(RecallDB).filter(RecallDB.country.in_(["US", "CA"])).all()
+                recalls = (
+                    session.query(RecallDB)
+                    .filter(RecallDB.country.in_(["US", "CA"]))
+                    .all()
+                )
                 assert isinstance(recalls, list)
         except Exception:
             pytest.skip("Database not available")
@@ -585,7 +595,11 @@ class TestDatabaseAndModels:
         try:
             with get_db_session() as session:
                 recalls = (
-                    session.query(RecallDB).filter(and_(RecallDB.country == "US", RecallDB.brand == "TestBrand")).all()
+                    session.query(RecallDB)
+                    .filter(
+                        and_(RecallDB.country == "US", RecallDB.brand == "TestBrand")
+                    )
+                    .all()
                 )
                 assert isinstance(recalls, list)
         except Exception:
@@ -598,7 +612,11 @@ class TestDatabaseAndModels:
 
         try:
             with get_db_session() as session:
-                recalls = session.query(RecallDB).filter(or_(RecallDB.country == "US", RecallDB.country == "CA")).all()
+                recalls = (
+                    session.query(RecallDB)
+                    .filter(or_(RecallDB.country == "US", RecallDB.country == "CA"))
+                    .all()
+                )
                 assert isinstance(recalls, list)
         except Exception:
             pytest.skip("Database not available")
@@ -621,7 +639,11 @@ class TestDatabaseAndModels:
 
         try:
             with get_db_session() as session:
-                result = session.query(RecallDB.country, func.count(RecallDB.id)).group_by(RecallDB.country).all()
+                result = (
+                    session.query(RecallDB.country, func.count(RecallDB.id))
+                    .group_by(RecallDB.country)
+                    .all()
+                )
                 assert isinstance(result, list)
         except Exception:
             pytest.skip("Database not available")
@@ -653,7 +675,11 @@ class TestDatabaseAndModels:
                 user = User(email="test_rollback@test.com")
                 session.add(user)
                 session.rollback()
-                result = session.query(User).filter(User.email == "test_rollback@test.com").first()
+                result = (
+                    session.query(User)
+                    .filter(User.email == "test_rollback@test.com")
+                    .first()
+                )
                 assert result is None
         except Exception:
             pytest.skip("Database not available")
@@ -825,7 +851,9 @@ class TestDatabaseAndModels:
 
     def test_alembic_versions_directory(self):
         """Test alembic versions directory exists"""
-        versions_dir = os.path.join(os.path.dirname(__file__), "..", "alembic", "versions")
+        versions_dir = os.path.join(
+            os.path.dirname(__file__), "..", "alembic", "versions"
+        )
         assert os.path.exists(versions_dir)
 
     def test_alembic_env_file(self):
@@ -837,16 +865,24 @@ class TestDatabaseAndModels:
 
     def test_alembic_script_mako(self):
         """Test alembic script.py.mako exists"""
-        script_file = os.path.join(os.path.dirname(__file__), "..", "alembic", "script.py.mako")
+        script_file = os.path.join(
+            os.path.dirname(__file__), "..", "alembic", "script.py.mako"
+        )
         if not os.path.exists(script_file):
             pytest.skip("Alembic script.py.mako not configured")
         assert os.path.exists(script_file)
 
     def test_migration_versions_count(self):
         """Test migration versions exist"""
-        versions_dir = os.path.join(os.path.dirname(__file__), "..", "alembic", "versions")
+        versions_dir = os.path.join(
+            os.path.dirname(__file__), "..", "alembic", "versions"
+        )
         if os.path.exists(versions_dir):
-            versions = [f for f in os.listdir(versions_dir) if f.endswith(".py") and f != "__pycache__"]
+            versions = [
+                f
+                for f in os.listdir(versions_dir)
+                if f.endswith(".py") and f != "__pycache__"
+            ]
             assert len(versions) >= 0
 
     def test_database_current_revision(self):

@@ -64,7 +64,11 @@ class TestChatMemoryModels:
         db_session.commit()
 
         # Retrieve and verify
-        retrieved = db_session.query(UserProfile).filter(UserProfile.user_id == "test-user-123").first()
+        retrieved = (
+            db_session.query(UserProfile)
+            .filter(UserProfile.user_id == "test-user-123")
+            .first()
+        )
 
         assert retrieved is not None
         assert retrieved.user_id == "test-user-123"
@@ -84,7 +88,11 @@ class TestChatMemoryModels:
         db_session.add(user_profile)
         db_session.commit()
 
-        retrieved = db_session.query(UserProfile).filter(UserProfile.user_id == "test-user-456").first()
+        retrieved = (
+            db_session.query(UserProfile)
+            .filter(UserProfile.user_id == "test-user-456")
+            .first()
+        )
 
         assert retrieved.consent_personalization is False
         assert retrieved.memory_paused is False
@@ -106,18 +114,26 @@ class TestChatMemoryModels:
         db_session.add(user_profile)
         db_session.commit()
 
-        retrieved = db_session.query(UserProfile).filter(UserProfile.user_id == "test-user-789").first()
+        retrieved = (
+            db_session.query(UserProfile)
+            .filter(UserProfile.user_id == "test-user-789")
+            .first()
+        )
 
         assert retrieved.allergies == complex_allergies
 
     def test_conversation_creation(self, db_session):
         """Test Conversation model creation"""
-        conversation = Conversation(id="conv-123", user_id="user-123", scan_id="scan-456")
+        conversation = Conversation(
+            id="conv-123", user_id="user-123", scan_id="scan-456"
+        )
 
         db_session.add(conversation)
         db_session.commit()
 
-        retrieved = db_session.query(Conversation).filter(Conversation.id == "conv-123").first()
+        retrieved = (
+            db_session.query(Conversation).filter(Conversation.id == "conv-123").first()
+        )
 
         assert retrieved is not None
         assert retrieved.id == "conv-123"
@@ -133,7 +149,9 @@ class TestChatMemoryModels:
         db_session.add(conversation)
         db_session.commit()
 
-        retrieved = db_session.query(Conversation).filter(Conversation.id == "conv-456").first()
+        retrieved = (
+            db_session.query(Conversation).filter(Conversation.id == "conv-456").first()
+        )
 
         assert retrieved.user_id is None
         assert retrieved.scan_id is None
@@ -159,7 +177,11 @@ class TestChatMemoryModels:
         db_session.add(message)
         db_session.commit()
 
-        retrieved = db_session.query(ConversationMessage).filter(ConversationMessage.id == message.id).first()
+        retrieved = (
+            db_session.query(ConversationMessage)
+            .filter(ConversationMessage.id == message.id)
+            .first()
+        )
 
         assert retrieved is not None
         assert retrieved.conversation_id == "conv-123"
@@ -180,12 +202,18 @@ class TestChatMemoryModels:
         db_session.commit()
 
         # Create message with minimal data
-        message = ConversationMessage(conversation_id="conv-456", role="assistant", content={"text": "Hello!"})
+        message = ConversationMessage(
+            conversation_id="conv-456", role="assistant", content={"text": "Hello!"}
+        )
 
         db_session.add(message)
         db_session.commit()
 
-        retrieved = db_session.query(ConversationMessage).filter(ConversationMessage.id == message.id).first()
+        retrieved = (
+            db_session.query(ConversationMessage)
+            .filter(ConversationMessage.id == message.id)
+            .first()
+        )
 
         assert retrieved.intent is None
         assert retrieved.trace_id is None
@@ -211,12 +239,18 @@ class TestChatMemoryModels:
             "metadata": {"confidence": 0.95, "sources": ["FDA", "CPSC"]},
         }
 
-        message = ConversationMessage(conversation_id="conv-789", role="assistant", content=complex_content)
+        message = ConversationMessage(
+            conversation_id="conv-789", role="assistant", content=complex_content
+        )
 
         db_session.add(message)
         db_session.commit()
 
-        retrieved = db_session.query(ConversationMessage).filter(ConversationMessage.id == message.id).first()
+        retrieved = (
+            db_session.query(ConversationMessage)
+            .filter(ConversationMessage.id == message.id)
+            .first()
+        )
 
         assert retrieved.content == complex_content
         assert retrieved.content["data"]["product_name"] == "Baby Bottle"
@@ -246,14 +280,22 @@ class TestChatMemoryModels:
         db_session.commit()
 
         # Test relationship
-        retrieved_conv = db_session.query(Conversation).filter(Conversation.id == "conv-relationship").first()
+        retrieved_conv = (
+            db_session.query(Conversation)
+            .filter(Conversation.id == "conv-relationship")
+            .first()
+        )
 
         assert len(retrieved_conv.messages) == 2
         assert retrieved_conv.messages[0].role == "user"
         assert retrieved_conv.messages[1].role == "assistant"
 
         # Test reverse relationship
-        retrieved_msg = db_session.query(ConversationMessage).filter(ConversationMessage.id == message1.id).first()
+        retrieved_msg = (
+            db_session.query(ConversationMessage)
+            .filter(ConversationMessage.id == message1.id)
+            .first()
+        )
 
         assert retrieved_msg.conversation.id == "conv-relationship"
 
@@ -264,7 +306,9 @@ class TestChatMemoryModels:
         db_session.add(conversation)
         db_session.commit()
 
-        message1 = ConversationMessage(conversation_id="conv-cascade", role="user", content={"text": "Message 1"})
+        message1 = ConversationMessage(
+            conversation_id="conv-cascade", role="user", content={"text": "Message 1"}
+        )
         message2 = ConversationMessage(
             conversation_id="conv-cascade",
             role="assistant",
@@ -277,7 +321,9 @@ class TestChatMemoryModels:
 
         # Verify messages exist
         message_count = (
-            db_session.query(ConversationMessage).filter(ConversationMessage.conversation_id == "conv-cascade").count()
+            db_session.query(ConversationMessage)
+            .filter(ConversationMessage.conversation_id == "conv-cascade")
+            .count()
         )
         assert message_count == 2
 
@@ -287,7 +333,9 @@ class TestChatMemoryModels:
 
         # Verify messages are cascade deleted
         message_count = (
-            db_session.query(ConversationMessage).filter(ConversationMessage.conversation_id == "conv-cascade").count()
+            db_session.query(ConversationMessage)
+            .filter(ConversationMessage.conversation_id == "conv-cascade")
+            .count()
         )
         assert message_count == 0
 
@@ -306,7 +354,11 @@ class TestChatMemoryModels:
         user_profile.erase_requested_at = datetime.utcnow()
         db_session.commit()
 
-        retrieved = db_session.query(UserProfile).filter(UserProfile.user_id == "test-erase-user").first()
+        retrieved = (
+            db_session.query(UserProfile)
+            .filter(UserProfile.user_id == "test-erase-user")
+            .first()
+        )
 
         assert retrieved.erase_requested_at is not None
 
@@ -322,7 +374,11 @@ class TestChatMemoryModels:
         conversation.last_activity_at = datetime.utcnow()
         db_session.commit()
 
-        retrieved = db_session.query(Conversation).filter(Conversation.id == "conv-activity").first()
+        retrieved = (
+            db_session.query(Conversation)
+            .filter(Conversation.id == "conv-activity")
+            .first()
+        )
 
         assert retrieved.last_activity_at > original_activity
 
@@ -346,7 +402,9 @@ class TestChatMemoryModels:
         db_session.commit()
 
         messages = (
-            db_session.query(ConversationMessage).filter(ConversationMessage.conversation_id == "conv-roles").all()
+            db_session.query(ConversationMessage)
+            .filter(ConversationMessage.conversation_id == "conv-roles")
+            .all()
         )
 
         assert len(messages) == 3
@@ -378,7 +436,9 @@ class TestChatMemoryModels:
         db_session.commit()
 
         messages = (
-            db_session.query(ConversationMessage).filter(ConversationMessage.conversation_id == "conv-intent").all()
+            db_session.query(ConversationMessage)
+            .filter(ConversationMessage.conversation_id == "conv-intent")
+            .all()
         )
 
         assert len(messages) == 4
@@ -405,7 +465,9 @@ class TestChatMemoryModels:
         db_session.commit()
 
         messages = (
-            db_session.query(ConversationMessage).filter(ConversationMessage.conversation_id == "conv-trace").all()
+            db_session.query(ConversationMessage)
+            .filter(ConversationMessage.conversation_id == "conv-trace")
+            .all()
         )
 
         assert len(messages) == 3
@@ -424,7 +486,11 @@ class TestChatMemoryModels:
         db_session.add(user_profile)
         db_session.commit()
 
-        retrieved = db_session.query(UserProfile).filter(UserProfile.user_id == "test-pregnancy").first()
+        retrieved = (
+            db_session.query(UserProfile)
+            .filter(UserProfile.user_id == "test-pregnancy")
+            .first()
+        )
 
         assert retrieved.pregnancy_trimester == 3
         assert retrieved.pregnancy_due_date == date(2024, 8, 15)
@@ -437,7 +503,11 @@ class TestChatMemoryModels:
         db_session.add(user1)
         db_session.commit()
 
-        retrieved1 = db_session.query(UserProfile).filter(UserProfile.user_id == "user-empty-allergies").first()
+        retrieved1 = (
+            db_session.query(UserProfile)
+            .filter(UserProfile.user_id == "user-empty-allergies")
+            .first()
+        )
         assert retrieved1.allergies == []
 
         # Test None allergies (should default to empty list)
@@ -445,7 +515,11 @@ class TestChatMemoryModels:
         db_session.add(user2)
         db_session.commit()
 
-        retrieved2 = db_session.query(UserProfile).filter(UserProfile.user_id == "user-none-allergies").first()
+        retrieved2 = (
+            db_session.query(UserProfile)
+            .filter(UserProfile.user_id == "user-none-allergies")
+            .first()
+        )
         assert retrieved2.allergies == []
 
     def test_conversation_scan_id_field(self, db_session):
@@ -455,7 +529,11 @@ class TestChatMemoryModels:
         db_session.add(conversation)
         db_session.commit()
 
-        retrieved = db_session.query(Conversation).filter(Conversation.id == "conv-scan").first()
+        retrieved = (
+            db_session.query(Conversation)
+            .filter(Conversation.id == "conv-scan")
+            .first()
+        )
 
         assert retrieved.scan_id == "scan-abc123"
 

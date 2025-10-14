@@ -21,7 +21,9 @@ from core_infra.database import (
     drop_tables,
 )
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # --- Test Configuration ---
 TEST_USER_ID = 1
@@ -38,14 +40,18 @@ async def main():
     create_tables()
     with SessionLocal() as db:
         # Create a new user with default values (is_pregnant=False)
-        test_user = User(id=TEST_USER_ID, email="new.user@example.com", is_subscribed=True)
+        test_user = User(
+            id=TEST_USER_ID, email="new.user@example.com", is_subscribed=True
+        )
         db.add(test_user)
         db.commit()
     logger.info(f"Database seeded with new user ID: {TEST_USER_ID} (is_pregnant=False)")
 
     try:
         # 2. Initialize the real OnboardingAgentLogic.
-        agent_logic = OnboardingAgentLogic(agent_id="test_onboard_001", logger_instance=logger)
+        agent_logic = OnboardingAgentLogic(
+            agent_id="test_onboard_001", logger_instance=logger
+        )
         logger.info("Agent logic initialized.")
 
         # 3. Define the task payload to set the user as pregnant.
@@ -69,12 +75,16 @@ async def main():
             updated_user = db.query(User).filter(User.id == TEST_USER_ID).first()
             if updated_user and updated_user.is_pregnant is True:
                 db_was_updated = True
-                logger.info("Verification successful: User's is_pregnant status is now True in the database.")
+                logger.info(
+                    "Verification successful: User's is_pregnant status is now True in the database."
+                )
 
         # 7. Validate the final result.
         if result.get("status") == "COMPLETED" and db_was_updated:
             print("\n" + "=" * 50)
-            print("✅✅✅ TEST PASSED: Agent successfully updated the user's profile in the database.")
+            print(
+                "✅✅✅ TEST PASSED: Agent successfully updated the user's profile in the database."
+            )
         else:
             print("\n" + "=" * 50)
             if not db_was_updated:
@@ -82,7 +92,9 @@ async def main():
                     "❌ TEST FAILED: The agent did not correctly update the user's is_pregnant status in the database."
                 )
             else:
-                print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")
+                print(
+                    f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}"
+                )
 
     except Exception as e:
         print("\n" + "=" * 50)

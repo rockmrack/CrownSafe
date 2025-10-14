@@ -34,9 +34,13 @@ class PregnancyCheckRequest(BaseModel):
     """Request model for pregnancy safety check"""
 
     barcode: Optional[str] = Field(None, description="Product barcode/UPC")
-    product_name: Optional[str] = Field(None, description="Product name if barcode not available")
+    product_name: Optional[str] = Field(
+        None, description="Product name if barcode not available"
+    )
     trimester: int = Field(1, ge=1, le=3, description="Pregnancy trimester (1-3)")
-    user_id: Optional[int] = Field(None, description="User ID (deprecated; derived from token if present)")
+    user_id: Optional[int] = Field(
+        None, description="User ID (deprecated; derived from token if present)"
+    )
 
 
 class PregnancyCheckResponse(BaseModel):
@@ -55,8 +59,12 @@ class AllergyCheckRequest(BaseModel):
     """Request model for allergy check"""
 
     barcode: Optional[str] = Field(None, description="Product barcode/UPC")
-    product_name: Optional[str] = Field(None, description="Product name if barcode not available")
-    user_id: Optional[int] = Field(None, description="User ID (deprecated; derived from token if present)")
+    product_name: Optional[str] = Field(
+        None, description="Product name if barcode not available"
+    )
+    user_id: Optional[int] = Field(
+        None, description="User ID (deprecated; derived from token if present)"
+    )
     check_all_members: bool = Field(True, description="Check for all family members")
 
 
@@ -75,10 +83,14 @@ class AllergyCheckResponse(BaseModel):
 class FamilyMemberRequest(BaseModel):
     """Request model for adding/updating family member"""
 
-    name: str = Field(..., min_length=1, max_length=100, description="Family member name")
+    name: str = Field(
+        ..., min_length=1, max_length=100, description="Family member name"
+    )
     relationship: Optional[str] = Field(None, description="Relationship to user")
     allergies: List[str] = Field(default=[], description="List of allergies")
-    dietary_restrictions: Optional[List[str]] = Field(default=[], description="Dietary restrictions")
+    dietary_restrictions: Optional[List[str]] = Field(
+        default=[], description="Dietary restrictions"
+    )
     age: Optional[int] = Field(None, ge=0, le=150, description="Age of family member")
 
 
@@ -101,7 +113,9 @@ class CombinedSafetyCheckRequest(BaseModel):
     product_name: Optional[str] = Field(None, description="Product name")
     user_id: int = Field(..., description="User ID")
     check_pregnancy: bool = Field(False, description="Include pregnancy safety check")
-    trimester: Optional[int] = Field(None, ge=1, le=3, description="If pregnant, which trimester")
+    trimester: Optional[int] = Field(
+        None, ge=1, le=3, description="If pregnant, which trimester"
+    )
     check_allergies: bool = Field(True, description="Include allergy check")
 
 
@@ -140,7 +154,9 @@ async def check_pregnancy_safety(
                     "error": {"message": "Mismatched user_id vs token"},
                 },
             )
-        logger.info(f"Pregnancy safety check for user {user_id}, trimester {payload.trimester}")
+        logger.info(
+            f"Pregnancy safety check for user {user_id}, trimester {payload.trimester}"
+        )
 
         # Validate user exists (defensive)
         user = db.query(User).filter(User.id == user_id).first()
@@ -168,10 +184,16 @@ async def check_pregnancy_safety(
                     recommendations.append(
                         f"CAUTION: {alert['ingredient']} - {alert.get('reason', 'Use with caution')}"
                     )
-            recommendations.append("Consult your healthcare provider before using this product.")
+            recommendations.append(
+                "Consult your healthcare provider before using this product."
+            )
         else:
-            recommendations.append("No known pregnancy risks identified in our database.")
-            recommendations.append("Always consult your healthcare provider for personalized advice.")
+            recommendations.append(
+                "No known pregnancy risks identified in our database."
+            )
+            recommendations.append(
+                "Always consult your healthcare provider for personalized advice."
+            )
 
         # Determine overall risk level
         risk_level = "Low"
@@ -183,7 +205,9 @@ async def check_pregnancy_safety(
                 risk_level = "Moderate"
 
         payload = {
-            "product_name": result.get("product_name", payload.product_name or "Unknown Product"),
+            "product_name": result.get(
+                "product_name", payload.product_name or "Unknown Product"
+            ),
             "is_safe": result.get("is_safe", True),
             "risk_level": risk_level,
             "alerts": result.get("alerts", []),
@@ -281,7 +305,9 @@ async def check_product_allergies(
                 safe_members = ["No family members registered"]
 
         payload: Dict[str, Any] = {
-            "product_name": result.get("product_name", payload.product_name or "Unknown Product"),
+            "product_name": result.get(
+                "product_name", payload.product_name or "Unknown Product"
+            ),
             "is_safe": result.get("is_safe", True),
             "alerts": result.get("alerts", []),
             "safe_for_members": safe_members,
@@ -303,7 +329,9 @@ async def check_product_allergies(
 
 
 @router.get("/family/members", response_model=List[FamilyMemberResponse])
-async def get_family_members(user_id: int = Query(..., description="User ID"), db: Session = Depends(get_db)):
+async def get_family_members(
+    user_id: int = Query(..., description="User ID"), db: Session = Depends(get_db)
+):
     """
     Get all family members and their allergy profiles.
     """
@@ -337,7 +365,9 @@ async def get_family_members(user_id: int = Query(..., description="User ID"), d
         raise
     except Exception as e:
         logger.error(f"Failed to get family members: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve family members: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to retrieve family members: {str(e)}"
+        )
 
 
 @router.post("/family/members", response_model=FamilyMemberResponse)
@@ -380,7 +410,9 @@ async def add_family_member(
     except Exception as e:
         logger.error(f"Failed to add family member: {e}", exc_info=True)
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to add family member: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to add family member: {str(e)}"
+        )
 
 
 @router.put("/family/members/{member_id}", response_model=FamilyMemberResponse)
@@ -400,13 +432,17 @@ async def update_family_member(
             raise HTTPException(status_code=404, detail="User not found")
 
         # Get the family member
-        family_member = db.query(FamilyMember).filter(FamilyMember.id == member_id).first()
+        family_member = (
+            db.query(FamilyMember).filter(FamilyMember.id == member_id).first()
+        )
         if not family_member:
             raise HTTPException(status_code=404, detail="Family member not found")
 
         # Verify ownership
         if family_member.user_id != user_id:
-            raise HTTPException(status_code=403, detail="Not authorized to update this family member")
+            raise HTTPException(
+                status_code=403, detail="Not authorized to update this family member"
+            )
 
         # Update only the fields that exist in the database model
         family_member.name = member.name
@@ -432,7 +468,9 @@ async def update_family_member(
     except Exception as e:
         logger.error(f"Failed to update family member: {e}", exc_info=True)
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to update family member: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to update family member: {str(e)}"
+        )
 
 
 @router.delete("/family/members/{member_id}")
@@ -451,13 +489,17 @@ async def delete_family_member(
             raise HTTPException(status_code=404, detail="User not found")
 
         # Get the family member
-        family_member = db.query(FamilyMember).filter(FamilyMember.id == member_id).first()
+        family_member = (
+            db.query(FamilyMember).filter(FamilyMember.id == member_id).first()
+        )
         if not family_member:
             raise HTTPException(status_code=404, detail="Family member not found")
 
         # Verify ownership
         if family_member.user_id != user_id:
-            raise HTTPException(status_code=403, detail="Not authorized to delete this family member")
+            raise HTTPException(
+                status_code=403, detail="Not authorized to delete this family member"
+            )
 
         # Delete family member
         db.delete(family_member)
@@ -473,14 +515,18 @@ async def delete_family_member(
     except Exception as e:
         logger.error(f"Failed to delete family member: {e}", exc_info=True)
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to delete family member: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to delete family member: {str(e)}"
+        )
 
 
 # ==================== Dev Override Endpoints for Testing ====================
 
 
 @router.post("/pregnancy/check-dev")
-async def check_pregnancy_safety_dev(payload: PregnancyCheckRequest, db: Session = Depends(get_db)):
+async def check_pregnancy_safety_dev(
+    payload: PregnancyCheckRequest, db: Session = Depends(get_db)
+):
     """
     Dev override version of pregnancy safety check - no authentication required
     """
@@ -499,7 +545,9 @@ async def check_pregnancy_safety_dev(payload: PregnancyCheckRequest, db: Session
         logger.info(f"Pregnancy safety check for user {payload.user_id}")
 
         # Initialize pregnancy agent
-        pregnancy_agent = PregnancyProductSafetyAgentLogic(agent_id="pregnancy_check_dev")
+        pregnancy_agent = PregnancyProductSafetyAgentLogic(
+            agent_id="pregnancy_check_dev"
+        )
 
         # Perform pregnancy safety check
         result = pregnancy_agent.check_product_safety(
@@ -520,11 +568,15 @@ async def check_pregnancy_safety_dev(payload: PregnancyCheckRequest, db: Session
         raise
     except Exception as e:
         logger.error(f"Pregnancy safety check failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Pregnancy safety check failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Pregnancy safety check failed: {str(e)}"
+        )
 
 
 @router.post("/allergy/check-dev")
-async def check_allergy_safety_dev(payload: AllergyCheckRequest, db: Session = Depends(get_db)):
+async def check_allergy_safety_dev(
+    payload: AllergyCheckRequest, db: Session = Depends(get_db)
+):
     """
     Dev override version of allergy safety check - no authentication required
     """
@@ -535,7 +587,9 @@ async def check_allergy_safety_dev(payload: AllergyCheckRequest, db: Session = D
         REQUIRED_FEATURE = "premium.allergy"
 
         if not dev_entitled(payload.user_id or 0, REQUIRED_FEATURE):
-            raise HTTPException(status_code=402, detail="Subscription required for allergy safety check")
+            raise HTTPException(
+                status_code=402, detail="Subscription required for allergy safety check"
+            )
 
         logger.info(f"Allergy safety check for user {payload.user_id}")
 
@@ -563,14 +617,18 @@ async def check_allergy_safety_dev(payload: AllergyCheckRequest, db: Session = D
         raise
     except Exception as e:
         logger.error(f"Allergy safety check failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Allergy safety check failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Allergy safety check failed: {str(e)}"
+        )
 
 
 # ==================== Combined Safety Check Endpoint ====================
 
 
 @router.post("/safety/comprehensive")
-async def comprehensive_safety_check(request: CombinedSafetyCheckRequest, db: Session = Depends(get_db)):
+async def comprehensive_safety_check(
+    request: CombinedSafetyCheckRequest, db: Session = Depends(get_db)
+):
     """
     Perform a comprehensive safety check including recalls, pregnancy, and allergies.
 
@@ -595,7 +653,9 @@ async def comprehensive_safety_check(request: CombinedSafetyCheckRequest, db: Se
                     detail="Subscription required for comprehensive safety check",
                 )
         else:
-            logger.info(f"DEV OVERRIDE: Bypassing subscription check for user {request.user_id}")
+            logger.info(
+                f"DEV OVERRIDE: Bypassing subscription check for user {request.user_id}"
+            )
             # Skip subscription validation and proceed
 
         response = {
@@ -609,13 +669,17 @@ async def comprehensive_safety_check(request: CombinedSafetyCheckRequest, db: Se
 
         # Pregnancy check
         if request.check_pregnancy and request.trimester:
-            pregnancy_result = pregnancy_agent.check_product_safety(request.barcode or "unknown", request.trimester)
+            pregnancy_result = pregnancy_agent.check_product_safety(
+                request.barcode or "unknown", request.trimester
+            )
 
             response["checks_performed"].append("pregnancy")
 
             if not pregnancy_result.get("is_safe"):
                 response["overall_safety"] = "CAUTION"
-                response["risk_factors"].append({"type": "pregnancy", "alerts": pregnancy_result.get("alerts", [])})
+                response["risk_factors"].append(
+                    {"type": "pregnancy", "alerts": pregnancy_result.get("alerts", [])}
+                )
 
                 for alert in pregnancy_result.get("alerts", []):
                     if alert.get("risk_level") == "High":
@@ -626,7 +690,9 @@ async def comprehensive_safety_check(request: CombinedSafetyCheckRequest, db: Se
 
         # Allergy check
         if request.check_allergies:
-            allergy_result = allergy_agent.check_product_for_family(request.user_id, request.barcode or "unknown")
+            allergy_result = allergy_agent.check_product_for_family(
+                request.user_id, request.barcode or "unknown"
+            )
 
             response["checks_performed"].append("allergies")
 
@@ -634,7 +700,9 @@ async def comprehensive_safety_check(request: CombinedSafetyCheckRequest, db: Se
                 if response["overall_safety"] == "SAFE":
                     response["overall_safety"] = "CAUTION"
 
-                response["risk_factors"].append({"type": "allergies", "alerts": allergy_result.get("alerts", [])})
+                response["risk_factors"].append(
+                    {"type": "allergies", "alerts": allergy_result.get("alerts", [])}
+                )
 
                 for alert in allergy_result.get("alerts", []):
                     response["recommendations"].append(
@@ -643,9 +711,13 @@ async def comprehensive_safety_check(request: CombinedSafetyCheckRequest, db: Se
 
         # Add general recommendation
         if response["overall_safety"] == "SAFE":
-            response["recommendations"].append("No safety concerns identified based on available data.")
+            response["recommendations"].append(
+                "No safety concerns identified based on available data."
+            )
         else:
-            response["recommendations"].append("Please review all warnings carefully before use.")
+            response["recommendations"].append(
+                "Please review all warnings carefully before use."
+            )
 
         return response
 

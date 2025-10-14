@@ -20,7 +20,9 @@ def env_float(name: str, default: float) -> float:
 
 
 FEATURE_CHAT_ENABLED = env_bool("BS_FEATURE_CHAT_ENABLED", False)  # global kill switch
-FEATURE_CHAT_ROLLOUT_PCT = env_float("BS_FEATURE_CHAT_ROLLOUT_PCT", 0.10)  # 10% by default
+FEATURE_CHAT_ROLLOUT_PCT = env_float(
+    "BS_FEATURE_CHAT_ROLLOUT_PCT", 0.10
+)  # 10% by default
 
 
 def _bucket(user_key: str) -> float:

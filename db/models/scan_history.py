@@ -64,7 +64,9 @@ class ScanHistory(Base):
         """Convert to dictionary for API responses"""
         return {
             "scan_id": self.scan_id,
-            "scan_timestamp": self.scan_timestamp.isoformat() if self.scan_timestamp else None,
+            "scan_timestamp": self.scan_timestamp.isoformat()
+            if self.scan_timestamp
+            else None,
             "product": {
                 "name": self.product_name,
                 "brand": self.brand,

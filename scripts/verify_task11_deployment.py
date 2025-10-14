@@ -63,7 +63,9 @@ for name, method, path in tests:
                 providers = response.get("providers", [])
                 print(f"   Found {len(providers)} OAuth providers")
             elif "crashlytics_enabled" in response:
-                print(f"   Crashlytics: {response.get('crashlytics_enabled')} (should be False by default)")
+                print(
+                    f"   Crashlytics: {response.get('crashlytics_enabled')} (should be False by default)"
+                )
             elif "retry_policy" in response:
                 policy = response.get("retry_policy", {})
                 print(f"   Max retries: {policy.get('max_retries')}")
@@ -122,7 +124,9 @@ print("=" * 70)
 # Simulate OAuth login (will fail without real token, but tests endpoint)
 test_oauth_data = {"provider": "apple", "id_token": "test_token_invalid"}
 
-status, response = test_endpoint("OAuth Login Test", "POST", "/api/v1/auth/oauth/login", test_oauth_data)
+status, response = test_endpoint(
+    "OAuth Login Test", "POST", "/api/v1/auth/oauth/login", test_oauth_data
+)
 
 if status == 401:
     print("✅ OAuth endpoint responding correctly (401 for invalid token)")

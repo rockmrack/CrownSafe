@@ -8,7 +8,11 @@ from core_infra.database import get_db_session, User, FamilyMember
 
 logger = logging.getLogger(__name__)
 
-MOCK_INGREDIENTS_PATH = Path(__file__).parent.parent.parent.parent / "data" / "mock_product_ingredients.json"
+MOCK_INGREDIENTS_PATH = (
+    Path(__file__).parent.parent.parent.parent
+    / "data"
+    / "mock_product_ingredients.json"
+)
 
 
 class AllergySensitivityAgentLogic:
@@ -17,11 +21,15 @@ class AllergySensitivityAgentLogic:
         self.logger = logger
 
         # Check if mock data is allowed in production
-        USE_MOCK_INGREDIENT_DB = os.getenv("USE_MOCK_INGREDIENT_DB", "false").lower() == "true"
+        USE_MOCK_INGREDIENT_DB = (
+            os.getenv("USE_MOCK_INGREDIENT_DB", "false").lower() == "true"
+        )
         ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 
         if ENVIRONMENT == "production" and USE_MOCK_INGREDIENT_DB:
-            raise RuntimeError("Production environment cannot use mock ingredient database")
+            raise RuntimeError(
+                "Production environment cannot use mock ingredient database"
+            )
 
         self._load_ingredient_data(USE_MOCK_INGREDIENT_DB)
         self.logger.info("AllergySensitivityAgentLogic initialized.")
@@ -43,11 +51,15 @@ class AllergySensitivityAgentLogic:
             # Database connections will be made per-request for better performance
             self.ingredient_db = None  # Will use database queries
 
-    def check_product_for_family(self, user_id: int, product_upc: str) -> Dict[str, Any]:
+    def check_product_for_family(
+        self, user_id: int, product_upc: str
+    ) -> Dict[str, Any]:
         """
         Checks a product's ingredients against all members of a user's family.
         """
-        self.logger.info(f"Performing allergy check for user {user_id} and UPC {product_upc}")
+        self.logger.info(
+            f"Performing allergy check for user {user_id} and UPC {product_upc}"
+        )
 
         # Use mock data if available (development mode)
         if self.ingredient_db is not None:
@@ -94,17 +106,23 @@ class AllergySensitivityAgentLogic:
                 # 3. Check for allergen conflicts
                 alerts = []
                 for member in family_members:
-                    member_allergies = set([allergy.allergen_name.lower() for allergy in member.allergies])
+                    member_allergies = set(
+                        [allergy.allergen_name.lower() for allergy in member.allergies]
+                    )
 
                     # Check for direct ingredient matches
-                    conflicting_ingredients = product_ingredients.intersection(member_allergies)
+                    conflicting_ingredients = product_ingredients.intersection(
+                        member_allergies
+                    )
 
                     if conflicting_ingredients:
                         alerts.append(
                             {
                                 "member_name": member.name,
                                 "age_months": member.age_months,
-                                "conflicting_ingredients": list(conflicting_ingredients),
+                                "conflicting_ingredients": list(
+                                    conflicting_ingredients
+                                ),
                                 "severity": "high",  # Default; could be enhanced
                             }
                         )
@@ -131,14 +149,20 @@ class AllergySensitivityAgentLogic:
         try:
             with get_db_session() as db:
                 # 1. Get product ingredients from database
-                product = db.query(ProductIngredient).filter(ProductIngredient.upc == product_upc).first()
+                product = (
+                    db.query(ProductIngredient)
+                    .filter(ProductIngredient.upc == product_upc)
+                    .first()
+                )
                 if not product:
                     return {
                         "status": "error",
                         "message": "Product not found in ingredient database.",
                     }
 
-                product_ingredients = set(product.ingredients) if product.ingredients else set()
+                product_ingredients = (
+                    set(product.ingredients) if product.ingredients else set()
+                )
                 known_allergens = set(product.allergens) if product.allergens else set()
 
                 # 2. Get family members and their allergies
@@ -165,13 +189,19 @@ class AllergySensitivityAgentLogic:
                 # 3. Check for allergen conflicts
                 alerts = []
                 for member in family_members:
-                    member_allergies = set([allergy.allergen_name.lower() for allergy in member.allergies])
+                    member_allergies = set(
+                        [allergy.allergen_name.lower() for allergy in member.allergies]
+                    )
 
                     # Check for direct ingredient matches
-                    conflicting_ingredients = product_ingredients.intersection(member_allergies)
+                    conflicting_ingredients = product_ingredients.intersection(
+                        member_allergies
+                    )
 
                     # Check for known allergen matches
-                    conflicting_allergens = known_allergens.intersection(member_allergies)
+                    conflicting_allergens = known_allergens.intersection(
+                        member_allergies
+                    )
 
                     # Check database for ingredient safety records
                     ingredient_alerts = []
@@ -179,14 +209,20 @@ class AllergySensitivityAgentLogic:
                         safety_records = (
                             db.query(IngredientSafety)
                             .filter(
-                                IngredientSafety.ingredient_name.ilike(f"%{ingredient}%"),
+                                IngredientSafety.ingredient_name.ilike(
+                                    f"%{ingredient}%"
+                                ),
                                 IngredientSafety.common_allergen,
                             )
                             .all()
                         )
 
                         for safety_record in safety_records:
-                            if safety_record.allergen_type and safety_record.allergen_type.lower() in member_allergies:
+                            if (
+                                safety_record.allergen_type
+                                and safety_record.allergen_type.lower()
+                                in member_allergies
+                            ):
                                 ingredient_alerts.append(
                                     {
                                         "ingredient": ingredient,
@@ -195,12 +231,18 @@ class AllergySensitivityAgentLogic:
                                     }
                                 )
 
-                    if conflicting_ingredients or conflicting_allergens or ingredient_alerts:
+                    if (
+                        conflicting_ingredients
+                        or conflicting_allergens
+                        or ingredient_alerts
+                    ):
                         alerts.append(
                             {
                                 "member_name": member.name,
                                 "age_months": member.age_months,
-                                "conflicting_ingredients": list(conflicting_ingredients),
+                                "conflicting_ingredients": list(
+                                    conflicting_ingredients
+                                ),
                                 "conflicting_allergens": list(conflicting_allergens),
                                 "ingredient_alerts": ingredient_alerts,
                                 "severity": "high",  # Default; could be enhanced based on member age/sensitivity
@@ -219,7 +261,9 @@ class AllergySensitivityAgentLogic:
                     "family_members_checked": len(family_members),
                     "data_source": "database",
                     "confidence_score": product.confidence_score,
-                    "last_updated": product.last_updated.isoformat() if product.last_updated else None,
+                    "last_updated": product.last_updated.isoformat()
+                    if product.last_updated
+                    else None,
                 }
 
         except Exception as e:

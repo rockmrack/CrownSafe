@@ -55,7 +55,9 @@ async def create_redis_pool(force_new=False) -> ConnectionPool:
 
     # Check if we need a new pool
     if _redis_pool is None or force_new:
-        logger.info(f"Creating Redis connection pool for {REDIS_HOST}:{REDIS_PORT}, DB: {REDIS_DB}")
+        logger.info(
+            f"Creating Redis connection pool for {REDIS_HOST}:{REDIS_PORT}, DB: {REDIS_DB}"
+        )
 
         # Close existing pool if forcing new one
         if _redis_pool is not None and force_new:
@@ -103,13 +105,17 @@ async def create_redis_pool(force_new=False) -> ConnectionPool:
                     logger.info(f"Retrying in {REDIS_RETRY_DELAY} seconds...")
                     await asyncio.sleep(REDIS_RETRY_DELAY)
                 else:
-                    logger.critical(f"All Redis connection attempts failed: {e}", exc_info=True)
+                    logger.critical(
+                        f"All Redis connection attempts failed: {e}", exc_info=True
+                    )
                     _redis_pool = None
                     raise ConnectionError(
                         f"Could not connect to Redis after {REDIS_RETRY_ATTEMPTS} attempts: {e}"
                     ) from e
             except Exception as e:
-                logger.critical(f"Unexpected error creating Redis pool: {e}", exc_info=True)
+                logger.critical(
+                    f"Unexpected error creating Redis pool: {e}", exc_info=True
+                )
                 _redis_pool = None
                 raise
 

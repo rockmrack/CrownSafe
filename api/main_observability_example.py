@@ -78,13 +78,17 @@ def create_app_with_observability() -> FastAPI:
 
     # 3. Add middleware (order matters!)
     # Correlation ID middleware
-    app.add_middleware(CorrelationIdMiddleware, api_version=os.getenv("API_VERSION", "v1.2.0"))
+    app.add_middleware(
+        CorrelationIdMiddleware, api_version=os.getenv("API_VERSION", "v1.2.0")
+    )
 
     # Access logging middleware
     app.add_middleware(AccessLogMiddleware)
 
     # 4. Add error handlers
-    app.add_exception_handler(RequestValidationError, errors.handle_request_validation_error)
+    app.add_exception_handler(
+        RequestValidationError, errors.handle_request_validation_error
+    )
     app.add_exception_handler(StarletteHTTPException, errors.handle_http_exception)
     app.add_exception_handler(Exception, errors.handle_generic_exception)
 
@@ -95,7 +99,9 @@ def create_app_with_observability() -> FastAPI:
 
     # 5. Add Prometheus metrics
     instrumentator = Instrumentator()
-    instrumentator.instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
+    instrumentator.instrument(app).expose(
+        app, endpoint="/metrics", include_in_schema=False
+    )
 
     # 6. Add system routes
     app.include_router(system.router, tags=["system"])

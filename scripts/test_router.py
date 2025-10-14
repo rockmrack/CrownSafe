@@ -28,7 +28,9 @@ class MockRecallDataAgentLogic:
         )
 
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 def convert_sets_to_lists(obj):
@@ -74,7 +76,9 @@ async def main():
         router.agent_registry["query_recalls_by_product"] = MockRecallDataAgentLogic()
         logger.info("Step 2: Router initialized and RecallDataAgent has been mocked.")
     else:
-        logger.error("Router could not register the RecallDataAgent. Check import paths.")
+        logger.error(
+            "Router could not register the RecallDataAgent. Check import paths."
+        )
         return
 
     # 3. --- Execute the simplified plan ---
@@ -86,7 +90,9 @@ async def main():
     print("\n" + "=" * 50)
     print("          ROUTER AGENT TEST RESULT")
     print("=" * 50)
-    print(json.dumps(convert_sets_to_lists(router_result), indent=2))  # <-- Fix applied here
+    print(
+        json.dumps(convert_sets_to_lists(router_result), indent=2)
+    )  # <-- Fix applied here
 
     if router_result.get("status") == "COMPLETED":
         final_result = router_result.get("final_result", {})
@@ -98,7 +104,9 @@ async def main():
             print("❌ TEST FAILED: The final result was not as expected.")
     else:
         print("\n" + "=" * 50)
-        print(f"❌ TEST FAILED: The router did not complete the plan. Status: {router_result.get('status')}")
+        print(
+            f"❌ TEST FAILED: The router did not complete the plan. Status: {router_result.get('status')}"
+        )
 
     print("--- Test Complete ---")
 

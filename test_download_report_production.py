@@ -34,7 +34,9 @@ def test_download_report_production():
     }
 
     try:
-        response = requests.post(f"{BASE_URL}/api/v1/baby/reports/generate", json=payload, timeout=30)
+        response = requests.post(
+            f"{BASE_URL}/api/v1/baby/reports/generate", json=payload, timeout=30
+        )
 
         print(f"Status Code: {response.status_code}")
 
@@ -69,7 +71,9 @@ def test_download_report_production():
 
     try:
         # Try GET on download endpoint (should fail with auth error, not 404)
-        response = requests.get(f"{BASE_URL}/api/v1/baby/reports/download/test-report-id", timeout=10)
+        response = requests.get(
+            f"{BASE_URL}/api/v1/baby/reports/download/test-report-id", timeout=10
+        )
 
         print(f"Status Code: {response.status_code}")
 

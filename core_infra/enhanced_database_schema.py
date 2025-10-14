@@ -42,10 +42,14 @@ class EnhancedRecallDB(Base):
     # ================================
     # 🔢 BATCH/LOT IDENTIFIERS (Food/Pharma Critical)
     # ================================
-    lot_number = Column(String, index=True, nullable=True)  # 🆕 CRITICAL for food agencies
+    lot_number = Column(
+        String, index=True, nullable=True
+    )  # 🆕 CRITICAL for food agencies
     batch_number = Column(String, index=True, nullable=True)  # 🆕 CRITICAL for pharma
     serial_number = Column(String, index=True, nullable=True)  # 🆕 Electronics/devices
-    part_number = Column(String, index=True, nullable=True)  # 🆕 Vehicle parts/components
+    part_number = Column(
+        String, index=True, nullable=True
+    )  # 🆕 Vehicle parts/components
 
     # ================================
     # 📅 DATE IDENTIFIERS (Expiry/Production Critical)
@@ -58,7 +62,9 @@ class EnhancedRecallDB(Base):
     # 💊 PHARMACEUTICAL IDENTIFIERS (FDA/Health Agencies)
     # ================================
     ndc_number = Column(String, index=True, nullable=True)  # 🆕 US National Drug Code
-    din_number = Column(String, index=True, nullable=True)  # 🆕 Canada Drug Identification
+    din_number = Column(
+        String, index=True, nullable=True
+    )  # 🆕 Canada Drug Identification
 
     # ================================
     # 🚗 VEHICLE IDENTIFIERS (NHTSA/Transport Agencies)
@@ -87,11 +93,17 @@ class EnhancedRecallDB(Base):
     recall_date = Column(Date, index=True, nullable=False)  # ✅ Existing
     source_agency = Column(String, index=True, nullable=True)  # ✅ Existing
     hazard = Column(Text, nullable=True)  # ✅ Existing
-    hazard_category = Column(String, index=True, nullable=True)  # 🆕 Structured hazard type
+    hazard_category = Column(
+        String, index=True, nullable=True
+    )  # 🆕 Structured hazard type
     # Examples: "choking", "fire", "chemical", "microbial", "allergen"
 
-    severity = Column(String(50), nullable=True)  # 🆕 Severity level (low, medium, high, critical)
-    risk_category = Column(String(100), nullable=True)  # 🆕 Risk category (general, food, vehicle, etc.)
+    severity = Column(
+        String(50), nullable=True
+    )  # 🆕 Severity level (low, medium, high, critical)
+    risk_category = Column(
+        String(100), nullable=True
+    )  # 🆕 Risk category (general, food, vehicle, etc.)
 
     recall_reason = Column(Text, nullable=True)  # Enhanced from hazard_description
     remedy = Column(Text, nullable=True)  # ✅ Existing

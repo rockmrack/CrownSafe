@@ -244,8 +244,12 @@ def populate_ingredient_safety_table():
                 pregnancy_risk_level=data["risk_level"],
                 pregnancy_risk_reason=data["reason"],
                 pregnancy_source=data["source"],
-                baby_risk_level=BABY_UNSAFE_INGREDIENTS.get(ingredient, {}).get("risk_level"),
-                baby_risk_reason=BABY_UNSAFE_INGREDIENTS.get(ingredient, {}).get("reason"),
+                baby_risk_level=BABY_UNSAFE_INGREDIENTS.get(ingredient, {}).get(
+                    "risk_level"
+                ),
+                baby_risk_reason=BABY_UNSAFE_INGREDIENTS.get(ingredient, {}).get(
+                    "reason"
+                ),
                 baby_source=BABY_UNSAFE_INGREDIENTS.get(ingredient, {}).get("source"),
                 common_allergen=ingredient in COMMON_ALLERGENS,
                 allergen_type=COMMON_ALLERGENS.get(ingredient, {}).get("type"),
@@ -273,7 +277,10 @@ def populate_ingredient_safety_table():
 
         # Add common allergens that aren't already added
         for allergen, data in COMMON_ALLERGENS.items():
-            if allergen not in PREGNANCY_UNSAFE_INGREDIENTS and allergen not in BABY_UNSAFE_INGREDIENTS:
+            if (
+                allergen not in PREGNANCY_UNSAFE_INGREDIENTS
+                and allergen not in BABY_UNSAFE_INGREDIENTS
+            ):
                 safety_record = IngredientSafety(
                     ingredient_name=allergen,
                     common_allergen=True,

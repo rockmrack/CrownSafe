@@ -17,7 +17,9 @@ logger = logging.getLogger(__name__)
 class BabyShieldException(Exception):
     """Base exception for BabyShield application"""
 
-    def __init__(self, message: str, status_code: int = 500, details: Dict[str, Any] = None):
+    def __init__(
+        self, message: str, status_code: int = 500, details: Dict[str, Any] = None
+    ):
         self.message = message
         self.status_code = status_code
         self.details = details or {}
@@ -37,7 +39,9 @@ class NotFoundError(BabyShieldException):
 
     def __init__(self, resource: str, identifier: Any):
         message = f"{resource} not found: {identifier}"
-        super().__init__(message, status_code=404, details={"resource": resource, "id": identifier})
+        super().__init__(
+            message, status_code=404, details={"resource": resource, "id": identifier}
+        )
 
 
 class AuthenticationError(BabyShieldException):
@@ -124,7 +128,11 @@ async def database_exception_handler(request: Request, exc: SQLAlchemyError):
     )
 
     # Don't expose internal database errors in production
-    message = "Database operation failed" if not logger.isEnabledFor(logging.DEBUG) else str(exc)
+    message = (
+        "Database operation failed"
+        if not logger.isEnabledFor(logging.DEBUG)
+        else str(exc)
+    )
 
     return JSONResponse(
         status_code=500,
@@ -191,7 +199,11 @@ async def general_exception_handler(request: Request, exc: Exception):
     )
 
     # Don't expose internal errors in production
-    message = "An unexpected error occurred" if not logger.isEnabledFor(logging.DEBUG) else str(exc)
+    message = (
+        "An unexpected error occurred"
+        if not logger.isEnabledFor(logging.DEBUG)
+        else str(exc)
+    )
 
     return JSONResponse(
         status_code=500,

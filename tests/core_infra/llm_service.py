@@ -41,7 +41,9 @@ try:
     AVAILABLE_PROVIDERS["anthropic"] = True
     logger.info("Anthropic library available")
 except ImportError:
-    logger.warning("Anthropic library not installed. Install with: pip install anthropic")
+    logger.warning(
+        "Anthropic library not installed. Install with: pip install anthropic"
+    )
 
 try:
     import google.generativeai as genai
@@ -49,7 +51,9 @@ try:
     AVAILABLE_PROVIDERS["google"] = True
     logger.info("Google AI library available")
 except ImportError:
-    logger.warning("Google AI library not installed. Install with: pip install google-generativeai")
+    logger.warning(
+        "Google AI library not installed. Install with: pip install google-generativeai"
+    )
 
 
 class LLMProvider(Enum):
@@ -105,7 +109,9 @@ class LLMConfig:
             try:
                 self.provider = LLMProvider(self.provider.lower())
             except ValueError:
-                logger.warning(f"Unknown provider '{self.provider}', defaulting to MOCK")
+                logger.warning(
+                    f"Unknown provider '{self.provider}', defaulting to MOCK"
+                )
                 self.provider = LLMProvider.MOCK
 
 
@@ -158,7 +164,9 @@ class LLMRateLimiter:
 
             # Clean old entries
             self.request_times = deque(t for t in self.request_times if now - t < 60)
-            self.token_usage = deque((t, tokens) for t, tokens in self.token_usage if now - t < 60)
+            self.token_usage = deque(
+                (t, tokens) for t, tokens in self.token_usage if now - t < 60
+            )
 
             # Check request limit
             if len(self.request_times) >= self.requests_per_minute:
@@ -169,7 +177,9 @@ class LLMRateLimiter:
             current_tokens = sum(tokens for _, tokens in self.token_usage)
             if current_tokens + estimated_tokens > self.tokens_per_minute:
                 # Find when we'll have enough token budget
-                tokens_to_free = (current_tokens + estimated_tokens) - self.tokens_per_minute
+                tokens_to_free = (
+                    current_tokens + estimated_tokens
+                ) - self.tokens_per_minute
                 accumulated = 0
                 for t, tokens in self.token_usage:
                     accumulated += tokens
@@ -397,21 +407,23 @@ class MockLLMProvider:
 
         # If no specific patient but we have a score, use score-based logic
         elif score_found is not None:
-            logger.debug(f"No specific patient detected, using score-based logic: {score_found:.2f}")
+            logger.debug(
+                f"No specific patient detected, using score-based logic: {score_found:.2f}"
+            )
             if score_found > 0.75:
                 template["approval_likelihood_percent"] = int(score_found * 100)
                 template["decision_prediction"] = "Approve"
                 template["confidence_score"] = min(0.9, score_found)
-                template["clinical_rationale"] = (
-                    f"High evidence score ({score_found:.0%}) strongly supports approval based on clinical criteria."
-                )
+                template[
+                    "clinical_rationale"
+                ] = f"High evidence score ({score_found:.0%}) strongly supports approval based on clinical criteria."
             elif score_found < 0.25:
                 template["approval_likelihood_percent"] = int(score_found * 100)
                 template["decision_prediction"] = "Deny"
                 template["confidence_score"] = min(0.9, 1 - score_found)
-                template["clinical_rationale"] = (
-                    f"Low evidence score ({score_found:.0%}) indicates multiple unmet criteria. Step therapy or other requirements not satisfied."
-                )
+                template[
+                    "clinical_rationale"
+                ] = f"Low evidence score ({score_found:.0%}) indicates multiple unmet criteria. Step therapy or other requirements not satisfied."
             else:
                 template["approval_likelihood_percent"] = int(score_found * 100)
                 template["confidence_score"] = 0.5 + abs(score_found - 0.5) * 0.5
@@ -451,8 +463,12 @@ class LLMClient:
     def __init__(self, config: LLMConfig):
         self.config = config
         self.metrics = LLMMetrics()
-        self.rate_limiter = LLMRateLimiter(config.requests_per_minute, config.tokens_per_minute)
-        self.cache = LLMCache(config.cache_ttl_seconds) if config.enable_caching else None
+        self.rate_limiter = LLMRateLimiter(
+            config.requests_per_minute, config.tokens_per_minute
+        )
+        self.cache = (
+            LLMCache(config.cache_ttl_seconds) if config.enable_caching else None
+        )
 
         # Initialize provider
         self._provider = None
@@ -466,7 +482,9 @@ class LLMClient:
         self._request_id = 0
         self._lock = threading.Lock()
 
-        logger.info(f"LLMClient initialized with provider: {config.provider.value}, model: {config.model}")
+        logger.info(
+            f"LLMClient initialized with provider: {config.provider.value}, model: {config.model}"
+        )
 
     def _initialize_provider(self):
         """Initialize the appropriate provider client"""
@@ -476,10 +494,14 @@ class LLMClient:
             logger.info("Using mock LLM provider")
             return
 
-        api_key = self.config.api_key or os.getenv(f"{self.config.provider.value.upper()}_API_KEY")
+        api_key = self.config.api_key or os.getenv(
+            f"{self.config.provider.value.upper()}_API_KEY"
+        )
 
         if not api_key and self.config.provider != LLMProvider.MOCK:
-            logger.warning(f"No API key found for {self.config.provider.value}, falling back to mock provider")
+            logger.warning(
+                f"No API key found for {self.config.provider.value}, falling back to mock provider"
+            )
             self.config.provider = LLMProvider.MOCK
             return
 
@@ -556,7 +578,9 @@ class LLMClient:
         if AVAILABLE_PROVIDERS["openai"] == "new":
             from openai import AzureOpenAI
 
-            self._provider = AzureOpenAI(api_key=api_key, api_version=api_version, azure_endpoint=api_base)
+            self._provider = AzureOpenAI(
+                api_key=api_key, api_version=api_version, azure_endpoint=api_base
+            )
         else:
             import openai
 
@@ -661,7 +685,9 @@ class LLMClient:
 
             # Record metrics
             latency_ms = (time.time() - start_time) * 1000
-            self._record_metrics(response, latency_ms, kwargs.get("model", self.config.model))
+            self._record_metrics(
+                response, latency_ms, kwargs.get("model", self.config.model)
+            )
 
             # Cache response
             if self.cache and self.config.enable_caching and cache_key:
@@ -676,7 +702,9 @@ class LLMClient:
         except Exception as e:
             self.metrics.failed_requests += 1
             error_type = type(e).__name__
-            self.metrics.errors_by_type[error_type] = self.metrics.errors_by_type.get(error_type, 0) + 1
+            self.metrics.errors_by_type[error_type] = (
+                self.metrics.errors_by_type.get(error_type, 0) + 1
+            )
             logger.error(f"LLM request {request_id} failed: {e}")
             raise
 
@@ -695,8 +723,12 @@ class LLMClient:
             "temperature": kwargs.get("temperature", self.config.temperature),
             "max_tokens": kwargs.get("max_tokens", self.config.max_tokens),
             "top_p": kwargs.get("top_p", self.config.top_p),
-            "frequency_penalty": kwargs.get("frequency_penalty", self.config.frequency_penalty),
-            "presence_penalty": kwargs.get("presence_penalty", self.config.presence_penalty),
+            "frequency_penalty": kwargs.get(
+                "frequency_penalty", self.config.frequency_penalty
+            ),
+            "presence_penalty": kwargs.get(
+                "presence_penalty", self.config.presence_penalty
+            ),
         }
 
         if self.config.stop_sequences:
@@ -808,7 +840,11 @@ class LLMClient:
                     self.total_tokens = input_tokens + output_tokens
 
             def __init__(self, anthropic_response):
-                content = anthropic_response.content[0].text if anthropic_response.content else ""
+                content = (
+                    anthropic_response.content[0].text
+                    if anthropic_response.content
+                    else ""
+                )
                 self.choices = [self.Choice(content)]
                 self.usage = self.Usage(
                     anthropic_response.usage.input_tokens,
@@ -839,7 +875,9 @@ class LLMClient:
                     self.total_tokens = usage_data.get("total_tokens", 0)
 
             def __init__(self, response_data):
-                self.choices = [self.Choice(choice) for choice in response_data["choices"]]
+                self.choices = [
+                    self.Choice(choice) for choice in response_data["choices"]
+                ]
                 self.usage = self.Usage(response_data.get("usage", {}))
                 self.model = response_data.get("model", "unknown")
                 self.id = response_data.get("id", f"legacy-{int(time.time())}")
@@ -872,7 +910,9 @@ class LLMClient:
             self.metrics.total_cost += self._estimate_cost(tokens_used, model)
 
         # Track by model
-        self.metrics.requests_by_model[model] = self.metrics.requests_by_model.get(model, 0) + 1
+        self.metrics.requests_by_model[model] = (
+            self.metrics.requests_by_model.get(model, 0) + 1
+        )
 
     def _estimate_cost(self, tokens: int, model: str) -> float:
         """Estimate cost based on token usage"""
@@ -907,11 +947,14 @@ class LLMClient:
             "total_requests": self.metrics.total_requests,
             "successful_requests": self.metrics.successful_requests,
             "failed_requests": self.metrics.failed_requests,
-            "success_rate": self.metrics.successful_requests / max(self.metrics.total_requests, 1),
+            "success_rate": self.metrics.successful_requests
+            / max(self.metrics.total_requests, 1),
             "total_tokens": self.metrics.total_tokens,
             "total_cost": f"${self.metrics.total_cost:.2f}",
-            "average_latency_ms": self.metrics.total_latency_ms / max(self.metrics.successful_requests, 1),
-            "cache_hit_rate": self.metrics.cache_hits / max(self.metrics.cache_hits + self.metrics.cache_misses, 1),
+            "average_latency_ms": self.metrics.total_latency_ms
+            / max(self.metrics.successful_requests, 1),
+            "cache_hit_rate": self.metrics.cache_hits
+            / max(self.metrics.cache_hits + self.metrics.cache_misses, 1),
             "errors": dict(self.metrics.errors_by_type),
             "models": dict(self.metrics.requests_by_model),
         }
@@ -941,11 +984,16 @@ def get_llm_client(config: Optional[LLMConfig] = None) -> LLMClient:
 def get_all_metrics() -> Dict[str, Any]:
     """Get metrics for all clients"""
     with _registry_lock:
-        return {client_key: client.get_metrics() for client_key, client in _client_registry.items()}
+        return {
+            client_key: client.get_metrics()
+            for client_key, client in _client_registry.items()
+        }
 
 
 # Utility functions
-def build_structured_prompt(sections: Dict[str, Any], separator: str = "\n" + "=" * 50 + "\n") -> str:
+def build_structured_prompt(
+    sections: Dict[str, Any], separator: str = "\n" + "=" * 50 + "\n"
+) -> str:
     """Build a structured prompt from sections"""
     prompt_parts = []
 
@@ -992,7 +1040,9 @@ def parse_llm_json_response(response_text: str, strict: bool = False) -> Dict[st
                 raise
 
     # Strategy 3: Find JSON-like structure
-    json_pattern = re.search(r"\{[^{}]*\{[^{}]*\}[^{}]*\}|\{[^{}]+\}", response_text, re.DOTALL)
+    json_pattern = re.search(
+        r"\{[^{}]*\{[^{}]*\}[^{}]*\}|\{[^{}]+\}", response_text, re.DOTALL
+    )
     if json_pattern:
         try:
             return json.loads(json_pattern.group(0))

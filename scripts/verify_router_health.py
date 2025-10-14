@@ -33,7 +33,9 @@ def check_router_health():
     initial_len = r.llen(queue_key)
     r.lpush(queue_key, json.dumps(test_msg))
 
-    print(f"   Added test message to queue (length: {initial_len} -> {initial_len + 1})")
+    print(
+        f"   Added test message to queue (length: {initial_len} -> {initial_len + 1})"
+    )
 
     # Wait and check if processed
     time.sleep(2)
@@ -69,7 +71,11 @@ def check_router_health():
                 pass
 
         for wf in recent_workflows:
-            status_icon = "✅" if wf["has_workflow_id"] and wf["workflow_id_value"] != "N/A" else "❌"
+            status_icon = (
+                "✅"
+                if wf["has_workflow_id"] and wf["workflow_id_value"] != "N/A"
+                else "❌"
+            )
             print(
                 f"   {status_icon} {wf['id'][:8]}... - Status: {wf['status']}, workflow_id: {wf['workflow_id_value']}"
             )
@@ -116,7 +122,9 @@ def check_router_health():
             if data.get("workflow_id") == test_workflow_id:
                 print("   ✅ workflow_id field is correctly set!")
             else:
-                print(f"   ❌ workflow_id field is: {data.get('workflow_id', 'MISSING')}")
+                print(
+                    f"   ❌ workflow_id field is: {data.get('workflow_id', 'MISSING')}"
+                )
 
             return True
 

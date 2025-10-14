@@ -52,7 +52,9 @@ def setup_observability(app: FastAPI):
     logger.info("Access log middleware added")
 
     # 3. Add exception handlers for unified error responses
-    app.add_exception_handler(RequestValidationError, errors.handle_request_validation_error)
+    app.add_exception_handler(
+        RequestValidationError, errors.handle_request_validation_error
+    )
     app.add_exception_handler(StarletteHTTPException, errors.handle_http_exception)
     app.add_exception_handler(Exception, errors.handle_generic_exception)
     logger.info("Error handlers configured")
@@ -69,7 +71,9 @@ def setup_observability(app: FastAPI):
         inprogress_labels=True,
     )
 
-    instrumentator.instrument(app).expose(app, endpoint="/metrics", include_in_schema=False, tags=["monitoring"])
+    instrumentator.instrument(app).expose(
+        app, endpoint="/metrics", include_in_schema=False, tags=["monitoring"]
+    )
     logger.info("Prometheus metrics configured at /metrics")
 
     # 5. Add system routes

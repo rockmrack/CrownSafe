@@ -33,15 +33,15 @@ No backup files, temporary files, or orphaned code found:
 #### Legitimate Duplicates (Different Purposes)
 These files have similar names but serve different purposes:
 
-| File | Locations | Status |
-|------|-----------|--------|
-| `security_middleware.py` | `api/` and `core_infra/` | ✅ Different implementations for different layers |
-| `sqlite_jsonb_shim.py` | `core_infra/` and `db/` | ✅ Different purposes (runtime vs migration shim) |
-| `query_optimizer.py` | `core_infra/` and `utils/database/` | ✅ Different scopes |
-| `agent_logic.py` | 22 files in `agents/*/` | ✅ Agent pattern - each agent has its own logic |
-| `router.py` | `core/` and `tests/core_infra/mcp_router_service/` | ✅ Production vs test code |
-| `analytics.py` | `api/crud/`, `api/models/`, `api/routers/` | ✅ Different layers (CRUD, models, routes) |
-| Test files | Various `tests/` subdirectories | ✅ Organized by test type |
+| File                     | Locations                                          | Status                                           |
+| ------------------------ | -------------------------------------------------- | ------------------------------------------------ |
+| `security_middleware.py` | `api/` and `core_infra/`                           | ✅ Different implementations for different layers |
+| `sqlite_jsonb_shim.py`   | `core_infra/` and `db/`                            | ✅ Different purposes (runtime vs migration shim) |
+| `query_optimizer.py`     | `core_infra/` and `utils/database/`                | ✅ Different scopes                               |
+| `agent_logic.py`         | 22 files in `agents/*/`                            | ✅ Agent pattern - each agent has its own logic   |
+| `router.py`              | `core/` and `tests/core_infra/mcp_router_service/` | ✅ Production vs test code                        |
+| `analytics.py`           | `api/crud/`, `api/models/`, `api/routers/`         | ✅ Different layers (CRUD, models, routes)        |
+| Test files               | Various `tests/` subdirectories                    | ✅ Organized by test type                         |
 
 **Verdict:** These duplicates are intentional and follow proper architecture patterns.
 

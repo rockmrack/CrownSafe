@@ -53,7 +53,9 @@ class DSARRequest(BaseModel):
         description="Request source (ios|android|web|api)",
         pattern="^(ios|android|web|email|api)$",
     )
-    reason: Optional[str] = Field(None, max_length=500, description="Optional reason for request")
+    reason: Optional[str] = Field(
+        None, max_length=500, description="Optional reason for request"
+    )
     metadata: Optional[dict] = Field(None, description="Additional metadata")
 
     @field_validator("email")
@@ -77,7 +79,9 @@ class DSARResponse(BaseModel):
     submitted_at: Optional[str] = None
 
 
-def create_response(data: dict, request: Request, status_code: int = 200) -> JSONResponse:
+def create_response(
+    data: dict, request: Request, status_code: int = 200
+) -> JSONResponse:
     """
     Create standard JSON response with trace ID
 
@@ -99,7 +103,9 @@ def create_response(data: dict, request: Request, status_code: int = 200) -> JSO
     )
 
 
-@router.post("/data/export", response_model=DSARResponse, dependencies=[Depends(dsar_limiter)])
+@router.post(
+    "/data/export", response_model=DSARResponse, dependencies=[Depends(dsar_limiter)]
+)
 @privacy_audit_log
 async def request_data_export(
     request: Request,
@@ -140,7 +146,9 @@ async def request_data_export(
             return JSONResponse(
                 content={
                     "ok": True,
-                    "data": format_dsar_response("export", "pending", body.jurisdiction),
+                    "data": format_dsar_response(
+                        "export", "pending", body.jurisdiction
+                    ),
                     "traceId": getattr(request.state, "trace_id", None),
                 },
                 status_code=200,
@@ -188,7 +196,9 @@ async def request_data_export(
         )
 
 
-@router.post("/data/delete", response_model=DSARResponse, dependencies=[Depends(dsar_limiter)])
+@router.post(
+    "/data/delete", response_model=DSARResponse, dependencies=[Depends(dsar_limiter)]
+)
 @privacy_audit_log
 async def request_data_deletion(
     request: Request,
@@ -229,7 +239,9 @@ async def request_data_deletion(
             return JSONResponse(
                 content={
                     "ok": True,
-                    "data": format_dsar_response("delete", "pending", body.jurisdiction),
+                    "data": format_dsar_response(
+                        "delete", "pending", body.jurisdiction
+                    ),
                     "traceId": getattr(request.state, "trace_id", None),
                 },
                 status_code=200,
@@ -340,7 +352,9 @@ async def privacy_summary(request: Request):
 
 
 @router.post("/privacy/verify/{token}")
-async def verify_privacy_request(token: str, request: Request, db: Session = Depends(get_db)):
+async def verify_privacy_request(
+    token: str, request: Request, db: Session = Depends(get_db)
+):
     """
     Verify a privacy request via email token
 
@@ -348,7 +362,11 @@ async def verify_privacy_request(token: str, request: Request, db: Session = Dep
     """
     try:
         # Find request by token
-        privacy_request = db.query(PrivacyRequest).filter(PrivacyRequest.verification_token == token).first()
+        privacy_request = (
+            db.query(PrivacyRequest)
+            .filter(PrivacyRequest.verification_token == token)
+            .first()
+        )
 
         if not privacy_request:
             raise APIError(
@@ -399,7 +417,9 @@ async def verify_privacy_request(token: str, request: Request, db: Session = Dep
 
 
 @router.get("/privacy/status/{request_id}")
-async def check_request_status(request_id: str, request: Request, db: Session = Depends(get_db)):
+async def check_request_status(
+    request_id: str, request: Request, db: Session = Depends(get_db)
+):
     """
     Check status of a privacy request
 
@@ -419,7 +439,9 @@ async def check_request_status(request_id: str, request: Request, db: Session = 
             )
 
         # Find request
-        privacy_request = db.query(PrivacyRequest).filter(PrivacyRequest.id == request_id).first()
+        privacy_request = (
+            db.query(PrivacyRequest).filter(PrivacyRequest.id == request_id).first()
+        )
 
         if not privacy_request:
             raise APIError(
@@ -435,8 +457,12 @@ async def check_request_status(request_id: str, request: Request, db: Session = 
                 "kind": privacy_request.kind,
                 "status": privacy_request.status,
                 "submitted_at": privacy_request.submitted_at.isoformat(),
-                "verified_at": privacy_request.verified_at.isoformat() if privacy_request.verified_at else None,
-                "completed_at": privacy_request.completed_at.isoformat() if privacy_request.completed_at else None,
+                "verified_at": privacy_request.verified_at.isoformat()
+                if privacy_request.verified_at
+                else None,
+                "completed_at": privacy_request.completed_at.isoformat()
+                if privacy_request.completed_at
+                else None,
                 "sla_days": privacy_request.sla_days,
                 "is_overdue": privacy_request.is_overdue,
                 "days_elapsed": privacy_request.days_elapsed,
@@ -459,17 +485,23 @@ async def check_request_status(request_id: str, request: Request, db: Session = 
 
 
 @router.post("/data/rectify", dependencies=[Depends(dsar_limiter)])
-async def request_data_rectification(request: Request, body: DSARRequest, db: Session = Depends(get_db)):
+async def request_data_rectification(
+    request: Request, body: DSARRequest, db: Session = Depends(get_db)
+):
     """
     Request rectification of inaccurate data (GDPR Article 16)
     """
     # Similar implementation to export/delete
     # Would create a "rectify" type request
-    return create_response(format_dsar_response("rectify", "queued", body.jurisdiction or "other"), request)
+    return create_response(
+        format_dsar_response("rectify", "queued", body.jurisdiction or "other"), request
+    )
 
 
 @router.post("/data/restrict", dependencies=[Depends(dsar_limiter)])
-async def request_processing_restriction(request: Request, body: DSARRequest, db: Session = Depends(get_db)):
+async def request_processing_restriction(
+    request: Request, body: DSARRequest, db: Session = Depends(get_db)
+):
     """
     Request restriction of processing (GDPR Article 18)
     """
@@ -480,11 +512,15 @@ async def request_processing_restriction(request: Request, body: DSARRequest, db
 
 
 @router.post("/data/object", dependencies=[Depends(dsar_limiter)])
-async def object_to_processing(request: Request, body: DSARRequest, db: Session = Depends(get_db)):
+async def object_to_processing(
+    request: Request, body: DSARRequest, db: Session = Depends(get_db)
+):
     """
     Object to data processing (GDPR Article 21)
     """
-    return create_response(format_dsar_response("object", "queued", body.jurisdiction or "other"), request)
+    return create_response(
+        format_dsar_response("object", "queued", body.jurisdiction or "other"), request
+    )
 
 
 # Export router
