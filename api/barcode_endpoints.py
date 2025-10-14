@@ -46,6 +46,9 @@ barcode_router = APIRouter(prefix="/api/v1/scan", tags=["barcode-scanning"])
 # Additional router for mobile-specific endpoints
 mobile_scan_router = APIRouter(prefix="/api/v1/mobile/scan", tags=["mobile-scanning"])
 
+# Router matching documentation path /api/v1/barcode/scan
+barcode_scan_router = APIRouter(prefix="/api/v1/barcode", tags=["barcode-scanning"])
+
 
 # Request/Response Models
 class BarcodeScanRequest(BaseModel):
@@ -845,3 +848,113 @@ async def get_scan_results_page(
             None,
             {"barcode": request.barcode_data, "format": "unknown", "confidence": 0.0},
         )
+
+
+@barcode_scan_router.post("/scan", response_model=ApiResponse)
+async def barcode_scan_with_file(
+    file: UploadFile = File(..., description="Image file to scan for barcodes"),
+    db: Session = Depends(get_db_session),
+) -> ApiResponse:
+    """
+    Scan barcode from uploaded image file with security validation.
+
+    This endpoint validates:
+    - File type (must be image: jpg, jpeg, png, gif, bmp, webp)
+    - File size (max 10MB)
+
+    Args:
+        file: Uploaded image file
+        db: Database session
+
+    Returns:
+        Scan results with recall checking
+
+    Raises:
+        400: Invalid file type
+        413: File too large
+        422: Validation error
+    """
+    try:
+        # Validate file type
+        allowed_types = [
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "image/gif",
+            "image/bmp",
+            "image/webp",
+        ]
+        if file.content_type not in allowed_types:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid file type: {file.content_type}. Allowed types: {', '.join(allowed_types)}",
+            )
+
+        # Read file content
+        content = await file.read()
+
+        # Validate file size (10MB limit)
+        max_size = 10 * 1024 * 1024  # 10MB
+        if len(content) > max_size:
+            raise HTTPException(
+                status_code=413,
+                detail=f"File too large: {len(content)} bytes. Maximum allowed: {max_size} bytes (10MB)",
+            )
+
+        # Convert to base64 for scanner
+        image_base64 = base64.b64encode(content).decode("utf-8")
+
+        # Generate trace ID
+        trace_id = f"file_scan_{int(datetime.utcnow().timestamp())}_{hash(file.filename) % 10000}"
+
+        # Scan image
+        scan_results = await scanner.scan_image(image_base64)
+
+        # Check each result against database
+        recall_checks = []
+        any_recalls = False
+        verifications: List[Optional[Dict[str, Any]]] = []
+
+        for scan_result in scan_results:
+            if scan_result.success:
+                recall_check = check_recall_database(scan_result, db)
+                recall_checks.append(recall_check)
+                if recall_check.recall_found:
+                    any_recalls = True
+                v = _attempt_unit_verification(scan_result)
+                verifications.append(v)
+                _persist_verification(scan_result, v, db, trace_id)
+
+        # Build response
+        response_data = {
+            "ok": True,
+            "scan_results": [r.to_dict() for r in scan_results],
+            "recall_checks": [r.model_dump() for r in recall_checks]
+            if recall_checks
+            else None,
+            "trace_id": trace_id,
+            "verifications": verifications if verifications else None,
+            "file_info": {
+                "filename": file.filename,
+                "content_type": file.content_type,
+                "size_bytes": len(content),
+            },
+        }
+
+        # Add warning if any recalls found
+        if any_recalls:
+            total_recalls = sum(r.recall_count for r in recall_checks if r.recall_found)
+            response_data[
+                "message"
+            ] = f"⚠️ RECALL ALERT: {total_recalls} recall(s) found!"
+
+        return ApiResponse(
+            success=True, data=response_data, message="File scanned successfully"
+        )
+
+    except HTTPException:
+        # Re-raise HTTP exceptions (400, 413, etc.)
+        raise
+    except Exception as e:
+        logger.error(f"File scan error: {e}")
+        raise HTTPException(status_code=500, detail=f"Scan failed: {str(e)}") from e

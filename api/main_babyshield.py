@@ -1216,10 +1216,15 @@ except Exception as e:
 
 # Import and include barcode scanning endpoints
 try:
-    from api.barcode_endpoints import barcode_router, mobile_scan_router
+    from api.barcode_endpoints import (
+        barcode_router,
+        mobile_scan_router,
+        barcode_scan_router,
+    )
 
     app.include_router(barcode_router)
     app.include_router(mobile_scan_router)
+    app.include_router(barcode_scan_router)  # /api/v1/barcode/scan endpoint
     logging.info("Ã¢Å“â€¦ Barcode scanning endpoints registered")
     logging.info("Ã¢Å“â€¦ Mobile scan results endpoints registered")
 except Exception as e:
