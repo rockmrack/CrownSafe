@@ -117,9 +117,7 @@ def test_postman_collection():
 
     # Check for variables
     if "variable" in collection:
-        vars_list = [
-            f"{v['key']}={v.get('value', 'undefined')}" for v in collection["variable"]
-        ]
+        vars_list = [f"{v['key']}={v.get('value', 'undefined')}" for v in collection["variable"]]
         print(f"   ✅ Variables: {', '.join(vars_list)}")
 
     return total_requests > 0

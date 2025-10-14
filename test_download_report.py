@@ -39,9 +39,7 @@ def test_download_report_workflow():
     }
 
     try:
-        response = requests.post(
-            f"{BASE_URL}/api/v1/baby/reports/generate", json=payload, timeout=30
-        )
+        response = requests.post(f"{BASE_URL}/api/v1/baby/reports/generate", json=payload, timeout=30)
 
         print(f"Status Code: {response.status_code}")
 
@@ -81,9 +79,7 @@ def test_download_report_workflow():
 
                         print("✅ Report downloaded successfully!")
                         print(f"   Content-Type: {content_type}")
-                        print(
-                            f"   File Size: {content_length} bytes ({content_length / 1024:.2f} KB)"
-                        )
+                        print(f"   File Size: {content_length} bytes ({content_length / 1024:.2f} KB)")
 
                         if "application/pdf" in content_type:
                             print("   ✅ Correct content type (PDF)")
@@ -109,13 +105,9 @@ def test_download_report_workflow():
                         print("❌ Forbidden - User doesn't own this report")
                     elif download_response.status_code == 404:
                         print("❌ Report file not found on server")
-                        print(
-                            "   The report may have been generated but file is missing"
-                        )
+                        print("   The report may have been generated but file is missing")
                     else:
-                        print(
-                            f"❌ Download failed with status {download_response.status_code}"
-                        )
+                        print(f"❌ Download failed with status {download_response.status_code}")
                         print(f"   Response: {download_response.text[:500]}")
 
                 except requests.exceptions.ConnectionError:
@@ -136,9 +128,7 @@ def test_download_report_workflow():
 
     except requests.exceptions.ConnectionError:
         print(f"❌ Connection error - Is the API running at {BASE_URL}?")
-        print(
-            "💡 Start the API with: uvicorn api.main_babyshield:app --reload --port 8001"
-        )
+        print("💡 Start the API with: uvicorn api.main_babyshield:app --reload --port 8001")
     except requests.exceptions.Timeout:
         print("❌ Request timed out")
     except Exception as e:
@@ -156,9 +146,7 @@ def test_download_report_workflow():
     }
 
     try:
-        response = requests.post(
-            f"{BASE_URL}/api/v1/baby/reports/generate", json=payload, timeout=30
-        )
+        response = requests.post(f"{BASE_URL}/api/v1/baby/reports/generate", json=payload, timeout=30)
 
         print(f"Status Code: {response.status_code}")
 
@@ -186,9 +174,7 @@ def test_download_report_workflow():
     }
 
     try:
-        response = requests.post(
-            f"{BASE_URL}/api/v1/baby/reports/generate", json=payload, timeout=30
-        )
+        response = requests.post(f"{BASE_URL}/api/v1/baby/reports/generate", json=payload, timeout=30)
 
         print(f"Status Code: {response.status_code}")
 

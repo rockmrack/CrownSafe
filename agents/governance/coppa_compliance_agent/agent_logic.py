@@ -16,15 +16,11 @@ class COPPA_ComplianceAgentLogic:
         self.logger = logger
         self.logger.info("COPPA_ComplianceAgentLogic initialized.")
 
-    def check_age_and_get_consent_status(
-        self, user_profile: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def check_age_and_get_consent_status(self, user_profile: Dict[str, Any]) -> Dict[str, Any]:
         """
         Checks a user's age and determines if parental consent is required and obtained.
         """
-        self.logger.info(
-            f"Performing COPPA check for user_id: {user_profile.get('user_id')}"
-        )
+        self.logger.info(f"Performing COPPA check for user_id: {user_profile.get('user_id')}")
 
         try:
             birth_date_str = user_profile.get("birth_date")
@@ -34,11 +30,7 @@ class COPPA_ComplianceAgentLogic:
 
             birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d").date()
             today = datetime.now().date()
-            age = (
-                today.year
-                - birth_date.year
-                - ((today.month, today.day) < (birth_date.month, birth_date.day))
-            )
+            age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
 
             self.logger.info(f"Calculated age for user is {age}.")
 
@@ -69,9 +61,7 @@ class COPPA_ComplianceAgentLogic:
                 }
 
         except Exception as e:
-            self.logger.error(
-                f"An error occurred during COPPA check: {e}", exc_info=True
-            )
+            self.logger.error(f"An error occurred during COPPA check: {e}", exc_info=True)
             return {"status": "error", "message": f"An unexpected error occurred: {e}"}
 
     def _handle_consent_required(self, reason: str) -> Dict[str, Any]:

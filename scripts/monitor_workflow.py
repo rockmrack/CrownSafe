@@ -74,9 +74,7 @@ async def trace_workflow_creation():
             await monitor_workflow(workflow_id)
 
             # Also check status endpoint
-            status_response = requests.get(
-                f"http://localhost:8000/api/v1/status/{workflow_id}"
-            )
+            status_response = requests.get(f"http://localhost:8000/api/v1/status/{workflow_id}")
             print(f"\nAPI Status endpoint: {status_response.status_code}")
             if status_response.status_code == 200:
                 print(f"Status data: {json.dumps(status_response.json(), indent=2)}")

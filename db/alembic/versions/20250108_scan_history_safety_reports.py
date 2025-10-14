@@ -53,21 +53,15 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        op.f("ix_scan_history_user_id"), "scan_history", ["user_id"], unique=False
-    )
-    op.create_index(
-        op.f("ix_scan_history_scan_id"), "scan_history", ["scan_id"], unique=True
-    )
+    op.create_index(op.f("ix_scan_history_user_id"), "scan_history", ["user_id"], unique=False)
+    op.create_index(op.f("ix_scan_history_scan_id"), "scan_history", ["scan_id"], unique=True)
     op.create_index(
         op.f("ix_scan_history_scan_timestamp"),
         "scan_history",
         ["scan_timestamp"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_scan_history_barcode"), "scan_history", ["barcode"], unique=False
-    )
+    op.create_index(op.f("ix_scan_history_barcode"), "scan_history", ["barcode"], unique=False)
 
     # Create safety_reports table
     op.create_table(
@@ -101,9 +95,7 @@ def upgrade():
         ["report_id"],
         unique=True,
     )
-    op.create_index(
-        op.f("ix_safety_reports_user_id"), "safety_reports", ["user_id"], unique=False
-    )
+    op.create_index(op.f("ix_safety_reports_user_id"), "safety_reports", ["user_id"], unique=False)
 
 
 def downgrade():

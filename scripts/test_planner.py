@@ -15,9 +15,7 @@ sys.path.insert(0, project_root)
 
 from agents.planning.planner_agent.agent_logic import BabyShieldPlannerLogic
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 async def main():
@@ -26,9 +24,7 @@ async def main():
     logger.info("--- Starting BabyShield Planner Agent Test (v3.1) ---")
 
     # 1. Initialize the Planner Agent Logic
-    planner = BabyShieldPlannerLogic(
-        agent_id="test_planner_001", logger_instance=logger
-    )
+    planner = BabyShieldPlannerLogic(agent_id="test_planner_001", logger_instance=logger)
     logger.info("Planner initialized.")
 
     # 2. Define a sample task payload that matches your template's needs
@@ -62,14 +58,10 @@ async def main():
         step1_inputs = plan.get("steps", [{}])[0].get("inputs", {})
         if step1_inputs.get("barcode") == "0123456789123":
             print("\n" + "=" * 50)
-            print(
-                "✅ TEST PASSED: The plan was generated successfully and the barcode was correctly substituted."
-            )
+            print("✅ TEST PASSED: The plan was generated successfully and the barcode was correctly substituted.")
         else:
             print("\n" + "=" * 50)
-            print(
-                "❌ TEST FAILED: The barcode was not substituted correctly in the plan."
-            )
+            print("❌ TEST FAILED: The barcode was not substituted correctly in the plan.")
 
     else:
         print("❌ Status: FAILED")

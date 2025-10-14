@@ -287,9 +287,7 @@ class TestEnhancedBarcodeScanner:
         with patch.object(scanner, "_bytes_to_cv2") as mock_bytes_to_cv2:
             with patch.object(scanner, "_scan_with_pyzbar") as mock_scan_pyzbar:
                 mock_bytes_to_cv2.return_value = np.zeros((100, 100), dtype=np.uint8)
-                mock_scan_pyzbar.return_value = [
-                    BarcodeResult("test_data", BarcodeType.QRCODE, method="pyzbar")
-                ]
+                mock_scan_pyzbar.return_value = [BarcodeResult("test_data", BarcodeType.QRCODE, method="pyzbar")]
 
                 image_data = b"fake_image_data"
                 results = scanner.scan_image(image_data)
@@ -307,9 +305,7 @@ class TestEnhancedBarcodeScanner:
         with patch.object(scanner, "_bytes_to_cv2") as mock_bytes_to_cv2:
             with patch.object(scanner, "_scan_with_opencv") as mock_scan_opencv:
                 mock_bytes_to_cv2.return_value = np.zeros((100, 100), dtype=np.uint8)
-                mock_scan_opencv.return_value = [
-                    BarcodeResult("test_data", BarcodeType.QRCODE, method="opencv")
-                ]
+                mock_scan_opencv.return_value = [BarcodeResult("test_data", BarcodeType.QRCODE, method="opencv")]
 
                 image_data = b"fake_image_data"
                 results = scanner.scan_image(image_data)
@@ -383,9 +379,7 @@ class TestEnhancedBarcodeScanner:
         mock_code.write = Mock()
 
         with patch("core_infra.barcode_scanner_enhanced.BytesIO") as mock_bytesio:
-            with patch(
-                "core_infra.barcode_scanner_enhanced.ImageWriter"
-            ) as _:  # mock_writer
+            with patch("core_infra.barcode_scanner_enhanced.ImageWriter") as _:  # mock_writer
                 mock_bytesio.return_value = mock_buffer
 
                 result = scanner.generate_barcode("123456789", "code128")
@@ -399,9 +393,7 @@ class TestEnhancedBarcodeScanner:
         """Test generate_barcode when barcode generation library not available"""
         scanner = EnhancedBarcodeScanner()
 
-        with pytest.raises(
-            ValueError, match="Barcode generation library not available"
-        ):
+        with pytest.raises(ValueError, match="Barcode generation library not available"):
             scanner.generate_barcode("123456789")
 
     def test_test_functionality(self):
@@ -410,9 +402,7 @@ class TestEnhancedBarcodeScanner:
 
         with patch("core_infra.barcode_scanner_enhanced.PYZBAR_AVAILABLE", True):
             with patch("core_infra.barcode_scanner_enhanced.OPENCV_AVAILABLE", True):
-                with patch(
-                    "core_infra.barcode_scanner_enhanced.QRCODE_AVAILABLE", True
-                ):
+                with patch("core_infra.barcode_scanner_enhanced.QRCODE_AVAILABLE", True):
                     with patch(
                         "core_infra.barcode_scanner_enhanced.BARCODE_GEN_AVAILABLE",
                         True,
@@ -441,9 +431,7 @@ class TestGlobalFunctions:
     def test_scan_barcode_function(self):
         """Test scan_barcode function"""
         with patch.object(enhanced_scanner, "scan_image") as mock_scan_image:
-            mock_scan_image.return_value = [
-                BarcodeResult("test_data", BarcodeType.QRCODE, method="pyzbar")
-            ]
+            mock_scan_image.return_value = [BarcodeResult("test_data", BarcodeType.QRCODE, method="pyzbar")]
 
             image_data = b"fake_image_data"
             results = scan_barcode(image_data)

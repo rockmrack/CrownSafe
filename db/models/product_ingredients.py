@@ -59,9 +59,7 @@ class IngredientSafety(Base):
     alternative_names = Column(JSON, nullable=True)  # List of alternative names
 
     # Safety information
-    pregnancy_risk_level = Column(
-        String(20), nullable=True, index=True
-    )  # None, Low, Moderate, High
+    pregnancy_risk_level = Column(String(20), nullable=True, index=True)  # None, Low, Moderate, High
     pregnancy_risk_reason = Column(Text, nullable=True)
     pregnancy_source = Column(String(200), nullable=True)
 

@@ -166,9 +166,7 @@ class ImageAnalysisService:
         self.rekognition_client = None
         if AWS_AVAILABLE:
             try:
-                self.rekognition_client = boto3.client(
-                    "rekognition", region_name=aws_region
-                )
+                self.rekognition_client = boto3.client("rekognition", region_name=aws_region)
                 logger.info("AWS Rekognition initialized")
             except Exception as e:
                 logger.warning(f"AWS Rekognition init failed: {e}")
@@ -341,9 +339,7 @@ class ImageAnalysisService:
             logger.error(f"Barcode extraction error: {e}")
             return []
 
-    async def _extract_text(
-        self, image: Image.Image, providers: List[Provider]
-    ) -> Optional[OCRResult]:
+    async def _extract_text(self, image: Image.Image, providers: List[Provider]) -> Optional[OCRResult]:
         """Extract text using specified providers"""
         for provider in providers:
             try:
@@ -439,9 +435,7 @@ class ImageAnalysisService:
             processing_time_ms=processing_time,
         )
 
-    async def _extract_labels(
-        self, image_data: bytes, providers: List[Provider]
-    ) -> Optional[LabelResult]:
+    async def _extract_labels(self, image_data: bytes, providers: List[Provider]) -> Optional[LabelResult]:
         """Extract image labels/tags"""
         for provider in providers:
             try:
@@ -470,14 +464,9 @@ class ImageAnalysisService:
             label_list.append({"name": label.description, "confidence": label.score})
 
             # Categorize
-            if any(
-                word in label.description.lower()
-                for word in ["baby", "infant", "child"]
-            ):
+            if any(word in label.description.lower() for word in ["baby", "infant", "child"]):
                 categories.add("baby_product")
-            if any(
-                word in label.description.lower() for word in ["toy", "game", "play"]
-            ):
+            if any(word in label.description.lower() for word in ["toy", "game", "play"]):
                 categories.add("toy")
 
         processing_time = int((datetime.now() - start_time).total_seconds() * 1000)
@@ -532,9 +521,7 @@ class ImageAnalysisService:
         if lines and not result.product_name:
             # Assume first substantial line is product name
             for line in lines:
-                if len(line) > 10 and not any(
-                    word in line.lower() for word in ["warning", "caution", "model"]
-                ):
+                if len(line) > 10 and not any(word in line.lower() for word in ["warning", "caution", "model"]):
                     result.product_name = line.strip()
                     break
 
@@ -665,9 +652,7 @@ class ImageAnalysisService:
             edges = cv2.Canny(gray, 50, 150, apertureSize=3)
 
             # Find contours for crack detection
-            contours, _ = cv2.findContours(
-                edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-            )
+            contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
             for contour in contours:
                 area = cv2.contourArea(contour)
@@ -690,9 +675,7 @@ class ImageAnalysisService:
                                     "height": int(h),
                                 },
                                 "severity": "high" if area > 1000 else "medium",
-                                "confidence": min(
-                                    0.95, 0.3 + (area / 5000)
-                                ),  # Confidence based on area
+                                "confidence": min(0.95, 0.3 + (area / 5000)),  # Confidence based on area
                                 "area_pixels": int(area),
                             }
                         )
@@ -704,9 +687,7 @@ class ImageAnalysisService:
             thresh = cv2.threshold(diff, 25, 255, cv2.THRESH_BINARY)[1]
 
             # Find significant anomalies
-            contours_missing, _ = cv2.findContours(
-                thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-            )
+            contours_missing, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
             for contour in contours_missing:
                 area = cv2.contourArea(contour)
@@ -746,13 +727,9 @@ class ImageAnalysisService:
             s_std = np.std(s)
 
             # Areas with very high or very low saturation compared to average
-            unusual_sat = cv2.threshold(s, s_mean + 2 * s_std, 255, cv2.THRESH_BINARY)[
-                1
-            ]
+            unusual_sat = cv2.threshold(s, s_mean + 2 * s_std, 255, cv2.THRESH_BINARY)[1]
 
-            contours_color, _ = cv2.findContours(
-                unusual_sat, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-            )
+            contours_color, _ = cv2.findContours(unusual_sat, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
             for contour in contours_color:
                 area = cv2.contourArea(contour)
@@ -794,9 +771,7 @@ def redact_pii(text: str) -> str:
     text = re.sub(r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b", "[PHONE]", text)
 
     # Email addresses
-    text = re.sub(
-        r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", "[EMAIL]", text
-    )
+    text = re.sub(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", "[EMAIL]", text)
 
     # SSN
     text = re.sub(r"\b\d{3}-\d{2}-\d{4}\b", "[SSN]", text)

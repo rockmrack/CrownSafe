@@ -112,9 +112,7 @@ class MemorySafeImageProcessor:
                 new_width = int(width * scale)
                 new_height = int(height * scale)
                 image = cv2.resize(image, (new_width, new_height))
-                logger.info(
-                    f"Resized image from {width}x{height} to {new_width}x{new_height}"
-                )
+                logger.info(f"Resized image from {width}x{height} to {new_width}x{new_height}")
 
             yield image
 
@@ -143,9 +141,7 @@ class MemorySafeImageProcessor:
 
             # Check size
             if img.size[0] > self.MAX_WIDTH or img.size[1] > self.MAX_HEIGHT:
-                img.thumbnail(
-                    (self.MAX_WIDTH, self.MAX_HEIGHT), Image.Resampling.LANCZOS
-                )
+                img.thumbnail((self.MAX_WIDTH, self.MAX_HEIGHT), Image.Resampling.LANCZOS)
 
             # Process image (example)
             result = {"format": img.format, "size": img.size, "mode": img.mode}
@@ -333,9 +329,7 @@ def make_memory_safe(func):
 
             # Cleanup if too much memory used
             if mem_diff > 50:  # More than 50MB
-                logger.warning(
-                    f"{func.__name__} used {mem_diff:.2f}MB, forcing cleanup"
-                )
+                logger.warning(f"{func.__name__} used {mem_diff:.2f}MB, forcing cleanup")
                 gc.collect()
 
             return result

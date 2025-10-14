@@ -111,19 +111,19 @@ def test_circuit_breaker_different_keys():
     assert not cb.allow("key2")
 
 
-@patch("time.monotonic")
+@patch("core.resilience.monotonic")
 def test_circuit_breaker_cooldown_recovery(mock_monotonic):
     """Test that circuit breaker recovers after cooldown period"""
-    # Mock time progression
-    mock_times = [0, 0, 0, 0, 0, 150]  # 150 seconds later
+    # Mock time progression: 2 failures at time 0, check at time 0, then check at time 150
+    mock_times = [0, 0, 0, 150]  # 150 seconds later (after 120s cooldown)
     mock_monotonic.side_effect = mock_times
 
     cb = CircuitBreaker(threshold=2, window_sec=60, cooldown_sec=120)
 
     # Trigger circuit opening
-    cb.record_failure("test_key")
-    cb.record_failure("test_key")
-    assert not cb.allow("test_key")  # Circuit opens
+    cb.record_failure("test_key")  # time=0
+    cb.record_failure("test_key")  # time=0, opens circuit with open_until=120
+    assert not cb.allow("test_key")  # time=0, circuit is open (120 > 0)
 
     # After cooldown period, should allow again
-    assert cb.allow("test_key")  # Should be open after cooldown
+    assert cb.allow("test_key")  # time=150, circuit should be closed (120 < 150)

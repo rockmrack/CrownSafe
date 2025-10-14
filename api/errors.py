@@ -14,9 +14,7 @@ from pydantic import ValidationError
 logger = logging.getLogger("app")
 
 
-def create_error_payload(
-    code: str, message: str, trace_id: Optional[str] = None, **extra
-) -> Dict[str, Any]:
+def create_error_payload(code: str, message: str, trace_id: Optional[str] = None, **extra) -> Dict[str, Any]:
     """
     Create standardized error payload
 
@@ -39,9 +37,7 @@ def create_error_payload(
     return {"ok": False, "error": error_data, "traceId": trace_id or "unknown"}
 
 
-async def json_error_response(
-    status_code: int, code: str, message: str, request: Request, **extra
-) -> JSONResponse:
+async def json_error_response(status_code: int, code: str, message: str, request: Request, **extra) -> JSONResponse:
     """
     Create JSON error response with trace ID
 
@@ -75,9 +71,7 @@ async def json_error_response(
     )
 
 
-async def handle_request_validation_error(
-    request: Request, exc: RequestValidationError
-) -> JSONResponse:
+async def handle_request_validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
     """
     Handle Pydantic validation errors (422)
     """
@@ -118,14 +112,10 @@ async def handle_request_validation_error(
         code = "VALIDATION_ERROR"
         message = "Invalid request data"
 
-    return await json_error_response(
-        status_code=422, code=code, message=message, request=request, **extra
-    )
+    return await json_error_response(status_code=422, code=code, message=message, request=request, **extra)
 
 
-async def handle_http_exception(
-    request: Request, exc: StarletteHTTPException
-) -> JSONResponse:
+async def handle_http_exception(request: Request, exc: StarletteHTTPException) -> JSONResponse:
     """
     Handle HTTP exceptions (4xx, 5xx)
     """
@@ -178,9 +168,7 @@ async def handle_http_exception(
     else:
         message = f"HTTP {exc.status_code} error"
 
-    return await json_error_response(
-        status_code=exc.status_code, code=code, message=message, request=request
-    )
+    return await json_error_response(status_code=exc.status_code, code=code, message=message, request=request)
 
 
 async def handle_generic_exception(request: Request, exc: Exception) -> JSONResponse:

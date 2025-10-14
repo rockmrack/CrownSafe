@@ -197,9 +197,7 @@ def test_manual_model_number_entry_with_recall():
                 print(f"   Agency: {first_recall.get('source_agency', 'N/A')}")
         else:
             print("✅ No recalls found for this model number")
-            pytest.skip(
-                "Model number not found in database - adjust test with real model number"
-            )
+            pytest.skip("Model number not found in database - adjust test with real model number")
 
     print("\n" + "=" * 80)
     print("TEST 1: PASSED ✓")

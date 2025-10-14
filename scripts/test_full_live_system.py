@@ -46,9 +46,7 @@ async def run_live_test(barcode: str):
     # 2. Live product identification
     identifier = ProductIdentifierLogic()
     try:
-        product_info = await identifier.identify_product(
-            barcode=barcode, image_url=None
-        )
+        product_info = await identifier.identify_product(barcode=barcode, image_url=None)
         logger.info(f"Product identified: {product_info}")
     except Exception as e:
         logger.error(f"Product identification failed: {e}")
@@ -57,9 +55,7 @@ async def run_live_test(barcode: str):
     # 3. Live hazard analysis
     analyzer = HazardAnalysisLogic()
     try:
-        hazard_summary = await analyzer.analyze_hazards(
-            product_name=product_info.get("name"), recalls=all_recalls
-        )
+        hazard_summary = await analyzer.analyze_hazards(product_name=product_info.get("name"), recalls=all_recalls)
         logger.info("Hazard analysis result:")
         logger.info(hazard_summary)
     except Exception as e:
@@ -68,9 +64,7 @@ async def run_live_test(barcode: str):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Run 100% live end-to-end recall + hazard test"
-    )
+    parser = argparse.ArgumentParser(description="Run 100% live end-to-end recall + hazard test")
     parser.add_argument("--barcode", required=True, help="Product barcode to test")
     args = parser.parse_args()
     asyncio.run(run_live_test(args.barcode))

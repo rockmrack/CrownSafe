@@ -84,9 +84,7 @@ def breaker_closed(breaker):
 
 # Attach listeners to breakers
 for breaker in breakers.values():
-    breaker.add_listeners(
-        {"breaker_opened": breaker_opened, "breaker_closed": breaker_closed}
-    )
+    breaker.add_listeners({"breaker_opened": breaker_opened, "breaker_closed": breaker_closed})
 
 
 # Decorator for applying circuit breaker to functions
@@ -180,9 +178,7 @@ def with_retry(
     """
     return retry(
         stop=stop_after_attempt(max_attempts),
-        wait=wait_exponential(
-            multiplier=wait_exponential_multiplier, max=wait_exponential_max
-        ),
+        wait=wait_exponential(multiplier=wait_exponential_multiplier, max=wait_exponential_max),
         retry=retry_if_exception_type(retry_on),
     )
 
@@ -202,9 +198,7 @@ def resilient_operation(service_name: str, max_attempts: int = 3, fallback=None)
         # First apply retry
         retried_func = with_retry(max_attempts=max_attempts)(func)
         # Then apply circuit breaker
-        protected_func = with_circuit_breaker(service_name, fallback=fallback)(
-            retried_func
-        )
+        protected_func = with_circuit_breaker(service_name, fallback=fallback)(retried_func)
         return protected_func
 
     return decorator
@@ -224,9 +218,7 @@ def get_circuit_status(service_name: str) -> Dict[str, Any]:
         "success": breaker.success_counter,
         "fail_max": breaker.fail_max,
         "reset_timeout": breaker.reset_timeout,
-        "last_failure": breaker.last_failure
-        if hasattr(breaker, "last_failure")
-        else None,
+        "last_failure": breaker.last_failure if hasattr(breaker, "last_failure") else None,
     }
 
 
@@ -293,11 +285,7 @@ def check_circuits_health() -> Dict[str, Any]:
     """Check health of all circuit breakers"""
     all_status = get_all_circuit_status()
 
-    open_circuits = [
-        service
-        for service, status in all_status.items()
-        if status.get("state") == "open"
-    ]
+    open_circuits = [service for service, status in all_status.items() if status.get("state") == "open"]
 
     health = {
         "healthy": len(open_circuits) == 0,

@@ -60,20 +60,12 @@ class SafetyIssue(BaseModel):
     upc: Optional[str] = Field(None, description="UPC/barcode")
     hazard: Optional[str] = Field(None, description="Hazard description")
     riskCategory: Optional[str] = Field(None, description="Risk category")
-    severity: Optional[str] = Field(
-        None, description="Severity level", pattern="^(low|medium|high)$"
-    )
-    status: Optional[str] = Field(
-        None, description="Recall status", pattern="^(open|closed)$"
-    )
+    severity: Optional[str] = Field(None, description="Severity level", pattern="^(low|medium|high)$")
+    status: Optional[str] = Field(None, description="Recall status", pattern="^(open|closed)$")
     imageUrl: Optional[str] = Field(None, description="Product image URL")
-    affectedCountries: Optional[List[str]] = Field(
-        None, description="Affected countries"
-    )
+    affectedCountries: Optional[List[str]] = Field(None, description="Affected countries")
     recallDate: Optional[str] = Field(None, description="Recall date (YYYY-MM-DD)")
-    lastUpdated: Optional[str] = Field(
-        None, description="Last update timestamp (ISO-8601)"
-    )
+    lastUpdated: Optional[str] = Field(None, description="Last update timestamp (ISO-8601)")
     sourceUrl: str = Field(..., description="Source URL for recall details")
 
 
@@ -460,10 +452,7 @@ def convert_recall_to_safety_issue(recall: RecallDB, agency_code: str) -> Safety
         hazard = getattr(recall, "hazard", None)
         if hazard and isinstance(hazard, str):
             hazard_lower = hazard.lower()
-            if any(
-                word in hazard_lower
-                for word in ["death", "serious", "critical", "severe"]
-            ):
+            if any(word in hazard_lower for word in ["death", "serious", "critical", "severe"]):
                 severity = "high"
             elif any(word in hazard_lower for word in ["minor", "low", "slight"]):
                 severity = "low"
@@ -474,9 +463,7 @@ def convert_recall_to_safety_issue(recall: RecallDB, agency_code: str) -> Safety
         title = f"{brand} - {product_name}" if brand else product_name
 
         # Build source URL
-        recall_id = getattr(recall, "recall_id", None) or str(
-            getattr(recall, "id", "unknown")
-        )
+        recall_id = getattr(recall, "recall_id", None) or str(getattr(recall, "id", "unknown"))
         url = getattr(recall, "url", None)
         source_url = url or f"https://babyshield.cureviax.ai/recall/{recall_id}"
 
@@ -561,9 +548,7 @@ def get_empty_search_result() -> dict:
     return {"items": [], "nextCursor": None, "total": 0}
 
 
-async def search_agency_upstream(
-    agency_code: str, product: str, limit: int = 20
-) -> dict:
+async def search_agency_upstream(agency_code: str, product: str, limit: int = 20) -> dict:
     """Search using upstream agency connectors (bypass database)"""
     logger.info(f"🔄 Using upstream search for {agency_code} (product: {product})")
 
@@ -585,16 +570,8 @@ async def search_agency_upstream(
             filtered_recalls = []
             for recall in recalls[:limit]:  # Limit results
                 if (
-                    (
-                        product.lower() in recall.product_name.lower()
-                        if recall.product_name
-                        else False
-                    )
-                    or (
-                        product.lower() in recall.description.lower()
-                        if recall.description
-                        else False
-                    )
+                    (product.lower() in recall.product_name.lower() if recall.product_name else False)
+                    or (product.lower() in recall.description.lower() if recall.description else False)
                     or (product.lower() in (recall.brand or "").lower())
                 ):
                     filtered_recalls.append(recall)
@@ -618,25 +595,17 @@ async def search_agency_upstream(
                             "recall_date": recall.recall_date,
                             "url": getattr(recall, "url", None),
                             "manufacturer": getattr(recall, "manufacturer", None),
-                            "manufacturer_contact": getattr(
-                                recall, "manufacturer_contact", None
-                            ),
+                            "manufacturer_contact": getattr(recall, "manufacturer_contact", None),
                             "country": getattr(recall, "country", None),
-                            "regions_affected": getattr(
-                                recall, "regions_affected", None
-                            ),
+                            "regions_affected": getattr(recall, "regions_affected", None),
                             "upc": getattr(recall, "upc", None),
                         },
                     )()
 
-                    safety_issue = convert_recall_to_safety_issue(
-                        mock_recall, agency_code
-                    )
+                    safety_issue = convert_recall_to_safety_issue(mock_recall, agency_code)
                     items.append(safety_issue)
                 except Exception as e:
-                    logger.warning(
-                        f"Failed to convert upstream recall {recall.recall_id}: {e}"
-                    )
+                    logger.warning(f"Failed to convert upstream recall {recall.recall_id}: {e}")
                     continue
 
             return {
@@ -653,9 +622,7 @@ async def search_agency_upstream(
         return get_empty_search_result()
 
 
-async def search_agency_recalls(
-    agency_code: str, product: str, limit: int = 20, cursor: Optional[str] = None
-) -> dict:
+async def search_agency_recalls(agency_code: str, product: str, limit: int = 20, cursor: Optional[str] = None) -> dict:
     """
     Search recalls for a specific agency with graceful table missing handling
 
@@ -664,9 +631,7 @@ async def search_agency_recalls(
 
     # 🚨 HOTFIX: Check if we should use upstream mode to bypass DB
     if SEARCH_BACKEND_MODE == "upstream":
-        logger.info(
-            f"🔄 HOTFIX MODE: Using upstream search for {agency_code} to bypass database issues"
-        )
+        logger.info(f"🔄 HOTFIX MODE: Using upstream search for {agency_code} to bypass database issues")
         return await search_agency_upstream(agency_code, product, limit)
 
     # Map API code to internal agency name
@@ -678,9 +643,7 @@ async def search_agency_recalls(
         with get_db_session() as db:
             # Check if table exists first
             if not check_table_exists(db):
-                logger.warning(
-                    f"Table 'recalls_enhanced' does not exist for {agency_code}"
-                )
+                logger.warning(f"Table 'recalls_enhanced' does not exist for {agency_code}")
                 if ALLOW_UPSTREAM_FALLBACK:
                     logger.info(f"🔄 Falling back to upstream search for {agency_code}")
                     return await search_agency_upstream(agency_code, product, limit)
@@ -688,15 +651,11 @@ async def search_agency_recalls(
 
             # Check if table is empty
             try:
-                row_count = db.execute(
-                    text("SELECT COUNT(*) FROM recalls_enhanced")
-                ).scalar()
+                row_count = db.execute(text("SELECT COUNT(*) FROM recalls_enhanced")).scalar()
                 if row_count == 0:
                     logger.info(f"Table 'recalls_enhanced' is empty for {agency_code}")
                     if ALLOW_UPSTREAM_FALLBACK:
-                        logger.info(
-                            f"🔄 Falling back to upstream search for {agency_code}"
-                        )
+                        logger.info(f"🔄 Falling back to upstream search for {agency_code}")
                         return await search_agency_upstream(agency_code, product, limit)
                     return get_empty_search_result()
             except Exception as e:
@@ -747,17 +706,13 @@ async def search_agency_recalls(
                     safety_issue = convert_recall_to_safety_issue(recall, agency_code)
                     items.append(safety_issue)
                 except Exception as e:
-                    logger.warning(
-                        f"Failed to convert recall {getattr(recall, 'recall_id', 'unknown')}: {e}"
-                    )
+                    logger.warning(f"Failed to convert recall {getattr(recall, 'recall_id', 'unknown')}: {e}")
                     continue
 
             # Get total count (optional, can be expensive)
             try:
                 total_query = (
-                    db.query(RecallDB)
-                    .filter(RecallDB.source_agency == internal_agency)
-                    .filter(search_conditions)
+                    db.query(RecallDB).filter(RecallDB.source_agency == internal_agency).filter(search_conditions)
                 )
                 total = total_query.count()
             except:
@@ -773,26 +728,19 @@ async def search_agency_recalls(
     except ProgrammingError as e:
         # Handle specific case where table doesn't exist or has schema issues
         error_message = str(e.orig) if hasattr(e, "orig") else str(e)
-        if (
-            "does not exist" in error_message.lower()
-            or "relation" in error_message.lower()
-        ):
+        if "does not exist" in error_message.lower() or "relation" in error_message.lower():
             logger.warning(f"Database table issue for {agency_code}: {error_message}")
             if ALLOW_UPSTREAM_FALLBACK:
                 logger.info(f"🔄 Falling back to upstream search for {agency_code}")
                 return await search_agency_upstream(agency_code, product, limit)
             return get_empty_search_result()
         else:
-            logger.error(
-                f"Database programming error for {agency_code}: {e}", exc_info=True
-            )
+            logger.error(f"Database programming error for {agency_code}: {e}", exc_info=True)
             raise
     except Exception as e:
         logger.error(f"Search failed for agency {agency_code}: {e}", exc_info=True)
         if ALLOW_UPSTREAM_FALLBACK:
-            logger.warning(
-                f"🔄 Falling back to upstream search for {agency_code} due to error: {e}"
-            )
+            logger.warning(f"🔄 Falling back to upstream search for {agency_code} due to error: {e}")
             return await search_agency_upstream(agency_code, product, limit)
         raise
 
@@ -818,9 +766,7 @@ async def search_fda_v1(
 ):
     """Search FDA recalls (versioned)"""
     trace_id = generate_trace_id()
-    logger.info(
-        f"[{trace_id}] GET /api/v1/fda?product={product}&limit={limit}&cursor={cursor}"
-    )
+    logger.info(f"[{trace_id}] GET /api/v1/fda?product={product}&limit={limit}&cursor={cursor}")
 
     try:
         results = await search_agency_recalls("FDA", product, limit, cursor)
@@ -859,9 +805,7 @@ async def search_cpsc_v1(
 ):
     """Search CPSC recalls (versioned)"""
     trace_id = generate_trace_id()
-    logger.info(
-        f"[{trace_id}] GET /api/v1/cpsc?product={product}&limit={limit}&cursor={cursor}"
-    )
+    logger.info(f"[{trace_id}] GET /api/v1/cpsc?product={product}&limit={limit}&cursor={cursor}")
 
     try:
         results = await search_agency_recalls("CPSC", product, limit, cursor)
@@ -900,9 +844,7 @@ async def search_eu_safety_gate_v1(
 ):
     """Search EU Safety Gate (RAPEX) recalls (versioned)"""
     trace_id = generate_trace_id()
-    logger.info(
-        f"[{trace_id}] GET /api/v1/eu_safety_gate?product={product}&limit={limit}&cursor={cursor}"
-    )
+    logger.info(f"[{trace_id}] GET /api/v1/eu_safety_gate?product={product}&limit={limit}&cursor={cursor}")
 
     try:
         results = await search_agency_recalls("EU_SAFETY_GATE", product, limit, cursor)
@@ -941,9 +883,7 @@ async def search_uk_opss_v1(
 ):
     """Search UK OPSS recalls (versioned)"""
     trace_id = generate_trace_id()
-    logger.info(
-        f"[{trace_id}] GET /api/v1/uk_opss?product={product}&limit={limit}&cursor={cursor}"
-    )
+    logger.info(f"[{trace_id}] GET /api/v1/uk_opss?product={product}&limit={limit}&cursor={cursor}")
 
     try:
         results = await search_agency_recalls("UK_OPSS", product, limit, cursor)

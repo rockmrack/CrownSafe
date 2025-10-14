@@ -216,9 +216,7 @@ class SupplementalDataService:
 
         logger.info("SupplementalDataService initialized")
 
-    async def get_food_data(
-        self, product_name: str, barcode: Optional[str] = None
-    ) -> FoodData:
+    async def get_food_data(self, product_name: str, barcode: Optional[str] = None) -> FoodData:
         """Get comprehensive food data from multiple sources"""
         logger.info(f"Getting food data for: {product_name}")
 
@@ -250,9 +248,7 @@ class SupplementalDataService:
             if food_id:
                 nutrition = await self.edamam_client.get_nutrition_info(food_id)
                 if nutrition:
-                    food_data.nutritional_info = self._extract_edamam_nutrition(
-                        nutrition
-                    )
+                    food_data.nutritional_info = self._extract_edamam_nutrition(nutrition)
 
         # If no data found from APIs, create mock data
         if not food_data.name:

@@ -112,9 +112,7 @@ class IncidentReport(Base):
     fda_case_number = Column(String, nullable=True)
 
     # Clustering and pattern detection
-    cluster_id = Column(
-        String, nullable=True, index=True
-    )  # For grouping similar incidents
+    cluster_id = Column(String, nullable=True, index=True)  # For grouping similar incidents
     similarity_score = Column(Float, nullable=True)  # Confidence in cluster assignment
 
     # Metadata
@@ -173,9 +171,7 @@ class AgencyNotification(Base):
     cluster_id = Column(String, ForeignKey("incident_clusters.id"))
 
     # Notification details
-    notification_type = Column(
-        String
-    )  # "threshold_alert", "trending_alert", "severity_alert"
+    notification_type = Column(String)  # "threshold_alert", "trending_alert", "severity_alert"
     incident_count = Column(Integer)
     severity_summary = Column(JSON)
 

@@ -29,9 +29,7 @@ class PasswordResetToken(Base):
     __tablename__ = "password_reset_tokens"
 
     id = Column(String(64), primary_key=True)  # SHA256 of token
-    user_id = Column(
-        Integer, ForeignKey("users.id"), nullable=False
-    )  # Fixed: Integer not String
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # Fixed: Integer not String
     created_at = Column(DateTime, default=datetime.utcnow)
     expires_at = Column(DateTime, nullable=False)
     used_at = Column(DateTime, nullable=True)
@@ -87,9 +85,7 @@ async def send_reset_email(email: str, token: str, user_name: Optional[str] = No
 
         if not smtp_user or not smtp_pass:
             logger.warning("SMTP not configured, logging reset link instead")
-            logger.info(
-                f"Password reset link for {email}: {app_url}/reset-password?token={token}"
-            )
+            logger.info(f"Password reset link for {email}: {app_url}/reset-password?token={token}")
             return
 
         # Create reset URL
@@ -194,9 +190,7 @@ async def request_password_reset(
             token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
 
             # Delete any existing tokens for this user
-            db.query(PasswordResetToken).filter(
-                PasswordResetToken.user_id == user.id
-            ).delete()
+            db.query(PasswordResetToken).filter(PasswordResetToken.user_id == user.id).delete()
 
             # Create new token
             reset_token = PasswordResetToken(
@@ -209,16 +203,12 @@ async def request_password_reset(
 
             # Send email in background
             user_name = getattr(user, "name", None) or getattr(user, "username", None)
-            background_tasks.add_task(
-                send_reset_email, request.email, raw_token, user_name
-            )
+            background_tasks.add_task(send_reset_email, request.email, raw_token, user_name)
 
             logger.info(f"Password reset requested for user {user.id}")
         else:
             # Log attempt but don't reveal user doesn't exist
-            logger.info(
-                f"Password reset requested for non-existent email: {request.email}"
-            )
+            logger.info(f"Password reset requested for non-existent email: {request.email}")
 
         # Always return success
         response = PasswordResetResponse(
@@ -234,9 +224,7 @@ async def request_password_reset(
 
 
 @router.post("/password-reset/confirm", response_model=ApiResponse)
-async def confirm_password_reset(
-    request: PasswordResetConfirm, db: Session = Depends(get_db)
-):
+async def confirm_password_reset(request: PasswordResetConfirm, db: Session = Depends(get_db)):
     """
     Confirm password reset with token and new password
     """
@@ -266,9 +254,7 @@ async def confirm_password_reset(
         )
 
         if not reset_token:
-            return fail(
-                "Invalid or expired reset token", code="INVALID_TOKEN", status=400
-            )
+            return fail("Invalid or expired reset token", code="INVALID_TOKEN", status=400)
 
         # Find user
         user = db.query(User).filter(User.id == reset_token.user_id).first()
@@ -362,9 +348,7 @@ async def complete_password_reset(
         )
 
         if not reset_token:
-            return fail(
-                "Invalid or expired reset token", code="INVALID_TOKEN", status=400
-            )
+            return fail("Invalid or expired reset token", code="INVALID_TOKEN", status=400)
 
         # Find user
         user = db.query(User).filter(User.id == reset_token.user_id).first()

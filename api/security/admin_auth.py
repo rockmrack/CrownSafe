@@ -16,9 +16,7 @@ logger = logging.getLogger(__name__)
 
 # Get admin key from environment
 ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "")
-ADMIN_KEY_HASH = (
-    hashlib.sha256(ADMIN_API_KEY.encode()).hexdigest() if ADMIN_API_KEY else ""
-)
+ADMIN_KEY_HASH = hashlib.sha256(ADMIN_API_KEY.encode()).hexdigest() if ADMIN_API_KEY else ""
 
 # Optional: Multiple admin keys for different services
 ADMIN_KEYS = {
@@ -35,9 +33,7 @@ ADMIN_KEYS = {
 api_key_header = APIKeyHeader(name="X-Admin-Key", auto_error=False)
 
 
-async def require_admin(
-    request: Request, x_admin_key: Optional[str] = Depends(api_key_header)
-) -> str:
+async def require_admin(request: Request, x_admin_key: Optional[str] = Depends(api_key_header)) -> str:
     """
     Require admin authentication via API key
 
@@ -89,9 +85,7 @@ async def require_admin(
                     "traceId": trace_id,
                     "path": request.url.path,
                     "ip": request.client.host if request.client else None,
-                    "key_prefix": x_admin_key[:8] + "..."
-                    if len(x_admin_key) > 8
-                    else "***",
+                    "key_prefix": x_admin_key[:8] + "..." if len(x_admin_key) > 8 else "***",
                 },
             )
             raise APIError(
@@ -116,9 +110,7 @@ async def require_admin(
     return "admin"
 
 
-async def optional_admin(
-    request: Request, x_admin_key: Optional[str] = Depends(api_key_header)
-) -> Optional[str]:
+async def optional_admin(request: Request, x_admin_key: Optional[str] = Depends(api_key_header)) -> Optional[str]:
     """
     Optional admin authentication
     Returns admin identifier if authenticated, None otherwise
