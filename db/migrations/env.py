@@ -10,9 +10,43 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-# Import your models
+# Import your models - ALL models must be imported for alembic to detect them
+# These imports are intentionally "unused" but required for Alembic autogenerate
+# ruff: noqa: F401
 from core_infra.enhanced_database_schema import Base
-from core_infra.database import User, FamilyMember
+from core_infra.database import User, FamilyMember, Allergy
+
+# Import incident reporting models
+from db.models.incident_report import IncidentReport, IncidentCluster, AgencyNotification
+
+# Import visual agent models
+from core_infra.visual_agent_models import (
+    ImageJob,
+    ImageExtraction,
+    ReviewQueue,
+    MFVSession,
+    ImageAnalysisCache,
+)
+
+# Import other db models
+from db.models.scan_history import ScanHistory, SafetyReport
+from db.models.share_token import ShareToken
+from db.models.serial_verification import SerialVerification
+from db.models.report_record import ReportRecord
+from db.models.privacy_request import PrivacyRequest
+from db.models.ingestion_run import IngestionRun
+from api.models.user_report import UserReport
+
+# Import risk assessment models
+from core_infra.risk_assessment_models import (
+    ProductGoldenRecord,
+    ProductRiskProfile,
+    ProductDataSource,
+    SafetyIncident,
+    CompanyComplianceProfile,
+    RiskAssessmentReport,
+    DataIngestionJob,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
