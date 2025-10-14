@@ -22,7 +22,7 @@ from core.chat_budget import (
     SYNTH_TIMEOUT_SEC,
 )
 from core.resilience import breaker, call_with_timeout
-from core.feature_flags import chat_enabled_for
+from core.feature_flags import chat_enabled_for, FEATURE_CHAT_ENABLED, FEATURE_CHAT_ROLLOUT_PCT
 from core.metrics import (
     inc_req,
     obs_total,
@@ -1044,19 +1044,12 @@ async def chat_flags(request: Request) -> JSONResponse:
     try:
         trace_id = getattr(request.state, "trace_id", str(uuid4()))
 
-        enabled = os.getenv("BS_FEATURE_CHAT_ENABLED", "false").lower() in (
-            "true",
-            "1",
-            "yes",
-        )
-        rollout_pct = float(os.getenv("BS_FEATURE_CHAT_ROLLOUT_PCT", "0"))
-
         return JSONResponse(
             {
                 "success": True,
                 "data": {
-                    "chat_enabled_global": enabled,
-                    "chat_rollout_pct": rollout_pct,
+                    "chat_enabled_global": FEATURE_CHAT_ENABLED,
+                    "chat_rollout_pct": FEATURE_CHAT_ROLLOUT_PCT,
                 },
                 "traceId": trace_id,
             }
