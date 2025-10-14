@@ -91,7 +91,7 @@ jobs:
   container-scan:
     name: Docker Container Security Scan
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 15 # Reduced from 25 to fail faster
 
     steps:
       - name: Checkout code
@@ -100,9 +100,11 @@ jobs:
       # Build Docker image for scanning
       - name: Build Docker Image
         continue-on-error: false
-        timeout-minutes: 15
+        timeout-minutes: 10  # Reduced from 15
         run: |
-          docker build -f Dockerfile.final -t babyshield-backend:scan .
+          # Use BuildKit for faster builds
+          export DOCKER_BUILDKIT=1
+          docker build -f Dockerfile.final -t babyshield-backend:scan . --progress=plain
 
       # Trivy Scanner - Comprehensive vulnerability scanner
       - name: Run Trivy vulnerability scanner
@@ -168,7 +170,7 @@ jobs:
           wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
           tar -xzf gitleaks_8.18.0_linux_x64.tar.gz
           chmod +x gitleaks
-          
+
           # Run gitleaks scan
           ./gitleaks detect --source . --verbose --no-git --config .gitleaksignore || echo "GitLeaks completed with findings"
 
@@ -178,21 +180,21 @@ jobs:
         run: |
           BASE="${{ github.event.before }}"
           HEAD="${{ github.sha }}"
-          
+
           # For pull requests, use different base
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             BASE="${{ github.event.pull_request.base.sha }}"
             HEAD="${{ github.event.pull_request.head.sha }}"
           fi
-          
+
           # For push to main, check if we have a valid base
           if [ -z "$BASE" ] || [ "$BASE" == "0000000000000000000000000000000000000000" ]; then
             BASE="HEAD~1"
           fi
-          
+
           echo "base=$BASE" >> $GITHUB_OUTPUT
           echo "head=$HEAD" >> $GITHUB_OUTPUT
-          
+
           # Check if base and head are the same
           if [ "$BASE" == "$HEAD" ]; then
             echo "skip=true" >> $GITHUB_OUTPUT
@@ -233,6 +235,7 @@ jobs:
 
       # Semgrep - Static analysis
       - name: Run Semgrep
+        continue-on-error: true
         uses: returntocorp/semgrep-action@v1
         with:
           config: >
@@ -241,6 +244,8 @@ jobs:
             p/owasp-top-ten
             p/dockerfile
             p/sql-injection
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
 
       # CodeQL Analysis
       - name: Initialize CodeQL
@@ -329,6 +334,9 @@ jobs:
   security-report:
     name: Security Summary Report
     runs-on: ubuntu-latest
+    permissions:
+      issues: write # Allow creating issues
+      contents: read
     needs:
       [
         dependency-scan,

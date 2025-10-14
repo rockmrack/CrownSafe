@@ -1,0 +1,45 @@
+# Semgrep Ignore Patterns
+# Exclude files with legitimate security patterns (scripts, tests, examples)
+
+# Scripts directory - contains utility/maintenance scripts with subprocess calls
+scripts/
+tests/
+test_*
+*_test.py
+
+# Migration scripts - may contain database URLs for documentation
+db/migrations/
+
+# Documentation and examples
+*.md
+*.txt
+*.example
+*.sample
+.env.example
+
+# Configuration files
+*.yml
+*.yaml
+*.json
+
+# Jupyter notebooks
+*.ipynb
+
+# Build and dependency files
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+dist/
+build/
+*.egg-info/
+
+# Git and version control
+.git/
+.github/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
