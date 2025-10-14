@@ -234,7 +234,7 @@ class TestChatWithRealData:
             assert response.status_code == 404
             data = response.json()
             # Check for either format
-            assert ("detail" in data or "message" in data)
+            assert "detail" in data or "message" in data
             if "message" in data:
                 assert "not found" in data["message"].lower()
             else:

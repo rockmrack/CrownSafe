@@ -1,9 +1,8 @@
 # api/routers/chat_fixed.py
 # COMPLETELY FIXED VERSION WITH ALL 30+ ERRORS RESOLVED
 from __future__ import annotations
-from uuid import uuid4, UUID
+from uuid import uuid4
 import logging
-import os
 import json
 import random
 from datetime import datetime
