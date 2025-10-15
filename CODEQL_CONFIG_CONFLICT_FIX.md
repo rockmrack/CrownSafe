@@ -151,15 +151,15 @@ After disabling default setup and pushing this fix:
 
 ## Comparison: Default vs Advanced Setup
 
-| Feature | Default Setup | Advanced Setup (Ours) |
-|---------|--------------|----------------------|
-| **Configuration** | Auto-generated | Custom workflow file |
-| **Language Detection** | Automatic (4 languages) | Explicit (Python only) |
-| **Control** | Limited (GitHub-managed) | Full control |
-| **Queries** | Standard security queries | Customizable (we use security-and-quality) |
-| **Maintenance** | GitHub updates automatically | Manual updates required |
-| **Visibility** | Not in repo (runs invisibly) | In repo (`.github/workflows/`) |
-| **Conflicts** | Can't coexist with advanced | Works alone |
+| Feature                | Default Setup                | Advanced Setup (Ours)                      |
+| ---------------------- | ---------------------------- | ------------------------------------------ |
+| **Configuration**      | Auto-generated               | Custom workflow file                       |
+| **Language Detection** | Automatic (4 languages)      | Explicit (Python only)                     |
+| **Control**            | Limited (GitHub-managed)     | Full control                               |
+| **Queries**            | Standard security queries    | Customizable (we use security-and-quality) |
+| **Maintenance**        | GitHub updates automatically | Manual updates required                    |
+| **Visibility**         | Not in repo (runs invisibly) | In repo (`.github/workflows/`)             |
+| **Conflicts**          | Can't coexist with advanced  | Works alone                                |
 
 **Our Choice**: Advanced setup for full control and Python-only analysis
 

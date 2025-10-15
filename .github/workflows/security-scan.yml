@@ -286,11 +286,11 @@ jobs:
 
       # Custom security checks
       - name: Custom Security Checks
-        continue-on-error: true  # Don't block workflow on warnings
+        continue-on-error: true # Don't block workflow on warnings
         run: |
           # Check for hardcoded passwords in production code (exclude tests, scripts, and test helpers)
           echo "🔍 Checking for hardcoded passwords in production code..."
-          
+
           # Search production directories but exclude test/seed functions
           if grep -r "password\s*=\s*[\"'][^\"']*[\"']" --include="*.py" \
             --exclude-dir=tests \
@@ -331,7 +331,7 @@ jobs:
           else
             echo "✅ Debug mode not enabled"
           fi
-          
+
           echo "✅ Custom security checks completed"
 
   # ============================================
