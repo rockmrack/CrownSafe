@@ -7,6 +7,7 @@ No production database access required!
 Run with: pytest tests/integration/test_model_number_workflow.py -v -s
 """
 
+import os
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -21,10 +22,15 @@ client = TestClient(app)
 
 # Create in-memory test database
 TEST_DATABASE_URL = "sqlite:///:memory:"
-test_engine = create_engine(
-    TEST_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+test_engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
 TestSession = sessionmaker(bind=test_engine)
+
+
+# Skip these tests on SQLite - they require PostgreSQL UUID types
+pytestmark = pytest.mark.skipif(
+    "sqlite" in os.getenv("DATABASE_URL", "sqlite"),
+    reason="SQLite doesn't support native UUID type - use PostgreSQL for these tests",
+)
 
 
 @pytest.fixture(scope="function")

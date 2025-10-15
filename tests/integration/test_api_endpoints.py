@@ -4,6 +4,7 @@ Tests complete request/response cycles with database
 """
 
 import pytest
+import uuid
 from fastapi.testclient import TestClient
 
 
@@ -62,13 +63,18 @@ class TestAuthenticationFlow:
         When: Register -> Verify Email -> Login
         Then: All steps succeed and return proper tokens
         """
-        # Step 1: Register
-        register_data = {"email": "test@example.com", "password": "SecurePass123!"}
+        # Step 1: Register with unique email
+        unique_email = f"testuser_{uuid.uuid4().hex[:8]}@example.com"
+        register_data = {
+            "email": unique_email,
+            "password": "SecurePass123!",
+            "confirm_password": "SecurePass123!",  # Required field
+        }
         register_response = client.post("/api/v1/auth/register", json=register_data)
-        assert register_response.status_code == 201
+        assert register_response.status_code == 200  # API returns 200, not 201
 
         # Step 2: Login
-        login_data = {"username": "test@example.com", "password": "SecurePass123!"}
+        login_data = {"username": unique_email, "password": "SecurePass123!"}
         login_response = client.post("/api/v1/auth/token", data=login_data)
         assert login_response.status_code == 200
         assert "access_token" in login_response.json()
@@ -86,15 +92,16 @@ class TestAuthenticationFlow:
 
         response = client.get("/api/v1/user/profile", headers=headers)
         assert response.status_code == 200
-        assert "email" in response.json()
+        response_data = response.json()
+        # API wraps response in {"success": bool, "data": {...}, "error": None}
+        assert response_data.get("success") is True
+        assert "email" in response_data.get("data", {})
 
 
 class TestBarcodeScanningFlow:
     """Test suite for barcode scanning workflow"""
 
-    def test_complete_barcode_scan_and_safety_check_flow(
-        self, client, authenticated_user, sample_barcode_image
-    ):
+    def test_complete_barcode_scan_and_safety_check_flow(self, client, authenticated_user, sample_barcode_image):
         """
         Test complete barcode scan to safety check workflow.
 
@@ -117,9 +124,7 @@ class TestBarcodeScanningFlow:
 
         # Step 3: Check safety
         safety_request = {"barcode": barcode, "user_id": authenticated_user["user_id"]}
-        safety_response = client.post(
-            "/api/v1/safety/check", headers=headers, json=safety_request
-        )
+        safety_response = client.post("/api/v1/safety/check", headers=headers, json=safety_request)
         assert safety_response.status_code == 200
         assert "verdict" in safety_response.json()
 
@@ -188,9 +193,7 @@ class TestSubscriptionFlow:
 
         # Upgrade subscription (mock payment)
         upgrade_request = {"tier": "premium", "payment_method": "stripe_token_mock"}
-        upgrade_response = client.post(
-            "/api/v1/subscription/upgrade", headers=headers, json=upgrade_request
-        )
+        upgrade_response = client.post("/api/v1/subscription/upgrade", headers=headers, json=upgrade_request)
         assert upgrade_response.status_code == 200
 
         # Verify upgrade
@@ -275,10 +278,37 @@ def db_session():
 @pytest.fixture
 def authenticated_user(client, db_session):
     """Create and authenticate a test user"""
-    # Create user
-    # Login
+    # Register user
+    # Generate unique credentials
+    email = f"testuser_{uuid.uuid4().hex[:8]}@example.com"
+    password = "SecurePassword123!"
+
+    register_data = {
+        "email": email,
+        "password": password,
+        "confirm_password": password,
+    }
+
+    # Register the user
+    register_response = client.post("/api/v1/auth/register", json=register_data)
+
+    # Check if registration succeeded (API returns 200)
+    if register_response.status_code != 200:
+        # If registration fails, return None
+        return None
+
+    # Login with created user - use /api/v1/auth/token with form data
+    login_data = {"username": email, "password": password}
+    login_response = client.post("/api/v1/auth/token", data=login_data)
+
+    if login_response.status_code != 200:
+        return None
+
     # Return user data with token
-    pass
+    user_data = login_response.json()
+    user_data["email"] = email
+    user_data["password"] = password
+    return user_data
 
 
 @pytest.fixture

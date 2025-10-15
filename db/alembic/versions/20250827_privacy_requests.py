@@ -20,107 +20,107 @@ depends_on = None
 def upgrade():
     """Create privacy_requests table for GDPR/CCPA compliance"""
 
-    # Ensure pgcrypto extension for UUID generation
-    op.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto")
+    # Detect database dialect
+    bind = op.get_bind()
+    is_sqlite = bind.dialect.name == "sqlite"
+
+    # For PostgreSQL, ensure pgcrypto extension for UUID generation
+    if not is_sqlite:
+        op.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto")
+
+    # Use appropriate types based on dialect
+    if is_sqlite:
+        id_type = sa.String(36)
+        id_server_default = None
+        json_type = sa.JSON()
+    else:
+        id_type = postgresql.UUID(as_uuid=True)
+        id_server_default = sa.text("gen_random_uuid()")
+        json_type = postgresql.JSONB
 
     # Create privacy_requests table
     op.create_table(
         "privacy_requests",
         sa.Column(
             "id",
-            postgresql.UUID(as_uuid=True),
+            id_type,
             primary_key=True,
-            server_default=sa.text("gen_random_uuid()"),
+            server_default=id_server_default,
         ),
-        sa.Column(
-            "kind", sa.String(16), nullable=False
-        ),  # "export" | "delete" | "rectify" | "access"
+        sa.Column("kind", sa.String(16), nullable=False),  # "export" | "delete" | "rectify" | "access"
         sa.Column("email", sa.String(320), nullable=False),  # Max email length per RFC
-        sa.Column(
-            "email_hash", sa.String(64), nullable=False
-        ),  # SHA-256 hash for searching
+        sa.Column("email_hash", sa.String(64), nullable=False),  # SHA-256 hash for searching
         sa.Column(
             "status", sa.String(16), nullable=False, server_default="queued"
         ),  # queued|verifying|processing|done|rejected|expired
         sa.Column(
-            "submitted_at", sa.DateTime(timezone=True), server_default=sa.text("NOW()")
+            "submitted_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("NOW()") if not is_sqlite else sa.text("CURRENT_TIMESTAMP"),
         ),
         sa.Column("verified_at", sa.DateTime(timezone=True), nullable=True),  # Added
         sa.Column("completed_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column(
-            "expires_at", sa.DateTime(timezone=True), nullable=True
-        ),  # Added for data export links
+        sa.Column("expires_at", sa.DateTime(timezone=True), nullable=True),  # Added for data export links
         sa.Column("notes", sa.Text, nullable=True),
         sa.Column("rejection_reason", sa.Text, nullable=True),  # Added
         sa.Column("trace_id", sa.String(64), nullable=True),
-        sa.Column(
-            "jurisdiction", sa.String(32), nullable=True
-        ),  # gdpr|ccpa|pipeda|other
+        sa.Column("jurisdiction", sa.String(32), nullable=True),  # gdpr|ccpa|pipeda|other
         sa.Column("source", sa.String(32), nullable=True),  # ios|android|web|email|api
         sa.Column("ip_address", sa.String(45), nullable=True),  # Added for audit
         sa.Column("user_agent", sa.Text, nullable=True),  # Added for audit
-        sa.Column(
-            "verification_token", sa.String(128), nullable=True
-        ),  # Added for email verification
+        sa.Column("verification_token", sa.String(128), nullable=True),  # Added for email verification
         sa.Column("export_url", sa.Text, nullable=True),  # Added for download links
-        sa.Column(
-            "metadata_json", postgresql.JSONB, nullable=True
-        ),  # Added for flexibility
+        sa.Column("metadata_json", json_type, nullable=True),  # Added for flexibility
     )
 
     # Create indexes for efficient querying
-    op.create_index(
-        "ix_privacy_email_hash", "privacy_requests", ["email_hash"], unique=False
-    )
+    op.create_index("ix_privacy_email_hash", "privacy_requests", ["email_hash"], unique=False)
 
     op.create_index("ix_privacy_status", "privacy_requests", ["status"], unique=False)
 
-    op.create_index(
-        "ix_privacy_submitted_at", "privacy_requests", ["submitted_at"], unique=False
-    )
+    op.create_index("ix_privacy_submitted_at", "privacy_requests", ["submitted_at"], unique=False)
 
-    op.create_index(
-        "ix_privacy_kind_status", "privacy_requests", ["kind", "status"], unique=False
-    )
+    op.create_index("ix_privacy_kind_status", "privacy_requests", ["kind", "status"], unique=False)
 
-    # Add check constraints
-    op.execute(
+    # Add check constraints (PostgreSQL only)
+    if not is_sqlite:
+        op.execute(
+            """
+            ALTER TABLE privacy_requests 
+            ADD CONSTRAINT check_kind CHECK (
+                kind IN ('export', 'delete', 'rectify', 'access', 'restrict', 'object')
+            )
         """
-        ALTER TABLE privacy_requests 
-        ADD CONSTRAINT check_kind CHECK (
-            kind IN ('export', 'delete', 'rectify', 'access', 'restrict', 'object')
         )
-    """
-    )
 
-    op.execute(
+        op.execute(
+            """
+            ALTER TABLE privacy_requests 
+            ADD CONSTRAINT check_status CHECK (
+                status IN ('queued', 'verifying', 'processing', 'done', 'rejected', 'expired', 'cancelled')
+            )
         """
-        ALTER TABLE privacy_requests 
-        ADD CONSTRAINT check_status CHECK (
-            status IN ('queued', 'verifying', 'processing', 'done', 'rejected', 'expired', 'cancelled')
         )
-    """
-    )
 
-    op.execute(
+        op.execute(
+            """
+            ALTER TABLE privacy_requests 
+            ADD CONSTRAINT check_jurisdiction CHECK (
+                jurisdiction IS NULL OR 
+                jurisdiction IN ('gdpr', 'ccpa', 'pipeda', 'lgpd', 'appi', 'uk_gdpr', 'other')
+            )
         """
-        ALTER TABLE privacy_requests 
-        ADD CONSTRAINT check_jurisdiction CHECK (
-            jurisdiction IS NULL OR 
-            jurisdiction IN ('gdpr', 'ccpa', 'pipeda', 'lgpd', 'appi', 'uk_gdpr', 'other')
         )
-    """
-    )
 
-    op.execute(
+        op.execute(
+            """
+            ALTER TABLE privacy_requests 
+            ADD CONSTRAINT check_source CHECK (
+                source IS NULL OR 
+                source IN ('ios', 'android', 'web', 'email', 'api', 'admin')
+            )
         """
-        ALTER TABLE privacy_requests 
-        ADD CONSTRAINT check_source CHECK (
-            source IS NULL OR 
-            source IN ('ios', 'android', 'web', 'email', 'api', 'admin')
         )
-    """
-    )
 
 
 def downgrade():

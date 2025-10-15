@@ -25,6 +25,10 @@ def upgrade() -> None:
     if inspector.has_table("user_reports"):
         return
 
+    # Use JSON for SQLite compatibility, JSONB for PostgreSQL
+    is_sqlite = bind.dialect.name == "sqlite"
+    json_type = sa.JSON() if is_sqlite else postgresql.JSONB()
+
     op.create_table(
         "user_reports",
         sa.Column("report_id", sa.Integer(), nullable=False, autoincrement=True),
@@ -44,8 +48,8 @@ def upgrade() -> None:
         sa.Column("reporter_phone", sa.String(50), nullable=True),
         sa.Column("incident_date", sa.Date(), nullable=True),
         sa.Column("incident_description", sa.Text(), nullable=True),
-        sa.Column("photos", postgresql.JSONB(), nullable=True),
-        sa.Column("metadata", postgresql.JSONB(), nullable=True),
+        sa.Column("photos", json_type, nullable=True),
+        sa.Column("metadata", json_type, nullable=True),
         sa.Column(
             "created_at",
             sa.DateTime(),
