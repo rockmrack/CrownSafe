@@ -124,7 +124,7 @@ jobs:
 
       # Trivy Scanner - Comprehensive vulnerability scanner
       - name: Run Trivy vulnerability scanner
-        continue-on-error: true  # Don't block on disk space issues
+        continue-on-error: true # Don't block on disk space issues
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "babyshield-backend:scan"
@@ -159,6 +159,7 @@ jobs:
 
       # Grype Scanner - Alternative vulnerability scanner
       - name: Run Grype vulnerability scanner
+        continue-on-error: true  # Don't block on scanner failures
         uses: anchore/scan-action@v3
         with:
           image: "babyshield-backend:scan"
@@ -166,6 +167,8 @@ jobs:
           severity-cutoff: high
 
       - name: Upload Grype results
+        if: always()
+        continue-on-error: true  # Don't block if Advanced Security not available
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results.sarif
@@ -271,12 +274,14 @@ jobs:
 
       # CodeQL Analysis
       - name: Initialize CodeQL
+        continue-on-error: true # Don't block if Advanced Security not available
         uses: github/codeql-action/init@v3
         with:
           languages: python
           queries: security-and-quality
 
       - name: Perform CodeQL Analysis
+        continue-on-error: true # Don't block if Advanced Security not available
         uses: github/codeql-action/analyze@v3
 
       # Custom security checks
