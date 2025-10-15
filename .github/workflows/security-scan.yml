@@ -1,5 +1,11 @@
 name: Security Scanning
 
+# Required permissions for CodeQL and security scanning
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
 on:
   push:
     branches: [main, development]
@@ -100,14 +106,25 @@ jobs:
       # Build Docker image for scanning
       - name: Build Docker Image
         continue-on-error: false
-        timeout-minutes: 10  # Reduced from 15
+        timeout-minutes: 10 # Reduced from 15
         run: |
           # Use BuildKit for faster builds
           export DOCKER_BUILDKIT=1
           docker build -f Dockerfile.final -t babyshield-backend:scan . --progress=plain
 
+      # Clear space and cache before Trivy scan
+      - name: Free Disk Space
+        run: |
+          # Remove unnecessary files to free up space
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          df -h
+
       # Trivy Scanner - Comprehensive vulnerability scanner
       - name: Run Trivy vulnerability scanner
+        continue-on-error: true  # Don't block on disk space issues
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "babyshield-backend:scan"
@@ -115,8 +132,13 @@ jobs:
           output: "trivy-results.sarif"
           severity: "CRITICAL,HIGH,MEDIUM"
           exit-code: "0" # Don't fail the build
+        env:
+          TRIVY_SKIP_DB_UPDATE: "false"
+          TRIVY_SKIP_JAVA_DB_UPDATE: "true"
 
       - name: Upload Trivy results to GitHub Security
+        if: always()
+        continue-on-error: true
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: "trivy-results.sarif"
