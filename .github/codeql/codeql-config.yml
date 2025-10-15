@@ -1,0 +1,17 @@
+name: "CodeQL Configuration"
+
+# Disable auto-detection and only analyze Python
+languages:
+  - python
+
+# Exclude test files and migrations from analysis
+paths-ignore:
+  - "tests/**"
+  - "test_*.py"
+  - "**/test_*.py"
+  - "alembic/versions/**"
+  - "db/migrations/**"
+
+# Use security and quality queries
+queries:
+  - uses: security-and-quality

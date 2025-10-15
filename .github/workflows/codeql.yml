@@ -1,0 +1,54 @@
+name: "CodeQL"
+
+on:
+    push:
+        branches: ["main", "staging"]
+    pull_request:
+        branches: ["main"]
+    schedule:
+        - cron: "0 0 * * 0" # Weekly on Sundays
+
+permissions:
+    security-events: write
+    contents: read
+    actions: read
+
+jobs:
+    analyze:
+        name: Analyze (${{ matrix.language }})
+        runs-on: ubuntu-latest
+        timeout-minutes: 360
+
+        strategy:
+            fail-fast: false
+            matrix:
+                # Only analyze Python - our primary language
+                language: ["python"]
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.11"
+
+            - name: Initialize CodeQL
+              uses: github/codeql-action/init@v3
+              with:
+                  languages: ${{ matrix.language }}
+                  queries: security-and-quality
+                  config-file: ./.github/codeql/codeql-config.yml
+
+            # Autobuild for Python
+            - name: Autobuild
+              uses: github/codeql-action/autobuild@v3
+
+            - name: Perform CodeQL Analysis
+              uses: github/codeql-action/analyze@v3
+              with:
+                  category: "/language:${{matrix.language}}"
+                  upload: true
+                  # Don't fail the workflow if SARIF upload fails (requires GitHub Advanced Security)
+                  upload-database: false
