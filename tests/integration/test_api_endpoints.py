@@ -3,8 +3,9 @@ Integration tests for API endpoints
 Tests complete request/response cycles with database
 """
 
-import pytest
 import uuid
+
+import pytest
 from fastapi.testclient import TestClient
 
 
