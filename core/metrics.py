@@ -56,9 +56,17 @@ if PROM:
     CHAT_EMERG = Counter("bs_chat_emergency_total", "Emergency-path responses")
 else:
     # Use no-op instances when Prometheus is not available
-    CHAT_REQ = CHAT_LAT = TOOL_LAT = SYN_LAT = CHAT_FALLBACK = CHAT_BLOCKED = EXPLAIN_FB = ALT_SHOWN = ALT_CLICKED = (
-        CHAT_UNCLEAR
-    ) = CHAT_EMERG = _N()
+    CHAT_REQ = _N()
+    CHAT_LAT = _N()
+    TOOL_LAT = _N()
+    SYN_LAT = _N()
+    CHAT_FALLBACK = _N()
+    CHAT_BLOCKED = _N()
+    EXPLAIN_FB = _N()
+    ALT_SHOWN = _N()
+    ALT_CLICKED = _N()
+    CHAT_UNCLEAR = _N()
+    CHAT_EMERG = _N()
 
 
 def inc_req(endpoint: str, intent: str, ok: bool, circuit: bool):
