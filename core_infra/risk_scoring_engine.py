@@ -73,7 +73,9 @@ class RiskScoringEngine:
 
         # Validate weights (allow small floating point errors)
         total_weight = sum(self.weights.values())
-        if abs(total_weight - 1.0) > 0.001:  # Allow 0.1% tolerance for floating point errors
+        if (
+            abs(total_weight - 1.0) > 0.001
+        ):  # Allow 0.1% tolerance for floating point errors
             # Normalize weights to sum to 1.0
             self.weights = {k: v / total_weight for k, v in self.weights.items()}
 
@@ -173,7 +175,9 @@ class RiskScoringEngine:
         components.risk_level = self._determine_risk_level(components.total_score)
 
         # Calculate confidence based on data completeness
-        components.confidence = self._calculate_confidence(product, incidents, company_profile)
+        components.confidence = self._calculate_confidence(
+            product, incidents, company_profile
+        )
 
         return components
 
@@ -203,10 +207,15 @@ class RiskScoringEngine:
 
                 # Track injury types
                 injury_type = incident.severity or "unknown"
-                details["injury_types"][injury_type] = details["injury_types"].get(injury_type, 0) + 1
+                details["injury_types"][injury_type] = (
+                    details["injury_types"].get(injury_type, 0) + 1
+                )
 
             # Track hazard types
-            if incident.hazard_type and incident.hazard_type not in details["hazard_types"]:
+            if (
+                incident.hazard_type
+                and incident.hazard_type not in details["hazard_types"]
+            ):
                 details["hazard_types"].append(incident.hazard_type)
 
         # Calculate base score from incidents
@@ -217,7 +226,10 @@ class RiskScoringEngine:
             injury_score = min(80, 40 + (details["total_injuries"] * 5))
 
             # Adjust for injury severity
-            if "serious" in details["injury_types"] or "hospitalized" in details["injury_types"]:
+            if (
+                "serious" in details["injury_types"]
+                or "hospitalized" in details["injury_types"]
+            ):
                 injury_score = min(90, injury_score + 20)
 
             score = injury_score
@@ -227,7 +239,10 @@ class RiskScoringEngine:
 
         # Adjust for hazard types
         if details["hazard_types"]:
-            max_hazard_score = max(self.hazard_severity.get(hazard.lower(), 50) for hazard in details["hazard_types"])
+            max_hazard_score = max(
+                self.hazard_severity.get(hazard.lower(), 50)
+                for hazard in details["hazard_types"]
+            )
             score = max(score, max_hazard_score)
 
         details["final_score"] = score
@@ -253,7 +268,9 @@ class RiskScoringEngine:
 
         # Find most recent incident
         if incidents:
-            recent_incident = max(incidents, key=lambda i: i.incident_date or datetime.min)
+            recent_incident = max(
+                incidents, key=lambda i: i.incident_date or datetime.min
+            )
             if recent_incident.incident_date:
                 details["most_recent_incident"] = recent_incident.incident_date
                 days_since = (now - recent_incident.incident_date).days
@@ -293,7 +310,9 @@ class RiskScoringEngine:
         details["final_score"] = score
         return score, details
 
-    def _calculate_volume_score(self, product: ProductGoldenRecord, db: Session) -> Tuple[float, Dict]:
+    def _calculate_volume_score(
+        self, product: ProductGoldenRecord, db: Session
+    ) -> Tuple[float, Dict]:
         """
         Calculate volume score based on units affected
         More units = higher risk
@@ -372,7 +391,11 @@ class RiskScoringEngine:
             "poisoning",
         ]
 
-        found_high_severity = [v for v in violation_types if any(hsv in v.lower() for hsv in high_severity_violations)]
+        found_high_severity = [
+            v
+            for v in violation_types
+            if any(hsv in v.lower() for hsv in high_severity_violations)
+        ]
 
         if found_high_severity:
             score = 80
@@ -385,7 +408,9 @@ class RiskScoringEngine:
         violation_counts = {}
         for incident in incidents:
             if incident.hazard_type:
-                violation_counts[incident.hazard_type] = violation_counts.get(incident.hazard_type, 0) + 1
+                violation_counts[incident.hazard_type] = (
+                    violation_counts.get(incident.hazard_type, 0) + 1
+                )
 
         if any(count > 2 for count in violation_counts.values()):
             details["repeat_violations"] = True
@@ -394,7 +419,9 @@ class RiskScoringEngine:
         details["final_score"] = score
         return score, details
 
-    def _calculate_compliance_score(self, company_profile: CompanyComplianceProfile) -> Tuple[float, Dict]:
+    def _calculate_compliance_score(
+        self, company_profile: CompanyComplianceProfile
+    ) -> Tuple[float, Dict]:
         """
         Calculate compliance score based on company history
         Poor compliance = higher risk
@@ -534,22 +561,46 @@ class RiskScoringEngine:
         # Key risk factors
         narrative.append("Key Risk Factors:")
 
-        if components.severity_details and components.severity_details.get("total_deaths") > 0:
-            narrative.append(f"• CRITICAL: {components.severity_details['total_deaths']} death(s) reported")
+        if (
+            components.severity_details
+            and components.severity_details.get("total_deaths") > 0
+        ):
+            narrative.append(
+                f"• CRITICAL: {components.severity_details['total_deaths']} death(s) reported"
+            )
 
-        if components.severity_details and components.severity_details.get("total_injuries") > 0:
-            narrative.append(f"• {components.severity_details['total_injuries']} injuries reported")
+        if (
+            components.severity_details
+            and components.severity_details.get("total_injuries") > 0
+        ):
+            narrative.append(
+                f"• {components.severity_details['total_injuries']} injuries reported"
+            )
 
-        if components.recency_details and components.recency_details.get("incidents_last_3_months") > 0:
-            narrative.append(f"• {components.recency_details['incidents_last_3_months']} incidents in last 3 months")
+        if (
+            components.recency_details
+            and components.recency_details.get("incidents_last_3_months") > 0
+        ):
+            narrative.append(
+                f"• {components.recency_details['incidents_last_3_months']} incidents in last 3 months"
+            )
 
-        if components.volume_details and components.volume_details.get("total_units_recalled") > 10000:
-            narrative.append(f"• {components.volume_details['total_units_recalled']:,} units affected")
+        if (
+            components.volume_details
+            and components.volume_details.get("total_units_recalled") > 10000
+        ):
+            narrative.append(
+                f"• {components.volume_details['total_units_recalled']:,} units affected"
+            )
 
-        if components.violation_details and components.violation_details.get("repeat_violations"):
+        if components.violation_details and components.violation_details.get(
+            "repeat_violations"
+        ):
             narrative.append("• Repeat violations detected")
 
-        if components.compliance_details and components.compliance_details.get("repeat_offender"):
+        if components.compliance_details and components.compliance_details.get(
+            "repeat_offender"
+        ):
             narrative.append("• Manufacturer is a repeat offender")
 
         return "\n".join(narrative)

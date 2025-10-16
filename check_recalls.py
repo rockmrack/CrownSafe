@@ -39,7 +39,9 @@ try:
         sample = db.query(EnhancedRecallDB).limit(3).all()
         print("\n   Sample recalls:")
         for recall in sample:
-            print(f"   - {recall.product_name} ({recall.brand}) - {recall.source_agency}")
+            print(
+                f"   - {recall.product_name} ({recall.brand}) - {recall.source_agency}"
+            )
 
     db.close()
 except Exception as e:

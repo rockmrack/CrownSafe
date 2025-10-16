@@ -39,7 +39,9 @@ async def get_enhanced_safety_report(
     start_time = time.time()
 
     try:
-        logger.info(f"Generating enhanced safety report for: {request.product_identifier}")
+        logger.info(
+            f"Generating enhanced safety report for: {request.product_identifier}"
+        )
 
         # Generate the enhanced safety report
         report = await enhanced_safety_service.generate_enhanced_safety_report(
@@ -51,19 +53,25 @@ async def get_enhanced_safety_report(
             include_chemical_data=request.include_chemical_data,
         )
 
-        _ = int((time.time() - start_time) * 1000)  # processing_time (reserved for future logging)
+        _ = int(
+            (time.time() - start_time) * 1000
+        )  # processing_time (reserved for future logging)
 
         return ok(data=report)
 
     except Exception as e:
         logger.error(f"Error generating enhanced safety report: {e}", exc_info=True)
-        return fail(message=f"Failed to generate enhanced safety report: {str(e)}", status=500)
+        return fail(
+            message=f"Failed to generate enhanced safety report: {str(e)}", status=500
+        )
 
 
 @router.get("/food-data/{product_identifier}", response_model=SupplementalDataResponse)
 async def get_food_data(
     product_identifier: str,
-    product_name: Optional[str] = Query(None, description="Product name for better search results"),
+    product_name: Optional[str] = Query(
+        None, description="Product name for better search results"
+    ),
     db: Session = Depends(get_db),
 ):
     """
@@ -86,7 +94,9 @@ async def get_food_data(
             include_chemical_data=False,
         )
 
-        _ = int((time.time() - start_time) * 1000)  # processing_time (reserved for future logging)
+        _ = int(
+            (time.time() - start_time) * 1000
+        )  # processing_time (reserved for future logging)
 
         return ok(data=report)
 
@@ -95,10 +105,14 @@ async def get_food_data(
         return fail(message=f"Failed to get food data: {str(e)}", status=500)
 
 
-@router.get("/cosmetic-data/{product_identifier}", response_model=SupplementalDataResponse)
+@router.get(
+    "/cosmetic-data/{product_identifier}", response_model=SupplementalDataResponse
+)
 async def get_cosmetic_data(
     product_identifier: str,
-    product_name: Optional[str] = Query(None, description="Product name for better search results"),
+    product_name: Optional[str] = Query(
+        None, description="Product name for better search results"
+    ),
     db: Session = Depends(get_db),
 ):
     """
@@ -128,7 +142,9 @@ async def get_cosmetic_data(
         )
 
         logger.info(f"Generated report: {report}")
-        _ = int((time.time() - start_time) * 1000)  # processing_time (reserved for future logging)
+        _ = int(
+            (time.time() - start_time) * 1000
+        )  # processing_time (reserved for future logging)
 
         return ok(data=report)
 
@@ -137,10 +153,14 @@ async def get_cosmetic_data(
         return fail(message=f"Failed to get cosmetic data: {str(e)}", status=500)
 
 
-@router.get("/chemical-data/{product_identifier}", response_model=SupplementalDataResponse)
+@router.get(
+    "/chemical-data/{product_identifier}", response_model=SupplementalDataResponse
+)
 async def get_chemical_data(
     product_identifier: str,
-    product_name: Optional[str] = Query(None, description="Product name for better search results"),
+    product_name: Optional[str] = Query(
+        None, description="Product name for better search results"
+    ),
     db: Session = Depends(get_db),
 ):
     """
@@ -163,7 +183,9 @@ async def get_chemical_data(
             include_chemical_data=True,
         )
 
-        _ = int((time.time() - start_time) * 1000)  # processing_time (reserved for future logging)
+        _ = int(
+            (time.time() - start_time) * 1000
+        )  # processing_time (reserved for future logging)
 
         return ok(data=report)
 
@@ -181,12 +203,16 @@ async def get_available_data_sources():
         sources = {
             "food": {
                 "usda_fooddata_central": {
-                    "enabled": bool(enhanced_safety_service.supplemental_service.usda_client.enabled),
+                    "enabled": bool(
+                        enhanced_safety_service.supplemental_service.usda_client.enabled
+                    ),
                     "description": "USDA FoodData Central - Nutritional and ingredient data",
                     "api_required": True,
                 },
                 "edamam": {
-                    "enabled": bool(enhanced_safety_service.supplemental_service.edamam_client.enabled),
+                    "enabled": bool(
+                        enhanced_safety_service.supplemental_service.edamam_client.enabled
+                    ),
                     "description": "Edamam Food Database - Nutritional analysis",
                     "api_required": True,
                 },
@@ -357,7 +383,9 @@ async def test_post_endpoint():
         return {
             "success": True,
             "message": "POST endpoint simulation successful",
-            "data": report.model_dump() if hasattr(report, "model_dump") else report.__dict__,
+            "data": report.model_dump()
+            if hasattr(report, "model_dump")
+            else report.__dict__,
         }
 
     except Exception as e:
@@ -459,7 +487,11 @@ async def test_recall_detail():
             result = db.execute(query).fetchone()
 
             if result:
-                recall_data = dict(result._mapping) if hasattr(result, "_mapping") else dict(result)
+                recall_data = (
+                    dict(result._mapping)
+                    if hasattr(result, "_mapping")
+                    else dict(result)
+                )
                 return {
                     "success": True,
                     "message": "Recall detail query successful",
@@ -524,7 +556,9 @@ async def test_cosmetic_data():
 
         # Test 2: Check if supplemental_service exists
         if not hasattr(enhanced_safety_service, "supplemental_service"):
-            logger.error("enhanced_safety_service has no supplemental_service attribute")
+            logger.error(
+                "enhanced_safety_service has no supplemental_service attribute"
+            )
             return fail(message="Supplemental service not found", status=500)
 
         if not enhanced_safety_service.supplemental_service:
@@ -532,13 +566,17 @@ async def test_cosmetic_data():
             return fail(message="Supplemental service is None", status=500)
 
         # Test 3: Check if get_cosmetic_data method exists
-        if not hasattr(enhanced_safety_service.supplemental_service, "get_cosmetic_data"):
+        if not hasattr(
+            enhanced_safety_service.supplemental_service, "get_cosmetic_data"
+        ):
             logger.error("supplemental_service has no get_cosmetic_data method")
             return fail(message="get_cosmetic_data method not found", status=500)
 
         # Test 4: Try to call the method
         logger.info("Calling get_cosmetic_data...")
-        cosmetic_data = await enhanced_safety_service.supplemental_service.get_cosmetic_data("test")
+        cosmetic_data = (
+            await enhanced_safety_service.supplemental_service.get_cosmetic_data("test")
+        )
 
         # Test 5: Check if we got data back
         if not cosmetic_data:

@@ -338,7 +338,9 @@ def perform_ocr(job_id: str, image_data: bytes) -> Dict[str, Any]:
 
     # Run OCR
     loop = asyncio.new_event_loop()
-    ocr_result = loop.run_until_complete(image_processor._extract_text(img, image_processor._auto_select_providers()))
+    ocr_result = loop.run_until_complete(
+        image_processor._extract_text(img, image_processor._auto_select_providers())
+    )
     loop.close()
 
     if ocr_result:
@@ -366,7 +368,9 @@ def extract_labels(job_id: str, image_data: bytes) -> Dict[str, Any]:
     # Run label extraction
     loop = asyncio.new_event_loop()
     labels_result = loop.run_until_complete(
-        image_processor._extract_labels(image_data, image_processor._auto_select_providers())
+        image_processor._extract_labels(
+            image_data, image_processor._auto_select_providers()
+        )
     )
     loop.close()
 
@@ -438,7 +442,9 @@ def save_extraction(self, job_id: str, results: Dict[str, Any]):
             # Calculate confidence
             confidence = ocr.get("confidence", 0.0)
             if barcodes:
-                confidence = max(confidence, max(b.get("confidence", 0) for b in barcodes))
+                confidence = max(
+                    confidence, max(b.get("confidence", 0) for b in barcodes)
+                )
 
             job.confidence_score = confidence
 
@@ -528,7 +534,9 @@ def download_from_s3(bucket: str, key: str) -> bytes:
 
 def generate_presigned_url(bucket: str, key: str, expiration: int = 3600) -> str:
     """Generate presigned URL for S3 object"""
-    return s3_client.generate_presigned_url("get_object", Params={"Bucket": bucket, "Key": key}, ExpiresIn=expiration)
+    return s3_client.generate_presigned_url(
+        "get_object", Params={"Bucket": bucket, "Key": key}, ExpiresIn=expiration
+    )
 
 
 # Safety Hub Tasks
@@ -561,7 +569,9 @@ def ingest_safety_articles():
             try:
                 # Check if article already exists
                 existing = (
-                    db.query(SafetyArticle).filter(SafetyArticle.article_id == article_data["article_id"]).first()
+                    db.query(SafetyArticle)
+                    .filter(SafetyArticle.article_id == article_data["article_id"])
+                    .first()
                 )
 
                 if not existing:
@@ -577,12 +587,16 @@ def ingest_safety_articles():
                     logger.debug(f"Updated existing article: {article_data['title']}")
 
             except Exception as e:
-                logger.error(f"Error processing article {article_data.get('article_id')}: {e}")
+                logger.error(
+                    f"Error processing article {article_data.get('article_id')}: {e}"
+                )
                 continue
 
         db.commit()
 
-    logger.info(f"[Celery Task] Ingestion complete. Upserted {upserted_count} new safety articles.")
+    logger.info(
+        f"[Celery Task] Ingestion complete. Upserted {upserted_count} new safety articles."
+    )
     return {
         "status": "success",
         "message": f"Ingestion complete. Upserted {upserted_count} new articles.",

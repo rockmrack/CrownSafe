@@ -47,7 +47,9 @@ def test_endpoint(name, method, path, data=None, params=None, files=None):
             print(f" {name}: FAILED ({response.status_code})")
             try:
                 error = response.json()
-                print(f"   Error: {error.get('detail', error.get('error', str(error))[:100])}")
+                print(
+                    f"   Error: {error.get('detail', error.get('error', str(error))[:100])}"
+                )
             except:
                 print(f"   Error: {response.text[:100]}")
             results["failed"].append(name)
@@ -120,7 +122,9 @@ test_endpoint(
     },
 )
 
-test_endpoint("Get Family Members", "GET", "/api/v1/premium/family/members", params={"user_id": 1})
+test_endpoint(
+    "Get Family Members", "GET", "/api/v1/premium/family/members", params={"user_id": 1}
+)
 
 test_endpoint(
     "Add Family Member",
@@ -285,7 +289,9 @@ print(" FINAL TEST RESULTS SUMMARY")
 print("=" * 80)
 print(f" PASSED: {len(results['passed'])} tests")
 print(f" FAILED: {len(results['failed'])} tests")
-print(f" SUCCESS RATE: {len(results['passed']) / (len(results['passed']) + len(results['failed'])) * 100:.1f}%")
+print(
+    f" SUCCESS RATE: {len(results['passed']) / (len(results['passed']) + len(results['failed'])) * 100:.1f}%"
+)
 
 if results["failed"]:
     print("\n Failed Tests:")

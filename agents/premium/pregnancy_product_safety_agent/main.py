@@ -4,7 +4,9 @@ from core_infra.mcp_client_library.client import MCPClient
 from .agent_logic import PregnancyProductSafetyAgentLogic
 
 # Configure standard logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "pregnancy_product_safety_agent_01"
@@ -22,7 +24,9 @@ class PregnancyProductSafetyAgent:
         self.logic = PregnancyProductSafetyAgentLogic(agent_id=self.agent_id)
 
         # Register the agent's capabilities with the MCP client
-        self.mcp_client.register_capability("check_pregnancy_safety", self.handle_check_safety)
+        self.mcp_client.register_capability(
+            "check_pregnancy_safety", self.handle_check_safety
+        )
 
     async def handle_check_safety(self, task_payload: dict) -> dict:
         """

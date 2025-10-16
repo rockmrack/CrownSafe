@@ -27,7 +27,9 @@ def auth():
     h = {"Authorization": f"Bearer {tok}"}
     me = client.get("/api/v1/auth/me", headers=h)
     print("me_status", me.status_code)
-    uid = (me.json() or {}).get("id") or (me.json().get("data", {}) if me.ok else {}).get("id")
+    uid = (me.json() or {}).get("id") or (
+        me.json().get("data", {}) if me.ok else {}
+    ).get("id")
     return h, uid
 
 

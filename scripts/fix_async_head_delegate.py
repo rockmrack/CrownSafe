@@ -4,7 +4,9 @@ p = Path("api/baby_features_endpoints.py")
 s = p.read_text(encoding="utf-8")
 
 # Find the GET download handler name and whether it's async
-m = re.search(r'@router\.get\("/reports/download/\{report_id\}"\)\s*(async\s+)?def\s+(\w+)\(', s)
+m = re.search(
+    r'@router\.get\("/reports/download/\{report_id\}"\)\s*(async\s+)?def\s+(\w+)\(', s
+)
 is_async = bool(m and m.group(1))
 get_fn = m.group(2) if m else "download_report"
 

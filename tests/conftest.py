@@ -87,7 +87,9 @@ def auth_token(test_user):
     try:
         from core_infra.auth import create_access_token
 
-        token = create_access_token(data={"sub": str(test_user.id), "email": test_user.email})
+        token = create_access_token(
+            data={"sub": str(test_user.id), "email": test_user.email}
+        )
         return token
     except ImportError:
         # If auth module not available, return a mock token
@@ -100,7 +102,9 @@ def valid_token():
     try:
         from core_infra.auth import create_access_token
 
-        token = create_access_token(data={"sub": "999999", "email": "test_security@example.com"})
+        token = create_access_token(
+            data={"sub": "999999", "email": "test_security@example.com"}
+        )
         return token
     except Exception:
         # Return a mock token if anything fails
@@ -130,7 +134,9 @@ def user1_token(test_user):
     try:
         from core_infra.auth import create_access_token
 
-        token = create_access_token(data={"sub": str(test_user.id), "email": test_user.email})
+        token = create_access_token(
+            data={"sub": str(test_user.id), "email": test_user.email}
+        )
         return token
     except Exception:
         return "user1_mock_token"
@@ -148,7 +154,9 @@ def regular_user_token():
     try:
         from core_infra.auth import create_access_token
 
-        token = create_access_token(data={"sub": "222222", "email": "regular@example.com", "is_admin": False})
+        token = create_access_token(
+            data={"sub": "222222", "email": "regular@example.com", "is_admin": False}
+        )
         return token
     except Exception:
         return "regular_user_mock_token"

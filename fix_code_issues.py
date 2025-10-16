@@ -11,10 +11,14 @@ from pathlib import Path
 def fix_unused_loop_variables(content):
     """Fix unused loop variables by prefixing with underscore"""
     # Pattern: for i in range(...):
-    content = re.sub(r"(\s+for\s+)([a-z_][a-z0-9_]*)\s+(in\s+range\([^)]+\):)", r"\1_\2 \3", content)
+    content = re.sub(
+        r"(\s+for\s+)([a-z_][a-z0-9_]*)\s+(in\s+range\([^)]+\):)", r"\1_\2 \3", content
+    )
     # Pattern: for i, var in enumerate(...):
     content = re.sub(
-        r"(\s+for\s+)([a-z_][a-z0-9_]*),\s*([a-z_][a-z0-9_]*)\s+(in\s+enumerate)", r"\1\2, _\3 \4", content
+        r"(\s+for\s+)([a-z_][a-z0-9_]*),\s*([a-z_][a-z0-9_]*)\s+(in\s+enumerate)",
+        r"\1\2, _\3 \4",
+        content,
     )
     return content
 

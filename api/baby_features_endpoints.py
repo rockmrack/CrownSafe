@@ -53,7 +53,9 @@ REPORTS_DIR = Path(os.environ.get("REPORTS_DIR", Path.cwd() / "generated_reports
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _write_report_metadata(report_id: str, owner_user_id: int, report_type: str, file_path: Path) -> None:
+def _write_report_metadata(
+    report_id: str, owner_user_id: int, report_type: str, file_path: Path
+) -> None:
     try:
         meta = {
             "report_id": report_id,
@@ -62,7 +64,9 @@ def _write_report_metadata(report_id: str, owner_user_id: int, report_type: str,
             "file_path": str(file_path),
             "created_at": datetime.utcnow().isoformat() + "Z",
         }
-        with open(REPORTS_DIR / f"report_{report_id}.json", "w", encoding="utf-8") as fh:
+        with open(
+            REPORTS_DIR / f"report_{report_id}.json", "w", encoding="utf-8"
+        ) as fh:
             json.dump(meta, fh)
     except Exception as _:
         pass
@@ -70,7 +74,9 @@ def _write_report_metadata(report_id: str, owner_user_id: int, report_type: str,
 
 def _load_report_metadata(report_id: str) -> dict:
     try:
-        with open(REPORTS_DIR / f"report_{report_id}.json", "r", encoding="utf-8") as fh:
+        with open(
+            REPORTS_DIR / f"report_{report_id}.json", "r", encoding="utf-8"
+        ) as fh:
             return json.load(fh)
     except Exception:
         return {}
@@ -103,7 +109,9 @@ class AlternativesRequest(BaseModel):
     product_category: Optional[str] = Field(None, description="Category of product")
     barcode: Optional[str] = Field(None, description="Product barcode if available")
     user_id: int = Field(..., description="User ID for personalized recommendations")
-    max_alternatives: int = Field(5, ge=1, le=20, description="Maximum alternatives to return")
+    max_alternatives: int = Field(
+        5, ge=1, le=20, description="Maximum alternatives to return"
+    )
 
 
 class AlternativeProduct(BaseModel):
@@ -137,7 +145,9 @@ class NotificationRequest(BaseModel):
     user_id: int = Field(..., description="User ID to send notification to")
     title: str = Field(..., max_length=100, description="Notification title")
     body: str = Field(..., max_length=500, description="Notification body")
-    notification_type: str = Field("recall_alert", description="Type: recall_alert, safety_tip, reminder")
+    notification_type: str = Field(
+        "recall_alert", description="Type: recall_alert, safety_tip, reminder"
+    )
     data: Optional[Dict[str, str]] = Field(None, description="Additional data payload")
     device_tokens: Optional[List[str]] = Field(
         None, description="Specific device tokens, or all user devices if not provided"
@@ -179,14 +189,24 @@ class ReportRequest(AppModel):
     )
     format: str = Field("pdf", description="Format: pdf, html, json")
     date_range: Optional[int] = Field(30, description="Days of history to include")
-    include_alternatives: bool = Field(True, description="Include safe alternatives in report")
+    include_alternatives: bool = Field(
+        True, description="Include safe alternatives in report"
+    )
     include_guidelines: bool = Field(True, description="Include safety guidelines")
-    products: Optional[List[str]] = Field(None, description="Specific products to include")
+    products: Optional[List[str]] = Field(
+        None, description="Specific products to include"
+    )
     # Product Safety (Level 1)
-    product_name: Optional[str] = Field(None, description="Product name for product_safety report")
-    barcode: Optional[str] = Field(None, description="UPC/EAN/GTIN for product_safety report")
+    product_name: Optional[str] = Field(
+        None, description="Product name for product_safety report"
+    )
+    barcode: Optional[str] = Field(
+        None, description="UPC/EAN/GTIN for product_safety report"
+    )
     model_number: Optional[str] = Field(None, description="Model number if available")
-    lot_or_serial: Optional[str] = Field(None, description="Lot or Serial number if available")
+    lot_or_serial: Optional[str] = Field(
+        None, description="Lot or Serial number if available"
+    )
 
 
 class ReportResponse(BaseModel):
@@ -206,10 +226,14 @@ class OnboardingRequest(BaseModel):
     """Request model for user onboarding"""
 
     user_id: int
-    child_age_months: Optional[int] = Field(None, ge=0, le=216, description="Child's age in months (0-18 years)")
+    child_age_months: Optional[int] = Field(
+        None, ge=0, le=216, description="Child's age in months (0-18 years)"
+    )
     expecting: Optional[bool] = Field(False, description="Is the user expecting?")
     due_date: Optional[str] = Field(None, description="Expected due date if pregnant")
-    interests: Optional[List[str]] = Field(None, description="Product categories of interest")
+    interests: Optional[List[str]] = Field(
+        None, description="Product categories of interest"
+    )
     notification_preferences: Optional[Dict[str, bool]] = None
 
 
@@ -265,7 +289,9 @@ except Exception as e:
 
 
 @router.post("/alternatives")
-async def get_safe_alternatives(request: AlternativesRequest, db: Session = Depends(get_db)):
+async def get_safe_alternatives(
+    request: AlternativesRequest, db: Session = Depends(get_db)
+):
     """
     Get safe alternative products when a recall is found.
 
@@ -304,7 +330,9 @@ async def get_safe_alternatives(request: AlternativesRequest, db: Session = Depe
                 category = "Baby Products"
 
         # Get alternatives from agent
-        alternatives_result = await alternatives_agent.process_task({"product_category": category or "Baby Products"})
+        alternatives_result = await alternatives_agent.process_task(
+            {"product_category": category or "Baby Products"}
+        )
 
         # Process and enhance alternatives
         alternatives = []
@@ -315,9 +343,13 @@ async def get_safe_alternatives(request: AlternativesRequest, db: Session = Depe
 
                 # Check if product has any recalls in database
                 if alt.get("upc"):
-                    recall_count = db.query(RecallDB).filter(RecallDB.upc == alt["upc"]).count()
+                    recall_count = (
+                        db.query(RecallDB).filter(RecallDB.upc == alt["upc"]).count()
+                    )
                     if recall_count > 0:
-                        safety_score -= recall_count * 10  # Reduce score for each recall
+                        safety_score -= (
+                            recall_count * 10
+                        )  # Reduce score for each recall
 
                 alternatives.append(
                     AlternativeProduct(
@@ -351,14 +383,18 @@ async def get_safe_alternatives(request: AlternativesRequest, db: Session = Depe
             "timestamp": datetime.now(),
         }
         if len(alternatives) == 0:
-            payload["notice"] = "No curated alternatives available yet for this category."
+            payload[
+                "notice"
+            ] = "No curated alternatives available yet for this category."
         return ok(payload)
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Failed to find alternatives: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to find alternatives: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to find alternatives: {str(e)}"
+        )
 
 
 # ==================== Push Notification Endpoints ====================
@@ -423,7 +459,9 @@ async def send_push_notification(
                 sent_count += 1
             else:
                 failed_count += 1
-                errors.append(f"Token {token[:10]}...: {result.get('message', 'Unknown error')}")
+                errors.append(
+                    f"Token {token[:10]}...: {result.get('message', 'Unknown error')}"
+                )
 
         # Store notification in database for history (optional)
         notification_id = str(uuid.uuid4())
@@ -443,7 +481,9 @@ async def send_push_notification(
         raise
     except Exception as e:
         logger.error(f"Failed to send notification: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to send notification: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to send notification: {str(e)}"
+        )
 
 
 @router.post("/notifications/bulk", response_model=NotificationResponse)
@@ -499,7 +539,9 @@ async def send_bulk_notifications(
 
     except Exception as e:
         logger.error(f"Bulk notification failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Bulk notification failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Bulk notification failed: {str(e)}"
+        )
 
 
 # ==================== Report Generation Endpoints ====================
@@ -521,9 +563,13 @@ async def generate_safety_report(
     """
     try:
         if not report_agent:
-            raise HTTPException(status_code=503, detail="Report generation service unavailable")
+            raise HTTPException(
+                status_code=503, detail="Report generation service unavailable"
+            )
 
-        logger.info(f"Generating {request.report_type} report for user {request.user_id}")
+        logger.info(
+            f"Generating {request.report_type} report for user {request.user_id}"
+        )
 
         # Validate user
         user = db.query(User).filter(User.id == request.user_id).first()
@@ -578,7 +624,13 @@ async def generate_safety_report(
                     # OR across filters
                     from sqlalchemy import or_
 
-                    matches = db.query(RecallDB).filter(or_(*q)).order_by(RecallDB.recall_date.desc()).limit(5).all()
+                    matches = (
+                        db.query(RecallDB)
+                        .filter(or_(*q))
+                        .order_by(RecallDB.recall_date.desc())
+                        .limit(5)
+                        .all()
+                    )
                     for r in matches:
                         recalls_list.append(
                             {
@@ -675,7 +727,11 @@ async def generate_safety_report(
         # Derive path from agent result for product_safety/nursery_quarterly
         pdf_path = None
         if isinstance(result, dict):
-            pdf_path = (result.get("payload", {}) or {}).get("result", {}) if "payload" in result else result
+            pdf_path = (
+                (result.get("payload", {}) or {}).get("result", {})
+                if "payload" in result
+                else result
+            )
             if isinstance(pdf_path, dict):
                 pdf_path = pdf_path.get("pdf_path")
             else:
@@ -692,7 +748,9 @@ async def generate_safety_report(
         report_path = str(dest_path)
 
         # Store metadata for ownership and future lookups (sidecar + DB)
-        _write_report_metadata(report_id, request.user_id, request.report_type, dest_path)
+        _write_report_metadata(
+            report_id, request.user_id, request.report_type, dest_path
+        )
         try:
             rec = ReportRecord(
                 report_id=report_id,
@@ -718,7 +776,11 @@ async def generate_safety_report(
                 presigned = presign_get(s3_key, filename=fname)
                 # Update persisted record to point to S3 URI (create if missing)
                 try:
-                    rec = db.query(ReportRecord).filter(ReportRecord.report_id == report_id).first()
+                    rec = (
+                        db.query(ReportRecord)
+                        .filter(ReportRecord.report_id == report_id)
+                        .first()
+                    )
                     if rec:
                         rec.storage_path = f"s3://{s3_bucket}/{s3_key}"
                     else:
@@ -747,7 +809,10 @@ async def generate_safety_report(
                 # fall back to local download route
                 pass
         # Delete local after S3 if configured
-        if use_s3 and os.environ.get("DELETE_LOCAL_AFTER_S3", "false").lower() == "true":
+        if (
+            use_s3
+            and os.environ.get("DELETE_LOCAL_AFTER_S3", "false").lower() == "true"
+        ):
             try:
                 if Path(report_path).exists():
                     os.remove(report_path)
@@ -776,7 +841,9 @@ async def generate_safety_report(
         raise
     except Exception as e:
         logger.error(f"Report generation failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Report generation failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Report generation failed: {str(e)}"
+        )
 
 
 @router.get("/reports/download/{report_id}")
@@ -796,7 +863,11 @@ async def download_report(
         # Ownership check via DB if available, else sidecar JSON as fallback
         owner_ok = False
         try:
-            rec = db.query(ReportRecord).filter(ReportRecord.report_id == report_id).first()
+            rec = (
+                db.query(ReportRecord)
+                .filter(ReportRecord.report_id == report_id)
+                .first()
+            )
             if rec and str(rec.user_id) == str(current_user.id):
                 owner_ok = True
         except Exception:
@@ -810,7 +881,11 @@ async def download_report(
 
         # If stored in S3, return a presigned URL
         try:
-            rec = db.query(ReportRecord).filter(ReportRecord.report_id == report_id).first()
+            rec = (
+                db.query(ReportRecord)
+                .filter(ReportRecord.report_id == report_id)
+                .first()
+            )
         except Exception:
             rec = None
         if rec and getattr(rec, "storage_path", "").startswith("s3://"):
@@ -849,7 +924,9 @@ async def download_report(
                     },
                 )
 
-        raise HTTPException(status_code=404, detail=f"Report file not found for id={report_id}")
+        raise HTTPException(
+            status_code=404, detail=f"Report file not found for id={report_id}"
+        )
     except HTTPException:
         raise
     except Exception as e:
@@ -934,7 +1011,9 @@ async def setup_user_profile(request: OnboardingRequest, db: Session = Depends(g
 
 
 @router.post("/hazards/analyze", response_model=HazardAnalysisResponse)
-async def analyze_product_hazards(request: HazardAnalysisRequest, db: Session = Depends(get_db)):
+async def analyze_product_hazards(
+    request: HazardAnalysisRequest, db: Session = Depends(get_db)
+):
     """
     Analyze specific hazards for a product based on child's age.
 
@@ -1000,10 +1079,14 @@ async def analyze_product_hazards(request: HazardAnalysisRequest, db: Session = 
             recommendations.append("Consider finding a safer alternative product")
             recommendations.append("Keep product out of reach of children")
         if not age_appropriate:
-            recommendations.append(f"Product not recommended for {request.child_age_months} month old")
+            recommendations.append(
+                f"Product not recommended for {request.child_age_months} month old"
+            )
             recommendations.append("Check age recommendations on packaging")
         if not hazards:
-            recommendations.append("No specific hazards identified - follow general safety guidelines")
+            recommendations.append(
+                "No specific hazards identified - follow general safety guidelines"
+            )
 
         # Find safer alternatives if high risk
         safer_alternatives = None
@@ -1089,7 +1172,9 @@ async def get_community_alerts(
 
     except Exception as e:
         logger.error(f"Failed to get community alerts: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to get community alerts: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get community alerts: {str(e)}"
+        )
 
 
 @router.head("/reports/download/{report_id}")

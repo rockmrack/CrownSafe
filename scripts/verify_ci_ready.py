@@ -39,7 +39,11 @@ def main():
     # Check 1: Migration file exists
     print("📋 Checking Database Migrations...")
     migration_file = (
-        project_root / "db" / "migrations" / "versions" / "2024_08_22_0100_001_create_recalls_enhanced_table.py"
+        project_root
+        / "db"
+        / "migrations"
+        / "versions"
+        / "2024_08_22_0100_001_create_recalls_enhanced_table.py"
     )
     all_passed &= check(
         migration_file.exists(),
@@ -77,7 +81,9 @@ def main():
     if migration_file.exists():
         try:
             content = migration_file.read_text(encoding="utf-8")
-            creates_table = '"recalls_enhanced"' in content and "op.create_table" in content
+            creates_table = (
+                '"recalls_enhanced"' in content and "op.create_table" in content
+            )
             all_passed &= check(
                 creates_table,
                 "Migration creates recalls_enhanced table",

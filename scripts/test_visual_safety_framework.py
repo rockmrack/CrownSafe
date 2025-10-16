@@ -15,7 +15,9 @@ from typing import Dict, Any
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -54,11 +56,15 @@ async def test_phase1_liability_mitigation():
         result = await commander.start_safety_check_workflow(test_request)
 
         # Verify INCONCLUSIVE status
-        assert result["status"] == "INCONCLUSIVE", f"Expected INCONCLUSIVE status, got {result['status']}"
-        assert result["data"]["risk_level"] == "Unknown", (
-            f"Expected Unknown risk level, got {result['data'].get('risk_level')}"
-        )
-        assert "not mean the product is safe" in result["data"]["note"], "Missing safety disclaimer"
+        assert (
+            result["status"] == "INCONCLUSIVE"
+        ), f"Expected INCONCLUSIVE status, got {result['status']}"
+        assert (
+            result["data"]["risk_level"] == "Unknown"
+        ), f"Expected Unknown risk level, got {result['data'].get('risk_level')}"
+        assert (
+            "not mean the product is safe" in result["data"]["note"]
+        ), "Missing safety disclaimer"
 
         logger.info("✅ Phase 1 Test PASSED: INCONCLUSIVE status returned correctly")
         logger.info(f"Result: {json.dumps(result, indent=2)}")
@@ -133,12 +139,16 @@ async def test_phase2_visual_suggestions():
         result = await visual_agent.process_task({"image_url": test_image_url})
 
         # Verify successful completion
-        assert result["status"] == "COMPLETED", f"Expected COMPLETED status, got {result['status']}"
+        assert (
+            result["status"] == "COMPLETED"
+        ), f"Expected COMPLETED status, got {result['status']}"
         assert "suggestions" in result["result"], "Missing suggestions in result"
 
         suggestions = result["result"]["suggestions"]
         assert len(suggestions) == 3, f"Expected 3 suggestions, got {len(suggestions)}"
-        assert suggestions[0]["confidence"] == 0.85, "First suggestion should have highest confidence"
+        assert (
+            suggestions[0]["confidence"] == 0.85
+        ), "First suggestion should have highest confidence"
 
         logger.info("✅ Phase 2 Test PASSED: Visual suggestions returned correctly")
         logger.info(f"Suggestions: {json.dumps(suggestions, indent=2)}")
@@ -171,7 +181,9 @@ async def test_api_endpoint_integration():
             )
 
             if response.status_code == 503:
-                logger.warning("⚠️ Visual search service not ready (expected if OpenAI key not configured)")
+                logger.warning(
+                    "⚠️ Visual search service not ready (expected if OpenAI key not configured)"
+                )
             elif response.status_code == 200:
                 data = response.json()
                 assert data.get("success"), "Expected success=true in response"
@@ -199,10 +211,14 @@ async def main():
     results = []
 
     # Run Phase 1 test
-    results.append(("Phase 1: Liability Mitigation", await test_phase1_liability_mitigation()))
+    results.append(
+        ("Phase 1: Liability Mitigation", await test_phase1_liability_mitigation())
+    )
 
     # Run Phase 2 test
-    results.append(("Phase 2: Visual Suggestions", await test_phase2_visual_suggestions()))
+    results.append(
+        ("Phase 2: Visual Suggestions", await test_phase2_visual_suggestions())
+    )
 
     # Run API endpoint test (optional - requires running server)
     # results.append(("API Endpoint Integration", await test_api_endpoint_integration()))

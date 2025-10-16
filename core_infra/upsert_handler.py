@@ -155,7 +155,9 @@ class UpsertHandler:
             return False
 
     @staticmethod
-    def bulk_upsert_recalls(db: Session, recalls: List[Dict[str, Any]], batch_size: int = 100) -> Dict[str, int]:
+    def bulk_upsert_recalls(
+        db: Session, recalls: List[Dict[str, Any]], batch_size: int = 100
+    ) -> Dict[str, int]:
         """
         Perform bulk UPSERT for multiple recalls with batching
 
@@ -376,7 +378,9 @@ class EnhancedUpsertHandler(UpsertHandler):
             update_sets = []
             for col in columns:
                 if col != unique_key:  # Don't update the unique key
-                    update_sets.append(f"{col} = COALESCE(EXCLUDED.{col}, {table}.{col})")
+                    update_sets.append(
+                        f"{col} = COALESCE(EXCLUDED.{col}, {table}.{col})"
+                    )
 
             query = text(
                 f"""

@@ -121,7 +121,9 @@ class CommanderAgentManager:
     async def handle_incoming_message(self, message: MCPMessage):
         """Handle incoming messages with proper error handling and response processing"""
         if not self.commander_logic:
-            logger.error("CommanderLogic instance not initialized. Cannot process message.")
+            logger.error(
+                "CommanderLogic instance not initialized. Cannot process message."
+            )
             return
 
         try:
@@ -153,16 +155,22 @@ class CommanderAgentManager:
 
             # Initialize CommanderLogic with dedicated logger
             logic_logger = logging.getLogger(f"{AGENT_ID}.logic")
-            self.commander_logic = CommanderLogic(agent_id=AGENT_ID, mcp_client=self.mcp_client, logger=logic_logger)
+            self.commander_logic = CommanderLogic(
+                agent_id=AGENT_ID, mcp_client=self.mcp_client, logger=logic_logger
+            )
 
-            logger.info(f"CommanderAgent components initialized successfully (Version: {AGENT_VERSION})")
+            logger.info(
+                f"CommanderAgent components initialized successfully (Version: {AGENT_VERSION})"
+            )
             logger.info(f"Environment loaded from: {env_source}")
             logger.info(f"MCP Server URL: {MCP_SERVER_URL}")
 
             return True
 
         except Exception as e:
-            logger.critical(f"Failed to initialize CommanderAgent components: {e}", exc_info=True)
+            logger.critical(
+                f"Failed to initialize CommanderAgent components: {e}", exc_info=True
+            )
             return False
 
     def setup_signal_handlers(self):
@@ -181,7 +189,9 @@ class CommanderAgentManager:
                     loop.add_signal_handler(sig, lambda s=sig: signal_handler(s))
                     logger.debug(f"Added signal handler for {signal.Signals(sig).name}")
                 except (NotImplementedError, OSError) as e:
-                    logger.warning(f"Cannot add signal handler for {signal.Signals(sig).name}: {e}")
+                    logger.warning(
+                        f"Cannot add signal handler for {signal.Signals(sig).name}: {e}"
+                    )
 
         except RuntimeError as e:
             logger.warning(f"Could not setup signal handlers: {e}")

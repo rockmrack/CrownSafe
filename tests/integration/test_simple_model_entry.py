@@ -44,7 +44,9 @@ def test_safety_check_endpoint_exists():
             print(f"   - {key}: {type(data[key]).__name__}")
 
         # Validate basic structure
-        assert "risk_level" in data or "status" in data, "Response missing expected fields"
+        assert (
+            "risk_level" in data or "status" in data
+        ), "Response missing expected fields"
 
     elif response.status_code == 404:
         print("❌ FAILED: Endpoint not found (404)")

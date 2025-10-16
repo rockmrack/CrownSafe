@@ -52,7 +52,9 @@ def decode_jwt_token(token: str) -> Dict[str, Any]:
     Raises jwt.ExpiredSignatureError or jwt.InvalidTokenError on failure.
     """
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+        payload = jwt.decode(
+            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+        )
         return payload
     except jwt.ExpiredSignatureError:
         logger.warning("JWT decode failed: Token has expired.")
@@ -61,7 +63,9 @@ def decode_jwt_token(token: str) -> Dict[str, Any]:
         logger.warning(f"JWT decode failed: Invalid token - {e}")
         raise
     except Exception as e:
-        logger.error(f"An unexpected error occurred during JWT decoding: {e}", exc_info=True)
+        logger.error(
+            f"An unexpected error occurred during JWT decoding: {e}", exc_info=True
+        )
         raise jwt.InvalidTokenError("Unexpected error during token decoding.")
 
 
@@ -104,9 +108,12 @@ def generate_test_jwt(agent_id: str) -> str:
     payload = {
         "sub": agent_id,
         "iat": datetime.datetime.utcnow(),
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),  # Token valid for 1 hour
+        "exp": datetime.datetime.utcnow()
+        + datetime.timedelta(hours=1),  # Token valid for 1 hour
         "iss": settings.SERVICE_NAME,  # Issuer
         # Add other claims like scope ('scp') if needed
     }
-    token = jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+    token = jwt.encode(
+        payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
+    )
     return token

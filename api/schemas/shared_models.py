@@ -135,9 +135,13 @@ class ProductSearchRequest(BaseModel):
     """Request to search for products/recalls"""
 
     query: Optional[str] = Field(None, max_length=200, description="Search query")
-    product_name: Optional[str] = Field(None, max_length=500, description="Product name")
+    product_name: Optional[str] = Field(
+        None, max_length=500, description="Product name"
+    )
     brand: Optional[str] = Field(None, max_length=200, description="Brand name")
-    model_number: Optional[str] = Field(None, max_length=100, description="Model number")
+    model_number: Optional[str] = Field(
+        None, max_length=100, description="Model number"
+    )
     barcode: Optional[str] = Field(None, max_length=50, description="Barcode")
 
     # Filters
@@ -188,7 +192,9 @@ class ApiResponse(BaseModel):
     data: Optional[Any] = Field(None, description="Response data")
     error: Optional[str] = Field(None, description="Error message if failed")
     message: Optional[str] = Field(None, description="Additional message")
-    timestamp: datetime = Field(default_factory=datetime.utcnow, description="Response timestamp")
+    timestamp: datetime = Field(
+        default_factory=datetime.utcnow, description="Response timestamp"
+    )
     trace_id: Optional[str] = Field(None, description="Trace ID for debugging")
 
 
@@ -267,7 +273,9 @@ class ScanResult(BaseModel):
 
     # Risk assessment
     overall_risk: RiskLevel = RiskLevel.UNKNOWN
-    safety_score: Optional[float] = Field(None, ge=0, le=100, description="Safety score (0-100)")
+    safety_score: Optional[float] = Field(
+        None, ge=0, le=100, description="Safety score (0-100)"
+    )
 
     # Additional metadata
     verification_status: Optional[str] = None

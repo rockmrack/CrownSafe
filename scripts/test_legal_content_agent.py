@@ -13,7 +13,9 @@ sys.path.insert(0, project_root)
 
 from agents.governance.legalcontent_agent.agent_logic import LegalContentAgentLogic
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # --- Test Configuration ---
 # We will test by fetching one of the files you have in data/legal/
@@ -28,7 +30,9 @@ async def main():
 
     try:
         # 1. Initialize the real LegalContentAgentLogic.
-        agent_logic = LegalContentAgentLogic(agent_id="test_lc_001", logger_instance=logger)
+        agent_logic = LegalContentAgentLogic(
+            agent_id="test_lc_001", logger_instance=logger
+        )
         logger.info("Agent logic initialized.")
 
         # 2. Define the task payload.
@@ -47,7 +51,9 @@ async def main():
         # We print the first 200 characters of the content for brevity
         if result.get("status") == "COMPLETED":
             result_copy = result.copy()
-            result_copy["result"]["content"] = result_copy["result"]["content"][:200] + "..."
+            result_copy["result"]["content"] = (
+                result_copy["result"]["content"][:200] + "..."
+            )
             print(json.dumps(result_copy, indent=2))
         else:
             print(json.dumps(result, indent=2))
@@ -57,13 +63,19 @@ async def main():
             content = result.get("result", {}).get("content", "")
             if len(content) > 50:  # Check that we got a reasonable amount of text
                 print("\n" + "=" * 50)
-                print(f"✅✅✅ TEST PASSED: Successfully read the legal document '{TEST_DOCUMENT_NAME}'.")
+                print(
+                    f"✅✅✅ TEST PASSED: Successfully read the legal document '{TEST_DOCUMENT_NAME}'."
+                )
             else:
                 print("\n" + "=" * 50)
-                print("❌ TEST FAILED: The agent returned empty or very short content for the document.")
+                print(
+                    "❌ TEST FAILED: The agent returned empty or very short content for the document."
+                )
         else:
             print("\n" + "=" * 50)
-            print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")
+            print(
+                f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}"
+            )
 
     except Exception as e:
         print("\n" + "=" * 50)

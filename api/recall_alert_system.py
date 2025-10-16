@@ -260,13 +260,22 @@ class RecallAlertService:
                             data = response.json()
                             # Process CPSC format
                             for recall in data.get("results", []):
-                                if recall.get("RecallDate") > last_check_time.isoformat():
+                                if (
+                                    recall.get("RecallDate")
+                                    > last_check_time.isoformat()
+                                ):
                                     new_recalls.append(
                                         {
                                             "recall_id": recall.get("RecallID"),
-                                            "product_name": recall.get("Products", [{}])[0].get("Name"),
-                                            "hazard": recall.get("Hazards", [{}])[0].get("Name"),
-                                            "remedy": recall.get("Remedies", [{}])[0].get("Name"),
+                                            "product_name": recall.get(
+                                                "Products", [{}]
+                                            )[0].get("Name"),
+                                            "hazard": recall.get("Hazards", [{}])[
+                                                0
+                                            ].get("Name"),
+                                            "remedy": recall.get("Remedies", [{}])[
+                                                0
+                                            ].get("Name"),
                                             "date": recall.get("RecallDate"),
                                             "agency": "CPSC",
                                         }
@@ -287,7 +296,9 @@ class RecallAlertService:
         )
 
     @classmethod
-    async def find_affected_users(cls, recall: Dict[str, Any], db: Session) -> List[int]:
+    async def find_affected_users(
+        cls, recall: Dict[str, Any], db: Session
+    ) -> List[int]:
         """Find users who have scanned products affected by this recall"""
 
         affected_user_ids = []
@@ -302,7 +313,9 @@ class RecallAlertService:
                 .filter(
                     or_(
                         func.lower(ScanHistory.product_name).contains(product_name),
-                        func.lower(ScanHistory.brand).contains(product_name.split()[0] if product_name else ""),
+                        func.lower(ScanHistory.brand).contains(
+                            product_name.split()[0] if product_name else ""
+                        ),
                     )
                 )
                 .distinct(ScanHistory.user_id)
@@ -316,7 +329,9 @@ class RecallAlertService:
                 db.query(MonitoredProduct)
                 .filter(
                     or_(
-                        func.lower(MonitoredProduct.product_name).contains(product_name),
+                        func.lower(MonitoredProduct.product_name).contains(
+                            product_name
+                        ),
                         func.lower(MonitoredProduct.brand_name).contains(
                             product_name.split()[0] if product_name else ""
                         ),
@@ -336,12 +351,18 @@ class RecallAlertService:
         return affected_user_ids
 
     @classmethod
-    async def send_recall_alert(cls, user_id: int, recall: Dict[str, Any], db: Session) -> bool:
+    async def send_recall_alert(
+        cls, user_id: int, recall: Dict[str, Any], db: Session
+    ) -> bool:
         """Send recall alert to a specific user"""
 
         try:
             # Get user's devices
-            devices = db.query(DeviceToken).filter(DeviceToken.user_id == user_id, DeviceToken.is_active).all()
+            devices = (
+                db.query(DeviceToken)
+                .filter(DeviceToken.user_id == user_id, DeviceToken.is_active)
+                .all()
+            )
 
             if not devices:
                 logger.info(f"No active devices for user {user_id}")
@@ -377,7 +398,9 @@ class RecallAlertService:
                 db.add(notification)
             except NameError:
                 # NotificationHistory not available, skip storage
-                logger.warning("NotificationHistory not available, skipping notification storage")
+                logger.warning(
+                    "NotificationHistory not available, skipping notification storage"
+                )
             except Exception as e:
                 logger.error(f"Error storing notification history: {e}")
 
@@ -396,7 +419,9 @@ class RecallAlertService:
 
             db.commit()
 
-            logger.info(f"Sent recall alert to {success_count}/{len(devices)} devices for user {user_id}")
+            logger.info(
+                f"Sent recall alert to {success_count}/{len(devices)} devices for user {user_id}"
+            )
             return success_count > 0
 
         except Exception as e:
@@ -410,11 +435,17 @@ class RecallAlertService:
         hazard = recall.get("hazard", "").lower()
 
         # Critical severity keywords
-        if any(word in hazard for word in ["death", "fatal", "choking", "suffocation", "strangulation"]):
+        if any(
+            word in hazard
+            for word in ["death", "fatal", "choking", "suffocation", "strangulation"]
+        ):
             return "critical"
 
         # High severity keywords
-        if any(word in hazard for word in ["injury", "burn", "cut", "poison", "toxic", "lead"]):
+        if any(
+            word in hazard
+            for word in ["injury", "burn", "cut", "poison", "toxic", "lead"]
+        ):
             return "high"
 
         # Medium severity keywords
@@ -452,10 +483,14 @@ async def check_all_agencies_for_recalls():
         # Check each agency
         for agency in RecallAlertService.AGENCY_ENDPOINTS.keys():
             try:
-                result = await RecallAlertService.check_agency_for_new_recalls(agency, last_check, db)
+                result = await RecallAlertService.check_agency_for_new_recalls(
+                    agency, last_check, db
+                )
 
                 if result.new_recalls_count > 0:
-                    logger.info(f"Found {result.new_recalls_count} new recalls from {agency}")
+                    logger.info(
+                        f"Found {result.new_recalls_count} new recalls from {agency}"
+                    )
                     all_new_recalls.extend(result.recalls)
 
             except Exception as e:
@@ -467,9 +502,13 @@ async def check_all_agencies_for_recalls():
 
             for recall in all_new_recalls:
                 # Find affected users
-                affected_users = await RecallAlertService.find_affected_users(recall, db)
+                affected_users = await RecallAlertService.find_affected_users(
+                    recall, db
+                )
 
-                logger.info(f"Recall {recall.get('recall_id')} affects {len(affected_users)} users")
+                logger.info(
+                    f"Recall {recall.get('recall_id')} affects {len(affected_users)} users"
+                )
 
                 # Send alerts to affected users
                 for user_id in affected_users:
@@ -511,7 +550,9 @@ def send_daily_recall_digest():
         # Get recalls from last 24 hours
         yesterday = datetime.utcnow() - timedelta(days=1)
 
-        recent_recalls = db.query(RecallDB).filter(RecallDB.created_at >= yesterday).all()
+        recent_recalls = (
+            db.query(RecallDB).filter(RecallDB.created_at >= yesterday).all()
+        )
 
         if not recent_recalls:
             logger.info("No new recalls for daily digest")
@@ -535,7 +576,9 @@ def send_daily_recall_digest():
 
 
 @recall_alert_router.post("/test-alert")
-async def test_recall_alert(user_id: int, product_name: str, db: Session = Depends(get_db)):
+async def test_recall_alert(
+    user_id: int, product_name: str, db: Session = Depends(get_db)
+):
     """Test endpoint to trigger a recall alert for a user"""
 
     mock_recall = {
@@ -595,7 +638,9 @@ async def get_alert_preferences(
 
 
 @recall_alert_router.post("/preferences")
-async def update_alert_preferences(preferences: UserAlertPreference, db: Session = Depends(get_db)):
+async def update_alert_preferences(
+    preferences: UserAlertPreference, db: Session = Depends(get_db)
+):
     """Update user's recall alert preferences"""
 
     # Store preferences in database
@@ -609,7 +654,9 @@ async def update_alert_preferences(preferences: UserAlertPreference, db: Session
 
 
 @recall_alert_router.get("/history/{user_id}")
-async def get_alert_history(user_id: int, limit: int = 50, db: Session = Depends(get_db)):
+async def get_alert_history(
+    user_id: int, limit: int = 50, db: Session = Depends(get_db)
+):
     """Get user's recall alert history"""
 
     try:
@@ -643,7 +690,9 @@ async def get_alert_history(user_id: int, limit: int = 50, db: Session = Depends
 
     except NameError:
         # Fallback: NotificationHistory not available, return empty history
-        logger.warning(f"NotificationHistory not available, returning empty history for user {user_id}")
+        logger.warning(
+            f"NotificationHistory not available, returning empty history for user {user_id}"
+        )
         return {
             "success": True,
             "alerts": [],

@@ -26,7 +26,9 @@ def patch_file(p: pathlib.Path) -> bool:
         changed = True
 
     # Replace class Foo(BaseModel): ... (only when that class block contains model_number:)
-    pattern = re.compile(r"(class\s+\w+\(\s*BaseModel\s*\)\s*:\s*)([\s\S]*?)(?=^class\s+\w+\(|\Z)", re.M)
+    pattern = re.compile(
+        r"(class\s+\w+\(\s*BaseModel\s*\)\s*:\s*)([\s\S]*?)(?=^class\s+\w+\(|\Z)", re.M
+    )
     flag = [False]
 
     def repl(m):
