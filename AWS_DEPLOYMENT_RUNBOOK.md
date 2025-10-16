@@ -17,7 +17,7 @@
 - **Port**: 5432
 - **Database**: `babyshield_db`
 - **Username**: `babyshield_user`
-- **Password**: `MandarunLabadiena25!`
+- **Password**: `<REDACTED - stored in AWS Secrets Manager>`
 - **Total Recalls**: 137,000+ records
 - **Custom Columns**: `severity`, `risk_category` (added manually)
 
