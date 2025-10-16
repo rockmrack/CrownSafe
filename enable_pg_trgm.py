@@ -12,7 +12,7 @@ try:
     import psycopg2
 except ImportError:
     print("❌ psycopg2 not installed. Installing...")
-    subprocess.run(["pip", "install", "psycopg2-binary"], check=True)
+    subprocess.run(["pip", "install", "psycopg2-binary==2.9.7"], check=True)
     import psycopg2
 
 # Database connection details
