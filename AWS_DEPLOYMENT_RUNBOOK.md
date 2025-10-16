@@ -437,10 +437,68 @@ $response | ConvertTo-Json -Depth 3
 - Port: Container listens on `8001`
 
 ### 🔐 Security
-- Database password is in task definition (consider moving to AWS Secrets Manager)
-- JWT secret key is in task definition (consider rotating periodically)
-- All credentials are in environment variables, not hardcoded
+- **Sensitive credentials (database password, JWT secret key) are currently stored in the ECS task definition as environment variables.**
 
+#### 👉 How to migrate credentials to AWS Secrets Manager
+
+1. **Create secrets in AWS Secrets Manager**
+   - Go to [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/).
+   - Click "Store a new secret".
+   - For database password:  
+     - Select "Other type of secret".
+     - Add a key (e.g., `DB_PASSWORD`) and its value.
+     - Name the secret (e.g., `babyshield/prod/db_password`).
+   - For JWT secret key:  
+     - Add a key (e.g., `JWT_SECRET_KEY`) and its value.
+     - Name the secret (e.g., `babyshield/prod/jwt_secret`).
+
+2. **Grant ECS Task Execution Role access to the secrets**
+   - Find the IAM role used by your ECS task (see ECS Task Definition > Task Role).
+   - Attach a policy allowing `secretsmanager:GetSecretValue` for the relevant secrets. Example policy:
+     ```json
+     {
+       "Version": "2012-10-17",
+       "Statement": [
+         {
+           "Effect": "Allow",
+           "Action": "secretsmanager:GetSecretValue",
+           "Resource": [
+             "arn:aws:secretsmanager:eu-north-1:180703226577:secret:babyshield/prod/db_password-*",
+             "arn:aws:secretsmanager:eu-north-1:180703226577:secret:babyshield/prod/jwt_secret-*"
+           ]
+         }
+       ]
+     }
+     ```
+
+3. **Update ECS Task Definition to use secrets**
+   - In the task definition, under `containerDefinitions`, use the `secrets` parameter instead of `environment` for sensitive values.
+   - Example snippet:
+     ```json
+     "secrets": [
+       {
+         "name": "DB_PASSWORD",
+         "valueFrom": "arn:aws:secretsmanager:eu-north-1:180703226577:secret:babyshield/prod/db_password-xxxxxx"
+       },
+       {
+         "name": "JWT_SECRET_KEY",
+         "valueFrom": "arn:aws:secretsmanager:eu-north-1:180703226577:secret:babyshield/prod/jwt_secret-xxxxxx"
+       }
+     ]
+     ```
+   - Remove these keys from the `environment` section to avoid duplication.
+
+4. **(Optional) AWS CLI example to update task definition**
+   - See [AWS docs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data-secrets.html) for full details.
+   - Example:
+     ```sh
+     aws ecs register-task-definition \
+       --family babyshield-backend-task \
+       --container-definitions file://container-definitions.json
+     ```
+
+- **All credentials should be managed via AWS Secrets Manager, not hardcoded or stored in plaintext environment variables.**
+- **Rotate secrets regularly in AWS Secrets Manager.**
 ### 📈 Performance
 - CPU: 1 vCPU (1024 units)
 - Memory: 2 GB (2048 MB)
