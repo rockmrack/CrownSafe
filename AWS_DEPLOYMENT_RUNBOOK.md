@@ -8,7 +8,7 @@
 - **ECS Cluster**: `babyshield-cluster`
 - **ECS Service**: `babyshield-backend-task-service-0l41s2a9`
 - **Task Definition Family**: `babyshield-backend-task`
-- **Current Working Task**: `:63`
+- **Current Working Task**: `:183` (deployed Oct 16, 2025)
 - **ECR Repository**: `180703226577.dkr.ecr.eu-north-1.amazonaws.com/babyshield-backend`
 - **API URL**: https://babyshield.cureviax.ai
 
@@ -378,15 +378,15 @@ aws logs tail /ecs/babyshield-backend --since 30m --region eu-north-1 --follow
 ### Rollback to Previous Version
 
 ```powershell
-# Rollback to task definition :63 (last known good)
+# Rollback to task definition :183 (last known good - Oct 16, 2025)
 aws ecs update-service `
   --cluster babyshield-cluster `
   --service babyshield-backend-task-service-0l41s2a9 `
-  --task-definition babyshield-backend-task:63 `
+  --task-definition babyshield-backend-task:183 `
   --force-new-deployment `
   --region eu-north-1
 
-Write-Host "✅ Rolled back to task definition :63" -ForegroundColor Yellow
+Write-Host "✅ Rolled back to task definition :183" -ForegroundColor Yellow
 ```
 
 ### Test Database Connection
@@ -421,7 +421,7 @@ $response | ConvertTo-Json -Depth 3
 
 ### ⚠️ Critical Points
 1. **Always use service**: `babyshield-backend-task-service-0l41s2a9` (NOT `bv5v69zq` - that was deleted)
-2. **Latest working task**: `:63`
+2. **Current production task**: `:183` (deployed Oct 16, 2025 - image: main-20251016-1353-aff4f77)
 3. **Database has custom columns**: `severity`, `risk_category` (added manually, not in migrations)
 4. **Redis is required**: Auth, rate limiting, visual processing all depend on Redis
 5. **ECS auto-rollback enabled**: Failed deployments automatically roll back to last working version
@@ -484,6 +484,7 @@ aws ecr list-images `
 
 ---
 
-**Last Updated**: October 16, 2025
-**Current Production Task**: babyshield-backend-task:63
-**Current Production Image**: production-fixed-20250901
+**Last Updated**: October 16, 2025  
+**Current Production Task**: babyshield-backend-task:183  
+**Current Production Image**: main-20251016-1353-aff4f77  
+**Deployment Status**: ✅ Active and Healthy
