@@ -20,11 +20,7 @@ attack_intelligence: Dict[str, list] = {"ips": [], "patterns": [], "user_agents"
 
 def record_honeypot_hit(request: Request, honeypot_type: str):
     """Record honeypot access for security intelligence"""
-    client_ip = (
-        request.headers.get("X-Forwarded-For", request.client.host)
-        .split(",")[0]
-        .strip()
-    )
+    client_ip = request.headers.get("X-Forwarded-For", request.client.host).split(",")[0].strip()
     user_agent = request.headers.get("User-Agent", "Unknown")
 
     # Record the hit
@@ -44,9 +40,7 @@ def record_honeypot_hit(request: Request, honeypot_type: str):
 
     # Auto-block after multiple hits
     if honeypot_hits[client_ip] >= 3:
-        logger.error(
-            f"🚨 AUTO-BLOCKING IP {client_ip} after {honeypot_hits[client_ip]} honeypot hits"
-        )
+        logger.error(f"🚨 AUTO-BLOCKING IP {client_ip} after {honeypot_hits[client_ip]} honeypot hits")
         # In production, this would add to IP blocklist
 
 
@@ -109,9 +103,7 @@ def create_convincing_response(honeypot_type: str) -> JSONResponse:
 # Honeypot Endpoints (designed to attract attackers)
 
 
-@router.get(
-    "/admin/login.php", operation_id="admin_login_honeypot_get", include_in_schema=False
-)
+@router.get("/admin/login.php", operation_id="admin_login_honeypot_get", include_in_schema=False)
 @router.post(
     "/admin/login.php",
     operation_id="admin_login_honeypot_post",
@@ -215,8 +207,6 @@ async def get_attack_intelligence():
         "honeypot_hits": len(honeypot_hits),
         "unique_attackers": len(attack_intelligence["ips"]),
         "attack_patterns": len(attack_intelligence["patterns"]),
-        "top_attacking_ips": sorted(
-            honeypot_hits.items(), key=lambda x: x[1], reverse=True
-        )[:10],
+        "top_attacking_ips": sorted(honeypot_hits.items(), key=lambda x: x[1], reverse=True)[:10],
         "common_user_agents": attack_intelligence["user_agents"][:10],
     }

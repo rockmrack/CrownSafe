@@ -40,9 +40,7 @@ class RedisSearchCache:
                     "REDIS_CACHE_URL",
                     os.getenv("RATE_LIMIT_REDIS_URL", "redis://localhost:6379/0"),
                 )
-                self.redis = Redis.from_url(
-                    redis_url, encoding="utf-8", decode_responses=True
-                )
+                self.redis = Redis.from_url(redis_url, encoding="utf-8", decode_responses=True)
                 await self.redis.ping()
                 logger.info(f"Redis cache connected to {redis_url}")
             except Exception as e:
@@ -54,9 +52,7 @@ class RedisSearchCache:
         if self.redis:
             await self.redis.close()
 
-    def _make_cache_key(
-        self, filters_hash: str, as_of: str, after_tuple: Optional[tuple] = None
-    ) -> str:
+    def _make_cache_key(self, filters_hash: str, as_of: str, after_tuple: Optional[tuple] = None) -> str:
         """
         Generate cache key for search results
 
@@ -87,9 +83,7 @@ class RedisSearchCache:
 
         return ":".join(components)
 
-    async def get(
-        self, filters_hash: str, as_of: str, after_tuple: Optional[tuple] = None
-    ) -> Optional[Dict[str, Any]]:
+    async def get(self, filters_hash: str, as_of: str, after_tuple: Optional[tuple] = None) -> Optional[Dict[str, Any]]:
         """
         Get cached search results
 
@@ -219,9 +213,7 @@ class RedisSearchCache:
                     break
 
             if deleted > 0:
-                logger.info(
-                    f"Invalidated {deleted} cache keys matching pattern: {pattern}"
-                )
+                logger.info(f"Invalidated {deleted} cache keys matching pattern: {pattern}")
 
         except Exception as e:
             logger.warning(f"Pattern invalidation error: {e}")
@@ -260,16 +252,12 @@ class RedisSearchCache:
                 "connected": True,
                 "keys": key_count,
                 "epoch": epoch,
-                "memory_used_mb": round(
-                    memory.get("used_memory", 0) / (1024 * 1024), 2
-                ),
+                "memory_used_mb": round(memory.get("used_memory", 0) / (1024 * 1024), 2),
                 "hits": info.get("keyspace_hits", 0),
                 "misses": info.get("keyspace_misses", 0),
                 "hit_rate": round(
                     info.get("keyspace_hits", 0)
-                    / max(
-                        info.get("keyspace_hits", 0) + info.get("keyspace_misses", 1), 1
-                    )
+                    / max(info.get("keyspace_hits", 0) + info.get("keyspace_misses", 1), 1)
                     * 100,
                     2,
                 ),

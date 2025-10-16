@@ -48,9 +48,7 @@ if TEST_MODE:
 
 if not DATABASE_URL:
     # In production/staging we require DATABASE_URL to be set to a PostgreSQL DSN
-    logger.warning(
-        "DATABASE_URL not set. Application may fail to connect to a production database."
-    )
+    logger.warning("DATABASE_URL not set. Application may fail to connect to a production database.")
 
 # -------------------------------------------------------------------
 # Engine & Session setup
@@ -144,16 +142,12 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     stripe_customer_id = Column(String, unique=True, index=True, nullable=True)
     hashed_password = Column(String, nullable=False, default="", server_default="")
-    is_subscribed = Column(
-        Boolean, default=False, nullable=False
-    )  # Single subscription status
+    is_subscribed = Column(Boolean, default=False, nullable=False)  # Single subscription status
     is_pregnant = Column(Boolean, default=False, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)  # Account status
 
     # Relationship to family members
-    family_members = relationship(
-        "FamilyMember", back_populates="user", cascade="all, delete-orphan"
-    )
+    family_members = relationship("FamilyMember", back_populates="user", cascade="all, delete-orphan")
 
     def to_dict(self) -> dict:
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -174,9 +168,7 @@ class FamilyMember(Base):
 
     # Relationships
     user = relationship("User", back_populates="family_members")
-    allergies = relationship(
-        "Allergy", back_populates="family_member", cascade="all, delete-orphan"
-    )
+    allergies = relationship("Allergy", back_populates="family_member", cascade="all, delete-orphan")
 
     def to_dict(self) -> dict:
         return {
@@ -187,9 +179,7 @@ class FamilyMember(Base):
         }
 
     def __repr__(self):
-        return (
-            f"<FamilyMember(id={self.id}, name={self.name!r}, user_id={self.user_id})>"
-        )
+        return f"<FamilyMember(id={self.id}, name={self.name!r}, user_id={self.user_id})>"
 
 
 class Allergy(Base):
@@ -370,9 +360,7 @@ def ensure_test_users():
     """Create or update test users for testing."""
     if TEST_MODE:
         try:
-            with engine.connect().execution_options(
-                isolation_level="AUTOCOMMIT"
-            ) as conn:
+            with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
                 # Clean up existing test users
                 conn.execute(text("DELETE FROM users WHERE id IN (1, 2)"))
                 print("Cleaned up existing test users")
@@ -414,9 +402,7 @@ def ensure_test_users():
             print(f"Error creating test users: {e}")
 
 
-def create_or_update_test_user(
-    user_id: int, email: str, is_subscribed: bool = False, is_pregnant: bool = False
-):
+def create_or_update_test_user(user_id: int, email: str, is_subscribed: bool = False, is_pregnant: bool = False):
     """Helper to create or update a single test user."""
     with get_db_session() as db:
         try:
@@ -513,20 +499,14 @@ class SafetyArticle(Base):
     __tablename__ = "safety_articles"
 
     id = Column(Integer, primary_key=True, index=True)
-    article_id = Column(
-        String, unique=True, index=True, nullable=False
-    )  # A unique ID we create or get from the source
+    article_id = Column(String, unique=True, index=True, nullable=False)  # A unique ID we create or get from the source
     title = Column(String, nullable=False)
     summary = Column(Text, nullable=False)
     source_agency = Column(String, index=True, nullable=False)  # e.g., "CPSC", "AAP"
     publication_date = Column(Date, nullable=False)
     image_url = Column(String, nullable=True)  # URL for the article's main image
-    article_url = Column(
-        String, nullable=False
-    )  # The direct URL to the original article
-    is_featured = Column(
-        Boolean, default=False, index=True
-    )  # A flag to feature an article on the home screen
+    article_url = Column(String, nullable=False)  # The direct URL to the original article
+    is_featured = Column(Boolean, default=False, index=True)  # A flag to feature an article on the home screen
 
 
 # -------------------------------------------------------------------

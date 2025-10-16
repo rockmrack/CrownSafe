@@ -31,15 +31,11 @@ class HazardAnalysisLogic:
         self.agent_id = agent_id
         self.logger = logger_instance or logger
         if not API_KEY:
-            self.logger.critical(
-                "OPENAI_API_KEY not found in environment variables. The agent cannot function."
-            )
+            self.logger.critical("OPENAI_API_KEY not found in environment variables. The agent cannot function.")
             raise ValueError("OPENAI_API_KEY is not set.")
         self.logger.info(f"HazardAnalysisLogic initialized for agent {self.agent_id}.")
 
-    def _create_llm_prompt(
-        self, recall_data: List[Dict[str, Any]], product_name: str
-    ) -> str:
+    def _create_llm_prompt(self, recall_data: List[Dict[str, Any]], product_name: str) -> str:
         """Creates a system prompt for the LLM to summarize recall information."""
         recall_details = ""
         for i, recall in enumerate(recall_data):
@@ -146,11 +142,7 @@ Example of a perfect response:
             prompt = self._create_llm_prompt(recall_data, product_name)
             analysis = await self._query_llm(prompt)
 
-            if (
-                isinstance(analysis, dict)
-                and "summary" in analysis
-                and "risk_level" in analysis
-            ):
+            if isinstance(analysis, dict) and "summary" in analysis and "risk_level" in analysis:
                 # --- START OF NEW CONDITIONAL WARNING LOGIC ---
                 if visual_confidence and 0.7 <= visual_confidence < 0.95:
                     warning_text = f"⚠️ Warning: This product was identified from a photo with {int(visual_confidence * 100)}% confidence. Please verify the model number on the product to ensure this information is accurate for your specific item. "

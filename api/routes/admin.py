@@ -31,9 +31,7 @@ router = APIRouter(
 )
 
 
-def create_response(
-    data: Any, request: Request, status_code: int = 200
-) -> JSONResponse:
+def create_response(data: Any, request: Request, status_code: int = 200) -> JSONResponse:
     """Create standard JSON response with trace ID"""
     return JSONResponse(
         content={
@@ -66,9 +64,7 @@ async def trigger_ingestion(
     metadata = body.get("metadata", {})
 
     if not agency:
-        raise APIError(
-            status_code=400, code="MISSING_AGENCY", message="Agency is required"
-        )
+        raise APIError(status_code=400, code="MISSING_AGENCY", message="Agency is required")
 
     if agency not in IngestionRunner.SUPPORTED_AGENCIES:
         raise APIError(
@@ -112,9 +108,7 @@ async def trigger_ingestion(
             },
         )
 
-        return create_response(
-            {"runId": run_id, "status": status, "agency": agency, "mode": mode}, request
-        )
+        return create_response({"runId": run_id, "status": status, "agency": agency, "mode": mode}, request)
 
     except ValueError as e:
         raise APIError(status_code=400, code="INVALID_REQUEST", message=str(e))
@@ -183,9 +177,7 @@ async def list_ingestion_runs(
 
 
 @router.get("/runs/{run_id}")
-async def get_ingestion_run(
-    run_id: str, request: Request, db: Session = Depends(get_db)
-):
+async def get_ingestion_run(run_id: str, request: Request, db: Session = Depends(get_db)):
     """
     Get details of a specific ingestion run
     """
@@ -194,17 +186,13 @@ async def get_ingestion_run(
         try:
             UUID(run_id)
         except ValueError:
-            raise APIError(
-                status_code=400, code="INVALID_RUN_ID", message="Invalid run ID format"
-            )
+            raise APIError(status_code=400, code="INVALID_RUN_ID", message="Invalid run ID format")
 
         # Query run
         run = db.query(IngestionRun).filter(IngestionRun.id == run_id).first()
 
         if not run:
-            raise APIError(
-                status_code=404, code="RUN_NOT_FOUND", message="Ingestion run not found"
-            )
+            raise APIError(status_code=404, code="RUN_NOT_FOUND", message="Ingestion run not found")
 
         return create_response(run.to_dict(), request)
 
@@ -234,17 +222,13 @@ async def cancel_ingestion_run(
         try:
             UUID(run_id)
         except ValueError:
-            raise APIError(
-                status_code=400, code="INVALID_RUN_ID", message="Invalid run ID format"
-            )
+            raise APIError(status_code=400, code="INVALID_RUN_ID", message="Invalid run ID format")
 
         # Check if run exists and is running
         run = db.query(IngestionRun).filter(IngestionRun.id == run_id).first()
 
         if not run:
-            raise APIError(
-                status_code=404, code="RUN_NOT_FOUND", message="Ingestion run not found"
-            )
+            raise APIError(status_code=404, code="RUN_NOT_FOUND", message="Ingestion run not found")
 
         if run.status != "running":
             raise APIError(
@@ -270,15 +254,11 @@ async def cancel_ingestion_run(
         raise
     except Exception as e:
         logger.error(f"Failed to cancel run {run_id}: {e}")
-        raise APIError(
-            status_code=500, code="CANCEL_FAILED", message="Failed to cancel ingestion"
-        )
+        raise APIError(status_code=500, code="CANCEL_FAILED", message="Failed to cancel ingestion")
 
 
 @router.post("/reindex", dependencies=[Depends(AdminRateLimit.get_reindex_limiter)])
-async def reindex_database(
-    request: Request, admin: str = Depends(require_admin), db: Session = Depends(get_db)
-):
+async def reindex_database(request: Request, admin: str = Depends(require_admin), db: Session = Depends(get_db)):
     """
     Reindex database and run VACUUM ANALYZE
     """
@@ -331,9 +311,7 @@ async def reindex_database(
 
     except Exception as e:
         logger.error(f"Reindex failed: {e}")
-        raise APIError(
-            status_code=500, code="REINDEX_FAILED", message="Failed to reindex database"
-        )
+        raise APIError(status_code=500, code="REINDEX_FAILED", message="Failed to reindex database")
 
 
 @router.get("/freshness")
@@ -355,15 +333,13 @@ async def data_freshness(request: Request, db: Session = Depends(get_db)):
                 func.max(EnhancedRecallDB.last_updated).label("last_updated"),
                 func.sum(
                     func.cast(
-                        EnhancedRecallDB.last_updated
-                        >= datetime.utcnow() - timedelta(hours=24),
+                        EnhancedRecallDB.last_updated >= datetime.utcnow() - timedelta(hours=24),
                         Integer,
                     )
                 ).label("new_24h"),
                 func.sum(
                     func.cast(
-                        EnhancedRecallDB.last_updated
-                        >= datetime.utcnow() - timedelta(days=7),
+                        EnhancedRecallDB.last_updated >= datetime.utcnow() - timedelta(days=7),
                         Integer,
                     )
                 ).label("new_7d"),
@@ -380,14 +356,10 @@ async def data_freshness(request: Request, db: Session = Depends(get_db)):
                 {
                     "agency": stat.agency,
                     "total": stat.total,
-                    "lastUpdated": stat.last_updated.isoformat()
-                    if stat.last_updated
-                    else None,
+                    "lastUpdated": stat.last_updated.isoformat() if stat.last_updated else None,
                     "new24h": stat.new_24h or 0,
                     "new7d": stat.new_7d or 0,
-                    "staleness": "fresh"
-                    if stat.new_24h > 0
-                    else ("recent" if stat.new_7d > 0 else "stale"),
+                    "staleness": "fresh" if stat.new_24h > 0 else ("recent" if stat.new_7d > 0 else "stale"),
                 }
             )
 
@@ -456,17 +428,11 @@ async def admin_statistics(request: Request, db: Session = Depends(get_db)):
         ingestion_stats = (
             db.query(
                 func.count(IngestionRun.id).label("total"),
-                func.sum(func.cast(IngestionRun.status == "success", Integer)).label(
-                    "success"
+                func.sum(func.cast(IngestionRun.status == "success", Integer)).label("success"),
+                func.sum(func.cast(IngestionRun.status == "failed", Integer)).label("failed"),
+                func.avg(func.extract("epoch", IngestionRun.finished_at - IngestionRun.started_at)).label(
+                    "avg_duration"
                 ),
-                func.sum(func.cast(IngestionRun.status == "failed", Integer)).label(
-                    "failed"
-                ),
-                func.avg(
-                    func.extract(
-                        "epoch", IngestionRun.finished_at - IngestionRun.started_at
-                    )
-                ).label("avg_duration"),
             )
             .filter(IngestionRun.created_at >= week_ago)
             .first()

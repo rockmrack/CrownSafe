@@ -39,17 +39,9 @@ class SubscriptionService:
                 "user_id": user_id,
             }
 
-        allow_users = {
-            s.strip()
-            for s in os.getenv("ENTITLEMENTS_ALLOWLIST", "").split(",")
-            if s.strip()
-        }
+        allow_users = {s.strip() for s in os.getenv("ENTITLEMENTS_ALLOWLIST", "").split(",") if s.strip()}
         if str(user_id) in allow_users:
-            feats = {
-                s.strip()
-                for s in os.getenv("ENTITLEMENTS_FEATURES", "").split(",")
-                if s.strip()
-            }
+            feats = {s.strip() for s in os.getenv("ENTITLEMENTS_FEATURES", "").split(",") if s.strip()}
             if not feats or (feature and feature in feats):
                 return {
                     "has_access": True,
@@ -59,9 +51,7 @@ class SubscriptionService:
         return None
 
     @staticmethod
-    def is_active(
-        user_id: int, db: Optional[Session] = None, feature: str = None
-    ) -> bool:
+    def is_active(user_id: int, db: Optional[Session] = None, feature: str = None) -> bool:
         """
         Check if user has an active subscription
 
@@ -76,9 +66,7 @@ class SubscriptionService:
         # Check dev override first
         override = SubscriptionService._dev_entitlement_override(user_id, feature)
         if override:
-            logger.info(
-                f"DEV OVERRIDE: Granting access to user {user_id} for feature {feature}"
-            )
+            logger.info(f"DEV OVERRIDE: Granting access to user {user_id} for feature {feature}")
             return True
 
         if db:
@@ -385,9 +373,7 @@ class SubscriptionService:
                         user = db.query(User).filter(User.id == user_id).first()
                         if user:
                             user.is_subscribed = False
-                            logger.info(
-                                f"Updated user {user_id} subscription status to False"
-                            )
+                            logger.info(f"Updated user {user_id} subscription status to False")
 
             db.commit()
 
@@ -455,11 +441,7 @@ class SubscriptionService:
             )
 
             # Total expired
-            expired_count = (
-                db.query(Subscription)
-                .filter(Subscription.status == SubscriptionStatus.EXPIRED)
-                .count()
-            )
+            expired_count = db.query(Subscription).filter(Subscription.status == SubscriptionStatus.EXPIRED).count()
 
             return {
                 "active_total": active_count,
@@ -467,10 +449,6 @@ class SubscriptionService:
                 "active_annual": annual_count,
                 "cancelled_active": cancelled_count,
                 "expired_total": expired_count,
-                "monthly_percentage": (monthly_count / active_count * 100)
-                if active_count > 0
-                else 0,
-                "annual_percentage": (annual_count / active_count * 100)
-                if active_count > 0
-                else 0,
+                "monthly_percentage": (monthly_count / active_count * 100) if active_count > 0 else 0,
+                "annual_percentage": (annual_count / active_count * 100) if active_count > 0 else 0,
             }

@@ -95,9 +95,7 @@ class TestChatEnabledFor:
 
                 # With 100 users and 10% rollout, we should find both enabled and disabled
                 assert found_enabled, "Should find at least one user in 10% rollout"
-                assert (
-                    found_disabled
-                ), "Should find at least one user NOT in 10% rollout"
+                assert found_disabled, "Should find at least one user NOT in 10% rollout"
 
     def test_prefers_user_id_over_device_id(self):
         with patch("core.feature_flags.FEATURE_CHAT_ENABLED", True):

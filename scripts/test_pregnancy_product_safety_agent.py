@@ -42,9 +42,7 @@ def test_pregnancy_safety_logic():
     assert "not found" in result["message"]
     print("   -> SUCCESS: Correctly handled a product not found in the database.")
 
-    print(
-        "\n--- All tests passed successfully! PregnancyProductSafetyAgent is working. ---"
-    )
+    print("\n--- All tests passed successfully! PregnancyProductSafetyAgent is working. ---")
 
 
 if __name__ == "__main__":

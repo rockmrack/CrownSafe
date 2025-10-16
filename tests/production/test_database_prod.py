@@ -32,9 +32,7 @@ class TestProductionDatabase:
 
         connection_time = (time.time() - start_time) * 1000  # ms
 
-        assert (
-            connection_time < 100
-        ), f"Connection took {connection_time}ms (should be < 100ms)"
+        assert connection_time < 100, f"Connection took {connection_time}ms (should be < 100ms)"
 
         db.close()
 
@@ -83,9 +81,7 @@ class TestProductionDatabase:
         try:
             pool_size = pool.size() if callable(pool.size) else pool.size
         except (TypeError, AttributeError):
-            pool_size = (
-                getattr(pool, "_pool", {}).qsize() if hasattr(pool, "_pool") else 5
-            )
+            pool_size = getattr(pool, "_pool", {}).qsize() if hasattr(pool, "_pool") else 5
 
         assert pool_size >= 0, f"Pool size should be non-negative: {pool_size}"
 
@@ -134,17 +130,13 @@ class TestProductionDatabase:
                 if is_postgres:
                     # PostgreSQL syntax
                     result = db.execute(
-                        text(
-                            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = :table)"
-                        ),
+                        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = :table)"),
                         {"table": table},
                     )
                 elif is_sqlite:
                     # SQLite syntax
                     result = db.execute(
-                        text(
-                            "SELECT name FROM sqlite_master WHERE type='table' AND name = :table"
-                        ),
+                        text("SELECT name FROM sqlite_master WHERE type='table' AND name = :table"),
                         {"table": table},
                     )
                 else:
@@ -159,9 +151,7 @@ class TestProductionDatabase:
                 if not exists and table in ["users", "alembic_version"]:
                     # Critical tables - but skip in development/SQLite
                     if is_sqlite:
-                        pytest.skip(
-                            f"Table '{table}' not found in SQLite (development mode)"
-                        )
+                        pytest.skip(f"Table '{table}' not found in SQLite (development mode)")
                     else:
                         pytest.fail(f"Critical table '{table}' does not exist")
                 elif not exists:
@@ -184,9 +174,7 @@ class TestProductionDatabase:
         try:
             # Check alembic_version table exists
             result = db.execute(
-                text(
-                    "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'alembic_version')"
-                )
+                text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'alembic_version')")
             )
             has_alembic = result.fetchone()[0]
 
@@ -197,9 +185,7 @@ class TestProductionDatabase:
             result = db.execute(text("SELECT version_num FROM alembic_version"))
             version = result.fetchone()
 
-            assert (
-                version is not None
-            ), "No migration version found - database may not be initialized"
+            assert version is not None, "No migration version found - database may not be initialized"
             assert len(version[0]) > 0, "Migration version should not be empty"
 
         except Exception as e:
@@ -235,9 +221,7 @@ class TestProductionDatabase:
 
             # Read it back
             result = db.execute(
-                text(
-                    "SELECT test_value FROM test_production_writes WHERE test_value = :val"
-                ),
+                text("SELECT test_value FROM test_production_writes WHERE test_value = :val"),
                 {"val": test_value},
             )
             row = result.fetchone()
@@ -275,9 +259,7 @@ class TestProductionDatabase:
 
             # Session should now be usable after rollback
             result = db.execute(text("SELECT 1"))
-            assert (
-                result.fetchone()[0] == 1
-            ), "Session should recover from error after rollback"
+            assert result.fetchone()[0] == 1, "Session should recover from error after rollback"
 
         finally:
             db.close()
@@ -290,9 +272,7 @@ class TestProductionDatabase:
             unicode_test = "Hello 👶 世界 🍼 Здравствуй"
 
             # Try to use Unicode in a query
-            result = db.execute(
-                text("SELECT :text as unicode_test"), {"text": unicode_test}
-            )
+            result = db.execute(text("SELECT :text as unicode_test"), {"text": unicode_test})
             value = result.fetchone()[0]
 
             assert value == unicode_test, "Unicode should be preserved"
@@ -367,15 +347,11 @@ class TestProductionDatabaseHealth:
             # Check if we're using SQLite (for local development)
             db_url = str(engine.url)
             if "sqlite" in db_url.lower():
-                pytest.skip(
-                    "Running with SQLite in development mode (DATABASE_URL not required)"
-                )
+                pytest.skip("Running with SQLite in development mode (DATABASE_URL not required)")
             else:
                 assert False, "DATABASE_URL must be set for non-SQLite databases"
 
-        assert (
-            "://" in database_url
-        ), "DATABASE_URL should have protocol (postgresql://, sqlite://, etc.)"
+        assert "://" in database_url, "DATABASE_URL should have protocol (postgresql://, sqlite://, etc.)"
 
     def test_database_production_mode(self):
         """Test database is in production mode"""
@@ -384,12 +360,8 @@ class TestProductionDatabaseHealth:
         # In production, we should be using production database
         if environment == "production":
             database_url = os.getenv("DATABASE_URL", "")
-            assert (
-                "localhost" not in database_url
-            ), "Production should not use localhost"
-            assert (
-                "127.0.0.1" not in database_url
-            ), "Production should not use 127.0.0.1"
+            assert "localhost" not in database_url, "Production should not use localhost"
+            assert "127.0.0.1" not in database_url, "Production should not use 127.0.0.1"
 
     def test_database_connection_limit_not_exceeded(self):
         """Test we're not near connection limits"""
@@ -411,9 +383,7 @@ class TestProductionDatabaseHealth:
 
             # Warn if we're using > 80% of typical connection limit
             # Most PostgreSQL instances have 100-200 max connections
-            assert (
-                conn_count < 80
-            ), f"High connection count: {conn_count} (should be < 80)"
+            assert conn_count < 80, f"High connection count: {conn_count} (should be < 80)"
 
         except Exception as e:
             pytest.skip(f"Connection limit check skipped: {e}")

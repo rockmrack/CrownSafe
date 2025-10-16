@@ -24,9 +24,7 @@ def get_allowed_origins() -> List[str]:
 
     # Parse comma-separated list
     if origins_env:
-        origins = [
-            origin.strip() for origin in origins_env.split(",") if origin.strip()
-        ]
+        origins = [origin.strip() for origin in origins_env.split(",") if origin.strip()]
     else:
         # Default to known BabyShield domains
         origins = [
@@ -170,9 +168,7 @@ class CORSConfig:
         elif env == "staging":
             return cls.PRODUCTION_ORIGINS + cls.STAGING_ORIGINS
         elif env in ("development", "dev", "local"):
-            return (
-                cls.PRODUCTION_ORIGINS + cls.STAGING_ORIGINS + cls.DEVELOPMENT_ORIGINS
-            )
+            return cls.PRODUCTION_ORIGINS + cls.STAGING_ORIGINS + cls.DEVELOPMENT_ORIGINS
         else:
             # Unknown environment - be restrictive
             logger.warning(f"Unknown environment: {environment}")

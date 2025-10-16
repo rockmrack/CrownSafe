@@ -37,48 +37,32 @@ if TYPE_CHECKING:
     from websockets.legacy.protocol import WebSocketCommonProtocol
 
 DEFAULT_RECONNECT_DELAY: int = 5
-DEFAULT_MAX_CONNECT_ATTEMPTS: int = (
-    5  # Tenacity will use this for @retry if not overridden by instance
-)
+DEFAULT_MAX_CONNECT_ATTEMPTS: int = 5  # Tenacity will use this for @retry if not overridden by instance
 DEFAULT_HEARTBEAT_INTERVAL: int = 30
 
 
 def before_sleep_log(retry_state: RetryCallState):
-    instance_self = (
-        retry_state.args[0]
-        if retry_state.args and isinstance(retry_state.args[0], MCPClient)
-        else None
-    )
+    instance_self = retry_state.args[0] if retry_state.args and isinstance(retry_state.args[0], MCPClient) else None
     agent_id_str = instance_self.agent_id if instance_self else "UnknownAgent"
 
     # Determine max_attempts for logging correctly
     max_attempts_for_log = DEFAULT_MAX_CONNECT_ATTEMPTS  # Default
-    if instance_self and hasattr(
-        instance_self, "max_connect_attempts_for_retry_decorator"
-    ):
+    if instance_self and hasattr(instance_self, "max_connect_attempts_for_retry_decorator"):
         max_attempts_for_log = instance_self.max_connect_attempts_for_retry_decorator
-    elif instance_self and hasattr(
-        instance_self, "max_connect_attempts"
-    ):  # Fallback to instance attribute
+    elif instance_self and hasattr(instance_self, "max_connect_attempts"):  # Fallback to instance attribute
         max_attempts_for_log = instance_self.max_connect_attempts
 
     wait_time_for_log = DEFAULT_RECONNECT_DELAY  # Default
     if instance_self and hasattr(instance_self, "reconnect_delay_for_retry_decorator"):
         wait_time_for_log = instance_self.reconnect_delay_for_retry_decorator
-    elif instance_self and hasattr(
-        instance_self, "reconnect_delay"
-    ):  # Fallback to instance attribute
+    elif instance_self and hasattr(instance_self, "reconnect_delay"):  # Fallback to instance attribute
         wait_time_for_log = instance_self.reconnect_delay
 
     # If tenacity provides next_action.sleep, use that as it's the actual calculated wait
     if retry_state.next_action and hasattr(retry_state.next_action, "sleep"):
         wait_time_for_log = retry_state.next_action.sleep
 
-    logger_to_use = (
-        instance_self.logger
-        if instance_self and hasattr(instance_self, "logger")
-        else module_logger
-    )
+    logger_to_use = instance_self.logger if instance_self and hasattr(instance_self, "logger") else module_logger
     logger_to_use.warning(
         f"MCPClient ({agent_id_str}): Connection attempt {retry_state.attempt_number}/{max_attempts_for_log} failed. "
         f"Retrying in {wait_time_for_log:.2f}s. Error: {retry_state.outcome.exception() if retry_state.outcome else 'N/A'}"
@@ -99,9 +83,7 @@ class MCPClient:
         heartbeat_interval: int = DEFAULT_HEARTBEAT_INTERVAL,
     ):
         if not all([agent_id, agent_name, agent_type, mcp_server_url, message_handler]):
-            raise ValueError(
-                "agent_id, agent_name, agent_type, mcp_server_url, and message_handler are required."
-            )
+            raise ValueError("agent_id, agent_name, agent_type, mcp_server_url, and message_handler are required.")
 
         self.agent_id = agent_id
         self.agent_name = agent_name
@@ -139,9 +121,7 @@ class MCPClient:
         try:
             return self.websocket.state == WebSocketStateEnum.OPEN
         except AttributeError:
-            self.logger.error(
-                f"AttributeError accessing websocket.state for {self.agent_id}."
-            )
+            self.logger.error(f"AttributeError accessing websocket.state for {self.agent_id}.")
             return False
         except Exception as e:
             self.logger.error(
@@ -164,9 +144,7 @@ class MCPClient:
         stop=stop_after_attempt(
             DEFAULT_MAX_CONNECT_ATTEMPTS
         ),  # Uses default, not instance specific max_connect_attempts
-        wait=wait_fixed(
-            DEFAULT_RECONNECT_DELAY
-        ),  # Uses default, not instance specific reconnect_delay
+        wait=wait_fixed(DEFAULT_RECONNECT_DELAY),  # Uses default, not instance specific reconnect_delay
         retry=retry_if_exception_type(
             (
                 MCPConnectionError,
@@ -184,9 +162,7 @@ class MCPClient:
         self.logger.info(f"Attempting to connect to {self.ws_url} ({self.agent_id})...")
         try:
             if self.websocket is not None and not self.is_websocket_open():
-                self.logger.debug(
-                    f"Clearing previous non-open WebSocket for {self.agent_id}."
-                )
+                self.logger.debug(f"Clearing previous non-open WebSocket for {self.agent_id}.")
                 try:
                     await self.websocket.close()
                 except Exception:
@@ -195,27 +171,17 @@ class MCPClient:
 
             # Pass instance-specific timeout to websockets.connect if possible, or use a default
             # For now, using a default timeout for the connection attempt itself.
-            connect_timeout = (
-                self.reconnect_delay_for_retry_decorator * 1.5
-            )  # Example: 1.5x the retry delay
-            self.websocket = await asyncio.wait_for(
-                websockets.connect(self.ws_url), timeout=connect_timeout
-            )
+            connect_timeout = self.reconnect_delay_for_retry_decorator * 1.5  # Example: 1.5x the retry delay
+            self.websocket = await asyncio.wait_for(websockets.connect(self.ws_url), timeout=connect_timeout)
 
             if self.is_websocket_open():
                 self._is_connected = True
                 self._stop_requested.clear()
-                self.logger.info(
-                    f"WebSocket connection established successfully for {self.agent_id}."
-                )
+                self.logger.info(f"WebSocket connection established successfully for {self.agent_id}.")
                 self._receive_task = asyncio.create_task(self._receive_loop())
                 self._heartbeat_task = asyncio.create_task(self._send_heartbeat())
             else:
-                ws_state_str = (
-                    str(getattr(self.websocket, "state", "N/A"))
-                    if self.websocket
-                    else "None"
-                )
+                ws_state_str = str(getattr(self.websocket, "state", "N/A")) if self.websocket else "None"
                 self.logger.error(
                     f"connect() for {self.agent_id} completed but WebSocket not OPEN. State: {ws_state_str}"
                 )
@@ -223,18 +189,14 @@ class MCPClient:
                     await self.websocket.close()
                 self.websocket = None
                 self._is_connected = False
-                raise MCPConnectionError(
-                    f"Failed to establish an OPEN WebSocket connection for {self.agent_id}."
-                )
+                raise MCPConnectionError(f"Failed to establish an OPEN WebSocket connection for {self.agent_id}.")
         except asyncio.TimeoutError:  # Timeout for the websockets.connect call itself
             self._is_connected = False
             self.websocket = None
             self.logger.error(
                 f"Connection attempt to {self.ws_url} for {self.agent_id} timed out after {connect_timeout}s."
             )
-            raise MCPConnectionError(
-                f"Connection attempt timed out for {self.agent_id}"
-            )
+            raise MCPConnectionError(f"Connection attempt timed out for {self.agent_id}")
         except (
             InvalidURI,
             ConnectionRefusedError,
@@ -247,17 +209,13 @@ class MCPClient:
                 self.logger.critical(f"Invalid URI for {self.agent_id}: {self.ws_url}")
                 raise MCPConnectionError(f"Invalid URI: {self.ws_url}") from e
             elif isinstance(e, ConnectionRefusedError):
-                self.logger.error(
-                    f"Connection refused by server at {self.ws_url} for {self.agent_id}"
-                )
+                self.logger.error(f"Connection refused by server at {self.ws_url} for {self.agent_id}")
                 raise MCPConnectionError(f"Connection refused: {self.ws_url}") from e
             elif isinstance(e, WebsocketsInvalidStatus):
                 self.logger.error(
                     f"Server rejected WebSocket for {self.agent_id}: {e.status_code} {e.reason if hasattr(e, 'reason') else 'N/A'}"
                 )
-                raise MCPConnectionError(
-                    f"Server rejected WebSocket connection: {e.status_code}"
-                ) from e
+                raise MCPConnectionError(f"Server rejected WebSocket connection: {e.status_code}") from e
             elif isinstance(e, WebSocketException):
                 self.logger.error(
                     f"WebSocket connection failed for {self.agent_id}: {e}",
@@ -271,9 +229,7 @@ class MCPClient:
                 f"Critical unexpected error during connect for {self.agent_id}: {e}",
                 exc_info=True,
             )
-            raise MCPConnectionError(
-                f"Critical unexpected connection error: {e}"
-            ) from e
+            raise MCPConnectionError(f"Critical unexpected connection error: {e}") from e
 
     async def disconnect(self):
         if not self._is_connected and self.websocket is None:
@@ -281,27 +237,19 @@ class MCPClient:
             return
         self.logger.info(f"Disconnecting ({self.agent_id})...")
         self._stop_requested.set()
-        tasks_to_cancel = [
-            t for t in [self._heartbeat_task, self._receive_task] if t and not t.done()
-        ]
+        tasks_to_cancel = [t for t in [self._heartbeat_task, self._receive_task] if t and not t.done()]
         for task in tasks_to_cancel:
             task.cancel()
         if tasks_to_cancel:
-            self.logger.debug(
-                f"Awaiting cancellation of {len(tasks_to_cancel)} tasks for {self.agent_id}."
-            )
+            self.logger.debug(f"Awaiting cancellation of {len(tasks_to_cancel)} tasks for {self.agent_id}.")
             await asyncio.gather(*tasks_to_cancel, return_exceptions=True)
             self.logger.debug(f"Tasks cancelled for {self.agent_id}.")
         if self.websocket and self.is_websocket_open():
             try:
-                await self.websocket.close(
-                    code=1000, reason="Client initiated disconnect"
-                )
+                await self.websocket.close(code=1000, reason="Client initiated disconnect")
                 self.logger.info(f"WebSocket closed gracefully for {self.agent_id}.")
             except Exception as e:
-                self.logger.error(
-                    f"Error closing WebSocket for {self.agent_id}: {e}", exc_info=True
-                )
+                self.logger.error(f"Error closing WebSocket for {self.agent_id}: {e}", exc_info=True)
         self.websocket = None
         self._is_connected = False
         self._receive_task = None
@@ -317,9 +265,7 @@ class MCPClient:
         correlation_id: Optional[str] = None,
     ):
         if not self.is_connected:
-            raise MCPConnectionError(
-                f"Cannot send message ({self.agent_id}), not connected."
-            )
+            raise MCPConnectionError(f"Cannot send message ({self.agent_id}), not connected.")
         if not message_type:
             raise ValueError("message_type is required.")
 
@@ -346,18 +292,10 @@ class MCPClient:
             message_json = message.model_dump_json()
             # Log less for PING to reduce noise
             if message_type == "PING":
-                self.logger.debug(
-                    f"Sending PING to {target_service or target_agent_id} (CorrID: {correlation_id})"
-                )
+                self.logger.debug(f"Sending PING to {target_service or target_agent_id} (CorrID: {correlation_id})")
             else:
-                log_message_snippet = (
-                    message_json[:300] + "..."
-                    if len(message_json) > 300
-                    else message_json
-                )
-                self.logger.debug(
-                    f"Sending message ({self.agent_id}): {log_message_snippet}"
-                )
+                log_message_snippet = message_json[:300] + "..." if len(message_json) > 300 else message_json
+                self.logger.debug(f"Sending message ({self.agent_id}): {log_message_snippet}")
 
             await self.websocket.send(message_json)  # type: ignore
 
@@ -368,13 +306,9 @@ class MCPClient:
                     f"Sent message Type='{message.mcp_header.message_type}', Target='{target_agent_id or target_service}', CorrID='{message.mcp_header.correlation_id}' from {self.agent_id}"
                 )
         except WebSocketException as e:
-            self.logger.error(
-                f"WebSocket error during send ({self.agent_id}): {e}", exc_info=True
-            )
+            self.logger.error(f"WebSocket error during send ({self.agent_id}): {e}", exc_info=True)
             self._is_connected = False  # Assume connection is lost on send error
-            raise MCPConnectionError(
-                f"WebSocket send error ({self.agent_id}): {e}"
-            ) from e
+            raise MCPConnectionError(f"WebSocket send error ({self.agent_id}): {e}") from e
         except Exception as e:
             self.logger.error(
                 f"Failed to send message Type='{message_type}' ({self.agent_id}): {e}",
@@ -411,12 +345,8 @@ class MCPClient:
             and all(isinstance(c, str) for c in capabilities_to_query)
             and capabilities_to_query
         ):
-            self.logger.error(
-                f"Invalid capabilities_to_query for {self.agent_id}: {capabilities_to_query}"
-            )
-            raise ValueError(
-                "capabilities_to_query must be a non-empty list of strings."
-            )
+            self.logger.error(f"Invalid capabilities_to_query for {self.agent_id}: {capabilities_to_query}")
+            raise ValueError("capabilities_to_query must be a non-empty list of strings.")
         correlation_id_for_query = str(uuid.uuid4())
         payload = {
             "requester_agent_id": self.agent_id,
@@ -444,35 +374,23 @@ class MCPClient:
         self.logger.info(f"Receive loop started for {self.agent_id}.")
         while not self._stop_requested.is_set() and self._is_connected:
             if not self.is_websocket_open():
-                self.logger.warning(
-                    f"Receive loop ({self.agent_id}): WebSocket not open. Breaking loop."
-                )
+                self.logger.warning(f"Receive loop ({self.agent_id}): WebSocket not open. Breaking loop.")
                 self._is_connected = False
                 break
             try:
-                self.logger.debug(
-                    f"Receive loop ({self.agent_id}): Awaiting message..."
-                )
+                self.logger.debug(f"Receive loop ({self.agent_id}): Awaiting message...")
                 message_text = await asyncio.wait_for(self.websocket.recv(), timeout=self.heartbeat_interval + 10.0)  # type: ignore
 
                 # CHANGED LOG LEVEL FROM CRITICAL TO DEBUG
-                self.logger.debug(
-                    f"CLIENT_RECV_RAW_BYTES ({self.agent_id}): <<< {str(message_text)[:1000]} >>>"
-                )
+                self.logger.debug(f"CLIENT_RECV_RAW_BYTES ({self.agent_id}): <<< {str(message_text)[:1000]} >>>")
 
                 message_data = None
                 validated_message: Optional[MCPMessage] = None
                 try:
-                    self.logger.debug(
-                        f"CLIENT_RECV_JSON_PARSE_ATTEMPT ({self.agent_id}): Attempting json.loads..."
-                    )
+                    self.logger.debug(f"CLIENT_RECV_JSON_PARSE_ATTEMPT ({self.agent_id}): Attempting json.loads...")
                     message_data = json.loads(str(message_text))
-                    msg_type_for_log = message_data.get("mcp_header", {}).get(
-                        "message_type", "UNKNOWN_TYPE"
-                    )
-                    corr_id_for_log = message_data.get("mcp_header", {}).get(
-                        "correlation_id", "NO_CORR_ID"
-                    )
+                    msg_type_for_log = message_data.get("mcp_header", {}).get("message_type", "UNKNOWN_TYPE")
+                    corr_id_for_log = message_data.get("mcp_header", {}).get("correlation_id", "NO_CORR_ID")
                     self.logger.info(
                         f"CLIENT_RECV_JSON_SUCCESS ({self.agent_id}): JSON loaded. Type='{msg_type_for_log}', CorrID='{corr_id_for_log}'"
                     )
@@ -514,13 +432,9 @@ class MCPClient:
                         if message_data and len(str(message_data)) > 500
                         else str(message_data)
                     )
-                    self.logger.error(
-                        f"CLIENT_RECV_FAIL_DATA ({self.agent_id}): Problematic data: {data_snippet}"
-                    )
+                    self.logger.error(f"CLIENT_RECV_FAIL_DATA ({self.agent_id}): Problematic data: {data_snippet}")
             except asyncio.TimeoutError:
-                self.logger.debug(
-                    f"Receive loop ({self.agent_id}): Timeout. Checking connection."
-                )
+                self.logger.debug(f"Receive loop ({self.agent_id}): Timeout. Checking connection.")
                 continue
             except (
                 ConnectionClosedOK,
@@ -528,11 +442,7 @@ class MCPClient:
                 asyncio.CancelledError,
                 WebSocketException,
             ) as e:
-                level = (
-                    logging.INFO
-                    if isinstance(e, (ConnectionClosedOK, asyncio.CancelledError))
-                    else logging.ERROR
-                )
+                level = logging.INFO if isinstance(e, (ConnectionClosedOK, asyncio.CancelledError)) else logging.ERROR
                 self.logger.log(
                     level,
                     f"Receive loop ({self.agent_id}): Connection closed/cancelled: {type(e).__name__} - {e}",
@@ -555,41 +465,29 @@ class MCPClient:
             # For now, it just logs and the client remains disconnected.
 
     async def _send_heartbeat(self):
-        self.logger.info(
-            f"Heartbeat task started for {self.agent_id} (Interval: {self.heartbeat_interval}s)."
-        )
+        self.logger.info(f"Heartbeat task started for {self.agent_id} (Interval: {self.heartbeat_interval}s).")
         while not self._stop_requested.is_set():
             try:
-                await asyncio.wait_for(
-                    self._stop_requested.wait(), timeout=self.heartbeat_interval
-                )
+                await asyncio.wait_for(self._stop_requested.wait(), timeout=self.heartbeat_interval)
             except asyncio.TimeoutError:
                 pass
             except asyncio.CancelledError:
-                self.logger.info(
-                    f"Heartbeat task cancelled during sleep for {self.agent_id}."
-                )
+                self.logger.info(f"Heartbeat task cancelled during sleep for {self.agent_id}.")
                 break
             if self._stop_requested.is_set():
                 break
             if not self.is_connected:
-                self.logger.warning(
-                    f"Heartbeat ({self.agent_id}): Not connected. Stopping heartbeat."
-                )
+                self.logger.warning(f"Heartbeat ({self.agent_id}): Not connected. Stopping heartbeat.")
                 break
             try:
                 await self.send_message(
-                    payload={
-                        "client_timestamp": datetime.now(timezone.utc).timestamp()
-                    },
+                    payload={"client_timestamp": datetime.now(timezone.utc).timestamp()},
                     message_type="PING",
                     target_service="MCP_ROUTER",
                 )
                 # self.logger.debug(f"Sent PING from {self.agent_id}.") # Already logged by send_message at DEBUG for PING
             except asyncio.CancelledError:
-                self.logger.info(
-                    f"Heartbeat cancelled during PING send for {self.agent_id}."
-                )
+                self.logger.info(f"Heartbeat cancelled during PING send for {self.agent_id}.")
                 break
             except (MCPConnectionError, MCPError) as e:
                 self.logger.error(

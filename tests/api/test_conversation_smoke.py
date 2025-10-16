@@ -19,9 +19,7 @@ class DummyLLM:
             "summary": "Quick summary for testing.",
             "reasons": ["Test reason"],
             "checks": ["Check label"],
-            "flags": ["soft_cheese"]
-            if "cheese" in str(kwargs.get("user", "")).lower()
-            else [],
+            "flags": ["soft_cheese"] if "cheese" in str(kwargs.get("user", "")).lower() else [],
             "disclaimer": "Not medical advice.",
             "jurisdiction": {"code": "EU", "label": "EU Safety Gate"},
             "evidence": [],
@@ -44,9 +42,7 @@ def _fake_scan(product="Brie", extra=None):
 def test_conversation_pregnancy(monkeypatch):
     # Wire LLM + fetch_scan_data
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
-    monkeypatch.setattr(
-        chat_router, "fetch_scan_data", lambda db, sid: _fake_scan("Brie Président")
-    )
+    monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan("Brie Président"))
     client = TestClient(app)
     r = client.post(
         "/api/v1/chat/conversation",

@@ -55,9 +55,7 @@ class JsonFormatter(logging.Formatter):
         # Add exception info if present
         if record.exc_info:
             payload["exc_info"] = self.formatException(record.exc_info)
-            payload["exc_type"] = (
-                record.exc_info[0].__name__ if record.exc_info[0] else None
-            )
+            payload["exc_type"] = record.exc_info[0].__name__ if record.exc_info[0] else None
 
         # Add source location for debugging (only for errors)
         if record.levelno >= logging.ERROR:
@@ -115,6 +113,4 @@ def setup_json_logging(log_level: str = "INFO"):
         logger.propagate = False
 
     # Log startup message
-    logging.getLogger("app").info(
-        "JSON logging configured", extra={"log_level": log_level}
-    )
+    logging.getLogger("app").info("JSON logging configured", extra={"log_level": log_level})

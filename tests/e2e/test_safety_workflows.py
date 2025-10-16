@@ -145,9 +145,7 @@ def _seed_recall(
         session.close()
 
 
-def test_barcode_recall_workflow_returns_high_risk(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_barcode_recall_workflow_returns_high_risk(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 1: parent scans a recalled product and receives a high-risk verdict."""
 
     _seed_user(user_id=1)
@@ -165,9 +163,7 @@ def test_barcode_recall_workflow_returns_high_risk(
             "data": {
                 "product_name": "Yoto Mini Player",
                 "risk_level": "High",
-                "summary": (
-                    "This product has an active recall due to the Lithium-ion battery overheating."
-                ),
+                "summary": ("This product has an active recall due to the Lithium-ion battery overheating."),
                 "recall_details": {
                     "recall_id": "CPSC-24-0001",
                     "source_agency": "CPSC",
@@ -177,9 +173,7 @@ def test_barcode_recall_workflow_returns_high_risk(
             },
         }
 
-    monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", fake_run_optimized
-    )
+    monkeypatch.setattr("api.main_babyshield.run_optimized_safety_check", fake_run_optimized)
 
     response = client.post(
         "/api/v1/safety-check",
@@ -197,9 +191,7 @@ def test_barcode_recall_workflow_returns_high_risk(
     assert payload["data"].get("recall_details", {}).get("recall_id") == "CPSC-24-0001"
 
 
-def test_allergy_workflow_flags_family_allergens(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_allergy_workflow_flags_family_allergens(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 2: allergy sensitivity agent catches a milk ingredient for a subscriber."""
 
     _seed_user(user_id=2, email="premium@example.com")
@@ -238,9 +230,7 @@ def test_allergy_workflow_flags_family_allergens(
             ],
         }
 
-    monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", fake_run_optimized
-    )
+    monkeypatch.setattr("api.main_babyshield.run_optimized_safety_check", fake_run_optimized)
     monkeypatch.setattr(
         "agents.premium.allergy_sensitivity_agent.agent_logic.AllergySensitivityAgentLogic.check_product_for_family",
         fake_allergy_check,
@@ -266,9 +256,7 @@ def test_allergy_workflow_flags_family_allergens(
     assert payload["data"].get("premium_checks_performed") is True
 
 
-def test_visual_low_confidence_returns_inconclusive(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_visual_low_confidence_returns_inconclusive(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 3: low-confidence visual scan surfaces an inconclusive result."""
 
     _seed_user(user_id=3)
@@ -281,9 +269,7 @@ def test_visual_low_confidence_returns_inconclusive(
         }
 
     class StubCommander:
-        async def start_safety_check_workflow(
-            self, user_request: Dict[str, Any]
-        ) -> Dict[str, Any]:
+        async def start_safety_check_workflow(self, user_request: Dict[str, Any]) -> Dict[str, Any]:
             assert user_request["image_url"] == "https://example.com/blurry_photo.jpg"
             return {
                 "status": "COMPLETED",
@@ -297,9 +283,7 @@ def test_visual_low_confidence_returns_inconclusive(
                 },
             }
 
-    monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", failing_run_optimized
-    )
+    monkeypatch.setattr("api.main_babyshield.run_optimized_safety_check", failing_run_optimized)
 
     # Preserve the existing commander to restore after the test
     from api import main_babyshield as mb_module
@@ -322,9 +306,7 @@ def test_visual_low_confidence_returns_inconclusive(
     assert "Could not definitively identify" in payload["data"]["summary"]
 
 
-def test_scan_camera_model_number_workflow(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_scan_camera_model_number_workflow(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 1.2: OCR extracts model number and still reaches the safety check."""
 
     _seed_user(user_id=4)
@@ -351,9 +333,7 @@ def test_scan_camera_model_number_workflow(
             },
         }
 
-    monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", fake_run_optimized
-    )
+    monkeypatch.setattr("api.main_babyshield.run_optimized_safety_check", fake_run_optimized)
 
     response = client.post(
         "/api/v1/safety-check",
@@ -367,9 +347,7 @@ def test_scan_camera_model_number_workflow(
     assert payload["data"]["recalls_found"] == 1
 
 
-def test_visual_upload_pipeline_completes_analysis(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_visual_upload_pipeline_completes_analysis(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 2: Upload-photo workflow returns a completed analysis."""
 
     monkeypatch.setattr(
@@ -381,14 +359,10 @@ def test_visual_upload_pipeline_completes_analysis(
     )
 
     class FakeS3Client:
-        def head_object(
-            self, *, Bucket: str, Key: str
-        ) -> None:  # noqa: N802 - third-party signature
+        def head_object(self, *, Bucket: str, Key: str) -> None:  # noqa: N802 - third-party signature
             return None
 
-    monkeypatch.setattr(
-        "api.visual_agent_endpoints.boto3.client", lambda *_, **__: FakeS3Client()
-    )
+    monkeypatch.setattr("api.visual_agent_endpoints.boto3.client", lambda *_, **__: FakeS3Client())
 
     class DummyProcess:
         @staticmethod
@@ -443,9 +417,7 @@ def test_visual_upload_pipeline_completes_analysis(
     assert status_payload["extraction"]["warnings"] == ["Battery overheating"]
 
 
-def test_enter_model_number_prioritizes_recall_agent(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_enter_model_number_prioritizes_recall_agent(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 3: Manual model number search skips product identification and hits recall agent."""
 
     _seed_user(user_id=5)
@@ -476,9 +448,7 @@ def test_enter_model_number_prioritizes_recall_agent(
             },
         }
 
-    monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", fake_run_optimized
-    )
+    monkeypatch.setattr("api.main_babyshield.run_optimized_safety_check", fake_run_optimized)
 
     response = client.post(
         "/api/v1/safety-check",
@@ -491,9 +461,7 @@ def test_enter_model_number_prioritizes_recall_agent(
     assert metadata["workflow_plan"][1] == "RouterAgent:RecallDataAgent"
 
 
-def test_manual_barcode_entry_golden_path(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_manual_barcode_entry_golden_path(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 4: Manual barcode entry follows the golden path workflow."""
 
     _seed_user(user_id=6)
@@ -511,9 +479,7 @@ def test_manual_barcode_entry_golden_path(
             },
         }
 
-    monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", fake_run_optimized
-    )
+    monkeypatch.setattr("api.main_babyshield.run_optimized_safety_check", fake_run_optimized)
 
     response = client.post(
         "/api/v1/safety-check",
@@ -526,9 +492,7 @@ def test_manual_barcode_entry_golden_path(
     assert "manually entered barcode" in payload["data"]["summary"].lower()
 
 
-def test_lot_number_search_returns_precise_recall(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_lot_number_search_returns_precise_recall(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 5: Lot or serial number lookup surfaces specific recall guidance."""
 
     _seed_user(user_id=7)
@@ -554,9 +518,7 @@ def test_lot_number_search_returns_precise_recall(
             },
         }
 
-    monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", fake_run_optimized
-    )
+    monkeypatch.setattr("api.main_babyshield.run_optimized_safety_check", fake_run_optimized)
 
     response = client.post(
         "/api/v1/safety-check",
@@ -568,9 +530,7 @@ def test_lot_number_search_returns_precise_recall(
     assert payload["data"]["match_metadata"]["match_type"] == "lot_number_exact"
 
 
-def test_product_name_search_uses_fuzzy_matching(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_product_name_search_uses_fuzzy_matching(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 6: Fuzzy name search retrieves the correct recall details."""
 
     _seed_user(user_id=8)
@@ -598,9 +558,7 @@ def test_product_name_search_uses_fuzzy_matching(
             },
         }
 
-    monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", fake_run_optimized
-    )
+    monkeypatch.setattr("api.main_babyshield.run_optimized_safety_check", fake_run_optimized)
 
     response = client.post(
         "/api/v1/safety-check",

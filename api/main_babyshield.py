@@ -37,9 +37,7 @@ try:
 except Exception as e:
     CONFIG_LOADED = False
     config = None
-    logging.getLogger(__name__).warning(
-        f"[WARN] Configuration system not available, using environment variables: {e}"
-    )
+    logging.getLogger(__name__).warning(f"[WARN] Configuration system not available, using environment variables: {e}")
 
 # Logging imports (Issue #32) - import after config to allow graceful degradation
 try:
@@ -53,17 +51,13 @@ try:
     # Only use structured logging if config is available
     if CONFIG_LOADED and config:
         logger = setup_logging(config)
-        logger.info(
-            " BabyShield Backend starting up", extra={"version": "2.0", "phase": "2"}
-        )
+        logger.info(" BabyShield Backend starting up", extra={"version": "2.0", "phase": "2"})
         STRUCTURED_LOGGING_ENABLED = True
     else:
         raise Exception("Config not loaded, falling back to standard logging")
 except Exception as e:
     # Fallback to standard logging if structured logging fails
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     logger = logging.getLogger(__name__)
     logger.warning(f"Structured logging not available, using standard logging: {e}")
     STRUCTURED_LOGGING_ENABLED = False
@@ -87,12 +81,8 @@ try:
         CONTENT_TYPE_LATEST,
     )
 
-    REQUEST_COUNT = Counter(
-        "http_requests_total", "Total HTTP requests", ["method", "endpoint"]
-    )
-    REQUEST_DURATION = Histogram(
-        "http_request_duration_seconds", "HTTP request duration"
-    )
+    REQUEST_COUNT = Counter("http_requests_total", "Total HTTP requests", ["method", "endpoint"])
+    REQUEST_DURATION = Histogram("http_request_duration_seconds", "HTTP request duration")
     PROMETHEUS_ENABLED = True
 except Exception as e:
     logger.warning(f"Prometheus metrics not available: {e}")
@@ -103,9 +93,7 @@ except Exception as e:
 # Construct DATABASE_URL from individual components if not provided
 database_url = None
 if CONFIG_LOADED and config:
-    database_url = getattr(
-        config, "database_url", getattr(config, "DATABASE_URL", None)
-    )
+    database_url = getattr(config, "database_url", getattr(config, "DATABASE_URL", None))
 else:
     database_url = os.getenv("DATABASE_URL")
 
@@ -118,14 +106,10 @@ if not database_url:
     db_name = os.getenv("DB_NAME")
 
     if all([db_username, db_password, db_host, db_port, db_name]):
-        database_url = (
-            f"postgresql://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}"
-        )
+        database_url = f"postgresql://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}"
         # Set the environment variable for the rest of the application
         os.environ["DATABASE_URL"] = database_url
-        logging.getLogger(__name__).info(
-            "[OK] Constructed DATABASE_URL from individual DB components"
-        )
+        logging.getLogger(__name__).info("[OK] Constructed DATABASE_URL from individual DB components")
 
 # Get environment safely for logging
 _env_value = "unset"
@@ -158,14 +142,10 @@ from api.pydantic_base import AppModel
 
 # Environment configuration - integrated with new config system
 if CONFIG_LOADED and config:
-    ENVIRONMENT = getattr(
-        config, "ENVIRONMENT", getattr(config, "environment", "development")
-    )
+    ENVIRONMENT = getattr(config, "ENVIRONMENT", getattr(config, "environment", "development"))
     DEBUG_MODE = getattr(config, "DEBUG", getattr(config, "debug", False))
 else:
-    ENVIRONMENT = os.getenv(
-        "ENVIRONMENT", "development"
-    )  # development, staging, production
+    ENVIRONMENT = os.getenv("ENVIRONMENT", "development")  # development, staging, production
     DEBUG_MODE = os.getenv("DEBUG", "false").lower() == "true"
 
 # OAuth configuration
@@ -312,15 +292,9 @@ class SafetyCheckRequest(AppModel):
     )
     image_url: Optional[str] = Field(None, example="https://example.com/img.jpg")
     # Premium feature flags
-    check_pregnancy: Optional[bool] = Field(
-        False, description="Include pregnancy safety check"
-    )
-    pregnancy_trimester: Optional[int] = Field(
-        None, ge=1, le=3, description="If pregnant, specify trimester (1-3)"
-    )
-    check_allergies: Optional[bool] = Field(
-        False, description="Include family allergy check"
-    )
+    check_pregnancy: Optional[bool] = Field(False, description="Include pregnancy safety check")
+    pregnancy_trimester: Optional[int] = Field(None, ge=1, le=3, description="If pregnant, specify trimester (1-3)")
+    check_allergies: Optional[bool] = Field(False, description="Include family allergy check")
 
 
 class SafetyCheckResponse(BaseModel):
@@ -330,9 +304,7 @@ class SafetyCheckResponse(BaseModel):
     data: Optional[dict] = Field(None, example={})
     error: Optional[str] = Field(None, example=None)
     # Enhanced with alternatives
-    alternatives: Optional[List[dict]] = Field(
-        None, description="Safe alternative products if recall found"
-    )
+    alternatives: Optional[List[dict]] = Field(None, description="Safe alternative products if recall found")
 
 
 class UserCreateRequest(BaseModel):
@@ -358,24 +330,14 @@ class AdvancedSearchRequest(BaseModel):
     model_config = {"protected_namespaces": ()}
 
     # Text search fields
-    query: Optional[str] = Field(
-        None, description="Search term for product name, brand, or hazard"
-    )
-    product: Optional[str] = Field(
-        None, description="Alternative to 'query' - search term"
-    )
+    query: Optional[str] = Field(None, description="Search term for product name, brand, or hazard")
+    product: Optional[str] = Field(None, description="Alternative to 'query' - search term")
     id: Optional[str] = Field(None, description="Exact recall ID lookup")
-    keywords: Optional[List[str]] = Field(
-        None, description="List of keywords (AND logic) - all must be present"
-    )
+    keywords: Optional[List[str]] = Field(None, description="List of keywords (AND logic) - all must be present")
 
     # Filter fields
-    agencies: Optional[List[str]] = Field(
-        None, description="Filter by specific agencies (e.g., ['CPSC', 'FDA'])"
-    )
-    agency: Optional[str] = Field(
-        None, description="Single agency filter (alias for agencies)"
-    )
+    agencies: Optional[List[str]] = Field(None, description="Filter by specific agencies (e.g., ['CPSC', 'FDA'])")
+    agency: Optional[str] = Field(None, description="Single agency filter (alias for agencies)")
     date_from: Optional[date] = Field(None, description="Recall date from (YYYY-MM-DD)")
     date_to: Optional[date] = Field(None, description="Recall date to (YYYY-MM-DD)")
 
@@ -400,9 +362,7 @@ class AdvancedSearchRequest(BaseModel):
 
     # Pagination
     limit: int = Field(20, ge=1, le=50, description="Maximum results (1-50)")
-    offset: Optional[int] = Field(
-        None, ge=0, description="Number of results to skip (offset pagination)"
-    )
+    offset: Optional[int] = Field(None, ge=0, description="Number of results to skip (offset pagination)")
     nextCursor: Optional[str] = Field(None, description="Cursor for pagination")
 
     @model_validator(mode="after")
@@ -425,9 +385,7 @@ class AdvancedSearchRequest(BaseModel):
 
         # Otherwise require product or query
         if not self.product and not self.query:
-            raise ValueError(
-                "Either 'product', 'query', 'id', or 'keywords' field is required"
-            )
+            raise ValueError("Either 'product', 'query', 'id', or 'keywords' field is required")
 
         # Ensure text search has min_length
         if self.product and self.product.strip() and len(self.product.strip()) < 2:
@@ -440,9 +398,7 @@ class AdvancedSearchRequest(BaseModel):
 class BulkSearchRequest(BaseModel):
     model_config = {"protected_namespaces": ()}
 
-    barcodes: List[str] = Field(
-        ..., min_items=1, max_items=50, description="List of barcodes to check"
-    )
+    barcodes: List[str] = Field(..., min_items=1, max_items=50, description="List of barcodes to check")
     user_id: int = Field(..., description="User ID for the bulk check")
 
 
@@ -504,13 +460,9 @@ try:
     # Add rate limiting (more lenient in development)
     if not _in_test_env:
         if IS_PRODUCTION:
-            app.add_middleware(
-                RateLimitMiddleware, requests_per_minute=60, burst_size=10
-            )
+            app.add_middleware(RateLimitMiddleware, requests_per_minute=60, burst_size=10)
         else:
-            app.add_middleware(
-                RateLimitMiddleware, requests_per_minute=120, burst_size=20
-            )
+            app.add_middleware(RateLimitMiddleware, requests_per_minute=120, burst_size=20)
         logger.info("[OK] Rate limiting middleware added")
     else:
         logger.info("[OK] Rate limiting middleware skipped in test environment")
@@ -550,8 +502,7 @@ def custom_openapi():
     schema = get_openapi(
         title=app.title,
         version=app.version,
-        description=app.description
-        or "BabyShield API - Production-ready safety check system",
+        description=app.description or "BabyShield API - Production-ready safety check system",
         routes=app.routes,
     )
 
@@ -663,17 +614,13 @@ async def favicon():
     favicon_path = os.path.join(static_dir, "favicon.svg")
     if os.path.exists(favicon_path):
         return FileResponse(favicon_path, media_type="image/svg+xml")
-    return FileResponse(
-        os.path.join(static_dir, "favicon.ico"), media_type="image/x-icon"
-    )
+    return FileResponse(os.path.join(static_dir, "favicon.ico"), media_type="image/x-icon")
 
 
 @app.get("/favicon.svg", include_in_schema=False)
 async def favicon_svg():
     """Serve modern SVG favicon"""
-    return FileResponse(
-        os.path.join(static_dir, "favicon.svg"), media_type="image/svg+xml"
-    )
+    return FileResponse(os.path.join(static_dir, "favicon.svg"), media_type="image/svg+xml")
 
 
 # Root endpoint to reduce 4xx noise
@@ -708,9 +655,7 @@ async def robots():
 @app.get("/sitemap.xml", include_in_schema=False)
 async def sitemap():
     """Serve sitemap.xml for SEO crawlers"""
-    return FileResponse(
-        os.path.join(static_dir, "sitemap.xml"), media_type="application/xml"
-    )
+    return FileResponse(os.path.join(static_dir, "sitemap.xml"), media_type="application/xml")
 
 
 # Legacy redirect (Play/Apple reviewers sometimes hit old docs)
@@ -727,9 +672,7 @@ async def serve_account_deletion():
     try:
         import os
 
-        file_path = os.path.join(
-            os.path.dirname(__file__), "..", "static", "legal", "account-deletion.html"
-        )
+        file_path = os.path.join(os.path.dirname(__file__), "..", "static", "legal", "account-deletion.html")
         with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
         return HTMLResponse(content=content)
@@ -744,9 +687,7 @@ async def serve_privacy():
     try:
         import os
 
-        file_path = os.path.join(
-            os.path.dirname(__file__), "..", "static", "legal", "privacy.html"
-        )
+        file_path = os.path.join(os.path.dirname(__file__), "..", "static", "legal", "privacy.html")
         with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
         return HTMLResponse(content=content)
@@ -761,9 +702,7 @@ async def serve_terms():
     try:
         import os
 
-        file_path = os.path.join(
-            os.path.dirname(__file__), "..", "static", "legal", "terms.html"
-        )
+        file_path = os.path.join(os.path.dirname(__file__), "..", "static", "legal", "terms.html")
         with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
         return HTMLResponse(content=content)
@@ -821,24 +760,14 @@ try:
     pass  # OLD middleware permanently disabled - Phase 2 is superior
     # from core_infra.security_headers_middleware import SecurityHeadersMiddleware as OldSecurityMiddleware
     # app.add_middleware(OldSecurityMiddleware)
-    logging.info(
-        "[OK] Using Phase 2 security headers exclusively (OLD middleware disabled)"
-    )
+    logging.info("[OK] Using Phase 2 security headers exclusively (OLD middleware disabled)")
 except Exception as e:
     logging.warning(f"Could not add security headers middleware: {e}")
 
 # Add CORS middleware
 ALLOWED_ORIGINS = (
-    (
-        getattr(config, "ALLOWED_ORIGINS", "")
-        if CONFIG_LOADED
-        else os.getenv("ALLOWED_ORIGINS", "")
-    ).split(",")
-    if (
-        getattr(config, "ALLOWED_ORIGINS", None)
-        if CONFIG_LOADED
-        else os.getenv("ALLOWED_ORIGINS")
-    )
+    (getattr(config, "ALLOWED_ORIGINS", "") if CONFIG_LOADED else os.getenv("ALLOWED_ORIGINS", "")).split(",")
+    if (getattr(config, "ALLOWED_ORIGINS", None) if CONFIG_LOADED else os.getenv("ALLOWED_ORIGINS"))
     else [
         "https://app.babyshield.app",
         "https://api.babyshield.app",
@@ -855,9 +784,7 @@ ALLOWED_ORIGINS = (
 try:
     from core_infra.security_headers_middleware import EnhancedCORSMiddleware
 
-    app.add_middleware(
-        EnhancedCORSMiddleware, allowed_origins=ALLOWED_ORIGINS, allow_credentials=True
-    )
+    app.add_middleware(EnhancedCORSMiddleware, allowed_origins=ALLOWED_ORIGINS, allow_credentials=True)
     logging.info("[OK] Enhanced CORS middleware added")
 except Exception as e:
     # Fallback to standard CORS
@@ -948,9 +875,7 @@ async def security_middleware(request: Request, call_next):
         "SEARCH",
     ]:
         logger = logging.getLogger(__name__)
-        logger.debug(
-            f"Blocked WebDAV method: {request.method} {request.url.path} from {request.client.host}"
-        )
+        logger.debug(f"Blocked WebDAV method: {request.method} {request.url.path} from {request.client.host}")
         return JSONResponse(
             status_code=405,
             content={"error": "Method Not Allowed"},
@@ -1017,15 +942,13 @@ async def security_middleware(request: Request, call_next):
     ]
 
     # Block if path or query contains attack patterns
-    if any(
-        pattern in path or pattern in query for pattern in php_attack_patterns
-    ) and not path.startswith("/api/v1/barcode/test/"):
+    if any(pattern in path or pattern in query for pattern in php_attack_patterns) and not path.startswith(
+        "/api/v1/barcode/test/"
+    ):
         # Get logger for this module
         logger = logging.getLogger(__name__)
         # Log at DEBUG level to reduce noise, but track attack patterns
-        logger.debug(
-            f"Blocked PHP/vulnerability scan: {request.url.path} from {request.client.host}"
-        )
+        logger.debug(f"Blocked PHP/vulnerability scan: {request.url.path} from {request.client.host}")
         # Only log unique attack patterns at WARNING level
         if "phpunit" in path or "eval-stdin" in path:
             logger.warning(f"PHP vulnerability scan blocked from {request.client.host}")
@@ -1100,9 +1023,7 @@ async def add_security_headers(request: Request, call_next):
 
     # 4. Strict-Transport-Security (HSTS) - only in production
     if IS_PRODUCTION:
-        response.headers[
-            "Strict-Transport-Security"
-        ] = "max-age=31536000; includeSubDomains; preload"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
 
     # 5. X-XSS-Protection (legacy, but still useful)
     response.headers["X-XSS-Protection"] = "1; mode=block"
@@ -1111,18 +1032,14 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
     # 7. Permissions-Policy (feature restrictions)
-    response.headers[
-        "Permissions-Policy"
-    ] = "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
 
     # 8. X-Permitted-Cross-Domain-Policies
     response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
 
     # 9. Cache-Control for sensitive endpoints
     if request.url.path.startswith(("/api/v1/auth", "/api/v1/user")):
-        response.headers[
-            "Cache-Control"
-        ] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
         response.headers["Pragma"] = "no-cache"
 
     return response
@@ -1391,13 +1308,9 @@ def get_safety_hub_articles(
     limit: int = Query(20, ge=1, le=100, description="Number of articles per page"),
     offset: int = Query(0, ge=0, description="Number of articles to skip"),
     category: Optional[str] = Query(None, description="Filter by article category"),
-    language: Optional[str] = Query(
-        "en", description="Language filter (en, es, fr, etc.)"
-    ),
+    language: Optional[str] = Query("en", description="Language filter (en, es, fr, etc.)"),
     featured_only: bool = Query(False, description="Show only featured articles"),
-    sort: str = Query(
-        "recent", pattern="^(recent|oldest|title)$", description="Sort order"
-    ),
+    sort: str = Query("recent", pattern="^(recent|oldest|title)$", description="Sort order"),
 ):
     """
     Returns a paginated list of safety articles with filtering and caching support.
@@ -1434,13 +1347,9 @@ def get_safety_hub_articles(
 
             # Apply sorting
             if sort == "recent":
-                query = query.order_by(
-                    desc(SafetyArticle.publication_date), desc(SafetyArticle.id)
-                )
+                query = query.order_by(desc(SafetyArticle.publication_date), desc(SafetyArticle.id))
             elif sort == "oldest":
-                query = query.order_by(
-                    asc(SafetyArticle.publication_date), asc(SafetyArticle.id)
-                )
+                query = query.order_by(asc(SafetyArticle.publication_date), asc(SafetyArticle.id))
             elif sort == "title":
                 query = query.order_by(asc(SafetyArticle.title))
 
@@ -1455,9 +1364,7 @@ def get_safety_hub_articles(
                     "title": article.title,
                     "summary": article.summary,
                     "source_agency": article.source_agency,
-                    "publication_date": article.publication_date.isoformat()
-                    if article.publication_date
-                    else None,
+                    "publication_date": article.publication_date.isoformat() if article.publication_date else None,
                     "image_url": article.image_url,
                     "article_url": article.article_url,
                     "is_featured": article.is_featured,
@@ -1488,9 +1395,7 @@ def get_safety_hub_articles(
         }
 
         # Generate ETag for caching
-        content_hash = hashlib.md5(
-            json.dumps(response_data, sort_keys=True).encode()
-        ).hexdigest()
+        content_hash = hashlib.md5(json.dumps(response_data, sort_keys=True).encode()).hexdigest()
         etag = f'"{content_hash}"'
 
         # Create response with cache headers
@@ -1575,9 +1480,7 @@ def get_safety_hub_articles(
         import hashlib
         import json
 
-        content_hash = hashlib.md5(
-            json.dumps(fallback_response_data, sort_keys=True).encode()
-        ).hexdigest()
+        content_hash = hashlib.md5(json.dumps(fallback_response_data, sort_keys=True).encode()).hexdigest()
         etag = f'"{content_hash}"'
 
         # Return fallback response with cache headers
@@ -1744,13 +1647,9 @@ try:
     from api.baby_features_endpoints import router as baby_router
 
     app.include_router(baby_router)
-    logging.info(
-        "Ã¢Å“â€¦ Baby Safety Features (Alternatives, Notifications, Reports) endpoints registered"
-    )
+    logging.info("Ã¢Å“â€¦ Baby Safety Features (Alternatives, Notifications, Reports) endpoints registered")
 except (ImportError, FileNotFoundError) as e:
-    logging.warning(
-        f"Baby Safety Features not available (missing dependency pylibdmtx): {e}"
-    )
+    logging.warning(f"Baby Safety Features not available (missing dependency pylibdmtx): {e}")
     # Continue without baby features - they're optional
 
 # Include Advanced Features (Web Research, Guidelines, Visual Recognition) endpoints
@@ -1758,9 +1657,7 @@ try:
     from api.advanced_features_endpoints import router as advanced_router
 
     app.include_router(advanced_router)
-    logging.info(
-        "Ã¢Å“â€¦ Advanced Features (Web Research, Guidelines, Visual) endpoints registered"
-    )
+    logging.info("Ã¢Å“â€¦ Advanced Features (Web Research, Guidelines, Visual) endpoints registered")
 except (ImportError, FileNotFoundError) as e:
     logging.warning(f"Advanced Features not available (missing dependency): {e}")
     # Continue without advanced features - they're optional
@@ -1769,9 +1666,7 @@ except (ImportError, FileNotFoundError) as e:
 from api.compliance_endpoints import router as compliance_router
 
 app.include_router(compliance_router)
-logging.info(
-    "Ã¢Å“â€¦ Legal Compliance endpoints (COPPA, GDPR, Children's Code) registered"
-)
+logging.info("Ã¢Å“â€¦ Legal Compliance endpoints (COPPA, GDPR, Children's Code) registered")
 
 # Include Supplemental Data endpoints for enhanced safety reports
 try:
@@ -1853,9 +1748,7 @@ from api.schemas.common import ok
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc):
     """Handle validation errors with our standard error envelope"""
-    trace_id = (
-        f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
-    )
+    trace_id = f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
 
     # Extract the first error message
     error_msg = "Invalid request"
@@ -1900,9 +1793,7 @@ async def validation_exception_handler(request, exc):
 @app.exception_handler(json.JSONDecodeError)
 async def json_decode_exception_handler(request, exc):
     """Handle JSON decode errors with our standard error envelope"""
-    trace_id = (
-        f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
-    )
+    trace_id = f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
 
     logger = logging.getLogger(__name__)
     logger.warning(f"[{trace_id}] JSON decode error: {str(exc)}")
@@ -1923,9 +1814,7 @@ async def json_decode_exception_handler(request, exc):
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request, exc):
     """Handle HTTP exceptions with our standard error envelope"""
-    trace_id = (
-        f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
-    )
+    trace_id = f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
 
     # Map status codes to error codes
     error_code = "INTERNAL_ERROR"
@@ -1975,9 +1864,7 @@ async def http_exception_handler(request, exc):
 @app.exception_handler(Exception)
 async def general_exception_handler(request, exc):
     """Handle all unhandled exceptions with our standard error envelope"""
-    trace_id = (
-        f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
-    )
+    trace_id = f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
 
     logger = logging.getLogger(__name__)
     logger.error(f"[{trace_id}] Unhandled exception: {exc}", exc_info=True)
@@ -2005,9 +1892,7 @@ _agents_initialized = False
 def on_startup():
     global commander_agent, visual_search_agent, _agents_initialized
     logger = logging.getLogger(__name__)
-    logger.info(
-        f"Ã°Å¸â€Â§ Starting up BabyShield API in {ENVIRONMENT.upper()} environmentÃ¢â‚¬Â¦"
-    )
+    logger.info(f"Ã°Å¸â€Â§ Starting up BabyShield API in {ENVIRONMENT.upper()} environmentÃ¢â‚¬Â¦")
 
     # Prevent double initialization
     if _agents_initialized:
@@ -2020,14 +1905,10 @@ def on_startup():
         if CONFIG_LOADED
         else os.getenv("ENABLE_AGENTS", "false").lower() == "true"
     ):
-        commander_agent = BabyShieldCommanderLogic(
-            agent_id="api_commander_001", logger_instance=logger
-        )
+        commander_agent = BabyShieldCommanderLogic(agent_id="api_commander_001", logger_instance=logger)
         logger.info("Ã¢Å“â€¦ Commander Agent initialized.")
         logger.info("Initializing the Visual Search Agent...")
-        visual_search_agent = VisualSearchAgentLogic(
-            agent_id="api_visual_search_001", logger_instance=logger
-        )
+        visual_search_agent = VisualSearchAgentLogic(agent_id="api_visual_search_001", logger_instance=logger)
         logger.info("Ã¢Å“â€¦ Visual Search Agent initialized.")
     else:
         logger.info("Ã°Å¸Å¡Â« Agents disabled in development mode")
@@ -2055,11 +1936,7 @@ def on_startup():
             from alembic import command
 
             # Check if we're using PostgreSQL
-            database_url = (
-                config.database_url
-                if CONFIG_LOADED and config
-                else os.getenv("DATABASE_URL", "")
-            )
+            database_url = config.database_url if CONFIG_LOADED and config else os.getenv("DATABASE_URL", "")
             if "postgresql" in database_url.lower():
                 logger.info("[OK] Running Alembic migrations for PostgreSQL...")
 
@@ -2081,9 +1958,7 @@ def on_startup():
                     db_session = DBSession()
                     try:
                         # Enable extension
-                        db_session.execute(
-                            text("CREATE EXTENSION IF NOT EXISTS pg_trgm;")
-                        )
+                        db_session.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm;"))
                         db_session.commit()
                         logger.info("[OK] pg_trgm extension enabled successfully.")
 
@@ -2107,19 +1982,13 @@ def on_startup():
 
                 except Exception as trgm_error:
                     logger.warning(f"[WARN] pg_trgm setup failed: {trgm_error}")
-                    logger.info(
-                        "[INFO] Fuzzy search may not work correctly without pg_trgm extension."
-                    )
+                    logger.info("[INFO] Fuzzy search may not work correctly without pg_trgm extension.")
             else:
-                logger.info(
-                    "[INFO] Skipping Alembic migrations for non-PostgreSQL database."
-                )
+                logger.info("[INFO] Skipping Alembic migrations for non-PostgreSQL database.")
 
         except Exception as migration_error:
             logger.warning(f"[WARN] Alembic migration failed: {migration_error}")
-            logger.info(
-                "[INFO] Continuing without migrations - tables may be missing columns."
-            )
+            logger.info("[INFO] Continuing without migrations - tables may be missing columns.")
 
         # Simple user seeding
         db = SessionLocal()
@@ -2136,14 +2005,10 @@ def on_startup():
                 )
                 db.add(u)
                 db.commit()
-                logger.info(
-                    "[OK] Seeded default user test_parent@babyshield.com (id=1, subscribed)."
-                )
+                logger.info("[OK] Seeded default user test_parent@babyshield.com (id=1, subscribed).")
             except UserIntegrityError:
                 db.rollback()
-                logger.info(
-                    "[INFO] User id=1 already exists (inserted by another worker)."
-                )
+                logger.info("[INFO] User id=1 already exists (inserted by another worker).")
         except Exception as e:
             logger.error(f"Ã¢ÂÅ’ Failed to seed user: {e}")
             db.rollback()
@@ -2152,19 +2017,13 @@ def on_startup():
 
     except Exception as db_error:
         logger.warning(f"Database initialization skipped: {db_error}")
-        logger.info(
-            "Ã¢Å¡Â Ã¯Â¸Â Running without database - some features may not work"
-        )
+        logger.info("Ã¢Å¡Â Ã¯Â¸Â Running without database - some features may not work")
 
     # Ã°Å¸â€Â¥ START BACKGROUND CACHE WARMING for 70%+ hit rate
     try:
-        logger.info(
-            "Ã°Å¸Å¡â‚¬ Starting intelligent cache warming for 39-agency system..."
-        )
+        logger.info("Ã°Å¸Å¡â‚¬ Starting intelligent cache warming for 39-agency system...")
         asyncio.create_task(start_background_cache_warming())
-        logger.info(
-            "Ã¢Å“â€¦ Background cache warming started - will boost hit rate to 70%+"
-        )
+        logger.info("Ã¢Å“â€¦ Background cache warming started - will boost hit rate to 70%+")
     except Exception as e:
         logger.warning(f"Cache warming startup failed: {e}")
 
@@ -2205,9 +2064,7 @@ async def healthz_api_alias() -> Dict[str, str]:
     return {"status": "ok"}
 
 
-@app.get(
-    "/api/v1/public/endpoint", tags=["public"], operation_id="public_test_endpoint"
-)
+@app.get("/api/v1/public/endpoint", tags=["public"], operation_id="public_test_endpoint")
 async def public_test_endpoint() -> Dict[str, str]:
     """
     Public test endpoint for rate limiting and security testing.
@@ -2251,9 +2108,7 @@ def readyz():
                 inspector = sa_inspect(db.get_bind())
                 table_exists = inspector.has_table("recalls_enhanced")
                 if table_exists:
-                    count_result = db.execute(
-                        text("SELECT COUNT(*) FROM recalls_enhanced")
-                    )
+                    count_result = db.execute(text("SELECT COUNT(*) FROM recalls_enhanced"))
                     table_count = count_result.scalar()
             except Exception as table_err:
                 logger = logging.getLogger(__name__)
@@ -2280,9 +2135,7 @@ def debug_db_info():
     try:
         with get_db_session() as db:
             # Get current database info
-            result = db.execute(
-                text("SELECT current_database(), current_schema(), version()")
-            )
+            result = db.execute(text("SELECT current_database(), current_schema(), version()"))
             row = result.fetchone()
 
             # Check if is_active column exists in users table
@@ -2296,10 +2149,7 @@ def debug_db_info():
             """
                 )
             )
-            columns = [
-                {"name": r[0], "type": r[1], "nullable": r[2], "default": r[3]}
-                for r in columns_result
-            ]
+            columns = [{"name": r[0], "type": r[1], "nullable": r[2], "default": r[3]} for r in columns_result]
 
             is_active_exists = any(col["name"] == "is_active" for col in columns)
 
@@ -2326,9 +2176,7 @@ def test_endpoint():
 
     env_value = "development"
     if CONFIG_LOADED and config:
-        env_value = getattr(
-            config, "ENVIRONMENT", getattr(config, "environment", "development")
-        )
+        env_value = getattr(config, "ENVIRONMENT", getattr(config, "environment", "development"))
     else:
         env_value = os.getenv("ENVIRONMENT", "development")
 
@@ -2433,9 +2281,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
     REQUIRED_FEATURE = "safety.check"
 
     if dev_entitled(req.user_id, REQUIRED_FEATURE):
-        logger.info(
-            f"DEV OVERRIDE: Bypassing subscription check for user {req.user_id}"
-        )
+        logger.info(f"DEV OVERRIDE: Bypassing subscription check for user {req.user_id}")
         # Skip subscription validation and proceed to safety check
     else:
         # 4b) Validate user & subscription from your DB
@@ -2449,12 +2295,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
     # 4b) Run the full live workflow and return its raw result (with environment-aware error handling)
     try:
         # WORKAROUND: If image_url is provided, route to visual search directly
-        if (
-            req.image_url
-            and not req.barcode
-            and not req.model_number
-            and not req.product_name
-        ):
+        if req.image_url and not req.barcode and not req.model_number and not req.product_name:
             logger.info("Routing image_url request directly to visual search endpoint")
 
             # Create a new visual agent instance directly (don't rely on global)
@@ -2464,9 +2305,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                 )
 
                 temp_visual_agent = VisualSearchAgentLogic("temp_visual_001")
-                visual_result = await temp_visual_agent.identify_product_from_image(
-                    req.image_url
-                )
+                visual_result = await temp_visual_agent.identify_product_from_image(req.image_url)
 
                 if visual_result and visual_result.get("status") == "COMPLETED":
                     return JSONResponse(
@@ -2474,16 +2313,10 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                         content={
                             "status": "COMPLETED",
                             "data": {
-                                "summary": visual_result.get("result", {}).get(
-                                    "summary", "Visual analysis completed"
-                                ),
-                                "product_name": visual_result.get("result", {}).get(
-                                    "product_name"
-                                ),
+                                "summary": visual_result.get("result", {}).get("summary", "Visual analysis completed"),
+                                "product_name": visual_result.get("result", {}).get("product_name"),
                                 "brand": visual_result.get("result", {}).get("brand"),
-                                "confidence": visual_result.get("result", {}).get(
-                                    "confidence", 0
-                                ),
+                                "confidence": visual_result.get("result", {}).get("confidence", 0),
                                 "recalls_found": False,
                                 "checked_sources": ["Visual Recognition"],
                                 "message": "Visual recognition completed via direct agent",
@@ -2491,13 +2324,9 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                         },
                     )
                 else:
-                    logger.warning(
-                        f"Visual agent returned non-completed status: {visual_result}"
-                    )
+                    logger.warning(f"Visual agent returned non-completed status: {visual_result}")
             except Exception as visual_error:
-                logger.error(
-                    f"Visual search routing failed: {visual_error}", exc_info=True
-                )
+                logger.error(f"Visual search routing failed: {visual_error}", exc_info=True)
                 # Continue to normal workflow
 
         # USE OPTIMIZED ASYNC WORKFLOW for 3-5x performance boost!
@@ -2514,12 +2343,8 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
         logger.info(f"Optimized workflow result: {result}")
 
         # Fallback to standard workflow if optimized fails
-        if result.get(
-            "status"
-        ) == "FAILED" and "optimized workflow error" in result.get("error", ""):
-            logger.warning(
-                "Ã¢Å¡Â Ã¯Â¸Â Optimized workflow failed, falling back to standard workflow..."
-            )
+        if result.get("status") == "FAILED" and "optimized workflow error" in result.get("error", ""):
+            logger.warning("Ã¢Å¡Â Ã¯Â¸Â Optimized workflow failed, falling back to standard workflow...")
 
             # Check if commander_agent is available
             if commander_agent is None:
@@ -2551,9 +2376,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
             if enhanced_result.get("data"):
                 enhanced_result["data"]["response_time_ms"] = response_time
                 enhanced_result["data"]["agencies_checked"] = 39
-                enhanced_result["data"]["performance"] = (
-                    "optimized" if response_time < 1000 else "standard"
-                )
+                enhanced_result["data"]["performance"] = "optimized" if response_time < 1000 else "standard"
 
                 # Ã°Å¸Å½Â¯ INTEGRATE PREMIUM FEATURES: Pregnancy & Allergy Checks
                 premium_alerts = []
@@ -2565,9 +2388,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                             PregnancyProductSafetyAgentLogic,
                         )
 
-                        pregnancy_agent = PregnancyProductSafetyAgentLogic(
-                            agent_id="safety_check_pregnancy"
-                        )
+                        pregnancy_agent = PregnancyProductSafetyAgentLogic(agent_id="safety_check_pregnancy")
                         pregnancy_result = pregnancy_agent.check_product_safety(
                             req.barcode or "unknown", req.pregnancy_trimester
                         )
@@ -2589,9 +2410,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                             }
                     except Exception as preg_err:
                         logger.warning(f"Pregnancy check failed: {preg_err}")
-                        enhanced_result["data"]["pregnancy_safety"] = {
-                            "error": "Check unavailable"
-                        }
+                        enhanced_result["data"]["pregnancy_safety"] = {"error": "Check unavailable"}
 
                 # Allergy check if requested
                 if req.check_allergies:
@@ -2600,12 +2419,8 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                             AllergySensitivityAgentLogic,
                         )
 
-                        allergy_agent = AllergySensitivityAgentLogic(
-                            agent_id="safety_check_allergy"
-                        )
-                        allergy_result = allergy_agent.check_product_for_family(
-                            req.user_id, req.barcode or "unknown"
-                        )
+                        allergy_agent = AllergySensitivityAgentLogic(agent_id="safety_check_allergy")
+                        allergy_result = allergy_agent.check_product_for_family(req.user_id, req.barcode or "unknown")
 
                         if not allergy_result.get("is_safe"):
                             enhanced_result["data"]["allergy_safety"] = {
@@ -2621,24 +2436,18 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                             enhanced_result["data"]["allergy_safety"] = {"safe": True}
                     except Exception as allergy_err:
                         logger.warning(f"Allergy check failed: {allergy_err}")
-                        enhanced_result["data"]["allergy_safety"] = {
-                            "error": "Check unavailable"
-                        }
+                        enhanced_result["data"]["allergy_safety"] = {"error": "Check unavailable"}
 
                 # Add premium alerts to summary if any
                 if premium_alerts:
                     current_summary = enhanced_result["data"].get("summary", "")
                     enhanced_result["data"]["summary"] = (
-                        current_summary
-                        + "\n\nPREMIUM SAFETY ALERTS:\n"
-                        + "\n".join(premium_alerts)
+                        current_summary + "\n\nPREMIUM SAFETY ALERTS:\n" + "\n".join(premium_alerts)
                     )
                     enhanced_result["data"]["premium_checks_performed"] = True
 
                 # Ã°Å¸â€â€ž AUTO-SUGGEST ALTERNATIVES if recall found
-                if enhanced_result["data"].get("recalls_found") or enhanced_result[
-                    "data"
-                ].get("risk_level") in [
+                if enhanced_result["data"].get("recalls_found") or enhanced_result["data"].get("risk_level") in [
                     "Medium",
                     "High",
                     "Critical",
@@ -2648,9 +2457,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                             AlternativesAgentLogic,
                         )
 
-                        alt_agent = AlternativesAgentLogic(
-                            agent_id="safety_check_alternatives"
-                        )
+                        alt_agent = AlternativesAgentLogic(agent_id="safety_check_alternatives")
 
                         # Determine product category from result data
                         product_name = enhanced_result["data"].get("product_name", "")
@@ -2659,34 +2466,21 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
 
                         # Get alternatives
                         alt_result = await alt_agent.process_task(
-                            {
-                                "product_category": enhanced_result["data"].get(
-                                    "category", "Baby Products"
-                                )
-                            }
+                            {"product_category": enhanced_result["data"].get("category", "Baby Products")}
                         )
 
                         if alt_result.get("status") == "COMPLETED":
-                            alternatives = alt_result.get("result", {}).get(
-                                "alternatives", []
-                            )
+                            alternatives = alt_result.get("result", {}).get("alternatives", [])
                             if alternatives:
-                                enhanced_result["alternatives"] = alternatives[
-                                    :3
-                                ]  # Top 3 alternatives
-                                enhanced_result["data"]["alternatives_suggested"] = len(
-                                    alternatives
-                                )
+                                enhanced_result["alternatives"] = alternatives[:3]  # Top 3 alternatives
+                                enhanced_result["data"]["alternatives_suggested"] = len(alternatives)
 
                                 # Add to summary
-                                alt_summary = (
-                                    "\n\nÃ¢Å“â€¦ SAFER ALTERNATIVES AVAILABLE:\n"
-                                )
+                                alt_summary = "\n\nÃ¢Å“â€¦ SAFER ALTERNATIVES AVAILABLE:\n"
                                 for alt in alternatives[:3]:
                                     alt_summary += f"Ã¢â‚¬Â¢ {alt['product_name']}: {alt['reason']}\n"
                                 enhanced_result["data"]["summary"] = (
-                                    enhanced_result["data"].get("summary", "")
-                                    + alt_summary
+                                    enhanced_result["data"].get("summary", "") + alt_summary
                                 )
 
                     except Exception as alt_err:
@@ -2696,9 +2490,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
 
         # If workflow returns no data, handle based on environment
         if ENVIRONMENT in ["development", "staging"]:
-            logger.warning(
-                f"Workflow returned no data, using mock response for {ENVIRONMENT} environment"
-            )
+            logger.warning(f"Workflow returned no data, using mock response for {ENVIRONMENT} environment")
             # Ã¢Å¡Â¡ ADD PERFORMANCE METRICS to mock responses
             response_time = int((datetime.now() - start_time).total_seconds() * 1000)
             return JSONResponse(
@@ -2713,9 +2505,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                         "note": f"This is mock data for {ENVIRONMENT} environment - no recalls found in database",
                         "response_time_ms": response_time,
                         "agencies_checked": 39,
-                        "performance": "optimized"
-                        if response_time < 1000
-                        else "standard",
+                        "performance": "optimized" if response_time < 1000 else "standard",
                     },
                 },
             )
@@ -2776,9 +2566,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                         "message": "Product has been checked against major recall databases and no safety issues were found.",
                         "response_time_ms": response_time,
                         "agencies_checked": 39,
-                        "performance": "optimized"
-                        if response_time < 1000
-                        else "standard",
+                        "performance": "optimized" if response_time < 1000 else "standard",
                     },
                 },
             )
@@ -2901,9 +2689,7 @@ def create_user(req: UserCreateRequest):
         # Check if user already exists
         existing_user = db.query(User).filter(User.email == req.email).first()
         if existing_user:
-            raise HTTPException(
-                status_code=400, detail="User with this email already exists"
-            )
+            raise HTTPException(status_code=400, detail="User with this email already exists")
 
         # Create new user
         u = User(
@@ -3017,16 +2803,10 @@ async def autocomplete_products(
                     continue
 
                 # Check if it's a baby product
-                is_baby = (
-                    is_baby_domain(clean_name)
-                    or is_baby_domain(brand or "")
-                    or is_baby_domain(category or "")
-                )
+                is_baby = is_baby_domain(clean_name) or is_baby_domain(brand or "") or is_baby_domain(category or "")
 
                 # Calculate score
-                score = calculate_suggestion_score(
-                    q, clean_name, brand, domain, is_baby
-                )
+                score = calculate_suggestion_score(q, clean_name, brand, domain, is_baby)
 
                 if score > 0:
                     scored_suggestions.append(
@@ -3231,13 +3011,9 @@ async def advanced_search(request: Request):
 
             # Log first few characters to help debug malformed JSON
             if len(body_str) > 0:
-                logger.info(
-                    f"[{trace_id}] First 50 chars of body: {repr(body_str[:50])}"
-                )
+                logger.info(f"[{trace_id}] First 50 chars of body: {repr(body_str[:50])}")
                 # Log body length and character analysis
-                logger.info(
-                    f"[{trace_id}] Body length: {len(body_str)}, starts with: {repr(body_str[:10])}"
-                )
+                logger.info(f"[{trace_id}] Body length: {len(body_str)}, starts with: {repr(body_str[:10])}")
 
             body_data = json.loads(body_str)
         else:
@@ -3255,14 +3031,14 @@ async def advanced_search(request: Request):
             )
     except json.JSONDecodeError as e:
         logger.error(f"[{trace_id}] JSON decode error: {e}")
-        logger.error(
-            f"[{trace_id}] Malformed JSON body: {repr(body_str) if 'body_str' in locals() else 'N/A'}"
-        )
+        logger.error(f"[{trace_id}] Malformed JSON body: {repr(body_str) if 'body_str' in locals() else 'N/A'}")
 
         # Try to provide more helpful error messages
         error_msg = f"Invalid JSON in request body: {str(e)}"
         if "Expecting property name enclosed in double quotes" in str(e):
-            error_msg += '. Check that all property names are properly quoted (e.g., {"query": "value"} not {query: "value"})'
+            error_msg += (
+                '. Check that all property names are properly quoted (e.g., {"query": "value"} not {query: "value"})'
+            )
         elif "Expecting value" in str(e):
             error_msg += ". Check that all values are properly formatted"
         elif "Unterminated string" in str(e):
@@ -3292,26 +3068,16 @@ async def advanced_search(request: Request):
 
     # Log cursor field for debugging
     if "nextCursor" in body_data:
-        logger.info(
-            f"[{trace_id}] Found 'nextCursor' in request: {body_data.get('nextCursor')}"
-        )
+        logger.info(f"[{trace_id}] Found 'nextCursor' in request: {body_data.get('nextCursor')}")
     elif "cursor" in body_data:
-        logger.info(
-            f"[{trace_id}] Found 'cursor' in request: {body_data.get('cursor')}"
-        )
+        logger.info(f"[{trace_id}] Found 'cursor' in request: {body_data.get('cursor')}")
 
     # Create AdvancedSearchRequest from parsed data
     try:
-        logger.info(
-            f"[{trace_id}] Creating AdvancedSearchRequest with body_data: {body_data}"
-        )
-        logger.info(
-            f"[{trace_id}] nextCursor in body_data: {body_data.get('nextCursor')}"
-        )
+        logger.info(f"[{trace_id}] Creating AdvancedSearchRequest with body_data: {body_data}")
+        logger.info(f"[{trace_id}] nextCursor in body_data: {body_data.get('nextCursor')}")
         req = AdvancedSearchRequest(**body_data)
-        logger.info(
-            f"[{trace_id}] AdvancedSearchRequest created successfully: nextCursor={req.nextCursor}"
-        )
+        logger.info(f"[{trace_id}] AdvancedSearchRequest created successfully: nextCursor={req.nextCursor}")
         logger.info(f"[{trace_id}] All fields in req: {req.model_dump()}")
     except Exception as e:
         logger.error(f"[{trace_id}] Invalid request data: {e}")
@@ -3355,12 +3121,8 @@ async def advanced_search(request: Request):
         search_info.append(f"agencies={req.agencies}")
 
     logger.info(f"[{trace_id}] Advanced search: {', '.join(search_info)}")
-    logger.info(
-        f"[{trace_id}] Pagination params: limit={req.limit}, offset={req.offset}, nextCursor={req.nextCursor}"
-    )
-    logger.info(
-        f"[{trace_id}] Raw cursor value from request: {body_data.get('nextCursor', 'NOT_FOUND')}"
-    )
+    logger.info(f"[{trace_id}] Pagination params: limit={req.limit}, offset={req.offset}, nextCursor={req.nextCursor}")
+    logger.info(f"[{trace_id}] Raw cursor value from request: {body_data.get('nextCursor', 'NOT_FOUND')}")
 
     try:
         with get_db_session() as db:
@@ -3369,20 +3131,14 @@ async def advanced_search(request: Request):
 
             # Check if pg_trgm is enabled
             if not search_service.check_pg_trgm_enabled():
-                logger.warning(
-                    f"[{trace_id}] pg_trgm extension not enabled, falling back to basic search"
-                )
+                logger.warning(f"[{trace_id}] pg_trgm extension not enabled, falling back to basic search")
 
             # Prioritize cursor pagination over offset pagination
             # If nextCursor is provided, ignore offset to use cursor-based pagination
             search_offset = None if req.nextCursor else req.offset
 
-            logger.info(
-                f"[{trace_id}] Pagination strategy: {'cursor-based' if req.nextCursor else 'offset-based'}"
-            )
-            logger.info(
-                f"[{trace_id}] Final search params: offset={search_offset}, cursor={req.nextCursor}"
-            )
+            logger.info(f"[{trace_id}] Pagination strategy: {'cursor-based' if req.nextCursor else 'offset-based'}")
+            logger.info(f"[{trace_id}] Final search params: offset={search_offset}, cursor={req.nextCursor}")
 
             # Execute search
             search_result = search_service.search(
@@ -3422,9 +3178,7 @@ async def advanced_search(request: Request):
                 elapsed_ms = (datetime.now().timestamp() - req._start_time) * 1000
                 search_result["responseTimeMs"] = round(elapsed_ms, 2)
 
-            logger.info(
-                f"[{trace_id}] Search completed: {search_result['data']['total']} results"
-            )
+            logger.info(f"[{trace_id}] Search completed: {search_result['data']['total']} results")
 
             return JSONResponse(status_code=200, content=search_result)
     except Exception as e:
@@ -3456,9 +3210,7 @@ async def bulk_search(req: BulkSearchRequest):
         try:
             # Use your existing safety check logic
             # SafetyCheckRequest created for validation but not used yet
-            _safety_req = SafetyCheckRequest(
-                user_id=req.user_id, barcode=barcode, model_number=None, image_url=None
-            )
+            _safety_req = SafetyCheckRequest(user_id=req.user_id, barcode=barcode, model_number=None, image_url=None)
 
             # Call your existing safety check endpoint logic
             # (This is a simplified version - in production you'd extract the logic)
@@ -3500,11 +3252,7 @@ async def recall_analytics():
 
             # Recent recalls (last 30 days)
             thirty_days_ago = datetime.now().date() - timedelta(days=30)
-            recent_recalls = (
-                db.query(RecallDB)
-                .filter(RecallDB.recall_date >= thirty_days_ago)
-                .count()
-            )
+            recent_recalls = db.query(RecallDB).filter(RecallDB.recall_date >= thirty_days_ago).count()
 
             # Top hazards
             hazard_query = db.execute(
@@ -3535,9 +3283,7 @@ async def recall_analytics():
             """
                 )
             )
-            top_agencies = [
-                {"agency": row[0], "recalls": row[1]} for row in agency_query
-            ]
+            top_agencies = [{"agency": row[0], "recalls": row[1]} for row in agency_query]
 
             return RecallAnalyticsResponse(
                 total_recalls=total_recalls,
@@ -3595,9 +3341,7 @@ async def analytics_counts():
                 "updated_at": datetime.now().isoformat(),
             }
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Counts analytics failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Counts analytics failed: {str(e)}")
 
 
 # --- MONITORING & ALERTING ENDPOINTS ---
@@ -3649,9 +3393,7 @@ async def agency_health_check():
                         "agency": agency_name,
                         "status": status,
                         "total_recalls": total_recalls,
-                        "last_recall_date": last_recall.isoformat()
-                        if last_recall
-                        else None,
+                        "last_recall_date": last_recall.isoformat() if last_recall else None,
                         "recent_recalls_30d": recent_recalls,
                     }
                 )
@@ -3659,9 +3401,7 @@ async def agency_health_check():
             return {
                 "status": "success",
                 "total_agencies": 39,
-                "active_agencies": len(
-                    [a for a in agencies_data if a["status"] == "active"]
-                ),
+                "active_agencies": len([a for a in agencies_data if a["status"] == "active"]),
                 "monitoring_timestamp": datetime.now().isoformat(),
                 "agencies": agencies_data,
                 "system_health": "excellent" if len(agencies_data) >= 35 else "good",
@@ -3705,9 +3445,7 @@ async def system_health():
             logger.warning(f"Unable to count recalls for health check: {e}")
 
         # Overall system health
-        overall_health = (
-            "healthy" if (db_healthy and total_recalls > 1000) else "degraded"
-        )
+        overall_health = "healthy" if (db_healthy and total_recalls > 1000) else "degraded"
 
         return {
             "status": overall_health,
@@ -3747,12 +3485,8 @@ class NotificationRequest(BaseModel):
     model_config = {"protected_namespaces": ()}
 
     user_id: int = Field(..., description="User ID to set up notifications")
-    product_identifiers: List[str] = Field(
-        ..., description="List of barcodes/model numbers to monitor"
-    )
-    notification_types: List[str] = Field(
-        ["email"], description="Types: email, sms, push"
-    )
+    product_identifiers: List[str] = Field(..., description="List of barcodes/model numbers to monitor")
+    notification_types: List[str] = Field(["email"], description="Types: email, sms, push")
 
 
 class NotificationResponse(BaseModel):
@@ -3774,16 +3508,12 @@ async def setup_notifications(req: NotificationRequest):
     Set up real-time notifications for specific products across 39 agencies
     """
     logger = logging.getLogger(__name__)
-    logger.info(
-        f"Setting up notifications for user {req.user_id}, {len(req.product_identifiers)} products"
-    )
+    logger.info(f"Setting up notifications for user {req.user_id}, {len(req.product_identifiers)} products")
 
     try:
         # For now, create a simple notification record
         # In production, this would integrate with email/SMS services
-        notification_id = (
-            f"notif_{req.user_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        )
+        notification_id = f"notif_{req.user_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
         # Store notification preferences (simplified for now)
         notification_data = {
@@ -3797,9 +3527,7 @@ async def setup_notifications(req: NotificationRequest):
         # Cache the notification setup
         from core_infra.cache_manager import set_cached
 
-        set_cached(
-            "notifications", notification_id, notification_data, ttl=86400
-        )  # 24 hours
+        set_cached("notifications", notification_id, notification_data, ttl=86400)  # 24 hours
 
         return NotificationResponse(
             status="success",
@@ -3810,9 +3538,7 @@ async def setup_notifications(req: NotificationRequest):
 
     except Exception as e:
         logger.error(f"Notification setup failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Notification setup failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Notification setup failed: {str(e)}")
 
 
 @app.get("/api/v1/notifications/{notification_id}", tags=["notifications"])
@@ -3850,17 +3576,11 @@ class MobileScanRequest(BaseModel):
 
     user_id: int = Field(..., description="User ID")
     barcode: str = Field(..., description="Scanned barcode")
-    location: Optional[str] = Field(
-        None, description="User location for regional prioritization"
-    )
+    location: Optional[str] = Field(None, description="User location for regional prioritization")
     quick_scan: bool = Field(True, description="Fast response mode for mobile")
     # Premium features for mobile
-    check_pregnancy: Optional[bool] = Field(
-        False, description="Include pregnancy check"
-    )
-    pregnancy_trimester: Optional[int] = Field(
-        None, ge=1, le=3, description="Pregnancy trimester if applicable"
-    )
+    check_pregnancy: Optional[bool] = Field(False, description="Include pregnancy check")
+    pregnancy_trimester: Optional[int] = Field(None, ge=1, le=3, description="Pregnancy trimester if applicable")
     check_allergies: Optional[bool] = Field(False, description="Include allergy check")
 
 
@@ -3886,9 +3606,7 @@ async def mobile_scan(req: MobileScanRequest):
     """
     start_time = datetime.now()
     logger = logging.getLogger(__name__)
-    logger.info(
-        f"Ã°Å¸â€œÂ± Mobile scan: user={req.user_id}, barcode={req.barcode}, quick={req.quick_scan}"
-    )
+    logger.info(f"Ã°Å¸â€œÂ± Mobile scan: user={req.user_id}, barcode={req.barcode}, quick={req.quick_scan}")
 
     try:
         # Use existing safety check logic but optimized for mobile, including premium features
@@ -3923,21 +3641,15 @@ async def mobile_scan(req: MobileScanRequest):
                 safety_level = "SAFE"
 
             # Extract pregnancy alerts if present
-            if result.data.get("pregnancy_safety") and not result.data[
-                "pregnancy_safety"
-            ].get("safe"):
+            if result.data.get("pregnancy_safety") and not result.data["pregnancy_safety"].get("safe"):
                 safety_level = "CAUTION" if safety_level == "SAFE" else safety_level
                 for alert in result.data["pregnancy_safety"].get("alerts", []):
                     if alert.get("risk_level") == "High":
                         safety_level = "DANGER"
-                    pregnancy_alerts.append(
-                        f"{alert['ingredient']}: {alert.get('reason', 'Risk')}"
-                    )
+                    pregnancy_alerts.append(f"{alert['ingredient']}: {alert.get('reason', 'Risk')}")
 
             # Extract allergy alerts if present
-            if result.data.get("allergy_safety") and not result.data[
-                "allergy_safety"
-            ].get("safe"):
+            if result.data.get("allergy_safety") and not result.data["allergy_safety"].get("safe"):
                 safety_level = "CAUTION" if safety_level == "SAFE" else safety_level
                 for alert in result.data["allergy_safety"].get("alerts", []):
                     allergens = ", ".join(alert.get("found_allergens", []))
@@ -3948,9 +3660,7 @@ async def mobile_scan(req: MobileScanRequest):
         return MobileScanResponse(
             status="success",
             safety_level=safety_level,
-            summary=result.data.get(
-                "summary", "Product checked across 39 international agencies"
-            )
+            summary=result.data.get("summary", "Product checked across 39 international agencies")
             if result.data
             else "Safe - no recalls found",
             agencies_checked=39,
@@ -4000,9 +3710,7 @@ async def ultra_fast_check(barcode: str, user_id: int) -> dict:
 
     # Check length for common formats
     if len(cleaned_barcode) < 6 or len(cleaned_barcode) > 13:
-        raise ValueError(
-            f"Invalid barcode length: {len(cleaned_barcode)} (expected 6-13 digits)"
-        )
+        raise ValueError(f"Invalid barcode length: {len(cleaned_barcode)} (expected 6-13 digits)")
 
     # Mock recall check (in real implementation, this would query database)
     response_time_ms = int((time.time() - start_time) * 1000)
@@ -4021,12 +3729,8 @@ async def ultra_fast_check(barcode: str, user_id: int) -> dict:
 async def mobile_instant_check(
     barcode: str = Path(..., min_length=8, description="Barcode to check"),
     user_id: Optional[int] = Query(None, alias="user_id", description="User ID"),
-    user_id_alt: Optional[int] = Query(
-        None, alias="user-id", description="User ID (alternative)"
-    ),
-    x_user_id: Optional[int] = Header(
-        None, alias="X-User-Id", description="User ID (header)"
-    ),
+    user_id_alt: Optional[int] = Query(None, alias="user-id", description="User ID (alternative)"),
+    x_user_id: Optional[int] = Header(None, alias="X-User-Id", description="User ID (header)"),
 ):
     """
     Ã°Å¸Å¡â‚¬ ULTRA-FAST mobile endpoint using hot path optimization
@@ -4080,12 +3784,8 @@ async def mobile_instant_check(
 async def mobile_quick_check(
     barcode: str = Path(..., min_length=8, description="Barcode to check"),
     user_id: Optional[int] = Query(None, alias="user_id", description="User ID"),
-    user_id_alt: Optional[int] = Query(
-        None, alias="user-id", description="User ID (alternative)"
-    ),
-    x_user_id: Optional[int] = Header(
-        None, alias="X-User-Id", description="User ID (header)"
-    ),
+    user_id_alt: Optional[int] = Query(None, alias="user-id", description="User ID (alternative)"),
+    x_user_id: Optional[int] = Header(None, alias="X-User-Id", description="User ID (header)"),
 ):
     """
     Ã°Å¸Å½Â¯ OPTIMIZED mobile endpoint with enhanced caching
@@ -4217,9 +3917,7 @@ async def report_unsafe_product(request: Request):
             if ctx and "error" in ctx:
                 ctx["error"] = str(ctx["error"])
 
-        raise HTTPException(
-            status_code=422, detail=formatted_errors
-        ) from validation_error
+        raise HTTPException(status_code=422, detail=formatted_errors) from validation_error
 
     try:
         # Rate limiting: Check submissions in last hour for this user
@@ -4237,9 +3935,7 @@ async def report_unsafe_product(request: Request):
             if recent_reports >= 10:
                 raise HTTPException(
                     status_code=429,
-                    detail=(
-                        "Rate limit exceeded. Maximum 10 reports per hour. Please try again later."
-                    ),
+                    detail=("Rate limit exceeded. Maximum 10 reports per hour. Please try again later."),
                 )
 
             # Create new report
@@ -4293,9 +3989,7 @@ async def report_unsafe_product(request: Request):
         raise
     except Exception as e:
         logger_inst.error(f"Failed to create unsafe product report: {e}")
-        raise HTTPException(
-            status_code=500, detail="Failed to submit report. Please try again later."
-        ) from e
+        raise HTTPException(status_code=500, detail="Failed to submit report. Please try again later.") from e
 
 
 @app.get("/api/v1/user-reports/{user_id}", tags=["safety-reports"])
@@ -4332,12 +4026,7 @@ async def get_user_reports(
             total_count = query.count()
 
             # Get paginated results
-            reports = (
-                query.order_by(UserReport.created_at.desc())
-                .offset(offset)
-                .limit(limit)
-                .all()
-            )
+            reports = query.order_by(UserReport.created_at.desc()).offset(offset).limit(limit).all()
 
             return {
                 "total": total_count,
@@ -4414,9 +4103,7 @@ async def fix_upc_data():
 
                                 recall.upc = enhanced_upc
                                 enhanced_count += 1
-                                logger.info(
-                                    f"Ã¢Å“â€¦ Enhanced '{recall.product_name[:40]}...' with UPC {enhanced_upc}"
-                                )
+                                logger.info(f"Ã¢Å“â€¦ Enhanced '{recall.product_name[:40]}...' with UPC {enhanced_upc}")
                                 break
 
                 except Exception as e:
@@ -4425,20 +4112,12 @@ async def fix_upc_data():
             # Commit changes
             if enhanced_count > 0:
                 db.commit()
-                logger.info(
-                    f"Ã°Å¸Å½Â¯ Successfully enhanced {enhanced_count} recalls with UPC data"
-                )
+                logger.info(f"Ã°Å¸Å½Â¯ Successfully enhanced {enhanced_count} recalls with UPC data")
 
             # Get final statistics
-            final_upc_count = (
-                db.query(RecallDB).filter(RecallDB.upc.isnot(None)).count()
-            )
+            final_upc_count = db.query(RecallDB).filter(RecallDB.upc.isnot(None)).count()
             total_recalls = db.query(RecallDB).count()
-            upc_coverage = (
-                round((final_upc_count / total_recalls) * 100, 2)
-                if total_recalls > 0
-                else 0
-            )
+            upc_coverage = round((final_upc_count / total_recalls) * 100, 2) if total_recalls > 0 else 0
 
             result = {
                 "status": "completed",
@@ -4450,9 +4129,7 @@ async def fix_upc_data():
                 "impact": "Barcode scanning now functional!",
             }
 
-            logger.info(
-                f"Ã°Å¸Å½â€° UPC Enhancement Complete: {upc_coverage}% coverage achieved!"
-            )
+            logger.info(f"Ã°Å¸Å½â€° UPC Enhancement Complete: {upc_coverage}% coverage achieved!")
 
             return result
 

@@ -47,9 +47,7 @@ print("=" * 80 + "\n")
 
 if not _REPORT_BUILDER_AVAILABLE:
     pytestmark = pytest.mark.skip(  # type: ignore[var-annotated]
-        reason=(
-            f"ReportBuilderAgent dependencies unavailable: {_REPORT_BUILDER_IMPORT_ERROR}"
-        )
+        reason=(f"ReportBuilderAgent dependencies unavailable: {_REPORT_BUILDER_IMPORT_ERROR}")
     )
 
 
@@ -130,11 +128,7 @@ def test_recall_agent_database_query():
         assert total_count >= 3, "Database should contain test recall records"
 
         # Get a sample recall
-        sample = (
-            session.query(LegacyRecallDB)
-            .filter(LegacyRecallDB.recall_id == "TEST-001")
-            .first()
-        )
+        sample = session.query(LegacyRecallDB).filter(LegacyRecallDB.recall_id == "TEST-001").first()
         if sample:
             print("\n  === SAMPLE RECALL DATA ===")
             print(f"  Product: {sample.product_name}")
@@ -145,29 +139,20 @@ def test_recall_agent_database_query():
 
         # Test query by product name
         search_results = (
-            session.query(LegacyRecallDB)
-            .filter(LegacyRecallDB.product_name.ilike("%baby%"))
-            .limit(5)
-            .all()
+            session.query(LegacyRecallDB).filter(LegacyRecallDB.product_name.ilike("%baby%")).limit(5).all()
         )
         print(f"\n  - Sample 'baby' product search: {len(search_results)} results")
         assert len(search_results) >= 2, "Should find baby-related products"
 
         # Test query by recall_id
-        recall_result = (
-            session.query(LegacyRecallDB)
-            .filter(LegacyRecallDB.recall_id == "TEST-002")
-            .first()
-        )
+        recall_result = session.query(LegacyRecallDB).filter(LegacyRecallDB.recall_id == "TEST-002").first()
         assert recall_result is not None, "Should find recall by recall_id"
         print(f"  - Recall ID lookup successful: {recall_result.product_name}")
 
     finally:
         # Cleanup test data
         try:
-            session.query(LegacyRecallDB).filter(
-                LegacyRecallDB.recall_id.like("TEST-%")
-            ).delete()
+            session.query(LegacyRecallDB).filter(LegacyRecallDB.recall_id.like("TEST-%")).delete()
             session.commit()
         except Exception:
             session.rollback()
@@ -202,9 +187,7 @@ async def test_recall_agent_process_task():
 
     agent = RecallDataAgentLogic(agent_id="test-process-task")
 
-    result = await agent.process_task(
-        {"upc": "070470003795", "product_name": "Test Baby Product"}
-    )
+    result = await agent.process_task({"upc": "070470003795", "product_name": "Test Baby Product"})
 
     assert result is not None
     print("✓ Successfully processed recall search task")
@@ -402,9 +385,7 @@ async def test_workflow_scan_to_recall():
     recall_agent = RecallDataAgentLogic(agent_id="workflow-test")
 
     # Step 2: Process recall check
-    result = await recall_agent.process_task(
-        {"upc": "070470003795", "product_name": "Test Baby Product"}
-    )
+    result = await recall_agent.process_task({"upc": "070470003795", "product_name": "Test Baby Product"})
 
     assert result is not None
     print("✓ Complete workflow test successful")
@@ -419,9 +400,7 @@ async def test_workflow_recall_to_report():
 
     # Step 1: Get recalls
     recall_agent = RecallDataAgentLogic(agent_id="workflow-recall-report")
-    recall_result = await recall_agent.process_task(
-        {"upc": "070470003795", "product_name": "Test Product"}
-    )
+    recall_result = await recall_agent.process_task({"upc": "070470003795", "product_name": "Test Product"})
 
     # Step 2: Generate report
     assert ReportBuilderAgentLogic is not None  # nosec - ensured by test skip
@@ -466,9 +445,7 @@ async def test_multiple_connectors_parallel():
     fda_recalls = results[1] if not isinstance(results[1], Exception) else []
 
     print("✓ Parallel connector test complete")
-    print(
-        f"  CPSC recalls: {len(cpsc_recalls) if isinstance(cpsc_recalls, list) else 0}"
-    )
+    print(f"  CPSC recalls: {len(cpsc_recalls) if isinstance(cpsc_recalls, list) else 0}")
     print(f"  FDA recalls: {len(fda_recalls) if isinstance(fda_recalls, list) else 0}")
 
 
