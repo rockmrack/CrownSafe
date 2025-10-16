@@ -72,9 +72,6 @@ def enable_pg_trgm():
             ("idx_recalls_product_name_trgm", "recalls", "product_name"),
         ]
 
-        # Whitelists for validation
-
-
         for idx_name, table, column in indexes:
             try:
                 print(f"   Creating {idx_name}...")
