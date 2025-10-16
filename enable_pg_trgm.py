@@ -18,7 +18,10 @@ except ImportError:
 DB_HOST = "babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com"
 DB_NAME = "babyshield_db"
 DB_USER = "babyshield_user"
-DB_PASSWORD = os.getenv("DB_PASSWORD", "MandarunLabadiena25!")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+if DB_PASSWORD is None:
+    print("❌ Environment variable DB_PASSWORD must be set. Exiting.")
+    sys.exit(1)
 DB_PORT = 5432
 
 
