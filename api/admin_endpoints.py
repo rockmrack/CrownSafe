@@ -283,25 +283,24 @@ async def enable_pg_trgm_extension(
 
             index_definitions = [
                 (
-                    "CREATE INDEX IF NOT EXISTS idx_recalls_product_trgm ON "
-                    "recalls_enhanced USING gin (lower(product_name) gin_trgm_ops);"
+                    "idx_recalls_product_trgm",
+                    "CREATE INDEX IF NOT EXISTS idx_recalls_product_trgm ON recalls_enhanced USING gin (lower(product_name) gin_trgm_ops);"
                 ),
                 (
-                    "CREATE INDEX IF NOT EXISTS idx_recalls_brand_trgm ON "
-                    "recalls_enhanced USING gin (lower(brand) gin_trgm_ops);"
+                    "idx_recalls_brand_trgm",
+                    "CREATE INDEX IF NOT EXISTS idx_recalls_brand_trgm ON recalls_enhanced USING gin (lower(brand) gin_trgm_ops);"
                 ),
                 (
-                    "CREATE INDEX IF NOT EXISTS idx_recalls_description_trgm ON "
-                    "recalls_enhanced USING gin (lower(description) gin_trgm_ops);"
+                    "idx_recalls_description_trgm",
+                    "CREATE INDEX IF NOT EXISTS idx_recalls_description_trgm ON recalls_enhanced USING gin (lower(description) gin_trgm_ops);"
                 ),
                 (
-                    "CREATE INDEX IF NOT EXISTS idx_recalls_hazard_trgm ON "
-                    "recalls_enhanced USING gin (lower(hazard) gin_trgm_ops);"
+                    "idx_recalls_hazard_trgm",
+                    "CREATE INDEX IF NOT EXISTS idx_recalls_hazard_trgm ON recalls_enhanced USING gin (lower(hazard) gin_trgm_ops);"
                 ),
             ]
 
-            for idx_sql in index_definitions:
-                idx_name = idx_sql.split("idx_recalls_")[1].split(" ON")[0]
+            for idx_name, idx_sql in index_definitions:
                 db.execute(text(idx_sql))
                 indexes_created.append(idx_name)
                 logger.info(f"Created index: {idx_name}")
