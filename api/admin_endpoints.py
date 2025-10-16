@@ -81,19 +81,11 @@ async def list_all_users(
     """
     # Check if user has admin privileges
     if not is_admin(current_user):
-        raise HTTPException(
-            status_code=403, detail="Access denied. Admin privileges required."
-        )
+        raise HTTPException(status_code=403, detail="Access denied. Admin privileges required.")
 
     try:
         # Get users from database
-        users = (
-            db.query(User)
-            .order_by(desc(User.created_at))
-            .offset(skip)
-            .limit(limit)
-            .all()
-        )
+        users = db.query(User).order_by(desc(User.created_at)).offset(skip).limit(limit).all()
         total_count = db.query(User).count()
 
         # Import ImageJob for scan count
@@ -111,9 +103,7 @@ async def list_all_users(
                 "full_name": getattr(user, "full_name", None),
                 "is_active": getattr(user, "is_active", True),
                 "is_premium": getattr(user, "is_premium", False),
-                "created_at": user.created_at.isoformat() + "Z"
-                if hasattr(user, "created_at")
-                else None,
+                "created_at": user.created_at.isoformat() + "Z" if hasattr(user, "created_at") else None,
                 "last_login": user.last_login.isoformat() + "Z"
                 if hasattr(user, "last_login") and user.last_login
                 else None,
@@ -159,9 +149,7 @@ async def get_user_details(
     """
     # Check if user has admin privileges
     if not is_admin(current_user):
-        raise HTTPException(
-            status_code=403, detail="Access denied. Admin privileges required."
-        )
+        raise HTTPException(status_code=403, detail="Access denied. Admin privileges required.")
 
     try:
         user = db.query(User).filter(User.id == user_id).first()
@@ -174,11 +162,7 @@ async def get_user_details(
 
         scan_count = db.query(ImageJob).filter(ImageJob.user_id == user.id).count()
         recent_scans = (
-            db.query(ImageJob)
-            .filter(ImageJob.user_id == user.id)
-            .order_by(desc(ImageJob.created_at))
-            .limit(10)
-            .all()
+            db.query(ImageJob).filter(ImageJob.user_id == user.id).order_by(desc(ImageJob.created_at)).limit(10).all()
         )
 
         user_details = {
@@ -189,9 +173,7 @@ async def get_user_details(
             "is_active": getattr(user, "is_active", True),
             "is_premium": getattr(user, "is_premium", False),
             "is_admin": is_admin(user),
-            "created_at": user.created_at.isoformat() + "Z"
-            if hasattr(user, "created_at")
-            else None,
+            "created_at": user.created_at.isoformat() + "Z" if hasattr(user, "created_at") else None,
             "last_login": user.last_login.isoformat() + "Z"
             if hasattr(user, "last_login") and user.last_login
             else None,
@@ -207,3 +189,121 @@ async def get_user_details(
     except Exception as e:
         logger.error(f"Error fetching user details: {e}", exc_info=True)
         return fail(f"Failed to fetch user details: {str(e)}", status=500)
+
+
+@router.post("/database/enable-pg-trgm", response_model=ApiResponse)
+async def enable_pg_trgm_extension(
+    current_user=Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Enable pg_trgm PostgreSQL extension for fuzzy text search (admin only).
+
+    This endpoint enables the trigram extension and creates GIN indexes
+    for optimal search performance.
+
+    Returns:
+        Status of the operation with details
+
+    Raises:
+        403: If user is not an admin
+        500: If database operation fails
+    """
+    # Check if user has admin privileges
+    if not is_admin(current_user):
+        raise HTTPException(status_code=403, detail="Access denied. Admin privileges required.")
+
+    try:
+        from sqlalchemy import text
+
+        logger.info("Admin triggering pg_trgm extension enablement...")
+
+        # Check if extension already exists
+        result = db.execute(text("SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';"))
+        existing = result.fetchone()
+
+        if existing:
+            logger.info(f"pg_trgm already enabled (version {existing[1]})")
+            extension_status = "already_enabled"
+            extension_version = existing[1]
+        else:
+            # Enable the extension
+            db.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm;"))
+            db.commit()
+            logger.info("pg_trgm extension enabled successfully")
+            extension_status = "newly_enabled"
+            extension_version = "latest"
+
+        # Test the similarity function
+        test_result = db.execute(text("SELECT similarity('baby', 'baby');"))
+        similarity_row = test_result.fetchone()
+        similarity_score = similarity_row[0] if similarity_row else 0.0
+
+        # Check for existing indexes
+        idx_check = db.execute(
+            text("""
+                SELECT indexname 
+                FROM pg_indexes 
+                WHERE tablename = 'recalls_enhanced' 
+                AND indexname LIKE '%trgm%'
+            """)
+        )
+        existing_indexes = [row[0] for row in idx_check.fetchall()]
+
+        # Create indexes if they don't exist
+        indexes_created = []
+        if not existing_indexes:
+            logger.info("Creating GIN indexes for pg_trgm...")
+
+            index_definitions = [
+                (
+                    "CREATE INDEX IF NOT EXISTS idx_recalls_product_trgm ON "
+                    "recalls_enhanced USING gin (lower(product_name) gin_trgm_ops);"
+                ),
+                (
+                    "CREATE INDEX IF NOT EXISTS idx_recalls_brand_trgm ON "
+                    "recalls_enhanced USING gin (lower(brand) gin_trgm_ops);"
+                ),
+                (
+                    "CREATE INDEX IF NOT EXISTS idx_recalls_description_trgm ON "
+                    "recalls_enhanced USING gin (lower(description) gin_trgm_ops);"
+                ),
+                (
+                    "CREATE INDEX IF NOT EXISTS idx_recalls_hazard_trgm ON "
+                    "recalls_enhanced USING gin (lower(hazard) gin_trgm_ops);"
+                ),
+            ]
+
+            for idx_sql in index_definitions:
+                idx_name = idx_sql.split("idx_recalls_")[1].split(" ON")[0]
+                db.execute(text(idx_sql))
+                indexes_created.append(idx_name)
+                logger.info(f"Created index: {idx_name}")
+
+            db.commit()
+            logger.info("All GIN indexes created successfully")
+            index_status = "created"
+        else:
+            index_status = "already_exist"
+            logger.info(f"Indexes already exist: {existing_indexes}")
+
+        result = {
+            "success": True,
+            "extension_status": extension_status,
+            "extension_version": extension_version,
+            "similarity_test": similarity_score,
+            "index_status": index_status,
+            "existing_indexes": existing_indexes,
+            "indexes_created": indexes_created,
+            "message": "pg_trgm extension is now enabled and configured",
+        }
+
+        logger.info(f"pg_trgm enablement complete: {result}")
+        return ok(result)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error enabling pg_trgm: {e}", exc_info=True)
+        db.rollback()
+        return fail(f"Failed to enable pg_trgm: {str(e)}", status=500)
