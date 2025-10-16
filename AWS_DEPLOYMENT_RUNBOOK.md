@@ -153,7 +153,9 @@ $taskDefJson = @"
         },
         {
           "name": "JWT_SECRET_KEY",
-          "value": "a9f8c2d4e6b1a3c5e7f9b2d4e6a8c1e3f5b7d9e1a3c5e7f9b1d3e5a7c9e1f3b5"
+          "value": "{{RESOLVE:secretsmanager:jwt_secret_key:SecretString:JWT_SECRET_KEY}}"
+          // NOTE: Do NOT store the JWT secret key in plaintext. Use AWS Secrets Manager or SSM Parameter Store.
+          // Replace the above value with the appropriate reference for your secret management solution.
         },
         {
           "name": "JWT_ALGORITHM",
