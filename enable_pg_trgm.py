@@ -73,15 +73,10 @@ def enable_pg_trgm():
         ]
 
         # Whitelists for validation
-        allowed_indexes = {name for name, _, _ in indexes}
-        allowed_tables = {tbl for _, tbl, _ in indexes}
-        allowed_columns = {col for _, _, col in indexes}
+
 
         for idx_name, table, column in indexes:
             try:
-                # Validate identifiers
-                if idx_name not in allowed_indexes or table not in allowed_tables or column not in allowed_columns:
-                    raise ValueError("Invalid index, table, or column name detected.")
                 print(f"   Creating {idx_name}...")
                 cur.execute(
                     f"""
