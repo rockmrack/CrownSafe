@@ -55,7 +55,11 @@ class PasswordResetConfirm(BaseModel):
 
 
 @router.post("/register", response_model=UserResponse)
-async def register(request: Request, user_data: UserRegister, db: Session = Depends(get_db)):
+async def register(
+    request: Request,
+    user_data: UserRegister,
+    db: Session = Depends(get_db),  # noqa: B008
+):
     """
     Register a new user
     Limited to 5 registrations per hour per IP
@@ -97,7 +101,7 @@ async def register(request: Request, user_data: UserRegister, db: Session = Depe
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error creating user account",
-        )
+        ) from e
 
 
 @router.post("/token", response_model=Token)
@@ -105,8 +109,8 @@ async def register(request: Request, user_data: UserRegister, db: Session = Depe
 async def login(
     response: Response,  # must be starlette Response for DI
     request: Request,
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db),
+    form_data: OAuth2PasswordRequestForm = Depends(),  # noqa: B008
+    db: Session = Depends(get_db),  # noqa: B008
 ):
     """
     Login endpoint - returns JWT tokens
@@ -139,7 +143,9 @@ async def login(
         logger.info(f"User logged in: {user.email}")
 
         # If you set cookies/headers, do it on `response` here:
-        # response.set_cookie("access_token", access_token, httponly=True, secure=True, samesite="lax")
+        # response.set_cookie(
+        #     "access_token", access_token, httponly=True, secure=True, samesite="lax"
+        # )
 
         payload = {
             "access_token": access_token,
@@ -148,30 +154,30 @@ async def login(
         }
         return payload
 
-    except (OperationalError, SQLAlchemyError):
+    except (OperationalError, SQLAlchemyError) as e:
         logger.exception("DB error during login")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Authentication service temporarily unavailable",
-        )
-    except (UnknownHashError, ValueError):
+        ) from e
+    except (UnknownHashError, ValueError) as e:
         logger.warning("Password verification failed")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
-        )
+        ) from e
     except HTTPException:
         raise
-    except Exception:
+    except Exception as e:
         logger.exception("Unhandled error in auth/token")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
-        )
+        ) from e
 
 
 @router.post("/refresh", response_model=Token)
-async def refresh_token(request: Request, db: Session = Depends(get_db)):
+async def refresh_token(request: Request, db: Session = Depends(get_db)):  # noqa: B008
     """
     Refresh access token using refresh token
     """
@@ -182,11 +188,11 @@ async def refresh_token(request: Request, db: Session = Depends(get_db)):
 
         if not refresh_token:
             raise HTTPException(status_code=400, detail="refresh_token is required in request body")
-    except Exception:
+    except Exception as e:
         raise HTTPException(
             status_code=400,
             detail='Invalid JSON body. Expected: {"refresh_token": "<token>"}',
-        )
+        ) from e
 
     # Decode refresh token
     payload = decode_token(refresh_token)
@@ -219,7 +225,7 @@ async def refresh_token(request: Request, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user_profile(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),  # noqa: B008
 ):
     """
     Get current user profile
@@ -236,8 +242,8 @@ async def get_current_user_profile(
 @router.put("/me")
 async def update_profile(
     updates: dict,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),  # noqa: B008
+    db: Session = Depends(get_db),  # noqa: B008
 ):
     """
     Update current user profile
@@ -269,11 +275,11 @@ async def update_profile(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error updating profile",
-        )
+        ) from e
 
 
 @router.post("/logout")
-async def logout(current_user: User = Depends(get_current_active_user)):
+async def logout(current_user: User = Depends(get_current_active_user)):  # noqa: B008
     """
     Logout endpoint
     In a production system, you might want to blacklist the token
@@ -300,7 +306,7 @@ async def logout(current_user: User = Depends(get_current_active_user)):
 @router.get("/verify")
 async def verify_token(
     code: Optional[str] = Query(None, description="Verification code from email"),
-    current_user: Optional[User] = Depends(get_current_user),
+    current_user: Optional[User] = Depends(get_current_user),  # noqa: B008
 ):
     """
     Verify email or token
@@ -325,8 +331,8 @@ async def verify_token(
                 "email": email,
             }
 
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid or expired verification code")
+        except Exception as e:
+            raise HTTPException(status_code=400, detail="Invalid or expired verification code") from e
     else:
         # Token verification flow (requires auth)
         if not current_user:
