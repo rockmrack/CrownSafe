@@ -141,8 +141,8 @@ $taskDefJson = @"
       "environment": [
         {
           "name": "DATABASE_URL",
-          "value": "postgresql://babyshield_user:${DB_PASSWORD}@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
-          // NOTE: Inject the production database password securely at deployment time using environment variables or AWS Secrets Manager. Do NOT store plaintext passwords in documentation or version control.
+          "value": "postgresql://babyshield_user:{{resolve:secretsmanager:db_password_secret:SecretString:DB_PASSWORD}}@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
+          // NOTE: The database password is injected securely from AWS Secrets Manager. Do NOT store plaintext passwords in documentation or version control.
         },
         {
           "name": "REDIS_URL",
