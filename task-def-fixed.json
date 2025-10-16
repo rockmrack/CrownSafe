@@ -1,0 +1,121 @@
+﻿{
+    "containerDefinitions":  [
+                                 {
+                                     "name":  "babyshield-backend",
+                                     "image":  "180703226577.dkr.ecr.eu-north-1.amazonaws.com/babyshield-backend@sha256:0cef401fa8dc2bc4d0b7c427076b1c3c56236bc7a0e52c66d07945921875eaa1",
+                                     "cpu":  0,
+                                     "portMappings":  [
+                                                          {
+                                                              "containerPort":  8001,
+                                                              "hostPort":  8001,
+                                                              "protocol":  "tcp",
+                                                              "name":  "babyshield-backend-8001-tcp"
+                                                          }
+                                                      ],
+                                     "essential":  true,
+                                     "environment":  [
+                                                         {
+                                                             "name":  "API_HOST",
+                                                             "value":  "0.0.0.0"
+                                                         },
+                                                         {
+                                                             "name":  "DB_PORT",
+                                                             "value":  "5432"
+                                                         },
+                                                         {
+                                                             "name":  "ENVIRONMENT",
+                                                             "value":  "production"
+                                                         },
+                                                         {
+                                                             "name":  "DB_NAME",
+                                                             "value":  "postgres"
+                                                         },
+                                                         {
+                                                             "name":  "DB_HOST",
+                                                             "value":  "babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com"
+                                                         },
+                                                         {
+                                                             "name":  "DATABASE_URL",
+                                                             "value":  "postgresql://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
+                                                         },
+                                                         {
+                                                             "name":  "DB_USERNAME",
+                                                             "value":  "babyshield_user"
+                                                         },
+                                                         {
+                                                             "name":  "IS_PRODUCTION",
+                                                             "value":  "true"
+                                                         },
+                                                         {
+                                                             "name":  "API_PORT",
+                                                             "value":  "8001"
+                                                         },
+                                                         {
+                                                             "name":  "BS_FEATURE_CHAT_ROLLOUT_PCT",
+                                                             "value":  "1.0"
+                                                         },
+                                                         {
+                                                             "name":  "OPENAI_API_KEY",
+                                                             "value":  "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"
+                                                         },
+                                                         {
+                                                             "name":  "ENABLE_AGENTS",
+                                                             "value":  "true"
+                                                         },
+                                                         {
+                                                             "name":  "BS_FEATURE_CHAT_ENABLED",
+                                                             "value":  "true"
+                                                         },
+                                                         {
+                                                             "name":  "DB_PASSWORD",
+                                                             "value":  "MandarunLabadiena25!"
+                                                         }
+                                                     ],
+                                     "mountPoints":  [
+
+                                                     ],
+                                     "volumesFrom":  [
+
+                                                     ],
+                                     "logConfiguration":  {
+                                                              "logDriver":  "awslogs",
+                                                              "options":  {
+                                                                              "awslogs-group":  "/ecs/babyshield-backend",
+                                                                              "awslogs-region":  "eu-north-1",
+                                                                              "awslogs-stream-prefix":  "ecs"
+                                                                          },
+                                                              "secretOptions":  [
+
+                                                                                ]
+                                                          },
+                                     "healthCheck":  {
+                                                         "command":  [
+                                                                         "CMD-SHELL",
+                                                                         "curl -f http://localhost:8001/healthz || exit 1"
+                                                                     ],
+                                                         "interval":  30,
+                                                         "timeout":  10,
+                                                         "retries":  3,
+                                                         "startPeriod":  60
+                                                     },
+                                     "systemControls":  [
+
+                                                        ]
+                                 }
+                             ],
+    "family":  "babyshield-backend-task",
+    "taskRoleArn":  "arn:aws:iam::180703226577:role/babyshield-task-role",
+    "executionRoleArn":  "arn:aws:iam::180703226577:role/ecsTaskExecutionRole",
+    "networkMode":  "awsvpc",
+    "volumes":  [
+
+                ],
+    "placementConstraints":  [
+
+                             ],
+    "requiresCompatibilities":  [
+                                    "FARGATE"
+                                ],
+    "cpu":  "512",
+    "memory":  "1024"
+}

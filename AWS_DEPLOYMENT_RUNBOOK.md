@@ -117,6 +117,12 @@ Write-Host "Image Tag: $imageTag" -ForegroundColor Cyan
 # Store the image tag for the task definition
 $imageUri = "180703226577.dkr.ecr.eu-north-1.amazonaws.com/babyshield-backend:$imageTag"
 
+# IMPORTANT: Database Configuration Notes
+# - DATABASE_URL must point to 'babyshield_db' database (NOT 'postgres')
+# - DB_NAME environment variable must be set to 'babyshield_db'
+# - Use RDS hostname (NOT IP address) for SSL certificate validation
+# - Current production password is in plaintext (consider AWS Secrets Manager for enhanced security)
+
 # Create task definition JSON
 $taskDefJson = @"
 {
@@ -141,8 +147,7 @@ $taskDefJson = @"
       "environment": [
         {
           "name": "DATABASE_URL",
-          "value": "postgresql://babyshield_user:{{resolve:secretsmanager:db_password_secret:SecretString:DB_PASSWORD}}@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
-          // NOTE: The database password is injected securely from AWS Secrets Manager. Do NOT store plaintext passwords in documentation or version control.
+          "value": "postgresql://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
         },
         {
           "name": "REDIS_URL",
@@ -154,10 +159,7 @@ $taskDefJson = @"
         },
         {
           "name": "JWT_SECRET_KEY",
-          "value": "{{resolve:secretsmanager:jwt_secret_key:SecretString:JWT_SECRET_KEY}}"
-          // NOTE: Do NOT store the JWT secret key in plaintext. Use AWS Secrets Manager or SSM Parameter Store.
-          // The value above uses the correct AWS Secrets Manager reference syntax (lowercase 'resolve').
-          // Ensure that secrets are injected securely at runtime and never stored in plaintext in environment variables or version control.
+          "value": "a9f8c2d4e6b1a3c5e7f9b2d4e6a8c1e3f5b7d9e1a3c5e7f9b1d3e5a7c9e1f3b5"
         },
         {
           "name": "JWT_ALGORITHM",

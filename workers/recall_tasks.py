@@ -16,9 +16,7 @@ class RecallAgent:
     def __init__(self):
         pass
 
-    def fetch_recalls(
-        self, agency: str, date_range: Dict[str, str]
-    ) -> List[Dict[str, Any]]:
+    def fetch_recalls(self, agency: str, date_range: Dict[str, str]) -> List[Dict[str, Any]]:
         """Fetch recalls from a specific agency."""
         return [
             {
@@ -57,9 +55,7 @@ except ImportError:
     soft_time_limit=300,
     time_limit=360,
 )
-def ingest_recalls_from_agency_task(
-    self: Task, agency: str, date_range: Dict[str, str]
-) -> Dict[str, Any]:
+def ingest_recalls_from_agency_task(self: Task, agency: str, date_range: Dict[str, str]) -> Dict[str, Any]:
     """
     Ingest recalls from a specific regulatory agency.
 
@@ -100,9 +96,7 @@ def ingest_recalls_from_agency_task(
 
     except Exception as exc:
         # Retry with exponential backoff
-        raise self.retry(
-            exc=exc, countdown=min(60 * (2**self.request.retries), 300)
-        ) from exc
+        raise self.retry(exc=exc, countdown=min(60 * (2**self.request.retries), 300)) from exc
 
 
 @app.task(name="refresh_all_recalls", soft_time_limit=600, time_limit=720)

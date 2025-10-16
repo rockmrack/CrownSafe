@@ -3,9 +3,7 @@ import logging
 from core_infra.mcp_client_library.client import MCPClient
 from .agent_logic import DataGovernanceAgentLogic
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "datagovernance_agent_01"
@@ -18,12 +16,8 @@ class DataGovernanceAgent:
         self.mcp_client = MCPClient(agent_id=self.agent_id, server_url=MCP_SERVER_URL)
         self.logic = DataGovernanceAgentLogic(agent_id=self.agent_id)
 
-        self.mcp_client.register_capability(
-            "check_data_minimization", self.handle_check_minimization
-        )
-        self.mcp_client.register_capability(
-            "determine_data_residency", self.handle_determine_residency
-        )
+        self.mcp_client.register_capability("check_data_minimization", self.handle_check_minimization)
+        self.mcp_client.register_capability("determine_data_residency", self.handle_determine_residency)
 
     async def handle_check_minimization(self, task_payload: dict) -> dict:
         data_payload = task_payload.get("data_payload")

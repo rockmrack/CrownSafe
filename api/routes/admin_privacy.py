@@ -40,15 +40,11 @@ class UpdatePrivacyRequest(BaseModel):
         pattern="^(verifying|processing|done|rejected|cancelled)$",
         description="New status for the request",
     )
-    notes: Optional[str] = Field(
-        None, max_length=2000, description="Admin notes about the request"
-    )
+    notes: Optional[str] = Field(None, max_length=2000, description="Admin notes about the request")
     rejection_reason: Optional[str] = Field(
         None, max_length=500, description="Reason for rejection (if status=rejected)"
     )
-    export_url: Optional[str] = Field(
-        None, description="Export download URL (if status=done for export requests)"
-    )
+    export_url: Optional[str] = Field(None, description="Export download URL (if status=done for export requests)")
 
 
 class PrivacyRequestFilter(BaseModel):
@@ -56,22 +52,14 @@ class PrivacyRequestFilter(BaseModel):
     Filters for privacy request queries
     """
 
-    kind: Optional[str] = Field(
-        None, pattern="^(export|delete|rectify|access|restrict|object)$"
-    )
-    status: Optional[str] = Field(
-        None, pattern="^(queued|verifying|processing|done|rejected|expired|cancelled)$"
-    )
-    jurisdiction: Optional[str] = Field(
-        None, pattern="^(gdpr|uk_gdpr|ccpa|pipeda|lgpd|appi|other)$"
-    )
+    kind: Optional[str] = Field(None, pattern="^(export|delete|rectify|access|restrict|object)$")
+    status: Optional[str] = Field(None, pattern="^(queued|verifying|processing|done|rejected|expired|cancelled)$")
+    jurisdiction: Optional[str] = Field(None, pattern="^(gdpr|uk_gdpr|ccpa|pipeda|lgpd|appi|other)$")
     overdue_only: bool = False
     email_search: Optional[str] = None
 
 
-def create_response(
-    data: dict, request: Request, status_code: int = 200
-) -> JSONResponse:
+def create_response(data: dict, request: Request, status_code: int = 200) -> JSONResponse:
     """Create standard JSON response with trace ID"""
     return JSONResponse(
         content={
@@ -144,13 +132,9 @@ async def list_privacy_requests(
                 "email_masked": mask_email(req.email),
                 "jurisdiction": req.jurisdiction,
                 "source": req.source,
-                "submitted_at": req.submitted_at.isoformat()
-                if req.submitted_at
-                else None,
+                "submitted_at": req.submitted_at.isoformat() if req.submitted_at else None,
                 "verified_at": req.verified_at.isoformat() if req.verified_at else None,
-                "completed_at": req.completed_at.isoformat()
-                if req.completed_at
-                else None,
+                "completed_at": req.completed_at.isoformat() if req.completed_at else None,
                 "sla_days": req.sla_days,
                 "is_overdue": req.is_overdue,
                 "days_elapsed": req.days_elapsed,
@@ -219,9 +203,7 @@ async def get_privacy_request_details(
             )
 
         # Query request
-        privacy_request = (
-            db.query(PrivacyRequest).filter(PrivacyRequest.id == request_id).first()
-        )
+        privacy_request = db.query(PrivacyRequest).filter(PrivacyRequest.id == request_id).first()
 
         if not privacy_request:
             raise APIError(
@@ -282,9 +264,7 @@ async def update_privacy_request_status(
             )
 
         # Get request
-        privacy_request = (
-            db.query(PrivacyRequest).filter(PrivacyRequest.id == request_id).first()
-        )
+        privacy_request = db.query(PrivacyRequest).filter(PrivacyRequest.id == request_id).first()
 
         if not privacy_request:
             raise APIError(
@@ -323,14 +303,10 @@ async def update_privacy_request_status(
             privacy_request.verified_at = datetime.now(timezone.utc)
 
         elif new_status == "done":
-            privacy_request.set_completed(
-                export_url=body.export_url if privacy_request.kind == "export" else None
-            )
+            privacy_request.set_completed(export_url=body.export_url if privacy_request.kind == "export" else None)
 
         elif new_status == "rejected":
-            privacy_request.set_rejected(
-                body.rejection_reason or "Request rejected by administrator"
-            )
+            privacy_request.set_rejected(body.rejection_reason or "Request rejected by administrator")
 
         elif new_status == "cancelled":
             privacy_request.status = "cancelled"
@@ -340,9 +316,7 @@ async def update_privacy_request_status(
         if body.notes:
             existing_notes = privacy_request.notes or ""
             timestamp = datetime.now(timezone.utc).isoformat()
-            privacy_request.notes = (
-                f"{existing_notes}\n[{timestamp}] Admin ({admin}): {body.notes}".strip()
-            )
+            privacy_request.notes = f"{existing_notes}\n[{timestamp}] Admin ({admin}): {body.notes}".strip()
 
         # Save changes
         db.commit()
@@ -398,10 +372,7 @@ async def privacy_request_statistics(
 
         # Overall statistics
         total_requests = (
-            db.query(func.count(PrivacyRequest.id))
-            .filter(PrivacyRequest.submitted_at >= since_date)
-            .scalar()
-            or 0
+            db.query(func.count(PrivacyRequest.id)).filter(PrivacyRequest.submitted_at >= since_date).scalar() or 0
         )
 
         # By kind
@@ -472,18 +443,12 @@ async def privacy_request_statistics(
             "overview": {
                 "total_requests": total_requests,
                 "pending": db.query(func.count(PrivacyRequest.id))
-                .filter(
-                    PrivacyRequest.status.in_(["queued", "verifying", "processing"])
-                )
+                .filter(PrivacyRequest.status.in_(["queued", "verifying", "processing"]))
                 .scalar()
                 or 0,
-                "completed": db.query(func.count(PrivacyRequest.id))
-                .filter(PrivacyRequest.status == "done")
-                .scalar()
+                "completed": db.query(func.count(PrivacyRequest.id)).filter(PrivacyRequest.status == "done").scalar()
                 or 0,
-                "rejected": db.query(func.count(PrivacyRequest.id))
-                .filter(PrivacyRequest.status == "rejected")
-                .scalar()
+                "rejected": db.query(func.count(PrivacyRequest.id)).filter(PrivacyRequest.status == "rejected").scalar()
                 or 0,
                 "overdue": overdue_count,
             },
@@ -491,12 +456,8 @@ async def privacy_request_statistics(
             "by_status": {status: count for status, count in by_status},
             "by_jurisdiction": {juris: count for juris, count in by_jurisdiction},
             "processing_metrics": {
-                "average_days": round(avg_processing_time / 86400, 1)
-                if avg_processing_time
-                else None,
-                "sla_compliance_rate": round(
-                    (1 - (overdue_count / total_requests)) * 100, 1
-                )
+                "average_days": round(avg_processing_time / 86400, 1) if avg_processing_time else None,
+                "sla_compliance_rate": round((1 - (overdue_count / total_requests)) * 100, 1)
                 if total_requests > 0
                 else 100,
             },
@@ -547,9 +508,7 @@ async def process_privacy_request(
             )
 
         # Get request
-        privacy_request = (
-            db.query(PrivacyRequest).filter(PrivacyRequest.id == request_id).first()
-        )
+        privacy_request = db.query(PrivacyRequest).filter(PrivacyRequest.id == request_id).first()
 
         if not privacy_request:
             raise APIError(
@@ -567,16 +526,12 @@ async def process_privacy_request(
 
         # Update to processing status
         privacy_request.status = "processing"
-        privacy_request.verified_at = privacy_request.verified_at or datetime.now(
-            timezone.utc
-        )
+        privacy_request.verified_at = privacy_request.verified_at or datetime.now(timezone.utc)
 
         # Add note
         timestamp = datetime.now(timezone.utc).isoformat()
         notes = privacy_request.notes or ""
-        privacy_request.notes = (
-            f"{notes}\n[{timestamp}] Processing initiated by admin ({admin})".strip()
-        )
+        privacy_request.notes = f"{notes}\n[{timestamp}] Processing initiated by admin ({admin})".strip()
 
         db.commit()
 

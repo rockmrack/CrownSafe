@@ -6,8 +6,8 @@ Revises: 20250826_search_trgm_indexes
 Create Date: 2025-08-27 00:00:00.000000
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers
@@ -51,19 +51,14 @@ def upgrade():
         ),
         sa.Column("agency", sa.String(64), nullable=False),
         sa.Column("mode", sa.String(16), nullable=False),  # "delta" | "full"
-        sa.Column(
-            "status", sa.String(16), nullable=False
-        ),  # "queued"|"running"|"success"|"failed"|"cancelled"
+        # "queued"|"running"|"success"|"failed"|"cancelled"
+        sa.Column("status", sa.String(16), nullable=False),
         sa.Column("started_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("finished_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("items_inserted", sa.Integer, nullable=False, server_default="0"),
         sa.Column("items_updated", sa.Integer, nullable=False, server_default="0"),
-        sa.Column(
-            "items_skipped", sa.Integer, nullable=False, server_default="0"
-        ),  # Added
-        sa.Column(
-            "items_failed", sa.Integer, nullable=False, server_default="0"
-        ),  # Added
+        sa.Column("items_skipped", sa.Integer, nullable=False, server_default="0"),  # Added
+        sa.Column("items_failed", sa.Integer, nullable=False, server_default="0"),  # Added
         sa.Column("error_text", sa.Text, nullable=True),
         sa.Column("initiated_by", sa.String(128), nullable=True),
         sa.Column("trace_id", sa.String(64), nullable=True),
@@ -83,13 +78,9 @@ def upgrade():
         unique=False,
     )
 
-    op.create_index(
-        "ix_ingestion_runs_status", "ingestion_runs", ["status"], unique=False
-    )
+    op.create_index("ix_ingestion_runs_status", "ingestion_runs", ["status"], unique=False)
 
-    op.create_index(
-        "ix_ingestion_runs_created_at", "ingestion_runs", ["created_at"], unique=False
-    )
+    op.create_index("ix_ingestion_runs_created_at", "ingestion_runs", ["created_at"], unique=False)
 
     # Add check constraints (PostgreSQL only - SQLite doesn't support ALTER TABLE ADD CONSTRAINT)
     if not is_sqlite:

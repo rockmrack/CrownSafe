@@ -42,9 +42,7 @@ class SecurityLimitsTester:
         # Create large payload (200KB)
         large_data = {"product": "a" * 200000, "query": "test"}  # 200KB string
 
-        response = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json=large_data
-        )
+        response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json=large_data)
 
         self.test(
             response.status_code == 413,
@@ -156,9 +154,7 @@ class SecurityLimitsTester:
 
             if "access-control-allow-origin" in headers_lower:
                 allowed = headers_lower["access-control-allow-origin"]
-                self.test(
-                    allowed != origin, f"Evil origin NOT echoed: {allowed} != {origin}"
-                )
+                self.test(allowed != origin, f"Evil origin NOT echoed: {allowed} != {origin}")
             else:
                 self.test(True, "No Access-Control-Allow-Origin for evil origin")
 
@@ -169,9 +165,7 @@ class SecurityLimitsTester:
         print("\n📝 Test 4: Input Field Length Limits")
 
         # Test oversized product field (>128 chars)
-        response = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json={"product": "x" * 1000}
-        )
+        response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json={"product": "x" * 1000})
 
         self.test(
             response.status_code in (400, 422),
@@ -195,9 +189,7 @@ class SecurityLimitsTester:
         )
 
         # Test ID field with invalid chars
-        response3 = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json={"id": "../../etc/passwd"}
-        )
+        response3 = self.session.post(f"{self.base_url}/api/v1/search/advanced", json={"id": "../../etc/passwd"})
 
         self.test(
             response3.status_code in (200, 400, 422, 404),
@@ -213,9 +205,7 @@ class SecurityLimitsTester:
         # Test too many keywords (>8)
         keywords = ["keyword" + str(i) for i in range(100)]
 
-        response = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json={"keywords": keywords}
-        )
+        response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json={"keywords": keywords})
 
         self.test(
             response.status_code in (200, 400, 422),
@@ -229,9 +219,7 @@ class SecurityLimitsTester:
         # Test oversized keyword (>32 chars each)
         long_keywords = ["x" * 100, "y" * 100]
 
-        response2 = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json={"keywords": long_keywords}
-        )
+        response2 = self.session.post(f"{self.base_url}/api/v1/search/advanced", json={"keywords": long_keywords})
 
         self.test(
             response2.status_code in (400, 422),
@@ -267,9 +255,7 @@ class SecurityLimitsTester:
                     f"Large response compressed: {encoding}",
                 )
             else:
-                print(
-                    f"   ℹ️ Response size {content_length} bytes - may not be compressed"
-                )
+                print(f"   ℹ️ Response size {content_length} bytes - may not be compressed")
 
         return True
 
@@ -298,9 +284,7 @@ class SecurityLimitsTester:
 
         for header in optional_headers:
             if header.lower() in headers_lower:
-                self.test(
-                    True, f"{header} present: {headers_lower[header.lower()][:50]}"
-                )
+                self.test(True, f"{header} present: {headers_lower[header.lower()][:50]}")
 
         return True
 
@@ -317,9 +301,7 @@ class SecurityLimitsTester:
         ]
 
         for ua in bad_agents[:2]:  # Test first two
-            response = self.session.get(
-                f"{self.base_url}/api/v1/healthz", headers={"User-Agent": ua}
-            )
+            response = self.session.get(f"{self.base_url}/api/v1/healthz", headers={"User-Agent": ua})
 
             self.test(
                 response.status_code in (403, 200),
@@ -342,9 +324,7 @@ class SecurityLimitsTester:
             headers={"User-Agent": "BabyShield/1.0 (iOS)"},
         )
 
-        self.test(
-            response.status_code == 200, f"Normal UA allowed: {response.status_code}"
-        )
+        self.test(response.status_code == 200, f"Normal UA allowed: {response.status_code}")
 
         return True
 
@@ -361,9 +341,7 @@ class SecurityLimitsTester:
         ]
 
         for payload in sql_payloads[:2]:
-            response = self.session.post(
-                f"{self.base_url}/api/v1/search/advanced", json={"product": payload}
-            )
+            response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json={"product": payload})
 
             self.test(
                 response.status_code in (200, 400, 422),
@@ -391,9 +369,7 @@ class SecurityLimitsTester:
         ]
 
         for payload in xss_payloads[:2]:
-            response = self.session.post(
-                f"{self.base_url}/api/v1/search/advanced", json={"query": payload}
-            )
+            response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json={"query": payload})
 
             self.test(
                 response.status_code in (200, 400, 422),

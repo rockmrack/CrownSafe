@@ -95,9 +95,7 @@ print(json.dumps(search_payload, indent=2))
 print()
 
 try:
-    response = requests.post(
-        f"{BASE_URL}/api/v1/search/advanced", json=search_payload, timeout=10
-    )
+    response = requests.post(f"{BASE_URL}/api/v1/search/advanced", json=search_payload, timeout=10)
 
     print(f"Status Code: {response.status_code}")
 
@@ -163,9 +161,7 @@ print(json.dumps(verify_payload, indent=2))
 print()
 
 try:
-    response = requests.post(
-        f"{BASE_URL}/api/v1/safety-check", json=verify_payload, timeout=15
-    )
+    response = requests.post(f"{BASE_URL}/api/v1/safety-check", json=verify_payload, timeout=15)
 
     print(f"Status Code: {response.status_code}")
 
@@ -224,9 +220,7 @@ print("Params: limit=10, language=en")
 print()
 
 try:
-    response = requests.get(
-        f"{BASE_URL}/api/v1/safety-hub/articles", params=params, timeout=10
-    )
+    response = requests.get(f"{BASE_URL}/api/v1/safety-hub/articles", params=params, timeout=10)
 
     print(f"Status Code: {response.status_code}")
 
@@ -279,9 +273,7 @@ print("Params: user_id=1, limit=5")
 print()
 
 try:
-    response = requests.get(
-        f"{BASE_URL}/api/v1/baby/community/alerts", params=community_params, timeout=10
-    )
+    response = requests.get(f"{BASE_URL}/api/v1/baby/community/alerts", params=community_params, timeout=10)
 
     print(f"Status Code: {response.status_code}")
 

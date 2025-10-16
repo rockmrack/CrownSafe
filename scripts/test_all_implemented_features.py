@@ -56,9 +56,7 @@ async def test_core_features():
                     "allergies": ["milk", "soy"],
                 },
             )
-            log_result(
-                "Safety Check with Premium Features", response.status_code == 200
-            )
+            log_result("Safety Check with Premium Features", response.status_code == 200)
             if response.status_code == 200:
                 data = response.json()
                 print(f"  - Safety Level: {data.get('safety_level')}")
@@ -143,9 +141,7 @@ async def test_premium_features():
 
         # 3. Family Member Management (if endpoint exists)
         try:
-            response = await client.get(
-                f"{BASE_URL}/api/v1/premium/family/members", params={"user_id": 1}
-            )
+            response = await client.get(f"{BASE_URL}/api/v1/premium/family/members", params={"user_id": 1})
             if response.status_code == 404:
                 print("  ⚠️ Family member endpoints not available in simplified API")
             else:
@@ -256,9 +252,7 @@ async def test_advanced_features():
                 json={"image_base64": "mock_image_data"},
             )
             if response.status_code == 404:
-                print(
-                    "  ⚠️ Visual recognition endpoint not available in simplified API"
-                )
+                print("  ⚠️ Visual recognition endpoint not available in simplified API")
             else:
                 log_result("Visual Recognition", response.status_code in [200, 422])
         except Exception as e:
@@ -283,9 +277,7 @@ async def test_compliance_features():
                 data = response.json()
                 print(f"  - Age: {data.get('age')}")
                 print(f"  - COPPA Applies: {data.get('coppa_applies')}")
-                print(
-                    f"  - Parental Consent Required: {data.get('requires_parental_consent')}"
-                )
+                print(f"  - Parental Consent Required: {data.get('requires_parental_consent')}")
         except Exception as e:
             log_result("COPPA Age Verification", False, str(e))
 
@@ -340,9 +332,7 @@ async def test_system_features():
                 data = response.json()
                 print(f"  - API Version: {data.get('api_version')}")
                 print(f"  - Database Status: {data.get('database', {}).get('status')}")
-                print(
-                    f"  - Total Recalls: {data.get('database', {}).get('total_recalls')}"
-                )
+                print(f"  - Total Recalls: {data.get('database', {}).get('total_recalls')}")
         except Exception as e:
             log_result("System Statistics", False, str(e))
 
@@ -391,18 +381,14 @@ async def main():
     print("=" * 60)
     print(f"✅ Passed: {test_results['passed']}")
     print(f"❌ Failed: {test_results['failed']}")
-    print(
-        f"📈 Success Rate: {(test_results['passed'] / (test_results['passed'] + test_results['failed']) * 100):.1f}%"
-    )
+    print(f"📈 Success Rate: {(test_results['passed'] / (test_results['passed'] + test_results['failed']) * 100):.1f}%")
 
     if test_results["errors"]:
         print("\n⚠️ Failed Tests:")
         for error in test_results["errors"][:5]:
             print(f"  • {error}")
 
-    print(
-        f"\n🏁 Test suite completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-    )
+    print(f"\n🏁 Test suite completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     # Overall status
     if test_results["failed"] == 0:

@@ -6,9 +6,8 @@ Version: 2.0 - Adapted for BabyShield EnhancedRecallDB
 """
 
 import logging
-from typing import Dict, Optional, Any
-import asyncio
 from datetime import datetime
+from typing import Any, Dict, Optional
 
 # Import Pydantic model
 from .models import Recall
@@ -85,12 +84,10 @@ class RecallDataAgentLogic:
         )
 
         # Validate inputs
-        if not any(
-            [product_name, model_number, upc, ean_code, gtin, lot_number, brand]
-        ):
+        if not any([product_name, model_number, upc, ean_code, gtin, lot_number, brand]):
             return {
                 "status": "FAILED",
-                "error": "At least one product identifier is required (name, model, UPC, EAN, GTIN, lot, or brand).",
+                "error": ("At least one product identifier is required (name, model, UPC, EAN, GTIN, lot, or brand)."),
             }
 
         try:
@@ -121,8 +118,7 @@ class RecallDataAgentLogic:
                 # Priority 2: Brand + name matching (medium confidence)
                 if brand and product_name:
                     filters.append(
-                        (RecallDB.brand.ilike(f"%{brand}%"))
-                        & (RecallDB.product_name.ilike(f"%{product_name}%"))
+                        (RecallDB.brand.ilike(f"%{brand}%")) & (RecallDB.product_name.ilike(f"%{product_name}%"))
                     )
 
                 # Priority 3: Product name fuzzy matching (lower confidence)
@@ -138,9 +134,7 @@ class RecallDataAgentLogic:
                 else:
                     recalled_products = []
 
-                self.logger.info(
-                    f"[{self.agent_id}] Found {len(recalled_products)} matching recalls"
-                )
+                self.logger.info(f"[{self.agent_id}] Found {len(recalled_products)} matching recalls")
 
                 # Convert to dictionaries using Pydantic validation
                 found_recalls = []
@@ -150,9 +144,7 @@ class RecallDataAgentLogic:
                         recall_obj = Recall.model_validate(db_recall)
                         found_recalls.append(recall_obj.model_dump())
                     except Exception as e:
-                        self.logger.error(
-                            f"Error converting recall {db_recall.id}: {e}"
-                        )
+                        self.logger.error(f"Error converting recall {db_recall.id}: {e}")
                         continue
 
                 return {
@@ -167,9 +159,7 @@ class RecallDataAgentLogic:
                 db.close()
 
         except Exception as e:
-            self.logger.error(
-                f"[{self.agent_id}] Database query failed: {e}", exc_info=True
-            )
+            self.logger.error(f"[{self.agent_id}] Database query failed: {e}", exc_info=True)
             return {"status": "FAILED", "error": f"Database query failed: {str(e)}"}
 
     async def run_ingestion_cycle(self) -> Dict[str, Any]:
@@ -199,9 +189,7 @@ class RecallDataAgentLogic:
             all_recalls = await self.connector_registry.fetch_all_recalls()
 
             if not all_recalls:
-                self.logger.warning(
-                    f"[{self.agent_id}] No new recalls found in this cycle."
-                )
+                self.logger.warning(f"[{self.agent_id}] No new recalls found in this cycle.")
                 return {
                     "status": "success",
                     "total_fetched": 0,
@@ -210,9 +198,7 @@ class RecallDataAgentLogic:
                     "duration_seconds": (datetime.now() - start_time).total_seconds(),
                 }
 
-            self.logger.info(
-                f"[{self.agent_id}] Fetched {len(all_recalls)} total recalls from all agencies"
-            )
+            self.logger.info(f"[{self.agent_id}] Fetched {len(all_recalls)} total recalls from all agencies")
 
             # Upsert into database
             db = SessionLocal()
@@ -224,11 +210,7 @@ class RecallDataAgentLogic:
                 for recall_data in all_recalls:
                     try:
                         # Check if recall already exists
-                        existing = (
-                            db.query(RecallDB)
-                            .filter(RecallDB.recall_id == recall_data.recall_id)
-                            .first()
-                        )
+                        existing = db.query(RecallDB).filter(RecallDB.recall_id == recall_data.recall_id).first()
 
                         if existing:
                             # Update existing record
@@ -247,9 +229,7 @@ class RecallDataAgentLogic:
                             db.commit()
 
                     except Exception as e:
-                        error_msg = (
-                            f"Error upserting recall {recall_data.recall_id}: {e}"
-                        )
+                        error_msg = f"Error upserting recall {recall_data.recall_id}: {e}"
                         self.logger.error(error_msg)
                         errors.append(error_msg)
                         db.rollback()
@@ -303,9 +283,7 @@ class RecallDataAgentLogic:
                 from sqlalchemy import func
 
                 agency_counts = (
-                    db.query(RecallDB.source_agency, func.count(RecallDB.id))
-                    .group_by(RecallDB.source_agency)
-                    .all()
+                    db.query(RecallDB.source_agency, func.count(RecallDB.id)).group_by(RecallDB.source_agency).all()
                 )
 
                 # List of available connectors (hardcoded for now)
@@ -355,10 +333,10 @@ class RecallDataAgentLogic:
 
 
 async def test_query(
-    product_name: str = None,
-    model_number: str = None,
-    upc: str = None,
-    brand: str = None,
+    product_name: Optional[str] = None,
+    model_number: Optional[str] = None,
+    upc: Optional[str] = None,
+    brand: Optional[str] = None,
 ):
     """Test the query functionality"""
     agent = RecallDataAgentLogic(agent_id="test_agent")

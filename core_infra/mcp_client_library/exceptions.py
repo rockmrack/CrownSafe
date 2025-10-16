@@ -39,9 +39,7 @@ class AuthenticationError(MCPClientError):
     pass
 
 
-class TimeoutError(
-    MCPClientError
-):  # Note: This might conflict with built-in TimeoutError if not careful with imports
+class TimeoutError(MCPClientError):  # Note: This might conflict with built-in TimeoutError if not careful with imports
     """Raised when an operation times out."""
 
     pass

@@ -133,37 +133,27 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers.setdefault("Permissions-Policy", self.permissions_policy)
 
         # Cross-origin policies
-        response.headers.setdefault(
-            "Cross-Origin-Opener-Policy", self.cross_origin_opener_policy
-        )
+        response.headers.setdefault("Cross-Origin-Opener-Policy", self.cross_origin_opener_policy)
 
         # For API responses, we typically don't need COEP
         # But include for completeness
         if self.cross_origin_embedder_policy:
-            response.headers.setdefault(
-                "Cross-Origin-Embedder-Policy", self.cross_origin_embedder_policy
-            )
+            response.headers.setdefault("Cross-Origin-Embedder-Policy", self.cross_origin_embedder_policy)
 
-        response.headers.setdefault(
-            "Cross-Origin-Resource-Policy", self.cross_origin_resource_policy
-        )
+        response.headers.setdefault("Cross-Origin-Resource-Policy", self.cross_origin_resource_policy)
 
         # CSP only for HTML responses
         # Skip for JSON API responses to avoid console warnings
         content_type = response.headers.get("content-type", "").lower()
         if self.content_security_policy and "text/html" in content_type:
-            response.headers.setdefault(
-                "Content-Security-Policy", self.content_security_policy
-            )
+            response.headers.setdefault("Content-Security-Policy", self.content_security_policy)
 
         # Additional security headers for APIs
         response.headers.setdefault("X-Permitted-Cross-Domain-Policies", "none")
 
         # Cache control for sensitive endpoints
         if "/api/v1/auth" in request.url.path or "/api/v1/user" in request.url.path:
-            response.headers[
-                "Cache-Control"
-            ] = "no-store, no-cache, must-revalidate, private"
+            response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private"
             response.headers["Pragma"] = "no-cache"
             response.headers["Expires"] = "0"
 

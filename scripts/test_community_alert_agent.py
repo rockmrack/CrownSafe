@@ -13,9 +13,7 @@ sys.path.insert(0, project_root)
 
 from agents.engagement.community_alert_agent.agent_logic import CommunityAlertAgentLogic
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 
 async def main():
@@ -24,9 +22,7 @@ async def main():
     logger.info("--- Starting CommunityAlertAgent Test ---")
 
     # 1. Load the mock HTML file from our test fixtures.
-    fixture_path = os.path.join(
-        project_root, "tests", "fixtures", "mock_forum_page.html"
-    )
+    fixture_path = os.path.join(project_root, "tests", "fixtures", "mock_forum_page.html")
     try:
         with open(fixture_path, "r") as f:
             mock_html = f.read()
@@ -37,9 +33,7 @@ async def main():
 
     try:
         # 2. Initialize the real CommunityAlertAgentLogic.
-        agent_logic = CommunityAlertAgentLogic(
-            agent_id="test_ca_001", logger_instance=logger
-        )
+        agent_logic = CommunityAlertAgentLogic(agent_id="test_ca_001", logger_instance=logger)
         logger.info("Agent logic initialized.")
 
         # 3. Define the task payload.
@@ -71,14 +65,10 @@ async def main():
                 )
             else:
                 print("\n" + "=" * 50)
-                print(
-                    f"❌ TEST FAILED: The agent only found {len(risks_found)} keywords, but expected at least 4."
-                )
+                print(f"❌ TEST FAILED: The agent only found {len(risks_found)} keywords, but expected at least 4.")
         else:
             print("\n" + "=" * 50)
-            print(
-                f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}"
-            )
+            print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")
 
     except Exception as e:
         print("\n" + "=" * 50)

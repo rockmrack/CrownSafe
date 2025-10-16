@@ -26,9 +26,7 @@ class ShareToken(Base):
     token = Column(String(100), unique=True, index=True, nullable=False)
 
     # What is being shared
-    share_type = Column(
-        String(50), nullable=False
-    )  # scan_result, report, product_safety
+    share_type = Column(String(50), nullable=False)  # scan_result, report, product_safety
     content_id = Column(String(100), nullable=False)  # scan_id, report_id, etc.
 
     # Share metadata

@@ -21,9 +21,7 @@ class TestUpsertHandler:
         mock_session = Mock()
         mock_result = Mock()
         mock_row = Mock()
-        mock_row.__getitem__ = Mock(
-            side_effect=lambda x: "RECALL-001" if x == 0 else True
-        )
+        mock_row.__getitem__ = Mock(side_effect=lambda x: "RECALL-001" if x == 0 else True)
         mock_result.fetchone.return_value = mock_row
         mock_session.execute.return_value = mock_result
 
@@ -66,9 +64,7 @@ class TestUpsertHandler:
         mock_session = Mock()
         mock_result = Mock()
         mock_row = Mock()
-        mock_row.__getitem__ = Mock(
-            side_effect=lambda x: "RECALL-001" if x == 0 else False
-        )
+        mock_row.__getitem__ = Mock(side_effect=lambda x: "RECALL-001" if x == 0 else False)
         mock_result.fetchone.return_value = mock_row
         mock_session.execute.return_value = mock_result
 
@@ -198,17 +194,13 @@ class TestEnhancedUpsertHandler:
         mock_session = Mock()
         mock_result = Mock()
         mock_row = Mock()
-        mock_row.__getitem__ = Mock(
-            side_effect=lambda x: "entity_123" if x == 0 else True
-        )
+        mock_row.__getitem__ = Mock(side_effect=lambda x: "entity_123" if x == 0 else True)
         mock_result.fetchone.return_value = mock_row
         mock_session.execute.return_value = mock_result
 
         data = {"id": "entity_123", "name": "Test Entity", "value": "Test Value"}
 
-        result = EnhancedUpsertHandler.upsert_with_history(
-            mock_session, "test_table", data, "id", track_changes=True
-        )
+        result = EnhancedUpsertHandler.upsert_with_history(mock_session, "test_table", data, "id", track_changes=True)
 
         assert result is True
         # Should call execute twice: once for upsert, once for history
@@ -219,17 +211,13 @@ class TestEnhancedUpsertHandler:
         mock_session = Mock()
         mock_result = Mock()
         mock_row = Mock()
-        mock_row.__getitem__ = Mock(
-            side_effect=lambda x: "entity_123" if x == 0 else True
-        )
+        mock_row.__getitem__ = Mock(side_effect=lambda x: "entity_123" if x == 0 else True)
         mock_result.fetchone.return_value = mock_row
         mock_session.execute.return_value = mock_result
 
         data = {"id": "entity_123", "name": "Test Entity"}
 
-        result = EnhancedUpsertHandler.upsert_with_history(
-            mock_session, "test_table", data, "id", track_changes=False
-        )
+        result = EnhancedUpsertHandler.upsert_with_history(mock_session, "test_table", data, "id", track_changes=False)
 
         assert result is True
         # Should call execute only once for upsert
@@ -242,9 +230,7 @@ class TestEnhancedUpsertHandler:
 
         data = {"id": "entity_123", "name": "Test Entity"}
 
-        result = EnhancedUpsertHandler.upsert_with_history(
-            mock_session, "test_table", data, "id"
-        )
+        result = EnhancedUpsertHandler.upsert_with_history(mock_session, "test_table", data, "id")
 
         assert result is False
 
@@ -253,17 +239,13 @@ class TestEnhancedUpsertHandler:
         mock_session = Mock()
         mock_result = Mock()
         mock_row = Mock()
-        mock_row.__getitem__ = Mock(
-            side_effect=lambda x: "entity_123" if x == 0 else False
-        )
+        mock_row.__getitem__ = Mock(side_effect=lambda x: "entity_123" if x == 0 else False)
         mock_result.fetchone.return_value = mock_row
         mock_session.execute.return_value = mock_result
 
         data = {"id": "entity_123", "name": "Updated Entity"}
 
-        result = EnhancedUpsertHandler.upsert_with_history(
-            mock_session, "test_table", data, "id", track_changes=True
-        )
+        result = EnhancedUpsertHandler.upsert_with_history(mock_session, "test_table", data, "id", track_changes=True)
 
         assert result is True
         assert mock_session.execute.call_count == 2
@@ -350,9 +332,7 @@ class TestEdgeCases:
         mock_session = Mock()
         data = {}
 
-        result = EnhancedUpsertHandler.upsert_with_history(
-            mock_session, "test_table", data, "id"
-        )
+        result = EnhancedUpsertHandler.upsert_with_history(mock_session, "test_table", data, "id")
 
         assert result is True
         mock_session.execute.assert_called_once()
@@ -366,9 +346,7 @@ class TestParameterHandling:
         mock_session = Mock()
         mock_result = Mock()
         mock_row = Mock()
-        mock_row.__getitem__ = Mock(
-            side_effect=lambda x: "RECALL-001" if x == 0 else True
-        )
+        mock_row.__getitem__ = Mock(side_effect=lambda x: "RECALL-001" if x == 0 else True)
         mock_result.fetchone.return_value = mock_row
         mock_session.execute.return_value = mock_result
 
@@ -394,10 +372,7 @@ class TestParameterHandling:
         mock_result = Mock()
         mock_session.execute.return_value = mock_result
 
-        recalls = [
-            {"recall_id": f"RECALL-{i:03d}", "product_name": f"Product {i}"}
-            for i in range(5)
-        ]
+        recalls = [{"recall_id": f"RECALL-{i:03d}", "product_name": f"Product {i}"} for i in range(5)]
 
         result = UpsertHandler.bulk_upsert_recalls(mock_session, recalls, batch_size=2)
 

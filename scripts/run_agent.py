@@ -45,9 +45,7 @@ except Exception as e:
 
 # --- Basic Logging Config ---
 # Agent-specific logging will be configured within the agent's main module
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("RunAgentScript")
 
 # --- Argument Parsing ---
@@ -70,17 +68,13 @@ async def start_agent(module_path: str):
         logger.info(f"Successfully imported {module_path}")
 
         # Check if the module has an async main() function
-        if hasattr(agent_module, "main") and asyncio.iscoroutinefunction(
-            agent_module.main
-        ):
+        if hasattr(agent_module, "main") and asyncio.iscoroutinefunction(agent_module.main):
             logger.info(f"Found async main() function in {module_path}. Executing...")
             # Execute the agent's main function
             await agent_module.main()
             logger.info(f"Agent module {module_path} main() finished.")
         else:
-            logger.error(
-                f"Module {module_path} does not have a callable async main() function."
-            )
+            logger.error(f"Module {module_path} does not have a callable async main() function.")
 
     except ImportError as e:
         # This is where the Langchain import error would likely be caught now
@@ -92,9 +86,7 @@ async def start_agent(module_path: str):
             "Ensure the module path is correct and all dependencies (like langchain-openai) are installed in the venv."
         )
     except AttributeError as e:
-        logger.critical(
-            f"Error accessing main() function in {module_path}: {e}", exc_info=True
-        )
+        logger.critical(f"Error accessing main() function in {module_path}: {e}", exc_info=True)
     except Exception as e:
         logger.critical(
             f"An unexpected error occurred while running agent {module_path}: {e}",

@@ -11,9 +11,7 @@ from typing import Dict, List, Tuple
 BASE_URL = "https://babyshield.cureviax.ai"
 
 
-def check_endpoint(
-    path: str, method: str = "GET", data: Dict = None
-) -> Tuple[int, Dict]:
+def check_endpoint(path: str, method: str = "GET", data: Dict = None) -> Tuple[int, Dict]:
     """Check if an endpoint is working"""
     url = f"{BASE_URL}{path}"
     headers = {"Content-Type": "application/json"}
@@ -26,9 +24,9 @@ def check_endpoint(
         else:
             return 0, {"error": "Unsupported method"}
 
-        return response.status_code, response.json() if response.headers.get(
-            "content-type", ""
-        ).startswith("application/json") else {"text": response.text[:200]}
+        return response.status_code, response.json() if response.headers.get("content-type", "").startswith(
+            "application/json"
+        ) else {"text": response.text[:200]}
     except requests.exceptions.Timeout:
         return 0, {"error": "Timeout"}
     except requests.exceptions.ConnectionError:
@@ -140,10 +138,7 @@ def main():
         print("\n[DIAGNOSIS]")
         print("-" * 70)
 
-        if (
-            "/api/v1/healthz" in critical_failures
-            and "/api/v1/search/advanced" in critical_failures
-        ):
+        if "/api/v1/healthz" in critical_failures and "/api/v1/search/advanced" in critical_failures:
             print(">>> The API is NOT running or NOT properly deployed!")
             print("\nPOSSIBLE CAUSES:")
             print("1. Docker container failed to start")
@@ -165,22 +160,14 @@ def main():
             print("   - SECRET_KEY")
             print()
             print("3. Test locally with production config:")
-            print(
-                "   docker run --env-file .env.prod -p 8001:8001 babyshield-backend:api-v1"
-            )
+            print("   docker run --env-file .env.prod -p 8001:8001 babyshield-backend:api-v1")
             print()
             print("4. Force new deployment with fixed Dockerfile:")
             print("   docker build -f Dockerfile.final -t babyshield-backend:api-v1 .")
-            print(
-                "   aws ecr get-login-password | docker login --username AWS --password-stdin <ecr-url>"
-            )
-            print(
-                "   docker tag babyshield-backend:api-v1 <ecr-url>/babyshield-backend:api-v1"
-            )
+            print("   aws ecr get-login-password | docker login --username AWS --password-stdin <ecr-url>")
+            print("   docker tag babyshield-backend:api-v1 <ecr-url>/babyshield-backend:api-v1")
             print("   docker push <ecr-url>/babyshield-backend:api-v1")
-            print(
-                "   aws ecs update-service --cluster <cluster> --service <service> --force-new-deployment"
-            )
+            print("   aws ecs update-service --cluster <cluster> --service <service> --force-new-deployment")
     else:
         print("\n[SUCCESS] API is running!")
 

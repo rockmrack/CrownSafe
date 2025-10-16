@@ -5,8 +5,8 @@ Revises: 20251012_create_pg_trgm
 Create Date: 2025-10-12 15:45:00.000000
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.

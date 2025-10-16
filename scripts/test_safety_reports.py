@@ -237,9 +237,7 @@ def test_90_day_report():
                 product_groups[key]["risk_levels"].append(scan.risk_level)
 
         print("\n📦 Top Scanned Products:")
-        sorted_products = sorted(
-            product_groups.items(), key=lambda x: len(x[1]["scans"]), reverse=True
-        )
+        sorted_products = sorted(product_groups.items(), key=lambda x: len(x[1]["scans"]), reverse=True)
         for i, (key, group) in enumerate(sorted_products[:5], 1):
             scan_count = len(group["scans"])
             risk = (
@@ -281,17 +279,11 @@ def test_90_day_report():
         print(f"✅ Report saved with ID: {report.report_id}")
 
         # Verify report retrieval
-        saved_report = (
-            db.query(SafetyReport)
-            .filter(SafetyReport.report_id == report.report_id)
-            .first()
-        )
+        saved_report = db.query(SafetyReport).filter(SafetyReport.report_id == report.report_id).first()
 
         assert saved_report is not None, "Report should be saved"
         assert saved_report.total_scans == total_scans, "Total scans should match"
-        assert (
-            saved_report.unique_products == unique_products
-        ), "Unique products should match"
+        assert saved_report.unique_products == unique_products, "Unique products should match"
 
         print("\n" + "=" * 60)
         print("✅ All tests passed!")

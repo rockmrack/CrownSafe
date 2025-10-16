@@ -80,12 +80,8 @@ class BabyShieldMigration:
             logger.info("✅ Enhanced schema created successfully!")
 
             # Show new columns
-            enhanced_columns = [
-                col["name"] for col in self.inspector.get_columns("recalls_enhanced")
-            ]
-            logger.info(
-                f"🆕 Enhanced table columns ({len(enhanced_columns)}): {enhanced_columns}"
-            )
+            enhanced_columns = [col["name"] for col in self.inspector.get_columns("recalls_enhanced")]
+            logger.info(f"🆕 Enhanced table columns ({len(enhanced_columns)}): {enhanced_columns}")
 
             return True
 
@@ -156,9 +152,7 @@ class BabyShieldMigration:
 
             # Final commit
             self.session.commit()
-            logger.info(
-                f"✅ Successfully migrated {migrated_count} records to enhanced schema!"
-            )
+            logger.info(f"✅ Successfully migrated {migrated_count} records to enhanced schema!")
 
             return True
 
@@ -225,9 +219,7 @@ class BabyShieldMigration:
             self.session.commit()
 
             # Count backup records
-            result = self.session.execute(
-                text("SELECT COUNT(*) FROM recalls_backup")
-            ).scalar()
+            result = self.session.execute(text("SELECT COUNT(*) FROM recalls_backup")).scalar()
             logger.info(f"✅ Backup created with {result} records")
 
             return True

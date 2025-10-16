@@ -5,15 +5,16 @@ Requires admin role/permissions
 
 import logging
 from datetime import datetime
-from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from typing import Optional
 
-from core_infra.database import get_db, User
-from core_infra.auth import get_current_active_user
-from api.schemas.common import ApiResponse, ok, fail
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import desc
+from sqlalchemy.orm import Session
+
 from api.pydantic_base import AppModel
+from api.schemas.common import ApiResponse, fail, ok
+from core_infra.auth import get_current_active_user
+from core_infra.database import User, get_db
 
 logger = logging.getLogger(__name__)
 
@@ -81,19 +82,11 @@ async def list_all_users(
     """
     # Check if user has admin privileges
     if not is_admin(current_user):
-        raise HTTPException(
-            status_code=403, detail="Access denied. Admin privileges required."
-        )
+        raise HTTPException(status_code=403, detail="Access denied. Admin privileges required.")
 
     try:
         # Get users from database
-        users = (
-            db.query(User)
-            .order_by(desc(User.created_at))
-            .offset(skip)
-            .limit(limit)
-            .all()
-        )
+        users = db.query(User).order_by(desc(User.created_at)).offset(skip).limit(limit).all()
         total_count = db.query(User).count()
 
         # Import ImageJob for scan count
@@ -111,9 +104,7 @@ async def list_all_users(
                 "full_name": getattr(user, "full_name", None),
                 "is_active": getattr(user, "is_active", True),
                 "is_premium": getattr(user, "is_premium", False),
-                "created_at": user.created_at.isoformat() + "Z"
-                if hasattr(user, "created_at")
-                else None,
+                "created_at": user.created_at.isoformat() + "Z" if hasattr(user, "created_at") else None,
                 "last_login": user.last_login.isoformat() + "Z"
                 if hasattr(user, "last_login") and user.last_login
                 else None,
@@ -159,9 +150,7 @@ async def get_user_details(
     """
     # Check if user has admin privileges
     if not is_admin(current_user):
-        raise HTTPException(
-            status_code=403, detail="Access denied. Admin privileges required."
-        )
+        raise HTTPException(status_code=403, detail="Access denied. Admin privileges required.")
 
     try:
         user = db.query(User).filter(User.id == user_id).first()
@@ -174,11 +163,7 @@ async def get_user_details(
 
         scan_count = db.query(ImageJob).filter(ImageJob.user_id == user.id).count()
         recent_scans = (
-            db.query(ImageJob)
-            .filter(ImageJob.user_id == user.id)
-            .order_by(desc(ImageJob.created_at))
-            .limit(10)
-            .all()
+            db.query(ImageJob).filter(ImageJob.user_id == user.id).order_by(desc(ImageJob.created_at)).limit(10).all()
         )
 
         user_details = {
@@ -189,9 +174,7 @@ async def get_user_details(
             "is_active": getattr(user, "is_active", True),
             "is_premium": getattr(user, "is_premium", False),
             "is_admin": is_admin(user),
-            "created_at": user.created_at.isoformat() + "Z"
-            if hasattr(user, "created_at")
-            else None,
+            "created_at": user.created_at.isoformat() + "Z" if hasattr(user, "created_at") else None,
             "last_login": user.last_login.isoformat() + "Z"
             if hasattr(user, "last_login") and user.last_login
             else None,
@@ -229,9 +212,7 @@ async def enable_pg_trgm_extension(
     """
     # Check if user has admin privileges
     if not is_admin(current_user):
-        raise HTTPException(
-            status_code=403, detail="Access denied. Admin privileges required."
-        )
+        raise HTTPException(status_code=403, detail="Access denied. Admin privileges required.")
 
     try:
         from sqlalchemy import text
@@ -239,11 +220,7 @@ async def enable_pg_trgm_extension(
         logger.info("Admin triggering pg_trgm extension enablement...")
 
         # Check if extension already exists
-        result = db.execute(
-            text(
-                "SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';"
-            )
-        )
+        result = db.execute(text("SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';"))
         existing = result.fetchone()
 
         if existing:
@@ -284,19 +261,23 @@ async def enable_pg_trgm_extension(
             index_definitions = [
                 (
                     "idx_recalls_product_trgm",
-                    "CREATE INDEX IF NOT EXISTS idx_recalls_product_trgm ON recalls_enhanced USING gin (lower(product_name) gin_trgm_ops);"
+                    "CREATE INDEX IF NOT EXISTS idx_recalls_product_trgm "
+                    "ON recalls_enhanced USING gin (lower(product_name) gin_trgm_ops);",
                 ),
                 (
                     "idx_recalls_brand_trgm",
-                    "CREATE INDEX IF NOT EXISTS idx_recalls_brand_trgm ON recalls_enhanced USING gin (lower(brand) gin_trgm_ops);"
+                    "CREATE INDEX IF NOT EXISTS idx_recalls_brand_trgm "
+                    "ON recalls_enhanced USING gin (lower(brand) gin_trgm_ops);",
                 ),
                 (
                     "idx_recalls_description_trgm",
-                    "CREATE INDEX IF NOT EXISTS idx_recalls_description_trgm ON recalls_enhanced USING gin (lower(description) gin_trgm_ops);"
+                    "CREATE INDEX IF NOT EXISTS idx_recalls_description_trgm "
+                    "ON recalls_enhanced USING gin (lower(description) gin_trgm_ops);",
                 ),
                 (
                     "idx_recalls_hazard_trgm",
-                    "CREATE INDEX IF NOT EXISTS idx_recalls_hazard_trgm ON recalls_enhanced USING gin (lower(hazard) gin_trgm_ops);"
+                    "CREATE INDEX IF NOT EXISTS idx_recalls_hazard_trgm "
+                    "ON recalls_enhanced USING gin (lower(hazard) gin_trgm_ops);",
                 ),
             ]
 

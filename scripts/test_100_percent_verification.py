@@ -12,9 +12,7 @@ from datetime import datetime
 BASE_URL = "http://localhost:8001"
 
 
-def test_endpoint(
-    name, method, path, data=None, params=None, expected_status=[200, 201]
-):
+def test_endpoint(name, method, path, data=None, params=None, expected_status=[200, 201]):
     """Test a single endpoint"""
     try:
         url = f"{BASE_URL}{path}"

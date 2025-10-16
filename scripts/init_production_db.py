@@ -51,9 +51,7 @@ def init_production_database():
             print("✅ Database initialization successful")
             return True
         else:
-            print(
-                f"⚠️ Search endpoint returned {response.status_code}: {response.text}"
-            )
+            print(f"⚠️ Search endpoint returned {response.status_code}: {response.text}")
 
             # Try agencies endpoint as fallback
             response = requests.get(f"{base_url}/api/v1/agencies", timeout=10)
@@ -61,9 +59,7 @@ def init_production_database():
                 print("✅ Database initialization successful (via agencies endpoint)")
                 return True
             else:
-                print(
-                    f"⚠️ Agencies endpoint returned {response.status_code}: {response.text}"
-                )
+                print(f"⚠️ Agencies endpoint returned {response.status_code}: {response.text}")
                 return False
 
     except requests.RequestException as e:

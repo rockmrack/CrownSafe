@@ -112,9 +112,7 @@ class ConfigManager:
         if environment == "production":
             secrets_dict = self.generate_secrets()
             for key, value in secrets_dict.items():
-                content = content.replace(
-                    f"your-{key.lower().replace('_', '-')}", value
-                )
+                content = content.replace(f"your-{key.lower().replace('_', '-')}", value)
 
             print("🔐 Generated secure secrets for production:")
             for key in secrets_dict:

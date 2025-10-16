@@ -40,9 +40,7 @@ class AlternativesAgentLogic:
     def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
-        self.logger.info(
-            f"AlternativesAgentLogic initialized for agent {self.agent_id}."
-        )
+        self.logger.info(f"AlternativesAgentLogic initialized for agent {self.agent_id}.")
 
     async def find_alternatives(self, category: str) -> List[Dict[str, str]]:
         """Simulates searching for safe alternatives in a given category."""
@@ -79,7 +77,5 @@ class AlternativesAgentLogic:
                 },
             }
         except Exception as e:
-            self.logger.error(
-                f"An error occurred while finding alternatives: {e}", exc_info=True
-            )
+            self.logger.error(f"An error occurred while finding alternatives: {e}", exc_info=True)
             return {"status": "FAILED", "error": str(e)}
