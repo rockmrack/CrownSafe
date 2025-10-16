@@ -16,10 +16,16 @@ except ImportError:
     import psycopg2
 
 # Database connection details
-DB_HOST = "babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com"
-DB_NAME = "babyshield_db"
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
+if DB_HOST is None:
+    print("❌ Environment variable DB_HOST must be set. Exiting.")
+    sys.exit(1)
+if DB_NAME is None:
+    print("❌ Environment variable DB_NAME must be set. Exiting.")
+    sys.exit(1)
 if DB_USER is None:
     print("❌ Environment variable DB_USER must be set. Exiting.")
     sys.exit(1)
