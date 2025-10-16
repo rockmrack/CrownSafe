@@ -6,12 +6,13 @@ Run this script from within the ECS container or a machine with DB access.
 
 import os
 import sys
+import subprocess
 
 try:
     import psycopg2
 except ImportError:
     print("❌ psycopg2 not installed. Installing...")
-    os.system("pip install psycopg2-binary")
+    subprocess.run(["pip", "install", "psycopg2-binary"], check=True)
     import psycopg2
 
 # Database connection details
