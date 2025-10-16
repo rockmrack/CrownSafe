@@ -81,9 +81,7 @@ class TestXSSProtection:
         ]
 
         for payload in xss_payloads:
-            response = client.post(
-                "/api/v1/product", headers=headers, json={"name": payload}
-            )
+            response = client.post("/api/v1/product", headers=headers, json={"name": payload})
             # Should sanitize or reject
             if response.status_code == 200:
                 assert "<script>" not in response.json().get("name", "")
@@ -149,7 +147,7 @@ class TestAuthentication:
         When: Threshold is exceeded
         Then: Account is locked or rate limited (429/403) or validation error (422)
         """
-        for i in range(10):
+        for _ in range(10):
             response = client.post(
                 "/api/v1/auth/token",
                 data={"username": "test@example.com", "password": "WrongPassword"},
@@ -179,9 +177,7 @@ class TestAuthorization:
         response = client.get(f"/api/v1/user/{user2_id}/profile", headers=headers)
         assert response.status_code == 403
 
-    def test_regular_user_cannot_access_admin_endpoints(
-        self, client, regular_user_token
-    ):
+    def test_regular_user_cannot_access_admin_endpoints(self, client, regular_user_token):
         """
         Test admin endpoint protection.
 
@@ -223,7 +219,7 @@ class TestRateLimiting:
         headers = {"Authorization": f"Bearer {auth_token}"}
 
         # Make requests up to rate limit
-        for i in range(100):
+        for _ in range(100):
             client.get("/api/v1/user/profile", headers=headers)
 
         # Next request should be rate limited (or succeed if rate limiting disabled in tests)
@@ -239,7 +235,7 @@ class TestRateLimiting:
         When: Rate limit is exceeded
         Then: 429 Too Many Requests (or 200 if rate limiting not configured in test env)
         """
-        for i in range(200):
+        for _ in range(200):
             client.get("/api/v1/public/endpoint")
 
         response = client.get("/api/v1/public/endpoint")

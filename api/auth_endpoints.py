@@ -3,29 +3,28 @@ Authentication Endpoints for BabyShield API
 JWT-based authentication system
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Query, Response
-from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError, OperationalError
-from passlib.exc import UnknownHashError
-from datetime import timedelta
+import logging
 from typing import Optional
 
-from core_infra.database import get_db, User
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
+from fastapi.security import OAuth2PasswordRequestForm
+from passlib.exc import UnknownHashError
+from pydantic import BaseModel, EmailStr
+from sqlalchemy.exc import OperationalError, SQLAlchemyError
+from sqlalchemy.orm import Session
+
 from core_infra.auth import (
+    Token,
     authenticate_user,
     create_access_token,
     create_refresh_token,
+    decode_token,
     get_current_active_user,
     get_current_user,
     get_password_hash,
-    decode_token,
-    Token,
-    UserLogin,
 )
-from core_infra.rate_limiter import auth_limit, limiter
-from pydantic import BaseModel, EmailStr
-import logging
+from core_infra.database import User, get_db
+from core_infra.rate_limiter import limiter
 
 logger = logging.getLogger(__name__)
 
@@ -56,25 +55,19 @@ class PasswordResetConfirm(BaseModel):
 
 
 @router.post("/register", response_model=UserResponse)
-async def register(
-    request: Request, user_data: UserRegister, db: Session = Depends(get_db)
-):
+async def register(request: Request, user_data: UserRegister, db: Session = Depends(get_db)):
     """
     Register a new user
     Limited to 5 registrations per hour per IP
     """
     # Validate passwords match
     if user_data.password != user_data.confirm_password:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Passwords do not match"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Passwords do not match")
 
     # Check if user exists
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
 
     # Create new user
     hashed_password = get_password_hash(user_data.password)
@@ -137,9 +130,7 @@ async def login(
             )
 
         if not user.is_active:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="Account is inactive"
-            )
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is inactive")
 
         # Create tokens
         access_token = create_access_token(data={"sub": str(user.id)})
@@ -190,9 +181,7 @@ async def refresh_token(request: Request, db: Session = Depends(get_db)):
         refresh_token = body.get("refresh_token")
 
         if not refresh_token:
-            raise HTTPException(
-                status_code=400, detail="refresh_token is required in request body"
-            )
+            raise HTTPException(status_code=400, detail="refresh_token is required in request body")
     except Exception:
         raise HTTPException(
             status_code=400,
@@ -203,15 +192,11 @@ async def refresh_token(request: Request, db: Session = Depends(get_db)):
     payload = decode_token(refresh_token)
 
     if not payload or payload.get("type") != "refresh":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token"
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
 
     user_id = payload.get("sub")
     if not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token"
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
 
     # Get user
     user = db.query(User).filter(User.id == user_id).first()
@@ -341,9 +326,7 @@ async def verify_token(
             }
 
         except Exception:
-            raise HTTPException(
-                status_code=400, detail="Invalid or expired verification code"
-            )
+            raise HTTPException(status_code=400, detail="Invalid or expired verification code")
     else:
         # Token verification flow (requires auth)
         if not current_user:

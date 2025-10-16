@@ -20,7 +20,10 @@ class TestHealthEndpoints:
         When: GET /healthz
         Then: 200 OK with status ok
 
-        Note: The health endpoint response format was changed from 'healthy' to 'ok' in API v1.4.0 (2024-05-12) as part of a broader standardization of status responses across all health and readiness endpoints. See API changelog entry for v1.4.0 (2024-05-12) for details.
+        Note: The health endpoint response format was changed from 'healthy'
+        to 'ok' in API v1.4.0 (2024-05-12) as part of a broader
+        standardization of status responses across all health and readiness
+        endpoints. See API changelog entry for v1.4.0 (2024-05-12) for details.
         """
         response = client.get("/healthz")
         assert response.status_code == 200
@@ -101,9 +104,7 @@ class TestAuthenticationFlow:
 class TestBarcodeScanningFlow:
     """Test suite for barcode scanning workflow"""
 
-    def test_complete_barcode_scan_and_safety_check_flow(
-        self, client, authenticated_user, sample_barcode_image
-    ):
+    def test_complete_barcode_scan_and_safety_check_flow(self, client, authenticated_user, sample_barcode_image):
         """
         Test complete barcode scan to safety check workflow.
 
@@ -126,9 +127,7 @@ class TestBarcodeScanningFlow:
 
         # Step 3: Check safety
         safety_request = {"barcode": barcode, "user_id": authenticated_user["user_id"]}
-        safety_response = client.post(
-            "/api/v1/safety/check", headers=headers, json=safety_request
-        )
+        safety_response = client.post("/api/v1/safety/check", headers=headers, json=safety_request)
         assert safety_response.status_code == 200
         assert "verdict" in safety_response.json()
 
@@ -197,9 +196,7 @@ class TestSubscriptionFlow:
 
         # Upgrade subscription (mock payment)
         upgrade_request = {"tier": "premium", "payment_method": "stripe_token_mock"}
-        upgrade_response = client.post(
-            "/api/v1/subscription/upgrade", headers=headers, json=upgrade_request
-        )
+        upgrade_response = client.post("/api/v1/subscription/upgrade", headers=headers, json=upgrade_request)
         assert upgrade_response.status_code == 200
 
         # Verify upgrade
@@ -219,7 +216,7 @@ class TestRateLimiting:
         Then: 429 Too Many Requests is returned
         """
         # Make requests up to rate limit
-        for i in range(100):  # Assuming 100 requests/minute limit
+        for _ in range(100):  # Assuming 100 requests/minute limit
             response = client.get("/api/v1/public/endpoint")
 
         # Next request should be rate limited
