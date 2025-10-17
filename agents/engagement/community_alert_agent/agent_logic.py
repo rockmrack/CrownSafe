@@ -27,9 +27,13 @@ class CommunityAlertAgentLogic:
     def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
-        self.logger.info(f"CommunityAlertAgentLogic initialized for agent {self.agent_id}.")
+        self.logger.info(
+            f"CommunityAlertAgentLogic initialized for agent {self.agent_id}."
+        )
 
-    async def scrape_and_analyze(self, html_content: str, product_name: str) -> Dict[str, Any]:
+    async def scrape_and_analyze(
+        self, html_content: str, product_name: str
+    ) -> Dict[str, Any]:
         """
         Parses HTML content and analyzes it for safety keywords related to a product.
         """
@@ -37,10 +41,14 @@ class CommunityAlertAgentLogic:
         self.logger.info(f"Scraping content for mentions of '{product_name}'...")
 
         if not BS4_AVAILABLE:
-            self.logger.warning("BeautifulSoup not available - using simple text extraction")
+            self.logger.warning(
+                "BeautifulSoup not available - using simple text extraction"
+            )
             page_text = html_content.lower() if html_content else ""
         else:
-            soup = BeautifulSoup(html_content, "html.parser")  # Use html.parser instead of lxml
+            soup = BeautifulSoup(
+                html_content, "html.parser"
+            )  # Use html.parser instead of lxml
             page_text = soup.get_text().lower()
 
         # Check if the product name is even mentioned on the page
@@ -52,7 +60,9 @@ class CommunityAlertAgentLogic:
             if keyword in page_text:
                 found_risks.append(keyword)
 
-        self.logger.info(f"Found {len(found_risks)} potential risk keywords: {found_risks}")
+        self.logger.info(
+            f"Found {len(found_risks)} potential risk keywords: {found_risks}"
+        )
         return {"mentions_found": 1, "risks": found_risks}
 
     async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
@@ -74,5 +84,7 @@ class CommunityAlertAgentLogic:
 
             return {"status": "COMPLETED", "result": analysis}
         except Exception as e:
-            self.logger.error(f"An error occurred during community alert analysis: {e}", exc_info=True)
+            self.logger.error(
+                f"An error occurred during community alert analysis: {e}", exc_info=True
+            )
             return {"status": "FAILED", "error": str(e)}

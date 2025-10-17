@@ -72,7 +72,9 @@ class AgeVerificationRequest(BaseModel):
     user_id: Optional[int] = Field(None, description="Existing user ID if available")
     email: EmailStr = Field(..., description="User email")
     birthdate: date = Field(..., description="User's birthdate")
-    parent_email: Optional[EmailStr] = Field(None, description="Parent email if under 13")
+    parent_email: Optional[EmailStr] = Field(
+        None, description="Parent email if under 13"
+    )
     verification_method: AgeVerificationMethod = Field(AgeVerificationMethod.BIRTHDATE)
     country: str = Field("US", description="User's country for compliance rules")
 
@@ -99,7 +101,9 @@ class ParentalConsentRequest(BaseModel):
     parent_name: str
     consent_types: List[ConsentType]
     verification_token: str = Field(..., description="Token from age verification")
-    verification_method: AgeVerificationMethod = Field(AgeVerificationMethod.PARENTAL_EMAIL)
+    verification_method: AgeVerificationMethod = Field(
+        AgeVerificationMethod.PARENTAL_EMAIL
+    )
     credit_card_last4: Optional[str] = Field(None, min_length=4, max_length=4)
 
 
@@ -124,7 +128,9 @@ class ChildrenCodeAssessmentRequest(BaseModel):
     age: int
     country: str
     features_used: List[str] = Field(..., description="App features the child uses")
-    data_collected: List[DataCategory] = Field(..., description="Types of data collected")
+    data_collected: List[DataCategory] = Field(
+        ..., description="Types of data collected"
+    )
     third_party_sharing: bool = Field(False, description="Whether data is shared")
 
 
@@ -234,7 +240,9 @@ class ConsentUpdateResponse(BaseModel):
 
 
 @router.post("/coppa/verify-age", response_model=AgeVerificationResponse)
-async def verify_user_age(request: AgeVerificationRequest, db: Session = Depends(get_db)):
+async def verify_user_age(
+    request: AgeVerificationRequest, db: Session = Depends(get_db)
+):
     """
     Verify user age for COPPA compliance.
 
@@ -252,7 +260,10 @@ async def verify_user_age(request: AgeVerificationRequest, db: Session = Depends
         age = (
             today.year
             - request.birthdate.year
-            - ((today.month, today.day) < (request.birthdate.month, request.birthdate.day))
+            - (
+                (today.month, today.day)
+                < (request.birthdate.month, request.birthdate.day)
+            )
         )
 
         # Determine compliance requirements
@@ -272,10 +283,14 @@ async def verify_user_age(request: AgeVerificationRequest, db: Session = Depends
         parent_consent_url = None
         if requires_consent:
             verification_token = secrets.token_urlsafe(32)
-            parent_consent_url = f"/compliance/parental-consent?token={verification_token}"
+            parent_consent_url = (
+                f"/compliance/parental-consent?token={verification_token}"
+            )
 
             # Store verification token (in production, save to database)
-            logger.info(f"Generated consent token for {request.email}: {verification_token}")
+            logger.info(
+                f"Generated consent token for {request.email}: {verification_token}"
+            )
 
         # Determine restrictions
         restrictions = []
@@ -314,7 +329,9 @@ async def verify_user_age(request: AgeVerificationRequest, db: Session = Depends
 
     except Exception as e:
         logger.error(f"Age verification failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Age verification failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Age verification failed: {str(e)}"
+        )
 
 
 @router.post("/coppa/parental-consent", response_model=ParentalConsentResponse)
@@ -345,7 +362,9 @@ async def submit_parental_consent(
             # Verify credit card (mock)
             if request.credit_card_last4:
                 verified = True
-                logger.info(f"Credit card verification successful for {request.parent_email}")
+                logger.info(
+                    f"Credit card verification successful for {request.parent_email}"
+                )
 
         elif request.verification_method == AgeVerificationMethod.PARENTAL_EMAIL:
             # Send verification email (mock)
@@ -353,7 +372,9 @@ async def submit_parental_consent(
             logger.info(f"Verification email sent to {request.parent_email}")
 
             # Schedule email sending in background
-            background_tasks.add_task(logger.info, f"Sending consent email to {request.parent_email}")
+            background_tasks.add_task(
+                logger.info, f"Sending consent email to {request.parent_email}"
+            )
 
         # Generate consent ID
         consent_id = f"consent_{uuid.uuid4().hex[:12]}"
@@ -374,7 +395,9 @@ async def submit_parental_consent(
 
     except Exception as e:
         logger.error(f"Parental consent failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Parental consent failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Parental consent failed: {str(e)}"
+        )
 
 
 @router.get("/coppa/consent-status/{user_id}")
@@ -406,14 +429,18 @@ async def get_consent_status(user_id: int, db: Session = Depends(get_db)):
 
     except Exception as e:
         logger.error(f"Consent status check failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Consent status check failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Consent status check failed: {str(e)}"
+        )
 
 
 # ==================== Children's Code Compliance Endpoints ====================
 
 
 @router.post("/childrens-code/assess", response_model=ChildrenCodeAssessmentResponse)
-async def assess_childrens_code_compliance(request: ChildrenCodeAssessmentRequest, db: Session = Depends(get_db)):
+async def assess_childrens_code_compliance(
+    request: ChildrenCodeAssessmentRequest, db: Session = Depends(get_db)
+):
     """
     Assess compliance with Age Appropriate Design Code (Children's Code).
 
@@ -435,7 +462,9 @@ async def assess_childrens_code_compliance(request: ChildrenCodeAssessmentReques
     15. Data protection impact assessments
     """
     try:
-        logger.info(f"Children's Code assessment for user {request.user_id}, age {request.age}")
+        logger.info(
+            f"Children's Code assessment for user {request.user_id}, age {request.age}"
+        )
 
         compliant = True
         required_safeguards = []
@@ -487,7 +516,9 @@ async def assess_childrens_code_compliance(request: ChildrenCodeAssessmentReques
             )
 
             if DataCategory.BIOMETRIC in request.data_collected:
-                required_safeguards.append("Explicit consent required for biometric data")
+                required_safeguards.append(
+                    "Explicit consent required for biometric data"
+                )
 
             design_recommendations.extend(
                 [
@@ -566,7 +597,9 @@ async def submit_data_request(
             message = "Your deletion request has been received. Your data will be permanently deleted within 72 hours."
 
             # Schedule deletion in background
-            background_tasks.add_task(logger.info, f"Scheduling deletion for user {request.user_id}")
+            background_tasks.add_task(
+                logger.info, f"Scheduling deletion for user {request.user_id}"
+            )
 
         elif request.request_type == PrivacyRight.PORTABILITY:
             estimated_completion = datetime.now() + timedelta(hours=48)
@@ -574,9 +607,7 @@ async def submit_data_request(
 
         else:
             estimated_completion = datetime.now() + timedelta(hours=72)
-            message = (
-                f"Your {request.request_type.value} request has been received and will be processed within 72 hours."
-            )
+            message = f"Your {request.request_type.value} request has been received and will be processed within 72 hours."
 
         # In production, store request in database
 
@@ -626,7 +657,9 @@ async def get_request_status(
 
 
 @router.post("/gdpr/retention-policy", response_model=DataRetentionPolicyResponse)
-async def set_retention_policy(request: DataRetentionPolicyRequest, db: Session = Depends(get_db)):
+async def set_retention_policy(
+    request: DataRetentionPolicyRequest, db: Session = Depends(get_db)
+):
     """
     Set data retention policies for user data.
 
@@ -696,7 +729,9 @@ async def set_retention_policy(request: DataRetentionPolicyRequest, db: Session 
 
 
 @router.post("/legal/document", response_model=LegalDocumentResponse)
-async def get_legal_document(request: LegalDocumentRequest, db: Session = Depends(get_db)):
+async def get_legal_document(
+    request: LegalDocumentRequest, db: Session = Depends(get_db)
+):
     """
     Get legal documents (ToS, Privacy Policy, etc.) with age-appropriate versions.
     """
@@ -748,7 +783,9 @@ async def get_legal_document(request: LegalDocumentRequest, db: Session = Depend
                 <p>We do not sell your personal information...</p>
                 <h2>Your Rights</h2>
                 <p>You have the right to access, correct, and delete your data...</p>
-                """.format(date=datetime.now().strftime("%B %d, %Y"))
+                """.format(
+                    date=datetime.now().strftime("%B %d, %Y")
+                )
 
                 summary_points = [
                     "We collect minimal data necessary for safety services",
@@ -784,7 +821,9 @@ async def get_legal_document(request: LegalDocumentRequest, db: Session = Depend
 
 
 @router.post("/legal/consent/update", response_model=ConsentUpdateResponse)
-async def update_user_consent(request: ConsentUpdateRequest, db: Session = Depends(get_db)):
+async def update_user_consent(
+    request: ConsentUpdateRequest, db: Session = Depends(get_db)
+):
     """
     Update user consent preferences.
     """

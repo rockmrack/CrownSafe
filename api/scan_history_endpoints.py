@@ -54,7 +54,9 @@ class ScanHistoryResponse(AppModel):
 async def get_scan_history(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Items per page"),
-    days: Optional[int] = Query(None, ge=1, le=365, description="Filter by last N days"),
+    days: Optional[int] = Query(
+        None, ge=1, le=365, description="Filter by last N days"
+    ),
     status: Optional[str] = Query(None, description="Filter by status"),
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -87,7 +89,12 @@ async def get_scan_history(
 
         # Apply pagination and ordering
         offset = (page - 1) * page_size
-        jobs = query.order_by(desc(ImageJob.created_at)).offset(offset).limit(page_size).all()
+        jobs = (
+            query.order_by(desc(ImageJob.created_at))
+            .offset(offset)
+            .limit(page_size)
+            .all()
+        )
 
         # Build response items
         scan_items = []
@@ -98,7 +105,9 @@ async def get_scan_history(
             # Calculate processing time
             processing_time_ms = None
             if job.started_at and job.completed_at:
-                processing_time_ms = int((job.completed_at - job.started_at).total_seconds() * 1000)
+                processing_time_ms = int(
+                    (job.completed_at - job.started_at).total_seconds() * 1000
+                )
 
             # Check for recalls (simplified - you'd integrate with recall checking)
             has_recalls = False
@@ -107,7 +116,11 @@ async def get_scan_history(
                 # TODO: Check against recalls table
                 from core_infra.database import RecallDB
 
-                recalls = db.query(RecallDB).filter(RecallDB.upc_codes.contains([extraction.upc_code])).count()
+                recalls = (
+                    db.query(RecallDB)
+                    .filter(RecallDB.upc_codes.contains([extraction.upc_code]))
+                    .count()
+                )
                 if recalls > 0:
                     has_recalls = True
                     recall_count = recalls
@@ -121,7 +134,9 @@ async def get_scan_history(
                 model_number=extraction.model_number if extraction else None,
                 upc_code=extraction.upc_code if extraction else None,
                 confidence_score=job.confidence_score,
-                confidence_level=job.confidence_level.value if job.confidence_level else None,
+                confidence_level=job.confidence_level.value
+                if job.confidence_level
+                else None,
                 has_recalls=has_recalls,
                 recall_count=recall_count,
                 image_url=job.s3_presigned_url,
@@ -159,7 +174,11 @@ async def get_scan_details(
     """
     try:
         # Get job ensuring it belongs to user
-        job = db.query(ImageJob).filter(and_(ImageJob.id == job_id, ImageJob.user_id == current_user.id)).first()
+        job = (
+            db.query(ImageJob)
+            .filter(and_(ImageJob.id == job_id, ImageJob.user_id == current_user.id))
+            .first()
+        )
 
         if not job:
             return fail("Scan not found", code="NOT_FOUND", status=404)
@@ -185,8 +204,12 @@ async def get_scan_details(
             },
             "timing": {
                 "created_at": job.created_at.isoformat() + "Z",
-                "started_at": job.started_at.isoformat() + "Z" if job.started_at else None,
-                "completed_at": job.completed_at.isoformat() + "Z" if job.completed_at else None,
+                "started_at": job.started_at.isoformat() + "Z"
+                if job.started_at
+                else None,
+                "completed_at": job.completed_at.isoformat() + "Z"
+                if job.completed_at
+                else None,
             },
             "error_message": job.error_message,
         }
@@ -228,7 +251,11 @@ async def delete_scan(
     """
     try:
         # Get job ensuring it belongs to user
-        job = db.query(ImageJob).filter(and_(ImageJob.id == job_id, ImageJob.user_id == current_user.id)).first()
+        job = (
+            db.query(ImageJob)
+            .filter(and_(ImageJob.id == job_id, ImageJob.user_id == current_user.id))
+            .first()
+        )
 
         if not job:
             return fail("Scan not found", code="NOT_FOUND", status=404)
@@ -246,7 +273,9 @@ async def delete_scan(
 
 
 @router.get("/scan-statistics", response_model=ApiResponse)
-async def get_scan_statistics(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
+async def get_scan_statistics(
+    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
+):
     """
     Get user's scanning statistics
 
@@ -272,7 +301,12 @@ async def get_scan_statistics(current_user=Depends(get_current_active_user), db:
         month_scans = len([j for j in jobs if (now - j.created_at).days <= 30])
 
         # Get unique products scanned
-        extractions = db.query(ImageExtraction).join(ImageJob).filter(ImageJob.user_id == current_user.id).all()
+        extractions = (
+            db.query(ImageExtraction)
+            .join(ImageJob)
+            .filter(ImageJob.user_id == current_user.id)
+            .all()
+        )
 
         unique_products = set()
         unique_brands = set()
@@ -292,7 +326,9 @@ async def get_scan_statistics(current_user=Depends(get_current_active_user), db:
             "total_scans": total_scans,
             "completed_scans": completed_scans,
             "failed_scans": failed_scans,
-            "success_rate": (completed_scans / total_scans * 100) if total_scans > 0 else 0,
+            "success_rate": (completed_scans / total_scans * 100)
+            if total_scans > 0
+            else 0,
             "average_confidence": round(avg_confidence, 2),
             "activity": {
                 "today": today_scans,
@@ -304,7 +340,9 @@ async def get_scan_statistics(current_user=Depends(get_current_active_user), db:
                 "unique_brands": len(unique_brands),
                 "top_brands": list(unique_brands)[:5],  # Top 5 brands
             },
-            "member_since": current_user.created_at.isoformat() + "Z" if hasattr(current_user, "created_at") else None,
+            "member_since": current_user.created_at.isoformat() + "Z"
+            if hasattr(current_user, "created_at")
+            else None,
         }
 
         return ok(stats)
@@ -343,7 +381,9 @@ class UserProfileUpdateRequest(AppModel):
 
 
 @router.get("/profile", response_model=ApiResponse)
-async def get_user_profile(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
+async def get_user_profile(
+    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
+):
     """
     Get current user's profile information.
 
@@ -352,7 +392,9 @@ async def get_user_profile(current_user=Depends(get_current_active_user), db: Se
     """
     try:
         # Count user's scans
-        scan_count = db.query(ImageJob).filter(ImageJob.user_id == current_user.id).count()
+        scan_count = (
+            db.query(ImageJob).filter(ImageJob.user_id == current_user.id).count()
+        )
 
         profile_data = {
             "id": current_user.id,
@@ -368,7 +410,9 @@ async def get_user_profile(current_user=Depends(get_current_active_user), db: Se
             if hasattr(current_user, "last_login") and current_user.last_login
             else None,
             "scan_count": scan_count,
-            "notification_preferences": getattr(current_user, "notification_preferences", {}),
+            "notification_preferences": getattr(
+                current_user, "notification_preferences", {}
+            ),
         }
 
         return ok(profile_data)
@@ -405,7 +449,9 @@ async def update_user_profile(
 
         if profile_update.notification_preferences is not None:
             if hasattr(current_user, "notification_preferences"):
-                current_user.notification_preferences = profile_update.notification_preferences
+                current_user.notification_preferences = (
+                    profile_update.notification_preferences
+                )
 
         # Update last_modified timestamp if exists
         if hasattr(current_user, "updated_at"):
@@ -425,7 +471,9 @@ async def update_user_profile(
             "created_at": current_user.created_at.isoformat() + "Z"
             if hasattr(current_user, "created_at")
             else datetime.utcnow().isoformat() + "Z",
-            "notification_preferences": getattr(current_user, "notification_preferences", {}),
+            "notification_preferences": getattr(
+                current_user, "notification_preferences", {}
+            ),
         }
 
         return ok(profile_data, message="Profile updated successfully")
@@ -476,7 +524,9 @@ async def get_other_user_profile(
             "username": getattr(user, "username", None),
             "full_name": getattr(user, "full_name", None),
             "is_active": getattr(user, "is_active", True),
-            "created_at": user.created_at.isoformat() + "Z" if hasattr(user, "created_at") else None,
+            "created_at": user.created_at.isoformat() + "Z"
+            if hasattr(user, "created_at")
+            else None,
             "scan_count": scan_count,
         }
 

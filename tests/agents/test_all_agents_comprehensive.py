@@ -155,7 +155,9 @@ def test_recall_agent_initialization():
         agent = RecallDataAgentLogic(agent_id="test-recall-agent")
         assert agent is not None
         assert agent.agent_id == "test-recall-agent"
-        test_results.add_result(agent_name, test_name, "PASSED", "Agent initialized successfully")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Agent initialized successfully"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -234,12 +236,16 @@ async def test_recall_agent_process_task():
         agent = RecallDataAgentLogic(agent_id="test-process-task")
 
         # Test with UPC search
-        result = await agent.process_task({"upc": "070470003795", "product_name": "Test Product"})
+        result = await agent.process_task(
+            {"upc": "070470003795", "product_name": "Test Product"}
+        )
 
         assert result is not None
         assert "recalls" in result or "error" not in result
 
-        test_results.add_result(agent_name, test_name, "PASSED", "Successfully processed recall search task")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Successfully processed recall search task"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -283,7 +289,9 @@ def test_chat_agent_initialization():
         agent = ChatAgentLogic(llm=mock_llm)
         assert agent is not None
         assert agent.llm is mock_llm
-        test_results.add_result(agent_name, test_name, "PASSED", "Agent initialized successfully")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Agent initialized successfully"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -346,7 +354,9 @@ async def test_chat_agent_emergency_detection():
         assert result is not None
         # Emergency should be detected
 
-        test_results.add_result(agent_name, test_name, "PASSED", "Emergency detection working")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Emergency detection working"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -367,7 +377,9 @@ def test_report_builder_initialization():
         agent = ReportBuilderAgentLogic(agent_id="test-report-builder")
         assert agent is not None
         assert agent.agent_id == "test-report-builder"
-        test_results.add_result(agent_name, test_name, "PASSED", "Agent initialized successfully")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Agent initialized successfully"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -401,7 +413,9 @@ def test_report_builder_generate_report():
         assert result is not None
         assert "report_id" in result or "report" in result or "error" not in result
 
-        test_results.add_result(agent_name, test_name, "PASSED", "Successfully generated report")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Successfully generated report"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -422,7 +436,9 @@ def test_visual_search_initialization():
         agent = VisualSearchAgentLogic(agent_id="test-visual-search")
         assert agent is not None
         assert agent.agent_id == "test-visual-search"
-        test_results.add_result(agent_name, test_name, "PASSED", "Agent initialized successfully")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Agent initialized successfully"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -441,7 +457,9 @@ async def test_visual_search_capabilities():
         # Check that agent has expected methods
         assert hasattr(agent, "process_task")
 
-        test_results.add_result(agent_name, test_name, "PASSED", "Agent has required capabilities")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Agent has required capabilities"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -462,7 +480,9 @@ def test_alternatives_agent_initialization():
         agent = AlternativesAgentLogic(agent_id="test-alternatives")
         assert agent is not None
         assert agent.agent_id == "test-alternatives"
-        test_results.add_result(agent_name, test_name, "PASSED", "Agent initialized successfully")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Agent initialized successfully"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -488,7 +508,9 @@ async def test_alternatives_agent_find_alternatives():
 
         assert result is not None
 
-        test_results.add_result(agent_name, test_name, "PASSED", "Successfully found alternatives")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Successfully found alternatives"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -513,7 +535,9 @@ def test_product_identifier_initialization():
         agent = ProductIdentifierAgentLogic(agent_id="test-product-id")
         assert agent is not None
         assert agent.agent_id == "test-product-id"
-        test_results.add_result(agent_name, test_name, "PASSED", "Agent initialized successfully")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Agent initialized successfully"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -533,11 +557,15 @@ async def test_product_identifier_process():
     try:
         agent = ProductIdentifierAgentLogic(agent_id="test-prod-process")
 
-        result = await agent.process_task({"upc": "070470003795", "product_name": "Test Product"})
+        result = await agent.process_task(
+            {"upc": "070470003795", "product_name": "Test Product"}
+        )
 
         assert result is not None
 
-        test_results.add_result(agent_name, test_name, "PASSED", "Successfully identified product")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Successfully identified product"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -559,7 +587,9 @@ def test_router_agent_initialization():
         agent = RouterAgentLogic(agent_id="test-router")
         assert agent is not None
         assert agent.agent_id == "test-router"
-        test_results.add_result(agent_name, test_name, "PASSED", "Agent initialized successfully")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Agent initialized successfully"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise
@@ -578,7 +608,9 @@ def test_router_agent_capabilities():
         # Check that router knows about all agents
         assert hasattr(agent, "route_task") or hasattr(agent, "process_task")
 
-        test_results.add_result(agent_name, test_name, "PASSED", "Router has capability mappings")
+        test_results.add_result(
+            agent_name, test_name, "PASSED", "Router has capability mappings"
+        )
     except Exception as e:
         test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
         raise

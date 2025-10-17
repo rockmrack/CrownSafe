@@ -27,7 +27,9 @@ def upgrade():
         sa.Column("status", sa.String(length=16), nullable=False),
         sa.Column("source", sa.String(length=16), nullable=True),
         sa.Column("meta", sa.JSON(), nullable=True),
-        sa.Column("created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(
@@ -46,6 +48,10 @@ def upgrade():
 
 def downgrade():
     # Drop account_deletion_audit table
-    op.drop_index(op.f("ix_account_deletion_audit_jti"), table_name="account_deletion_audit")
-    op.drop_index(op.f("ix_account_deletion_audit_user_id"), table_name="account_deletion_audit")
+    op.drop_index(
+        op.f("ix_account_deletion_audit_jti"), table_name="account_deletion_audit"
+    )
+    op.drop_index(
+        op.f("ix_account_deletion_audit_user_id"), table_name="account_deletion_audit"
+    )
     op.drop_table("account_deletion_audit")

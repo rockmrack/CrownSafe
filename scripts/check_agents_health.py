@@ -52,7 +52,9 @@ for agent_id, name in agents.items():
 print("\n🔍 Checking running processes:")
 try:
     # Windows
-    result = subprocess.run(["tasklist", "/FI", "IMAGENAME eq python.exe"], capture_output=True, text=True)
+    result = subprocess.run(
+        ["tasklist", "/FI", "IMAGENAME eq python.exe"], capture_output=True, text=True
+    )
     python_processes = result.stdout.count("python.exe")
     print(f"   Found {python_processes} Python processes")
 except:

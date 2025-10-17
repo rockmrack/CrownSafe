@@ -62,8 +62,12 @@ class TestLoadStress:
         # Ensure we have a reasonable number of requests completed
         # In production with network latency, 10 successful requests in 10s is reasonable
         assert total_count >= 10, f"Expected at least 10 requests, got {total_count}"
-        assert success_count >= 8, f"Expected at least 8 successful requests, got {success_count}"
-        assert success_rate >= 0.80, f"Expected 80% success rate, got {success_rate * 100:.1f}%"
+        assert (
+            success_count >= 8
+        ), f"Expected at least 8 successful requests, got {success_count}"
+        assert (
+            success_rate >= 0.80
+        ), f"Expected 80% success rate, got {success_rate * 100:.1f}%"
 
     def test_large_result_set_handling(self):
         """Test handling of large result sets"""
@@ -106,7 +110,9 @@ class TestLoadStress:
             max_time = max(response_times)
             min_time = min(response_times)
 
-            print(f"✅ Response times: avg={avg_time:.3f}s, min={min_time:.3f}s, max={max_time:.3f}s")
+            print(
+                f"✅ Response times: avg={avg_time:.3f}s, min={min_time:.3f}s, max={max_time:.3f}s"
+            )
 
             # Max should not be more than 3x the minimum
             assert max_time < min_time * 3 or max_time < 2.0

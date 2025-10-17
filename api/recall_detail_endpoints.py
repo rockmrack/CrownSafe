@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/recall/{recall_id:path}")
-async def get_recall_detail(recall_id: str, request: Request, response: Response) -> Dict[str, Any]:
+async def get_recall_detail(
+    recall_id: str, request: Request, response: Response
+) -> Dict[str, Any]:
     """
     Get detailed information for a specific recall by ID
 
@@ -137,7 +139,9 @@ async def get_recall_detail(recall_id: str, request: Request, response: Response
                 )
 
             # Convert to dict
-            recall_data = dict(result._mapping) if hasattr(result, "_mapping") else dict(result)
+            recall_data = (
+                dict(result._mapping) if hasattr(result, "_mapping") else dict(result)
+            )
 
             # Format dates
             if recall_data.get("recallDate"):

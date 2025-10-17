@@ -6,7 +6,9 @@ from typing import Dict, Any
 from sqlalchemy.orm import Session
 
 
-def run_tool_for_intent(intent: str, db: Session, scan_data: Dict[str, Any]) -> Dict[str, Any]:
+def run_tool_for_intent(
+    intent: str, db: Session, scan_data: Dict[str, Any]
+) -> Dict[str, Any]:
     """Run appropriate tool based on intent"""
 
     # Simple stub responses based on intent

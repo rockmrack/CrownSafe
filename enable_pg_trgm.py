@@ -56,7 +56,9 @@ def enable_pg_trgm():
         print("✅ pg_trgm extension enabled!")
 
         # Verify extension is enabled
-        cur.execute("SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';")
+        cur.execute(
+            "SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';"
+        )
         result = cur.fetchone()
         if result:
             print(f"✅ Verified: pg_trgm version {result[1]} is active")

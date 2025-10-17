@@ -21,7 +21,9 @@ from core_infra.database import (
     drop_tables,
 )
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # --- Test Configuration ---
 TEST_USER_ID_TO_DELETE = 99
@@ -37,14 +39,20 @@ async def main():
     drop_tables()
     create_tables()
     with SessionLocal() as db:
-        user_to_delete = User(id=TEST_USER_ID_TO_DELETE, email="delete.me@example.com", is_subscribed=True)
+        user_to_delete = User(
+            id=TEST_USER_ID_TO_DELETE, email="delete.me@example.com", is_subscribed=True
+        )
         db.add(user_to_delete)
         db.commit()
-    logger.info(f"Database seeded with user to be deleted, ID: {TEST_USER_ID_TO_DELETE}")
+    logger.info(
+        f"Database seeded with user to be deleted, ID: {TEST_USER_ID_TO_DELETE}"
+    )
 
     try:
         # 2. Initialize the real DataGovernanceAgentLogic.
-        agent_logic = DataGovernanceAgentLogic(agent_id="test_dg_001", logger_instance=logger)
+        agent_logic = DataGovernanceAgentLogic(
+            agent_id="test_dg_001", logger_instance=logger
+        )
         logger.info("Agent logic initialized.")
 
         # 3. Define the task payload.
@@ -68,21 +76,31 @@ async def main():
         # 6. Verify the user was deleted from the database.
         user_was_deleted = False
         with SessionLocal() as db:
-            deleted_user = db.query(User).filter(User.id == TEST_USER_ID_TO_DELETE).first()
+            deleted_user = (
+                db.query(User).filter(User.id == TEST_USER_ID_TO_DELETE).first()
+            )
             if deleted_user is None:
                 user_was_deleted = True
-                logger.info("Verification successful: User is no longer in the database.")
+                logger.info(
+                    "Verification successful: User is no longer in the database."
+                )
 
         # 7. Validate the final result.
         if result.get("status") == "COMPLETED" and user_was_deleted:
             print("\n" + "=" * 50)
-            print("✅✅✅ TEST PASSED: Agent successfully deleted the user's data from the database.")
+            print(
+                "✅✅✅ TEST PASSED: Agent successfully deleted the user's data from the database."
+            )
         else:
             print("\n" + "=" * 50)
             if not user_was_deleted:
-                print("❌ TEST FAILED: The agent did not correctly delete the user from the database.")
+                print(
+                    "❌ TEST FAILED: The agent did not correctly delete the user from the database."
+                )
             else:
-                print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")
+                print(
+                    f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}"
+                )
 
     except Exception as e:
         print("\n" + "=" * 50)

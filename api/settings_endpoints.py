@@ -27,9 +27,13 @@ router = APIRouter(prefix="/api/v1/settings", tags=["Settings"])
 class AppSettings(BaseModel):
     """User app settings"""
 
-    crashlytics_enabled: bool = Field(False, description="Enable crash reporting (default: false)")
+    crashlytics_enabled: bool = Field(
+        False, description="Enable crash reporting (default: false)"
+    )
     notifications_enabled: bool = Field(True, description="Enable push notifications")
-    offline_mode: bool = Field(False, description="Enable offline mode with cached data")
+    offline_mode: bool = Field(
+        False, description="Enable offline mode with cached data"
+    )
     auto_retry: bool = Field(True, description="Automatically retry failed requests")
     language: str = Field("en", description="App language code")
     theme: str = Field("auto", pattern="^(light|dark|auto)$", description="App theme")
@@ -139,7 +143,9 @@ async def update_settings(
     updates_dict = {k: v for k, v in updates.dict().items() if v is not None}
 
     if not updates_dict:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No settings to update")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="No settings to update"
+        )
 
     # Update settings
     settings = update_user_settings(identifier, updates_dict)
@@ -274,7 +280,9 @@ async def reset_settings(
         },
     )
 
-    return SettingsResponse(ok=True, settings=settings_store[identifier], updated_at=datetime.utcnow())
+    return SettingsResponse(
+        ok=True, settings=settings_store[identifier], updated_at=datetime.utcnow()
+    )
 
 
 # ========================= ERROR RECOVERY =========================

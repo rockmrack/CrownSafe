@@ -96,7 +96,9 @@ async def test_4_recall_agent_process_task():
 
     agent = RecallDataAgentLogic(agent_id="test-process-task")
 
-    result = await agent.process_task({"upc": "070470003795", "product_name": "Test Baby Product"})
+    result = await agent.process_task(
+        {"upc": "070470003795", "product_name": "Test Baby Product"}
+    )
 
     assert result is not None
     print("✓ PASSED - Successfully processed recall search task")
@@ -199,7 +201,9 @@ async def test_10_workflow_scan_to_recall():
 
     recall_agent = RecallDataAgentLogic(agent_id="workflow-test")
 
-    result = await recall_agent.process_task({"upc": "070470003795", "product_name": "Test Baby Product"})
+    result = await recall_agent.process_task(
+        {"upc": "070470003795", "product_name": "Test Baby Product"}
+    )
 
     assert result is not None
     print("✓ PASSED - Complete workflow: Scan → Recall Check")
@@ -215,7 +219,9 @@ async def test_11_multiple_connectors_parallel():
     fda = FDAConnector()
 
     # Run both in parallel
-    results = await asyncio.gather(cpsc.fetch_recent_recalls(), fda.fetch_recent_recalls(), return_exceptions=True)
+    results = await asyncio.gather(
+        cpsc.fetch_recent_recalls(), fda.fetch_recent_recalls(), return_exceptions=True
+    )
 
     cpsc_count = len(results[0]) if isinstance(results[0], list) else 0
     fda_count = len(results[1]) if isinstance(results[1], list) else 0
@@ -233,7 +239,9 @@ async def test_12_recall_agent_with_alternatives():
 
     # Step 1: Check recalls
     recall_agent = RecallDataAgentLogic(agent_id="workflow-recall")
-    recall_result = await recall_agent.process_task({"product_name": "Baby Bottle", "upc": "123456789"})
+    recall_result = await recall_agent.process_task(
+        {"product_name": "Baby Bottle", "upc": "123456789"}
+    )
 
     # Step 2: Find alternatives
     alt_agent = AlternativesAgentLogic(agent_id="workflow-alt")
@@ -267,7 +275,9 @@ async def test_13_stress_multiple_concurrent_searches():
     # Create 5 concurrent tasks
     tasks = []
     for i in range(5):
-        task = agent.process_task({"product_name": f"Test Product {i}", "upc": f"12345678{i}"})
+        task = agent.process_task(
+            {"product_name": f"Test Product {i}", "upc": f"12345678{i}"}
+        )
         tasks.append(task)
 
     results = await asyncio.gather(*tasks, return_exceptions=True)

@@ -50,7 +50,9 @@ class AdminToolsTester:
         if response.status_code in (401, 403):
             data = response.json()
             self.test(not data.get("ok"), "Error response has ok=false")
-            self.test("error" in data and "code" in data["error"], "Error has standard format")
+            self.test(
+                "error" in data and "code" in data["error"], "Error has standard format"
+            )
 
         # Test with invalid key
         response = self.session.get(
@@ -68,7 +70,9 @@ class AdminToolsTester:
         """Test 2: Data freshness endpoint"""
         print("\n📝 Test 2: Data Freshness")
 
-        response = self.session.get(f"{self.base_url}/api/v1/admin/freshness", headers=self.admin_headers)
+        response = self.session.get(
+            f"{self.base_url}/api/v1/admin/freshness", headers=self.admin_headers
+        )
 
         if response.status_code == 503:
             print("   ⚠️ Admin not configured, skipping")
@@ -100,13 +104,17 @@ class AdminToolsTester:
         """Test 3: List ingestion runs"""
         print("\n📝 Test 3: List Ingestion Runs")
 
-        response = self.session.get(f"{self.base_url}/api/v1/admin/runs", headers=self.admin_headers)
+        response = self.session.get(
+            f"{self.base_url}/api/v1/admin/runs", headers=self.admin_headers
+        )
 
         if response.status_code == 503:
             print("   ⚠️ Admin not configured, skipping")
             return True
 
-        self.test(response.status_code == 200, f"Runs list returns {response.status_code}")
+        self.test(
+            response.status_code == 200, f"Runs list returns {response.status_code}"
+        )
 
         if response.status_code == 200:
             data = response.json()
@@ -145,7 +153,8 @@ class AdminToolsTester:
         if response.status_code == 400:
             data = response.json()
             self.test(
-                data.get("error", {}).get("code") in ["UNSUPPORTED_AGENCY", "INVALID_REQUEST"],
+                data.get("error", {}).get("code")
+                in ["UNSUPPORTED_AGENCY", "INVALID_REQUEST"],
                 f"Error code: {data.get('error', {}).get('code')}",
             )
 
@@ -156,7 +165,9 @@ class AdminToolsTester:
             json={"agency": "FDA", "mode": "invalid_mode"},
         )
 
-        self.test(response.status_code == 400, f"Invalid mode returns {response.status_code}")
+        self.test(
+            response.status_code == 400, f"Invalid mode returns {response.status_code}"
+        )
 
         # Test missing agency
         response = self.session.post(
@@ -187,11 +198,15 @@ class AdminToolsTester:
             print("   ⚠️ Admin not configured, skipping")
             return True
 
-        self.test(response.status_code == 400, f"Invalid UUID returns {response.status_code}")
+        self.test(
+            response.status_code == 400, f"Invalid UUID returns {response.status_code}"
+        )
 
         # Test with non-existent UUID
         fake_id = str(uuid.uuid4())
-        response = self.session.get(f"{self.base_url}/api/v1/admin/runs/{fake_id}", headers=self.admin_headers)
+        response = self.session.get(
+            f"{self.base_url}/api/v1/admin/runs/{fake_id}", headers=self.admin_headers
+        )
 
         self.test(
             response.status_code == 404,
@@ -204,7 +219,9 @@ class AdminToolsTester:
         """Test 6: Admin statistics endpoint"""
         print("\n📝 Test 6: Admin Statistics")
 
-        response = self.session.get(f"{self.base_url}/api/v1/admin/stats", headers=self.admin_headers)
+        response = self.session.get(
+            f"{self.base_url}/api/v1/admin/stats", headers=self.admin_headers
+        )
 
         if response.status_code == 503:
             print("   ⚠️ Admin not configured, skipping")
@@ -244,7 +261,9 @@ class AdminToolsTester:
 
         if response.status_code == 200:
             content = response.text
-            self.test("BabyShield Admin" in content, "Dashboard contains expected title")
+            self.test(
+                "BabyShield Admin" in content, "Dashboard contains expected title"
+            )
             self.test("apiKey" in content, "Dashboard has API key input")
             self.test("Data Freshness" in content, "Dashboard has freshness section")
 
@@ -254,11 +273,15 @@ class AdminToolsTester:
         """Test 8: Trace ID in admin responses"""
         print("\n📝 Test 8: Trace ID Presence")
 
-        response = self.session.get(f"{self.base_url}/api/v1/admin/freshness", headers=self.admin_headers)
+        response = self.session.get(
+            f"{self.base_url}/api/v1/admin/freshness", headers=self.admin_headers
+        )
 
         if response.status_code in (200, 401, 403):
             data = response.json()
-            self.test("traceId" in data or "trace_id" in data, "Response includes trace ID")
+            self.test(
+                "traceId" in data or "trace_id" in data, "Response includes trace ID"
+            )
 
         return True
 

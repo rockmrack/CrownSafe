@@ -107,7 +107,11 @@ try:
 
     migrations_path = "db/migrations/versions"
     if os.path.exists(migrations_path):
-        migration_files = [f for f in os.listdir(migrations_path) if f.endswith(".py") and not f.startswith("__")]
+        migration_files = [
+            f
+            for f in os.listdir(migrations_path)
+            if f.endswith(".py") and not f.startswith("__")
+        ]
         print(f"✅ PASS - Found {len(migration_files)} migration files")
         # Check for pg_trgm migration
         pg_trgm_exists = any("pg_trgm" in f for f in migration_files)
