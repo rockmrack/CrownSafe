@@ -359,7 +359,7 @@ class EnhancedSafetyService:
         elif report.overall_safety_score < 0.6:
             recommendations.append("[MODERATE RISK] Moderate risk - use with caution")
         else:
-            recommendations.append("[SAFE] Generally safe for intended use")
+            recommendations.append("[INFO] No active recalls found in our database")
 
         return recommendations
 
