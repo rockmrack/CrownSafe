@@ -240,10 +240,10 @@ gh run view --log
 
 ### Recommended Rotation
 
-| Secret | Rotation Frequency | Next Due |
-|--------|-------------------|----------|
-| SMOKE_TEST_EMAIL | When account compromised | As needed |
-| SMOKE_TEST_PASSWORD | Every 90 days | Jan 17, 2026 |
+| Secret              | Rotation Frequency       | Next Due     |
+| ------------------- | ------------------------ | ------------ |
+| SMOKE_TEST_EMAIL    | When account compromised | As needed    |
+| SMOKE_TEST_PASSWORD | Every 90 days            | Jan 17, 2026 |
 
 ### Rotation Process
 
