@@ -60,13 +60,23 @@ class EnhancedSafetyService:
 
         # Get supplemental data based on product type
         if include_food_data and (product_type == "food" or product_type is None):
-            report.food_data = await self._get_food_data(product_identifier, product_name)
+            report.food_data = await self._get_food_data(
+                product_identifier, product_name
+            )
 
-        if include_cosmetic_data and (product_type == "cosmetic" or product_type is None):
-            report.cosmetic_data = await self._get_cosmetic_data(product_identifier, product_name)
+        if include_cosmetic_data and (
+            product_type == "cosmetic" or product_type is None
+        ):
+            report.cosmetic_data = await self._get_cosmetic_data(
+                product_identifier, product_name
+            )
 
-        if include_chemical_data and (product_type == "chemical" or product_type is None):
-            report.chemical_data = await self._get_chemical_data(product_identifier, product_name)
+        if include_chemical_data and (
+            product_type == "chemical" or product_type is None
+        ):
+            report.chemical_data = await self._get_chemical_data(
+                product_identifier, product_name
+            )
 
         # Calculate overall safety score
         report.overall_safety_score = self._calculate_overall_safety_score(report)
@@ -94,11 +104,15 @@ class EnhancedSafetyService:
             logger.error(f"Error getting recall data: {e}")
             return {"status": "error", "count": 0, "recalls": []}
 
-    async def _get_food_data(self, product_identifier: str, product_name: Optional[str]) -> Optional[FoodDataResponse]:
+    async def _get_food_data(
+        self, product_identifier: str, product_name: Optional[str]
+    ) -> Optional[FoodDataResponse]:
         """Get food data from supplemental sources"""
         try:
             search_term = product_name or product_identifier
-            food_data = await self.supplemental_service.get_food_data(search_term, product_identifier)
+            food_data = await self.supplemental_service.get_food_data(
+                search_term, product_identifier
+            )
 
             if not food_data.name:
                 return None
@@ -109,12 +123,24 @@ class EnhancedSafetyService:
                 nutritional_info = NutritionalInfo(
                     calories=food_data.nutritional_info.get("energy", {}).get("amount"),
                     protein=food_data.nutritional_info.get("protein", {}).get("amount"),
-                    carbohydrates=food_data.nutritional_info.get("carbohydrate, by difference", {}).get("amount"),
-                    fat=food_data.nutritional_info.get("total lipid (fat)", {}).get("amount"),
-                    fiber=food_data.nutritional_info.get("fiber, total dietary", {}).get("amount"),
-                    sugar=food_data.nutritional_info.get("sugars, total including nse", {}).get("amount"),
-                    sodium=food_data.nutritional_info.get("sodium, na", {}).get("amount"),
-                    cholesterol=food_data.nutritional_info.get("cholesterol", {}).get("amount"),
+                    carbohydrates=food_data.nutritional_info.get(
+                        "carbohydrate, by difference", {}
+                    ).get("amount"),
+                    fat=food_data.nutritional_info.get("total lipid (fat)", {}).get(
+                        "amount"
+                    ),
+                    fiber=food_data.nutritional_info.get(
+                        "fiber, total dietary", {}
+                    ).get("amount"),
+                    sugar=food_data.nutritional_info.get(
+                        "sugars, total including nse", {}
+                    ).get("amount"),
+                    sodium=food_data.nutritional_info.get("sodium, na", {}).get(
+                        "amount"
+                    ),
+                    cholesterol=food_data.nutritional_info.get("cholesterol", {}).get(
+                        "amount"
+                    ),
                 )
 
             return FoodDataResponse(
@@ -138,7 +164,9 @@ class EnhancedSafetyService:
             search_term = product_name or product_identifier
             logger.info(f"Getting cosmetic data for search term: {search_term}")
 
-            cosmetic_data = await self.supplemental_service.get_cosmetic_data(search_term)
+            cosmetic_data = await self.supplemental_service.get_cosmetic_data(
+                search_term
+            )
             logger.info(f"Got cosmetic data: {cosmetic_data}")
 
             if not cosmetic_data.product_name:
@@ -191,7 +219,9 @@ class EnhancedSafetyService:
         """Get chemical data from supplemental sources"""
         try:
             search_term = product_name or product_identifier
-            chemical_data = await self.supplemental_service.get_chemical_data(search_term)
+            chemical_data = await self.supplemental_service.get_chemical_data(
+                search_term
+            )
 
             if not chemical_data.chemical_name:
                 return None
@@ -248,50 +278,80 @@ class EnhancedSafetyService:
         # Calculate weighted average
         if scores and weights:
             total_weight = sum(weights)
-            weighted_score = sum(score * weight for score, weight in zip(scores, weights)) / total_weight
+            weighted_score = (
+                sum(score * weight for score, weight in zip(scores, weights))
+                / total_weight
+            )
             return min(max(weighted_score, 0.0), 1.0)
 
         return 0.5  # Default neutral score
 
-    def _generate_safety_recommendations(self, report: EnhancedSafetyReport) -> List[str]:
+    def _generate_safety_recommendations(
+        self, report: EnhancedSafetyReport
+    ) -> List[str]:
         """Generate safety recommendations based on the report data"""
         recommendations = []
 
         # Recall-based recommendations
         if report.recall_count > 0:
-            recommendations.append("[WARNING] This product has been recalled. Avoid use and check for updates.")
+            recommendations.append(
+                "[WARNING] This product has been recalled. Avoid use and check for updates."
+            )
 
         # Food-based recommendations
         if report.food_data:
             if report.food_data.allergens:
-                recommendations.append(f"[FOOD] Contains allergens: {', '.join(report.food_data.allergens)}")
+                recommendations.append(
+                    f"[FOOD] Contains allergens: {', '.join(report.food_data.allergens)}"
+                )
 
             if report.food_data.nutritional_info:
-                if report.food_data.nutritional_info.sodium and report.food_data.nutritional_info.sodium > 500:
-                    recommendations.append("[SODIUM] High sodium content - consume in moderation")
+                if (
+                    report.food_data.nutritional_info.sodium
+                    and report.food_data.nutritional_info.sodium > 500
+                ):
+                    recommendations.append(
+                        "[SODIUM] High sodium content - consume in moderation"
+                    )
 
-                if report.food_data.nutritional_info.sugar and report.food_data.nutritional_info.sugar > 20:
-                    recommendations.append("[SUGAR] High sugar content - limit consumption")
+                if (
+                    report.food_data.nutritional_info.sugar
+                    and report.food_data.nutritional_info.sugar > 20
+                ):
+                    recommendations.append(
+                        "[SUGAR] High sugar content - limit consumption"
+                    )
 
         # Cosmetic-based recommendations
         if report.cosmetic_data:
             if report.cosmetic_data.safety_concerns:
-                recommendations.append(f"[COSMETIC] Safety concerns: {', '.join(report.cosmetic_data.safety_concerns)}")
+                recommendations.append(
+                    f"[COSMETIC] Safety concerns: {', '.join(report.cosmetic_data.safety_concerns)}"
+                )
 
-            if any(ingredient.restrictions for ingredient in report.cosmetic_data.ingredients):
-                recommendations.append("[WARNING] Some ingredients have usage restrictions")
+            if any(
+                ingredient.restrictions
+                for ingredient in report.cosmetic_data.ingredients
+            ):
+                recommendations.append(
+                    "[WARNING] Some ingredients have usage restrictions"
+                )
 
         # Chemical-based recommendations
         if report.chemical_data:
             if report.chemical_data.health_effects:
-                recommendations.append(f"[CHEMICAL] Health effects: {', '.join(report.chemical_data.health_effects)}")
+                recommendations.append(
+                    f"[CHEMICAL] Health effects: {', '.join(report.chemical_data.health_effects)}"
+                )
 
             if report.chemical_data.exposure_guidelines:
                 for (
                     exposure_type,
                     guideline,
                 ) in report.chemical_data.exposure_guidelines.items():
-                    recommendations.append(f"[PROTECTION] {exposure_type.title()} exposure: {guideline}")
+                    recommendations.append(
+                        f"[PROTECTION] {exposure_type.title()} exposure: {guideline}"
+                    )
 
         # Overall safety recommendations
         if report.overall_safety_score < 0.3:
@@ -317,10 +377,16 @@ class EnhancedSafetyService:
                 risk_factors.append("Allergen exposure")
 
             if report.food_data.nutritional_info:
-                if report.food_data.nutritional_info.sodium and report.food_data.nutritional_info.sodium > 1000:
+                if (
+                    report.food_data.nutritional_info.sodium
+                    and report.food_data.nutritional_info.sodium > 1000
+                ):
                     risk_factors.append("High sodium content")
 
-                if report.food_data.nutritional_info.sugar and report.food_data.nutritional_info.sugar > 30:
+                if (
+                    report.food_data.nutritional_info.sugar
+                    and report.food_data.nutritional_info.sugar > 30
+                ):
                     risk_factors.append("High sugar content")
 
         # Cosmetic risks

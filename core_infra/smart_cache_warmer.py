@@ -82,7 +82,12 @@ class SmartCacheWarmer:
                             brand_counter[brand] += mention_count
 
                 # Extract most popular brands
-                popular_brands = [brand for brand, count in brand_counter.most_common(self.config["warm_top_brands"])]
+                popular_brands = [
+                    brand
+                    for brand, count in brand_counter.most_common(
+                        self.config["warm_top_brands"]
+                    )
+                ]
 
                 elapsed = time.time() - start_time
                 self.logger.info(
@@ -111,14 +116,19 @@ class SmartCacheWarmer:
 
             # Batch products into groups for parallel processing
             batch_size = self.config["concurrent_warming"]
-            product_batches = [products[i : i + batch_size] for i in range(0, len(products), batch_size)]
+            product_batches = [
+                products[i : i + batch_size]
+                for i in range(0, len(products), batch_size)
+            ]
 
             for batch in product_batches:
                 # Process batch in parallel
                 async def warm_product(product_name):
                     try:
                         # Get recall data for this product
-                        recalls = await optimized_recall_search(product_name=product_name)
+                        recalls = await optimized_recall_search(
+                            product_name=product_name
+                        )
 
                         if recalls:
                             # Cache the search result
@@ -130,19 +140,27 @@ class SmartCacheWarmer:
                                 "cached_at": datetime.now().isoformat(),
                             }
 
-                            set_cached("recall", cache_key, cache_data, ttl=7200)  # 2 hour cache
+                            set_cached(
+                                "recall", cache_key, cache_data, ttl=7200
+                            )  # 2 hour cache
                             return True
                     except Exception as e:
-                        self.logger.warning(f"Cache warming failed for {product_name}: {e}")
+                        self.logger.warning(
+                            f"Cache warming failed for {product_name}: {e}"
+                        )
                         return False
                     return False
 
                 # Execute batch in parallel
                 batch_tasks = [warm_product(product) for product in batch]
-                batch_results = await asyncio.gather(*batch_tasks, return_exceptions=True)
+                batch_results = await asyncio.gather(
+                    *batch_tasks, return_exceptions=True
+                )
 
                 # Count successful warming operations
-                successful_warming += sum(1 for result in batch_results if result is True)
+                successful_warming += sum(
+                    1 for result in batch_results if result is True
+                )
 
                 # Small delay between batches to avoid overwhelming the system
                 await asyncio.sleep(0.1)
@@ -158,7 +176,9 @@ class SmartCacheWarmer:
             self.logger.error(f"Cache warming failed: {e}")
             return 0
 
-    async def warm_cache_for_autocomplete(self, products: List[str], brands: List[str]) -> int:
+    async def warm_cache_for_autocomplete(
+        self, products: List[str], brands: List[str]
+    ) -> int:
         """
         Pre-warm autocomplete cache for instant typing responses
         """
@@ -176,7 +196,9 @@ class SmartCacheWarmer:
                 words = product.split()[:3]  # First 3 words
                 for word in words:
                     if len(word) >= 2:
-                        for i in range(2, min(len(word) + 1, 6)):  # 2-5 character prefixes
+                        for i in range(
+                            2, min(len(word) + 1, 6)
+                        ):  # 2-5 character prefixes
                             prefix = word[:i].lower()
                             if prefix not in common_queries:
                                 common_queries.append(prefix)
@@ -216,10 +238,14 @@ class SmartCacheWarmer:
                         successful_warming += 1
 
                     except Exception as e:
-                        self.logger.warning(f"Autocomplete warming failed for '{query}': {e}")
+                        self.logger.warning(
+                            f"Autocomplete warming failed for '{query}': {e}"
+                        )
 
             elapsed = time.time() - start_time
-            self.logger.info(f"🎯 Autocomplete warming: {successful_warming} queries pre-cached in {elapsed:.3f}s")
+            self.logger.info(
+                f"🎯 Autocomplete warming: {successful_warming} queries pre-cached in {elapsed:.3f}s"
+            )
 
             return successful_warming
 
@@ -246,7 +272,9 @@ class SmartCacheWarmer:
             popular_data = await self.analyze_popular_products()
 
             # Step 2: Warm cache for popular products
-            product_warming = await self.warm_cache_for_products(popular_data["products"])
+            product_warming = await self.warm_cache_for_products(
+                popular_data["products"]
+            )
 
             # Step 3: Warm autocomplete cache
             autocomplete_warming = await self.warm_cache_for_autocomplete(

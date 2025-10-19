@@ -16,7 +16,9 @@ from dataclasses import dataclass
 import logging
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -113,7 +115,9 @@ class RestoreTester:
 
         while (time.time() - start_time) < timeout_seconds:
             try:
-                response = self.rds.describe_db_instances(DBInstanceIdentifier=instance_id)
+                response = self.rds.describe_db_instances(
+                    DBInstanceIdentifier=instance_id
+                )
 
                 if response["DBInstances"]:
                     status = response["DBInstances"][0]["DBInstanceStatus"]
@@ -217,7 +221,9 @@ class RestoreTester:
             result = cursor.fetchone()
             if result and result[0]:
                 age_hours = result[1].total_seconds() / 3600 if result[1] else 0
-                validation_results["recent_data"] = age_hours < 48  # Data within 48 hours
+                validation_results["recent_data"] = (
+                    age_hours < 48
+                )  # Data within 48 hours
                 logger.info(f"Most recent data: {age_hours:.1f} hours old")
 
             # 4. Check for orphaned records (data integrity)

@@ -52,7 +52,9 @@ try:
 
     # Verify
     print("Step 2: Verifying extension...")
-    cursor.execute("SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';")
+    cursor.execute(
+        "SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';"
+    )
     result = cursor.fetchone()
     if result:
         print(f"✓ pg_trgm version {result[1]} is installed")
@@ -97,7 +99,9 @@ try:
     print("=" * 60)
     print()
     print("Next steps:")
-    print("  1. Test search: curl -X POST https://babyshield.cureviax.ai/api/v1/search/advanced \\")
+    print(
+        "  1. Test search: curl -X POST https://babyshield.cureviax.ai/api/v1/search/advanced \\"
+    )
     print('                    -H "Content-Type: application/json" \\')
     print('                    -d \'{"query":"baby","limit":5}\'')
     print("  2. Expected: 'total' > 0 (not 0)")

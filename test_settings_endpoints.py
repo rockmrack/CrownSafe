@@ -90,7 +90,9 @@ print(f"Request: POST {BASE_URL}/api/v1/user/data/export")
 export_payload = {"email": "test@example.com", "format": "json"}
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/user/data/export", json=export_payload, timeout=10)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/user/data/export", json=export_payload, timeout=10
+    )
     print(f"Status Code: {response.status_code}")
     if response.status_code in [200, 202]:
         data = response.json()
@@ -111,10 +113,16 @@ print("TEST 5: Data Deletion Request Endpoint (GDPR Article 17)")
 print("-" * 80)
 print(f"Request: POST {BASE_URL}/api/v1/user/data/delete")
 
-deletion_payload = {"email": "test@example.com", "confirm": True, "reason": "Test deletion request"}
+deletion_payload = {
+    "email": "test@example.com",
+    "confirm": True,
+    "reason": "Test deletion request",
+}
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/user/data/delete", json=deletion_payload, timeout=10)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/user/data/delete", json=deletion_payload, timeout=10
+    )
     print(f"Status Code: {response.status_code}")
     if response.status_code in [200, 202]:
         data = response.json()
@@ -135,10 +143,16 @@ print("TEST 6: Feedback Endpoint (Report a Problem)")
 print("-" * 80)
 print(f"Request: POST {BASE_URL}/api/v1/feedback")
 
-feedback_payload = {"type": "bug", "message": "Test feedback submission", "category": "app_issue"}
+feedback_payload = {
+    "type": "bug",
+    "message": "Test feedback submission",
+    "category": "app_issue",
+}
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/feedback", json=feedback_payload, timeout=10)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/feedback", json=feedback_payload, timeout=10
+    )
     print(f"Status Code: {response.status_code}")
     if response.status_code in [200, 201]:
         data = response.json()

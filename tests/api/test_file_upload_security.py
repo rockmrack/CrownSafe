@@ -121,10 +121,14 @@ class TestFileUploadSecurity:
         ]
 
         for filename, content_type in malicious_files:
-            _mock_file = mock_upload_file(filename, size_mb=1, content_type=content_type)
+            _mock_file = mock_upload_file(
+                filename, size_mb=1, content_type=content_type
+            )
 
             # Verify file type is not allowed
-            assert content_type not in allowed_types, f"{content_type} should not be in allowed types"
+            assert (
+                content_type not in allowed_types
+            ), f"{content_type} should not be in allowed types"
 
     def test_concurrent_file_uploads(self, mock_upload_file):
         """
@@ -202,9 +206,9 @@ class TestFileUploadSecurity:
 
         for filename in malicious_names:
             # Verify path traversal patterns detected
-            assert ".." in filename or filename.startswith("/") or ":\\" in filename, (
-                "Should detect path traversal attempt"
-            )
+            assert (
+                ".." in filename or filename.startswith("/") or ":\\" in filename
+            ), "Should detect path traversal attempt"
 
             # In real implementation:
             # safe_filename = secure_filename(filename)

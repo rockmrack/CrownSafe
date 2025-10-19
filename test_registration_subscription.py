@@ -31,10 +31,16 @@ print("-" * 80)
 print("Endpoint: POST /api/v1/auth/register")
 
 test_email = f"test_{int(datetime.now().timestamp())}@example.com"
-registration_data = {"email": test_email, "password": "SecurePass123!", "confirm_password": "SecurePass123!"}
+registration_data = {
+    "email": test_email,
+    "password": "SecurePass123!",
+    "confirm_password": "SecurePass123!",
+}
 
 try:
-    response = requests.post(f"{BASE_URL}/api/v1/auth/register", json=registration_data, timeout=10)
+    response = requests.post(
+        f"{BASE_URL}/api/v1/auth/register", json=registration_data, timeout=10
+    )
     print(f"Status Code: {response.status_code}")
 
     if response.status_code == 200:
@@ -104,7 +110,9 @@ print("Endpoint: GET /api/v1/auth/me")
 if access_token:
     try:
         headers = {"Authorization": f"Bearer {access_token}"}
-        response = requests.get(f"{BASE_URL}/api/v1/auth/me", headers=headers, timeout=10)
+        response = requests.get(
+            f"{BASE_URL}/api/v1/auth/me", headers=headers, timeout=10
+        )
         print(f"Status Code: {response.status_code}")
 
         if response.status_code == 200:
@@ -131,7 +139,9 @@ print("Endpoint: GET /api/v1/user/profile")
 if access_token:
     try:
         headers = {"Authorization": f"Bearer {access_token}"}
-        response = requests.get(f"{BASE_URL}/api/v1/user/profile", headers=headers, timeout=10)
+        response = requests.get(
+            f"{BASE_URL}/api/v1/user/profile", headers=headers, timeout=10
+        )
         print(f"Status Code: {response.status_code}")
 
         if response.status_code == 200:
@@ -141,7 +151,9 @@ if access_token:
                 print("[OK] Extended profile retrieved")
                 print(f"   Scan Count: {profile.get('scan_count')}")
                 print(f"   Created At: {profile.get('created_at')}")
-                print(f"   Notification Prefs: {bool(profile.get('notification_preferences'))}")
+                print(
+                    f"   Notification Prefs: {bool(profile.get('notification_preferences'))}"
+                )
             else:
                 print("[INFO] Profile data format")
                 print(f"   Response: {str(data)[:150]}")
@@ -171,7 +183,9 @@ print("Endpoint: GET /api/v1/subscription/status")
 if access_token:
     try:
         headers = {"Authorization": f"Bearer {access_token}"}
-        response = requests.get(f"{BASE_URL}/api/v1/subscription/status", headers=headers, timeout=10)
+        response = requests.get(
+            f"{BASE_URL}/api/v1/subscription/status", headers=headers, timeout=10
+        )
         print(f"Status Code: {response.status_code}")
 
         if response.status_code == 200:
@@ -236,7 +250,9 @@ if access_token:
     try:
         headers = {"Authorization": f"Bearer {access_token}"}
         response = requests.get(
-            f"{BASE_URL}/api/v1/subscription/entitlement?feature=safety.check", headers=headers, timeout=10
+            f"{BASE_URL}/api/v1/subscription/entitlement?feature=safety.check",
+            headers=headers,
+            timeout=10,
         )
         print(f"Status Code: {response.status_code}")
 
@@ -247,7 +263,9 @@ if access_token:
                 print("[OK] Entitlement check successful")
                 print(f"   Feature: {entitlement.get('feature')}")
                 print(f"   Entitled: {entitlement.get('entitled')}")
-                print(f"   Subscription Active: {entitlement.get('subscription', {}).get('active')}")
+                print(
+                    f"   Subscription Active: {entitlement.get('subscription', {}).get('active')}"
+                )
             else:
                 print("[INFO] Entitlement response format")
                 print(f"   Response: {str(data)[:150]}")
@@ -278,7 +296,10 @@ if access_token:
         }
 
         response = requests.post(
-            f"{BASE_URL}/api/v1/subscription/activate", headers=headers, json=activation_data, timeout=10
+            f"{BASE_URL}/api/v1/subscription/activate",
+            headers=headers,
+            json=activation_data,
+            timeout=10,
         )
         print(f"Status Code: {response.status_code}")
 

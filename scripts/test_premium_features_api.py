@@ -29,7 +29,9 @@ async def test_pregnancy_endpoint():
         }
 
         try:
-            response = await client.post(f"{BASE_URL}/api/v1/premium/pregnancy/check", json=request_data)
+            response = await client.post(
+                f"{BASE_URL}/api/v1/premium/pregnancy/check", json=request_data
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -41,7 +43,9 @@ async def test_pregnancy_endpoint():
                 if data["alerts"]:
                     print("\n⚠️ Pregnancy Safety Alerts:")
                     for alert in data["alerts"]:
-                        print(f"  - {alert['ingredient']}: {alert.get('reason', 'Risk during pregnancy')}")
+                        print(
+                            f"  - {alert['ingredient']}: {alert.get('reason', 'Risk during pregnancy')}"
+                        )
 
                 if data["recommendations"]:
                     print("\n📋 Recommendations:")
@@ -69,7 +73,9 @@ async def test_allergy_endpoint():
         }
 
         try:
-            response = await client.post(f"{BASE_URL}/api/v1/premium/allergy/check", json=request_data)
+            response = await client.post(
+                f"{BASE_URL}/api/v1/premium/allergy/check", json=request_data
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -89,7 +95,9 @@ async def test_allergy_endpoint():
                 if data["unsafe_for_members"]:
                     print("\n❌ Unsafe for:")
                     for member in data["unsafe_for_members"]:
-                        print(f"  - {member['member_name']}: {', '.join(member['allergens_found'])}")
+                        print(
+                            f"  - {member['member_name']}: {', '.join(member['allergens_found'])}"
+                        )
             else:
                 print(f"❌ Error: {response.status_code} - {response.text}")
 
@@ -106,7 +114,9 @@ async def test_family_members_endpoint():
     async with httpx.AsyncClient() as client:
         # 1. Get existing family members
         try:
-            response = await client.get(f"{BASE_URL}/api/v1/premium/family/members", params={"user_id": 1})
+            response = await client.get(
+                f"{BASE_URL}/api/v1/premium/family/members", params={"user_id": 1}
+            )
 
             if response.status_code == 200:
                 members = response.json()
@@ -143,7 +153,9 @@ async def test_family_members_endpoint():
                 print(f"  Allergies: {', '.join(member['allergies'])}")
                 return member["id"]  # Return for later deletion
             else:
-                print(f"❌ Error adding member: {response.status_code} - {response.text}")
+                print(
+                    f"❌ Error adding member: {response.status_code} - {response.text}"
+                )
 
         except Exception as e:
             print(f"❌ Connection error: {e}")
@@ -168,7 +180,9 @@ async def test_integrated_safety_check():
         }
 
         try:
-            response = await client.post(f"{BASE_URL}/api/v1/safety-check", json=request_data)
+            response = await client.post(
+                f"{BASE_URL}/api/v1/safety-check", json=request_data
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -184,7 +198,9 @@ async def test_integrated_safety_check():
                         print(f"  Safe: {preg.get('safe', 'Unknown')}")
                         if preg.get("alerts"):
                             for alert in preg["alerts"]:
-                                print(f"  ⚠️ {alert['ingredient']}: {alert.get('reason', 'Risk')}")
+                                print(
+                                    f"  ⚠️ {alert['ingredient']}: {alert.get('reason', 'Risk')}"
+                                )
 
                     # Check for allergy safety results
                     if "allergy_safety" in result:
@@ -193,14 +209,19 @@ async def test_integrated_safety_check():
                         print(f"  Safe: {allergy.get('safe', 'Unknown')}")
                         if allergy.get("alerts"):
                             for alert in allergy["alerts"]:
-                                print(f"  ⚠️ {alert['member_name']}: {', '.join(alert.get('found_allergens', []))}")
+                                print(
+                                    f"  ⚠️ {alert['member_name']}: {', '.join(alert.get('found_allergens', []))}"
+                                )
 
                     # Check if premium checks were performed
                     if result.get("premium_checks_performed"):
                         print("\n✨ Premium safety checks were included in the results")
 
                     # Display summary with premium alerts
-                    if "summary" in result and "PREMIUM SAFETY ALERTS" in result["summary"]:
+                    if (
+                        "summary" in result
+                        and "PREMIUM SAFETY ALERTS" in result["summary"]
+                    ):
                         print("\n📄 Enhanced Summary (with premium alerts):")
                         print(result["summary"])
 
@@ -228,7 +249,9 @@ async def test_mobile_scan_with_premium():
         }
 
         try:
-            response = await client.post(f"{BASE_URL}/api/v1/mobile/scan", json=request_data)
+            response = await client.post(
+                f"{BASE_URL}/api/v1/mobile/scan", json=request_data
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -273,7 +296,9 @@ async def test_comprehensive_safety():
         }
 
         try:
-            response = await client.post(f"{BASE_URL}/api/v1/premium/safety/comprehensive", json=request_data)
+            response = await client.post(
+                f"{BASE_URL}/api/v1/premium/safety/comprehensive", json=request_data
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -286,9 +311,13 @@ async def test_comprehensive_safety():
                         print(f"  Type: {risk['type']}")
                         for alert in risk.get("alerts", []):
                             if risk["type"] == "pregnancy":
-                                print(f"    - {alert['ingredient']}: {alert.get('reason', 'Risk')}")
+                                print(
+                                    f"    - {alert['ingredient']}: {alert.get('reason', 'Risk')}"
+                                )
                             elif risk["type"] == "allergies":
-                                print(f"    - {alert['member_name']}: {', '.join(alert.get('found_allergens', []))}")
+                                print(
+                                    f"    - {alert['member_name']}: {', '.join(alert.get('found_allergens', []))}"
+                                )
 
                 if data["recommendations"]:
                     print("\n📋 Recommendations:")

@@ -43,7 +43,9 @@ async def test_safety_check():
         request_data = {"user_id": 1, "product": "Baby Formula", "product_type": "food"}
 
         try:
-            response = await client.post(f"{BASE_URL}/api/v1/safety-check", json=request_data)
+            response = await client.post(
+                f"{BASE_URL}/api/v1/safety-check", json=request_data
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -73,7 +75,9 @@ async def test_search_advanced():
         }
 
         try:
-            response = await client.post(f"{BASE_URL}/api/v1/search/advanced", json=request_data)
+            response = await client.post(
+                f"{BASE_URL}/api/v1/search/advanced", json=request_data
+            )
 
             if response.status_code == 200:
                 data = response.json()
@@ -81,7 +85,9 @@ async def test_search_advanced():
                 print(f"  Total Results: {data.get('total', 0)}")
                 print(f"  Agencies: {data.get('agencies', 0)}")
                 if data.get("recalls"):
-                    print(f"  First Result: {data['recalls'][0].get('product_name', 'Unknown')[:50]}...")
+                    print(
+                        f"  First Result: {data['recalls'][0].get('product_name', 'Unknown')[:50]}..."
+                    )
             else:
                 print(f"❌ Advanced search failed: {response.status_code}")
                 print(f"  Error: {response.text[:200]}")
@@ -99,7 +105,9 @@ async def test_mobile_scan():
         request_data = {"barcode": "123456789012", "user_id": 1, "scan_type": "upc"}
 
         try:
-            response = await client.post(f"{BASE_URL}/api/v1/mobile/scan", json=request_data)
+            response = await client.post(
+                f"{BASE_URL}/api/v1/mobile/scan", json=request_data
+            )
 
             if response.status_code in [200, 404]:  # 404 is ok for non-existent barcode
                 data = response.json()
@@ -159,8 +167,12 @@ async def test_system_stats():
             if response.status_code == 200:
                 data = response.json()
                 print("✅ System stats retrieved")
-                print(f"  Database: {data.get('database', {}).get('status', 'Unknown')}")
-                print(f"  Total Recalls: {data.get('database', {}).get('total_recalls', 0)}")
+                print(
+                    f"  Database: {data.get('database', {}).get('status', 'Unknown')}"
+                )
+                print(
+                    f"  Total Recalls: {data.get('database', {}).get('total_recalls', 0)}"
+                )
                 print(f"  API Version: {data.get('api_version', 'Unknown')}")
             else:
                 print(f"❌ System stats failed: {response.status_code}")

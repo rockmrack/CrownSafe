@@ -63,19 +63,27 @@ class Subscription(Base):
 
     # Subscription details
     plan = Column(SQLEnum(SubscriptionPlan), nullable=False)  # monthly or annual
-    status = Column(SQLEnum(SubscriptionStatus), nullable=False, default=SubscriptionStatus.PENDING)
+    status = Column(
+        SQLEnum(SubscriptionStatus), nullable=False, default=SubscriptionStatus.PENDING
+    )
     provider = Column(SQLEnum(PaymentProvider), nullable=False)  # apple or google
 
     # Product IDs from app stores
-    product_id = Column(String(100), nullable=False)  # e.g., "babyshield_monthly" or "babyshield_annual"
+    product_id = Column(
+        String(100), nullable=False
+    )  # e.g., "babyshield_monthly" or "babyshield_annual"
 
     # Subscription periods
     started_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     expires_at = Column(DateTime, nullable=False)
-    cancelled_at = Column(DateTime, nullable=True)  # When user cancelled (may still be active until expires_at)
+    cancelled_at = Column(
+        DateTime, nullable=True
+    )  # When user cancelled (may still be active until expires_at)
 
     # Receipt data
-    original_transaction_id = Column(String(200), index=True)  # Apple's original_transaction_id or Google's orderId
+    original_transaction_id = Column(
+        String(200), index=True
+    )  # Apple's original_transaction_id or Google's orderId
     latest_receipt = Column(String(5000))  # Store latest receipt for revalidation
     receipt_data = Column(String(10000))  # Full receipt JSON for debugging
 
@@ -99,7 +107,10 @@ class Subscription(Base):
 
     def is_active(self) -> bool:
         """Check if subscription is currently active"""
-        return self.status == SubscriptionStatus.ACTIVE and self.expires_at > datetime.utcnow()
+        return (
+            self.status == SubscriptionStatus.ACTIVE
+            and self.expires_at > datetime.utcnow()
+        )
 
     def calculate_expiry(self) -> DateTime:
         """Calculate expiry date based on plan"""
@@ -120,7 +131,9 @@ class Subscription(Base):
             "product_id": self.product_id,
             "started_at": self.started_at.isoformat() if self.started_at else None,
             "expires_at": self.expires_at.isoformat() if self.expires_at else None,
-            "cancelled_at": self.cancelled_at.isoformat() if self.cancelled_at else None,
+            "cancelled_at": self.cancelled_at.isoformat()
+            if self.cancelled_at
+            else None,
             "auto_renew": self.auto_renew,
             "is_active": self.is_active(),
         }

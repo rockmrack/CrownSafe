@@ -26,7 +26,9 @@ def _run_purge(user_id: UUID) -> int:
 
 if celery:
 
-    @celery.task(name=TASK_NAME, autoretry_for=(Exception,), retry_backoff=True, max_retries=5)
+    @celery.task(
+        name=TASK_NAME, autoretry_for=(Exception,), retry_backoff=True, max_retries=5
+    )
     def purge_user_history_task(user_id_str: str) -> int:
         return _run_purge(UUID(user_id_str))  # Celery passes strings
 

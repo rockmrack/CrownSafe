@@ -25,7 +25,11 @@ def auth():
     headers = {"Authorization": f"Bearer {tok}"}
     me = c.get("/api/v1/auth/me", headers=headers)
     assert me.status_code == 200, me.text
-    uid = me.json().get("id") or me.json().get("user_id") or me.json().get("user", {}).get("id")
+    uid = (
+        me.json().get("id")
+        or me.json().get("user_id")
+        or me.json().get("user", {}).get("id")
+    )
     return headers, uid
 
 
@@ -44,7 +48,9 @@ def gen_and_check(headers, uid, report_type):
     print(report_type, "HEAD_status", rh.status_code, "HEAD_Content-Length", head_len)
     print(report_type, "GET_status", rg.status_code, "GET_Content-Length", get_len)
     assert rh.status_code == 200 == rg.status_code
-    assert head_len == get_len, f"{report_type}: mismatch HEAD {head_len} vs GET {get_len}"
+    assert (
+        head_len == get_len
+    ), f"{report_type}: mismatch HEAD {head_len} vs GET {get_len}"
 
 
 if __name__ == "__main__":
@@ -103,7 +109,9 @@ def gen_and_check(headers, uid, report_type):
     print(report_type, "GET_status", rg.status_code, "GET_Content-Length", get_len)
 
     assert rh.status_code == 200 and rg.status_code == 200
-    assert head_len == get_len, f"{report_type}: mismatch HEAD {head_len} vs GET {get_len}"
+    assert (
+        head_len == get_len
+    ), f"{report_type}: mismatch HEAD {head_len} vs GET {get_len}"
 
 
 headers, uid = auth()

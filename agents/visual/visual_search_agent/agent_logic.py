@@ -41,7 +41,9 @@ async def _fetch_image_bytes(image_url: str) -> tuple[bytes, str]:
         return data, ctype
 
     # HTTP(S) path
-    async with httpx.AsyncClient(timeout=30.0, headers=headers, follow_redirects=True) as client:
+    async with httpx.AsyncClient(
+        timeout=30.0, headers=headers, follow_redirects=True
+    ) as client:
         r = await client.get(image_url)
         # Fail fast on broken URL
         if r.status_code >= 400:
@@ -50,7 +52,11 @@ async def _fetch_image_bytes(image_url: str) -> tuple[bytes, str]:
         if not ctype.startswith("image/"):
             raise ValueError(f"non_image_content:{ctype}")
         # Basic size guard (optional): reject huge files > 10MB
-        if (cl := r.headers.get("content-length")) and cl.isdigit() and int(cl) > 10_000_000:
+        if (
+            (cl := r.headers.get("content-length"))
+            and cl.isdigit()
+            and int(cl) > 10_000_000
+        ):
             raise ValueError("image_too_large")
         return r.content, ctype
 
@@ -68,7 +74,9 @@ class VisualSearchAgentLogic:
         # Check if OpenAI API key is available
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key or api_key.startswith("sk-mock"):
-            self.logger.warning("OpenAI API key not configured - visual identification will be unavailable")
+            self.logger.warning(
+                "OpenAI API key not configured - visual identification will be unavailable"
+            )
             self.llm_client = None
         else:
             self.llm_client = AsyncOpenAI(api_key=api_key)
@@ -107,7 +115,9 @@ class VisualSearchAgentLogic:
                     "type": "image_url",
                     "image_url": {"url": f"data:image/{fmt};base64,{b64}"},
                 }
-                self.logger.info(f"Fetched external image for suggestions ({len(image_bytes)} bytes, {content_type})")
+                self.logger.info(
+                    f"Fetched external image for suggestions ({len(image_bytes)} bytes, {content_type})"
+                )
             except Exception as fetch_err:
                 # Map common fetch errors to clean failures; skip OpenAI entirely
                 msg = str(fetch_err)
@@ -160,7 +170,9 @@ class VisualSearchAgentLogic:
             )
             self.logger.info("OpenAI API call for suggestions completed successfully")
             suggestions_json = response.choices[0].message.content
-            self.logger.info(f"OpenAI suggestions response: {suggestions_json[:200]}...")  # Log first 200 chars
+            self.logger.info(
+                f"OpenAI suggestions response: {suggestions_json[:200]}..."
+            )  # Log first 200 chars
 
             if not suggestions_json or suggestions_json.strip() == "":
                 self.logger.warning("OpenAI returned empty suggestions response")
@@ -174,7 +186,9 @@ class VisualSearchAgentLogic:
                 cleaned_json = suggestions_json.strip()
                 if cleaned_json.startswith("```json"):
                     # Remove markdown code block formatting
-                    cleaned_json = cleaned_json.replace("```json", "").replace("```", "").strip()
+                    cleaned_json = (
+                        cleaned_json.replace("```json", "").replace("```", "").strip()
+                    )
                 elif cleaned_json.startswith("```"):
                     # Remove generic code block formatting
                     cleaned_json = cleaned_json.replace("```", "").strip()
@@ -182,7 +196,9 @@ class VisualSearchAgentLogic:
                 suggestions = json.loads(cleaned_json)
                 return {"status": "COMPLETED", "result": {"suggestions": suggestions}}
             except json.JSONDecodeError as json_error:
-                self.logger.error(f"Failed to parse OpenAI suggestions JSON: {json_error}")
+                self.logger.error(
+                    f"Failed to parse OpenAI suggestions JSON: {json_error}"
+                )
                 self.logger.error(f"Raw suggestions content: {suggestions_json}")
 
                 return {
@@ -204,9 +220,12 @@ class VisualSearchAgentLogic:
 
             # Check if this is an OpenAI API key issue
             if "401" in error_message and (
-                "api key" in error_message.lower() or "unauthorized" in error_message.lower()
+                "api key" in error_message.lower()
+                or "unauthorized" in error_message.lower()
             ):
-                self.logger.warning("OpenAI API key is invalid or missing - visual identification unavailable")
+                self.logger.warning(
+                    "OpenAI API key is invalid or missing - visual identification unavailable"
+                )
                 return {
                     "status": "FAILED",
                     "error": "Visual identification unavailable - OpenAI API key not configured",
@@ -220,7 +239,9 @@ class VisualSearchAgentLogic:
         Analyzes an image and returns the single best product match with a confidence score.
         Used for Phase 3 full workflow integration.
         """
-        self.logger.info(f"Analyzing image for definitive product identification: {image_url}")
+        self.logger.info(
+            f"Analyzing image for definitive product identification: {image_url}"
+        )
 
         # Check if OpenAI client is available
         if not self.llm_client:
@@ -247,7 +268,9 @@ class VisualSearchAgentLogic:
                     "type": "image_url",
                     "image_url": {"url": f"data:image/{fmt};base64,{b64}"},
                 }
-                self.logger.info(f"Fetched external image ({len(image_bytes)} bytes, {content_type})")
+                self.logger.info(
+                    f"Fetched external image ({len(image_bytes)} bytes, {content_type})"
+                )
             except Exception as fetch_err:
                 # Map common fetch errors to clean failures; skip OpenAI entirely
                 msg = str(fetch_err)
@@ -300,7 +323,9 @@ class VisualSearchAgentLogic:
             )
             self.logger.info("OpenAI API call completed successfully")
             result_json = response.choices[0].message.content
-            self.logger.info(f"OpenAI response content: {result_json[:200]}...")  # Log first 200 chars
+            self.logger.info(
+                f"OpenAI response content: {result_json[:200]}..."
+            )  # Log first 200 chars
 
             if not result_json or result_json.strip() == "":
                 self.logger.warning("OpenAI returned empty response")
@@ -311,7 +336,9 @@ class VisualSearchAgentLogic:
                 cleaned_json = result_json.strip()
                 if cleaned_json.startswith("```json"):
                     # Remove markdown code block formatting
-                    cleaned_json = cleaned_json.replace("```json", "").replace("```", "").strip()
+                    cleaned_json = (
+                        cleaned_json.replace("```json", "").replace("```", "").strip()
+                    )
                 elif cleaned_json.startswith("```"):
                     # Remove generic code block formatting
                     cleaned_json = cleaned_json.replace("```", "").strip()
@@ -336,7 +363,9 @@ class VisualSearchAgentLogic:
                 ]
                 for field in required_fields:
                     if field not in best_guess:
-                        self.logger.warning(f"Missing field '{field}' in OpenAI response, setting to null")
+                        self.logger.warning(
+                            f"Missing field '{field}' in OpenAI response, setting to null"
+                        )
                         best_guess[field] = None
 
                 # Ensure confidence is a number
@@ -358,7 +387,9 @@ class VisualSearchAgentLogic:
                 return {
                     "status": "FAILED",
                     "error": f"OpenAI response parsing failed: {json_error}",
-                    "raw_response": result_json[:500],  # Include first 500 chars for debugging
+                    "raw_response": result_json[
+                        :500
+                    ],  # Include first 500 chars for debugging
                 }
         except Exception as e:
             self.logger.error(f"Error during visual identification: {e}", exc_info=True)
@@ -374,9 +405,12 @@ class VisualSearchAgentLogic:
 
             # Check if this is an OpenAI API key issue
             if "401" in error_message and (
-                "api key" in error_message.lower() or "unauthorized" in error_message.lower()
+                "api key" in error_message.lower()
+                or "unauthorized" in error_message.lower()
             ):
-                self.logger.warning("OpenAI API key is invalid or missing - visual identification unavailable")
+                self.logger.warning(
+                    "OpenAI API key is invalid or missing - visual identification unavailable"
+                )
                 return {
                     "status": "FAILED",
                     "error": "Visual identification unavailable - OpenAI API key not configured",

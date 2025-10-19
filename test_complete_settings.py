@@ -97,7 +97,9 @@ print("Feature: 'Enhanced checks for pregnancy-safe products'")
 print("Endpoint: GET/POST /api/v1/user/preferences/pregnancy-mode")
 
 try:
-    response = requests.get(f"{BASE_URL}/api/v1/user/preferences/pregnancy-mode", timeout=10)
+    response = requests.get(
+        f"{BASE_URL}/api/v1/user/preferences/pregnancy-mode", timeout=10
+    )
     print(f"Status Code: {response.status_code}")
     if response.status_code in [200, 401]:
         print("[OK] Pregnancy mode preference endpoint exists")
@@ -152,13 +154,17 @@ print("Feature: 'Immediate recall notifications'")
 print("Endpoint: GET/POST /api/v1/user/notifications/critical")
 
 try:
-    response = requests.get(f"{BASE_URL}/api/v1/user/notifications/critical", timeout=10)
+    response = requests.get(
+        f"{BASE_URL}/api/v1/user/notifications/critical", timeout=10
+    )
     print(f"Status Code: {response.status_code}")
     if response.status_code in [200, 401]:
         print("[OK] Critical alerts preference endpoint exists")
     else:
         # Try general notifications endpoint
-        response2 = requests.get(f"{BASE_URL}/api/v1/user/notifications/preferences", timeout=10)
+        response2 = requests.get(
+            f"{BASE_URL}/api/v1/user/notifications/preferences", timeout=10
+        )
         print(f"   Notifications preferences status: {response2.status_code}")
         if response2.status_code in [200, 401]:
             print("[OK] Notifications preferences endpoint exists")
@@ -174,7 +180,9 @@ print("Feature: 'When visual scans need verification'")
 print("Endpoint: GET/POST /api/v1/user/notifications/verification")
 
 try:
-    response = requests.get(f"{BASE_URL}/api/v1/user/notifications/verification", timeout=10)
+    response = requests.get(
+        f"{BASE_URL}/api/v1/user/notifications/verification", timeout=10
+    )
     print(f"Status Code: {response.status_code}")
     if response.status_code in [200, 401]:
         print("[OK] Verification alerts preference endpoint exists")
@@ -208,7 +216,9 @@ print()
 print("TEST 9: Request Deletion of My Data [RE-VERIFY]")
 print("-" * 80)
 response = requests.post(
-    f"{BASE_URL}/api/v1/user/data/delete", json={"email": "test@example.com", "confirm": True}, timeout=10
+    f"{BASE_URL}/api/v1/user/data/delete",
+    json={"email": "test@example.com", "confirm": True},
+    timeout=10,
 )
 print(f"Status: {response.status_code}")
 if response.status_code == 200:
@@ -263,7 +273,9 @@ print("-" * 80)
 print("Endpoint: GET /api/v1/user/notifications/preferences")
 
 try:
-    response = requests.get(f"{BASE_URL}/api/v1/user/notifications/preferences", timeout=10)
+    response = requests.get(
+        f"{BASE_URL}/api/v1/user/notifications/preferences", timeout=10
+    )
     print(f"Status Code: {response.status_code}")
     if response.status_code in [200, 401]:
         print("[OK] Notification preferences endpoint exists")

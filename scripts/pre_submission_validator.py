@@ -67,7 +67,9 @@ class SubmissionValidator:
             self.log_error(f"Error reading {path.name}: {e}")
             return False
 
-    def validate_text_file(self, path: Path, max_length: int = None, required_content: List[str] = None) -> bool:
+    def validate_text_file(
+        self, path: Path, max_length: int = None, required_content: List[str] = None
+    ) -> bool:
         """Validate a text file"""
         if not path.exists():
             self.log_error(f"Missing file: {path}")
@@ -78,13 +80,17 @@ class SubmissionValidator:
                 content = f.read()
 
             if max_length and len(content) > max_length:
-                self.log_error(f"{path.name} exceeds {max_length} characters (has {len(content)})")
+                self.log_error(
+                    f"{path.name} exceeds {max_length} characters (has {len(content)})"
+                )
                 return False
 
             if required_content:
                 for req in required_content:
                     if req.lower() not in content.lower():
-                        self.log_warning(f"{path.name} missing required content: '{req}'")
+                        self.log_warning(
+                            f"{path.name} missing required content: '{req}'"
+                        )
 
             self.log_success(f"Valid text file: {path.name}")
             return True
@@ -157,7 +163,9 @@ class SubmissionValidator:
         self.validate_text_file(tagline, max_length=80)
 
         # Long description
-        long_desc = self.base_path / "docs/store/common/descriptions/long_description_en.txt"
+        long_desc = (
+            self.base_path / "docs/store/common/descriptions/long_description_en.txt"
+        )
         self.validate_text_file(
             long_desc,
             max_length=4000,
@@ -185,12 +193,16 @@ class SubmissionValidator:
         if iphone67_count >= 3:
             self.log_success(f'iPhone 6.7" screenshots: {iphone67_count} (minimum 3)')
         else:
-            self.log_error(f'iPhone 6.7" screenshots: {iphone67_count} (need minimum 3)')
+            self.log_error(
+                f'iPhone 6.7" screenshots: {iphone67_count} (need minimum 3)'
+            )
 
         if iphone65_count >= 3:
             self.log_success(f'iPhone 6.5" screenshots: {iphone65_count} (minimum 3)')
         else:
-            self.log_error(f'iPhone 6.5" screenshots: {iphone65_count} (need minimum 3)')
+            self.log_error(
+                f'iPhone 6.5" screenshots: {iphone65_count} (need minimum 3)'
+            )
 
         # Check Android assets
         android_icon = assets_path / "icons/android/Icon512.png"
@@ -249,7 +261,9 @@ class SubmissionValidator:
         print("\n⚖️ Checking Compliance...")
 
         # Check for required disclaimers
-        long_desc_path = self.base_path / "docs/store/common/descriptions/long_description_en.txt"
+        long_desc_path = (
+            self.base_path / "docs/store/common/descriptions/long_description_en.txt"
+        )
         if long_desc_path.exists():
             with open(long_desc_path, "r", encoding="utf-8") as f:
                 content = f.read().lower()
@@ -259,7 +273,9 @@ class SubmissionValidator:
             else:
                 self.log_error("Medical disclaimer missing")
 
-            if "privacy" in content and ("gdpr" in content or "ccpa" in content or "privacy" in content):
+            if "privacy" in content and (
+                "gdpr" in content or "ccpa" in content or "privacy" in content
+            ):
                 self.log_success("Privacy information present")
             else:
                 self.log_warning("Privacy compliance info should be mentioned")
@@ -294,7 +310,9 @@ class SubmissionValidator:
 
         # Google review notes
         google_notes = self.base_path / "docs/store/google/review_notes.md"
-        self.validate_text_file(google_notes, required_content=["OAuth", "test", "privacy"])
+        self.validate_text_file(
+            google_notes, required_content=["OAuth", "test", "privacy"]
+        )
 
     def check_bundle_identifiers(self):
         """Check bundle identifiers consistency"""
@@ -311,7 +329,9 @@ class SubmissionValidator:
             if apple_data.get("bundleId") == bundle_id:
                 self.log_success(f"Apple bundle ID correct: {bundle_id}")
             else:
-                self.log_error(f"Apple bundle ID mismatch: {apple_data.get('bundleId')} != {bundle_id}")
+                self.log_error(
+                    f"Apple bundle ID mismatch: {apple_data.get('bundleId')} != {bundle_id}"
+                )
 
         # Check in Google metadata
         google_meta_path = self.base_path / "docs/store/google/listing.json"
@@ -322,7 +342,9 @@ class SubmissionValidator:
             if google_data.get("packageName") == bundle_id:
                 self.log_success(f"Google package name correct: {bundle_id}")
             else:
-                self.log_error(f"Google package name mismatch: {google_data.get('packageName')} != {bundle_id}")
+                self.log_error(
+                    f"Google package name mismatch: {google_data.get('packageName')} != {bundle_id}"
+                )
 
     def generate_submission_report(self):
         """Generate a submission readiness report"""

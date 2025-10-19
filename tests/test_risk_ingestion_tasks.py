@@ -37,7 +37,9 @@ class TestRiskIngestionTasks(unittest.TestCase):
         self.mock_db.query.return_value = mock_query
         mock_query.filter_by.return_value.first.return_value = None
         mock_query.filter.return_value.first.return_value = None
-        _ = _find_or_create_product_from_record(self.mock_record, self.mock_db)  # result
+        _ = _find_or_create_product_from_record(
+            self.mock_record, self.mock_db
+        )  # result
         self.mock_db.add.assert_called()
 
     @patch("core_infra.risk_ingestion_tasks.SafetyIncident")
@@ -48,7 +50,9 @@ class TestRiskIngestionTasks(unittest.TestCase):
         mock_query = MagicMock()
         self.mock_db.query.return_value = mock_query
         mock_query.filter_by.return_value.first.return_value = None
-        _ = _create_incident_from_record(self.mock_record, "product-123", self.mock_db)  # result
+        _ = _create_incident_from_record(
+            self.mock_record, "product-123", self.mock_db
+        )  # result
         self.mock_db.add.assert_called()
 
     @patch("core_infra.risk_ingestion_tasks.ProductDataSource")

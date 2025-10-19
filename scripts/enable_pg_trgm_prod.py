@@ -35,7 +35,9 @@ def enable_pg_trgm():
         print("✅ Extension enabled!")
 
         # Verify extension
-        cursor.execute("SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';")
+        cursor.execute(
+            "SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';"
+        )
         result = cursor.fetchone()
         if result:
             print(f"✅ Verified: pg_trgm version {result[1]}")
@@ -75,7 +77,9 @@ def enable_pg_trgm():
         print("✅ SUCCESS: pg_trgm extension is now enabled and configured!")
         print()
         print("🧪 Next step: Test the search endpoint:")
-        print("   curl -X POST https://babyshield.cureviax.ai/api/v1/search/advanced \\")
+        print(
+            "   curl -X POST https://babyshield.cureviax.ai/api/v1/search/advanced \\"
+        )
         print('        -H "Content-Type: application/json" \\')
         print('        -d \'{"query":"baby","limit":10}\'')
 

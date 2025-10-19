@@ -457,7 +457,9 @@ class BottleneckDetector:
                             "avg_time_ms": avg_time,
                             "max_time_ms": max_time,
                             "count": len(metrics),
-                            "severity": "high" if max_time > self.threshold_ms * 2 else "medium",
+                            "severity": "high"
+                            if max_time > self.threshold_ms * 2
+                            else "medium",
                         }
                     )
 
@@ -484,7 +486,9 @@ class PerformanceReporter:
         report.append("\nSYSTEM METRICS:")
         sys_metrics = summary["system"]
         report.append(f"  CPU: {sys_metrics['cpu']['percent']}%")
-        report.append(f"  Memory: {sys_metrics['memory']['percent']}% ({sys_metrics['memory']['used_gb']:.1f}GB used)")
+        report.append(
+            f"  Memory: {sys_metrics['memory']['percent']}% ({sys_metrics['memory']['used_gb']:.1f}GB used)"
+        )
         report.append(f"  Process Memory: {sys_metrics['process']['memory_mb']:.1f}MB")
 
         # Function metrics
@@ -494,13 +498,17 @@ class PerformanceReporter:
                 report.append(f"  {name}:")
                 report.append(f"    Calls: {stats['count']}")
                 report.append(f"    Avg: {stats['avg']:.2f}{stats['unit']}")
-                report.append(f"    Min/Max: {stats['min']:.2f}/{stats['max']:.2f}{stats['unit']}")
+                report.append(
+                    f"    Min/Max: {stats['min']:.2f}/{stats['max']:.2f}{stats['unit']}"
+                )
 
         # Bottlenecks
         if bottlenecks:
             report.append("\nBOTTLENECKS DETECTED:")
             for b in bottlenecks[:5]:  # Top 5
-                report.append(f"  {b['name']}: {b['max_time_ms']:.2f}ms (severity: {b['severity']})")
+                report.append(
+                    f"  {b['name']}: {b['max_time_ms']:.2f}ms (severity: {b['severity']})"
+                )
 
         # Counters
         if summary["counters"]:

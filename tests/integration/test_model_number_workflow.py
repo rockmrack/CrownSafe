@@ -22,7 +22,9 @@ client = TestClient(app)
 
 # Create in-memory test database
 TEST_DATABASE_URL = "sqlite:///:memory:"
-test_engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
+test_engine = create_engine(
+    TEST_DATABASE_URL, connect_args={"check_same_thread": False}
+)
 TestSession = sessionmaker(bind=test_engine)
 
 

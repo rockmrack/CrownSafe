@@ -72,7 +72,9 @@ class EnhancedBarcodeService:
                     confidence_score=validation_result.confidence_score,
                     scan_timestamp=scan_timestamp,
                     error_message=validation_result.error_message,
-                    recommendations=self.validator._get_recommendations(validation_result),
+                    recommendations=self.validator._get_recommendations(
+                        validation_result
+                    ),
                 )
 
             # Step 2: Search for exact product matches
@@ -81,7 +83,9 @@ class EnhancedBarcodeService:
             )
 
             # Step 3: Calculate overall confidence
-            confidence = self._calculate_overall_confidence(validation_result, exact_matches)
+            confidence = self._calculate_overall_confidence(
+                validation_result, exact_matches
+            )
 
             # Step 4: Log scan attempt
             self.logger.info(
@@ -99,7 +103,9 @@ class EnhancedBarcodeService:
                 exact_matches=exact_matches,
                 confidence_score=confidence,
                 scan_timestamp=scan_timestamp,
-                recommendations=self._get_scan_recommendations(validation_result, exact_matches),
+                recommendations=self._get_scan_recommendations(
+                    validation_result, exact_matches
+                ),
             )
 
         except Exception as e:
@@ -130,7 +136,9 @@ class EnhancedBarcodeService:
         try:
             with get_db_session() as db:
                 # Define search conditions based on barcode type
-                search_conditions = self._build_search_conditions(normalized_barcode, barcode_type)
+                search_conditions = self._build_search_conditions(
+                    normalized_barcode, barcode_type
+                )
 
                 # Execute search
                 products = db.query(RecallDB).filter(search_conditions).all()
@@ -147,11 +155,17 @@ class EnhancedBarcodeService:
                         "ean_code": product.ean_code,
                         "gtin": product.gtin,
                         "recall_status": product.recall_status,
-                        "recall_date": product.recall_date.isoformat() if product.recall_date else None,
+                        "recall_date": product.recall_date.isoformat()
+                        if product.recall_date
+                        else None,
                         "hazard_description": product.hazard_description,
                         "risk_level": product.risk_level,
-                        "match_type": self._determine_match_type(normalized_barcode, product, barcode_type),
-                        "match_confidence": self._calculate_match_confidence(normalized_barcode, product, barcode_type),
+                        "match_type": self._determine_match_type(
+                            normalized_barcode, product, barcode_type
+                        ),
+                        "match_confidence": self._calculate_match_confidence(
+                            normalized_barcode, product, barcode_type
+                        ),
                     }
                     matches.append(match)
 
@@ -163,7 +177,9 @@ class EnhancedBarcodeService:
 
         return matches
 
-    def _build_search_conditions(self, normalized_barcode: str, barcode_type: BarcodeType):
+    def _build_search_conditions(
+        self, normalized_barcode: str, barcode_type: BarcodeType
+    ):
         """Build database search conditions based on barcode type"""
         from sqlalchemy import and_, or_
 
@@ -200,7 +216,9 @@ class EnhancedBarcodeService:
         # Combine with OR logic
         return or_(*conditions)
 
-    def _determine_match_type(self, normalized_barcode: str, product: RecallDB, barcode_type: BarcodeType) -> str:
+    def _determine_match_type(
+        self, normalized_barcode: str, product: RecallDB, barcode_type: BarcodeType
+    ) -> str:
         """Determine the type of match found"""
         if product.barcode == normalized_barcode:
             return "exact_barcode"
@@ -224,7 +242,9 @@ class EnhancedBarcodeService:
         # Exact matches get highest confidence
         if product.barcode == normalized_barcode:
             confidence = 1.0
-        elif product.upc == normalized_barcode or product.ean_code == normalized_barcode:
+        elif (
+            product.upc == normalized_barcode or product.ean_code == normalized_barcode
+        ):
             confidence = 0.95
         elif product.gtin == normalized_barcode:
             confidence = 0.90
@@ -263,13 +283,17 @@ class EnhancedBarcodeService:
         recommendations = []
 
         if not matches:
-            recommendations.append("No products found with this barcode - it may be a new product")
+            recommendations.append(
+                "No products found with this barcode - it may be a new product"
+            )
             recommendations.append("Try searching by product name or brand instead")
         else:
             recommendations.append(f"Found {len(matches)} exact product match(es)")
 
             if matches[0]["recall_status"] == "active":
-                recommendations.append("⚠️ This product has an active recall - check details")
+                recommendations.append(
+                    "⚠️ This product has an active recall - check details"
+                )
             else:
                 recommendations.append("✅ No active recalls found for this product")
 
@@ -284,13 +308,17 @@ class EnhancedBarcodeService:
         return {
             "scan_timestamp": result.scan_timestamp.isoformat(),
             "is_valid": result.is_valid,
-            "barcode_validation": self.validator.get_validation_summary(result.barcode_validation),
+            "barcode_validation": self.validator.get_validation_summary(
+                result.barcode_validation
+            ),
             "product_found": result.product_found,
             "exact_matches_count": len(result.exact_matches),
             "confidence_score": result.confidence_score,
             "error_message": result.error_message,
             "recommendations": result.recommendations or [],
-            "matches": result.exact_matches[:5] if result.exact_matches else [],  # Limit to top 5
+            "matches": result.exact_matches[:5]
+            if result.exact_matches
+            else [],  # Limit to top 5
         }
 
 

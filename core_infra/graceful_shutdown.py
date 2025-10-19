@@ -173,7 +173,9 @@ async def request_tracking_middleware(request, call_next):
         if shutdown_handler.shutdown_event.is_set():
             from fastapi.responses import JSONResponse
 
-            return JSONResponse(status_code=503, content={"error": "Server is shutting down"})
+            return JSONResponse(
+                status_code=503, content={"error": "Server is shutting down"}
+            )
 
         response = await call_next(request)
         return response
@@ -339,7 +341,9 @@ def check_previous_shutdown():
             logger.warning(f"Previous shutdown detected at {state['shutdown_time']}")
 
             if state.get("active_requests", 0) > 0:
-                logger.warning(f"Previous shutdown had {state['active_requests']} active requests")
+                logger.warning(
+                    f"Previous shutdown had {state['active_requests']} active requests"
+                )
 
             # Clean up state file
             os.unlink("shutdown_state.json")

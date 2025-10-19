@@ -104,9 +104,13 @@ def upgrade():
         sa.Column("intent", sa.String(length=64), nullable=True),
         sa.Column("trace_id", sa.String(length=64), nullable=True),
         sa.Column("content", json_type, nullable=False),
-        sa.ForeignKeyConstraint(["conversation_id"], ["conversation.id"], ondelete="CASCADE"),
+        sa.ForeignKeyConstraint(
+            ["conversation_id"], ["conversation.id"], ondelete="CASCADE"
+        ),
     )
-    op.create_index("ix_message_conversation_id", "conversation_message", ["conversation_id"])
+    op.create_index(
+        "ix_message_conversation_id", "conversation_message", ["conversation_id"]
+    )
     op.create_index("ix_message_role", "conversation_message", ["role"])
     op.create_index("ix_message_trace", "conversation_message", ["trace_id"])
     op.create_index(

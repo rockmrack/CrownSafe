@@ -208,7 +208,9 @@ def validate_search_query(query: str) -> str:
             raise ValueError(f"Dangerous pattern detected in search query: {pattern}")
 
     # Check for SQL injection with semicolon
-    if ";" in query and any(kw in query_upper for kw in ["DROP", "DELETE", "INSERT", "UPDATE"]):
+    if ";" in query and any(
+        kw in query_upper for kw in ["DROP", "DELETE", "INSERT", "UPDATE"]
+    ):
         raise ValueError("SQL injection attempt detected")
 
     # Check for quotes followed by SQL comment (like "admin'--")
@@ -375,7 +377,9 @@ def sanitize_dict(data: dict) -> dict:
         elif isinstance(value, dict):
             cleaned[key] = sanitize_dict(value)
         elif isinstance(value, list):
-            cleaned[key] = [sanitize_html(item) if isinstance(item, str) else item for item in value]
+            cleaned[key] = [
+                sanitize_html(item) if isinstance(item, str) else item for item in value
+            ]
         else:
             cleaned[key] = value
     return cleaned

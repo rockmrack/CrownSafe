@@ -18,7 +18,9 @@ def get_user_by_email(db: Session, email: str) -> User | None:
     return db.query(User).filter(User.email == email).first()
 
 
-def create_user(db: Session, email: str, password: str, role_id: int = 2) -> User:  # Default to a 'user' role
+def create_user(
+    db: Session, email: str, password: str, role_id: int = 2
+) -> User:  # Default to a 'user' role
     hashed_password = get_password_hash(password)
     db_user = User(email=email, hashed_password=hashed_password, role_id=role_id)
     db.add(db_user)

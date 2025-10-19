@@ -16,9 +16,9 @@ import os
 import sys
 
 # Force production database
-os.environ["DATABASE_URL"] = (
-    "postgresql+psycopg://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
-)
+os.environ[
+    "DATABASE_URL"
+] = "postgresql+psycopg://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
 
 print("\n" + "=" * 80)
 print("🔍 MOBILE APP PRODUCT IDENTIFICATION - FULL VERIFICATION")
@@ -42,7 +42,9 @@ print("=" * 80)
 print("DATABASE CONNECTION VERIFICATION")
 print("=" * 80)
 print(f"Database: {engine.url.database}")
-print(f"Host: {str(engine.url).split('@')[1].split('/')[0] if '@' in str(engine.url) else 'N/A'}")
+print(
+    f"Host: {str(engine.url).split('@')[1].split('/')[0] if '@' in str(engine.url) else 'N/A'}"
+)
 print(f"Dialect: {engine.dialect.name}")
 
 db = SessionLocal()
@@ -77,17 +79,27 @@ recall_with_upc = (
 # Find a recall with model number
 recall_with_model = (
     db.query(EnhancedRecallDB)
-    .filter(EnhancedRecallDB.model_number.isnot(None), EnhancedRecallDB.model_number != "")
+    .filter(
+        EnhancedRecallDB.model_number.isnot(None), EnhancedRecallDB.model_number != ""
+    )
     .first()
 )
 
 # Find recalls with searchable names
 common_products = ["baby", "bottle", "stroller", "crib", "car seat"]
-recall_with_name = db.query(EnhancedRecallDB).filter(func.lower(EnhancedRecallDB.product_name).like("%baby%")).first()
+recall_with_name = (
+    db.query(EnhancedRecallDB)
+    .filter(func.lower(EnhancedRecallDB.product_name).like("%baby%"))
+    .first()
+)
 
 print(f"✓ Found recall with UPC: {recall_with_upc.upc if recall_with_upc else 'NONE'}")
-print(f"✓ Found recall with Model: {recall_with_model.model_number if recall_with_model else 'NONE'}")
-print(f"✓ Found recall with Name: {recall_with_name.product_name[:50] if recall_with_name else 'NONE'}")
+print(
+    f"✓ Found recall with Model: {recall_with_model.model_number if recall_with_model else 'NONE'}"
+)
+print(
+    f"✓ Found recall with Name: {recall_with_name.product_name[:50] if recall_with_name else 'NONE'}"
+)
 print()
 
 # ============================================================================
@@ -109,7 +121,9 @@ if recall_with_model:
     print(f"Expected Product: {test_product_name[:60]}")
 
     # Test via safety-check endpoint
-    response = client.post("/api/v1/safety-check", json={"user_id": 1, "model_number": test_model})
+    response = client.post(
+        "/api/v1/safety-check", json={"user_id": 1, "model_number": test_model}
+    )
 
     print("\nAPI Response:")
     print(f"  Status Code: {response.status_code}")
@@ -122,7 +136,10 @@ if recall_with_model:
         print("  ✅ Endpoint accessible, routes to production database")
     elif response.status_code == 500:
         resp_data = response.json()
-        if "agent" in str(resp_data).lower() or "initialization" in str(resp_data).lower():
+        if (
+            "agent" in str(resp_data).lower()
+            or "initialization" in str(resp_data).lower()
+        ):
             print("  ⚠️  Agent initialization needed (expected)")
             print("  ✅ Database query attempted, routes to production")
         else:
@@ -132,7 +149,11 @@ if recall_with_model:
 
     # Direct database verification
     print("\nDirect Database Verification:")
-    db_result = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.model_number == test_model).first()
+    db_result = (
+        db.query(EnhancedRecallDB)
+        .filter(EnhancedRecallDB.model_number == test_model)
+        .first()
+    )
 
     if db_result:
         print("  ✅ Model number found in production database")
@@ -167,7 +188,9 @@ if recall_with_upc:
     print(f"Expected Product: {test_product_name[:60]}")
 
     # Test via safety-check endpoint
-    response = client.post("/api/v1/safety-check", json={"user_id": 1, "barcode": test_barcode})
+    response = client.post(
+        "/api/v1/safety-check", json={"user_id": 1, "barcode": test_barcode}
+    )
 
     print("\nAPI Response:")
     print(f"  Status Code: {response.status_code}")
@@ -180,7 +203,10 @@ if recall_with_upc:
         print("  ✅ Endpoint accessible, routes to production database")
     elif response.status_code == 500:
         resp_data = response.json()
-        if "agent" in str(resp_data).lower() or "initialization" in str(resp_data).lower():
+        if (
+            "agent" in str(resp_data).lower()
+            or "initialization" in str(resp_data).lower()
+        ):
             print("  ⚠️  Agent initialization needed (expected)")
             print("  ✅ Database query attempted, routes to production")
         else:
@@ -190,7 +216,9 @@ if recall_with_upc:
 
     # Direct database verification
     print("\nDirect Database Verification:")
-    db_result = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.upc == test_barcode).first()
+    db_result = (
+        db.query(EnhancedRecallDB).filter(EnhancedRecallDB.upc == test_barcode).first()
+    )
 
     if db_result:
         print("  ✅ Barcode found in production database")
@@ -224,7 +252,9 @@ for test_name in test_names:
     print(f"\n  Testing: '{test_name}'")
 
     # Test via search/advanced endpoint
-    response = client.post("/api/v1/search/advanced", json={"product": test_name, "limit": 3})
+    response = client.post(
+        "/api/v1/search/advanced", json={"product": test_name, "limit": 3}
+    )
 
     if response.status_code == 200:
         data = response.json()
@@ -241,7 +271,10 @@ for test_name in test_names:
 # Direct database verification
 print("\nDirect Database Verification:")
 db_results = (
-    db.query(EnhancedRecallDB).filter(func.lower(EnhancedRecallDB.product_name).like("%baby bottle%")).limit(3).all()
+    db.query(EnhancedRecallDB)
+    .filter(func.lower(EnhancedRecallDB.product_name).like("%baby bottle%"))
+    .limit(3)
+    .all()
 )
 
 print(f"  Database query for 'baby bottle': {len(db_results)} results")
@@ -315,11 +348,17 @@ print("Parameter: lot_number")
 print("-" * 80)
 
 # Find a recall with lot number info
-recall_with_lot = db.query(EnhancedRecallDB).filter(func.lower(EnhancedRecallDB.description).like("%lot%")).first()
+recall_with_lot = (
+    db.query(EnhancedRecallDB)
+    .filter(func.lower(EnhancedRecallDB.description).like("%lot%"))
+    .first()
+)
 
 print("Testing lot_number parameter...")
 
-response = client.post("/api/v1/safety-check", json={"user_id": 1, "lot_number": "LOT-ABC-123"})
+response = client.post(
+    "/api/v1/safety-check", json={"user_id": 1, "lot_number": "LOT-ABC-123"}
+)
 
 print("\nAPI Response:")
 print(f"  Status Code: {response.status_code}")
@@ -341,7 +380,11 @@ else:
     print(f"  Response: {response.json()}")
 
 # Check database for lot number capability
-lot_mentions = db.query(EnhancedRecallDB).filter(func.lower(EnhancedRecallDB.description).like("%lot%")).count()
+lot_mentions = (
+    db.query(EnhancedRecallDB)
+    .filter(func.lower(EnhancedRecallDB.description).like("%lot%"))
+    .count()
+)
 
 print("\nDirect Database Verification:")
 print(f"  Recalls mentioning 'lot' in description: {lot_mentions:,}")

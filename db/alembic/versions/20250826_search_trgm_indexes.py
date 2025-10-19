@@ -32,13 +32,17 @@ def upgrade():
 
     # Check for recalls_enhanced
     result = connection.execute(
-        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls_enhanced');")
+        text(
+            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls_enhanced');"
+        )
     )
     has_enhanced = result.scalar()
 
     # Check for recalls
     result = connection.execute(
-        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls');")
+        text(
+            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls');"
+        )
     )
     has_recalls = result.scalar()
 
@@ -204,12 +208,16 @@ def downgrade():
     connection = op.get_bind()
 
     result = connection.execute(
-        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls_enhanced');")
+        text(
+            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls_enhanced');"
+        )
     )
     has_enhanced = result.scalar()
 
     result = connection.execute(
-        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls');")
+        text(
+            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls');"
+        )
     )
     has_recalls = result.scalar()
 
