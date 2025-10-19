@@ -19,9 +19,7 @@ class DataGovernanceAgentLogic:
     def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
-        self.logger.info(
-            f"DataGovernanceAgentLogic initialized for agent {self.agent_id}."
-        )
+        self.logger.info(f"DataGovernanceAgentLogic initialized for agent {self.agent_id}.")
 
     async def delete_user_data(self, user_id: int) -> bool:
         """
@@ -34,22 +32,16 @@ class DataGovernanceAgentLogic:
             with get_db_session() as db:
                 user = db.query(User).filter(User.id == user_id).first()
                 if not user:
-                    self.logger.warning(
-                        f"User with id {user_id} not found for deletion."
-                    )
+                    self.logger.warning(f"User with id {user_id} not found for deletion.")
                     # In this case, the goal is achieved (no data exists), so we return success.
                     return True
 
                 db.delete(user)
                 db.commit()
-                self.logger.info(
-                    f"Successfully deleted all data for user_id: {user_id}."
-                )
+                self.logger.info(f"Successfully deleted all data for user_id: {user_id}.")
                 return True
         except Exception as e:
-            self.logger.error(
-                f"Database deletion failed for user {user_id}: {e}", exc_info=True
-            )
+            self.logger.error(f"Database deletion failed for user {user_id}: {e}", exc_info=True)
             return False
 
     async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
@@ -73,9 +65,7 @@ class DataGovernanceAgentLogic:
             if success:
                 return {
                     "status": "COMPLETED",
-                    "result": {
-                        "message": f"Data deletion process completed for user_id: {user_id}."
-                    },
+                    "result": {"message": f"Data deletion process completed for user_id: {user_id}."},
                 }
             else:
                 return {

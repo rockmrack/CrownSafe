@@ -5,9 +5,7 @@ import json
 import logging
 import argparse
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # --- Configuration ---
@@ -41,16 +39,12 @@ def main(barcode: str):
 
     except requests.exceptions.RequestException as e:
         print(f"\n❌ TEST FAILED: Could not connect to the API at {API_URL}.")
-        print(
-            "Please ensure your Docker containers are running with 'docker-compose up -d'."
-        )
+        print("Please ensure your Docker containers are running with 'docker-compose up -d'.")
         print(f"Error: {e}")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Run a direct live test against the BabyShield API."
-    )
+    parser = argparse.ArgumentParser(description="Run a direct live test against the BabyShield API.")
     parser.add_argument("--barcode", required=True, help="The product barcode to test.")
     args = parser.parse_args()
     main(barcode=args.barcode)

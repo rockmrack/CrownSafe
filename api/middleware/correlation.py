@@ -61,9 +61,7 @@ class CorrelationIdMiddleware(BaseHTTPMiddleware):
         response.headers["Server-Timing"] = f"app;dur={duration_ms}"
 
         # Add security headers (only if not already set)
-        response.headers.setdefault(
-            "Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload"
-        )
+        response.headers.setdefault("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("X-Frame-Options", "DENY")
         response.headers.setdefault("Referrer-Policy", "no-referrer")

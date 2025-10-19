@@ -115,9 +115,7 @@ def setup_logging(
         "formatters": {
             "json": {"()": StructuredFormatter},
             "console": {"()": ConsoleFormatter},
-            "simple": {
-                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            },
+            "simple": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"},
         },
         "handlers": {
             "console": {
@@ -220,9 +218,7 @@ class RequestLogger:
         async def send_wrapper(message):
             if message["type"] == "http.response.start":
                 # Log response
-                duration_ms = int(
-                    (datetime.utcnow() - start_time).total_seconds() * 1000
-                )
+                duration_ms = int((datetime.utcnow() - start_time).total_seconds() * 1000)
                 status_code = message["status"]
 
                 log_level = logging.INFO

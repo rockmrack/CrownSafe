@@ -3,9 +3,7 @@ import logging
 from core_infra.mcp_client_library.client import MCPClient
 from .agent_logic import LegalContentAgentLogic
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "legalcontent_agent_01"
@@ -18,9 +16,7 @@ class LegalContentAgent:
         self.mcp_client = MCPClient(agent_id=self.agent_id, server_url=MCP_SERVER_URL)
         self.logic = LegalContentAgentLogic(agent_id=self.agent_id)
 
-        self.mcp_client.register_capability(
-            "get_legal_document", self.handle_get_document
-        )
+        self.mcp_client.register_capability("get_legal_document", self.handle_get_document)
 
     async def handle_get_document(self, task_payload: dict) -> dict:
         doc_type = task_payload.get("doc_type")

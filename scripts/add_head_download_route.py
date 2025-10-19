@@ -13,9 +13,7 @@ else:
         s = re.sub(r"(from fastapi import [^\n]+)", r"\1, Response", s, count=1)
     if "from sqlalchemy import text" not in s:
         if "\nfrom sqlalchemy import " in s:
-            s = s.replace(
-                "\nfrom sqlalchemy import ", "\nfrom sqlalchemy import text, "
-            )
+            s = s.replace("\nfrom sqlalchemy import ", "\nfrom sqlalchemy import text, ")
         else:
             s = s.replace(
                 "\nimport sqlalchemy as sa",

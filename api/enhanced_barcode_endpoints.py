@@ -21,25 +21,17 @@ from api.services.dev_override import dev_entitled
 logger = logging.getLogger(__name__)
 
 # Create router
-enhanced_barcode_router = APIRouter(
-    prefix="/api/v1/enhanced-scan", tags=["enhanced-barcode-scanning"]
-)
+enhanced_barcode_router = APIRouter(prefix="/api/v1/enhanced-scan", tags=["enhanced-barcode-scanning"])
 
 
 # Request/Response Models
 class EnhancedScanRequest(BaseModel):
     """Request model for enhanced barcode scanning"""
 
-    barcode: str = Field(
-        ..., min_length=1, max_length=100, description="Barcode to scan"
-    )
+    barcode: str = Field(..., min_length=1, max_length=100, description="Barcode to scan")
     user_id: int = Field(..., ge=1, description="User ID")
-    include_recommendations: bool = Field(
-        True, description="Include scan recommendations"
-    )
-    include_validation_details: bool = Field(
-        True, description="Include detailed validation info"
-    )
+    include_recommendations: bool = Field(True, description="Include scan recommendations")
+    include_validation_details: bool = Field(True, description="Include detailed validation info")
 
 
 class EnhancedScanResponse(BaseModel):
@@ -102,9 +94,7 @@ async def exact_barcode_scan(
             return await _basic_scan_fallback(request)
 
         # Perform enhanced exact scan
-        scan_result = await enhanced_barcode_service.scan_barcode_exact(
-            request.barcode, request.user_id
-        )
+        scan_result = await enhanced_barcode_service.scan_barcode_exact(request.barcode, request.user_id)
 
         # Build response
         response_data = {
@@ -121,16 +111,12 @@ async def exact_barcode_scan(
             "confidence_score": scan_result.confidence_score,
             "error_message": scan_result.error_message,
             "recommendations": scan_result.recommendations or [],
-            "matches": scan_result.exact_matches[:10]
-            if request.include_recommendations
-            else [],  # Limit matches
+            "matches": scan_result.exact_matches[:10] if request.include_recommendations else [],  # Limit matches
         }
 
         # Add validation details if requested
         if request.include_validation_details:
-            response_data[
-                "validation_details"
-            ] = enhanced_barcode_service.validator.get_validation_summary(
+            response_data["validation_details"] = enhanced_barcode_service.validator.get_validation_summary(
                 scan_result.barcode_validation
             )
 
@@ -163,9 +149,7 @@ async def validate_barcode_format(
     """
     try:
         # Perform validation
-        validation_result = enhanced_barcode_service.validator.validate_barcode(
-            request.barcode
-        )
+        validation_result = enhanced_barcode_service.validator.validate_barcode(request.barcode)
 
         # Build response
         response_data = {
@@ -179,18 +163,16 @@ async def validate_barcode_format(
             "check_digit": validation_result.check_digit,
             "confidence_score": validation_result.confidence_score,
             "error_message": validation_result.error_message,
-            "recommendations": enhanced_barcode_service.validator._get_recommendations(
-                validation_result
-            ),
+            "recommendations": enhanced_barcode_service.validator._get_recommendations(validation_result),
         }
 
         # Validate against expected type if provided
         if request.expected_type:
             expected_type = BarcodeType(request.expected_type)
             if validation_result.barcode_type != expected_type:
-                response_data[
-                    "error_message"
-                ] = f"Expected {expected_type.value}, got {validation_result.barcode_type.value}"
+                response_data["error_message"] = (
+                    f"Expected {expected_type.value}, got {validation_result.barcode_type.value}"
+                )
                 response_data["is_valid"] = False
 
         logger.info(
@@ -229,9 +211,7 @@ async def test_barcode_validation(
             "confidence": validation_result.confidence_score,
             "check_digit": validation_result.check_digit,
             "error": validation_result.error_message,
-            "recommendations": enhanced_barcode_service.validator._get_recommendations(
-                validation_result
-            ),
+            "recommendations": enhanced_barcode_service.validator._get_recommendations(validation_result),
         }
 
     except Exception as e:
@@ -242,9 +222,7 @@ async def _basic_scan_fallback(request: EnhancedScanRequest) -> EnhancedScanResp
     """Fallback for non-premium users - basic validation only"""
     try:
         # Basic validation only
-        validation_result = enhanced_barcode_service.validator.validate_barcode(
-            request.barcode
-        )
+        validation_result = enhanced_barcode_service.validator.validate_barcode(request.barcode)
 
         return EnhancedScanResponse(
             success=True,
@@ -259,12 +237,8 @@ async def _basic_scan_fallback(request: EnhancedScanRequest) -> EnhancedScanResp
             exact_matches_count=0,
             confidence_score=validation_result.confidence_score,
             error_message=validation_result.error_message,
-            recommendations=[
-                "Upgrade to premium for product matching and detailed recommendations"
-            ],
-            validation_details=enhanced_barcode_service.validator.get_validation_summary(
-                validation_result
-            )
+            recommendations=["Upgrade to premium for product matching and detailed recommendations"],
+            validation_details=enhanced_barcode_service.validator.get_validation_summary(validation_result)
             if request.include_validation_details
             else None,
             matches=[],

@@ -47,14 +47,10 @@ def upgrade():
         sa.Column("platform", sa.String(length=32), nullable=True),  # ios|android|web
         sa.Column("app_version", sa.String(length=32), nullable=True),
         sa.Column("locale", sa.String(length=16), nullable=True),
-        sa.Column(
-            "jurisdiction_code", sa.String(length=8), nullable=True
-        ),  # e.g. EU/US
+        sa.Column("jurisdiction_code", sa.String(length=8), nullable=True),  # e.g. EU/US
     )
     op.create_index("ix_explain_feedback_scan_id", "explain_feedback", ["scan_id"])
-    op.create_index(
-        "ix_explain_feedback_created_at", "explain_feedback", ["created_at"]
-    )
+    op.create_index("ix_explain_feedback_created_at", "explain_feedback", ["created_at"])
 
 
 def downgrade():

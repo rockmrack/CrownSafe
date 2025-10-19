@@ -27,9 +27,7 @@ def test(name, method, url, json_data=None, params=None):
         if method == "GET":
             r = requests.get(f"{BASE_URL}{url}", params=params, timeout=5)
         else:
-            r = requests.post(
-                f"{BASE_URL}{url}", json=json_data, params=params, timeout=5
-            )
+            r = requests.post(f"{BASE_URL}{url}", json=json_data, params=params, timeout=5)
 
         if r.status_code in [200, 201]:
             print(f"✅ {name}")
@@ -93,9 +91,7 @@ test(
         "allergies": ["peanuts", "milk"],
     },
 )
-test(
-    "Get Family Members", "GET", "/api/v1/premium/family/members", params={"user_id": 1}
-)
+test("Get Family Members", "GET", "/api/v1/premium/family/members", params={"user_id": 1})
 
 # Add Family Member with unique name to avoid duplicates
 unique_name = f"TestBaby_{random.randint(10000, 99999)}"

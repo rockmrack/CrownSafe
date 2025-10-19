@@ -67,15 +67,11 @@ class ObservabilityTester:
                 self.test(has_api_version, f"{method} {path} has X-API-Version header")
 
                 # Check for traceId in JSON response
-                if response.headers.get("content-type", "").startswith(
-                    "application/json"
-                ):
+                if response.headers.get("content-type", "").startswith("application/json"):
                     try:
                         data = response.json()
                         has_trace = "traceId" in data or "trace_id" in data
-                        self.test(
-                            has_trace, f"{method} {path} has traceId in JSON response"
-                        )
+                        self.test(has_trace, f"{method} {path} has traceId in JSON response")
                     except:
                         pass
 
@@ -114,24 +110,19 @@ class ObservabilityTester:
                 self.test(not data.get("ok"), "404 error has ok=false")
                 self.test("error" in data, "404 error has error object")
                 self.test("code" in data.get("error", {}), "404 error has error code")
-                self.test(
-                    "message" in data.get("error", {}), "404 error has error message"
-                )
+                self.test("message" in data.get("error", {}), "404 error has error message")
                 self.test("traceId" in data, "404 error has traceId")
             except:
                 self.test(False, "404 response is valid JSON")
 
         # Test validation error (422)
-        response = self.session.post(
-            f"{self.base_url}/api/v1/search/advanced", json={"invalid_field": "test"}
-        )
+        response = self.session.post(f"{self.base_url}/api/v1/search/advanced", json={"invalid_field": "test"})
         if response.status_code in [400, 422]:
             try:
                 data = response.json()
                 self.test(not data.get("ok"), "Validation error has ok=false")
                 self.test(
-                    data.get("error", {}).get("code")
-                    in ["VALIDATION_ERROR", "INVALID_PARAMETERS", "BAD_REQUEST"],
+                    data.get("error", {}).get("code") in ["VALIDATION_ERROR", "INVALID_PARAMETERS", "BAD_REQUEST"],
                     "Validation error has appropriate error code",
                 )
             except:
@@ -165,9 +156,7 @@ class ObservabilityTester:
             self.test("redis" in deps, "Readiness checks Redis")
 
             if response.status_code == 200:
-                print(
-                    f"   ℹ️ Dependencies: DB={deps.get('db')}, Redis={deps.get('redis')}"
-                )
+                print(f"   ℹ️ Dependencies: DB={deps.get('db')}, Redis={deps.get('redis')}")
 
         return all(self.results[-7:]) if len(self.results) >= 7 else False
 
@@ -221,9 +210,7 @@ class ObservabilityTester:
                 break
 
         if not hit_limit:
-            print(
-                "   ℹ️ Rate limit not hit in 10 requests (may be disabled or high limit)"
-            )
+            print("   ℹ️ Rate limit not hit in 10 requests (may be disabled or high limit)")
             return True  # Not a failure if rate limiting is disabled
 
         return all(self.results[-2:]) if len(self.results) >= 2 else True
@@ -234,8 +221,7 @@ class ObservabilityTester:
 
         response = self.session.get(f"{self.base_url}/api/v1/healthz")
         self.test(
-            "Server-Timing" in response.headers
-            or "X-Response-Time" in response.headers,
+            "Server-Timing" in response.headers or "X-Response-Time" in response.headers,
             "Response includes timing information",
         )
 
@@ -300,9 +286,7 @@ def test_rate_limit_stress(base_url: str = BASE_URL):
     # Make 65 requests (should hit 60 req/min limit)
     statuses = []
     for i in range(65):
-        response = session.post(
-            f"{base_url}/api/v1/search/advanced", json={"product": "test", "limit": 1}
-        )
+        response = session.post(f"{base_url}/api/v1/search/advanced", json={"product": "test", "limit": 1})
         statuses.append(response.status_code)
 
         if response.status_code == 429:

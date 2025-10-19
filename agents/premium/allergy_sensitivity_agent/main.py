@@ -4,9 +4,7 @@ from core_infra.mcp_client_library.client import MCPClient
 from .agent_logic import AllergySensitivityAgentLogic
 
 # Configure standard logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "allergy_sensitivity_agent_01"
@@ -24,9 +22,7 @@ class AllergySensitivityAgent:
         self.logic = AllergySensitivityAgentLogic(agent_id=self.agent_id)
 
         # Register the agent's capabilities with the MCP client
-        self.mcp_client.register_capability(
-            "check_product_for_family_allergies", self.handle_check_allergies
-        )
+        self.mcp_client.register_capability("check_product_for_family_allergies", self.handle_check_allergies)
 
     async def handle_check_allergies(self, task_payload: dict) -> dict:
         """

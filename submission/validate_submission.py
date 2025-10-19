@@ -84,9 +84,7 @@ class SubmissionValidator:
                 url = f"{self.api_url}{endpoint}"
 
                 if method == "POST":
-                    response = requests.post(
-                        url, json=options.get("json", {}), timeout=5
-                    )
+                    response = requests.post(url, json=options.get("json", {}), timeout=5)
                 else:
                     response = requests.get(url, timeout=5)
 
@@ -123,9 +121,7 @@ class SubmissionValidator:
             except Exception as e:
                 self.print_result(f"{name}: {endpoint}", False, f"Error: {str(e)}")
                 all_passed = False
-                results.append(
-                    {"endpoint": endpoint, "status": "error", "error": str(e)}
-                )
+                results.append({"endpoint": endpoint, "status": "error", "error": str(e)})
 
         # Check average response time
         successful_times = [r["response_time"] for r in results if "response_time" in r]
@@ -224,9 +220,7 @@ class SubmissionValidator:
                         missing = []
 
                     if missing:
-                        self.print_result(
-                            name, False, f"Missing fields: {', '.join(missing)}"
-                        )
+                        self.print_result(name, False, f"Missing fields: {', '.join(missing)}")
                         all_valid = False
                     else:
                         self.print_result(name, True, "Valid JSON")
@@ -289,21 +283,15 @@ class SubmissionValidator:
                     )
                     all_valid = False
                 else:
-                    self.print_result(
-                        f"{platform} screenshots", True, f"{count} screenshots found"
-                    )
+                    self.print_result(f"{platform} screenshots", True, f"{count} screenshots found")
 
                     # Check file sizes
                     for screenshot in screenshots[:3]:  # Check first 3
                         size_mb = screenshot.stat().st_size / (1024 * 1024)
                         if size_mb > 10:
-                            self.warnings.append(
-                                f"Large screenshot: {screenshot.name} ({size_mb:.1f}MB)"
-                            )
+                            self.warnings.append(f"Large screenshot: {screenshot.name} ({size_mb:.1f}MB)")
             else:
-                self.print_result(
-                    f"{platform} screenshots", False, "Directory not found"
-                )
+                self.print_result(f"{platform} screenshots", False, "Directory not found")
                 all_valid = False
 
         return all_valid
@@ -397,22 +385,16 @@ class SubmissionValidator:
                 max_length = info["max_length"]
 
                 if length > max_length:
-                    self.print_result(
-                        name, False, f"Too long: {length} chars (max {max_length})"
-                    )
+                    self.print_result(name, False, f"Too long: {length} chars (max {max_length})")
                     all_valid = False
                 else:
-                    self.print_result(
-                        name, True, f"Length: {length}/{max_length} chars"
-                    )
+                    self.print_result(name, True, f"Length: {length}/{max_length} chars")
 
                 # Check for placeholder text
                 placeholders = ["TODO", "FIXME", "XXX", "[PLACEHOLDER]"]
                 for placeholder in placeholders:
                     if placeholder in content.upper():
-                        self.warnings.append(
-                            f"{name} contains placeholder text: {placeholder}"
-                        )
+                        self.warnings.append(f"{name} contains placeholder text: {placeholder}")
 
             else:
                 self.print_result(name, False, "File not found")
@@ -469,14 +451,10 @@ class SubmissionValidator:
 
         try:
             # Check if newman is installed
-            result = subprocess.run(
-                ["newman", "--version"], capture_output=True, text=True
-            )
+            result = subprocess.run(["newman", "--version"], capture_output=True, text=True)
 
             if result.returncode != 0:
-                self.print_result(
-                    "Newman CLI", False, "Not installed - run: npm install -g newman"
-                )
+                self.print_result("Newman CLI", False, "Not installed - run: npm install -g newman")
                 return True  # Don't fail if newman not installed
 
             # Run the collection
@@ -509,14 +487,10 @@ class SubmissionValidator:
                 failed = stats.get("assertions", {}).get("failed", 0)
 
                 if failed == 0:
-                    self.print_result(
-                        "Postman tests", True, f"All {total} tests passed"
-                    )
+                    self.print_result("Postman tests", True, f"All {total} tests passed")
                     return True
                 else:
-                    self.print_result(
-                        "Postman tests", False, f"{failed}/{total} tests failed"
-                    )
+                    self.print_result("Postman tests", False, f"{failed}/{total} tests failed")
                     return False
             else:
                 print("   ℹ️ Could not parse test results")
@@ -638,9 +612,7 @@ class SubmissionValidator:
 
         if passed == total and len(self.errors) == 0:
             print(f"{Colors.GREEN}{Colors.BOLD}✅ READY FOR SUBMISSION{Colors.ENDC}")
-            print(
-                "All validation checks passed. You may proceed with app store submission."
-            )
+            print("All validation checks passed. You may proceed with app store submission.")
             return True
         elif passed >= total * 0.8 and len(self.errors) <= 2:
             print(f"{Colors.YELLOW}{Colors.BOLD}⚠️ ALMOST READY{Colors.ENDC}")

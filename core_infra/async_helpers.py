@@ -20,9 +20,7 @@ class AsyncAPIClient:
     Async HTTP client with timeout, retry, and error handling
     """
 
-    def __init__(
-        self, timeout: int = 30, max_retries: int = 3, backoff_factor: float = 1.0
-    ):
+    def __init__(self, timeout: int = 30, max_retries: int = 3, backoff_factor: float = 1.0):
         self.timeout = aiohttp.ClientTimeout(total=timeout)
         self.max_retries = max_retries
         self.backoff_factor = backoff_factor
@@ -68,9 +66,7 @@ class AsyncAPIClient:
 
                     if response.status == 200:
                         data = await response.json()
-                        logger.info(
-                            f"API call successful: {method} {url} ({response_time:.2f}s)"
-                        )
+                        logger.info(f"API call successful: {method} {url} ({response_time:.2f}s)")
                         return data
                     elif response.status == 429:  # Rate limited
                         retry_after = int(response.headers.get("Retry-After", 60))
@@ -78,16 +74,12 @@ class AsyncAPIClient:
                         await asyncio.sleep(retry_after)
                         continue
                     else:
-                        logger.warning(
-                            f"API call failed: {method} {url} Status: {response.status}"
-                        )
+                        logger.warning(f"API call failed: {method} {url} Status: {response.status}")
                         last_exception = Exception(f"HTTP {response.status}")
 
             except asyncio.TimeoutError:
                 logger.warning(f"Timeout on attempt {attempt + 1} for {url}")
-                last_exception = TimeoutError(
-                    f"Request timed out after {self.timeout}s"
-                )
+                last_exception = TimeoutError(f"Request timed out after {self.timeout}s")
             except Exception as e:
                 logger.error(f"Error on attempt {attempt + 1}: {str(e)}")
                 last_exception = e
@@ -103,9 +95,7 @@ class AsyncAPIClient:
         raise last_exception or Exception("Request failed")
 
 
-async def fetch_multiple_apis(
-    urls: List[str], timeout: int = 30
-) -> List[Optional[Dict[str, Any]]]:
+async def fetch_multiple_apis(urls: List[str], timeout: int = 30) -> List[Optional[Dict[str, Any]]]:
     """
     Fetch data from multiple APIs concurrently
     """
@@ -163,15 +153,11 @@ class AsyncBatchProcessor:
             batch_results = await self._process_batch(batch, process_func)
             results.extend(batch_results)
 
-            logger.info(
-                f"Processed batch {i // self.batch_size + 1}, Total: {len(results)}/{len(items)}"
-            )
+            logger.info(f"Processed batch {i // self.batch_size + 1}, Total: {len(results)}/{len(items)}")
 
         return results
 
-    async def _process_batch(
-        self, batch: List[Any], process_func: Callable
-    ) -> List[Any]:
+    async def _process_batch(self, batch: List[Any], process_func: Callable) -> List[Any]:
         """
         Process a single batch with concurrency limit
         """
@@ -267,9 +253,7 @@ async def get_product_data_async(barcode: str) -> Dict[str, Any]:
     Example: Get product data with caching
     """
     async with AsyncAPIClient() as client:
-        return await client.get(
-            f"https://api.upcitemdb.com/prod/v1/lookup?upc={barcode}"
-        )
+        return await client.get(f"https://api.upcitemdb.com/prod/v1/lookup?upc={barcode}")
 
 
 # Async task queue
@@ -291,10 +275,7 @@ class AsyncTaskQueue:
     async def start(self):
         """Start processing tasks"""
         self.running = True
-        self.workers = [
-            asyncio.create_task(self._worker(f"worker-{i}"))
-            for i in range(self.max_workers)
-        ]
+        self.workers = [asyncio.create_task(self._worker(f"worker-{i}")) for i in range(self.max_workers)]
 
     async def stop(self):
         """Stop processing tasks"""
@@ -307,18 +288,14 @@ class AsyncTaskQueue:
         """Worker to process tasks"""
         while self.running:
             try:
-                task, args, kwargs = await asyncio.wait_for(
-                    self.queue.get(), timeout=1.0
-                )
+                task, args, kwargs = await asyncio.wait_for(self.queue.get(), timeout=1.0)
 
                 logger.debug(f"{name} processing task")
 
                 if asyncio.iscoroutinefunction(task):
                     await task(*args, **kwargs)
                 else:
-                    await asyncio.get_event_loop().run_in_executor(
-                        None, task, *args, **kwargs
-                    )
+                    await asyncio.get_event_loop().run_in_executor(None, task, *args, **kwargs)
 
                 self.queue.task_done()
 

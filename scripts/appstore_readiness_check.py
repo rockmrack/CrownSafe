@@ -29,11 +29,7 @@ def expect(cond, msg):
 def get_json(path):
     try:
         r = S.get(f"{BASE}{path}", timeout=15)
-        return r, (
-            r.json()
-            if r.headers.get("content-type", "").startswith("application/json")
-            else None
-        )
+        return r, (r.json() if r.headers.get("content-type", "").startswith("application/json") else None)
     except Exception as e:
         print(f"❌ Failed to GET {path}: {e}")
         return None, None
@@ -42,11 +38,7 @@ def get_json(path):
 def post_json(path, payload):
     try:
         r = S.post(f"{BASE}{path}", json=payload, timeout=30)
-        return r, (
-            r.json()
-            if r.headers.get("content-type", "").startswith("application/json")
-            else None
-        )
+        return r, (r.json() if r.headers.get("content-type", "").startswith("application/json") else None)
     except Exception as e:
         print(f"❌ Failed to POST {path}: {e}")
         return None, None
@@ -68,9 +60,7 @@ r, j = get_json("/api/v1/healthz")
 expect(r and r.status_code == 200, "/api/v1/healthz returns 200")
 expect(r and "X-API-Version" in r.headers, "X-API-Version header present")
 expect(r and r.headers.get("Strict-Transport-Security"), "HSTS header present")
-expect(
-    r and r.headers.get("X-Content-Type-Options") == "nosniff", "nosniff header present"
-)
+expect(r and r.headers.get("X-Content-Type-Options") == "nosniff", "nosniff header present")
 expect(
     r and r.headers.get("X-Frame-Options") in {"DENY", "SAMEORIGIN"},
     "X-Frame-Options present",
@@ -118,9 +108,7 @@ alias_payload = {
     "limit": 2,
 }
 r, j = post_json("/api/v1/search/advanced", alias_payload)
-expect(
-    r and r.status_code == 200, "aliases accepted (severity/product_category/agency)"
-)
+expect(r and r.status_code == 200, "aliases accepted (severity/product_category/agency)")
 
 # Test that risk_level and riskCategory also work
 alt_alias_payload = {
@@ -140,9 +128,7 @@ expect(
     r and (r.status_code == 400 or (r.status_code == 422 and j)),
     "invalid params produce 400/422",
 )
-expect(
-    j and (j.get("error") or j.get("detail")), "error message present for bad request"
-)
+expect(j and (j.get("error") or j.get("detail")), "error message present for bad request")
 
 # 5) Pagination & deterministic order
 print("\n📖 5. Pagination & Ordering")
@@ -162,9 +148,7 @@ elif j:
 
 if cursor:
     # Test pagination with cursor
-    r2, j2 = post_json(
-        "/api/v1/search/advanced", {"product": "doll", "nextCursor": cursor}
-    )
+    r2, j2 = post_json("/api/v1/search/advanced", {"product": "doll", "nextCursor": cursor})
     expect(r2 and r2.status_code == 200, "pagination next page 200")
 
     second_items = []
@@ -196,9 +180,7 @@ else:
 # 7) Error semantics
 print("\n❌ 7. Error Handling")
 print("-" * 40)
-r, j = post_json(
-    "/api/v1/search/advanced", {"product": "test", "date_from": "invalid-date"}
-)
+r, j = post_json("/api/v1/search/advanced", {"product": "test", "date_from": "invalid-date"})
 expect(r and r.status_code in (400, 422), "invalid date returns 4xx")
 
 r, j = get_json("/api/v1/recall/DOES-NOT-EXIST-99999")
@@ -306,9 +288,7 @@ else:
 # Check for traceId in responses
 r, j = post_json("/api/v1/search/advanced", {"product": "test product"})
 if j:
-    has_trace = (
-        "traceId" in j or "trace_id" in j or (j.get("data") and "traceId" in j["data"])
-    )
+    has_trace = "traceId" in j or "trace_id" in j or (j.get("data") and "traceId" in j["data"])
     expect(has_trace, "traceId present in response")
 else:
     print("   ⚠️ Could not verify traceId")

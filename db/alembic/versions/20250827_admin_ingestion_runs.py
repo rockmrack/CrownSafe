@@ -57,12 +57,8 @@ def upgrade():
         sa.Column("finished_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("items_inserted", sa.Integer, nullable=False, server_default="0"),
         sa.Column("items_updated", sa.Integer, nullable=False, server_default="0"),
-        sa.Column(
-            "items_skipped", sa.Integer, nullable=False, server_default="0"
-        ),  # Added
-        sa.Column(
-            "items_failed", sa.Integer, nullable=False, server_default="0"
-        ),  # Added
+        sa.Column("items_skipped", sa.Integer, nullable=False, server_default="0"),  # Added
+        sa.Column("items_failed", sa.Integer, nullable=False, server_default="0"),  # Added
         sa.Column("error_text", sa.Text, nullable=True),
         sa.Column("initiated_by", sa.String(128), nullable=True),
         sa.Column("trace_id", sa.String(64), nullable=True),
@@ -82,13 +78,9 @@ def upgrade():
         unique=False,
     )
 
-    op.create_index(
-        "ix_ingestion_runs_status", "ingestion_runs", ["status"], unique=False
-    )
+    op.create_index("ix_ingestion_runs_status", "ingestion_runs", ["status"], unique=False)
 
-    op.create_index(
-        "ix_ingestion_runs_created_at", "ingestion_runs", ["created_at"], unique=False
-    )
+    op.create_index("ix_ingestion_runs_created_at", "ingestion_runs", ["created_at"], unique=False)
 
     # Add check constraints (PostgreSQL only - SQLite doesn't support ALTER TABLE ADD CONSTRAINT)
     if not is_sqlite:

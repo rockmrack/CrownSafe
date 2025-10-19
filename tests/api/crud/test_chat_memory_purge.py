@@ -34,12 +34,8 @@ class UserProfileModel(TestBase):
     pregnancy_due_date = Column(Date, nullable=True)
     child_birthdate = Column(Date, nullable=True)
     erase_requested_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(
-        DateTime(timezone=True), default=datetime.utcnow, nullable=False
-    )
-    updated_at = Column(
-        DateTime(timezone=True), default=datetime.utcnow, nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
 
 
 class ConversationModel(TestBase):
@@ -47,12 +43,8 @@ class ConversationModel(TestBase):
     id = Column(String(36), primary_key=True)
     user_id = Column(String(36), nullable=True)
     scan_id = Column(String(64), nullable=True)
-    started_at = Column(
-        DateTime(timezone=True), default=datetime.utcnow, nullable=False
-    )
-    last_activity_at = Column(
-        DateTime(timezone=True), default=datetime.utcnow, nullable=False
-    )
+    started_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    last_activity_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     messages = relationship(
         "ConversationMessageModel",
         back_populates="conversation",
@@ -63,12 +55,8 @@ class ConversationModel(TestBase):
 class ConversationMessageModel(TestBase):
     __tablename__ = "conversation_message"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    conversation_id = Column(
-        String(36), ForeignKey("conversation.id", ondelete="CASCADE"), nullable=False
-    )
-    created_at = Column(
-        DateTime(timezone=True), default=datetime.utcnow, nullable=False
-    )
+    conversation_id = Column(String(36), ForeignKey("conversation.id", ondelete="CASCADE"), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     role = Column(String(16), nullable=False)  # 'user' | 'assistant'
     intent = Column(String(64), nullable=True)
     trace_id = Column(String(64), nullable=True)
@@ -127,17 +115,13 @@ def test_purge_conversations_for_user_with_conversations(db_session):
     db_session.commit()
 
     # Add messages to the conversations
-    msg1 = ConversationMessageModel(
-        conversation_id=conv1.id, role="user", content=json.dumps({"text": "Hello"})
-    )
+    msg1 = ConversationMessageModel(conversation_id=conv1.id, role="user", content=json.dumps({"text": "Hello"}))
     msg2 = ConversationMessageModel(
         conversation_id=conv1.id,
         role="assistant",
         content=json.dumps({"summary": "Hi there"}),
     )
-    msg3 = ConversationMessageModel(
-        conversation_id=conv2.id, role="user", content=json.dumps({"text": "Question"})
-    )
+    msg3 = ConversationMessageModel(conversation_id=conv2.id, role="user", content=json.dumps({"text": "Question"}))
     msg4 = ConversationMessageModel(
         conversation_id=conv3.id,
         role="user",

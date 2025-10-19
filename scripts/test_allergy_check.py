@@ -94,9 +94,7 @@ def drop_all_cascade():
 # ─── 4) Main Test Runner ───────────────────────────────────────────────────────
 async def main():
     # 4.1 Load the JSON plan
-    plan_path = os.path.join(
-        PROJECT_ROOT, "tests", "fixtures", "test_plan_with_allergy_check.json"
-    )
+    plan_path = os.path.join(PROJECT_ROOT, "tests", "fixtures", "test_plan_with_allergy_check.json")
     with open(plan_path, "r") as f:
         test_plan = json.load(f)
 
@@ -122,16 +120,10 @@ async def main():
 
     # 4.5 Wire mocks into CommanderAgent
     logger = logging.getLogger(__name__)
-    commander = BabyShieldCommanderLogic(
-        agent_id="test_commander", logger_instance=logger
-    )
+    commander = BabyShieldCommanderLogic(agent_id="test_commander", logger_instance=logger)
     commander.router.agent_registry["identify_product"] = MockProductIdentifierLogic()
-    commander.router.agent_registry[
-        "query_recalls_by_product"
-    ] = MockRecallDataAgentLogic()
-    commander.router.agent_registry[
-        "check_allergy_sensitivity"
-    ] = MockAllergySensitivityLogic()
+    commander.router.agent_registry["query_recalls_by_product"] = MockRecallDataAgentLogic()
+    commander.router.agent_registry["check_allergy_sensitivity"] = MockAllergySensitivityLogic()
     commander.router.agent_registry["analyze_hazards"] = MockHazardAnalysisLogic()
 
     # 4.6 Run the workflow
@@ -155,13 +147,9 @@ async def main():
         summary = data.get("summary")
         risk = data.get("risk_level")
         if summary == "Analysis complete." and risk == "Low":
-            print(
-                "\n✅✅✅ TEST PASSED: Final analysis summary and risk level are correct."
-            )
+            print("\n✅✅✅ TEST PASSED: Final analysis summary and risk level are correct.")
         else:
-            print(
-                f"\n❌❌❌ TEST FAILED: Unexpected data.summary={summary}, data.risk_level={risk}"
-            )
+            print(f"\n❌❌❌ TEST FAILED: Unexpected data.summary={summary}, data.risk_level={risk}")
     else:
         print("\n❌❌❌ TEST FAILED: Workflow did not complete successfully.")
 

@@ -241,27 +241,27 @@ if report.risk_level == "low" and not report.recalls:
 
 ### Category 1: Medical Advice Screening
 
-| Pattern | Found? | Compliant? | Notes |
-|---------|--------|------------|-------|
-| "We recommend..." | ❌ NO | ✅ N/A | Not found in user-facing responses |
-| "You should..." | ⚠️ YES | ✅ OK | Only in documentation context (e.g., "you should consult doctor") |
-| "Safe to use" | ⚠️ YES | ⚠️ REVIEW | Found in backend code, not prominently in API responses |
-| "Diagnose" / "Diagnosis" | ❌ NO | ✅ N/A | Not found |
-| "Treatment" | ❌ NO | ✅ N/A | Not found in advice context |
-| "Cure" / "Prevent" | ❌ NO | ✅ N/A | Not found |
-| "Medical advice" | ✅ YES | ✅ GOOD | Only in disclaimers stating we DON'T provide it |
+| Pattern                  | Found? | Compliant? | Notes                                                             |
+| ------------------------ | ------ | ---------- | ----------------------------------------------------------------- |
+| "We recommend..."        | ❌ NO   | ✅ N/A      | Not found in user-facing responses                                |
+| "You should..."          | ⚠️ YES  | ✅ OK       | Only in documentation context (e.g., "you should consult doctor") |
+| "Safe to use"            | ⚠️ YES  | ⚠️ REVIEW   | Found in backend code, not prominently in API responses           |
+| "Diagnose" / "Diagnosis" | ❌ NO   | ✅ N/A      | Not found                                                         |
+| "Treatment"              | ❌ NO   | ✅ N/A      | Not found in advice context                                       |
+| "Cure" / "Prevent"       | ❌ NO   | ✅ N/A      | Not found                                                         |
+| "Medical advice"         | ✅ YES  | ✅ GOOD     | Only in disclaimers stating we DON'T provide it                   |
 
 ---
 
 ### Category 2: Emergency Handling
 
-| Scenario | Response Type | Compliant? |
-|----------|--------------|------------|
-| Choking detected | Redirect to 911 | ✅ COMPLIANT |
-| Battery ingestion | Emergency alert, call 911 | ✅ COMPLIANT |
+| Scenario          | Response Type              | Compliant?  |
+| ----------------- | -------------------------- | ----------- |
+| Choking detected  | Redirect to 911            | ✅ COMPLIANT |
+| Battery ingestion | Emergency alert, call 911  | ✅ COMPLIANT |
 | Allergic reaction | Suggest calling doctor/911 | ✅ COMPLIANT |
-| Poison ingestion | Redirect to poison control | ✅ COMPLIANT |
-| Severe symptoms | Emergency disclaimer | ✅ COMPLIANT |
+| Poison ingestion  | Redirect to poison control | ✅ COMPLIANT |
+| Severe symptoms   | Emergency disclaimer       | ✅ COMPLIANT |
 
 **✅ VERDICT:** Emergency handling properly redirects to medical professionals, does not give medical instructions.
 
@@ -377,24 +377,24 @@ class SafetyCheckResponse(BaseModel):
 
 ### Apple App Store Requirements
 
-| Requirement | Status | Evidence |
-|-------------|--------|----------|
-| App is not a medical device | ✅ PASS | No diagnostic/treatment features |
-| No medical advice given | ✅ PASS | All disclaimers in place |
-| Medical disclaimers present | ✅ PASS | Terms of Service + in-app disclaimers |
-| Emergency scenarios handled properly | ✅ PASS | Redirects to 911/doctors |
-| Data sources cited | ✅ PASS | FDA, ACOG, CDC sources cited |
-| "For informational purposes only" | ✅ PASS | Stated in legal docs |
+| Requirement                          | Status | Evidence                              |
+| ------------------------------------ | ------ | ------------------------------------- |
+| App is not a medical device          | ✅ PASS | No diagnostic/treatment features      |
+| No medical advice given              | ✅ PASS | All disclaimers in place              |
+| Medical disclaimers present          | ✅ PASS | Terms of Service + in-app disclaimers |
+| Emergency scenarios handled properly | ✅ PASS | Redirects to 911/doctors              |
+| Data sources cited                   | ✅ PASS | FDA, ACOG, CDC sources cited          |
+| "For informational purposes only"    | ✅ PASS | Stated in legal docs                  |
 
 ### Google Play Store Requirements
 
-| Requirement | Status | Evidence |
-|-------------|--------|----------|
+| Requirement                | Status | Evidence                 |
+| -------------------------- | ------ | ------------------------ |
 | Not misleading health info | ✅ PASS | Factual recall data only |
-| Not a medical app | ✅ PASS | Safety information app |
-| Disclaimers present | ✅ PASS | Multiple disclaimers |
-| Sources credible | ✅ PASS | Government agencies |
-| No diagnosis/treatment | ✅ PASS | Informational only |
+| Not a medical app          | ✅ PASS | Safety information app   |
+| Disclaimers present        | ✅ PASS | Multiple disclaimers     |
+| Sources credible           | ✅ PASS | Government agencies      |
+| No diagnosis/treatment     | ✅ PASS | Informational only       |
 
 ---
 

@@ -47,18 +47,10 @@ if PROM:
         "Synth latency (ms)",
         buckets=(50, 100, 200, 400, 800, 1600),
     )
-    CHAT_FALLBACK = Counter(
-        "bs_chat_fallback_total", "LLM/template fallback used", ["endpoint", "reason"]
-    )
-    CHAT_BLOCKED = Counter(
-        "bs_chat_blocked_total", "Requests blocked by feature flag", ["endpoint"]
-    )
-    EXPLAIN_FB = Counter(
-        "bs_explain_feedback_total", "Explain feedback", ["helpful", "reason"]
-    )
-    ALT_SHOWN = Counter(
-        "bs_alternatives_shown_total", "Alternatives shown in responses", ["count"]
-    )
+    CHAT_FALLBACK = Counter("bs_chat_fallback_total", "LLM/template fallback used", ["endpoint", "reason"])
+    CHAT_BLOCKED = Counter("bs_chat_blocked_total", "Requests blocked by feature flag", ["endpoint"])
+    EXPLAIN_FB = Counter("bs_explain_feedback_total", "Explain feedback", ["helpful", "reason"])
+    ALT_SHOWN = Counter("bs_alternatives_shown_total", "Alternatives shown in responses", ["count"])
     ALT_CLICKED = Counter("bs_alternative_clicked_total", "Alternative clicked", ["id"])
     CHAT_UNCLEAR = Counter("bs_chat_unclear_total", "Unclear-intent responses")
     CHAT_EMERG = Counter("bs_chat_emergency_total", "Emergency-path responses")

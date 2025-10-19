@@ -11,9 +11,7 @@ class AlternativesAgent:
         # ... (Standard __init__) ...
         self.logic = AlternativesAgentLogic(agent_id=self.agent_id)
 
-        self.mcp_client.register_capability(
-            "get_alternatives", self.handle_get_alternatives
-        )
+        self.mcp_client.register_capability("get_alternatives", self.handle_get_alternatives)
 
     async def handle_get_alternatives(self, task_payload: dict) -> dict:
         product_name = task_payload.get("product_name")

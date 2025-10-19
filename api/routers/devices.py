@@ -38,9 +38,7 @@ def unregister_device(
         try:
             # Delete the specific push token for this user
             result = db.execute(
-                text(
-                    "DELETE FROM device_push_tokens WHERE user_id = :uid AND token = :t"
-                ),
+                text("DELETE FROM device_push_tokens WHERE user_id = :uid AND token = :t"),
                 {"uid": user_id, "t": token},
             )
             db.commit()
@@ -48,9 +46,7 @@ def unregister_device(
             if result.rowcount > 0:
                 logger.info(f"Unregistered push token for user {user_id}")
             else:
-                logger.info(
-                    f"No push token found for user {user_id} with token {token[:8]}..."
-                )
+                logger.info(f"No push token found for user {user_id} with token {token[:8]}...")
 
         except Exception as e:
             logger.error(f"Failed to unregister push token for user {user_id}: {e}")

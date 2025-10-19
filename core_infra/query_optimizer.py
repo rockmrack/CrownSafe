@@ -62,9 +62,7 @@ class QueryOptimizer:
         return query
 
     @staticmethod
-    def batch_load(
-        db: Session, model: Type, ids: List[int], batch_size: int = 100
-    ) -> Dict[int, Any]:
+    def batch_load(db: Session, model: Type, ids: List[int], batch_size: int = 100) -> Dict[int, Any]:
         """
         Load multiple records in batches instead of one by one
 
@@ -232,12 +230,7 @@ class OptimizedQueries:
         """
         Get recalls with all details efficiently
         """
-        return (
-            db.query(Recall)
-            .options(selectinload("images"), selectinload("incidents"))
-            .limit(limit)
-            .all()
-        )
+        return db.query(Recall).options(selectinload("images"), selectinload("incidents")).limit(limit).all()
 
     @staticmethod
     def search_products_optimized(db: Session, search_term: str, limit: int = 50):

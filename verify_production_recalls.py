@@ -5,9 +5,9 @@ Verify Production Database - 131,743 Recalls Check
 import os
 
 # Set production DATABASE_URL (using psycopg v3 driver)
-os.environ[
-    "DATABASE_URL"
-] = "postgresql+psycopg://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
+os.environ["DATABASE_URL"] = (
+    "postgresql+psycopg://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
+)
 
 print("=" * 70)
 print("PRODUCTION DATABASE CHECK - AWS RDS PostgreSQL")

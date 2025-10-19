@@ -35,9 +35,7 @@ def _bucket_region() -> str:
         return "eu-north-1"
 
 
-def presign_post(
-    key: str, user_id: int, job_id: str, content_type: str = "image/jpeg"
-) -> Dict:
+def presign_post(key: str, user_id: int, job_id: str, content_type: str = "image/jpeg") -> Dict:
     """Generate a presigned POST for uploading to S3 with correct regional endpoint.
 
     Args:
@@ -102,11 +100,7 @@ def presign_get(
     """
     region = _bucket_region()
     s3 = boto3.client("s3", region_name=region, config=Config(signature_version="s3v4"))
-    ttl = (
-        int(os.getenv("PRESIGN_TTL_SECONDS", "600"))
-        if (expires is None)
-        else int(expires)
-    )
+    ttl = int(os.getenv("PRESIGN_TTL_SECONDS", "600")) if (expires is None) else int(expires)
     params = {"Bucket": BUCKET, "Key": key}
     if filename:
         params["ResponseContentType"] = content_type
@@ -125,9 +119,7 @@ def presign_get(
     }
 
 
-def upload_file(
-    file_path: str, key: str, content_type: str = "application/pdf"
-) -> Dict:
+def upload_file(file_path: str, key: str, content_type: str = "application/pdf") -> Dict:
     """Upload a local file to S3 at the given key.
 
     Returns dict with bucket, key, region.

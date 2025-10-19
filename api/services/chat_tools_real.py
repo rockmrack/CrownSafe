@@ -109,16 +109,12 @@ def allergy_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
                 )
             )
 
-    out = AllergyCheckOut(
-        hits=hits, summary=raw_result.get("summary") if raw_result else None
-    )
+    out = AllergyCheckOut(hits=hits, summary=raw_result.get("summary") if raw_result else None)
 
     return {"allergy": out.model_dump()}
 
 
-def _check_pregnancy_safety_from_scan(
-    agent: PregnancyProductSafetyAgent, scan: Dict[str, Any]
-) -> Dict[str, Any]:
+def _check_pregnancy_safety_from_scan(agent: PregnancyProductSafetyAgent, scan: Dict[str, Any]) -> Dict[str, Any]:
     """
     Helper to check pregnancy safety based on scan data rather than UPC.
     This is a simplified adapter until we have full ingredient database integration.
@@ -169,9 +165,7 @@ def _check_pregnancy_safety_from_scan(
                     unsafe_ingredients[ingredient] = details
 
         # Check category-based risks
-        if category.lower() in ["cheese", "dairy"] and any(
-            "soft" in flag for flag in flags
-        ):
+        if category.lower() in ["cheese", "dairy"] and any("soft" in flag for flag in flags):
             unsafe_ingredients["soft_cheese"] = {
                 "reason": "Soft cheeses may contain listeria unless pasteurised",
                 "severity": "moderate",
@@ -189,9 +183,7 @@ def _check_pregnancy_safety_from_scan(
         return {"status": "error", "message": str(e)}
 
 
-def _check_allergy_from_scan(
-    scan: Dict[str, Any], profile_allergies: list
-) -> Dict[str, Any]:
+def _check_allergy_from_scan(scan: Dict[str, Any], profile_allergies: list) -> Dict[str, Any]:
     """
     Helper to check allergies based on scan data and profile.
     This is a simplified adapter until we have full user profile integration.
@@ -326,9 +318,7 @@ def recall_details_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
     out = RecallDetailsOut(
         recalls=recalls_data,
         recalls_found=len(recalls_data),
-        batch_check="Verify batch/lot and date codes on the label."
-        if recalls_data
-        else None,
+        batch_check="Verify batch/lot and date codes on the label." if recalls_data else None,
     )
 
     # Add evidence for each recall found
@@ -356,27 +346,16 @@ def ingredient_info_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
         ingredient_lower = ingredient.lower()
 
         # Pregnancy concerns
-        if any(
-            term in ingredient_lower
-            for term in ["retinol", "salicylic acid", "hydroquinone", "tretinoin"]
-        ):
+        if any(term in ingredient_lower for term in ["retinol", "salicylic acid", "hydroquinone", "tretinoin"]):
             highlighted.append(ingredient)
-            notes.append(
-                f"{ingredient}: Check with healthcare provider during pregnancy"
-            )
+            notes.append(f"{ingredient}: Check with healthcare provider during pregnancy")
 
         # Common allergens
-        if any(
-            term in ingredient_lower
-            for term in ["fragrance", "parfum", "sulfate", "paraben"]
-        ):
+        if any(term in ingredient_lower for term in ["fragrance", "parfum", "sulfate", "paraben"]):
             highlighted.append(ingredient)
 
         # Preservatives
-        if any(
-            term in ingredient_lower
-            for term in ["formaldehyde", "methylisothiazolinone", "benzalkonium"]
-        ):
+        if any(term in ingredient_lower for term in ["formaldehyde", "methylisothiazolinone", "benzalkonium"]):
             highlighted.append(ingredient)
             notes.append(f"{ingredient}: Potential skin sensitizer")
 
@@ -392,9 +371,7 @@ def ingredient_info_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
 
     facts = out.model_dump()
     if recommend_label_check:
-        facts.setdefault("evidence", []).extend(
-            label_to_evidence("ingredient verification")
-        )
+        facts.setdefault("evidence", []).extend(label_to_evidence("ingredient verification"))
 
     return facts
 

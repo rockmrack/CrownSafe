@@ -87,9 +87,7 @@ class ImageJob(Base):
     confidence_level = Column(SQLEnum(ConfidenceLevel))
 
     # Relationships
-    extractions = relationship(
-        "ImageExtraction", back_populates="job", cascade="all, delete-orphan"
-    )
+    extractions = relationship("ImageExtraction", back_populates="job", cascade="all, delete-orphan")
     review = relationship("ReviewQueue", back_populates="job", uselist=False)
 
     def __repr__(self):
@@ -158,9 +156,7 @@ class ReviewQueue(Base):
 
     # Review reason
     review_reason = Column(String(500))  # "Low confidence OCR", "Conflicting signals"
-    auto_flagged_issues = Column(
-        JSON
-    )  # ["blur_detected", "partial_text", "multiple_products"]
+    auto_flagged_issues = Column(JSON)  # ["blur_detected", "partial_text", "multiple_products"]
 
     # Review actions
     reviewed_by = Column(String(100))
@@ -187,9 +183,7 @@ class ReviewQueue(Base):
     job = relationship("ImageJob", back_populates="review")
 
     def __repr__(self):
-        return (
-            f"<ReviewQueue id={self.id} job={self.job_id} status={self.status.value}>"
-        )
+        return f"<ReviewQueue id={self.id} job={self.job_id} status={self.status.value}>"
 
 
 class MFVSession(Base):
