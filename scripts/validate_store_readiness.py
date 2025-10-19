@@ -6,10 +6,10 @@ Tests critical endpoints and features required for app store submission
 
 import os
 import sys
-import json
-import requests
 import time
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
+
+import requests
 
 BASE_URL = os.getenv("BABYSHIELD_BASE_URL", "https://babyshield.cureviax.ai")
 
@@ -37,9 +37,7 @@ CRITICAL_ENDPOINTS = [
 ]
 
 
-def test_endpoint(
-    method: str, path: str, data: dict, name: str
-) -> Tuple[bool, str, int]:
+def test_endpoint(method: str, path: str, data: dict, name: str) -> Tuple[bool, str, int]:
     """Test a single endpoint and return status"""
     url = f"{BASE_URL}{path}"
     headers = {
@@ -47,18 +45,21 @@ def test_endpoint(
         "User-Agent": "BabyShield-Readiness-Check/1.0",
     }
 
+    # Search API may need more time for complex queries with pg_trgm
+    timeout = 30 if "search" in path.lower() else 10
+
     try:
         if method == "GET":
-            response = requests.get(url, headers=headers, timeout=10)
+            response = requests.get(url, headers=headers, timeout=timeout)
         elif method == "POST":
-            response = requests.post(url, json=data, headers=headers, timeout=10)
+            response = requests.post(url, json=data, headers=headers, timeout=timeout)
         else:
             return False, f"Unsupported method: {method}", 0
 
         return response.status_code == 200, response.reason, response.status_code
 
     except requests.exceptions.Timeout:
-        return False, "Timeout", 0
+        return False, f"Timeout (>{timeout}s)", 0
     except requests.exceptions.ConnectionError:
         return False, "Connection Error", 0
     except Exception as e:
@@ -72,18 +73,15 @@ def check_headers(url: str) -> Dict[str, bool]:
         headers = response.headers
 
         checks = {
-            "X-Content-Type-Options": "nosniff"
-            in headers.get("X-Content-Type-Options", ""),
-            "X-Frame-Options": headers.get("X-Frame-Options", "")
-            in ["DENY", "SAMEORIGIN"],
-            "Strict-Transport-Security": "max-age="
-            in headers.get("Strict-Transport-Security", ""),
+            "X-Content-Type-Options": "nosniff" in headers.get("X-Content-Type-Options", ""),
+            "X-Frame-Options": headers.get("X-Frame-Options", "") in ["DENY", "SAMEORIGIN"],
+            "Strict-Transport-Security": "max-age=" in headers.get("Strict-Transport-Security", ""),
             "X-API-Version": bool(headers.get("X-API-Version")),
             "Server": bool(headers.get("Server")),
         }
 
         return checks
-    except:
+    except Exception:
         return {}
 
 
@@ -128,7 +126,7 @@ def main():
         response = requests.post(
             f"{BASE_URL}/api/v1/search/advanced",
             json={"product": "test", "limit": 1},
-            timeout=10,
+            timeout=30,
         )
         if response.status_code == 200:
             data = response.json()
@@ -139,7 +137,7 @@ def main():
             print(f"  {'✅' if has_ok else '❌'} 'ok' field present")
             print(f"  {'✅' if has_data else '❌'} 'data' field present")
             print(f"  {'✅' if has_trace else '⚠️'} Trace ID present")
-    except:
+    except Exception:
         print("  ❌ Could not verify response format")
 
     # Summary

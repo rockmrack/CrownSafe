@@ -2,15 +2,19 @@ name: Nightly — Readiness Probe
 
 on:
   schedule:
-    - cron: "0 5 * * *"  # 05:00 UTC daily
-  workflow_dispatch:  # Allow manual trigger
+    - cron: "0 5 * * *" # 05:00 UTC daily
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: read
+  issues: write
 
 jobs:
   readiness:
     runs-on: ubuntu-latest
     env:
       BABYSHIELD_BASE_URL: https://babyshield.cureviax.ai
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,13 +50,13 @@ jobs:
           echo "Date: $(date)" >> readiness_report.md
           echo "API URL: ${{ env.BABYSHIELD_BASE_URL }}" >> readiness_report.md
           echo "" >> readiness_report.md
-          
+
           if [ "${{ steps.readiness.outputs.exit_code }}" == "0" ]; then
             echo "✅ **API is READY for app store submission**" >> readiness_report.md
           else
             echo "❌ **API has issues that need attention**" >> readiness_report.md
           fi
-          
+
           echo "" >> readiness_report.md
           echo "## Test Results" >> readiness_report.md
           python scripts/validate_store_readiness.py 2>&1 >> readiness_report.md || true
@@ -83,7 +87,7 @@ jobs:
                         `**API URL:** ${{ env.BABYSHIELD_BASE_URL }}\n` +
                         `**Workflow Run:** [View Details](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n\n` +
                         `Please check the API status and deployment.`;
-            
+
             // Check if issue already exists for today
             const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
@@ -91,11 +95,11 @@ jobs:
               state: 'open',
               labels: 'readiness-check'
             });
-            
+
             const existingIssue = issues.data.find(issue => 
               issue.title.includes(date)
             );
-            
+
             if (!existingIssue) {
               await github.rest.issues.create({
                 owner: context.repo.owner,
