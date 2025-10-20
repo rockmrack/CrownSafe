@@ -62,7 +62,9 @@ celery_app.conf.update(
 celery_app.conf.beat_schedule = {
     "refresh-all-recalls-every-3-days": {
         "task": "risk_ingestion_tasks.sync_all_agencies",
-        "schedule": crontab(hour=2, minute=0, day_of_month="*/3"),  # Every 3 days at 2 AM UTC
+        "schedule": crontab(
+            hour=2, minute=0, day_of_month="*/3"
+        ),  # Every 3 days at 2 AM UTC
         "args": (),
     },
     # Risk recalculation after ingestion (once per day is sufficient)
@@ -133,7 +135,9 @@ def sync_all_agencies(days_back: int = 3):
                         "updated": updated,
                     }
                 )
-                logger.info(f"  ✅ {agency_name}: {processed} processed, {created} new, {updated} updated")
+                logger.info(
+                    f"  ✅ {agency_name}: {processed} processed, {created} new, {updated} updated"
+                )
             else:
                 results.append(
                     {
@@ -199,7 +203,9 @@ def sync_cpsc_data(days_back: int = 7, job_id: Optional[str] = None):
         # Run async code in sync context
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        records = loop.run_until_complete(connector.fetch_recalls(start_date=start_date))
+        records = loop.run_until_complete(
+            connector.fetch_recalls(start_date=start_date)
+        )
 
         job.records_fetched = len(records)
 
@@ -208,7 +214,9 @@ def sync_cpsc_data(days_back: int = 7, job_id: Optional[str] = None):
         created = 0
         updated = 0
 
-        _ = DataUnificationEngine()  # unification_engine (reserved for future deduplication)
+        _ = (
+            DataUnificationEngine()
+        )  # unification_engine (reserved for future deduplication)
 
         for record in records:
             # Find or create product
@@ -326,7 +334,9 @@ def recalculate_affected_products(days_back: int = 7):
     """
     Recalculate risk scores for recently updated products
     """
-    logger.info(f"Recalculating risk scores for products updated in last {days_back} days")
+    logger.info(
+        f"Recalculating risk scores for products updated in last {days_back} days"
+    )
 
     db = SessionLocal()
     risk_engine = RiskScoringEngine()
@@ -347,22 +357,34 @@ def recalculate_affected_products(days_back: int = 7):
 
         for product in recent_products:
             # Get incidents
-            incidents = db.query(SafetyIncident).filter(SafetyIncident.product_id == product.id).all()
+            incidents = (
+                db.query(SafetyIncident)
+                .filter(SafetyIncident.product_id == product.id)
+                .all()
+            )
 
             # Get company profile
             company_profile = None
             if product.manufacturer:
                 company_profile = (
                     db.query(CompanyComplianceProfile)
-                    .filter(CompanyComplianceProfile.company_name == product.manufacturer)
+                    .filter(
+                        CompanyComplianceProfile.company_name == product.manufacturer
+                    )
                     .first()
                 )
 
             # Calculate risk score
-            risk_components = risk_engine.calculate_risk_score(product, incidents, company_profile, db)
+            risk_components = risk_engine.calculate_risk_score(
+                product, incidents, company_profile, db
+            )
 
             # Update or create risk profile
-            risk_profile = db.query(ProductRiskProfile).filter(ProductRiskProfile.product_id == product.id).first()
+            risk_profile = (
+                db.query(ProductRiskProfile)
+                .filter(ProductRiskProfile.product_id == product.id)
+                .first()
+            )
 
             if not risk_profile:
                 risk_profile = ProductRiskProfile(product_id=product.id)
@@ -393,7 +415,9 @@ def recalculate_affected_products(days_back: int = 7):
 
             # Keep last 90 days of history
             cutoff = datetime.utcnow() - timedelta(days=90)
-            historical = [h for h in historical if datetime.fromisoformat(h["date"]) > cutoff]
+            historical = [
+                h for h in historical if datetime.fromisoformat(h["date"]) > cutoff
+            ]
 
             risk_profile.trend_data = historical
             risk_profile.risk_trend = risk_engine.calculate_trend(
@@ -433,7 +457,9 @@ def recalculate_high_risk_scores():
     try:
         # Find high-risk products
         high_risk_profiles = (
-            db.query(ProductRiskProfile).filter(ProductRiskProfile.risk_level.in_(["high", "critical"])).all()
+            db.query(ProductRiskProfile)
+            .filter(ProductRiskProfile.risk_level.in_(["high", "critical"]))
+            .all()
         )
 
         updated = 0
@@ -443,19 +469,27 @@ def recalculate_high_risk_scores():
             product = profile.product
 
             # Get latest incidents
-            incidents = db.query(SafetyIncident).filter(SafetyIncident.product_id == product.id).all()
+            incidents = (
+                db.query(SafetyIncident)
+                .filter(SafetyIncident.product_id == product.id)
+                .all()
+            )
 
             # Get company profile
             company_profile = None
             if product.manufacturer:
                 company_profile = (
                     db.query(CompanyComplianceProfile)
-                    .filter(CompanyComplianceProfile.company_name == product.manufacturer)
+                    .filter(
+                        CompanyComplianceProfile.company_name == product.manufacturer
+                    )
                     .first()
                 )
 
             # Recalculate
-            risk_components = risk_engine.calculate_risk_score(product, incidents, company_profile, db)
+            risk_components = risk_engine.calculate_risk_score(
+                product, incidents, company_profile, db
+            )
 
             # Check for significant changes
             old_score = profile.risk_score
@@ -516,7 +550,9 @@ def update_company_compliance():
 
             # Get or create company profile
             profile = (
-                db.query(CompanyComplianceProfile).filter(CompanyComplianceProfile.company_name == manufacturer).first()
+                db.query(CompanyComplianceProfile)
+                .filter(CompanyComplianceProfile.company_name == manufacturer)
+                .first()
             )
 
             if not profile:
@@ -650,7 +686,9 @@ def enrich_product_from_barcode(product_id: str, barcode: str):
 
 
 # Helper functions
-def _find_or_create_product_from_record(record: SafetyDataRecord, db: Session) -> Optional[ProductGoldenRecord]:
+def _find_or_create_product_from_record(
+    record: SafetyDataRecord, db: Session
+) -> Optional[ProductGoldenRecord]:
     """
     Find or create product from safety data record
     """
@@ -688,14 +726,18 @@ def _find_or_create_product_from_record(record: SafetyDataRecord, db: Session) -
     return product
 
 
-def _create_incident_from_record(record: SafetyDataRecord, product_id: str, db: Session) -> Optional[SafetyIncident]:
+def _create_incident_from_record(
+    record: SafetyDataRecord, product_id: str, db: Session
+) -> Optional[SafetyIncident]:
     """
     Create safety incident from record
     """
     # Check if incident already exists
     existing = (
         db.query(SafetyIncident)
-        .filter_by(product_id=product_id, source=record.source, source_id=record.source_id)
+        .filter_by(
+            product_id=product_id, source=record.source, source_id=record.source_id
+        )
         .first()
     )
 
@@ -727,7 +769,9 @@ def _update_product_data_source(product_id: str, record: SafetyDataRecord, db: S
     # Check if source exists
     existing = (
         db.query(ProductDataSource)
-        .filter_by(product_id=product_id, source_type=record.source, source_id=record.source_id)
+        .filter_by(
+            product_id=product_id, source_type=record.source, source_id=record.source_id
+        )
         .first()
     )
 
