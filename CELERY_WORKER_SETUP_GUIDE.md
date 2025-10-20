@@ -21,12 +21,12 @@
 
 ### **Celery's Role**
 
-| Component | Purpose | What It Does |
-|-----------|---------|--------------|
-| **Celery Beat** | Timer/Scheduler | Drops a job onto Redis every 3 days at scheduled time |
-| **Celery Worker** | Doer/Executor | Picks job from Redis, fetches recalls, normalizes/dedupes, writes to Postgres |
-| **Redis (Azure)** | Shared Queue | Message broker between Beat and Worker (MUST use same Azure Redis URL) |
-| **PostgreSQL** | Data Storage | Stores normalized recall data for fast app searches |
+| Component         | Purpose         | What It Does                                                                  |
+| ----------------- | --------------- | ----------------------------------------------------------------------------- |
+| **Celery Beat**   | Timer/Scheduler | Drops a job onto Redis every 3 days at scheduled time                         |
+| **Celery Worker** | Doer/Executor   | Picks job from Redis, fetches recalls, normalizes/dedupes, writes to Postgres |
+| **Redis (Azure)** | Shared Queue    | Message broker between Beat and Worker (MUST use same Azure Redis URL)        |
+| **PostgreSQL**    | Data Storage    | Stores normalized recall data for fast app searches                           |
 
 ---
 
