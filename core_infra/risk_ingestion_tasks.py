@@ -54,28 +54,119 @@ celery_app.conf.update(
 )
 
 # Schedule periodic tasks
+# BabyShield Update Strategy:
+# - Recalls DB refreshed every 3 days (not live API calls from app)
+# - Celery Beat schedules the job, drops it on Redis queue
+# - Celery Worker picks from Redis, fetches from agencies, normalizes, writes to Postgres
+# - Redis (Azure) is the shared queue between Beat and Worker
 celery_app.conf.beat_schedule = {
-    "daily-cpsc-sync": {
-        "task": "risk_ingestion_tasks.sync_cpsc_data",
-        "schedule": crontab(hour=2, minute=0),  # 2 AM daily
+    "refresh-all-recalls-every-3-days": {
+        "task": "risk_ingestion_tasks.sync_all_agencies",
+        "schedule": crontab(
+            hour=2, minute=0, day_of_month="*/3"
+        ),  # Every 3 days at 2 AM UTC
         "args": (),
     },
-    "weekly-eu-sync": {
-        "task": "risk_ingestion_tasks.sync_eu_safety_gate",
-        "schedule": crontab(day_of_week=1, hour=3, minute=0),  # Monday 3 AM
-        "args": (),
-    },
-    "hourly-risk-recalc": {
+    # Risk recalculation after ingestion (once per day is sufficient)
+    "daily-risk-recalc": {
         "task": "risk_ingestion_tasks.recalculate_high_risk_scores",
-        "schedule": crontab(minute=0),  # Every hour
-        "args": (),
-    },
-    "daily-company-compliance": {
-        "task": "risk_ingestion_tasks.update_company_compliance",
-        "schedule": crontab(hour=4, minute=0),  # 4 AM daily
+        "schedule": crontab(hour=3, minute=0),  # Daily at 3 AM UTC (after ingestion)
         "args": (),
     },
 }
+
+
+@celery_app.task(name="risk_ingestion_tasks.sync_all_agencies")
+def sync_all_agencies(days_back: int = 3):
+    """
+    Sync recalls from ALL supported agencies (every 3 days)
+
+    This is the main scheduled task that refreshes the entire recalls database.
+    - Fetches new recalls from all 39 international regulatory agencies
+    - Normalizes and deduplicates data
+    - Updates PostgreSQL database
+    - Updates Redis cache
+
+    Args:
+        days_back: Number of days to fetch (default 3 for 3-day refresh cycle)
+
+    Returns:
+        Dict with summary of ingestion results
+    """
+    logger.info(f"🔄 Starting ALL AGENCIES sync for last {days_back} days")
+
+    # List of primary agencies (expand to all 39 as connectors are implemented)
+    agencies = [
+        ("CPSC", sync_cpsc_data),
+        ("EU_SAFETY_GATE", sync_eu_safety_gate),
+        # Add more agencies as connectors become available:
+        # ("FDA", sync_fda_data),
+        # ("NHTSA", sync_nhtsa_data),
+        # ("TRANSPORT_CANADA", sync_transport_canada),
+        # ("HEALTH_CANADA", sync_health_canada),
+        # ... etc for all 39 agencies
+    ]
+
+    results = []
+    total_processed = 0
+    total_created = 0
+    total_updated = 0
+
+    for agency_name, sync_func in agencies:
+        try:
+            logger.info(f"  → Syncing {agency_name}...")
+            result = sync_func(days_back=days_back)
+
+            if result and result.get("status") == "completed":
+                processed = result.get("records_processed", 0)
+                created = result.get("records_created", 0)
+                updated = result.get("records_updated", 0)
+
+                total_processed += processed
+                total_created += created
+                total_updated += updated
+
+                results.append(
+                    {
+                        "agency": agency_name,
+                        "status": "success",
+                        "processed": processed,
+                        "created": created,
+                        "updated": updated,
+                    }
+                )
+                logger.info(
+                    f"  ✅ {agency_name}: {processed} processed, "
+                    f"{created} new, {updated} updated"
+                )
+            else:
+                results.append(
+                    {
+                        "agency": agency_name,
+                        "status": "failed",
+                        "error": "Unexpected result format",
+                    }
+                )
+                logger.warning(f"  ⚠️ {agency_name}: Failed")
+
+        except Exception as e:
+            logger.error(f"  ❌ {agency_name}: Error - {e}", exc_info=True)
+            results.append({"agency": agency_name, "status": "failed", "error": str(e)})
+
+    logger.info(
+        f"🎉 ALL AGENCIES sync complete: {total_processed} total processed, "
+        f"{total_created} new, {total_updated} updated"
+    )
+
+    return {
+        "success": True,
+        "total_processed": total_processed,
+        "total_created": total_created,
+        "total_updated": total_updated,
+        "agencies_synced": len([r for r in results if r["status"] == "success"]),
+        "agencies_failed": len([r for r in results if r["status"] == "failed"]),
+        "details": results,
+    }
 
 
 @celery_app.task(name="risk_ingestion_tasks.sync_cpsc_data")

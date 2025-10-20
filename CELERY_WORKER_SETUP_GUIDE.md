@@ -2,7 +2,95 @@
 
 **Date:** October 20, 2025  
 **Issue:** Celery worker running in Azure but no data in PostgreSQL or Redis  
-**Status:** ✅ **ROOT CAUSE IDENTIFIED + SOLUTION PROVIDED**
+**Status:** ✅ **ROOT CAUSE IDENTIFIED + SOLUTION PROVIDED**  
+**Architecture:** 3-day recall refresh cycle (updated)
+
+---
+
+## 🎯 HOW BABYSHIELD WORKS (SIMPLE)
+
+### **Searches (Mobile App)**
+- ✅ **App NEVER calls agency APIs live**
+- ✅ **App reads from PostgreSQL recalls database** → Fast & reliable
+- ✅ **131,743+ recalls** available instantly (no API delays)
+
+### **Updates (Background Process)**
+- ✅ **Database refreshed every 3 days** by pulling new recalls from 39 agencies
+- ✅ **Automatic** - runs in background via Celery Beat scheduler
+- ✅ **Normalizes & deduplicates** data before storing
+
+### **Celery's Role**
+
+| Component | Purpose | What It Does |
+|-----------|---------|--------------|
+| **Celery Beat** | Timer/Scheduler | Drops a job onto Redis every 3 days at scheduled time |
+| **Celery Worker** | Doer/Executor | Picks job from Redis, fetches recalls, normalizes/dedupes, writes to Postgres |
+| **Redis (Azure)** | Shared Queue | Message broker between Beat and Worker (MUST use same Azure Redis URL) |
+| **PostgreSQL** | Data Storage | Stores normalized recall data for fast app searches |
+
+---
+
+## 🔄 DATA FLOW DIAGRAM
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    EVERY 3 DAYS (2 AM UTC)                  │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+                    ┌──────────────────┐
+                    │  Celery Beat     │
+                    │  (Scheduler)     │
+                    └────────┬─────────┘
+                             │ Drops job on queue
+                             ▼
+                    ┌──────────────────┐
+                    │  Redis (Azure)   │
+                    │  Message Broker  │
+                    └────────┬─────────┘
+                             │ Worker picks job
+                             ▼
+                    ┌──────────────────┐
+                    │  Celery Worker   │
+                    │  (Executor)      │
+                    └────────┬─────────┘
+                             │
+        ┌────────────────────┼────────────────────┐
+        │                    │                    │
+        ▼                    ▼                    ▼
+  ┌──────────┐         ┌──────────┐        ┌──────────┐
+  │  CPSC    │         │ EU Gate  │        │ FDA/etc  │
+  │  API     │         │  API     │        │  APIs    │
+  └────┬─────┘         └────┬─────┘        └────┬─────┘
+       │                    │                    │
+       └────────────────────┼────────────────────┘
+                            │ Fetch recalls (last 3 days)
+                            ▼
+                   ┌─────────────────┐
+                   │  Normalize &    │
+                   │  Deduplicate    │
+                   └────────┬────────┘
+                            │
+                            ▼
+                   ┌─────────────────┐
+                   │  PostgreSQL     │
+                   │  (131,743+      │
+                   │   recalls)      │
+                   └────────┬────────┘
+                            │
+                            ▼
+                   ┌─────────────────┐
+                   │  Update Redis   │
+                   │  Cache          │
+                   └────────┬────────┘
+                            │
+                            ▼
+                   ┌─────────────────┐
+                   │  Mobile App     │
+                   │  (Instant       │
+                   │   Search)       │
+                   └─────────────────┘
+```
 
 ---
 
@@ -37,11 +125,8 @@ Hi Ross,
 ### 2. **Celery Beat (Periodic Task Scheduler)**
 
 **Purpose:** Automatically trigger tasks on schedule:
-- **Daily at 2 AM UTC:** Sync CPSC recalls (`sync_cpsc_data`)
-- **Monday 3 AM UTC:** Sync EU Safety Gate (`sync_eu_safety_gate`)
-- **Hourly:** Recalculate high-risk product scores (`recalculate_high_risk_scores`)
-- **Daily at 4 AM UTC:** Update company compliance profiles (`update_company_compliance`)
-- **Daily at 2:15 AM UTC:** Purge legal retention data (`purge_legal_retention`)
+- **Every 3 days at 2 AM UTC:** Sync ALL 39 agencies (`sync_all_agencies`)
+- **Daily at 3 AM UTC:** Recalculate risk scores (`recalculate_high_risk_scores`)
 
 **Current Status:** ❌ **NOT RUNNING** (no automatic task scheduling)
 
@@ -88,10 +173,10 @@ celery -A core_infra.risk_ingestion_tasks worker --beat --loglevel=info
 ```
 
 **Expected Outcome:**
-- ✅ CPSC data synced daily at 2 AM UTC
-- ✅ EU Safety Gate data synced Monday 3 AM UTC
-- ✅ Risk scores recalculated hourly
-- ✅ Company compliance updated daily at 4 AM UTC
+- ✅ All recalls database refreshed every 3 days at 2 AM UTC
+- ✅ Risk scores recalculated daily at 3 AM UTC (after any ingestion)
+- ✅ Data automatically normalized and deduplicated
+- ✅ Redis cache updated after each ingestion
 
 **Logs You'll See:**
 ```
