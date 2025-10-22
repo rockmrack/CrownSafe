@@ -1,72 +1,44 @@
 version: "3.8"
 
-# Azure Production Docker Compose
-# This file is for deploying to Azure with Azure PostgreSQL and Azure Redis
-# 
-# SECURITY: DO NOT commit with real credentials!
-# Create a .env.azure file with actual values (see .env.azure.example)
-# 
-# Usage: docker-compose -f docker-compose.azure.yml up -d
-
 services:
-  # Celery Worker (for background task execution)
   worker:
     build:
       context: .
       dockerfile: Dockerfile.final
-    # CORRECTED: Use risk_ingestion_tasks celery_app (not celery_tasks app)
-    # This app contains the 3-day recall sync tasks
-    command: celery -A core_infra.risk_ingestion_tasks:celery_app worker --loglevel=info --concurrency=4
+    command: celery -A core_infra.risk_ingestion_tasks:celery_app worker --loglevel=info
     environment:
-      # Azure PostgreSQL - URL-encoded password required for special characters
-      # Original password: LWJE6fTl(At*E)?c
-      # URL-encoded: LWJE6fTl%28At%2AE%29%3Fc
-      DATABASE_URL: postgresql://${AZURE_PG_USER}:${AZURE_PG_PASSWORD_ENCODED}@${AZURE_PG_HOST}:5432/${AZURE_PG_DATABASE}?sslmode=require
-      
-      # Azure Redis Cache - MUST use TLS (rediss://) and port 6380
-      # Same Redis URL for broker and backend (DB index /0)
+      TZ: UTC
+      PYTHONUNBUFFERED: "1"
+      CELERY_ENABLE_UTC: "1"
+      CELERY_TIMEZONE: UTC
+      # Force-import tasks in case the entrypoint app is changed later
+      CELERY_IMPORTS: core_infra.risk_ingestion_tasks
+
+      # Azure Redis (TLS + correct port, same DB index as worker; likely /0)
       REDIS_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
       CELERY_BROKER_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
       CELERY_RESULT_BACKEND: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
-    restart: unless-stopped
-    depends_on:
-      - beat
 
-  # Celery Beat (for scheduled task triggering - runs every 3 days at 2 AM UTC)
+      # Azure Postgres (password must be URL-encoded)
+      DATABASE_URL: postgresql://${AZURE_PG_USER}:${AZURE_PG_PASSWORD_ENCODED}@${AZURE_PG_HOST}:5432/${AZURE_PG_DATABASE}?sslmode=require
+    restart: unless-stopped
+
   beat:
     build:
       context: .
       dockerfile: Dockerfile.final
-    # CORRECTED: Use 'beat' command (not 'worker')
-    # This scheduler triggers the 3-day recall sync task
     command: celery -A core_infra.risk_ingestion_tasks:celery_app beat --loglevel=info
     environment:
-      # Azure PostgreSQL (same as worker) - URL-encoded password
-      DATABASE_URL: postgresql://${AZURE_PG_USER}:${AZURE_PG_PASSWORD_ENCODED}@${AZURE_PG_HOST}:5432/${AZURE_PG_DATABASE}?sslmode=require
-      
-      # Azure Redis Cache (MUST match worker exactly) - TLS required
+      TZ: UTC
+      PYTHONUNBUFFERED: "1"
+      CELERY_ENABLE_UTC: "1"
+      CELERY_TIMEZONE: UTC
+
       REDIS_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
       CELERY_BROKER_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
       CELERY_RESULT_BACKEND: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
+
+      DATABASE_URL: postgresql://${AZURE_PG_USER}:${AZURE_PG_PASSWORD_ENCODED}@${AZURE_PG_HOST}:5432/${AZURE_PG_DATABASE}?sslmode=require
     restart: unless-stopped
 
-  # OPTIONAL: Visual Agent Worker (for image processing tasks - separate Celery app)
-  # Uncomment if you need image processing capabilities (barcode scanning, visual recognition)
-  # visual-worker:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.final
-  #   command: celery -A core_infra.celery_tasks:app worker --loglevel=info --concurrency=2
-  #   environment:
-  #     DATABASE_URL: postgresql://${AZURE_PG_USER}:${AZURE_PG_PASSWORD_ENCODED}@${AZURE_PG_HOST}:5432/${AZURE_PG_DATABASE}?sslmode=require
-  #     REDIS_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
-  #     CELERY_BROKER_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
-  #     CELERY_RESULT_BACKEND: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
-  #     AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-  #     AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-  #     AWS_REGION: ${AWS_REGION:-us-east-1}
-  #     S3_BUCKET: ${S3_BUCKET:-babyshield-images}
-  #   restart: unless-stopped
 
-# Note: No volumes needed for Azure deployment (using managed services)
-# Azure PostgreSQL and Azure Redis are fully managed external services
