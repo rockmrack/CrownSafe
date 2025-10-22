@@ -357,7 +357,10 @@ def recalculate_affected_products(days_back: int = 7):
         # Then fetch the full product records by joining on IDs
         recent_products = (
             db.query(ProductGoldenRecord)
-            .join(product_ids_subquery, ProductGoldenRecord.id == product_ids_subquery.c.id)
+            .join(
+                product_ids_subquery,
+                ProductGoldenRecord.id == product_ids_subquery.c.id,
+            )
             .all()
         )
 
