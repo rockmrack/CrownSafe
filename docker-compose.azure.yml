@@ -14,10 +14,10 @@ services:
       # Force-import tasks in case the entrypoint app is changed later
       CELERY_IMPORTS: core_infra.risk_ingestion_tasks
 
-      # Azure Redis (TLS + correct port, same DB index as worker; likely /0)
-      REDIS_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
-      CELERY_BROKER_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
-      CELERY_RESULT_BACKEND: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
+      # Azure Redis (TLS + correct port, DB index /0, ssl_cert_reqs required by Celery 5.x)
+      REDIS_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0?ssl_cert_reqs=none
+      CELERY_BROKER_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0?ssl_cert_reqs=none
+      CELERY_RESULT_BACKEND: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0?ssl_cert_reqs=none
 
       # Azure Postgres (password must be URL-encoded)
       DATABASE_URL: postgresql://${AZURE_PG_USER}:${AZURE_PG_PASSWORD_ENCODED}@${AZURE_PG_HOST}:5432/${AZURE_PG_DATABASE}?sslmode=require
@@ -34,9 +34,10 @@ services:
       CELERY_ENABLE_UTC: "1"
       CELERY_TIMEZONE: UTC
 
-      REDIS_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
-      CELERY_BROKER_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
-      CELERY_RESULT_BACKEND: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
+      # Azure Redis (TLS + ssl_cert_reqs required by Celery 5.x)
+      REDIS_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0?ssl_cert_reqs=none
+      CELERY_BROKER_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0?ssl_cert_reqs=none
+      CELERY_RESULT_BACKEND: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0?ssl_cert_reqs=none
 
       DATABASE_URL: postgresql://${AZURE_PG_USER}:${AZURE_PG_PASSWORD_ENCODED}@${AZURE_PG_HOST}:5432/${AZURE_PG_DATABASE}?sslmode=require
     restart: unless-stopped
