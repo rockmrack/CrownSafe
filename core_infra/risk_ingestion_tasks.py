@@ -345,11 +345,19 @@ def recalculate_affected_products(days_back: int = 7):
         # Find products with recent incidents
         cutoff_date = datetime.utcnow() - timedelta(days=days_back)
 
-        recent_products = (
-            db.query(ProductGoldenRecord)
+        # First get distinct product IDs (avoids DISTINCT on json columns)
+        product_ids_subquery = (
+            db.query(ProductGoldenRecord.id)
             .join(SafetyIncident)
             .filter(SafetyIncident.created_at >= cutoff_date)
             .distinct()
+            .subquery()
+        )
+
+        # Then fetch the full product records by joining on IDs
+        recent_products = (
+            db.query(ProductGoldenRecord)
+            .join(product_ids_subquery, ProductGoldenRecord.id == product_ids_subquery.c.id)
             .all()
         )
 
