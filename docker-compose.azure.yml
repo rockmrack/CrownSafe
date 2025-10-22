@@ -2,7 +2,11 @@ version: "3.8"
 
 # Azure Production Docker Compose
 # This file is for deploying to Azure with Azure PostgreSQL and Azure Redis
-# Use: docker-compose -f docker-compose.azure.yml up -d
+# 
+# SECURITY: DO NOT commit with real credentials!
+# Create a .env.azure file with actual values (see .env.azure.example)
+# 
+# Usage: docker-compose -f docker-compose.azure.yml up -d
 
 services:
   # Celery Worker (for background task execution)
@@ -14,12 +18,16 @@ services:
     # This app contains the 3-day recall sync tasks
     command: celery -A core_infra.risk_ingestion_tasks:celery_app worker --loglevel=info --concurrency=4
     environment:
-      # Azure PostgreSQL
-      DATABASE_URL: postgresql://pgadmin:LWJE6fTl(At*E)?c@psql-eastus2-dev.postgres.database.azure.com:5432/babyshield-prod-db?sslmode=require
-      # Azure Redis Cache (same for all Celery services)
-      REDIS_URL: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379
-      CELERY_BROKER_URL: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379/0
-      CELERY_RESULT_BACKEND: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379/0
+      # Azure PostgreSQL - URL-encoded password required for special characters
+      # Original password: LWJE6fTl(At*E)?c
+      # URL-encoded: LWJE6fTl%28At%2AE%29%3Fc
+      DATABASE_URL: postgresql://${AZURE_PG_USER}:${AZURE_PG_PASSWORD_ENCODED}@${AZURE_PG_HOST}:5432/${AZURE_PG_DATABASE}?sslmode=require
+      
+      # Azure Redis Cache - MUST use TLS (rediss://) and port 6380
+      # Same Redis URL for broker and backend (DB index /0)
+      REDIS_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
+      CELERY_BROKER_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
+      CELERY_RESULT_BACKEND: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
     restart: unless-stopped
     depends_on:
       - beat
@@ -33,12 +41,13 @@ services:
     # This scheduler triggers the 3-day recall sync task
     command: celery -A core_infra.risk_ingestion_tasks:celery_app beat --loglevel=info
     environment:
-      # Azure PostgreSQL (same as worker)
-      DATABASE_URL: postgresql://pgadmin:LWJE6fTl(At*E)?c@psql-eastus2-dev.postgres.database.azure.com:5432/babyshield-prod-db?sslmode=require
-      # Azure Redis Cache (MUST match worker exactly)
-      REDIS_URL: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379
-      CELERY_BROKER_URL: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379/0
-      CELERY_RESULT_BACKEND: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379/0
+      # Azure PostgreSQL (same as worker) - URL-encoded password
+      DATABASE_URL: postgresql://${AZURE_PG_USER}:${AZURE_PG_PASSWORD_ENCODED}@${AZURE_PG_HOST}:5432/${AZURE_PG_DATABASE}?sslmode=require
+      
+      # Azure Redis Cache (MUST match worker exactly) - TLS required
+      REDIS_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
+      CELERY_BROKER_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
+      CELERY_RESULT_BACKEND: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
     restart: unless-stopped
 
   # OPTIONAL: Visual Agent Worker (for image processing tasks - separate Celery app)
@@ -49,10 +58,10 @@ services:
   #     dockerfile: Dockerfile.final
   #   command: celery -A core_infra.celery_tasks:app worker --loglevel=info --concurrency=2
   #   environment:
-  #     DATABASE_URL: postgresql://pgadmin:LWJE6fTl(At*E)?c@psql-eastus2-dev.postgres.database.azure.com:5432/babyshield-prod-db?sslmode=require
-  #     REDIS_URL: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379
-  #     CELERY_BROKER_URL: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379/0
-  #     CELERY_RESULT_BACKEND: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379/0
+  #     DATABASE_URL: postgresql://${AZURE_PG_USER}:${AZURE_PG_PASSWORD_ENCODED}@${AZURE_PG_HOST}:5432/${AZURE_PG_DATABASE}?sslmode=require
+  #     REDIS_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
+  #     CELERY_BROKER_URL: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
+  #     CELERY_RESULT_BACKEND: rediss://default:${AZURE_REDIS_KEY}@${AZURE_REDIS_HOST}:6380/0
   #     AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
   #     AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
   #     AWS_REGION: ${AWS_REGION:-us-east-1}

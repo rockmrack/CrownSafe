@@ -82,6 +82,7 @@ serviceAccountKey.json
 *_credentials.json
 .env.production
 .env.staging
+.env.azure
 
 # Flask stuff:
 instance/

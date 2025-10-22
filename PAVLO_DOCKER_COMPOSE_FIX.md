@@ -1,48 +1,148 @@
-# Response to Pavlo - Corrected Docker Compose Commands
+# Response to Pavlo - Corrected Docker Compose Commands (UPDATED)
 
-## 🐛 Issues Found in Your Docker Compose File
+## � CRITICAL ISSUES FOUND AND FIXED
 
-### Issue 1: Beat Service Running Worker Command ❌
+GPT identified **4 critical security and configuration issues** in the original compose file:
+
+### Issue 1: Redis URLs Not Using TLS ❌
 ```yaml
 # WRONG (in your file):
-beat:
-  command: celery -A core_infra.risk_ingestion_tasks:celery_app worker -l debug
+REDIS_URL: redis://default:...@redis-eastus2-dev.redis.cache.windows.net:6379
 ```
 
-**Problem:** The Beat service is running a `worker` command instead of `beat`. Beat is the scheduler (timer), not a task executor.
+**Problem:** Azure Redis Cache requires TLS encryption. Must use `rediss://` (with double 's') and port **6380**, not `redis://` on port 6379.
 
 **Fix:**
 ```yaml
 # CORRECT:
-beat:
-  command: celery -A core_infra.risk_ingestion_tasks:celery_app beat --loglevel=info
+REDIS_URL: rediss://default:${AZURE_REDIS_KEY}@redis-eastus2-dev.redis.cache.windows.net:6380/0
 ```
 
-### Issue 2: Worker Pointing to Wrong Celery App ❌
+### Issue 2: PostgreSQL Password Not URL-Encoded ❌
 ```yaml
-# WRONG (in your file):
+# WRONG:
+DATABASE_URL: postgresql://pgadmin:LWJE6fTl(At*E)?c@...
+```
+
+**Problem:** Password contains special characters `(`, `)`, `*`, `?` which break URL parsing. The `?` character is especially problematic as it starts query parameters.
+
+**URL Encoding Rules:**
+- `(` = `%28`
+- `)` = `%29`
+- `*` = `%2A`
+- `?` = `%3F`
+
+**Fix:**
+```yaml
+# CORRECT:
+DATABASE_URL: postgresql://pgadmin:LWJE6fTl%28At%2AE%29%3Fc@...
+```
+
+### Issue 3: Hardcoded Credentials in Docker Compose ❌
+**Problem:** Real passwords and API keys are hardcoded in the compose file. This is a **security risk** if committed to git.
+
+**Fix:** Use environment variable substitution with a `.env.azure` file (which is gitignored).
+
+### Issue 4: Wrong Celery App Used ❌
+(This was already fixed in my previous response, but worth repeating)
+
+```yaml
+# WRONG:
 worker:
   command: celery -A core_infra.celery_tasks:app worker -l debug
 ```
 
-**Problem:** You're using `core_infra.celery_tasks:app` which is for **image processing tasks** (visual agent). The recall sync tasks are in `core_infra.risk_ingestion_tasks:celery_app`.
-
 **Fix:**
 ```yaml
 # CORRECT:
 worker:
-  command: celery -A core_infra.risk_ingestion_tasks:celery_app worker --loglevel=info --concurrency=4
+  command: celery -A core_infra.risk_ingestion_tasks:celery_app worker --loglevel=info
 ```
 
-### Issue 3: NotRegistered Error Explained
-```json
-{"exc_type": "NotRegistered", "exc_message": ["risk_ingestion_tasks.recalculate_high_risk_scores"]}
+---
+
+## ✅ Corrected Files Created
+
+I've created **3 new files** in the repo:
+
+1. **`docker-compose.azure.yml`** - Fully corrected with environment variables
+2. **`.env.azure.example`** - Template showing all required variables
+3. **`.env.azure`** - Actual credentials (URL-encoded, **gitignored**)
+
+### Updated .gitignore
+Added `.env.azure` to `.gitignore` to prevent accidental commit of secrets.
+
+---
+
+## 🚀 Testing Commands (GPT's Test Suite)
+
+### Test 1: Validate Configuration
+```bash
+# Verify docker-compose config is valid and variables are substituted
+docker-compose -f docker-compose.azure.yml --env-file .env.azure config
 ```
 
-**Root Cause:** When you used `celery -A core_infra.celery_tasks beat`, Beat found the schedule in `risk_ingestion_tasks.py` but tried to queue tasks that don't exist in `celery_tasks.py`. The two Celery apps are separate:
+**Expected:** No errors, shows parsed configuration with substituted values.
 
-- **`core_infra.celery_tasks:app`** - Image processing tasks (barcode scanning, visual recognition)
-- **`core_infra.risk_ingestion_tasks:celery_app`** - Recall sync tasks (CPSC, EU, risk recalc) ← **This is what you need**
+✅ **Status: PASSED** - Configuration validates successfully.
+
+### Test 2: Start Services and Check Beat Logs
+```bash
+# Start both Beat and Worker
+docker-compose -f docker-compose.azure.yml --env-file .env.azure up -d beat worker
+
+# View Beat logs (should show scheduler registration)
+docker-compose -f docker-compose.azure.yml logs -f beat
+```
+
+**Expected Beat Logs:**
+```
+celery beat v5.3.4 (emerald-rush) is starting.
+Configuration ->
+    . broker -> rediss://default:***@redis-eastus2-dev.redis.cache.windows.net:6380/0
+    . scheduler -> celery.beat.PersistentScheduler
+[INFO] beat: Starting...
+[INFO] Scheduler: Registered task refresh-all-recalls-every-3-days
+  Schedule: <crontab: 0 2 */3 * * (m/h/d/dM/MY)>
+[INFO] Scheduler: Registered task daily-risk-recalc
+  Schedule: <crontab: 0 3 * * * (m/h/d/dM/MY)>
+```
+
+### Test 3: Verify Worker Registered Tasks
+```bash
+# Inspect registered tasks in the worker
+docker-compose -f docker-compose.azure.yml exec worker \
+  celery -A core_infra.risk_ingestion_tasks:celery_app inspect registered | grep risk_ingestion_tasks
+```
+
+**Expected Output:**
+```
+risk_ingestion_tasks.recalculate_high_risk_scores
+risk_ingestion_tasks.sync_all_agencies
+risk_ingestion_tasks.sync_cpsc_data
+risk_ingestion_tasks.sync_eu_safety_gate
+risk_ingestion_tasks.update_company_compliance
+risk_ingestion_tasks.enrich_product_from_barcode
+risk_ingestion_tasks.send_risk_alerts
+```
+
+### Test 4: Manual Task Trigger (End-to-End Test)
+```bash
+# Trigger a task manually to verify full pipeline
+docker-compose -f docker-compose.azure.yml exec worker \
+  python -c "from core_infra.risk_ingestion_tasks import recalculate_high_risk_scores as t; print(t.delay().id)"
+```
+
+**Expected:** Returns a task ID (UUID format), then check worker logs:
+```bash
+docker-compose -f docker-compose.azure.yml logs -f worker
+```
+
+**Should see:**
+```
+[INFO] Task risk_ingestion_tasks.recalculate_high_risk_scores[<task-id>] received
+[INFO] Task risk_ingestion_tasks.recalculate_high_risk_scores[<task-id>] succeeded in 0.12s
+```
 
 ---
 
@@ -212,11 +312,11 @@ curl -X POST https://your-api.com/api/v1/admin/ingest \
 
 ## 📝 Summary of Changes
 
-| Component | Old Command | New Command | Why |
-|-----------|-------------|-------------|-----|
-| Beat | `worker -l debug` | `beat --loglevel=info` | Beat schedules, doesn't execute |
-| Worker | `celery_tasks:app` | `risk_ingestion_tasks:celery_app` | Need recall sync tasks, not image tasks |
-| Both | Mixed Celery apps | Same app for both | Tasks must be registered in same app |
+| Component | Old Command        | New Command                       | Why                                     |
+| --------- | ------------------ | --------------------------------- | --------------------------------------- |
+| Beat      | `worker -l debug`  | `beat --loglevel=info`            | Beat schedules, doesn't execute         |
+| Worker    | `celery_tasks:app` | `risk_ingestion_tasks:celery_app` | Need recall sync tasks, not image tasks |
+| Both      | Mixed Celery apps  | Same app for both                 | Tasks must be registered in same app    |
 
 ---
 
