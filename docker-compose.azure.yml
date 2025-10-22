@@ -1,0 +1,63 @@
+version: "3.8"
+
+# Azure Production Docker Compose
+# This file is for deploying to Azure with Azure PostgreSQL and Azure Redis
+# Use: docker-compose -f docker-compose.azure.yml up -d
+
+services:
+  # Celery Worker (for background task execution)
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.final
+    # CORRECTED: Use risk_ingestion_tasks celery_app (not celery_tasks app)
+    # This app contains the 3-day recall sync tasks
+    command: celery -A core_infra.risk_ingestion_tasks:celery_app worker --loglevel=info --concurrency=4
+    environment:
+      # Azure PostgreSQL
+      DATABASE_URL: postgresql://pgadmin:LWJE6fTl(At*E)?c@psql-eastus2-dev.postgres.database.azure.com:5432/babyshield-prod-db?sslmode=require
+      # Azure Redis Cache (same for all Celery services)
+      REDIS_URL: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379
+      CELERY_BROKER_URL: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379/0
+      CELERY_RESULT_BACKEND: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379/0
+    restart: unless-stopped
+    depends_on:
+      - beat
+
+  # Celery Beat (for scheduled task triggering - runs every 3 days at 2 AM UTC)
+  beat:
+    build:
+      context: .
+      dockerfile: Dockerfile.final
+    # CORRECTED: Use 'beat' command (not 'worker')
+    # This scheduler triggers the 3-day recall sync task
+    command: celery -A core_infra.risk_ingestion_tasks:celery_app beat --loglevel=info
+    environment:
+      # Azure PostgreSQL (same as worker)
+      DATABASE_URL: postgresql://pgadmin:LWJE6fTl(At*E)?c@psql-eastus2-dev.postgres.database.azure.com:5432/babyshield-prod-db?sslmode=require
+      # Azure Redis Cache (MUST match worker exactly)
+      REDIS_URL: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379
+      CELERY_BROKER_URL: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379/0
+      CELERY_RESULT_BACKEND: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379/0
+    restart: unless-stopped
+
+  # OPTIONAL: Visual Agent Worker (for image processing tasks - separate Celery app)
+  # Uncomment if you need image processing capabilities (barcode scanning, visual recognition)
+  # visual-worker:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.final
+  #   command: celery -A core_infra.celery_tasks:app worker --loglevel=info --concurrency=2
+  #   environment:
+  #     DATABASE_URL: postgresql://pgadmin:LWJE6fTl(At*E)?c@psql-eastus2-dev.postgres.database.azure.com:5432/babyshield-prod-db?sslmode=require
+  #     REDIS_URL: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379
+  #     CELERY_BROKER_URL: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379/0
+  #     CELERY_RESULT_BACKEND: redis://default:ghLOhuWN6asDosIXyt6r5GJJWBD0l3szvAzCaKFZC2c=@redis-eastus2-dev.redis.cache.windows.net:6379/0
+  #     AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+  #     AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+  #     AWS_REGION: ${AWS_REGION:-us-east-1}
+  #     S3_BUCKET: ${S3_BUCKET:-babyshield-images}
+  #   restart: unless-stopped
+
+# Note: No volumes needed for Azure deployment (using managed services)
+# Azure PostgreSQL and Azure Redis are fully managed external services
