@@ -459,6 +459,47 @@ class UK_FSA_Connector:
         return []
 
 
+class UK_TradingStandards_Connector:
+    """UK Trading Standards (Local Authorities)"""
+
+    BASE_URL = "https://www.tradingstandards.uk/consumers/product-recalls"
+
+    async def fetch_recent_recalls(self) -> List[Recall]:
+        """Fetch recalls from UK Trading Standards"""
+        logger.info("Fetching recent recalls from UK Trading Standards...")
+        # Note: Requires web scraping - placeholder implementation
+        logger.warning(
+            "UK Trading Standards connector requires web scraping - not yet implemented"
+        )
+        return []
+
+
+class UK_DVSA_Connector:
+    """UK Driver and Vehicle Standards Agency (Car Seats & Vehicle Safety)"""
+
+    BASE_URL = "https://www.gov.uk/vehicle-recalls-and-faults"
+
+    async def fetch_recent_recalls(self) -> List[Recall]:
+        """Fetch vehicle and car seat recalls from UK DVSA"""
+        logger.info("Fetching recent recalls from UK DVSA...")
+        # Note: Requires web scraping - placeholder implementation
+        logger.warning("UK DVSA connector requires web scraping - not yet implemented")
+        return []
+
+
+class UK_MHRA_Connector:
+    """UK Medicines and Healthcare products Regulatory Agency"""
+
+    BASE_URL = "https://www.gov.uk/drug-device-alerts"
+
+    async def fetch_recent_recalls(self) -> List[Recall]:
+        """Fetch medical device and pharmaceutical recalls from UK MHRA"""
+        logger.info("Fetching recent recalls from UK MHRA...")
+        # Note: Requires web scraping - placeholder implementation
+        logger.warning("UK MHRA connector requires web scraping - not yet implemented")
+        return []
+
+
 # ================================
 # 🇦🇺 AUSTRALIA & NEW ZEALAND (2)
 # ================================
@@ -626,10 +667,13 @@ class ConnectorRegistry:
             "Health_Canada": HealthCanadaConnector(),
             "CFIA": CFIAConnector(),
             "Transport_Canada": TransportCanadaConnector(),
-            # European Agencies (5)
+            # European Agencies (8) - Enhanced UK coverage
             "EU_RAPEX": EU_RAPEX_Connector(),
             "UK_OPSS": UK_OPSS_Connector(),
             "UK_FSA": UK_FSA_Connector(),
+            "UK_TradingStandards": UK_TradingStandards_Connector(),
+            "UK_DVSA": UK_DVSA_Connector(),
+            "UK_MHRA": UK_MHRA_Connector(),
             # Australia & New Zealand (2)
             "ACCC": ACCCConnector(),
             "Commerce_Commission_NZ": CommerceCommissionNZConnector(),

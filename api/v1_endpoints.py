@@ -190,6 +190,24 @@ AGENCIES = [
         country="United Kingdom",
         website="https://www.food.gov.uk",
     ),
+    Agency(
+        code="UK_TRADING_STANDARDS",
+        name="Trading Standards (Local Authorities)",
+        country="United Kingdom",
+        website="https://www.tradingstandards.uk/consumers/product-recalls",
+    ),
+    Agency(
+        code="UK_DVSA",
+        name="Driver and Vehicle Standards Agency",
+        country="United Kingdom",
+        website="https://www.gov.uk/vehicle-recalls-and-faults",
+    ),
+    Agency(
+        code="UK_MHRA",
+        name="Medicines and Healthcare products Regulatory Agency",
+        country="United Kingdom",
+        website="https://www.gov.uk/drug-device-alerts",
+    ),
     # France (1 agency)
     Agency(
         code="RAPPEL_CONSO",
@@ -387,6 +405,9 @@ AGENCY_CODE_MAP = {
     "EU RAPEX": "EU_SAFETY_GATE",
     "UK OPSS": "UK_OPSS",
     "UK FSA": "UK_FSA",
+    "UK Trading Standards": "UK_TRADING_STANDARDS",
+    "UK DVSA": "UK_DVSA",
+    "UK MHRA": "UK_MHRA",
     "RappelConso": "RAPPEL_CONSO",
     "Lebensmittelwarnung": "LEBENSMITTELWARNUNG",
     "NVWA": "NVWA",
