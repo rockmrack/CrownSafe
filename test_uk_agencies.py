@@ -21,6 +21,7 @@ try:
         UK_MHRA_Connector,
         ConnectorRegistry,
     )
+
     print("✅ All UK connector imports successful")
 except ImportError as e:
     print(f"❌ Import failed: {e}")
@@ -78,7 +79,7 @@ print("=" * 80)
 
 try:
     registry = ConnectorRegistry()
-    print(f"✅ ConnectorRegistry initialized")
+    print("✅ ConnectorRegistry initialized")
     print(f"   Total connectors: {len(registry.connectors)}")
 
     uk_agencies_in_registry = [
@@ -97,7 +98,7 @@ try:
         "UK_MHRA",
     }
     if expected_uk.issubset(set(uk_agencies_in_registry)):
-        print(f"\n✅ All 5 UK agencies found in registry")
+        print("\n✅ All 5 UK agencies found in registry")
     else:
         missing = expected_uk - set(uk_agencies_in_registry)
         print(f"\n⚠️  Missing UK agencies: {missing}")
@@ -114,7 +115,7 @@ print("=" * 80)
 try:
     from api.v1_endpoints import AGENCIES, AGENCY_CODE_MAP
 
-    print(f"✅ API v1_endpoints imported")
+    print("✅ API v1_endpoints imported")
     print(f"   Total agencies: {len(AGENCIES)}")
 
     uk_agencies_in_api = [
@@ -126,7 +127,7 @@ try:
         print(f"      Website: {agency.website}")
 
     # Check name mapping
-    print(f"\n   UK Agencies in Name Mapping:")
+    print("\n   UK Agencies in Name Mapping:")
     uk_mappings = {k: v for k, v in AGENCY_CODE_MAP.items() if "UK" in v}
     for name, code in uk_mappings.items():
         print(f"   ✅ '{name}' → {code}")
@@ -141,7 +142,7 @@ try:
     api_codes = {agency.code for agency in uk_agencies_in_api}
 
     if expected_codes.issubset(api_codes):
-        print(f"\n✅ All 5 UK agencies found in API definitions")
+        print("\n✅ All 5 UK agencies found in API definitions")
     else:
         missing = expected_codes - api_codes
         print(f"\n⚠️  Missing UK agencies in API: {missing}")
@@ -177,9 +178,9 @@ try:
             print(f"   ❌ {connector}: NOT FOUND")
 
     if all(connector in source for connector in expected_connectors):
-        print(f"\n✅ All 5 UK connectors found in agent_logic.py")
+        print("\n✅ All 5 UK connectors found in agent_logic.py")
     else:
-        print(f"\n⚠️  Some UK connectors missing from agent_logic.py")
+        print("\n⚠️  Some UK connectors missing from agent_logic.py")
 
 except Exception as e:
     print(f"❌ Agent logic test failed: {e}")
@@ -190,7 +191,7 @@ print("\n" + "=" * 80)
 print("TEST SUMMARY - UK GOVERNMENT AGENCIES")
 print("=" * 80)
 
-summary = f"""
+summary = """
 📊 UK Agency Coverage: 5 of 5 (100%)
 
 1. ✅ UK OPSS (Office for Product Safety and Standards)
