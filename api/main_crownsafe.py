@@ -896,6 +896,15 @@ try:
 except Exception as e:
     logger.error(f"Failed to register hair profile endpoints: {e}")
 
+# Import and include ingredient explainer endpoints (Crown Safe MVP)
+try:
+    from api.ingredient_explainer_endpoints import router as ingredient_explainer_router
+
+    app.include_router(ingredient_explainer_router)
+    logger.info("Ingredient explainer endpoints registered (/api/v1/ingredients)")
+except Exception as e:
+    logger.error(f"Failed to register ingredient explainer endpoints: {e}")
+
 # Import and include barcode scanning endpoints
 try:
     from api.barcode_endpoints import (

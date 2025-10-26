@@ -49,12 +49,8 @@ class HairProfileCreate(BaseModel):
         description="Sensitivities: protein-sensitive, coconut-sensitive, fragrance-sensitive",
     )
     preferred_brands: List[str] = Field(default=[], description="Preferred brand names")
-    avoided_ingredients: List[str] = Field(
-        default=[], description="Ingredients to avoid"
-    )
-    climate: str = Field(
-        default="humid", description="Climate: humid, dry, mixed (affects humectants)"
-    )
+    avoided_ingredients: List[str] = Field(default=[], description="Ingredients to avoid")
+    climate: str = Field(default="humid", description="Climate: humid, dry, mixed (affects humectants)")
 
     class Config:
         json_schema_extra = {
@@ -130,11 +126,7 @@ async def create_hair_profile(
     """
     try:
         # Check if profile already exists
-        existing_profile = (
-            db.query(HairProfileModel)
-            .filter(HairProfileModel.user_id == current_user.id)
-            .first()
-        )
+        existing_profile = db.query(HairProfileModel).filter(HairProfileModel.user_id == current_user.id).first()
 
         if existing_profile:
             raise HTTPException(
@@ -201,11 +193,7 @@ async def get_hair_profile(
             detail="You can only access your own hair profile",
         )
 
-    profile = (
-        db.query(HairProfileModel)
-        .filter(HairProfileModel.user_id == user_id)
-        .first()
-    )
+    profile = db.query(HairProfileModel).filter(HairProfileModel.user_id == user_id).first()
 
     if not profile:
         raise HTTPException(
@@ -235,11 +223,7 @@ async def update_hair_profile(
             detail="You can only update your own hair profile",
         )
 
-    profile = (
-        db.query(HairProfileModel)
-        .filter(HairProfileModel.user_id == user_id)
-        .first()
-    )
+    profile = db.query(HairProfileModel).filter(HairProfileModel.user_id == user_id).first()
 
     if not profile:
         raise HTTPException(
@@ -259,9 +243,7 @@ async def update_hair_profile(
         db.commit()
         db.refresh(profile)
 
-        logger.info(
-            f"✅ Updated hair profile for user {user_id} - fields: {list(update_data.keys())}"
-        )
+        logger.info(f"✅ Updated hair profile for user {user_id} - fields: {list(update_data.keys())}")
 
         return ApiResponse(
             success=True,
@@ -299,11 +281,7 @@ async def delete_hair_profile(
             detail="You can only delete your own hair profile",
         )
 
-    profile = (
-        db.query(HairProfileModel)
-        .filter(HairProfileModel.user_id == user_id)
-        .first()
-    )
+    profile = db.query(HairProfileModel).filter(HairProfileModel.user_id == user_id).first()
 
     if not profile:
         raise HTTPException(
@@ -317,9 +295,7 @@ async def delete_hair_profile(
 
         logger.info(f"✅ Deleted hair profile for user {user_id}")
 
-        return ApiResponse(
-            success=True, message="Hair profile deleted successfully", data=None
-        )
+        return ApiResponse(success=True, message="Hair profile deleted successfully", data=None)
 
     except Exception as e:
         logger.error(f"❌ Error deleting hair profile: {e}")
