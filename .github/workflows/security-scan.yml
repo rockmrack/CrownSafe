@@ -139,7 +139,7 @@ jobs:
       - name: Upload Trivy results to GitHub Security
         if: always()
         continue-on-error: true
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: "trivy-results.sarif"
 
@@ -169,7 +169,7 @@ jobs:
       - name: Upload Grype results
         if: always()
         continue-on-error: true # Don't block if Advanced Security not available
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: results.sarif
 
@@ -275,14 +275,14 @@ jobs:
       # CodeQL Analysis
       - name: Initialize CodeQL
         continue-on-error: true # Don't block if Advanced Security not available
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: python
           queries: security-and-quality
 
       - name: Perform CodeQL Analysis
         continue-on-error: true # Don't block if Advanced Security not available
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
 
       # Custom security checks
       - name: Custom Security Checks
