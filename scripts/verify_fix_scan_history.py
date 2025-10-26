@@ -1,6 +1,6 @@
-import sqlite3
 import os
-import sys
+import re
+import sqlite3
 
 DB = os.path.abspath("dev.db")
 REQUIRED = [
@@ -31,15 +31,24 @@ conn = sqlite3.connect(DB)
 cur = conn.cursor()
 
 # Ensure table exists minimally
-cur.execute(
-    "CREATE TABLE IF NOT EXISTS scan_history (id INTEGER PRIMARY KEY, scan_id TEXT)"
-)
+cur.execute("CREATE TABLE IF NOT EXISTS scan_history (id INTEGER PRIMARY KEY, scan_id TEXT)")
 conn.commit()
 
 # Current columns
 cur.execute("PRAGMA table_info('scan_history')")
 have = [r[1] for r in cur.fetchall()]
 missing = [c for c in REQUIRED if c not in have]
+
+identifier_pattern = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+
+def _quote_identifier(name: str) -> str:
+    """Return a safely-quoted SQLite identifier."""
+
+    if not identifier_pattern.fullmatch(name):
+        raise ValueError(f"Unsafe identifier provided: {name}")
+    return f'"{name}"'
+
 
 # Add any missing columns with safe defaults
 defaults = {
@@ -56,7 +65,8 @@ defaults = {
 }
 for c in missing:
     sqltype = defaults.get(c, "TEXT")
-    cur.execute(f"ALTER TABLE scan_history ADD COLUMN {c} {sqltype}")
+    quoted_column = _quote_identifier(c)
+    cur.execute(f"ALTER TABLE scan_history ADD COLUMN {quoted_column} {sqltype}")
 
 conn.commit()
 

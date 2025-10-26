@@ -5,7 +5,7 @@ from datetime import datetime
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
-from api.main_babyshield import app
+from api.main_crownsafe import app
 from db.models.scan_history import ScanHistory
 from agents.chat.chat_agent.agent_logic import ChatAgentLogic
 

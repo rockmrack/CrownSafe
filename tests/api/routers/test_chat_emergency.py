@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock, patch
 from fastapi.testclient import TestClient
-from api.main_babyshield import app
+from api.main_crownsafe import app
 from api.routers.chat import looks_emergency, build_suggested_questions, EMERGENCY_TERMS
 from uuid import uuid4
 

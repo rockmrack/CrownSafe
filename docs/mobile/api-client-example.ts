@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * BabyShield Mobile - Type-Safe API Client
  * 
@@ -5,7 +6,7 @@
  * Works with React Native, Expo, or any TypeScript mobile framework
  */
 
-import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type {
     AuthResponse,
@@ -33,18 +34,24 @@ import type {
 
 const API_CONFIG = {
     // Use environment variables for different environments
-    baseURL: process.env.API_BASE_URL || 'https://babyshield.cureviax.ai',
+    baseURL: process.env.API_BASE_URL || 'https://crownsafe.cureviax.ai',
     timeout: 30000,
     headers: {
         'Content-Type': 'application/json',
     },
 };
 
+const STORAGE_PREFIX = process.env.APP_STORAGE_PREFIX || 'crownsafe';
+
+function makeStorageKey(suffix: string): string {
+    return `${STORAGE_PREFIX}_${suffix}`;
+}
+
 // Storage keys
 const STORAGE_KEYS = {
-    ACCESS_TOKEN: '@babyshield_access_token',
-    REFRESH_TOKEN: '@babyshield_refresh_token',
-    USER_DATA: '@babyshield_user_data',
+    ACCESS_TOKEN: makeStorageKey('access_token'),
+    REFRESH_TOKEN: makeStorageKey('refresh_token'),
+    USER_DATA: makeStorageKey('user_data'),
 };
 
 // ============================================
@@ -69,18 +76,18 @@ class BabyShieldAPIClient {
     private setupInterceptors(): void {
         // Request interceptor - Add auth token
         this.client.interceptors.request.use(
-            (config) => {
+            (config: AxiosRequestConfig) => {
                 if (this.accessToken) {
                     config.headers.Authorization = `Bearer ${this.accessToken}`;
                 }
                 return config;
             },
-            (error) => Promise.reject(error)
+            (error: AxiosError) => Promise.reject(error)
         );
 
         // Response interceptor - Handle token refresh
         this.client.interceptors.response.use(
-            (response) => response,
+            (response: AxiosResponse) => response,
             async (error: AxiosError<APIError>) => {
                 const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 

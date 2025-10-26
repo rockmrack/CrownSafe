@@ -153,15 +153,15 @@ class TestImportsAndConfiguration:
     # API MODULE IMPORTS (20 tests)
     # ========================
 
-    def test_import_main_babyshield(self):
-        """Test main_babyshield module import"""
-        from api import main_babyshield
+    def test_import_main_crownsafe(self):
+        """Test main_crownsafe module import"""
+        from api import main_crownsafe
 
-        assert main_babyshield is not None
+        assert main_crownsafe is not None
 
     def test_import_app_from_main(self):
         """Test app import from main"""
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         assert app is not None
 

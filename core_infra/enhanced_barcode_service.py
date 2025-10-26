@@ -15,11 +15,13 @@ from core_infra.barcode_validator import (
 )
 from core_infra.database import get_db_session
 
-try:
-    from core_infra.database import RecallDB
-except ImportError:
-    # Fallback for different database models
-    from data_models.recall import RecallDB
+# REMOVED FOR CROWN SAFE: RecallDB barcode scanning no longer applicable
+# try:
+#     from core_infra.database import RecallDB
+# except ImportError:
+#     # Fallback for different database models
+#     from data_models.recall import RecallDB
+
 from core_infra.barcode_scanner import scanner, ScanResult
 
 logger = logging.getLogger(__name__)
@@ -72,9 +74,7 @@ class EnhancedBarcodeService:
                     confidence_score=validation_result.confidence_score,
                     scan_timestamp=scan_timestamp,
                     error_message=validation_result.error_message,
-                    recommendations=self.validator._get_recommendations(
-                        validation_result
-                    ),
+                    recommendations=self.validator._get_recommendations(validation_result),
                 )
 
             # Step 2: Search for exact product matches
@@ -83,9 +83,7 @@ class EnhancedBarcodeService:
             )
 
             # Step 3: Calculate overall confidence
-            confidence = self._calculate_overall_confidence(
-                validation_result, exact_matches
-            )
+            confidence = self._calculate_overall_confidence(validation_result, exact_matches)
 
             # Step 4: Log scan attempt
             self.logger.info(
@@ -103,9 +101,7 @@ class EnhancedBarcodeService:
                 exact_matches=exact_matches,
                 confidence_score=confidence,
                 scan_timestamp=scan_timestamp,
-                recommendations=self._get_scan_recommendations(
-                    validation_result, exact_matches
-                ),
+                recommendations=self._get_scan_recommendations(validation_result, exact_matches),
             )
 
         except Exception as e:
@@ -131,137 +127,28 @@ class EnhancedBarcodeService:
         self, normalized_barcode: str, barcode_type: BarcodeType
     ) -> List[Dict[str, Any]]:
         """Find exact product matches in database"""
-        matches = []
+        # REMOVED FOR CROWN SAFE: Recall database search no longer applicable
+        # Crown Safe uses hair products (HairProductModel), not baby product recalls
 
-        try:
-            with get_db_session() as db:
-                # Define search conditions based on barcode type
-                search_conditions = self._build_search_conditions(
-                    normalized_barcode, barcode_type
-                )
+        logger.info(f"⏭️  Database search skipped for barcode {normalized_barcode} (deprecated for Crown Safe)")
 
-                # Execute search
-                products = db.query(RecallDB).filter(search_conditions).all()
+        # Return empty list for backward compatibility
+        return []
 
-                # Convert to dictionaries
-                for product in products:
-                    match = {
-                        "product_id": product.id,
-                        "product_name": product.product_name,
-                        "brand_name": product.brand_name,
-                        "model_number": product.model_number,
-                        "barcode": product.barcode,
-                        "upc": product.upc,
-                        "ean_code": product.ean_code,
-                        "gtin": product.gtin,
-                        "recall_status": product.recall_status,
-                        "recall_date": product.recall_date.isoformat()
-                        if product.recall_date
-                        else None,
-                        "hazard_description": product.hazard_description,
-                        "risk_level": product.risk_level,
-                        "match_type": self._determine_match_type(
-                            normalized_barcode, product, barcode_type
-                        ),
-                        "match_confidence": self._calculate_match_confidence(
-                            normalized_barcode, product, barcode_type
-                        ),
-                    }
-                    matches.append(match)
+        # Original recall database search removed (40+ lines):
+        # try:
+        #     with get_db_session() as db:
+        #         search_conditions = self._build_search_conditions(normalized_barcode, barcode_type)
+        #         products = db.query(RecallDB).filter(search_conditions).all()
+        #         for product in products:
+        #             matches.append({...})  # Product matching logic
 
-                # Sort by match confidence (highest first)
-                matches.sort(key=lambda x: x["match_confidence"], reverse=True)
-
-        except Exception as e:
-            self.logger.error(f"Database search failed: {e}")
-
-        return matches
-
-    def _build_search_conditions(
-        self, normalized_barcode: str, barcode_type: BarcodeType
-    ):
-        """Build database search conditions based on barcode type"""
-        from sqlalchemy import and_, or_
-
-        # Base conditions for different barcode fields
-        conditions = []
-
-        # Always search in barcode field
-        conditions.append(RecallDB.barcode == normalized_barcode)
-
-        # For numeric barcodes, also search in UPC/EAN/GTIN fields
-        if barcode_type in [
-            BarcodeType.UPC_A,
-            BarcodeType.UPC_E,
-            BarcodeType.EAN_13,
-            BarcodeType.EAN_8,
-        ]:
-            conditions.extend(
-                [
-                    RecallDB.upc == normalized_barcode,
-                    RecallDB.ean_code == normalized_barcode,
-                    RecallDB.gtin == normalized_barcode,
-                ]
-            )
-
-        # For GS1-128, search in structured data fields
-        if barcode_type == BarcodeType.GS1_128:
-            conditions.extend(
-                [
-                    RecallDB.gtin == normalized_barcode,
-                    RecallDB.serial_number == normalized_barcode,
-                ]
-            )
-
-        # Combine with OR logic
-        return or_(*conditions)
-
-    def _determine_match_type(
-        self, normalized_barcode: str, product: RecallDB, barcode_type: BarcodeType
-    ) -> str:
-        """Determine the type of match found"""
-        if product.barcode == normalized_barcode:
-            return "exact_barcode"
-        elif product.upc == normalized_barcode:
-            return "exact_upc"
-        elif product.ean_code == normalized_barcode:
-            return "exact_ean"
-        elif product.gtin == normalized_barcode:
-            return "exact_gtin"
-        elif product.serial_number == normalized_barcode:
-            return "exact_serial"
-        else:
-            return "partial_match"
-
-    def _calculate_match_confidence(
-        self, normalized_barcode: str, product: RecallDB, barcode_type: BarcodeType
-    ) -> float:
-        """Calculate confidence score for a product match"""
-        confidence = 0.0
-
-        # Exact matches get highest confidence
-        if product.barcode == normalized_barcode:
-            confidence = 1.0
-        elif (
-            product.upc == normalized_barcode or product.ean_code == normalized_barcode
-        ):
-            confidence = 0.95
-        elif product.gtin == normalized_barcode:
-            confidence = 0.90
-        elif product.serial_number == normalized_barcode:
-            confidence = 0.85
-        else:
-            confidence = 0.50  # Partial match
-
-        # Boost confidence for recent recalls (more relevant)
-        if product.recall_date:
-            days_old = (datetime.utcnow() - product.recall_date).days
-            if days_old < 365:  # Within last year
-                confidence += 0.05
-            elif days_old < 30:  # Within last month
-                confidence += 0.10
-
-        return min(confidence, 1.0)
+    # REMOVED FOR CROWN SAFE: Helper functions for RecallDB search no longer needed
+    # def _build_search_conditions(...)
+    # def _determine_match_type(...)
+    # def _calculate_match_confidence(...)
+    # These functions built SQL conditions and analyzed RecallDB product matches
+    # Crown Safe uses hair products (HairProductModel), not baby product recalls
 
     def _calculate_overall_confidence(
         self, validation_result: BarcodeValidationResult, matches: List[Dict[str, Any]]
@@ -283,17 +170,13 @@ class EnhancedBarcodeService:
         recommendations = []
 
         if not matches:
-            recommendations.append(
-                "No products found with this barcode - it may be a new product"
-            )
+            recommendations.append("No products found with this barcode - it may be a new product")
             recommendations.append("Try searching by product name or brand instead")
         else:
             recommendations.append(f"Found {len(matches)} exact product match(es)")
 
             if matches[0]["recall_status"] == "active":
-                recommendations.append(
-                    "⚠️ This product has an active recall - check details"
-                )
+                recommendations.append("⚠️ This product has an active recall - check details")
             else:
                 recommendations.append("✅ No active recalls found for this product")
 
@@ -308,17 +191,13 @@ class EnhancedBarcodeService:
         return {
             "scan_timestamp": result.scan_timestamp.isoformat(),
             "is_valid": result.is_valid,
-            "barcode_validation": self.validator.get_validation_summary(
-                result.barcode_validation
-            ),
+            "barcode_validation": self.validator.get_validation_summary(result.barcode_validation),
             "product_found": result.product_found,
             "exact_matches_count": len(result.exact_matches),
             "confidence_score": result.confidence_score,
             "error_message": result.error_message,
             "recommendations": result.recommendations or [],
-            "matches": result.exact_matches[:5]
-            if result.exact_matches
-            else [],  # Limit to top 5
+            "matches": result.exact_matches[:5] if result.exact_matches else [],  # Limit to top 5
         }
 
 

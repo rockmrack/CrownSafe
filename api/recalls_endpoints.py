@@ -14,7 +14,8 @@ from pydantic import BaseModel
 from sqlalchemy import or_, and_, desc, asc, func, select
 from sqlalchemy.orm import Session
 
-from core_infra.database import get_db, RecallDB
+# CROWN SAFE: RecallDB model removed - replaced with HairProductModel
+from core_infra.database import get_db
 
 router = APIRouter(prefix="/api/v1/recalls", tags=["recalls"])
 
@@ -110,17 +111,11 @@ def list_recalls(
         min_length=2,
         description="Free text search over name/brand/description/hazard/category",
     ),
-    agency: Optional[str] = Query(
-        None, description="Filter by source agency (e.g., CPSC, FDA)"
-    ),
+    agency: Optional[str] = Query(None, description="Filter by source agency (e.g., CPSC, FDA)"),
     country: Optional[str] = Query(None, description="Filter by country"),
     category: Optional[str] = Query(None, description="Filter by product category"),
-    hazard_category: Optional[str] = Query(
-        None, description="Filter by hazard category"
-    ),
-    date_from: Optional[date] = Query(
-        None, description="Filter recalls from this date"
-    ),
+    hazard_category: Optional[str] = Query(None, description="Filter by hazard category"),
+    date_from: Optional[date] = Query(None, description="Filter recalls from this date"),
     date_to: Optional[date] = Query(None, description="Filter recalls to this date"),
     sort: str = Query(
         "recent",
@@ -157,151 +152,43 @@ def list_recalls(
     Also supports filtering by agency, country, category, hazard type, and date range.
     """
     # Base query
-    qry = db.query(RecallDB)
+    # CROWN SAFE: RecallDB model removed - this endpoint returns empty results
+    # Baby product recall functionality replaced with hair product safety analysis
+    return {
+        "recalls": [],
+        "total": 0,
+        "page": page or 1,
+        "page_size": page_size or limit,
+        "offset": offset or 0,
+        "limit": limit,
+        "filters_applied": {
+            "query": q,
+            "agency": agency,
+            "country": country,
+            "category": category,
+            "hazard_category": hazard_category,
+            "date_from": str(date_from) if date_from else None,
+            "date_to": str(date_to) if date_to else None,
+        },
+        "message": "Baby product recalls not available in Crown Safe (hair product platform)",
+    }
 
-    # Free text search filter
-    if q:
-        like = f"%{q}%"
-        qry = qry.filter(
-            or_(
-                RecallDB.product_name.ilike(like),
-                RecallDB.brand.ilike(like),
-                RecallDB.description.ilike(like),
-                RecallDB.hazard.ilike(like),
-                RecallDB.hazard_category.ilike(like),
-                RecallDB.manufacturer.ilike(like),
-                RecallDB.recall_reason.ilike(like),
-                RecallDB.model_number.ilike(like),
-            )
-        )
+    # CROWN SAFE: Remaining pagination code also removed
+    # Return empty results for baby product recalls
 
-    # Specific filters
-    if agency:
-        qry = qry.filter(RecallDB.source_agency.ilike(f"%{agency}%"))
-
-    if country:
-        qry = qry.filter(RecallDB.country.ilike(f"%{country}%"))
-
-    if category:
-        # Note: product_category field not available in current schema
-        # Filter by product_name or brand instead
-        qry = qry.filter(
-            or_(
-                RecallDB.product_name.ilike(f"%{category}%"),
-                RecallDB.brand.ilike(f"%{category}%"),
-            )
-        )
-
-    if hazard_category:
-        qry = qry.filter(RecallDB.hazard_category.ilike(f"%{hazard_category}%"))
-
-    if date_from:
-        qry = qry.filter(RecallDB.recall_date >= date_from)
-
-    if date_to:
-        qry = qry.filter(RecallDB.recall_date <= date_to)
-
-    # Get total count before pagination
-    total = qry.count()
-
-    # Apply sorting
-    if sort == "recent":
-        qry = qry.order_by(desc(RecallDB.recall_date).nullslast(), desc(RecallDB.id))
-    else:
-        qry = qry.order_by(asc(RecallDB.recall_date).nullsfirst(), asc(RecallDB.id))
-
-    # Determine effective pagination values
-    effective_limit = page_size if page_size is not None else limit
-    effective_offset = offset if offset is not None else 0
-
-    if page is not None:
-        chosen_page_size = page_size if page_size is not None else limit
-        effective_limit = chosen_page_size
-        effective_offset = (page - 1) * chosen_page_size
-
-    # Apply pagination (cursor-based or offset-based)
-    if cursor:
-        # Cursor-based pagination
-        cursor_data = decode_cursor(cursor)
-        if cursor_data:
-            if sort == "recent":
-                # For recent sort, get records after the cursor
-                qry = qry.filter(
-                    or_(
-                        RecallDB.recall_date < cursor_data.get("recall_date"),
-                        and_(
-                            RecallDB.recall_date == cursor_data.get("recall_date"),
-                            RecallDB.id < cursor_data.get("id"),
-                        ),
-                    )
-                )
-            else:
-                # For oldest sort, get records before the cursor
-                qry = qry.filter(
-                    or_(
-                        RecallDB.recall_date > cursor_data.get("recall_date"),
-                        and_(
-                            RecallDB.recall_date == cursor_data.get("recall_date"),
-                            RecallDB.id > cursor_data.get("id"),
-                        ),
-                    )
-                )
-        # Get one extra record to check if there are more
-        rows = qry.limit(effective_limit + 1).all()
-        has_more = len(rows) > effective_limit
-        if has_more:
-            rows = rows[:effective_limit]
-    else:
-        # Offset-based pagination
-        rows = qry.offset(effective_offset).limit(effective_limit).all()
-        has_more = (
-            len(rows) == effective_limit
-            and (effective_offset + effective_limit) < total
-        )
-
-    # Convert to response format
-    items = []
-    for row in rows:
-        items.append(
-            RecallItem(
-                id=row.id,
-                recall_id=clean_encoding(row.recall_id),
-                agency=clean_encoding(row.source_agency),
-                country=clean_encoding(row.country),
-                product_name=clean_encoding(row.product_name),
-                brand=clean_encoding(row.brand),
-                manufacturer=clean_encoding(row.manufacturer),
-                model_number=clean_encoding(row.model_number),
-                category=None,  # product_category field not available in current schema
-                hazard=clean_encoding(row.hazard),
-                hazard_category=clean_encoding(row.hazard_category),
-                recall_date=row.recall_date,
-                recall_reason=clean_encoding(row.recall_reason),
-                remedy=clean_encoding(row.remedy),
-                recall_class=clean_encoding(row.recall_class),
-                reference=row.recall_id,
-                url=row.url,
-            )
-        )
-
-    # Generate next cursor if there are more results
-    next_cursor = None
-    if has_more and rows:
-        last_row = rows[-1]
-        next_cursor = encode_cursor(
-            last_row.recall_id or "", last_row.recall_date, last_row.id
-        )
-
-    payload = RecallListResponse(
-        items=items,
-        total=total,
-        limit=effective_limit,
-        offset=effective_offset,
-        nextCursor=next_cursor,
-        hasMore=has_more,
-    )
-
-    return {"success": True, "data": payload.model_dump(), "count": len(payload.items)}
+    return {
+        "success": True,
+        "data": {
+            "items": [],
+            "total": 0,
+            "limit": limit,
+            "offset": offset or 0,
+            "nextCursor": None,
+            "hasMore": False,
+        },
+        "count": 0,
+        "message": "Baby product recalls not available in Crown Safe (hair product platform)",
+    }
 
 
 # DEV OVERRIDE ENDPOINTS - For testing without database dependencies
@@ -313,21 +200,13 @@ def search_recalls_dev(
     agency: Optional[str] = Query(None, description="Filter by source agency"),
     country: Optional[str] = Query(None, description="Filter by country"),
     category: Optional[str] = Query(None, description="Filter by product category"),
-    hazard_category: Optional[str] = Query(
-        None, description="Filter by hazard category"
-    ),
-    date_from: Optional[date] = Query(
-        None, description="Filter recalls from this date"
-    ),
+    hazard_category: Optional[str] = Query(None, description="Filter by hazard category"),
+    date_from: Optional[date] = Query(None, description="Filter recalls from this date"),
     date_to: Optional[date] = Query(None, description="Filter recalls to this date"),
     sort: str = Query("recent", pattern="^(recent|oldest)$", description="Sort order"),
     limit: int = Query(20, ge=1, le=100, description="Number of results per page"),
-    offset: Optional[int] = Query(
-        None, ge=0, description="Number of results to skip (offset pagination)"
-    ),
-    cursor: Optional[str] = Query(
-        None, description="Cursor for pagination (cursor-based pagination)"
-    ),
+    offset: Optional[int] = Query(None, ge=0, description="Number of results to skip (offset pagination)"),
+    cursor: Optional[str] = Query(None, description="Cursor for pagination (cursor-based pagination)"),
 ):
     """
     DEV OVERRIDE: Search recalls without database dependencies
@@ -399,34 +278,21 @@ def search_recalls_dev(
 
         if q:
             filtered_recalls = [
-                r
-                for r in filtered_recalls
-                if q.lower() in r["product_name"].lower()
-                or q.lower() in r["brand"].lower()
+                r for r in filtered_recalls if q.lower() in r["product_name"].lower() or q.lower() in r["brand"].lower()
             ]
 
         if agency:
-            filtered_recalls = [
-                r for r in filtered_recalls if agency.upper() in r["agency"]
-            ]
+            filtered_recalls = [r for r in filtered_recalls if agency.upper() in r["agency"]]
 
         if category:
-            filtered_recalls = [
-                r for r in filtered_recalls if category.lower() in r["category"].lower()
-            ]
+            filtered_recalls = [r for r in filtered_recalls if category.lower() in r["category"].lower()]
 
         if hazard_category:
-            filtered_recalls = [
-                r
-                for r in filtered_recalls
-                if hazard_category.lower() in r["hazard_category"].lower()
-            ]
+            filtered_recalls = [r for r in filtered_recalls if hazard_category.lower() in r["hazard_category"].lower()]
 
         # Apply sorting
         if sort == "recent":
-            filtered_recalls = sorted(
-                filtered_recalls, key=lambda x: x["recall_date"], reverse=True
-            )
+            filtered_recalls = sorted(filtered_recalls, key=lambda x: x["recall_date"], reverse=True)
         else:
             filtered_recalls = sorted(filtered_recalls, key=lambda x: x["recall_date"])
 
@@ -466,9 +332,7 @@ def search_recalls_dev(
         next_cursor = None
         if has_more and paginated_recalls:
             last_recall = paginated_recalls[-1]
-            next_cursor = encode_cursor(
-                last_recall["recall_id"], last_recall["recall_date"], last_recall["id"]
-            )
+            next_cursor = encode_cursor(last_recall["recall_id"], last_recall["recall_date"], last_recall["id"])
 
         return {
             "success": True,
@@ -522,53 +386,15 @@ def get_recall_stats_dev():
 def get_recall_stats(db: Session = Depends(get_db)):
     """
     Get recall statistics and counts
+    CROWN SAFE: Returns empty stats - baby product recalls not available
     """
-    try:
-        # Total recalls
-        total_recalls = db.query(RecallDB).count()
-
-        # Recent recalls (last 30 days)
-        from datetime import datetime, timedelta, timezone
-
-        thirty_days_ago = datetime.now(timezone.utc).date() - timedelta(days=30)
-        recent_recalls = (
-            db.query(RecallDB).filter(RecallDB.recall_date >= thirty_days_ago).count()
-        )
-
-        # Top agencies
-        agency_counts = (
-            db.query(RecallDB.source_agency, func.count(RecallDB.id).label("count"))
-            .group_by(RecallDB.source_agency)
-            .order_by(func.count(RecallDB.id).desc())
-            .limit(10)
-            .all()
-        )
-
-        # Top hazard categories
-        hazard_counts = (
-            db.query(RecallDB.hazard_category, func.count(RecallDB.id).label("count"))
-            .filter(RecallDB.hazard_category.isnot(None))
-            .group_by(RecallDB.hazard_category)
-            .order_by(func.count(RecallDB.id).desc())
-            .limit(10)
-            .all()
-        )
-
-        return {
-            "success": True,
-            "data": {
-                "total_recalls": total_recalls,
-                "recent_recalls_30_days": recent_recalls,
-                "top_agencies": [
-                    {"agency": agency, "count": count}
-                    for agency, count in agency_counts
-                ],
-                "top_hazard_categories": [
-                    {"category": category, "count": count}
-                    for category, count in hazard_counts
-                ],
-            },
-        }
-
-    except Exception as e:
-        return {"success": False, "error": f"Failed to get recall stats: {str(e)}"}
+    return {
+        "success": True,
+        "data": {
+            "total_recalls": 0,
+            "recent_recalls_30_days": 0,
+            "top_agencies": [],
+            "top_hazard_categories": [],
+        },
+        "message": "Baby product recall stats not available in Crown Safe (hair product platform)",
+    }

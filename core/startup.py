@@ -143,14 +143,14 @@ def start_api():
 
     # Import the app
     try:
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
-        logger.info("Successfully loaded main_babyshield app")
+        logger.info("Successfully loaded main_crownsafe app")
     except ImportError as e:
-        logger.error(f"Failed to import main_babyshield: {e}")
+        logger.error(f"Failed to import main_crownsafe: {e}")
         logger.info("Falling back to simplified API")
         try:
-            from api.main_babyshield_simplified import app
+            from api.main_crownsafe_simplified import app
         except ImportError:
             logger.error("No API module available!")
             sys.exit(1)

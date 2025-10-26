@@ -14,7 +14,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from fastapi.testclient import TestClient
-from api.main_babyshield import app
+from api.main_crownsafe import app
 
 
 def main() -> int:

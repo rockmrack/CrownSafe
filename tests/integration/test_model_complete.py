@@ -18,7 +18,7 @@ from sqlalchemy.orm import sessionmaker
 os.environ["TEST_MODE"] = "true"
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 
-from api.main_babyshield import app
+from api.main_crownsafe import app
 from core_infra.database import Base, User, LegacyRecallDB
 
 # Create test database

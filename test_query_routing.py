@@ -18,7 +18,7 @@ print("=" * 70)
 print()
 
 from fastapi.testclient import TestClient
-from api.main_babyshield import app
+from api.main_crownsafe import app
 from core_infra.database import SessionLocal
 from core_infra.enhanced_database_schema import EnhancedRecallDB
 

@@ -24,16 +24,14 @@ def get_allowed_origins() -> List[str]:
 
     # Parse comma-separated list
     if origins_env:
-        origins = [
-            origin.strip() for origin in origins_env.split(",") if origin.strip()
-        ]
+        origins = [origin.strip() for origin in origins_env.split(",") if origin.strip()]
     else:
-        # Default to known BabyShield domains
+        # Default to known Crown Safe domains
         origins = [
-            "https://babyshield.app",
-            "https://app.babyshield.app",
-            "https://babyshield.cureviax.ai",
-            "https://www.babyshield.app",
+            "https://crownsafe.app",
+            "https://app.crownsafe.app",
+            "https://crownsafe.cureviax.ai",
+            "https://www.crownsafe.app",
         ]
 
     # Add localhost for development if in dev mode
@@ -84,7 +82,7 @@ def add_strict_cors(
 
     if not origins:
         logger.warning("No CORS origins configured - defaulting to restrictive policy")
-        origins = ["https://babyshield.cureviax.ai"]
+        origins = ["https://crownsafe.cureviax.ai"]
 
     # Log configuration
     logger.info(f"CORS configured with {len(origins)} allowed origins")
@@ -126,18 +124,18 @@ class CORSConfig:
 
     # Production origins
     PRODUCTION_ORIGINS = [
-        "https://babyshield.app",
-        "https://app.babyshield.app",
-        "https://www.babyshield.app",
-        "https://babyshield.cureviax.ai",
-        "https://api.babyshield.app",
+        "https://crownsafe.app",
+        "https://app.crownsafe.app",
+        "https://www.crownsafe.app",
+        "https://crownsafe.cureviax.ai",
+        "https://api.crownsafe.app",
     ]
 
     # Staging origins
     STAGING_ORIGINS = [
-        "https://staging.babyshield.app",
-        "https://staging-app.babyshield.app",
-        "https://babyshield-staging.cureviax.ai",
+        "https://staging.crownsafe.app",
+        "https://staging-app.crownsafe.app",
+        "https://crownsafe-staging.cureviax.ai",
     ]
 
     # Development origins
@@ -170,9 +168,7 @@ class CORSConfig:
         elif env == "staging":
             return cls.PRODUCTION_ORIGINS + cls.STAGING_ORIGINS
         elif env in ("development", "dev", "local"):
-            return (
-                cls.PRODUCTION_ORIGINS + cls.STAGING_ORIGINS + cls.DEVELOPMENT_ORIGINS
-            )
+            return cls.PRODUCTION_ORIGINS + cls.STAGING_ORIGINS + cls.DEVELOPMENT_ORIGINS
         else:
             # Unknown environment - be restrictive
             logger.warning(f"Unknown environment: {environment}")

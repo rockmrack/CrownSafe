@@ -1,10 +1,10 @@
 """
-Example of how to integrate observability into main_babyshield.py
+Example of how to integrate observability into main_crownsafe.py
 This shows the minimal changes needed to add all Task 4 features
 """
 
 # ============================================================================
-# ADD THESE IMPORTS TO YOUR main_babyshield.py
+# ADD THESE IMPORTS TO YOUR main_crownsafe.py
 # ============================================================================
 
 import os
@@ -127,11 +127,11 @@ def create_app_with_observability() -> FastAPI:
 #     ...
 
 # ============================================================================
-# MINIMAL INTEGRATION FOR EXISTING main_babyshield.py
+# MINIMAL INTEGRATION FOR EXISTING main_crownsafe.py
 # ============================================================================
 
 """
-If you can't refactor the entire file, add this at the top of main_babyshield.py:
+If you can't refactor the entire file, add this at the top of main_crownsafe.py:
 
 # At the very top, before creating the app
 from api.logging_setup import setup_json_logging

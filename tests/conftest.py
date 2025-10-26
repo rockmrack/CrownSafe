@@ -22,7 +22,7 @@ def client():
     with SessionLocal() as session:
         session.query(UserReport).delete()
         session.commit()
-    from api.main_babyshield import app
+    from api.main_crownsafe import app
 
     return TestClient(app)
 

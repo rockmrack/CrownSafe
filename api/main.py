@@ -1,8 +1,8 @@
 """
-Main entry point for Docker - imports main_babyshield
+Main entry point for Docker - imports main_crownsafe
 """
 
-from api.main_babyshield import app
+from api.main_crownsafe import app
 
 if __name__ == "__main__":
     import uvicorn

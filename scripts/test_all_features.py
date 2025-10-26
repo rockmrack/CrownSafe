@@ -37,7 +37,7 @@ def start_api_server():
         sys.executable,
         "-m",
         "uvicorn",
-        "api.main_babyshield:app",
+        "api.main_crownsafe:app",
         "--host",
         "0.0.0.0",
         "--port",
@@ -121,7 +121,7 @@ async def main():
         if not api_process:
             print("❌ Cannot run tests without API server")
             print("Please start the server manually with:")
-            print("  uvicorn api.main_babyshield:app --host 0.0.0.0 --port 8001")
+            print("  uvicorn api.main_crownsafe:app --host 0.0.0.0 --port 8001")
             return
     else:
         print("✅ API server is already running")

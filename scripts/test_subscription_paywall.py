@@ -116,7 +116,7 @@ async def main():
         print(
             "Please ensure the FastAPI server is running in a separate terminal on port 8001."
         )
-        print("Command: uvicorn api.main_babyshield:app --port 8001")
+        print("Command: uvicorn api.main_crownsafe:app --port 8001")
     finally:
         # 3. Clean up the test database.
         drop_tables()

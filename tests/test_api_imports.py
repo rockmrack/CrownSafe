@@ -32,12 +32,12 @@ class TestAPIModules(unittest.TestCase):
         except ImportError:
             self.skipTest("Module not available")
 
-    def test_main_babyshield_import(self):
+    def test_main_crownsafe_import(self):
         """Test main babyshield module can be imported"""
         try:
-            from api import main_babyshield
+            from api import main_crownsafe
 
-            self.assertIsNotNone(main_babyshield)
+            self.assertIsNotNone(main_crownsafe)
         except ImportError:
             self.skipTest("Module not available")
 

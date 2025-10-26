@@ -30,7 +30,7 @@ os.environ["ENTITLEMENTS_ALLOWLIST"] = "999"
 os.environ["ENTITLEMENTS_FEATURES"] = "safety.check"
 
 # Import the FastAPI app
-from api.main_babyshield import app
+from api.main_crownsafe import app
 
 # Try to import the production schema, fallback to legacy if not available
 try:

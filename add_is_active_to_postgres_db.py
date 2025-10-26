@@ -3,16 +3,28 @@ Add is_active column to users table in POSTGRES database
 This script connects to the CORRECT database that production uses.
 """
 
-import psycopg2
+import os
 import sys
 
+import psycopg2
+
+
 # Production database connection - POSTGRES database (not babyshield_db!)
+def _require_env(var_name: str) -> str:
+    """Return the value of the required environment variable."""
+
+    value = os.getenv(var_name)
+    if not value:
+        raise RuntimeError(f"Missing required environment variable: {var_name}")
+    return value
+
+
 DB_CONFIG = {
-    "host": "babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com",
-    "port": 5432,
-    "database": "postgres",  # THIS IS THE KEY - app uses postgres, not babyshield_db!
-    "user": "babyshield_user",
-    "password": "MandarunLabadiena25!",
+    "host": _require_env("BABYSHIELD_DB_HOST"),
+    "port": int(os.getenv("BABYSHIELD_DB_PORT", "5432")),
+    "database": _require_env("BABYSHIELD_DB_NAME"),
+    "user": _require_env("BABYSHIELD_DB_USER"),
+    "password": _require_env("BABYSHIELD_DB_PASSWORD"),
 }
 
 
@@ -71,9 +83,7 @@ def main():
             print("📋 Current columns in users table:")
             for col in columns:
                 indicator = "✅" if col[0] == "is_active" else "  "
-                print(
-                    f"{indicator} {col[0]}: {col[1]} (nullable: {col[2]}, default: {col[3]})"
-                )
+                print(f"{indicator} {col[0]}: {col[1]} (nullable: {col[2]}, default: {col[3]})")
 
             # Count records
             cur.execute("SELECT COUNT(*) FROM users;")

@@ -132,7 +132,7 @@ class TestMultiTenancyDataIsolation:
         - 403 Forbidden if attempting to access others' data
         """
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
 

@@ -9,7 +9,7 @@ Run: pytest tests/integration/test_model_quickstart.py -v -s
 
 from fastapi.testclient import TestClient
 
-from api.main_babyshield import app
+from api.main_crownsafe import app
 
 client = TestClient(app)
 

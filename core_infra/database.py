@@ -4,14 +4,12 @@
 import logging
 import os
 from contextlib import contextmanager
-from datetime import date
 
 from dotenv import load_dotenv
 from sqlalchemy import (
     Boolean,
     Column,
     Date,
-    ForeignKey,
     Integer,
     String,
     Text,
@@ -20,7 +18,7 @@ from sqlalchemy import (
     text,
 )
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -48,9 +46,7 @@ if TEST_MODE:
 
 if not DATABASE_URL:
     # In production/staging we require DATABASE_URL to be set to a PostgreSQL DSN
-    logger.warning(
-        "DATABASE_URL not set. Application may fail to connect to a production database."
-    )
+    logger.warning("DATABASE_URL not set. Application may fail to connect to a production database.")
 
 # -------------------------------------------------------------------
 # Engine & Session setup
@@ -100,113 +96,28 @@ Base = declarative_base()
 # -------------------------------------------------------------------
 # ORM Models
 # -------------------------------------------------------------------
-# Import the enhanced schema (must come AFTER Base is defined)
-from core_infra.enhanced_database_schema import EnhancedRecallDB
-
-# Use enhanced schema as RecallDB for backward compatibility
-RecallDB = EnhancedRecallDB
-
-
-# Legacy recalls table for backward compatibility
-class LegacyRecallDB(Base):
-    __tablename__ = "recalls"
-
-    id = Column(Integer, primary_key=True, index=True)
-    recall_id = Column(String, unique=True, index=True, nullable=False)
-    product_name = Column(String, index=True, nullable=False)
-    brand = Column(String, nullable=True)
-    country = Column(String, nullable=True)
-    recall_date = Column(Date, index=True, nullable=False)
-    hazard_description = Column(Text, nullable=True)
-    manufacturer_contact = Column(String, nullable=True)
-    upc = Column(String, index=True, nullable=True)
-    source_agency = Column(String, nullable=True)
-    description = Column(Text, nullable=True)
-    hazard = Column(Text, nullable=True)
-    remedy = Column(Text, nullable=True)
-    url = Column(String, nullable=True)
-
-    def to_dict(self) -> dict:
-        result = {}
-        for c in self.__table__.columns:
-            v = getattr(self, c.name)
-            result[c.name] = v.isoformat() if isinstance(v, date) else v
-        return result
-
-    def __repr__(self):
-        return f"<LegacyRecallDB(id={self.id}, recall_id={self.recall_id!r})>"
+# CROWN SAFE: Import hair product safety models (used by helper functions below)
+from core_infra.crown_safe_models import HairProfileModel
+# -------------------------------------------------------------------
 
 
 class User(Base):
+    """Crown Safe user model - authentication and subscription management"""
+
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     stripe_customer_id = Column(String, unique=True, index=True, nullable=True)
     hashed_password = Column(String, nullable=False, default="", server_default="")
-    is_subscribed = Column(
-        Boolean, default=False, nullable=False
-    )  # Single subscription status
-    is_pregnant = Column(Boolean, default=False, nullable=False)
+    is_subscribed = Column(Boolean, default=False, nullable=False)  # Single subscription status
     is_active = Column(Boolean, default=True, nullable=False)  # Account status
-
-    # Relationship to family members
-    family_members = relationship(
-        "FamilyMember", back_populates="user", cascade="all, delete-orphan"
-    )
 
     def to_dict(self) -> dict:
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     def __repr__(self):
-        return (
-            f"<User(id={self.id}, email={self.email!r}, "
-            f"is_subscribed={self.is_subscribed}, is_pregnant={self.is_pregnant})>"
-        )
-
-
-class FamilyMember(Base):
-    __tablename__ = "family_members"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"))  # Link to the main user account
-
-    # Relationships
-    user = relationship("User", back_populates="family_members")
-    allergies = relationship(
-        "Allergy", back_populates="family_member", cascade="all, delete-orphan"
-    )
-
-    def to_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "user_id": self.user_id,
-            "allergies": [allergy.allergen for allergy in self.allergies],
-        }
-
-    def __repr__(self):
-        return (
-            f"<FamilyMember(id={self.id}, name={self.name!r}, user_id={self.user_id})>"
-        )
-
-
-class Allergy(Base):
-    __tablename__ = "allergies"
-
-    id = Column(Integer, primary_key=True, index=True)
-    allergen = Column(String, nullable=False)
-    member_id = Column(Integer, ForeignKey("family_members.id"))
-
-    # Relationships
-    family_member = relationship("FamilyMember", back_populates="allergies")
-
-    def to_dict(self) -> dict:
-        return {"id": self.id, "allergen": self.allergen, "member_id": self.member_id}
-
-    def __repr__(self):
-        return f"<Allergy(id={self.id}, allergen={self.allergen!r}, member_id={self.member_id})>"
+        return f"<User(id={self.id}, email={self.email!r}, is_subscribed={self.is_subscribed})>"
 
 
 # -------------------------------------------------------------------
@@ -300,10 +211,6 @@ def get_test_session():
 
 def create_tables():
     """Create all database tables from all Base classes"""
-    # NOTE: EnhancedRecallDB now uses the same Base as all other models
-    # (fixed in commit db1c0f8 to prevent Base metadata split)
-    # So one call to Base.metadata.create_all() creates ALL tables
-
     # Import all models to ensure they're registered with Base
     try:
         # Import models that use the main Base
@@ -370,9 +277,7 @@ def ensure_test_users():
     """Create or update test users for testing."""
     if TEST_MODE:
         try:
-            with engine.connect().execution_options(
-                isolation_level="AUTOCOMMIT"
-            ) as conn:
+            with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
                 # Clean up existing test users
                 conn.execute(text("DELETE FROM users WHERE id IN (1, 2)"))
                 print("Cleaned up existing test users")
@@ -384,26 +289,26 @@ def ensure_test_users():
         if DATABASE_URL.startswith("postgresql"):
             stmt = text(
                 """
-                INSERT INTO users (id, email, stripe_customer_id, hashed_password, is_subscribed, is_pregnant)
+                INSERT INTO users (id, email, stripe_customer_id, hashed_password, is_subscribed)
                 VALUES 
-                    (1, 'subscribed@test.com', NULL, 'testhash', true, true),
-                    (2, 'unsubscribed@test.com', NULL, 'testhash', false, false)
+                    (1, 'subscribed@test.com', NULL, 'testhash', true),
+                    (2, 'unsubscribed@test.com', NULL, 'testhash', false)
                 ON CONFLICT (id) 
                 DO UPDATE SET
                     email = EXCLUDED.email,
                     stripe_customer_id = EXCLUDED.stripe_customer_id,
                     hashed_password = EXCLUDED.hashed_password,
-                    is_subscribed = EXCLUDED.is_subscribed,
-                    is_pregnant = EXCLUDED.is_pregnant
+                    is_subscribed = EXCLUDED.is_subscribed
             """
             )
         else:
             stmt = text(
                 """
-                INSERT OR REPLACE INTO users (id, email, stripe_customer_id, hashed_password, is_subscribed, is_pregnant)
+                INSERT OR REPLACE INTO users 
+                (id, email, stripe_customer_id, hashed_password, is_subscribed)
                 VALUES 
-                    (1, 'subscribed@test.com', NULL, 'testhash', 1, 1),
-                    (2, 'unsubscribed@test.com', NULL, 'testhash', 0, 0)
+                    (1, 'subscribed@test.com', NULL, 'testhash', 1),
+                    (2, 'unsubscribed@test.com', NULL, 'testhash', 0)
             """
             )
 
@@ -414,9 +319,7 @@ def ensure_test_users():
             print(f"Error creating test users: {e}")
 
 
-def create_or_update_test_user(
-    user_id: int, email: str, is_subscribed: bool = False, is_pregnant: bool = False
-):
+def create_or_update_test_user(user_id: int, email: str, is_subscribed: bool = False):
     """Helper to create or update a single test user."""
     with get_db_session() as db:
         try:
@@ -426,7 +329,6 @@ def create_or_update_test_user(
                 user.email = email
                 user.hashed_password = "testhash"
                 user.is_subscribed = is_subscribed
-                user.is_pregnant = is_pregnant
                 db.commit()
                 print(f"Updated existing user {user_id}")
             else:
@@ -436,7 +338,6 @@ def create_or_update_test_user(
                     email=email,
                     hashed_password="testhash",
                     is_subscribed=is_subscribed,
-                    is_pregnant=is_pregnant,
                 )
                 db.add(user)
                 db.commit()
@@ -467,41 +368,38 @@ def setup_test_environment():
 
 
 # -------------------------------------------------------------------
-# Helper functions for family and allergy management
 # -------------------------------------------------------------------
-def add_family_member(user_id: int, name: str, allergies: list = None):
-    """Add a family member with optional allergies."""
+# Crown Safe - Hair Profile Helper Functions
+# -------------------------------------------------------------------
+def create_hair_profile(
+    user_id: int,
+    hair_type: str,
+    porosity: str,
+    hair_state: dict | None = None,
+    hair_goals: dict | None = None,
+    sensitivities: dict | None = None,
+):
+    """Create a hair profile for a user."""
     with get_db_session() as db:
-        member = FamilyMember(name=name, user_id=user_id)
-        db.add(member)
-        db.flush()  # Get the member ID
-
-        if allergies:
-            for allergen in allergies:
-                allergy = Allergy(allergen=allergen, member_id=member.id)
-                db.add(allergy)
-
+        profile = HairProfileModel(
+            user_id=user_id,
+            hair_type=hair_type,
+            porosity=porosity,
+            hair_state=hair_state or {},
+            hair_goals=hair_goals or {},
+            sensitivities=sensitivities or {},
+        )
+        db.add(profile)
         db.commit()
-        return member.id
+        db.refresh(profile)
+        return profile
 
 
-def get_family_allergies(user_id: int):
-    """Get all family members and their allergies for a user."""
+def get_user_hair_profile(user_id: int):
+    """Get the hair profile for a user."""
     with get_db_session() as db:
-        user = db.query(User).filter_by(id=user_id).first()
-        if not user:
-            return []
-
-        result = []
-        for member in user.family_members:
-            result.append(
-                {
-                    "member_id": member.id,
-                    "name": member.name,
-                    "allergies": [allergy.allergen for allergy in member.allergies],
-                }
-            )
-        return result
+        profile = db.query(HairProfileModel).filter_by(user_id=user_id).first()
+        return profile
 
 
 # -------------------------------------------------------------------
@@ -513,20 +411,16 @@ class SafetyArticle(Base):
     __tablename__ = "safety_articles"
 
     id = Column(Integer, primary_key=True, index=True)
-    article_id = Column(
-        String, unique=True, index=True, nullable=False
-    )  # A unique ID we create or get from the source
+    # A unique ID we create or get from the source
+    article_id = Column(String, unique=True, index=True, nullable=False)
     title = Column(String, nullable=False)
     summary = Column(Text, nullable=False)
     source_agency = Column(String, index=True, nullable=False)  # e.g., "CPSC", "AAP"
     publication_date = Column(Date, nullable=False)
     image_url = Column(String, nullable=True)  # URL for the article's main image
-    article_url = Column(
-        String, nullable=False
-    )  # The direct URL to the original article
-    is_featured = Column(
-        Boolean, default=False, index=True
-    )  # A flag to feature an article on the home screen
+    article_url = Column(String, nullable=False)  # The direct URL to the original article
+    # A flag to feature an article on the home screen
+    is_featured = Column(Boolean, default=False, index=True)
 
 
 # -------------------------------------------------------------------
@@ -571,12 +465,31 @@ if __name__ == "__main__":
         for u in all_users:
             print(f"  {u}")
 
+        # LEGACY BABY CODE: Family/allergy tests commented out
         # Test adding family members with allergies
-        print("\nTesting family members and allergies...")
-        member_id = add_family_member(1, "Child 1", ["peanuts", "milk"])
-        print(f"Added family member with ID: {member_id}")
+        # print("\nTesting family members and allergies...")
+        # member_id = add_family_member(1, "Child 1", ["peanuts", "milk"])
+        # print(f"Added family member with ID: {member_id}")
+        #
+        # allergies = get_family_allergies(1)
+        # print(f"Family allergies for user 1: {allergies}")
 
-        allergies = get_family_allergies(1)
-        print(f"Family allergies for user 1: {allergies}")
+        # CROWN SAFE: Test hair profile creation
+        print("\nTesting Crown Safe hair profile creation...")
+        test_profile = create_hair_profile(
+            user_id=1,
+            hair_type="4C",
+            porosity="High",
+            hair_state={"dryness": True, "breakage": False},
+            hair_goals={"moisture_retention": True, "length_retention": True},
+        )
+        print(f"Created hair profile: ID={test_profile.id}, Type={test_profile.hair_type}")
+
+        # Retrieve profile
+        profile = get_user_hair_profile(1)
+        if profile:
+            print(f"Retrieved hair profile: {profile.hair_type}, {profile.porosity} porosity")
+        else:
+            print("No hair profile found for user 1")
 
     print("=== Done ===")

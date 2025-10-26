@@ -27,7 +27,8 @@ from sqlalchemy.orm import Session
 from pathlib import Path
 import hashlib
 
-from core_infra.database import get_db, User, RecallDB
+# REMOVED FOR CROWN SAFE: RecallDB no longer applicable (hair products, not baby recalls)
+from core_infra.database import get_db, User
 
 # Define logger first
 logger = logging.getLogger(__name__)
@@ -36,17 +37,13 @@ logger = logging.getLogger(__name__)
 try:
     from agents.research.web_research_agent.agent_logic import WebResearchLogic
 
-    web_research_agent = WebResearchLogic(
-        agent_id="api_web_research", version="2.0", logger_instance=logger
-    )
+    web_research_agent = WebResearchLogic(agent_id="api_web_research", version="2.0", logger_instance=logger)
 except Exception as e:
     web_research_agent = None
     logger.warning(f"Web Research Agent not available: {e}")
 
 guideline_agent = None
-logger.info(
-    "Guideline agent retired; guidelines endpoint returns informational response only."
-)
+logger.info("Guideline agent retired; guidelines endpoint returns informational response only.")
 
 # Create router with prefix
 router = APIRouter(prefix="/api/v1/advanced", tags=["Advanced Features"])
@@ -59,13 +56,9 @@ class WebResearchRequest(BaseModel):
 
     product_name: str = Field(..., description="Product name to research")
     barcode: Optional[str] = Field(None, description="Product barcode if available")
-    search_depth: str = Field(
-        "standard", description="Search depth: quick, standard, deep"
-    )
+    search_depth: str = Field("standard", description="Search depth: quick, standard, deep")
     sources: Optional[List[str]] = Field(None, description="Specific sources to search")
-    include_social_media: bool = Field(
-        True, description="Include social media monitoring"
-    )
+    include_social_media: bool = Field(True, description="Include social media monitoring")
     include_forums: bool = Field(True, description="Include parent forums")
     user_id: int = Field(..., description="User ID for personalization")
 
@@ -105,15 +98,9 @@ class GuidelinesRequest(BaseModel):
     product_name: Optional[str] = Field(None, description="Product name")
     product_category: Optional[str] = Field(None, description="Product category")
     barcode: Optional[str] = Field(None, description="Product barcode")
-    child_age_months: int = Field(
-        ..., ge=0, le=216, description="Child's age in months"
-    )
-    child_weight_lbs: Optional[float] = Field(
-        None, gt=0, description="Child's weight in pounds"
-    )
-    child_height_inches: Optional[float] = Field(
-        None, gt=0, description="Child's height in inches"
-    )
+    child_age_months: int = Field(..., ge=0, le=216, description="Child's age in months")
+    child_weight_lbs: Optional[float] = Field(None, gt=0, description="Child's weight in pounds")
+    child_height_inches: Optional[float] = Field(None, gt=0, description="Child's height in inches")
     usage_scenario: Optional[str] = Field(None, description="How product will be used")
     user_id: int = Field(..., description="User ID")
 
@@ -149,13 +136,9 @@ class VisualRecognitionRequest(BaseModel):
     """Request model for visual product recognition"""
 
     user_id: int = Field(..., description="User ID")
-    include_similar: bool = Field(
-        True, description="Include similar products if no exact match"
-    )
+    include_similar: bool = Field(True, description="Include similar products if no exact match")
     check_for_defects: bool = Field(True, description="Check for visual defects")
-    confidence_threshold: float = Field(
-        0.7, ge=0, le=1, description="Minimum confidence for matches"
-    )
+    confidence_threshold: float = Field(0.7, ge=0, le=1, description="Minimum confidence for matches")
 
 
 class VisualRecognitionResponse(BaseModel):
@@ -177,15 +160,9 @@ class MonitoringRequest(BaseModel):
     product_name: str = Field(..., description="Product to monitor")
     barcode: Optional[str] = Field(None, description="Product barcode")
     user_id: int = Field(..., description="User ID")
-    monitoring_duration_days: int = Field(
-        30, ge=1, le=365, description="How long to monitor"
-    )
-    alert_threshold: str = Field(
-        "medium", description="Alert sensitivity: low, medium, high"
-    )
-    sources: Optional[List[str]] = Field(
-        None, description="Specific sources to monitor"
-    )
+    monitoring_duration_days: int = Field(30, ge=1, le=365, description="How long to monitor")
+    alert_threshold: str = Field("medium", description="Alert sensitivity: low, medium, high")
+    sources: Optional[List[str]] = Field(None, description="Specific sources to monitor")
 
 
 class MonitoringResponse(BaseModel):
@@ -335,9 +312,7 @@ async def research_product_safety(
             risk_indicators.append("Multiple negative reports found")
             safety_score -= 10
 
-        high_relevance_negative = any(
-            f.relevance_score > 0.8 and f.sentiment == "negative" for f in findings
-        )
+        high_relevance_negative = any(f.relevance_score > 0.8 and f.sentiment == "negative" for f in findings)
         if high_relevance_negative:
             risk_indicators.append("High-confidence safety concern identified")
             safety_score -= 15
@@ -368,9 +343,7 @@ async def research_product_safety(
 
 
 @router.post("/guidelines", response_model=GuidelinesResponse)
-async def get_product_guidelines(
-    request: GuidelinesRequest, db: Session = Depends(get_db)
-):
+async def get_product_guidelines(request: GuidelinesRequest, db: Session = Depends(get_db)):
     """Return HTTP 501 because the guideline feature is retired."""
     del request  # Guidelines feature retired; request data unused.
     del db
@@ -389,9 +362,7 @@ async def recognize_product_from_image(
     image: UploadFile = File(..., description="Product image"),
     include_similar: bool = Query(True, description="Include similar products"),
     check_for_defects: bool = Query(True, description="Check for visual defects"),
-    confidence_threshold: float = Query(
-        0.7, ge=0, le=1, description="Minimum confidence"
-    ),
+    confidence_threshold: float = Query(0.7, ge=0, le=1, description="Minimum confidence"),
     db: Session = Depends(get_db),
 ):
     """
@@ -457,9 +428,7 @@ async def recognize_product_from_image(
             # Upload image to S3 for processing
             import boto3
 
-            s3_client = boto3.client(
-                "s3", region_name=os.getenv("S3_BUCKET_REGION", "us-east-1")
-            )
+            s3_client = boto3.client("s3", region_name=os.getenv("S3_BUCKET_REGION", "us-east-1"))
             s3_client.put_object(
                 Bucket=job.s3_bucket,
                 Key=s3_key,
@@ -512,9 +481,7 @@ async def recognize_product_from_image(
 
                 products_identified.append(
                     {
-                        "product_name": product_data.get(
-                            "product_name", "Unknown Product"
-                        ),
+                        "product_name": product_data.get("product_name", "Unknown Product"),
                         "confidence": confidence,
                         "barcode": None,  # Would come from barcode extraction if available
                         "category": "Baby Product",  # Could be enhanced with category classification
@@ -541,9 +508,7 @@ async def recognize_product_from_image(
         except Exception as e:
             logger.error(f"Real visual recognition failed: {e}", exc_info=True)
             # Don't mask errors as 200 - raise proper HTTP exception
-            raise HTTPException(
-                status_code=500, detail=f"Processing error: {type(e).__name__}"
-            )
+            raise HTTPException(status_code=500, detail=f"Processing error: {type(e).__name__}")
 
         # Check for visual defects if requested
         if check_for_defects and confidence > confidence_threshold:
@@ -574,9 +539,7 @@ async def recognize_product_from_image(
                         }
                     )
 
-                logger.info(
-                    f"Real defect detection found {len(detected_defects)} defects"
-                )
+                logger.info(f"Real defect detection found {len(detected_defects)} defects")
 
             except Exception as e:
                 logger.error(f"Defect detection failed: {e}")
@@ -621,9 +584,7 @@ async def recognize_product_from_image(
         raise
     except Exception as e:
         logger.error(f"Visual recognition failed: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=500, detail=f"Visual recognition failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Visual recognition failed: {str(e)}")
 
 
 # ==================== Continuous Monitoring Endpoints ====================
@@ -696,9 +657,7 @@ async def setup_product_monitoring(
         raise
     except Exception as e:
         logger.error(f"Monitoring setup failed: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=500, detail=f"Monitoring setup failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Monitoring setup failed: {str(e)}")
 
 
 @router.get("/monitor/{monitoring_id}/status")

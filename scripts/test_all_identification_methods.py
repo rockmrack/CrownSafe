@@ -33,7 +33,7 @@ async def test_method_1_camera_scan():
 
     try:
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
 
@@ -89,7 +89,7 @@ async def test_method_2_upload_photo():
 
         # Test the upload request endpoint
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         # Check if visual router is mounted
         visual_mounted = False
@@ -137,7 +137,7 @@ async def test_method_3_barcode_text():
 
     try:
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
 
@@ -172,7 +172,7 @@ async def test_method_4_search_by_name():
 
     try:
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
 
@@ -206,7 +206,7 @@ async def test_endpoint_structure():
     logger.info("ENDPOINT STRUCTURE VERIFICATION")
     logger.info("=" * 60)
 
-    from api.main_babyshield import app
+    from api.main_crownsafe import app
 
     required_endpoints = {
         "/api/v1/safety-check": "POST",  # Main endpoint for Methods 1, 3, 4

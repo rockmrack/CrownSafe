@@ -14,7 +14,22 @@ if project_root not in sys.path:
 # These imports are intentionally "unused" but required for Alembic autogenerate
 # ruff: noqa: F401
 from core_infra.enhanced_database_schema import Base
-from core_infra.database import User, FamilyMember, Allergy
+from core_infra.database import User
+
+# CROWN SAFE: Import hair product safety models
+from core_infra.crown_safe_models import (
+    HairProfileModel,
+    HairProductModel,
+    IngredientModel,
+    ProductScanModel,
+    ProductReviewModel,
+    BrandCertificationModel,
+    SalonAccountModel,
+    MarketInsightModel,
+)
+
+# LEGACY BABY CODE: FamilyMember and Allergy models removed
+# from core_infra.database import FamilyMember, Allergy
 
 # Import incident reporting models
 from db.models.incident_report import (

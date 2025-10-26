@@ -6,7 +6,7 @@ os.environ["TEST_MODE"] = "true"
 os.environ["CREATE_TABLES_ON_IMPORT"] = "true"
 
 from fastapi.testclient import TestClient
-from api.main_babyshield import app
+from api.main_crownsafe import app
 
 
 def main():

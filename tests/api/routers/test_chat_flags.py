@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch
-from api.main_babyshield import app
+from api.main_crownsafe import app
 
 
 class TestChatFlags:

@@ -9,7 +9,7 @@ Run with: pytest tests/integration/test_simple_model_entry.py -v -s
 
 import pytest
 from fastapi.testclient import TestClient
-from api.main_babyshield import app
+from api.main_crownsafe import app
 
 # Create test client
 client = TestClient(app)

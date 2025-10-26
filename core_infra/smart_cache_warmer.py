@@ -45,59 +45,27 @@ class SmartCacheWarmer:
         start_time = time.time()
 
         try:
-            from core_infra.database import get_db_session, RecallDB
+            # REMOVED FOR CROWN SAFE: Recall analytics no longer applicable
+            # from core_infra.database import get_db_session, RecallDB
+            # Recall functionality removed - Crown Safe uses hair products
 
-            with get_db_session() as db:
-                # Get all product names and brands
-                products_query = db.execute(
-                    text(
-                        """
-                    SELECT 
-                        product_name,
-                        brand,
-                        COUNT(*) as mention_count,
-                        MAX(recall_date) as latest_recall
-                    FROM recalls 
-                    WHERE product_name IS NOT NULL
-                    GROUP BY product_name, brand
-                    ORDER BY mention_count DESC, latest_recall DESC
-                    LIMIT 1000
-                """
-                    )
-                )
+            logger.info("⏭️  Recall analytics cache warming skipped (deprecated for Crown Safe)")
 
-                popular_products = []
-                popular_brands = []
-                brand_counter = Counter()
+            # Return empty results for backward compatibility
+            elapsed = time.time() - start_time
+            return {
+                "popular_products": [],
+                "popular_brands": [],
+                "total_analyzed": 0,
+                "elapsed_time": elapsed,
+            }
 
-                for row in products_query:
-                    product_name = row[0]
-                    brand = row[1]
-                    mention_count = row[2]
-
-                    if mention_count >= self.config["popular_threshold"]:
-                        popular_products.append(product_name)
-
-                        if brand:
-                            brand_counter[brand] += mention_count
-
-                # Extract most popular brands
-                popular_brands = [
-                    brand
-                    for brand, count in brand_counter.most_common(
-                        self.config["warm_top_brands"]
-                    )
-                ]
-
-                elapsed = time.time() - start_time
-                self.logger.info(
-                    f"📊 Popular analysis: {len(popular_products)} products, {len(popular_brands)} brands in {elapsed:.3f}s"
-                )
-
-                return {
-                    "products": popular_products[: self.config["warm_top_products"]],
-                    "brands": popular_brands,
-                }
+            # Original recall analytics removed:
+            # with get_db_session() as db:
+            #     products_query = db.execute(text(...))
+            #     for row in products_query:
+            #         # Analyze products and brands
+            #         pass
 
         except Exception as e:
             self.logger.error(f"Popular product analysis failed: {e}")
@@ -116,19 +84,14 @@ class SmartCacheWarmer:
 
             # Batch products into groups for parallel processing
             batch_size = self.config["concurrent_warming"]
-            product_batches = [
-                products[i : i + batch_size]
-                for i in range(0, len(products), batch_size)
-            ]
+            product_batches = [products[i : i + batch_size] for i in range(0, len(products), batch_size)]
 
             for batch in product_batches:
                 # Process batch in parallel
                 async def warm_product(product_name):
                     try:
                         # Get recall data for this product
-                        recalls = await optimized_recall_search(
-                            product_name=product_name
-                        )
+                        recalls = await optimized_recall_search(product_name=product_name)
 
                         if recalls:
                             # Cache the search result
@@ -140,27 +103,19 @@ class SmartCacheWarmer:
                                 "cached_at": datetime.now().isoformat(),
                             }
 
-                            set_cached(
-                                "recall", cache_key, cache_data, ttl=7200
-                            )  # 2 hour cache
+                            set_cached("recall", cache_key, cache_data, ttl=7200)  # 2 hour cache
                             return True
                     except Exception as e:
-                        self.logger.warning(
-                            f"Cache warming failed for {product_name}: {e}"
-                        )
+                        self.logger.warning(f"Cache warming failed for {product_name}: {e}")
                         return False
                     return False
 
                 # Execute batch in parallel
                 batch_tasks = [warm_product(product) for product in batch]
-                batch_results = await asyncio.gather(
-                    *batch_tasks, return_exceptions=True
-                )
+                batch_results = await asyncio.gather(*batch_tasks, return_exceptions=True)
 
                 # Count successful warming operations
-                successful_warming += sum(
-                    1 for result in batch_results if result is True
-                )
+                successful_warming += sum(1 for result in batch_results if result is True)
 
                 # Small delay between batches to avoid overwhelming the system
                 await asyncio.sleep(0.1)
@@ -176,9 +131,7 @@ class SmartCacheWarmer:
             self.logger.error(f"Cache warming failed: {e}")
             return 0
 
-    async def warm_cache_for_autocomplete(
-        self, products: List[str], brands: List[str]
-    ) -> int:
+    async def warm_cache_for_autocomplete(self, products: List[str], brands: List[str]) -> int:
         """
         Pre-warm autocomplete cache for instant typing responses
         """
@@ -196,9 +149,7 @@ class SmartCacheWarmer:
                 words = product.split()[:3]  # First 3 words
                 for word in words:
                     if len(word) >= 2:
-                        for i in range(
-                            2, min(len(word) + 1, 6)
-                        ):  # 2-5 character prefixes
+                        for i in range(2, min(len(word) + 1, 6)):  # 2-5 character prefixes
                             prefix = word[:i].lower()
                             if prefix not in common_queries:
                                 common_queries.append(prefix)
@@ -212,42 +163,22 @@ class SmartCacheWarmer:
                             common_queries.append(prefix)
 
             # Warm autocomplete cache
-            from core_infra.database import get_db_session, RecallDB
+            # REMOVED FOR CROWN SAFE: RecallDB autocomplete no longer applicable
+            # from core_infra.database import get_db_session, RecallDB
+            # Recall functionality removed - Crown Safe uses hair products
 
-            with get_db_session() as db:
-                for query in common_queries[:500]:  # Limit to prevent overload
-                    try:
-                        # Generate autocomplete suggestions
-                        suggestions = (
-                            db.query(RecallDB.product_name)
-                            .filter(
-                                RecallDB.product_name.ilike(f"{query}%"),
-                                RecallDB.product_name.isnot(None),
-                            )
-                            .distinct()
-                            .limit(10)
-                            .all()
-                        )
+            logger.info("⏭️  Autocomplete cache warming skipped (deprecated for Crown Safe)")
 
-                        suggestion_list = [s[0] for s in suggestions if s[0]]
-
-                        # Cache the autocomplete result
-                        cache_key = f"autocomplete_{query}_10"
-                        set_cached("autocomplete", cache_key, suggestion_list, ttl=3600)
-
-                        successful_warming += 1
-
-                    except Exception as e:
-                        self.logger.warning(
-                            f"Autocomplete warming failed for '{query}': {e}"
-                        )
-
+            # Return 0 for backward compatibility
             elapsed = time.time() - start_time
-            self.logger.info(
-                f"🎯 Autocomplete warming: {successful_warming} queries pre-cached in {elapsed:.3f}s"
-            )
+            return 0
 
-            return successful_warming
+            # Original autocomplete warming removed:
+            # with get_db_session() as db:
+            #     for query in common_queries[:500]:
+            #         suggestions = db.query(RecallDB.product_name).filter(...).all()
+            #         set_cached("autocomplete", cache_key, suggestion_list, ttl=3600)
+            #         successful_warming += 1
 
         except Exception as e:
             self.logger.error(f"Autocomplete cache warming failed: {e}")
@@ -272,9 +203,7 @@ class SmartCacheWarmer:
             popular_data = await self.analyze_popular_products()
 
             # Step 2: Warm cache for popular products
-            product_warming = await self.warm_cache_for_products(
-                popular_data["products"]
-            )
+            product_warming = await self.warm_cache_for_products(popular_data["products"])
 
             # Step 3: Warm autocomplete cache
             autocomplete_warming = await self.warm_cache_for_autocomplete(

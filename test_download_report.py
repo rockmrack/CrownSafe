@@ -137,7 +137,7 @@ def test_download_report_workflow():
     except requests.exceptions.ConnectionError:
         print(f"❌ Connection error - Is the API running at {BASE_URL}?")
         print(
-            "💡 Start the API with: uvicorn api.main_babyshield:app --reload --port 8001"
+            "💡 Start the API with: uvicorn api.main_crownsafe:app --reload --port 8001"
         )
     except requests.exceptions.Timeout:
         print("❌ Request timed out")

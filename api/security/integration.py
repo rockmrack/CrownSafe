@@ -110,7 +110,7 @@ def validate_security_config():
 
 # Integration example for main.py
 INTEGRATION_EXAMPLE = """
-# Add to your main_babyshield.py:
+# Add to your main_crownsafe.py:
 
 from api.security.integration import setup_security, validate_security_config
 

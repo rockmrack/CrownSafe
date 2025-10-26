@@ -447,7 +447,7 @@ def get_cors_middleware_config():
 # ========================= USAGE EXAMPLE =========================
 
 """
-# In your main FastAPI application (api/main_babyshield.py):
+# In your main FastAPI application (api/main_crownsafe.py):
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

@@ -40,7 +40,7 @@ class TestComprehensiveSuite:
 
     def test_import_api_main(self):
         """Test main API module imports"""
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         assert app is not None
 
@@ -132,7 +132,7 @@ class TestComprehensiveSuite:
     def test_health_endpoint(self):
         """Test /healthz endpoint"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
         response = client.get("/healthz")
@@ -142,7 +142,7 @@ class TestComprehensiveSuite:
     def test_root_endpoint(self):
         """Test root / endpoint"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
         response = client.get("/")
@@ -151,7 +151,7 @@ class TestComprehensiveSuite:
     def test_docs_endpoint(self):
         """Test /docs endpoint availability"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
         response = client.get("/docs")
@@ -160,7 +160,7 @@ class TestComprehensiveSuite:
     def test_openapi_schema(self):
         """Test OpenAPI schema generation"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
         response = client.get("/openapi.json")
@@ -172,7 +172,7 @@ class TestComprehensiveSuite:
     def test_cors_headers(self):
         """Test CORS headers are present"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
         response = client.options("/api/v1/health")
@@ -184,7 +184,7 @@ class TestComprehensiveSuite:
     def test_security_headers(self):
         """Test security headers are present"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
         response = client.get("/healthz")
@@ -266,7 +266,7 @@ class TestComprehensiveSuite:
     def test_404_error_handling(self):
         """Test 404 error handling"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
         response = client.get("/nonexistent-endpoint-12345")
@@ -275,7 +275,7 @@ class TestComprehensiveSuite:
     def test_500_error_handling(self):
         """Test 500 error handling structure"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
         # Most endpoints should return structured errors
@@ -290,7 +290,7 @@ class TestComprehensiveSuite:
         """Test health endpoint response time"""
         import time
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
 
@@ -308,7 +308,7 @@ class TestComprehensiveSuite:
     def test_sql_injection_prevention(self):
         """Test SQL injection prevention"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
 
@@ -328,7 +328,7 @@ class TestComprehensiveSuite:
     def test_xss_prevention(self):
         """Test XSS prevention"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
 
@@ -355,7 +355,7 @@ class TestComprehensiveSuite:
     def test_empty_string_handling(self):
         """Test empty string handling"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
         # Use the actual endpoint: /api/v1/recalls with query param
@@ -367,7 +367,7 @@ class TestComprehensiveSuite:
     def test_very_long_input_handling(self):
         """Test very long input handling"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
         long_string = "A" * 10000
@@ -378,7 +378,7 @@ class TestComprehensiveSuite:
     def test_special_characters_handling(self):
         """Test special characters handling"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
         special_chars = "!@#$%^&*()_+-=[]{}|;:',.<>?/~`"
@@ -390,7 +390,7 @@ class TestComprehensiveSuite:
     def test_unicode_handling(self):
         """Test Unicode character handling"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
         unicode_string = "测试 Тест تجربة 🎉"
@@ -401,7 +401,7 @@ class TestComprehensiveSuite:
     def test_null_byte_handling(self):
         """Test null byte handling"""
         from fastapi.testclient import TestClient
-        from api.main_babyshield import app
+        from api.main_crownsafe import app
 
         client = TestClient(app)
         # Note: httpx may reject null bytes in URLs, so this tests the validation

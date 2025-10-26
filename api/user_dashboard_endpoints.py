@@ -4,18 +4,19 @@ User Dashboard & Statistics Endpoints
 
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, Any, List
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
-from sqlalchemy import func, and_, desc
 
-from core_infra.database import get_db, RecallDB
-from core_infra.auth import get_current_active_user
-from core_infra.visual_agent_models import ImageJob, ImageExtraction, JobStatus
-from api.schemas.common import ApiResponse, ok, fail
-from api.pydantic_base import AppModel
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy import desc, func
+from sqlalchemy.orm import Session
+
+# REMOVED FOR CROWN SAFE: RecallDB no longer applicable (hair products, not baby recalls)
 from api.monitoring_scheduler import MonitoredProduct
 from api.notification_endpoints import NotificationHistory
+from api.pydantic_base import AppModel
+from api.schemas.common import ApiResponse, fail, ok
+from core_infra.auth import get_current_active_user
+from core_infra.database import get_db
+from core_infra.visual_agent_models import ImageExtraction, ImageJob, JobStatus
 
 logger = logging.getLogger(__name__)
 
@@ -52,33 +53,23 @@ class ProductCategory(AppModel):
 
 
 @router.get("/overview", response_model=ApiResponse)
-async def get_dashboard_overview(
-    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
-):
+async def get_dashboard_overview(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
     """Get dashboard overview statistics"""
     try:
         now = datetime.utcnow()
         month_ago = now - timedelta(days=30)
 
         # Get scan statistics
-        total_scans = (
-            db.query(ImageJob).filter(ImageJob.user_id == current_user.id).count()
-        )
+        total_scans = db.query(ImageJob).filter(ImageJob.user_id == current_user.id).count()
 
         scans_this_month = (
-            db.query(ImageJob)
-            .filter(
-                ImageJob.user_id == current_user.id, ImageJob.created_at >= month_ago
-            )
-            .count()
+            db.query(ImageJob).filter(ImageJob.user_id == current_user.id, ImageJob.created_at >= month_ago).count()
         )
 
         # Get monitoring statistics
         active_monitors = (
             db.query(MonitoredProduct)
-            .filter(
-                MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active
-            )
+            .filter(MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active)
             .count()
         )
 
@@ -93,9 +84,7 @@ async def get_dashboard_overview(
 
         # Get notification statistics
         notifications_received = (
-            db.query(NotificationHistory)
-            .filter(NotificationHistory.user_id == current_user.id)
-            .count()
+            db.query(NotificationHistory).filter(NotificationHistory.user_id == current_user.id).count()
         )
 
         # Calculate safety score (0-100)
@@ -210,18 +199,11 @@ async def get_activity_timeline(
 
 
 @router.get("/product-categories", response_model=ApiResponse)
-async def get_product_categories(
-    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
-):
+async def get_product_categories(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
     """Get breakdown of scanned products by category"""
     try:
         # Get all extractions for user
-        extractions = (
-            db.query(ImageExtraction)
-            .join(ImageJob)
-            .filter(ImageJob.user_id == current_user.id)
-            .all()
-        )
+        extractions = db.query(ImageExtraction).join(ImageJob).filter(ImageJob.user_id == current_user.id).all()
 
         # Categorize products
         categories = {}
@@ -248,9 +230,7 @@ async def get_product_categories(
                     category = "Nursery"
                 elif any(word in product_lower for word in ["car seat", "stroller"]):
                     category = "Travel"
-                elif any(
-                    word in product_lower for word in ["bath", "shampoo", "lotion"]
-                ):
+                elif any(word in product_lower for word in ["bath", "shampoo", "lotion"]):
                     category = "Bath & Body"
 
             categories[category] = categories.get(category, 0) + 1
@@ -262,14 +242,10 @@ async def get_product_categories(
         for cat, count in sorted(categories.items(), key=lambda x: x[1], reverse=True):
             percentage = (count / total * 100) if total > 0 else 0
             category_stats.append(
-                ProductCategory(
-                    category=cat, count=count, percentage=round(percentage, 1)
-                ).model_dump()
+                ProductCategory(category=cat, count=count, percentage=round(percentage, 1)).model_dump()
             )
 
-        return ok(
-            {"categories": category_stats[:10], "total_products": total}
-        )  # Top 10 categories
+        return ok({"categories": category_stats[:10], "total_products": total})  # Top 10 categories
 
     except Exception as e:
         logger.error(f"Error fetching product categories: {e}", exc_info=True)
@@ -277,9 +253,7 @@ async def get_product_categories(
 
 
 @router.get("/safety-insights", response_model=ApiResponse)
-async def get_safety_insights(
-    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
-):
+async def get_safety_insights(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
     """Get personalized safety insights and recommendations"""
     try:
         insights = []
@@ -296,9 +270,7 @@ async def get_safety_insights(
 
         monitored = (
             db.query(MonitoredProduct)
-            .filter(
-                MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active
-            )
+            .filter(MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active)
             .count()
         )
 
@@ -309,17 +281,18 @@ async def get_safety_insights(
                     {
                         "type": "recommendation",
                         "title": "Increase Monitoring Coverage",
-                        "message": f"Only {round(coverage)}% of your scanned products are being monitored. Enable monitoring for more products to stay safer.",
+                        "message": (
+                            f"Only {round(coverage)}% of your scanned products "
+                            f"are being monitored. Enable monitoring for more "
+                            f"products to stay safer."
+                        ),
                         "priority": "medium",
                     }
                 )
 
         # Check scan frequency
         last_scan = (
-            db.query(ImageJob)
-            .filter(ImageJob.user_id == current_user.id)
-            .order_by(desc(ImageJob.created_at))
-            .first()
+            db.query(ImageJob).filter(ImageJob.user_id == current_user.id).order_by(desc(ImageJob.created_at)).first()
         )
 
         if last_scan:
@@ -329,7 +302,10 @@ async def get_safety_insights(
                     {
                         "type": "reminder",
                         "title": "Time for a Safety Check",
-                        "message": f"It's been {days_since} days since your last scan. Regular scanning helps identify new products.",
+                        "message": (
+                            f"It's been {days_since} days since your last scan. "
+                            f"Regular scanning helps identify new products."
+                        ),
                         "priority": "low",
                     }
                 )
@@ -350,7 +326,7 @@ async def get_safety_insights(
                 {
                     "type": "alert",
                     "title": "Unread Recall Alerts",
-                    "message": f"You have {unread} unread recall notifications. Check them immediately for safety.",
+                    "message": (f"You have {unread} unread recall notifications. Check them immediately for safety."),
                     "priority": "high",
                 }
             )
@@ -371,7 +347,7 @@ async def get_safety_insights(
                 {
                     "type": "warning",
                     "title": "Active Recalls",
-                    "message": f"{recalled} of your monitored products have active recalls. Review and take action.",
+                    "message": (f"{recalled} of your monitored products have active recalls. Review and take action."),
                     "priority": "high",
                 }
             )
@@ -382,14 +358,12 @@ async def get_safety_insights(
                 {
                     "type": "success",
                     "title": "Great Job!",
-                    "message": "All your monitored products are currently safe. Keep up the good monitoring!",
+                    "message": ("All your monitored products are currently safe. Keep up the good monitoring!"),
                     "priority": "low",
                 }
             )
 
-        return ok(
-            {"insights": insights, "generated_at": datetime.utcnow().isoformat() + "Z"}
-        )
+        return ok({"insights": insights, "generated_at": datetime.utcnow().isoformat() + "Z"})
 
     except Exception as e:
         logger.error(f"Error fetching safety insights: {e}", exc_info=True)
@@ -411,9 +385,7 @@ async def get_recent_recalls(
         # From monitored products
         monitored = (
             db.query(MonitoredProduct)
-            .filter(
-                MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active
-            )
+            .filter(MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active)
             .all()
         )
 
@@ -425,11 +397,7 @@ async def get_recent_recalls(
 
         # From scan history
         extractions = (
-            db.query(ImageExtraction)
-            .join(ImageJob)
-            .filter(ImageJob.user_id == current_user.id)
-            .limit(100)
-            .all()
+            db.query(ImageExtraction).join(ImageJob).filter(ImageJob.user_id == current_user.id).limit(100).all()
         )
 
         for ext in extractions:
@@ -438,50 +406,17 @@ async def get_recent_recalls(
             if ext.brand_name:
                 user_brands.add(ext.brand_name.lower())
 
-        # Find relevant recalls
+        # REMOVED FOR CROWN SAFE: Recall finding no longer applicable
+        # Crown Safe uses hair products (HairProductModel), not baby product recalls
         recalls = []
 
-        if user_upcs or user_brands:
-            query = db.query(RecallDB).order_by(desc(RecallDB.recall_date))
-
-            # Filter by UPCs or brands
-            # Note: This is simplified - you'd want more sophisticated matching
-            recent_recalls = query.limit(limit * 2).all()
-
-            for recall in recent_recalls:
-                relevant = False
-
-                # Check UPC match
-                if hasattr(recall, "upc_codes") and recall.upc_codes:
-                    for upc in user_upcs:
-                        if upc in recall.upc_codes:
-                            relevant = True
-                            break
-
-                # Check brand match
-                if not relevant and recall.brand:
-                    for brand in user_brands:
-                        if brand in recall.brand.lower():
-                            relevant = True
-                            break
-
-                if relevant or len(recalls) < 3:  # Include some general recalls
-                    recalls.append(
-                        {
-                            "id": recall.id,
-                            "title": recall.title,
-                            "brand": recall.brand,
-                            "product": recall.product_name,
-                            "hazard": recall.hazard_description,
-                            "date": recall.recall_date.isoformat()
-                            if recall.recall_date
-                            else None,
-                            "relevant": relevant,
-                        }
-                    )
-
-                if len(recalls) >= limit:
-                    break
+        # Original recall matching logic removed (~50 lines):
+        # if user_upcs or user_brands:
+        #     query = db.query(RecallDB).order_by(desc(RecallDB.recall_date))
+        #     recent_recalls = query.limit(limit * 2).all()
+        #     for recall in recent_recalls:
+        #         # Check UPC and brand matching
+        #         recalls.append({...})
 
         return ok({"recalls": recalls, "total": len(recalls)})
 
@@ -490,18 +425,14 @@ async def get_recent_recalls(
         return fail(f"Failed to fetch recalls: {str(e)}", status=500)
 
 
-@router.get("/achievements", response_model=ApiResponse)
-async def get_user_achievements(
-    current_user=Depends(get_current_active_user), db: Session = Depends(get_db)
-):
+@router.get("/user-achievements", response_model=ApiResponse)
+async def get_user_achievements(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
     """Get user achievements and milestones"""
     try:
         achievements = []
 
         # Scan milestones
-        total_scans = (
-            db.query(ImageJob).filter(ImageJob.user_id == current_user.id).count()
-        )
+        total_scans = db.query(ImageJob).filter(ImageJob.user_id == current_user.id).count()
 
         scan_milestones = [1, 10, 25, 50, 100, 250, 500, 1000]
         for milestone in scan_milestones:
@@ -520,9 +451,7 @@ async def get_user_achievements(
         # Monitoring achievements
         monitored = (
             db.query(MonitoredProduct)
-            .filter(
-                MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active
-            )
+            .filter(MonitoredProduct.user_id == current_user.id, MonitoredProduct.is_active)
             .count()
         )
 

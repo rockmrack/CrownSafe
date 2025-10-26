@@ -1,5 +1,15 @@
-import sqlite3
 import os
+import re
+import sqlite3
+
+identifier_pattern = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+
+def _is_safe_identifier(name: str, pattern: re.Pattern = identifier_pattern) -> bool:
+    """Return True if the provided identifier can be safely interpolated into SQL."""
+
+    return bool(pattern.fullmatch(name))
+
 
 # Check all database files
 db_files = ["babyshield_recalls.db", "babyshield_dev.db", "babyshield.db"]
@@ -31,6 +41,10 @@ for db_file in db_files:
         for table in tables:
             if "recall" in table.lower():
                 try:
+                    if not _is_safe_identifier(table):
+                        print(f"   ⚠️  Skipping table with unsafe name: {table}")
+                        continue
+
                     cursor.execute(f"SELECT COUNT(*) FROM {table}")
                     count = cursor.fetchone()[0]
                     print(f"   📊 {table}: {count:,} rows")

@@ -56,7 +56,7 @@ def create_app(
     # Register exception handlers
     _configure_exception_handlers(app)
 
-    # Register routers (done separately in main_babyshield.py)
+    # Register routers (done separately in main_crownsafe.py)
     # This keeps router registration visible and easy to modify
 
     logger.info(f"✅ FastAPI application created for {environment} environment")
@@ -187,13 +187,13 @@ def register_routers(app: FastAPI) -> None:
     """
     Register all API routers
 
-    This function is called from main_babyshield.py to keep router
+    This function is called from main_crownsafe.py to keep router
     registration visible and easy to modify
     """
     logger.info("🔧 Registering API routers...")
 
     # Import and register routers
-    # (This is done in main_babyshield.py for visibility)
+    # (This is done in main_crownsafe.py for visibility)
 
     pass
 

@@ -142,7 +142,7 @@ def add_rate_limited_routes(app: FastAPI):
 
 # Example integration code for main.py
 INTEGRATION_EXAMPLE = """
-# Add this to your main_babyshield.py or app factory:
+# Add this to your main_crownsafe.py or app factory:
 
 from api.observability_integration import setup_observability, on_startup, on_shutdown
 

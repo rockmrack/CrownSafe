@@ -69,9 +69,9 @@ def cached_query(cache: TTLCache, key_func: Callable = None):
         Decorated function with caching
 
     Example:
-        @cached_query(recall_cache)
-        def get_recalls_by_barcode(barcode: str, db: Session):
-            return db.query(RecallDB).filter(...).all()
+        @cached_query(product_cache)
+        def get_products_by_barcode(barcode: str, db: Session):
+            return db.query(HairProductModel).filter(...).all()
     """
 
     def decorator(func: Callable) -> Callable:
@@ -172,14 +172,12 @@ def cache_agency_query(func: Callable) -> Callable:
 @cache_recall_query
 def get_recalls_by_barcode_cached(barcode: str, db):
     """
-    Get recalls by barcode with caching.
-
-    Example of how to use the caching decorator.
-    Replace with actual implementation in your code.
+    REMOVED FOR CROWN SAFE: Recall functionality no longer applicable.
+    This function is deprecated and returns empty list.
     """
-    from core_infra.database import RecallDB
-
-    return db.query(RecallDB).filter(RecallDB.upc == barcode).all()
+    # from core_infra.database import RecallDB
+    # return db.query(RecallDB).filter(RecallDB.upc == barcode).all()
+    return []
 
 
 @cache_safety_query

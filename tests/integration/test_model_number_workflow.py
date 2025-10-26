@@ -14,7 +14,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import date
 
-from api.main_babyshield import app
+from api.main_crownsafe import app
 from core_infra.database import Base, LegacyRecallDB
 
 # Create test client

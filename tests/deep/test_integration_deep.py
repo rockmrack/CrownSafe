@@ -5,7 +5,7 @@ Testing cross-component integration and complex workflows
 
 import pytest
 from fastapi.testclient import TestClient
-from api.main_babyshield import app
+from api.main_crownsafe import app
 import os
 
 os.environ["BS_FEATURE_CHAT_ENABLED"] = "true"

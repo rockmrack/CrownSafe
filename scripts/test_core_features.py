@@ -192,7 +192,7 @@ async def main():
         print("Please start the server with:")
         print('  $env:DATABASE_URL="sqlite:///./babyshield_test.db"')
         print('  $env:TEST_MODE="true"')
-        print("  python -m uvicorn api.main_babyshield:app --host 0.0.0.0 --port 8001")
+        print("  python -m uvicorn api.main_crownsafe:app --host 0.0.0.0 --port 8001")
         return
 
     # Run tests

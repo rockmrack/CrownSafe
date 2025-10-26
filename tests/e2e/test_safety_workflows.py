@@ -25,7 +25,7 @@ os.environ.setdefault("TEST_DATABASE_URL", "sqlite:///babyshield_e2e.sqlite")
 os.environ.setdefault("ENVIRONMENT", "development")
 os.environ.setdefault("DEBUG", "false")
 
-from api.main_babyshield import app
+from api.main_crownsafe import app
 from core_infra.database import (
     Allergy,
     Base,
@@ -87,7 +87,7 @@ def _reset_database() -> None:
 
 @pytest.fixture()
 def client() -> TestClient:
-    from api import main_babyshield as mb_module
+    from api import main_crownsafe as mb_module
 
     # Force environment-mode code paths for SQLite-based integration tests
     mb_module.CONFIG_LOADED = False
@@ -178,7 +178,7 @@ def test_barcode_recall_workflow_returns_high_risk(
         }
 
     monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", fake_run_optimized
+        "api.main_crownsafe.run_optimized_safety_check", fake_run_optimized
     )
 
     response = client.post(
@@ -239,7 +239,7 @@ def test_allergy_workflow_flags_family_allergens(
         }
 
     monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", fake_run_optimized
+        "api.main_crownsafe.run_optimized_safety_check", fake_run_optimized
     )
     monkeypatch.setattr(
         "agents.premium.allergy_sensitivity_agent.agent_logic.AllergySensitivityAgentLogic.check_product_for_family",
@@ -298,11 +298,11 @@ def test_visual_low_confidence_returns_inconclusive(
             }
 
     monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", failing_run_optimized
+        "api.main_crownsafe.run_optimized_safety_check", failing_run_optimized
     )
 
     # Preserve the existing commander to restore after the test
-    from api import main_babyshield as mb_module
+    from api import main_crownsafe as mb_module
 
     original_commander = getattr(mb_module, "commander_agent", None)
     mb_module.commander_agent = StubCommander()
@@ -352,7 +352,7 @@ def test_scan_camera_model_number_workflow(
         }
 
     monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", fake_run_optimized
+        "api.main_crownsafe.run_optimized_safety_check", fake_run_optimized
     )
 
     response = client.post(
@@ -477,7 +477,7 @@ def test_enter_model_number_prioritizes_recall_agent(
         }
 
     monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", fake_run_optimized
+        "api.main_crownsafe.run_optimized_safety_check", fake_run_optimized
     )
 
     response = client.post(
@@ -512,7 +512,7 @@ def test_manual_barcode_entry_golden_path(
         }
 
     monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", fake_run_optimized
+        "api.main_crownsafe.run_optimized_safety_check", fake_run_optimized
     )
 
     response = client.post(
@@ -555,7 +555,7 @@ def test_lot_number_search_returns_precise_recall(
         }
 
     monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", fake_run_optimized
+        "api.main_crownsafe.run_optimized_safety_check", fake_run_optimized
     )
 
     response = client.post(
@@ -599,7 +599,7 @@ def test_product_name_search_uses_fuzzy_matching(
         }
 
     monkeypatch.setattr(
-        "api.main_babyshield.run_optimized_safety_check", fake_run_optimized
+        "api.main_crownsafe.run_optimized_safety_check", fake_run_optimized
     )
 
     response = client.post(

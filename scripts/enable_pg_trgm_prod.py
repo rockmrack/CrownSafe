@@ -1,20 +1,29 @@
 #!/usr/bin/env python3
-"""
-Enable pg_trgm extension in production PostgreSQL database.
-This fixes the "function similarity(text, unknown) does not exist" error.
-"""
+"""Enable pg_trgm extension in production PostgreSQL."""
 
-import psycopg2
+import os
 import sys
 
+import psycopg2
+
+
 # Connection details
+def _require_env(var_name: str) -> str:
+    """Return the value of the required environment variable."""
+
+    value = os.getenv(var_name)
+    if not value:
+        raise RuntimeError(f"Missing required environment variable: {var_name}")
+    return value
+
+
 DB_CONFIG = {
-    "host": "babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com",
-    "port": 5432,
-    "database": "postgres",
-    "user": "babyshield_user",
-    "password": "MandarunLabadiena25!",
-    "sslmode": "require",
+    "host": _require_env("BABYSHIELD_DB_HOST"),
+    "port": int(os.getenv("BABYSHIELD_DB_PORT", "5432")),
+    "database": _require_env("BABYSHIELD_DB_NAME"),
+    "user": _require_env("BABYSHIELD_DB_USER"),
+    "password": _require_env("BABYSHIELD_DB_PASSWORD"),
+    "sslmode": os.getenv("BABYSHIELD_DB_SSLMODE", "require"),
 }
 
 
@@ -35,9 +44,7 @@ def enable_pg_trgm():
         print("✅ Extension enabled!")
 
         # Verify extension
-        cursor.execute(
-            "SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';"
-        )
+        cursor.execute("SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';")
         result = cursor.fetchone()
         if result:
             print(f"✅ Verified: pg_trgm version {result[1]}")
@@ -77,9 +84,7 @@ def enable_pg_trgm():
         print("✅ SUCCESS: pg_trgm extension is now enabled and configured!")
         print()
         print("🧪 Next step: Test the search endpoint:")
-        print(
-            "   curl -X POST https://babyshield.cureviax.ai/api/v1/search/advanced \\"
-        )
+        print("   curl -X POST https://babyshield.cureviax.ai/api/v1/search/advanced \\")
         print('        -H "Content-Type: application/json" \\')
         print('        -d \'{"query":"baby","limit":10}\'')
 

@@ -14,15 +14,25 @@ except ImportError:
     os.system("pip3 install psycopg2-binary --quiet")
     import psycopg2
 
+
+def _require_env(var_name: str) -> str:
+    """Return the value of the required environment variable."""
+
+    value = os.getenv(var_name)
+    if not value:
+        raise RuntimeError(f"Missing required environment variable: {var_name}")
+    return value
+
+
 # Database connection details
 DB_CONFIG = {
-    "host": "babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com",
-    "port": 5432,
-    "database": "postgres",
-    "user": "babyshield_user",
-    "password": "MandarunLabadiena25!",
-    "sslmode": "require",
-    "connect_timeout": 10,
+    "host": _require_env("BABYSHIELD_DB_HOST"),
+    "port": int(os.getenv("BABYSHIELD_DB_PORT", "5432")),
+    "database": _require_env("BABYSHIELD_DB_NAME"),
+    "user": _require_env("BABYSHIELD_DB_USER"),
+    "password": _require_env("BABYSHIELD_DB_PASSWORD"),
+    "sslmode": os.getenv("BABYSHIELD_DB_SSLMODE", "require"),
+    "connect_timeout": int(os.getenv("BABYSHIELD_DB_CONNECT_TIMEOUT", "10")),
 }
 
 print("=" * 60)
@@ -52,9 +62,7 @@ try:
 
     # Verify
     print("Step 2: Verifying extension...")
-    cursor.execute(
-        "SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';"
-    )
+    cursor.execute("SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';")
     result = cursor.fetchone()
     if result:
         print(f"✓ pg_trgm version {result[1]} is installed")
@@ -99,9 +107,7 @@ try:
     print("=" * 60)
     print()
     print("Next steps:")
-    print(
-        "  1. Test search: curl -X POST https://babyshield.cureviax.ai/api/v1/search/advanced \\"
-    )
+    print("  1. Test search: curl -X POST https://babyshield.cureviax.ai/api/v1/search/advanced \\")
     print('                    -H "Content-Type: application/json" \\')
     print('                    -d \'{"query":"baby","limit":5}\'')
     print("  2. Expected: 'total' > 0 (not 0)")

@@ -359,5 +359,5 @@ async def main():
 
 if __name__ == "__main__":
     # For local testing, make sure the API is running:
-    # uvicorn api.main_babyshield:app --host 0.0.0.0 --port 8001
+    # uvicorn api.main_crownsafe:app --host 0.0.0.0 --port 8001
     asyncio.run(main())

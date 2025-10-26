@@ -18,7 +18,7 @@ from api.services.ingestion_runner import IngestionRunner
 from api.rate_limiting import RateLimiters
 from api.errors import APIError
 from core_infra.database import get_db
-from core_infra.enhanced_database_schema import EnhancedRecallDB
+# from core_infra.enhanced_database_schema import EnhancedRecallDB  # REMOVED FOR CROWN SAFE
 from db.models.ingestion_run import IngestionRun
 
 logger = logging.getLogger(__name__)
@@ -339,55 +339,20 @@ async def reindex_database(
 @router.get("/freshness")
 async def data_freshness(request: Request, db: Session = Depends(get_db)):
     """
-    Get data freshness statistics
+    Get data freshness statistics - DEPRECATED FOR CROWN SAFE
     """
+    # REMOVED FOR CROWN SAFE: EnhancedRecallDB statistics gutted
+    # Crown Safe focuses on hair product testing (HairProductModel), not baby recalls
     try:
-        # Overall statistics
-        total_recalls = db.query(func.count(EnhancedRecallDB.id)).scalar() or 0
-
-        latest_update = db.query(func.max(EnhancedRecallDB.last_updated)).scalar()
-
-        # Per-agency statistics
-        agency_stats = (
-            db.query(
-                EnhancedRecallDB.source_agency.label("agency"),
-                func.count(EnhancedRecallDB.id).label("total"),
-                func.max(EnhancedRecallDB.last_updated).label("last_updated"),
-                func.sum(
-                    func.cast(
-                        EnhancedRecallDB.last_updated
-                        >= datetime.utcnow() - timedelta(hours=24),
-                        Integer,
-                    )
-                ).label("new_24h"),
-                func.sum(
-                    func.cast(
-                        EnhancedRecallDB.last_updated
-                        >= datetime.utcnow() - timedelta(days=7),
-                        Integer,
-                    )
-                ).label("new_7d"),
-            )
-            .group_by(EnhancedRecallDB.source_agency)
-            .order_by(EnhancedRecallDB.source_agency)
-            .all()
+        return create_response(
+            {
+                "total": 0,
+                "lastUpdated": None,
+                "agencies": [],
+                "message": "Recall freshness deprecated for Crown Safe",
+            },
+            request,
         )
-
-        # Format agency data
-        agencies = []
-        for stat in agency_stats:
-            agencies.append(
-                {
-                    "agency": stat.agency,
-                    "total": stat.total,
-                    "lastUpdated": stat.last_updated.isoformat()
-                    if stat.last_updated
-                    else None,
-                    "new24h": stat.new_24h or 0,
-                    "new7d": stat.new_7d or 0,
-                    "staleness": "fresh"
-                    if stat.new_24h > 0
-                    else ("recent" if stat.new_7d > 0 else "stale"),
                 }
             )
 
@@ -446,7 +411,7 @@ async def admin_statistics(request: Request, db: Session = Depends(get_db)):
     try:
         # Database stats
         db_stats = {
-            "recalls": db.query(func.count(EnhancedRecallDB.id)).scalar() or 0,
+            "recalls": 0,  # EnhancedRecallDB removed for Crown Safe
             "ingestion_runs": db.query(func.count(IngestionRun.id)).scalar() or 0,
         }
 

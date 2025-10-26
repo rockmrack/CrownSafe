@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
-from api.main_babyshield import app
+from api.main_crownsafe import app
 
 
 class TestExplainFeedbackEndpoint:

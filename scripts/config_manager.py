@@ -12,22 +12,23 @@ Usage:
     python scripts/config_manager.py check-requirements
 """
 
+import argparse
 import os
-import sys
 import secrets
 import string
-import argparse
+import sys
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 try:
-    from config.settings import get_config, BaseConfig
     from config.settings.development import DevelopmentConfig
     from config.settings.production import ProductionConfig
+
+    from config.settings import BaseConfig, get_config
 except ImportError as e:
     print(f"❌ Error importing configuration: {e}")
     print("Make sure you're running this from the project root directory")
@@ -93,6 +94,10 @@ class ConfigManager:
 
     def create_env_file(self, environment: str) -> bool:
         """Create environment file from template"""
+        allowed_envs = {"development", "staging", "production"}
+        if environment not in allowed_envs:
+            raise ValueError(f"Unsupported environment '{environment}'. Expected one of: {sorted(allowed_envs)}")
+
         template_file = self.project_root / f".env.{environment}.example"
         env_file = self.project_root / f".env.{environment}"
 
@@ -112,9 +117,7 @@ class ConfigManager:
         if environment == "production":
             secrets_dict = self.generate_secrets()
             for key, value in secrets_dict.items():
-                content = content.replace(
-                    f"your-{key.lower().replace('_', '-')}", value
-                )
+                content = content.replace(f"your-{key.lower().replace('_', '-')}", value)
 
             print("🔐 Generated secure secrets for production:")
             for key in secrets_dict:

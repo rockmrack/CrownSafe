@@ -62,7 +62,7 @@ def test_report_unsafe_product():
     except requests.exceptions.ConnectionError:
         print("❌ Connection error - is the API running?")
         print(
-            "💡 Start the API with: uvicorn api.main_babyshield:app --reload --port 8001"
+            "💡 Start the API with: uvicorn api.main_crownsafe:app --reload --port 8001"
         )
     except Exception as e:
         print(f"❌ Error: {e}")

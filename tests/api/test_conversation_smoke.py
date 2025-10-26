@@ -6,7 +6,7 @@ os.environ["BS_FEATURE_CHAT_ENABLED"] = "true"
 os.environ["BS_FEATURE_CHAT_ROLLOUT_PCT"] = "1.0"  # 100% rollout for tests
 
 from fastapi.testclient import TestClient
-from api.main_babyshield import app
+from api.main_crownsafe import app
 
 # monkeypatch helpers from your code if needed:
 from api.routers import chat as chat_router

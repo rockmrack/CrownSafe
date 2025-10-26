@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,39 +11,39 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
         }
-        
+
         .header {
             background: white;
             border-radius: 12px;
             padding: 24px;
             margin-bottom: 24px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
-        
+
         .header h1 {
             font-size: 28px;
             color: #2d3748;
             margin-bottom: 16px;
         }
-        
+
         .auth-section {
             display: flex;
             gap: 12px;
             align-items: center;
         }
-        
+
         .auth-section input {
             flex: 1;
             max-width: 400px;
@@ -51,12 +52,12 @@
             border-radius: 8px;
             font-size: 14px;
         }
-        
+
         .auth-section input:focus {
             outline: none;
             border-color: #667eea;
         }
-        
+
         .status-indicator {
             padding: 6px 12px;
             border-radius: 20px;
@@ -64,30 +65,30 @@
             font-weight: 600;
             text-transform: uppercase;
         }
-        
+
         .status-connected {
             background: #c6f6d5;
             color: #22543d;
         }
-        
+
         .status-disconnected {
             background: #fed7d7;
             color: #742a2a;
         }
-        
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
             gap: 24px;
         }
-        
+
         .card {
             background: white;
             border-radius: 12px;
             padding: 24px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
-        
+
         .card h2 {
             font-size: 20px;
             color: #2d3748;
@@ -95,15 +96,16 @@
             padding-bottom: 12px;
             border-bottom: 2px solid #e2e8f0;
         }
-        
+
         .controls {
             display: flex;
             gap: 12px;
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
-        
-        select, button {
+
+        select,
+        button {
             padding: 10px 16px;
             border-radius: 8px;
             font-size: 14px;
@@ -111,12 +113,12 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
+
         select {
             border: 2px solid #e2e8f0;
             background: white;
         }
-        
+
         button {
             background: #667eea;
             color: white;
@@ -125,51 +127,52 @@
             align-items: center;
             gap: 8px;
         }
-        
+
         button:hover {
             background: #5a67d8;
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
-        
+
         button:active {
             transform: translateY(0);
         }
-        
+
         button:disabled {
             background: #cbd5e0;
             cursor: not-allowed;
         }
-        
+
         .btn-secondary {
             background: #4a5568;
         }
-        
+
         .btn-secondary:hover {
             background: #2d3748;
         }
-        
+
         .btn-danger {
             background: #f56565;
         }
-        
+
         .btn-danger:hover {
             background: #e53e3e;
         }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 12px;
         }
-        
-        th, td {
+
+        th,
+        td {
             text-align: left;
             padding: 12px;
             border-bottom: 1px solid #e2e8f0;
             font-size: 14px;
         }
-        
+
         th {
             background: #f7fafc;
             font-weight: 600;
@@ -177,11 +180,11 @@
             text-transform: uppercase;
             font-size: 12px;
         }
-        
+
         tbody tr:hover {
             background: #f7fafc;
         }
-        
+
         .status-badge {
             display: inline-block;
             padding: 4px 8px;
@@ -189,89 +192,89 @@
             font-size: 12px;
             font-weight: 600;
         }
-        
+
         .status-success {
             background: #c6f6d5;
             color: #22543d;
         }
-        
+
         .status-failed {
             background: #fed7d7;
             color: #742a2a;
         }
-        
+
         .status-running {
             background: #bee3f8;
             color: #2c5282;
         }
-        
+
         .status-queued {
             background: #fef5e7;
             color: #744210;
         }
-        
+
         .status-cancelled {
             background: #e2e8f0;
             color: #4a5568;
         }
-        
+
         .status-partial {
             background: #fed7e2;
             color: #702459;
         }
-        
+
         .metric-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
-        
+
         .metric-card {
             background: #f7fafc;
             padding: 16px;
             border-radius: 8px;
             text-align: center;
         }
-        
+
         .metric-value {
             font-size: 32px;
             font-weight: 700;
             color: #2d3748;
         }
-        
+
         .metric-label {
             font-size: 12px;
             color: #718096;
             text-transform: uppercase;
             margin-top: 4px;
         }
-        
+
         .alert {
             padding: 12px 16px;
             border-radius: 8px;
             margin-top: 12px;
             font-size: 14px;
         }
-        
+
         .alert-success {
             background: #c6f6d5;
             color: #22543d;
             border: 1px solid #9ae6b4;
         }
-        
+
         .alert-error {
             background: #fed7d7;
             color: #742a2a;
             border: 1px solid #fc8181;
         }
-        
+
         .alert-info {
             background: #bee3f8;
             color: #2c5282;
             border: 1px solid #90cdf4;
         }
-        
+
         .spinner {
             display: inline-block;
             width: 16px;
@@ -281,39 +284,49 @@
             border-top-color: transparent;
             animation: spin 0.8s linear infinite;
         }
-        
+
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
-        
-        .freshness-fresh { color: #48bb78; }
-        .freshness-recent { color: #ed8936; }
-        .freshness-stale { color: #f56565; }
-        
+
+        .freshness-fresh {
+            color: #48bb78;
+        }
+
+        .freshness-recent {
+            color: #ed8936;
+        }
+
+        .freshness-stale {
+            color: #f56565;
+        }
+
         .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
         }
-        
+
         .loading-overlay.active {
             display: flex;
         }
-        
+
         .loading-content {
             background: white;
             padding: 24px;
             border-radius: 12px;
             text-align: center;
         }
-        
+
         .loading-spinner {
             width: 48px;
             height: 48px;
@@ -325,6 +338,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Header -->
@@ -336,7 +350,7 @@
                 <button onclick="testConnection()">Test Connection</button>
             </div>
         </div>
-        
+
         <!-- Main Grid -->
         <div class="grid">
             <!-- Data Freshness Card -->
@@ -378,7 +392,7 @@
                     <tbody id="freshnessTable"></tbody>
                 </table>
             </div>
-            
+
             <!-- Ingestion Control Card -->
             <div class="card">
                 <h2>🚀 Ingestion Control</h2>
@@ -408,7 +422,7 @@
                     </button>
                 </div>
                 <div id="ingestResult"></div>
-                
+
                 <h3 style="margin-top: 24px; margin-bottom: 12px;">Recent Runs</h3>
                 <div class="controls">
                     <button onclick="loadRuns()" class="btn-secondary">
@@ -430,7 +444,7 @@
                 </table>
             </div>
         </div>
-        
+
         <!-- Maintenance Card -->
         <div class="card" style="margin-top: 24px;">
             <h2>🔧 Database Maintenance</h2>
@@ -446,7 +460,7 @@
             <div id="statsResult" style="margin-top: 16px;"></div>
         </div>
     </div>
-    
+
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
@@ -454,50 +468,71 @@
             <div>Processing...</div>
         </div>
     </div>
-    
+
     <script>
         const API_BASE = window.location.origin;
         let isConnected = false;
-        
+
         function getHeaders() {
             return {
                 'X-Admin-Key': document.getElementById('apiKey').value,
                 'Content-Type': 'application/json'
             };
         }
-        
+
         function showLoading() {
             document.getElementById('loadingOverlay').classList.add('active');
         }
-        
+
         function hideLoading() {
             document.getElementById('loadingOverlay').classList.remove('active');
         }
-        
+
         function formatDate(dateStr) {
             if (!dateStr) return '-';
             const date = new Date(dateStr);
             return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
         }
-        
+
         function formatDuration(seconds) {
             if (!seconds) return '-';
             if (seconds < 60) return `${Math.round(seconds)}s`;
             if (seconds < 3600) return `${Math.round(seconds / 60)}m`;
             return `${Math.round(seconds / 3600)}h`;
         }
-        
-        function showAlert(message, type = 'info') {
-            const alertHtml = `<div class="alert alert-${type}">${message}</div>`;
-            return alertHtml;
+
+        function clearChildren(element) {
+            if (!element) {
+                return;
+            }
+            while (element.firstChild) {
+                element.removeChild(element.firstChild);
+            }
         }
-        
+
+        function sanitizeClass(value) {
+            return String(value || '')
+                .toLowerCase()
+                .replace(/[^a-z0-9_-]/g, '') || 'info';
+        }
+
+        function renderAlert(container, message, type = 'info') {
+            if (!container) {
+                return;
+            }
+            clearChildren(container);
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${sanitizeClass(type)}`;
+            alert.textContent = String(message || '');
+            container.appendChild(alert);
+        }
+
         async function testConnection() {
             try {
                 const response = await fetch(`${API_BASE}/api/v1/admin/freshness`, {
                     headers: getHeaders()
                 });
-                
+
                 const authStatus = document.getElementById('authStatus');
                 if (response.ok) {
                     authStatus.textContent = 'Connected';
@@ -518,105 +553,147 @@
                 isConnected = false;
             }
         }
-        
+
         async function loadFreshness() {
             if (!isConnected && !document.getElementById('apiKey').value) {
                 alert('Please enter API key first');
                 return;
             }
-            
+
             try {
                 const response = await fetch(`${API_BASE}/api/v1/admin/freshness`, {
                     headers: getHeaders()
                 });
-                
+
                 if (!response.ok) throw new Error('Failed to load freshness');
-                
+
                 const data = await response.json();
-                
+                const summary = data?.data?.summary ?? {};
+
                 // Update metrics
                 const metrics = document.getElementById('freshnessMetrics');
-                metrics.innerHTML = `
-                    <div class="metric-card">
-                        <div class="metric-value">${(data.data.summary.totalRecalls || 0).toLocaleString()}</div>
-                        <div class="metric-label">Total Recalls</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">${data.data.summary.agencyCount || 0}</div>
-                        <div class="metric-label">Agencies</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">${data.data.summary.runningJobs || 0}</div>
-                        <div class="metric-label">Running Jobs</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">${formatDate(data.data.summary.lastUpdate).split(' ')[0]}</div>
-                        <div class="metric-label">Last Update</div>
-                    </div>
-                `;
-                
+                clearChildren(metrics);
+
+                const metricsData = [
+                    {
+                        value: (summary.totalRecalls || 0).toLocaleString(),
+                        label: 'Total Recalls'
+                    },
+                    {
+                        value: summary.agencyCount || 0,
+                        label: 'Agencies'
+                    },
+                    {
+                        value: summary.runningJobs || 0,
+                        label: 'Running Jobs'
+                    },
+                    {
+                        value: (() => {
+                            const formatted = formatDate(summary.lastUpdate);
+                            return formatted.includes(' ') ? formatted.split(' ')[0] : formatted;
+                        })(),
+                        label: 'Last Update'
+                    }
+                ];
+
+                metricsData.forEach(metric => {
+                    const card = document.createElement('div');
+                    card.className = 'metric-card';
+
+                    const valueDiv = document.createElement('div');
+                    valueDiv.className = 'metric-value';
+                    valueDiv.textContent = String(metric.value ?? '');
+
+                    const labelDiv = document.createElement('div');
+                    labelDiv.className = 'metric-label';
+                    labelDiv.textContent = metric.label;
+
+                    card.appendChild(valueDiv);
+                    card.appendChild(labelDiv);
+                    metrics.appendChild(card);
+                });
+
                 // Update table
                 const tbody = document.getElementById('freshnessTable');
-                tbody.innerHTML = '';
-                
-                data.data.agencies.forEach(agency => {
+                clearChildren(tbody);
+                const agencies = Array.isArray(data?.data?.agencies) ? data.data.agencies : [];
+
+                agencies.forEach(agency => {
                     const row = tbody.insertRow();
-                    row.innerHTML = `
-                        <td><strong>${agency.agency}</strong></td>
-                        <td>${agency.total.toLocaleString()}</td>
-                        <td>${formatDate(agency.lastUpdated)}</td>
-                        <td>${agency.new24h || 0}</td>
-                        <td><span class="freshness-${agency.staleness}">${agency.staleness.toUpperCase()}</span></td>
-                    `;
+
+                    const agencyCell = row.insertCell();
+                    const agencyStrong = document.createElement('strong');
+                    agencyStrong.textContent = String(agency.agency || '');
+                    agencyCell.appendChild(agencyStrong);
+
+                    const totalsValue = Number.isFinite(agency.total) ? agency.total : Number(agency.total) || 0;
+                    const totalCell = row.insertCell();
+                    totalCell.textContent = totalsValue.toLocaleString();
+
+                    const updatedCell = row.insertCell();
+                    updatedCell.textContent = formatDate(agency.lastUpdated);
+
+                    const newCell = row.insertCell();
+                    newCell.textContent = String(agency.new24h || 0);
+
+                    const stalenessCell = row.insertCell();
+                    const stalenessSpan = document.createElement('span');
+                    const stalenessValue = String(agency.staleness || 'unknown');
+                    stalenessSpan.className = `freshness-${sanitizeClass(stalenessValue)}`;
+                    stalenessSpan.textContent = stalenessValue.toUpperCase();
+                    stalenessCell.appendChild(stalenessSpan);
                 });
-                
+
                 if (!isConnected) {
                     testConnection();
                 }
-                
+
             } catch (error) {
                 console.error('Failed to load freshness:', error);
             }
         }
-        
+
         async function triggerIngestion() {
             const agency = document.getElementById('agency').value;
             const mode = document.getElementById('mode').value;
-            
+
             if (!agency) {
                 alert('Please select an agency');
                 return;
             }
-            
+
             const btn = document.getElementById('ingestBtn');
             btn.disabled = true;
             showLoading();
-            
+
             try {
                 const response = await fetch(`${API_BASE}/api/v1/admin/ingest`, {
                     method: 'POST',
                     headers: getHeaders(),
                     body: JSON.stringify({ agency, mode })
                 });
-                
+
                 const data = await response.json();
                 const resultDiv = document.getElementById('ingestResult');
-                
+
                 if (response.ok) {
-                    resultDiv.innerHTML = showAlert(
-                        `✅ Ingestion started: ${data.data.runId} (${data.data.status})`,
+                    renderAlert(
+                        resultDiv,
+                        `✅ Ingestion started: ${String(data.data.runId || '')} (${String(data.data.status || '')})`,
                         'success'
                     );
                     setTimeout(() => loadRuns(), 1000);
                 } else {
-                    resultDiv.innerHTML = showAlert(
-                        `❌ Error: ${data.error?.message || 'Unknown error'}`,
+                    renderAlert(
+                        resultDiv,
+                        `❌ Error: ${String(data.error?.message || 'Unknown error')}`,
                         'error'
                     );
                 }
             } catch (error) {
-                document.getElementById('ingestResult').innerHTML = showAlert(
-                    `❌ Failed to start ingestion: ${error.message}`,
+                renderAlert(
+                    document.getElementById('ingestResult'),
+                    `❌ Failed to start ingestion: ${String(error.message || error)}`,
                     'error'
                 );
             } finally {
@@ -624,70 +701,91 @@
                 hideLoading();
             }
         }
-        
+
         async function loadRuns() {
             try {
                 const response = await fetch(`${API_BASE}/api/v1/admin/runs?limit=10`, {
                     headers: getHeaders()
                 });
-                
+
                 if (!response.ok) throw new Error('Failed to load runs');
-                
+
                 const data = await response.json();
                 const tbody = document.getElementById('runsTable');
-                tbody.innerHTML = '';
-                
-                data.data.items.forEach(run => {
+                clearChildren(tbody);
+                const runs = Array.isArray(data?.data?.items) ? data.data.items : [];
+
+                runs.forEach(run => {
                     const row = tbody.insertRow();
-                    const totalItems = run.items_inserted + run.items_updated + run.items_skipped;
-                    
-                    row.innerHTML = `
-                        <td>${formatDate(run.started_at)}</td>
-                        <td><strong>${run.agency}</strong></td>
-                        <td>${run.mode}</td>
-                        <td><span class="status-badge status-${run.status}">${run.status.toUpperCase()}</span></td>
-                        <td>${totalItems > 0 ? totalItems.toLocaleString() : '-'}</td>
-                        <td>${formatDuration(run.duration_seconds)}</td>
-                    `;
+                    const totalItems = ['items_inserted', 'items_updated', 'items_skipped']
+                        .map(key => Number(run[key]) || 0)
+                        .reduce((acc, value) => acc + value, 0);
+
+                    const startedCell = row.insertCell();
+                    startedCell.textContent = formatDate(run.started_at);
+
+                    const agencyCell = row.insertCell();
+                    const agencyStrong = document.createElement('strong');
+                    agencyStrong.textContent = String(run.agency || '');
+                    agencyCell.appendChild(agencyStrong);
+
+                    const modeCell = row.insertCell();
+                    modeCell.textContent = String(run.mode || '');
+
+                    const statusCell = row.insertCell();
+                    const statusSpan = document.createElement('span');
+                    const statusValue = String(run.status || 'unknown');
+                    statusSpan.className = `status-badge status-${sanitizeClass(statusValue)}`;
+                    statusSpan.textContent = statusValue.toUpperCase();
+                    statusCell.appendChild(statusSpan);
+
+                    const totalCell = row.insertCell();
+                    totalCell.textContent = totalItems > 0 ? totalItems.toLocaleString() : '-';
+
+                    const durationCell = row.insertCell();
+                    durationCell.textContent = formatDuration(run.duration_seconds);
                 });
-                
+
             } catch (error) {
                 console.error('Failed to load runs:', error);
             }
         }
-        
+
         async function reindexDatabase() {
             if (!confirm('This will reindex the database and may take several minutes. Continue?')) {
                 return;
             }
-            
+
             const btn = document.getElementById('reindexBtn');
             btn.disabled = true;
             showLoading();
-            
+
             try {
                 const response = await fetch(`${API_BASE}/api/v1/admin/reindex`, {
                     method: 'POST',
                     headers: getHeaders()
                 });
-                
+
                 const data = await response.json();
                 const resultDiv = document.getElementById('maintenanceResult');
-                
+
                 if (response.ok) {
-                    resultDiv.innerHTML = showAlert(
-                        `✅ Reindex complete: ${data.data.reindexed.length} indexes reindexed`,
+                    renderAlert(
+                        resultDiv,
+                        `✅ Reindex complete: ${String(data.data.reindexed?.length || 0)} indexes reindexed`,
                         'success'
                     );
                 } else {
-                    resultDiv.innerHTML = showAlert(
-                        `❌ Error: ${data.error?.message || 'Reindex failed'}`,
+                    renderAlert(
+                        resultDiv,
+                        `❌ Error: ${String(data.error?.message || 'Reindex failed')}`,
                         'error'
                     );
                 }
             } catch (error) {
-                document.getElementById('maintenanceResult').innerHTML = showAlert(
-                    `❌ Failed to reindex: ${error.message}`,
+                renderAlert(
+                    document.getElementById('maintenanceResult'),
+                    `❌ Failed to reindex: ${String(error.message || error)}`,
                     'error'
                 );
             } finally {
@@ -695,45 +793,68 @@
                 hideLoading();
             }
         }
-        
+
         async function loadStats() {
             try {
                 const response = await fetch(`${API_BASE}/api/v1/admin/stats`, {
                     headers: getHeaders()
                 });
-                
+
                 if (!response.ok) throw new Error('Failed to load stats');
-                
+
                 const data = await response.json();
                 const statsDiv = document.getElementById('statsResult');
-                
-                statsDiv.innerHTML = `
-                    <h3>System Statistics</h3>
-                    <div class="metric-grid">
-                        <div class="metric-card">
-                            <div class="metric-value">${data.data.database.recalls.toLocaleString()}</div>
-                            <div class="metric-label">Total Recalls</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-value">${data.data.database.ingestion_runs}</div>
-                            <div class="metric-label">Total Runs</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-value">${data.data.ingestion.success}</div>
-                            <div class="metric-label">Successful (7d)</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-value">${data.data.ingestion.avgDurationSeconds}s</div>
-                            <div class="metric-label">Avg Duration</div>
-                        </div>
-                    </div>
-                `;
-                
+                clearChildren(statsDiv);
+
+                const header = document.createElement('h3');
+                header.textContent = 'System Statistics';
+                statsDiv.appendChild(header);
+
+                const grid = document.createElement('div');
+                grid.className = 'metric-grid';
+                statsDiv.appendChild(grid);
+
+                const statsMetrics = [
+                    {
+                        value: data.data.database.recalls.toLocaleString(),
+                        label: 'Total Recalls'
+                    },
+                    {
+                        value: data.data.database.ingestion_runs,
+                        label: 'Total Runs'
+                    },
+                    {
+                        value: data.data.ingestion.success,
+                        label: 'Successful (7d)'
+                    },
+                    {
+                        value: `${data.data.ingestion.avgDurationSeconds}s`,
+                        label: 'Avg Duration'
+                    }
+                ];
+
+                statsMetrics.forEach(stat => {
+                    const card = document.createElement('div');
+                    card.className = 'metric-card';
+
+                    const valueDiv = document.createElement('div');
+                    valueDiv.className = 'metric-value';
+                    valueDiv.textContent = String(stat.value ?? '');
+
+                    const labelDiv = document.createElement('div');
+                    labelDiv.className = 'metric-label';
+                    labelDiv.textContent = stat.label;
+
+                    card.appendChild(valueDiv);
+                    card.appendChild(labelDiv);
+                    grid.appendChild(card);
+                });
+
             } catch (error) {
                 console.error('Failed to load stats:', error);
             }
         }
-        
+
         // Auto-refresh every 30 seconds if connected
         setInterval(() => {
             if (isConnected) {
@@ -741,14 +862,14 @@
                 loadRuns();
             }
         }, 30000);
-        
+
         // Check for saved API key
         const savedKey = localStorage.getItem('adminApiKey');
         if (savedKey) {
             document.getElementById('apiKey').value = savedKey;
             testConnection();
         }
-        
+
         // Save API key on change
         document.getElementById('apiKey').addEventListener('change', (e) => {
             if (e.target.value) {
@@ -757,4 +878,5 @@
         });
     </script>
 </body>
+
 </html>

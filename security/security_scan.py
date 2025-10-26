@@ -314,7 +314,7 @@ class SecurityScanner:
         }
 
         # Check main API file
-        main_api = self.base_path / "api" / "main_babyshield.py"
+        main_api = self.base_path / "api" / "main_crownsafe.py"
         if main_api.exists():
             with open(main_api, "r") as f:
                 content = f.read()

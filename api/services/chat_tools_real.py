@@ -109,16 +109,12 @@ def allergy_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
                 )
             )
 
-    out = AllergyCheckOut(
-        hits=hits, summary=raw_result.get("summary") if raw_result else None
-    )
+    out = AllergyCheckOut(hits=hits, summary=raw_result.get("summary") if raw_result else None)
 
     return {"allergy": out.model_dump()}
 
 
-def _check_pregnancy_safety_from_scan(
-    agent: PregnancyProductSafetyAgent, scan: Dict[str, Any]
-) -> Dict[str, Any]:
+def _check_pregnancy_safety_from_scan(agent: PregnancyProductSafetyAgent, scan: Dict[str, Any]) -> Dict[str, Any]:
     """
     Helper to check pregnancy safety based on scan data rather than UPC.
     This is a simplified adapter until we have full ingredient database integration.
@@ -169,9 +165,7 @@ def _check_pregnancy_safety_from_scan(
                     unsafe_ingredients[ingredient] = details
 
         # Check category-based risks
-        if category.lower() in ["cheese", "dairy"] and any(
-            "soft" in flag for flag in flags
-        ):
+        if category.lower() in ["cheese", "dairy"] and any("soft" in flag for flag in flags):
             unsafe_ingredients["soft_cheese"] = {
                 "reason": "Soft cheeses may contain listeria unless pasteurised",
                 "severity": "moderate",
@@ -189,9 +183,7 @@ def _check_pregnancy_safety_from_scan(
         return {"status": "error", "message": str(e)}
 
 
-def _check_allergy_from_scan(
-    scan: Dict[str, Any], profile_allergies: list
-) -> Dict[str, Any]:
+def _check_allergy_from_scan(scan: Dict[str, Any], profile_allergies: list) -> Dict[str, Any]:
     """
     Helper to check allergies based on scan data and profile.
     This is a simplified adapter until we have full user profile integration.
@@ -273,65 +265,28 @@ def _check_allergy_from_scan(
 def recall_details_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
     """
     Adapter for recall lookups using the enhanced RecallDB.
+    REMOVED FOR CROWN SAFE: Recall lookups no longer applicable (hair products, not baby recalls)
     """
-    from core_infra.database import get_db_session, RecallDB
-    from sqlalchemy import or_
-
-    inp = RecallDetailsIn(
-        product_name=scan.get("product_name"),
-        model_number=scan.get("model_number"),
-        brand=scan.get("brand"),
-        gtin=scan.get("barcode") or scan.get("gtin"),
-        jurisdiction=scan.get("jurisdiction"),
-    )
-
-    # Query RecallDB for matching recalls
-    with get_db_session() as db:
-        query = db.query(RecallDB)
-
-        # Build search conditions
-        conditions = []
-        if inp.product_name:
-            conditions.append(RecallDB.product_name.ilike(f"%{inp.product_name}%"))
-        if inp.brand:
-            conditions.append(RecallDB.brand.ilike(f"%{inp.brand}%"))
-        if inp.model_number:
-            conditions.append(RecallDB.model_number == inp.model_number)
-        if inp.gtin:
-            conditions.append(
-                or_(
-                    RecallDB.upc == inp.gtin,
-                    RecallDB.ean_code == inp.gtin,
-                    RecallDB.gtin == inp.gtin,
-                )
-            )
-
-        # Execute query if we have conditions
-        recalls_data = []
-        if conditions:
-            results = query.filter(or_(*conditions)).limit(10).all()
-
-            for r in results:
-                recalls_data.append(
-                    RecallRecord(
-                        id=str(r.recall_id or r.id),
-                        agency=r.source_agency or "Unknown",
-                        date=r.recall_date.isoformat() if r.recall_date else "",
-                        url=r.url,
-                        title=r.product_name or "Recall Notice",
-                        hazard=r.hazard or r.recall_reason,
-                    ).model_dump()
-                )
+    # Return empty recalls for backward compatibility
+    recalls_data = []
 
     out = RecallDetailsOut(
         recalls=recalls_data,
-        recalls_found=len(recalls_data),
-        batch_check="Verify batch/lot and date codes on the label."
-        if recalls_data
-        else None,
+        recalls_found=0,
+        batch_check="Crown Safe focuses on hair product ingredients, not baby product recalls.",
+        message="Recall lookup deprecated for Crown Safe",
     )
+    return out.model_dump()
 
-    # Add evidence for each recall found
+    # Original recall lookup removed (~60 lines):
+    # from core_infra.database import get_db_session, RecallDB
+    # with get_db_session() as db:
+    #     query = db.query(RecallDB)
+    #     Build search conditions and query recalls
+    #     for r in results:
+    #         recalls_data.append(RecallRecord(...).model_dump())
+
+    # Add evidence for each recall found (now empty)
     facts = out.model_dump()
     facts["evidence"] = recalls_to_evidence(recalls_data)
     return facts
@@ -356,27 +311,16 @@ def ingredient_info_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
         ingredient_lower = ingredient.lower()
 
         # Pregnancy concerns
-        if any(
-            term in ingredient_lower
-            for term in ["retinol", "salicylic acid", "hydroquinone", "tretinoin"]
-        ):
+        if any(term in ingredient_lower for term in ["retinol", "salicylic acid", "hydroquinone", "tretinoin"]):
             highlighted.append(ingredient)
-            notes.append(
-                f"{ingredient}: Check with healthcare provider during pregnancy"
-            )
+            notes.append(f"{ingredient}: Check with healthcare provider during pregnancy")
 
         # Common allergens
-        if any(
-            term in ingredient_lower
-            for term in ["fragrance", "parfum", "sulfate", "paraben"]
-        ):
+        if any(term in ingredient_lower for term in ["fragrance", "parfum", "sulfate", "paraben"]):
             highlighted.append(ingredient)
 
         # Preservatives
-        if any(
-            term in ingredient_lower
-            for term in ["formaldehyde", "methylisothiazolinone", "benzalkonium"]
-        ):
+        if any(term in ingredient_lower for term in ["formaldehyde", "methylisothiazolinone", "benzalkonium"]):
             highlighted.append(ingredient)
             notes.append(f"{ingredient}: Potential skin sensitizer")
 
@@ -392,9 +336,7 @@ def ingredient_info_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
 
     facts = out.model_dump()
     if recommend_label_check:
-        facts.setdefault("evidence", []).extend(
-            label_to_evidence("ingredient verification")
-        )
+        facts.setdefault("evidence", []).extend(label_to_evidence("ingredient verification"))
 
     return facts
 

@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import api.routers.chat as chat_router
 from fastapi.testclient import TestClient
 
-from api.main_babyshield import app
+from api.main_crownsafe import app
 
 
 class TestChatFeatureGating:

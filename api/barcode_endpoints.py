@@ -1,28 +1,29 @@
-from api.pydantic_base import AppModel
-
 """
 Next-Generation Traceability API Endpoints
 Barcode, QR Code, and DataMatrix scanning with precise recall matching
 """
 
+import base64
 import logging
-from typing import Optional, Dict, Any, List
-from datetime import datetime, date
-from fastapi import APIRouter, HTTPException, UploadFile, File, Depends, Body
+from datetime import date, datetime
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func
 
-from core_infra.barcode_scanner import scanner, ScanResult
-from core_infra.database import get_db as get_db_session, RecallDB
+from api.models.scan_results import ScanResultsPage, create_scan_results
 from api.v1_endpoints import SafetyIssue
+from core_infra.barcode_scanner import ScanResult, scanner
+
+# RecallDB removed - Crown Safe uses HairProductModel
+from core_infra.database import get_db as get_db_session
 from core_infra.manufacturer_verifier import (
-    get_default_verifier,
     VerificationInput,
+    get_default_verifier,
 )
 from db.models.serial_verification import SerialVerification
-from api.models.scan_results import ScanResultsPage, create_scan_results
 
 
 # Define ApiResponse locally
@@ -34,9 +35,6 @@ class ApiResponse(BaseModel):
     error: Optional[str] = None
     message: Optional[str] = None
 
-
-import base64
-import json
 
 logger = logging.getLogger(__name__)
 
@@ -62,9 +60,7 @@ class ImageScanRequest(BaseModel):
     """Request model for image-based scanning"""
 
     image_base64: str = Field(..., description="Base64 encoded image data")
-    scan_mode: Optional[str] = Field(
-        "auto", description="Scan mode: auto, qr, datamatrix, barcode"
-    )
+    scan_mode: Optional[str] = Field("auto", description="Scan mode: auto, qr, datamatrix, barcode")
 
 
 class QRGenerateRequest(BaseModel):
@@ -74,9 +70,7 @@ class QRGenerateRequest(BaseModel):
     lot_number: Optional[str] = Field(None, description="Lot/Batch number")
     serial_number: Optional[str] = Field(None, description="Serial number")
     expiry_date: Optional[str] = Field(None, description="Expiry date (YYYY-MM-DD)")
-    custom_data: Optional[Dict[str, Any]] = Field(
-        None, description="Additional custom data"
-    )
+    custom_data: Optional[Dict[str, Any]] = Field(None, description="Additional custom data")
 
 
 class RecallCheckResult(BaseModel):
@@ -87,7 +81,8 @@ class RecallCheckResult(BaseModel):
     severity: Optional[str] = None
     recalls: List[SafetyIssue] = []
     match_type: str = Field(
-        ..., description="Type of match: exact_unit, lot_match, product_match, no_match"
+        ...,
+        description="Type of match: exact_unit, lot_match, product_match, no_match",
     )
     confidence: float = Field(..., description="Confidence score 0-1")
 
@@ -107,6 +102,7 @@ class ScanResponse(BaseModel):
 def check_recall_database(scan_result: ScanResult, db: Session) -> RecallCheckResult:
     """
     Check scanned product against recall database
+    REMOVED FOR CROWN SAFE: Recall checking no longer applicable (hair products, not baby recalls)
 
     Args:
         scan_result: Barcode scan result
@@ -116,7 +112,7 @@ def check_recall_database(scan_result: ScanResult, db: Session) -> RecallCheckRe
         Recall check result with matching recalls
     """
 
-    # Start with no match
+    # Return empty recall check for backward compatibility
     recall_check = RecallCheckResult(
         recall_found=False,
         recall_count=0,
@@ -128,131 +124,19 @@ def check_recall_database(scan_result: ScanResult, db: Session) -> RecallCheckRe
     if not scan_result.success:
         return recall_check
 
-    # Build query conditions (reserved for future multi-match logic)
-    _ = []  # conditions
-
-    # 1. Exact unit match (highest priority)
-    if scan_result.serial_number and scan_result.gtin:
-        exact_conditions = and_(
-            RecallDB.serial_number == scan_result.serial_number,
-            or_(
-                RecallDB.upc == scan_result.gtin,
-                RecallDB.ean_code == scan_result.gtin,
-                RecallDB.gtin == scan_result.gtin,
-            ),
-        )
-
-        exact_matches = db.query(RecallDB).filter(exact_conditions).all()
-        if exact_matches:
-            recall_check.recall_found = True
-            recall_check.recall_count = len(exact_matches)
-            recall_check.match_type = "exact_unit"
-            recall_check.confidence = 0.99
-            recall_check.recalls = [
-                _convert_recall_to_safety_issue(r) for r in exact_matches
-            ]
-
-            # Determine severity
-            recall_check.severity = _get_highest_severity(exact_matches)
-            return recall_check
-
-    # 2. Lot/Batch match (high priority)
-    if scan_result.lot_number and scan_result.gtin:
-        lot_conditions = and_(
-            or_(
-                RecallDB.lot_number == scan_result.lot_number,
-                RecallDB.batch_number == scan_result.lot_number,
-            ),
-            or_(
-                RecallDB.upc == scan_result.gtin,
-                RecallDB.ean_code == scan_result.gtin,
-                RecallDB.gtin == scan_result.gtin,
-            ),
-        )
-
-        lot_matches = db.query(RecallDB).filter(lot_conditions).all()
-        if lot_matches:
-            recall_check.recall_found = True
-            recall_check.recall_count = len(lot_matches)
-            recall_check.match_type = "lot_match"
-            recall_check.confidence = 0.95
-            recall_check.recalls = [
-                _convert_recall_to_safety_issue(r) for r in lot_matches
-            ]
-            recall_check.severity = _get_highest_severity(lot_matches)
-            return recall_check
-
-    # 3. Check expiry date recalls
-    if scan_result.expiry_date and scan_result.gtin:
-        # Check if product is recalled for specific expiry date ranges
-        expiry_conditions = and_(
-            RecallDB.expiry_date == scan_result.expiry_date,
-            or_(
-                RecallDB.upc == scan_result.gtin,
-                RecallDB.ean_code == scan_result.gtin,
-                RecallDB.gtin == scan_result.gtin,
-            ),
-        )
-
-        expiry_matches = db.query(RecallDB).filter(expiry_conditions).all()
-        if expiry_matches:
-            recall_check.recall_found = True
-            recall_check.recall_count = len(expiry_matches)
-            recall_check.match_type = "expiry_match"
-            recall_check.confidence = 0.90
-            recall_check.recalls = [
-                _convert_recall_to_safety_issue(r) for r in expiry_matches
-            ]
-            recall_check.severity = _get_highest_severity(expiry_matches)
-            return recall_check
-
-    # 4. Product-level match (GTIN only)
-    if scan_result.gtin:
-        # Normalize GTIN for comparison
-        normalized_gtin = scan_result.gtin.lstrip("0")
-
-        product_conditions = or_(
-            RecallDB.upc == scan_result.gtin,
-            RecallDB.upc == normalized_gtin,
-            RecallDB.ean_code == scan_result.gtin,
-            RecallDB.ean_code == normalized_gtin,
-            RecallDB.gtin == scan_result.gtin,
-            RecallDB.gtin == normalized_gtin,
-            func.replace(RecallDB.upc, "-", "") == normalized_gtin,
-        )
-
-        product_matches = db.query(RecallDB).filter(product_conditions).all()
-
-        if product_matches:
-            # Check if any matches don't require specific lot/serial
-            general_recalls = [
-                r for r in product_matches if not r.lot_number and not r.serial_number
-            ]
-
-            if general_recalls:
-                recall_check.recall_found = True
-                recall_check.recall_count = len(general_recalls)
-                recall_check.match_type = "product_match"
-                recall_check.confidence = 0.85
-                recall_check.recalls = [
-                    _convert_recall_to_safety_issue(r) for r in general_recalls
-                ]
-                recall_check.severity = _get_highest_severity(general_recalls)
-            else:
-                # Product has recalls but only for specific lots/serials
-                recall_check.recall_found = False
-                recall_check.match_type = "product_match_different_lot"
-                recall_check.confidence = 0.70
-                recall_check.message = f"Product has {len(product_matches)} recalls for specific lots/batches. Your unit may not be affected."
+    # Original recall checking removed (~150 lines):
+    # 1. Exact unit match (serial_number + gtin) -> RecallDB query
+    # 2. Lot/Batch match (lot_number + gtin) -> RecallDB query
+    # 3. Expiry date match (expiry_date + gtin) -> RecallDB query
+    # 4. Product-level match (gtin only) -> RecallDB query
+    # All RecallDB queries removed - Crown Safe uses hair products
 
     return recall_check
 
 
 def _attempt_unit_verification(scan_result: ScanResult) -> Optional[Dict[str, Any]]:
     """Call manufacturer verifier if we have identifiers."""
-    if not scan_result or not (
-        scan_result.gtin or scan_result.lot_number or scan_result.serial_number
-    ):
+    if not scan_result or not (scan_result.gtin or scan_result.lot_number or scan_result.serial_number):
         return None
     verifier = get_default_verifier()
     vin = VerificationInput(
@@ -313,81 +197,17 @@ def _persist_verification(
         return None
 
 
-def _convert_recall_to_safety_issue(recall: RecallDB) -> SafetyIssue:
-    """Convert database recall to SafetyIssue model"""
-    return SafetyIssue(
-        id=str(recall.id) if recall.id else recall.recall_id,
-        agencyCode=recall.source_agency,
-        title=recall.product_name,
-        description=recall.description,
-        productName=recall.product_name,
-        brand=recall.brand,
-        model=recall.model_number,
-        upc=recall.upc,
-        hazard=recall.hazard,
-        riskCategory=recall.hazard_category,
-        severity=_determine_severity(recall),
-        status="open" if not hasattr(recall, "status") else recall.status,
-        imageUrl=None,
-        affectedCountries=recall.regions_affected
-        if isinstance(recall.regions_affected, list)
-        else [recall.country],
-        recallDate=recall.recall_date.isoformat() if recall.recall_date else None,
-        lastUpdated=recall.last_updated.isoformat()
-        if hasattr(recall, "last_updated") and recall.last_updated
-        else None,
-        sourceUrl=recall.url,
-    )
-
-
-def _determine_severity(recall: RecallDB) -> str:
-    """Determine severity level from recall data"""
-    if not recall.hazard:
-        return "low"
-
-    hazard_lower = recall.hazard.lower()
-
-    # High severity keywords
-    high_keywords = [
-        "death",
-        "fatal",
-        "serious injury",
-        "choking",
-        "suffocation",
-        "strangulation",
-        "fire",
-        "burn",
-        "electrocution",
-        "poison",
-    ]
-    if any(keyword in hazard_lower for keyword in high_keywords):
-        return "high"
-
-    # Medium severity keywords
-    medium_keywords = ["injury", "hazard", "risk", "laceration", "fall", "tip"]
-    if any(keyword in hazard_lower for keyword in medium_keywords):
-        return "medium"
-
-    return "low"
-
-
-def _get_highest_severity(recalls: List[RecallDB]) -> str:
-    """Get the highest severity from a list of recalls"""
-    severities = [_determine_severity(r) for r in recalls]
-
-    if "high" in severities:
-        return "high"
-    elif "medium" in severities:
-        return "medium"
-    else:
-        return "low"
+# REMOVED FOR CROWN SAFE: Helper functions for RecallDB no longer needed
+# def _convert_recall_to_safety_issue(recall: RecallDB) -> SafetyIssue:
+# def _determine_severity(recall: RecallDB) -> str:
+# def _get_highest_severity(recalls: List[RecallDB]) -> str:
+# These functions converted RecallDB objects to SafetyIssue models
+# Crown Safe uses hair products (HairProductModel), not baby product recalls
 
 
 # API Endpoints
 @barcode_router.post("/barcode", response_model=ApiResponse)
-async def scan_barcode_text(
-    request: BarcodeScanRequest, db: Session = Depends(get_db_session)
-) -> ApiResponse:
+async def scan_barcode_text(request: BarcodeScanRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
     """
     Scan and parse text barcode data
 
@@ -466,9 +286,7 @@ async def scan_image(
         response_data = {
             "ok": True,
             "scan_results": [r.to_dict() for r in scan_results],
-            "recall_checks": [r.model_dump() for r in recall_checks]
-            if recall_checks
-            else None,
+            "recall_checks": [r.model_dump() for r in recall_checks] if recall_checks else None,
             "trace_id": trace_id,
             "verifications": verifications if verifications else None,
         }
@@ -476,9 +294,7 @@ async def scan_image(
         # Add warning if any recalls found
         if any_recalls:
             total_recalls = sum(r.recall_count for r in recall_checks if r.recall_found)
-            response_data[
-                "message"
-            ] = f"⚠️ RECALL ALERT: {total_recalls} recall(s) found in scanned items!"
+            response_data["message"] = f"⚠️ RECALL ALERT: {total_recalls} recall(s) found in scanned items!"
 
         return ApiResponse(success=True, data=response_data, message=None)
 
@@ -488,9 +304,7 @@ async def scan_image(
 
 
 @barcode_router.post("/qr", response_model=ApiResponse)
-async def scan_qr_code(
-    request: BarcodeScanRequest, db: Session = Depends(get_db_session)
-) -> ApiResponse:
+async def scan_qr_code(request: BarcodeScanRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
     """
     Specialized QR code scanning with enhanced parsing
 
@@ -499,7 +313,9 @@ async def scan_qr_code(
     """
     try:
         # Generate trace ID
-        trace_id = f"scan_qr_{int(datetime.utcnow().timestamp())}_{hash(request.barcode_data) % 10000}"
+        timestamp = int(datetime.utcnow().timestamp())
+        hash_val = hash(request.barcode_data) % 10000
+        trace_id = f"scan_qr_{timestamp}_{hash_val}"
 
         # Parse as QR code
         scan_result = scanner.scan_text(request.barcode_data, "QRCODE")
@@ -519,9 +335,7 @@ async def scan_qr_code(
         )
 
         if recall_check.recall_found:
-            response_data.message = (
-                f"⚠️ RECALL ALERT: {recall_check.recall_count} recall(s) found!"
-            )
+            response_data.message = f"⚠️ RECALL ALERT: {recall_check.recall_count} recall(s) found!"
 
         return ApiResponse(success=True, data=response_data.model_dump(), message=None)
 
@@ -531,9 +345,7 @@ async def scan_qr_code(
 
 
 @barcode_router.post("/datamatrix", response_model=ApiResponse)
-async def scan_datamatrix(
-    request: ImageScanRequest, db: Session = Depends(get_db_session)
-) -> ApiResponse:
+async def scan_datamatrix(request: ImageScanRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
     """
     Scan DataMatrix 2D barcodes
 
@@ -572,9 +384,7 @@ async def scan_datamatrix(
         )
 
         if recall_check.recall_found:
-            response_data.message = (
-                f"⚠️ RECALL ALERT: {recall_check.recall_count} recall(s) found!"
-            )
+            response_data.message = f"⚠️ RECALL ALERT: {recall_check.recall_count} recall(s) found!"
 
         return ApiResponse(success=True, data=response_data.model_dump(), message=None)
 
@@ -606,9 +416,7 @@ async def parse_gs1_data(
         scan_result = scanner.scan_text(gs1_data, "GS1_128")
 
         if not scan_result.success:
-            return ApiResponse(
-                success=False, data={"message": "Invalid GS1 format"}, message=None
-            )
+            return ApiResponse(success=False, data={"message": "Invalid GS1 format"}, message=None)
 
         # Check against recall database
         recall_check = check_recall_database(scan_result, db)
@@ -627,9 +435,7 @@ async def parse_gs1_data(
 
     except Exception as e:
         logger.error(f"GS1 parsing error: {e}")
-        return ApiResponse(
-            success=False, data={"error": str(e)}, message="Failed to parse GS1 data"
-        )
+        return ApiResponse(success=False, data={"error": str(e)}, message="Failed to parse GS1 data")
 
 
 class VerifyRequest(BaseModel):
@@ -643,9 +449,7 @@ class VerifyRequest(BaseModel):
 
 
 @barcode_router.post("/verify", response_model=ApiResponse)
-async def verify_unit(
-    request: VerifyRequest, db: Session = Depends(get_db_session)
-) -> ApiResponse:
+async def verify_unit(request: VerifyRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
     """
     Verify a unit (GTIN/lot/serial/expiry) with a pluggable manufacturer connector.
     Always persists a verification record for audit.
@@ -723,12 +527,11 @@ async def generate_qr_code(request: QRGenerateRequest) -> Response:
         # Generate QR code
         qr_image = scanner.generate_qr_code(qr_data)
 
+        filename = f"qr_{request.gtin or 'product'}.png"
         return Response(
             content=qr_image,
             media_type="image/png",
-            headers={
-                "Content-Disposition": f"attachment; filename=qr_{request.gtin or 'product'}.png"
-            },
+            headers={"Content-Disposition": f"attachment; filename={filename}"},
         )
 
     except Exception as e:
@@ -740,9 +543,7 @@ async def generate_qr_code(request: QRGenerateRequest) -> Response:
 
 
 @mobile_scan_router.post("/results", response_model=ScanResultsPage)
-async def get_scan_results_page(
-    request: BarcodeScanRequest, db: Session = Depends(get_db_session)
-) -> ScanResultsPage:
+async def get_scan_results_page(request: BarcodeScanRequest, db: Session = Depends(get_db_session)) -> ScanResultsPage:
     """
     Get formatted scan results for mobile display
 
@@ -787,9 +588,7 @@ async def get_scan_results_page(
                     {
                         "recall_id": r.id,
                         "agency": r.source_agency or "CPSC",
-                        "date": r.recall_date.strftime("%Y-%m-%d")
-                        if r.recall_date
-                        else "",
+                        "date": r.recall_date.strftime("%Y-%m-%d") if r.recall_date else "",
                         "hazard": r.hazard or "",
                         "remedy": r.remedy or "",
                         "severity": _get_highest_severity([r]),
@@ -822,9 +621,7 @@ async def get_scan_results_page(
                 verdict=results.verdict.value,
                 risk_level=recall_data.get("severity", "low") if recall_data else "low",
                 recalls_found=len(recall_data.get("recalls", [])) if recall_data else 0,
-                recall_ids=[r.get("recall_id") for r in recall_data.get("recalls", [])]
-                if recall_data
-                else None,
+                recall_ids=([r.get("recall_id") for r in recall_data.get("recalls", [])] if recall_data else None),
                 agencies_checked=results.safety_check.agencies_checked,
             )
             db.add(scan_history)
@@ -885,9 +682,10 @@ async def barcode_scan_with_file(
             "image/webp",
         ]
         if file.content_type not in allowed_types:
+            allowed_str = ", ".join(allowed_types)
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid file type: {file.content_type}. Allowed types: {', '.join(allowed_types)}",
+                detail=f"Invalid file type: {file.content_type}. Allowed: {allowed_str}",
             )
 
         # Read file content
@@ -898,7 +696,7 @@ async def barcode_scan_with_file(
         if len(content) > max_size:
             raise HTTPException(
                 status_code=413,
-                detail=f"File too large: {len(content)} bytes. Maximum allowed: {max_size} bytes (10MB)",
+                detail=(f"File too large: {len(content)} bytes. Maximum allowed: {max_size} bytes (10MB)"),
             )
 
         # Convert to base64 for scanner
@@ -929,9 +727,7 @@ async def barcode_scan_with_file(
         response_data = {
             "ok": True,
             "scan_results": [r.to_dict() for r in scan_results],
-            "recall_checks": [r.model_dump() for r in recall_checks]
-            if recall_checks
-            else None,
+            "recall_checks": [r.model_dump() for r in recall_checks] if recall_checks else None,
             "trace_id": trace_id,
             "verifications": verifications if verifications else None,
             "file_info": {
@@ -944,13 +740,9 @@ async def barcode_scan_with_file(
         # Add warning if any recalls found
         if any_recalls:
             total_recalls = sum(r.recall_count for r in recall_checks if r.recall_found)
-            response_data[
-                "message"
-            ] = f"⚠️ RECALL ALERT: {total_recalls} recall(s) found!"
+            response_data["message"] = f"⚠️ RECALL ALERT: {total_recalls} recall(s) found!"
 
-        return ApiResponse(
-            success=True, data=response_data, message="File scanned successfully"
-        )
+        return ApiResponse(success=True, data=response_data, message="File scanned successfully")
 
     except HTTPException:
         # Re-raise HTTP exceptions (400, 413, etc.)

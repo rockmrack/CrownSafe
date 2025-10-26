@@ -2,7 +2,7 @@ import os
 import json
 import uuid
 from fastapi.testclient import TestClient
-from api.main_babyshield import app
+from api.main_crownsafe import app
 
 # Ensure local test DB/env
 os.environ.setdefault("DATABASE_URL", "sqlite:///./babyshield_test.db")

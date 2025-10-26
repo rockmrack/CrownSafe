@@ -2,7 +2,7 @@ import os
 import uuid
 import sqlite3
 from fastapi.testclient import TestClient
-from api.main_babyshield import app
+from api.main_crownsafe import app
 
 os.environ.setdefault("DATABASE_URL", "sqlite:///./babyshield_test.db")
 os.environ["TEST_MODE"] = "true"

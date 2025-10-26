@@ -5,7 +5,7 @@ Comprehensive testing of auth flows, token validation, and security
 
 import pytest
 from fastapi.testclient import TestClient
-from api.main_babyshield import app
+from api.main_crownsafe import app
 from datetime import datetime, timedelta
 import jwt
 

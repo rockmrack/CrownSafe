@@ -3,37 +3,34 @@ Risk Assessment Report Generator
 Produces comprehensive product safety reports with legal disclaimers
 """
 
-import os
-import logging
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timedelta
 import json
+import logging
+import os
+from datetime import datetime
 from io import BytesIO
-from jinja2 import Template
-import boto3
+from typing import Any, Dict, List, Optional
 
-from reportlab.lib.pagesizes import letter, A4
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+import boto3
+from jinja2 import Environment, select_autoescape
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import (
-    SimpleDocTemplate,
+    PageBreak,
     Paragraph,
+    SimpleDocTemplate,
     Spacer,
     Table,
     TableStyle,
-    PageBreak,
-    Image,
-    KeepTogether,
 )
-from reportlab.lib import colors
-from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_LEFT
 
 from core_infra.risk_assessment_models import (
+    CompanyComplianceProfile,
     ProductGoldenRecord,
     ProductRiskProfile,
     SafetyIncident,
-    CompanyComplianceProfile,
-    RiskAssessmentReport,
 )
 from core_infra.risk_scoring_engine import RiskScoreComponents
 
@@ -41,6 +38,112 @@ logger = logging.getLogger(__name__)
 
 
 class RiskReportGenerator:
+    jinja_html_env = Environment(
+        autoescape=select_autoescape(
+            enabled_extensions=("html", "xml"),
+            default_for_string=True,
+            default=True,
+        ),
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+
+    RISK_REPORT_HTML_TEMPLATE = jinja_html_env.from_string(
+        """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Safety Risk Assessment - {{ report_id }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .header { background: #1a237e; color: white; padding: 20px; text-align: center; }
+        .disclaimer { background: #ffebee; border: 2px solid red; padding: 15px; margin: 20px 0; }
+        .risk-score { font-size: 48px; font-weight: bold; }
+        .risk-{{ risk_level }} { color: {{ risk_color }}; }
+        .section { margin: 30px 0; }
+        .factor { background: #f5f5f5; padding: 15px; margin: 10px 0; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: left; border: 1px solid #ddd; }
+        th { background: #e0e0e0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PRODUCT SAFETY RISK ASSESSMENT</h1>
+        <p>Report ID: {{ report_id }} | Generated: {{ generated_at }}</p>
+    </div>
+    
+    <div class="disclaimer">
+        <h2>⚠️ CRITICAL DISCLAIMERS</h2>
+        <p><strong>{{ disclaimers.general }}</strong></p>
+        <p>{{ disclaimers.ai_limitations }}</p>
+    </div>
+    
+    <div class="section">
+        <h2>Risk Summary</h2>
+        <div class="risk-score risk-{{ risk_summary.level|lower }}">
+            {{ risk_summary.score }}/100
+        </div>
+        <p>Risk Level: <strong>{{ risk_summary.level }}</strong></p>
+        <p>Confidence: {{ risk_summary.confidence }}</p>
+        <p>Trend: {{ risk_summary.trend }}</p>
+    </div>
+    
+    <div class="section">
+        <h2>Product Information</h2>
+        <table>
+            <tr><th>Product Name</th><td>{{ product.name }}</td></tr>
+            <tr><th>Brand</th><td>{{ product.brand or 'Unknown' }}</td></tr>
+            <tr><th>Manufacturer</th><td>{{ product.manufacturer or 'Unknown' }}</td></tr>
+            <tr><th>Model</th><td>{{ product.model or 'N/A' }}</td></tr>
+            <tr><th>GTIN/UPC</th><td>{{ product.gtin or product.upc or 'N/A' }}</td></tr>
+        </table>
+    </div>
+    
+    <div class="section">
+        <h2>Risk Factor Analysis</h2>
+        {% for factor_name, factor_data in risk_factors.items() %}
+        <div class="factor">
+            <h3>{{ factor_name|upper }} (Weight: {{ factor_data.weight }})</h3>
+            <p>Score: {{ factor_data.score }}/100</p>
+            {% if factor_data.details %}
+            <ul>
+                {% for key, value in factor_data.details.items() %}
+                <li>{{ key }}: {{ value }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if incidents %}
+    <div class="section">
+        <h2>Incident Summary</h2>
+        <p>{{ incidents }}</p>
+    </div>
+    {% endif %}
+    
+    <div class="section">
+        <h2>Recommendations</h2>
+        <ol>
+            {% for rec in recommendations %}
+            <li>{{ rec }}</li>
+            {% endfor %}
+        </ol>
+    </div>
+    
+    <div class="disclaimer">
+        <h2>Legal Disclaimers</h2>
+        {% for key, disclaimer in disclaimers.items() %}
+        <p>{{ disclaimer }}</p>
+        {% endfor %}
+    </div>
+</body>
+</html>
+"""
+    )
+
     """
     Generates comprehensive risk assessment reports
     Supports multiple formats: PDF, HTML, JSON
@@ -117,9 +220,7 @@ class RiskReportGenerator:
         logger.info(f"Generating {format} report for product {product.id}")
 
         # Prepare report data
-        report_data = self._prepare_report_data(
-            product, risk_profile, risk_components, incidents, company_profile
-        )
+        report_data = self._prepare_report_data(product, risk_profile, risk_components, incidents, company_profile)
 
         # Generate report based on format
         if format == "pdf":
@@ -207,9 +308,7 @@ class RiskReportGenerator:
                 },
             },
             "incidents": self._summarize_incidents(incidents),
-            "company": self._summarize_company(company_profile)
-            if company_profile
-            else None,
+            "company": self._summarize_company(company_profile) if company_profile else None,
             "recommendations": self._generate_recommendations(risk_components),
             "data_sources": self._list_data_sources(product),
             "disclaimers": self.disclaimers,
@@ -282,9 +381,7 @@ class RiskReportGenerator:
                 (data["risk_summary"]["trend"] or "UNKNOWN").upper(),
             ],
         ]
-        risk_table = Table(
-            risk_table_data, colWidths=[2 * inch, 2 * inch, 2 * inch, 2 * inch]
-        )
+        risk_table = Table(risk_table_data, colWidths=[2 * inch, 2 * inch, 2 * inch, 2 * inch])
         risk_table.setStyle(
             TableStyle(
                 [
@@ -335,9 +432,7 @@ class RiskReportGenerator:
         for factor_name, factor_data in data["risk_factors"].items():
             factor_title = f"{factor_name.upper()} (Weight: {factor_data['weight']})"
             story.append(Paragraph(factor_title, styles["Heading2"]))
-            story.append(
-                Paragraph(f"Score: {factor_data['score']}/100", styles["Normal"])
-            )
+            story.append(Paragraph(f"Score: {factor_data['score']}/100", styles["Normal"]))
 
             if factor_data["details"]:
                 details_text = self._format_details(factor_data["details"])
@@ -376,110 +471,11 @@ class RiskReportGenerator:
         return buffer
 
     def _generate_html_report(self, data: Dict) -> str:
-        """
-        Generate HTML report
-        """
-        template = Template(
-            """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Product Safety Risk Assessment - {{ report_id }}</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 40px; }
-                .header { background: #1a237e; color: white; padding: 20px; text-align: center; }
-                .disclaimer { background: #ffebee; border: 2px solid red; padding: 15px; margin: 20px 0; }
-                .risk-score { font-size: 48px; font-weight: bold; }
-                .risk-{{ risk_level }} { color: {{ risk_color }}; }
-                .section { margin: 30px 0; }
-                .factor { background: #f5f5f5; padding: 15px; margin: 10px 0; }
-                table { width: 100%; border-collapse: collapse; }
-                th, td { padding: 10px; text-align: left; border: 1px solid #ddd; }
-                th { background: #e0e0e0; }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h1>PRODUCT SAFETY RISK ASSESSMENT</h1>
-                <p>Report ID: {{ report_id }} | Generated: {{ generated_at }}</p>
-            </div>
-            
-            <div class="disclaimer">
-                <h2>⚠️ CRITICAL DISCLAIMERS</h2>
-                <p><strong>{{ disclaimers.general }}</strong></p>
-                <p>{{ disclaimers.ai_limitations }}</p>
-            </div>
-            
-            <div class="section">
-                <h2>Risk Summary</h2>
-                <div class="risk-score risk-{{ risk_summary.level|lower }}">
-                    {{ risk_summary.score }}/100
-                </div>
-                <p>Risk Level: <strong>{{ risk_summary.level }}</strong></p>
-                <p>Confidence: {{ risk_summary.confidence }}</p>
-                <p>Trend: {{ risk_summary.trend }}</p>
-            </div>
-            
-            <div class="section">
-                <h2>Product Information</h2>
-                <table>
-                    <tr><th>Product Name</th><td>{{ product.name }}</td></tr>
-                    <tr><th>Brand</th><td>{{ product.brand or 'Unknown' }}</td></tr>
-                    <tr><th>Manufacturer</th><td>{{ product.manufacturer or 'Unknown' }}</td></tr>
-                    <tr><th>Model</th><td>{{ product.model or 'N/A' }}</td></tr>
-                    <tr><th>GTIN/UPC</th><td>{{ product.gtin or product.upc or 'N/A' }}</td></tr>
-                </table>
-            </div>
-            
-            <div class="section">
-                <h2>Risk Factor Analysis</h2>
-                {% for factor_name, factor_data in risk_factors.items() %}
-                <div class="factor">
-                    <h3>{{ factor_name|upper }} (Weight: {{ factor_data.weight }})</h3>
-                    <p>Score: {{ factor_data.score }}/100</p>
-                    {% if factor_data.details %}
-                    <ul>
-                        {% for key, value in factor_data.details.items() %}
-                        <li>{{ key }}: {{ value }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
-            
-            {% if incidents %}
-            <div class="section">
-                <h2>Incident Summary</h2>
-                <p>{{ incidents }}</p>
-            </div>
-            {% endif %}
-            
-            <div class="section">
-                <h2>Recommendations</h2>
-                <ol>
-                    {% for rec in recommendations %}
-                    <li>{{ rec }}</li>
-                    {% endfor %}
-                </ol>
-            </div>
-            
-            <div class="disclaimer">
-                <h2>Legal Disclaimers</h2>
-                {% for key, disclaimer in disclaimers.items() %}
-                <p>{{ disclaimer }}</p>
-                {% endfor %}
-            </div>
-        </body>
-        </html>
-        """
-        )
-
-        # Add risk color
-        data["risk_color"] = self._get_risk_color_hex(data["risk_summary"]["level"])
-        data["risk_level"] = data["risk_summary"]["level"].lower()
-
-        return template.render(**data)
+        """Render HTML report with autoescaped template."""
+        context = dict(data)
+        context["risk_color"] = self._get_risk_color_hex(context["risk_summary"]["level"])
+        context["risk_level"] = context["risk_summary"]["level"].lower()
+        return self.RISK_REPORT_HTML_TEMPLATE.render(**context)
 
     def _generate_json_report(self, data: Dict) -> str:
         """
@@ -514,11 +510,7 @@ class RiskReportGenerator:
             summary += f"Injuries Reported: {injuries}\n"
 
         # Recent incidents
-        recent = [
-            i
-            for i in incidents
-            if i.incident_date and (datetime.utcnow() - i.incident_date).days < 90
-        ]
+        recent = [i for i in incidents if i.incident_date and (datetime.utcnow() - i.incident_date).days < 90]
         if recent:
             summary += f"Recent Incidents (last 90 days): {len(recent)}\n"
 
@@ -530,9 +522,7 @@ class RiskReportGenerator:
 
         if hazards:
             top_hazards = sorted(hazards.items(), key=lambda x: x[1], reverse=True)[:3]
-            summary += "Top Hazards: " + ", ".join(
-                [f"{h[0]} ({h[1]})" for h in top_hazards]
-            )
+            summary += "Top Hazards: " + ", ".join([f"{h[0]} ({h[1]})" for h in top_hazards])
 
         return summary
 
@@ -554,9 +544,7 @@ class RiskReportGenerator:
 
         return summary
 
-    def _generate_recommendations(
-        self, risk_components: RiskScoreComponents
-    ) -> List[str]:
+    def _generate_recommendations(self, risk_components: RiskScoreComponents) -> List[str]:
         """
         Generate actionable recommendations based on risk analysis
         """
@@ -573,47 +561,27 @@ class RiskReportGenerator:
             recommendations.append(
                 "IMMEDIATE ACTION REQUIRED: Stop using this product immediately and check for active recalls"
             )
-            recommendations.append(
-                "Contact the manufacturer or retailer for remedy information"
-            )
+            recommendations.append("Contact the manufacturer or retailer for remedy information")
         elif risk_components.risk_level == "high":
-            recommendations.append(
-                "Review product carefully for any defects or damage before use"
-            )
+            recommendations.append("Review product carefully for any defects or damage before use")
             recommendations.append("Monitor CPSC.gov for updates on this product")
 
         # Factor-specific recommendations
-        if (
-            risk_components.severity_details
-            and risk_components.severity_details.get("total_deaths") > 0
-        ):
+        if risk_components.severity_details and risk_components.severity_details.get("total_deaths") > 0:
             recommendations.append(
                 "⚠️ CRITICAL: Deaths have been reported with this product. "
                 "Exercise extreme caution and consider alternatives"
             )
 
-        if (
-            risk_components.recency_details
-            and risk_components.recency_details.get("incidents_last_3_months") > 0
-        ):
-            recommendations.append(
-                "Recent incidents detected - check for the latest safety notices"
-            )
+        if risk_components.recency_details and risk_components.recency_details.get("incidents_last_3_months") > 0:
+            recommendations.append("Recent incidents detected - check for the latest safety notices")
 
-        if risk_components.violation_details and risk_components.violation_details.get(
-            "repeat_violations"
-        ):
-            recommendations.append(
-                "Pattern of violations detected - consider alternative products"
-            )
+        if risk_components.violation_details and risk_components.violation_details.get("repeat_violations"):
+            recommendations.append("Pattern of violations detected - consider alternative products")
 
         # General safety recommendations
-        recommendations.append(
-            "Keep all product packaging and receipts for potential recalls"
-        )
-        recommendations.append(
-            "Register your product with the manufacturer for direct recall notifications"
-        )
+        recommendations.append("Keep all product packaging and receipts for potential recalls")
+        recommendations.append("Register your product with the manufacturer for direct recall notifications")
         recommendations.append("Report any safety issues to CPSC at SaferProducts.gov")
 
         return recommendations
@@ -626,9 +594,7 @@ class RiskReportGenerator:
 
         if product.data_sources:
             for ds in product.data_sources:
-                sources.append(
-                    f"• {ds.source_type}: {ds.source_name} (Updated: {ds.fetched_at})"
-                )
+                sources.append(f"• {ds.source_type}: {ds.source_name} (Updated: {ds.fetched_at})")
 
         if not sources:
             sources.append("• Internal database")
@@ -693,9 +659,7 @@ class RiskReportGenerator:
         # Check if S3 is configured and bucket exists
         s3_enabled = os.getenv("S3_ENABLED", "false").lower() == "true"
         if not s3_enabled:
-            logger.info(
-                f"S3 upload disabled, returning local path for report: {product_id}"
-            )
+            logger.info(f"S3 upload disabled, returning local path for report: {product_id}")
             return f"/api/v1/risk/report/local/{product_id}/{timestamp}.{format}"
 
         try:

@@ -5,7 +5,7 @@ Comprehensive testing of API response formats, headers, and error handling
 
 import pytest
 from fastapi.testclient import TestClient
-from api.main_babyshield import app
+from api.main_crownsafe import app
 import json
 
 

@@ -3,25 +3,28 @@ Share Results API Endpoints
 Secure sharing of scan results and reports
 """
 
-from typing import Optional, Dict, Any, List, Union
-from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter, HTTPException, Depends, Query, Body
-from fastapi.responses import HTMLResponse
-from pydantic import BaseModel, Field, EmailStr
-from sqlalchemy.orm import Session
-import json
 import logging
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 import os
+import smtplib
 import uuid
-import boto3
+from datetime import datetime, timedelta, timezone
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from html import escape
+from textwrap import dedent
+from typing import Any, Dict, Optional, Tuple, Union, cast
+from urllib.parse import quote
 
-from core_infra.database import get_db
-from db.models.share_token import ShareToken
-from db.models.scan_history import ScanHistory, SafetyReport
+import boto3
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import HTMLResponse
+from pydantic import BaseModel, EmailStr, Field
+from sqlalchemy.orm import Session
+
 from api.schemas.common import ApiResponse
+from core_infra.database import get_db
+from db.models.scan_history import SafetyReport, ScanHistory
+from db.models.share_token import ShareToken
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +32,7 @@ logger = logging.getLogger(__name__)
 share_router = APIRouter(prefix="/api/v1/share", tags=["share-results"])
 
 # S3 Configuration
-S3_BUCKET = os.getenv("S3_BUCKET", "babyshield-images")
+S3_BUCKET = os.getenv("S3_BUCKET", "crownsafe-images")
 s3_client = boto3.client("s3", region_name=os.getenv("S3_BUCKET_REGION", "us-east-1"))
 
 
@@ -69,9 +72,18 @@ def _guess_s3_key(user_id: int, report_uuid: str, content_type: str) -> Optional
     return None
 
 
+def _build_share_urls(base_url: str, token: str) -> Tuple[str, str]:
+    """Construct normalized share and QR URLs with a URL-safe token"""
+    normalized_base = base_url.rstrip("/") or base_url
+    safe_token = quote(token, safe="")
+    share_url = f"{normalized_base}/share/{safe_token}"
+    qr_code_url = f"{normalized_base}/api/v1/share/qr/{safe_token}"
+    return share_url, qr_code_url
+
+
 def create_share_token_for_s3(
     user_id: int, content_type: str, content_ref: str, s3_key: str, ttl_hours: int = 24
-) -> str:
+) -> Tuple[str, ShareToken]:
     """Create share token for S3-based content without database record"""
     token = ShareToken.generate_token()
     expires_at = datetime.utcnow() + timedelta(hours=ttl_hours)
@@ -111,19 +123,19 @@ class ShareRequest(BaseModel):
         description="Type of content (scan_result, report, safety_summary, nursery_quarterly)",
     )
     content_id: Union[str, int] = Field(
-        ..., description="ID of the content to share (numeric ID or UUID)"
+        ...,
+        description="ID of the content to share (numeric ID or UUID)",
     )
     user_id: int = Field(..., description="User creating the share")
 
     # Optional UUID field for reports
     report_uuid: Optional[str] = Field(
-        None, description="Report UUID (alternative to content_id for reports)"
+        None,
+        description="Report UUID (alternative to content_id for reports)",
     )
 
     # Share settings
-    expires_in_hours: Optional[int] = Field(
-        24, description="Hours until expiration (default 24)"
-    )
+    expires_in_hours: Optional[int] = Field(24, description="Hours until expiration (default 24)")
     max_views: Optional[int] = Field(None, description="Maximum number of views")
     password: Optional[str] = Field(None, description="Optional password protection")
     allow_download: bool = Field(True, description="Allow downloading PDFs")
@@ -176,7 +188,9 @@ async def create_share_link_dev(request: ShareRequest) -> ApiResponse:
         if request.content_type not in valid_content_types:
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid content type: {request.content_type}. Supported types: {', '.join(valid_content_types)}",
+                detail=(
+                    f"Invalid content type: {request.content_type}. Supported types: {', '.join(valid_content_types)}"
+                ),
             )
 
         # Mock share creation for testing (no database)
@@ -184,9 +198,8 @@ async def create_share_link_dev(request: ShareRequest) -> ApiResponse:
         expires_at = datetime.utcnow() + timedelta(hours=request.expires_in_hours or 24)
 
         # Generate URLs
-        base_url = os.getenv("APP_BASE_URL", "https://babyshield.cureviax.ai")
-        share_url = f"{base_url}/share/{token}"
-        qr_code_url = f"{base_url}/api/v1/share/qr/{token}"
+        base_url = os.getenv("APP_BASE_URL", "https://crownsafe.cureviax.ai")
+        share_url, qr_code_url = _build_share_urls(base_url, token)
 
         # Store in memory for testing (in production, this would be in database)
         if not hasattr(create_share_link_dev, "mock_shares"):
@@ -227,13 +240,15 @@ async def create_share_link_dev(request: ShareRequest) -> ApiResponse:
     except Exception as e:
         logger.error(f"Error creating share link: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to create share link: {str(e)}"
-        )
+            status_code=500,
+            detail=f"Failed to create share link: {str(e)}",
+        ) from e
 
 
 @share_router.post("/create", response_model=ApiResponse)
 async def create_share_link(
-    request: ShareRequest, db: Session = Depends(get_db)
+    request: ShareRequest,
+    db: Session = Depends(get_db),  # noqa: B008
 ) -> ApiResponse:
     """
     Create a shareable link for scan results or reports
@@ -275,9 +290,8 @@ async def create_share_link(
             db.commit()
 
             # Generate URLs
-            base_url = os.getenv("APP_BASE_URL", "https://babyshield.cureviax.ai")
-            share_url = f"{base_url}/share/{token}"
-            qr_code_url = f"{base_url}/api/v1/share/qr/{token}"
+            base_url = os.getenv("APP_BASE_URL", "https://crownsafe.cureviax.ai")
+            share_url, qr_code_url = _build_share_urls(base_url, token)
 
             response = ShareResponse(
                 success=True,
@@ -297,9 +311,7 @@ async def create_share_link(
 
         if request.content_type == "scan_result":
             # Get scan history (numeric ID only)
-            if not isinstance(request.content_id, (int, str)) or _is_uuid(
-                str(request.content_id)
-            ):
+            if not isinstance(request.content_id, (int, str)) or _is_uuid(str(request.content_id)):
                 raise HTTPException(
                     status_code=400,
                     detail="Scan results require numeric scan_id, not UUID",
@@ -317,18 +329,22 @@ async def create_share_link(
             if not scan:
                 raise HTTPException(
                     status_code=404,
-                    detail=f"Scan result not found for scan_id: {request.content_id}. Make sure the scan exists and belongs to user {request.user_id}",
+                    detail=(
+                        "Scan result not found for scan_id: "
+                        f"{request.content_id}. "
+                        "Make sure the scan exists and belongs to "
+                        f"user {request.user_id}"
+                    ),
                 )
 
             # Create content snapshot
+            scan_timestamp = cast(Optional[datetime], getattr(scan, "scan_timestamp", None))
             content_snapshot = {
                 "scan_id": scan.scan_id,
                 "product_name": scan.product_name,
                 "brand": scan.brand,
                 "barcode": scan.barcode,
-                "scan_timestamp": scan.scan_timestamp.isoformat()
-                if scan.scan_timestamp
-                else None,
+                "scan_timestamp": (scan_timestamp.isoformat() if scan_timestamp else None),
                 "verdict": scan.verdict,
                 "risk_level": scan.risk_level,
                 "recalls_found": scan.recalls_found,
@@ -352,9 +368,7 @@ async def create_share_link(
             if _is_uuid(report_uuid):
                 # UUID path - check if S3 object exists
                 try:
-                    s3_key = _guess_s3_key(
-                        request.user_id, report_uuid, request.content_type
-                    )
+                    s3_key = _guess_s3_key(request.user_id, report_uuid, request.content_type)
 
                     # Check if S3 object exists
                     s3_client.head_object(Bucket=S3_BUCKET, Key=s3_key)
@@ -370,13 +384,14 @@ async def create_share_link(
                     content_id_to_store = report_uuid
 
                 except Exception as e:
-                    logger.warning(
-                        f"S3 object not found for report UUID {report_uuid}: {e}"
-                    )
+                    logger.warning(f"S3 object not found for report UUID {report_uuid}: {e}")
                     raise HTTPException(
                         status_code=404,
-                        detail=f"Report not found for UUID: {report_uuid}. The report may not exist or may have been deleted.",
-                    )
+                        detail=(
+                            "Report not found for UUID: "
+                            f"{report_uuid}. The report may not exist or may have been deleted."
+                        ),
+                    ) from e
 
             else:
                 # Numeric ID path - check database
@@ -394,19 +409,22 @@ async def create_share_link(
                     if not report:
                         raise HTTPException(
                             status_code=404,
-                            detail=f"Report not found for report_id: {request.content_id}. Make sure the report exists and belongs to user {request.user_id}",
+                            detail=(
+                                "Report not found for report_id: "
+                                f"{request.content_id}. "
+                                "Make sure the report exists and belongs to "
+                                f"user {request.user_id}"
+                            ),
                         )
 
                     # Create content snapshot
+                    period_start = cast(Optional[datetime], getattr(report, "period_start", None))
+                    period_end = cast(Optional[datetime], getattr(report, "period_end", None))
                     content_snapshot = {
                         "report_id": report.report_id,
                         "report_type": report.report_type,
-                        "period_start": report.period_start.isoformat()
-                        if report.period_start
-                        else None,
-                        "period_end": report.period_end.isoformat()
-                        if report.period_end
-                        else None,
+                        "period_start": (period_start.isoformat() if period_start else None),
+                        "period_end": (period_end.isoformat() if period_end else None),
                         "total_scans": report.total_scans,
                         "unique_products": report.unique_products,
                         "recalls_found": report.recalls_found,
@@ -416,16 +434,20 @@ async def create_share_link(
                     }
                     content_id_to_store = str(numeric_id)
 
-                except ValueError:
+                except ValueError as exc:
                     raise HTTPException(
                         status_code=400,
-                        detail=f"Invalid content_id format: {request.content_id}. Must be numeric ID or valid UUID.",
-                    )
+                        detail=(f"Invalid content_id format: {request.content_id}. Must be numeric ID or valid UUID."),
+                    ) from exc
 
         else:
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid content type: {request.content_type}. Supported types: scan_result, report, safety_summary, nursery_quarterly, product_safety",
+                detail=(
+                    "Invalid content type: "
+                    f"{request.content_type}. Supported types: "
+                    "scan_result, report, safety_summary, nursery_quarterly, product_safety"
+                ),
             )
 
         # Generate share token
@@ -463,9 +485,8 @@ async def create_share_link(
         db.commit()
 
         # Generate URLs
-        base_url = os.getenv("APP_BASE_URL", "https://babyshield.cureviax.ai")
-        share_url = f"{base_url}/share/{token}"
-        qr_code_url = f"{base_url}/api/v1/share/qr/{token}"
+        base_url = os.getenv("APP_BASE_URL", "https://crownsafe.cureviax.ai")
+        share_url, qr_code_url = _build_share_urls(base_url, token)
 
         response = ShareResponse(
             success=True,
@@ -481,7 +502,7 @@ async def create_share_link(
         raise
     except Exception as e:
         logger.error(f"Error creating share link: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @share_router.get("/view-dev/{token}", response_model=ApiResponse)
@@ -513,12 +534,8 @@ async def view_share_link_dev(token: str) -> ApiResponse:
             "report_type": share_data["share_type"],
             "title": f"Safety Report: {share_data['share_type']}",
             "summary": "This is a mock safety report for testing purposes",
-            "created_at": share_data[
-                "expires_at"
-            ].isoformat(),  # Using expires_at as created_at for simplicity
-            "expires_at": share_data["expires_at"].isoformat()
-            if share_data["expires_at"]
-            else None,
+            "created_at": share_data["expires_at"].isoformat(),  # Using expires_at as created_at for simplicity
+            "expires_at": (share_data["expires_at"].isoformat() if share_data["expires_at"] else None),
             "pdf_available": True,
             "created_via": "dev_override",
         }
@@ -529,22 +546,22 @@ async def view_share_link_dev(token: str) -> ApiResponse:
                 "content": mock_content,
                 "allow_download": True,
                 "views_remaining": None,
+                "message": "Share content retrieved successfully (dev override)",
             },
-            message="Share content retrieved successfully (dev override)",
         )
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error viewing share link: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to view share link: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to view share link: {str(e)}") from e
 
 
 @share_router.get("/view/{token}", response_model=ApiResponse)
 async def view_shared_content(
-    token: str, password: Optional[str] = Query(None), db: Session = Depends(get_db)
+    token: str,
+    password: Optional[str] = Query(None),
+    db: Session = Depends(get_db),  # noqa: B008
 ) -> ApiResponse:
     """
     View shared content via share token
@@ -565,11 +582,13 @@ async def view_shared_content(
         # Validate token
         if not share_token.is_valid():
             raise HTTPException(
-                status_code=410, detail="Share link has expired or reached view limit"
+                status_code=410,
+                detail="Share link has expired or reached view limit",
             )
 
         # Check password if required
-        if share_token.password_protected:
+        password_required = bool(getattr(share_token, "password_protected", False))
+        if password_required:
             if not password:
                 raise HTTPException(status_code=401, detail="Password required")
 
@@ -577,7 +596,8 @@ async def view_shared_content(
 
             pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-            if not pwd_context.verify(password, share_token.password_hash):
+            stored_hash = cast(Optional[str], getattr(share_token, "password_hash", None))
+            if not stored_hash or not pwd_context.verify(password, stored_hash):
                 raise HTTPException(status_code=401, detail="Invalid password")
 
         # Increment view count
@@ -586,15 +606,17 @@ async def view_shared_content(
 
         # Calculate views remaining
         views_remaining = None
-        if share_token.max_views:
-            views_remaining = max(0, share_token.max_views - share_token.view_count)
+        max_views_value = cast(Optional[int], getattr(share_token, "max_views", None))
+        view_count_value = cast(Optional[int], getattr(share_token, "view_count", None)) or 0
+        if max_views_value is not None:
+            views_remaining = max(0, max_views_value - view_count_value)
 
         # Return content
         response = SharedContentResponse(
             success=True,
-            content_type=share_token.share_type,
-            content=share_token.content_snapshot or {},
-            allow_download=share_token.allow_download,
+            content_type=cast(str, share_token.share_type),
+            content=cast(Dict[str, Any], share_token.content_snapshot or {}),
+            allow_download=bool(getattr(share_token, "allow_download", False)),
             views_remaining=views_remaining,
         )
 
@@ -604,12 +626,13 @@ async def view_shared_content(
         raise
     except Exception as e:
         logger.error(f"Error viewing shared content: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @share_router.post("/email", response_model=ApiResponse)
 async def share_via_email(
-    request: EmailShareRequest, db: Session = Depends(get_db)
+    request: EmailShareRequest,
+    db: Session = Depends(get_db),  # noqa: B008
 ) -> ApiResponse:
     """
     Share results via email
@@ -618,9 +641,7 @@ async def share_via_email(
     """
     try:
         # Get share token to validate it exists
-        share_token = (
-            db.query(ShareToken).filter(ShareToken.token == request.share_token).first()
-        )
+        share_token = db.query(ShareToken).filter(ShareToken.token == request.share_token).first()
 
         if not share_token:
             raise HTTPException(status_code=404, detail="Share link not found")
@@ -629,44 +650,89 @@ async def share_via_email(
             raise HTTPException(status_code=410, detail="Share link has expired")
 
         # Prepare email content
-        base_url = os.getenv("APP_BASE_URL", "https://babyshield.cureviax.ai")
-        share_url = f"{base_url}/share/{request.share_token}"
+        base_url = os.getenv("APP_BASE_URL", "https://crownsafe.cureviax.ai")
+        share_url, _ = _build_share_urls(base_url, request.share_token)
+        safe_share_url = escape(share_url, quote=True)
+        safe_sender_name = escape(request.sender_name)
+        subject_sender = request.sender_name.replace("\r", " ").replace("\n", " ").strip()
+        subject_sender = subject_sender or "A Crown Safe user"
+
+        message_block = ""
+        if request.message:
+            safe_message = escape(request.message)
+            message_block = (
+                f'<p style="background-color: #e3f2fd; padding: 15px; border-radius: 5px;"><em>{safe_message}</em></p>'
+            )
+
+        current_view_count = cast(Optional[int], getattr(share_token, "view_count", None)) or 0
+        views_remaining = None
+        max_views_email = cast(Optional[int], getattr(share_token, "max_views", None))
+        if max_views_email is not None:
+            remaining = max_views_email - current_view_count
+            views_remaining = max(0, remaining)
+
+        expiry_text = "This link does not expire."
+        expires_at_value = cast(Optional[datetime], getattr(share_token, "expires_at", None))
+        if expires_at_value is not None:
+            seconds_remaining = (expires_at_value - datetime.utcnow()).total_seconds()
+            hours_remaining = max(0, int(seconds_remaining // 3600))
+            expiry_text = f"This link will expire in {hours_remaining} hours."
+
+        views_remaining_text = ""
+        if views_remaining is not None:
+            views_remaining_text = f" It can be viewed {views_remaining} more time(s)."
 
         # Create email message
-        subject = f"{request.sender_name} shared BabyShield safety results with you"
+        subject = f"{subject_sender} shared Crown Safe safety results with you"
 
-        html_body = f"""
-        <html>
-            <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
-                    <h2 style="color: #1a237e;">BabyShield Safety Results</h2>
-                    <p>Hi,</p>
-                    <p><strong>{request.sender_name}</strong> has shared product safety results with you from BabyShield.</p>
-                    
-                    {f'<p style="background-color: #e3f2fd; padding: 15px; border-radius: 5px;"><em>{request.message}</em></p>' if request.message else ""}
-                    
-                    <div style="text-align: center; margin: 30px 0;">
-                        <a href="{share_url}" style="background-color: #2196f3; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
-                            View Safety Results
-                        </a>
+        button_style = (
+            "background-color: #2196f3; color: white; padding: 12px 30px; "
+            "text-decoration: none; border-radius: 5px; display: inline-block;"
+        )
+        learn_more_style = "color: #2196f3;"
+
+        html_body = dedent(
+            f"""
+            <html>
+                <body
+                    style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;"
+                >
+                    <div
+                        style="background-color: #f8f9fa; padding: 20px; border-radius: 10px;"
+                    >
+                        <h2 style="color: #1a237e;">Crown Safe Safety Results</h2>
+                        <p>Hi,</p>
+                        <p>
+                            <strong>{safe_sender_name}</strong>
+                            has shared product safety results with you from Crown Safe.
+                        </p>
+
+                        {message_block}
+
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="{safe_share_url}" style="{button_style}">
+                                View Safety Results
+                            </a>
+                        </div>
+
+                        <p style="color: #666; font-size: 14px;">
+                            {expiry_text}{views_remaining_text}
+                        </p>
+
+                        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+
+                        <p style="color: #999; font-size: 12px;">
+                            Crown Safe helps parents make informed decisions about product safety.
+                            <br>
+                            <a href="https://crownsafe.cureviax.ai" style="{learn_more_style}">
+                                Learn more about Crown Safe
+                            </a>
+                        </p>
                     </div>
-                    
-                    <p style="color: #666; font-size: 14px;">
-                        This link will expire in {(share_token.expires_at - datetime.utcnow()).total_seconds() / 3600:.0f} hours.
-                        {f"It can be viewed {share_token.max_views - share_token.view_count} more time(s)." if share_token.max_views else ""}
-                    </p>
-                    
-                    <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-                    
-                    <p style="color: #999; font-size: 12px;">
-                        BabyShield helps parents make informed decisions about product safety.
-                        <br>
-                        <a href="https://babyshield.cureviax.ai" style="color: #2196f3;">Learn more about BabyShield</a>
-                    </p>
-                </div>
-            </body>
-        </html>
-        """
+                </body>
+            </html>
+            """
+        ).strip()
 
         # Send email (using configured SMTP settings)
         smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
@@ -693,15 +759,13 @@ async def share_via_email(
             # If SMTP not configured, just return the share URL
             message = f"Share link: {share_url} (Email service not configured)"
 
-        return ApiResponse(
-            success=True, data={"message": message, "share_url": share_url}
-        )
+        return ApiResponse(success=True, data={"message": message, "share_url": share_url})
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error sharing via email: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @share_router.delete("/revoke-dev/{token}", response_model=ApiResponse)
@@ -719,15 +783,11 @@ async def revoke_share_link_dev(
         share_data = create_share_link_dev.mock_shares.get(token)
 
         if not share_data:
-            raise HTTPException(
-                status_code=404, detail="Share link not found or unauthorized"
-            )
+            raise HTTPException(status_code=404, detail="Share link not found or unauthorized")
 
         # Check authorization
         if share_data["created_by"] != user_id:
-            raise HTTPException(
-                status_code=404, detail="Share link not found or unauthorized"
-            )
+            raise HTTPException(status_code=404, detail="Share link not found or unauthorized")
 
         # Revoke the token
         share_data["is_active"] = False
@@ -742,16 +802,14 @@ async def revoke_share_link_dev(
         raise
     except Exception as e:
         logger.error(f"Error revoking share link: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to revoke share link: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to revoke share link: {str(e)}") from e
 
 
 @share_router.delete("/revoke/{token}", response_model=ApiResponse)
 async def revoke_share_link(
     token: str,
     user_id: int = Query(..., description="User revoking the share"),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db),  # noqa: B008
 ) -> ApiResponse:
     """
     Revoke a share link
@@ -762,36 +820,35 @@ async def revoke_share_link(
         # Get share token
         share_token = (
             db.query(ShareToken)
-            .filter(ShareToken.token == token, ShareToken.created_by == user_id)
+            .filter(
+                ShareToken.token == token,
+                ShareToken.created_by == user_id,
+            )
             .first()
         )
 
         if not share_token:
-            raise HTTPException(
-                status_code=404, detail="Share link not found or unauthorized"
-            )
+            raise HTTPException(status_code=404, detail="Share link not found or unauthorized")
 
         # Revoke the token
-        share_token.is_active = False
-        share_token.revoked_at = datetime.utcnow()
+        share_token.is_active = False  # type: ignore[assignment]
+        share_token.revoked_at = datetime.utcnow()  # type: ignore[assignment]
         db.commit()
 
-        return ApiResponse(
-            success=True, data={"message": "Share link revoked successfully"}
-        )
+        return ApiResponse(success=True, data={"message": "Share link revoked successfully"})
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error revoking share link: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @share_router.get("/my-shares", response_model=ApiResponse)
 async def get_my_share_links(
     user_id: int = Query(..., description="User ID"),
     active_only: bool = Query(True, description="Only show active shares"),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db),  # noqa: B008
 ) -> ApiResponse:
     """
     Get all share links created by a user
@@ -811,13 +868,11 @@ async def get_my_share_links(
             share_data["is_valid"] = share.is_valid()
             share_list.append(share_data)
 
-        return ApiResponse(
-            success=True, data={"shares": share_list, "total": len(share_list)}
-        )
+        return ApiResponse(success=True, data={"shares": share_list, "total": len(share_list)})
 
     except Exception as e:
         logger.error(f"Error fetching user shares: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @share_router.get("/qr/{token}")
@@ -826,13 +881,14 @@ async def generate_share_qr_code(token: str):
     Generate QR code for share link
     """
     try:
-        import qrcode
         from io import BytesIO
+
+        import qrcode
         from fastapi.responses import StreamingResponse
 
         # Generate share URL
-        base_url = os.getenv("APP_BASE_URL", "https://babyshield.cureviax.ai")
-        share_url = f"{base_url}/share/{token}"
+        base_url = os.getenv("APP_BASE_URL", "https://crownsafe.cureviax.ai")
+        share_url, _ = _build_share_urls(base_url, token)
 
         # Generate QR code
         qr = qrcode.QRCode(version=1, box_size=10, border=4)
@@ -843,14 +899,14 @@ async def generate_share_qr_code(token: str):
 
         # Convert to bytes
         img_bytes = BytesIO()
-        img.save(img_bytes, format="PNG")
+        img.save(img_bytes, "PNG")
         img_bytes.seek(0)
 
         return StreamingResponse(img_bytes, media_type="image/png")
 
     except Exception as e:
         logger.error(f"Error generating QR code: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @share_router.get("/preview-dev/{token}")
@@ -899,7 +955,10 @@ async def preview_share_link_dev(token: str) -> HTMLResponse:
             </div>
             <div class="content">
                 <h2>Report Summary</h2>
-                <p>This is a mock safety report for testing purposes. The actual report content would be displayed here.</p>
+                <p>
+                    This is a mock safety report for testing purposes. The actual
+                    report content would be displayed here.
+                </p>
                 <p><strong>Status:</strong> Active and accessible</p>
                 <p><strong>Download:</strong> Available</p>
             </div>
@@ -917,13 +976,15 @@ async def preview_share_link_dev(token: str) -> HTMLResponse:
     except Exception as e:
         logger.error(f"Error previewing share link: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to preview share link: {str(e)}"
-        )
+            status_code=500,
+            detail=f"Failed to preview share link: {str(e)}",
+        ) from e
 
 
 @share_router.get("/preview/{token}")
 async def preview_shared_content(
-    token: str, db: Session = Depends(get_db)
+    token: str,
+    db: Session = Depends(get_db),  # noqa: B008
 ) -> HTMLResponse:
     """
     Generate a preview page for shared content
@@ -937,7 +998,7 @@ async def preview_shared_content(
         if not share_token or not share_token.is_valid():
             html_content = """
             <html>
-                <head><title>BabyShield - Link Expired</title></head>
+                <head><title>Crown Safe - Link Expired</title></head>
                 <body>
                     <h1>Share Link Expired</h1>
                     <p>This share link has expired or is no longer valid.</p>
@@ -948,23 +1009,33 @@ async def preview_shared_content(
 
         # Generate preview HTML
         content = share_token.content_snapshot or {}
+        share_type: str = cast(str, share_token.share_type)
 
-        if share_token.share_type == "scan_result":
-            title = f"Product Safety: {content.get('product_name', 'Unknown Product')}"
-            description = f"Risk Level: {content.get('risk_level', 'Unknown')} | Verdict: {content.get('verdict', 'No data')}"
+        if share_type == "scan_result":
+            raw_title = f"Product Safety: {content.get('product_name', 'Unknown Product')}"
+            raw_description = (
+                f"Risk Level: {content.get('risk_level', 'Unknown')} | Verdict: {content.get('verdict', 'No data')}"
+            )
         else:
-            title = f"Safety Report: {content.get('report_type', 'Unknown Type')}"
-            description = f"Products: {content.get('unique_products', 0)} | Recalls: {content.get('recalls_found', 0)}"
+            raw_title = f"Safety Report: {content.get('report_type', 'Unknown Type')}"
+            raw_description = (
+                f"Products: {content.get('unique_products', 0)} | Recalls: {content.get('recalls_found', 0)}"
+            )
+
+        safe_title = escape(str(raw_title))
+        safe_description = escape(str(raw_description))
+        token_path_fragment = quote(str(token), safe="")
+        safe_token_href = escape(f"/api/v1/share/view/{token_path_fragment}")
 
         html_content = f"""
         <!DOCTYPE html>
         <html>
         <head>
-            <title>BabyShield - {title}</title>
-            <meta property="og:title" content="{title}" />
-            <meta property="og:description" content="{description}" />
+            <title>Crown Safe - {safe_title}</title>
+            <meta property="og:title" content="{safe_title}" />
+            <meta property="og:description" content="{safe_description}" />
             <meta property="og:type" content="website" />
-            <meta property="og:image" content="https://babyshield.cureviax.ai/logo.png" />
+            <meta property="og:image" content="https://crownsafe.cureviax.ai/logo.png" />
             <meta name="twitter:card" content="summary" />
             <style>
                 body {{
@@ -1000,13 +1071,18 @@ async def preview_shared_content(
         </head>
         <body>
             <div class="container">
-                <h1>🛡️ BabyShield Safety Results</h1>
+                <h1>🛡️ Crown Safe Safety Results</h1>
                 <div class="info-box">
-                    <h2>{title}</h2>
-                    <p>{description}</p>
+                    <h2>{safe_title}</h2>
+                    <p>{safe_description}</p>
                 </div>
-                <p>This safety information has been shared with you via BabyShield.</p>
-                <a href="/api/v1/share/view/{token}" class="button">View Full Results</a>
+                <p>This safety information has been shared with you via Crown Safe.</p>
+                <a
+                    href="{safe_token_href}"
+                    class="button"
+                >
+                    View Full Results
+                </a>
             </div>
         </body>
         </html>
@@ -1018,7 +1094,7 @@ async def preview_shared_content(
         logger.error(f"Error generating preview: {e}")
         html_content = """
         <html>
-            <head><title>BabyShield - Error</title></head>
+            <head><title>Crown Safe - Error</title></head>
             <body>
                 <h1>Error</h1>
                 <p>An error occurred while loading the preview.</p>

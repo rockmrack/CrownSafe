@@ -11,7 +11,7 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 
 # Import and expose the actual FastAPI app
-from api.main_babyshield import app
+from api.main_crownsafe import app
 
 # The app is now available as 'app' in this module
 # Uvicorn can run it with: uvicorn main:app

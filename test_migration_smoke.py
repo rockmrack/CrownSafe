@@ -59,7 +59,7 @@ except Exception as e:
 # Test 5: Import FastAPI app
 print("\nTest 5: Import FastAPI application...")
 try:
-    from api.main_babyshield import app
+    from api.main_crownsafe import app
 
     print("✅ PASS - FastAPI app imported")
 except Exception as e:

@@ -109,17 +109,13 @@ def create_secure_engine(mode: str = "readonly") -> Engine:
         }
     elif mode == "write":
         pool_settings = WRITE_POOL_SETTINGS
-        connect_args = {
-            "options": "-c statement_timeout=60000"
-        }  # 60s timeout for writes
+        connect_args = {"options": "-c statement_timeout=60000"}  # 60s timeout for writes
     else:  # admin
         pool_settings = ADMIN_POOL_SETTINGS
         connect_args = {}
 
     # Create engine
-    engine = create_engine(
-        database_url, poolclass=QueuePool, connect_args=connect_args, **pool_settings
-    )
+    engine = create_engine(database_url, poolclass=QueuePool, connect_args=connect_args, **pool_settings)
 
     # Add event listeners for monitoring
     @event.listens_for(engine, "connect")
@@ -212,17 +208,11 @@ db_engines = DatabaseEngines()
 # ========================= SESSION FACTORIES =========================
 
 # Create session factories
-ReadOnlySessionLocal = sessionmaker(
-    autocommit=False, autoflush=False, bind=db_engines.readonly
-)
+ReadOnlySessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engines.readonly)
 
-WriteSessionLocal = sessionmaker(
-    autocommit=False, autoflush=True, bind=db_engines.write
-)
+WriteSessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=db_engines.write)
 
-AdminSessionLocal = sessionmaker(
-    autocommit=False, autoflush=True, bind=db_engines.admin
-)
+AdminSessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=db_engines.admin)
 
 
 # ========================= CONTEXT MANAGERS =========================
@@ -384,9 +374,7 @@ def migrate_to_secure_database():
     except Exception as e:
         print(f"❌ Error testing secure connections: {e}")
         print("\nPlease ensure you have set up the following environment variables:")
-        print(
-            "  - DATABASE_URL_READONLY: postgresql://babyshield_readonly:PASSWORD@host/db"
-        )
+        print("  - DATABASE_URL_READONLY: postgresql://babyshield_readonly:PASSWORD@host/db")
         print("  - DATABASE_URL: postgresql://babyshield_app:PASSWORD@host/db")
         print("  - DATABASE_URL_ADMIN: postgresql://babyshield_admin:PASSWORD@host/db")
 
@@ -398,13 +386,11 @@ def migrate_to_secure_database():
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-@app.get("/api/v1/recalls/{recall_id}")
-async def get_recall(
-    recall_id: str,
-    db: Session = Depends(get_db_readonly)  # Use readonly
-):
-    recall = db.query(RecallDB).filter(RecallDB.id == recall_id).first()
-    return recall
+# REMOVED FOR CROWN SAFE: Recall endpoints no longer applicable
+# @app.get("/api/v1/recalls/{recall_id}")
+# async def get_recall(recall_id: str, db: Session = Depends(get_db_readonly)):
+#     # RecallDB removed - Crown Safe uses HairProductModel
+#     pass
 
 
 # Example 2: FastAPI endpoint with write access
@@ -419,24 +405,14 @@ async def create_user(
     return new_user
 
 
-# Example 3: Background task with readonly
-def analyze_recalls():
-    with get_readonly_session() as session:
-        recalls = session.query(RecallDB).filter(
-            RecallDB.created_at > datetime.now() - timedelta(days=7)
-        ).all()
-        # Process recalls...
-
-
-# Example 4: Data modification task
-def update_risk_scores():
-    with get_write_session() as session:
-        recalls = session.query(RecallDB).filter(
-            RecallDB.risk_score == None
-        ).all()
-        
-        for recall in recalls:
-            recall.risk_score = calculate_risk_score(recall)
+# REMOVED FOR CROWN SAFE: Recall background tasks no longer applicable
+# def analyze_recalls():
+#     # RecallDB removed - Crown Safe uses HairProductModel
+#     pass
+#
+# def update_risk_scores():
+#     # RecallDB removed - Crown Safe uses hair product safety scoring
+#     pass
         
         session.commit()
 """

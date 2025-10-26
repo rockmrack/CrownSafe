@@ -39,7 +39,7 @@ def start_api_server():
         sys.executable,
         "-m",
         "uvicorn",
-        "api.main_babyshield:app",
+        "api.main_crownsafe:app",
         "--host",
         "0.0.0.0",
         "--port",
