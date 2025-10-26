@@ -58,7 +58,7 @@ numpy==1.26.2
 pandas==2.1.4
 
 # Task Queue & Background Jobs
-celery==5.3.4
+celery==5.5.3
 kombu==5.3.4
 
 # Monitoring & Logging
