@@ -905,6 +905,15 @@ try:
 except Exception as e:
     logger.error(f"Failed to register ingredient explainer endpoints: {e}")
 
+# Import and include routine analysis endpoints (Crown Safe MVP)
+try:
+    from api.routine_analysis_endpoints import router as routine_analysis_router
+
+    app.include_router(routine_analysis_router)
+    logger.info("Routine analysis endpoints registered (/api/v1/cabinet-audit, /routine-check)")
+except Exception as e:
+    logger.error(f"Failed to register routine analysis endpoints: {e}")
+
 # Import and include barcode scanning endpoints
 try:
     from api.barcode_endpoints import (
