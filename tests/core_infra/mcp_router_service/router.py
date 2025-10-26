@@ -32,9 +32,7 @@ async def forward_message(
             message_content_snippet = message_content_snippet[:300] + "..."
     except Exception:
         pass
-    logger.debug(
-        f"FORWARDING MSG CONTENT to {target_agent_id}: {message_content_snippet}"
-    )
+    logger.debug(f"FORWARDING MSG CONTENT to {target_agent_id}: {message_content_snippet}")
 
     ws = state.get_connection(target_agent_id)
 
@@ -46,9 +44,7 @@ async def forward_message(
 
     try:
         await ws.send_json(message_to_forward)  # FastAPI WebSocket handles dict to json
-        logger.info(
-            f"FORWARDING MSG [{label}]: Successfully delivered Type='{msg_type}' to '{target_agent_id}'."
-        )
+        logger.info(f"FORWARDING MSG [{label}]: Successfully delivered Type='{msg_type}' to '{target_agent_id}'.")
         return True
     except Exception as e:
         logger.error(
@@ -63,9 +59,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
 
     # --- ADDED CRITICAL LOG (GPT Suggestion B) ---
     # Attempt to parse for logging details, but log raw snippet regardless
-    log_snippet_critical = (
-        message_text[:300] + "..." if len(message_text) > 300 else message_text
-    )
+    log_snippet_critical = message_text[:300] + "..." if len(message_text) > 300 else message_text
     msg_type_log = "UNPARSABLE_JSON"
     sender_log = agent_id  # agent_id from path is the connected agent
     target_agent_log = "N/A"
@@ -76,9 +70,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
         if isinstance(parsed_for_log, dict) and "mcp_header" in parsed_for_log:
             header_for_log = parsed_for_log["mcp_header"]
             msg_type_log = header_for_log.get("message_type", "NO_MSG_TYPE_IN_HDR")
-            sender_log = header_for_log.get(
-                "sender_id", agent_id
-            )  # Prefer header sender_id
+            sender_log = header_for_log.get("sender_id", agent_id)  # Prefer header sender_id
             target_agent_log = header_for_log.get("target_agent_id", "N/A")
             target_service_log = header_for_log.get("target_service", "N/A")
             corr_id_log = header_for_log.get("correlation_id", "N/A")
@@ -98,16 +90,12 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
     )
     # --- END ADDED CRITICAL LOG ---
 
-    logger.debug(
-        f"ROUTER RECV: from='{agent_id}' snippet='{message_text[:200]}'"
-    )  # Existing debug log
+    logger.debug(f"ROUTER RECV: from='{agent_id}' snippet='{message_text[:200]}'")  # Existing debug log
     msg: Optional[Dict[str, Any]] = None
     try:
         msg = parse_mcp_message(message_text)
         if not msg or "mcp_header" not in msg:
-            logger.warning(
-                f"ROUTER: Malformed message from '{agent_id}'; dropping. raw='{message_text}'"
-            )
+            logger.warning(f"ROUTER: Malformed message from '{agent_id}'; dropping. raw='{message_text}'")
             return
 
         hdr = msg.get("mcp_header", {})
@@ -136,12 +124,8 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             return
 
         if target_svc == "MCP_DISCOVERY":
-            logger.debug(
-                f"ROUTER ROUTE→DISCOVERY: Type='{mtype}', From='{agent_id}', CorrID='{corr}'"
-            )
-            await discovery.handle_discovery_message(
-                msg, agent_id
-            )  # Pass full msg and path agent_id
+            logger.debug(f"ROUTER ROUTE→DISCOVERY: Type='{mtype}', From='{agent_id}', CorrID='{corr}'")
+            await discovery.handle_discovery_message(msg, agent_id)  # Pass full msg and path agent_id
             return
 
         if mtype == "PROCESS_USER_REQUEST":
@@ -151,9 +135,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
                 f"ROUTER: Searching for CommanderAgent among: {all_connected_agents} for PROCESS_USER_REQUEST from '{agent_id}'"
             )
             for connected_agent_id_str in all_connected_agents:
-                if (
-                    "commander_agent" in connected_agent_id_str.lower()
-                ):  # More specific check
+                if "commander_agent" in connected_agent_id_str.lower():  # More specific check
                     target_commander_id = connected_agent_id_str
                     logger.info(
                         f"ROUTER: Found CommanderAgent '{target_commander_id}' to handle PROCESS_USER_REQUEST from '{agent_id}'"
@@ -162,9 +144,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
 
             if target_commander_id:
                 # The sender_id for forward_message should be the original sender (agent_id from path)
-                success = await forward_message(
-                    agent_id, msg, target_commander_id, label="PROCESS_USER_REQUEST"
-                )
+                success = await forward_message(agent_id, msg, target_commander_id, label="PROCESS_USER_REQUEST")
                 if not success:
                     err_resp = create_mcp_error_response(
                         sender_id="MCP_ROUTER",
@@ -178,9 +158,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
                     if err_resp:
                         await websocket.send_json(err_resp)
             else:
-                logger.error(
-                    f"ROUTER: No CommanderAgent found to handle PROCESS_USER_REQUEST from '{agent_id}'"
-                )
+                logger.error(f"ROUTER: No CommanderAgent found to handle PROCESS_USER_REQUEST from '{agent_id}'")
                 err_resp = create_mcp_error_response(
                     sender_id="MCP_ROUTER",
                     correlation_id=corr,
@@ -213,9 +191,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
                     await websocket.send_json(err_resp)
                 return
             # The sender_id for forward_message should be the original sender (agent_id from path)
-            success = await forward_message(
-                agent_id, msg, target_agent_id_for_task, label="TASK_ASSIGN"
-            )
+            success = await forward_message(agent_id, msg, target_agent_id_for_task, label="TASK_ASSIGN")
             if not success:
                 err_resp = create_mcp_error_response(
                     sender_id="MCP_ROUTER",
@@ -266,9 +242,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             if pong_msg:
                 await websocket.send_json(pong_msg)
             else:
-                logger.error(
-                    f"ROUTER: Unable to build PONG for '{agent_id}', CorrID='{corr}'"
-                )
+                logger.error(f"ROUTER: Unable to build PONG for '{agent_id}', CorrID='{corr}'")
             return
 
         logger.warning(
@@ -302,17 +276,13 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             if err_resp_unparseable:
                 await websocket.send_json(err_resp_unparseable)
         except Exception as send_err_ex:
-            logger.error(
-                f"ROUTER: Failed to send unparseable JSON error to '{agent_id}': {send_err_ex}"
-            )
+            logger.error(f"ROUTER: Failed to send unparseable JSON error to '{agent_id}': {send_err_ex}")
 
     except Exception:
         logger.exception(f"ROUTER: Internal error handling message from '{agent_id}'")
         try:
             corr_id_for_error = (
-                msg.get("mcp_header", {}).get("correlation_id", "")
-                if msg and isinstance(msg, dict)
-                else None
+                msg.get("mcp_header", {}).get("correlation_id", "") if msg and isinstance(msg, dict) else None
             )  # Use None if not found
             err_resp = create_mcp_error_response(
                 sender_id="MCP_ROUTER",
@@ -326,6 +296,4 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             if err_resp:
                 await websocket.send_json(err_resp)
         except Exception as send_err_ex:
-            logger.error(
-                f"ROUTER: Failed to send internal error notification to '{agent_id}': {send_err_ex}"
-            )
+            logger.error(f"ROUTER: Failed to send internal error notification to '{agent_id}': {send_err_ex}")

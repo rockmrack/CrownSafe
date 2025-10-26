@@ -24,9 +24,7 @@ from core_infra.database import (
     DATABASE_URL,
 )
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 
 def seed_database():
@@ -62,9 +60,7 @@ def seed_database():
             logger.info("Added subscribed test user with ID: 1")
 
         # Check if recall already exists
-        existing_recall = (
-            db.query(RecallDB).filter_by(recall_id="LIVE-RECALL-001").first()
-        )
+        existing_recall = db.query(RecallDB).filter_by(recall_id="LIVE-RECALL-001").first()
         if existing_recall:
             logger.info(f"Recall already exists with UPC: {existing_recall.upc}")
             # Update the UPC if needed
@@ -112,9 +108,7 @@ def seed_database():
 
         # List all recalls with UPC
         all_recalls = db.query(RecallDB).filter(RecallDB.upc.isnot(None)).all()
-        logger.info(
-            f"All recalls with UPC: {[(r.recall_id, r.upc) for r in all_recalls]}"
-        )
+        logger.info(f"All recalls with UPC: {[(r.recall_id, r.upc) for r in all_recalls]}")
 
     logger.info("--- Database seeding complete. ---")
 

@@ -24,9 +24,7 @@ if response.status_code == 202:
     print("\n⏳ Checking status...")
     for i in range(5):
         time.sleep(2)
-        status_response = requests.get(
-            f"http://localhost:8000/api/v1/status/{workflow_id}"
-        )
+        status_response = requests.get(f"http://localhost:8000/api/v1/status/{workflow_id}")
         if status_response.status_code == 200:
             status_data = status_response.json()
             print(f"   Status: {status_data['status']}")

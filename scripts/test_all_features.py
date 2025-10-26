@@ -43,9 +43,7 @@ def start_api_server():
         "--port",
         "8001",
     ]
-    process = subprocess.Popen(
-        cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-    )
+    process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     # Wait for server to start
     for i in range(10):
@@ -168,9 +166,7 @@ async def main():
     print(f"  Failed: {failed_tests}")
     print(f"  Success Rate: {(passed_tests / total_tests) * 100:.1f}%")
 
-    print(
-        f"\n🏁 Test suite completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-    )
+    print(f"\n🏁 Test suite completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     # Cleanup
     if api_process:

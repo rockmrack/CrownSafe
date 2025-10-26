@@ -7,9 +7,9 @@ This script tests that user queries actually reach your 131,743 recalls
 import os
 
 # Set production DATABASE_URL
-os.environ[
-    "DATABASE_URL"
-] = "postgresql+psycopg://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
+os.environ["DATABASE_URL"] = (
+    "postgresql+psycopg://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
+)
 os.environ["TEST_MODE"] = "false"
 
 print("=" * 70)
@@ -37,19 +37,13 @@ print("Step 2: Test /api/v1/safety-check endpoint (model number query)...")
 try:
     # Find a real model number from the database
     db = SessionLocal()
-    sample_recall = (
-        db.query(EnhancedRecallDB)
-        .filter(EnhancedRecallDB.model_number.isnot(None))
-        .first()
-    )
+    sample_recall = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.model_number.isnot(None)).first()
 
     if sample_recall:
         test_model = sample_recall.model_number
         print(f"  Using real model number: {test_model}")
 
-        response = client.post(
-            "/api/v1/safety-check", json={"model_number": test_model}
-        )
+        response = client.post("/api/v1/safety-check", json={"model_number": test_model})
 
         print(f"  Status: {response.status_code}")
         if response.status_code == 200:
@@ -72,9 +66,7 @@ print()
 
 print("Step 3: Test /api/v1/search/advanced endpoint (product search)...")
 try:
-    response = client.post(
-        "/api/v1/search/advanced", json={"product": "baby", "limit": 5}
-    )
+    response = client.post("/api/v1/search/advanced", json={"product": "baby", "limit": 5})
 
     print(f"  Status: {response.status_code}")
     if response.status_code == 200:
@@ -84,9 +76,7 @@ try:
             count = len(data["recalls"])
             print(f"     Found {count} recalls")
             if count > 0:
-                print(
-                    f"     Sample: {data['recalls'][0].get('product_name', 'N/A')[:50]}"
-                )
+                print(f"     Sample: {data['recalls'][0].get('product_name', 'N/A')[:50]}")
         print(f"     Response keys: {list(data.keys())}")
     else:
         print(f"  Response: {response.json()}")
@@ -107,9 +97,7 @@ try:
     search_term = "baby bottle"
     results = (
         db.query(EnhancedRecallDB)
-        .filter(
-            func.lower(EnhancedRecallDB.product_name).like(f"%{search_term.lower()}%")
-        )
+        .filter(func.lower(EnhancedRecallDB.product_name).like(f"%{search_term.lower()}%"))
         .limit(3)
         .all()
     )

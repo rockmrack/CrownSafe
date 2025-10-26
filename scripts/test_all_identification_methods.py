@@ -19,9 +19,7 @@ import uuid
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -52,9 +50,7 @@ async def test_method_1_camera_scan():
             user_id = 1  # Use default test user
 
         # Test the safety-check endpoint with barcode
-        response = client.post(
-            "/api/v1/safety-check", json={"user_id": user_id, "barcode": test_barcode}
-        )
+        response = client.post("/api/v1/safety-check", json={"user_id": user_id, "barcode": test_barcode})
 
         if response.status_code in [200, 201]:
             logger.info("✅ Method 1 PASSED: Camera scan (barcode) endpoint works")
@@ -101,9 +97,7 @@ async def test_method_2_upload_photo():
         if visual_mounted:
             logger.info("✅ Method 2 VERIFIED: Visual upload endpoints are mounted")
         else:
-            logger.warning(
-                "⚠️ Visual endpoints not fully mounted, but structure exists"
-            )
+            logger.warning("⚠️ Visual endpoints not fully mounted, but structure exists")
 
         # Also test the simpler suggestion endpoint from Phase 2
         client = TestClient(app)
@@ -145,9 +139,7 @@ async def test_method_3_barcode_text():
         test_barcode = "123456789012"
 
         # This uses the same endpoint as Method 1
-        response = client.post(
-            "/api/v1/safety-check", json={"user_id": 1, "barcode": test_barcode}
-        )
+        response = client.post("/api/v1/safety-check", json={"user_id": 1, "barcode": test_barcode})
 
         if response.status_code in [200, 201, 403]:  # 403 if subscription required
             logger.info("✅ Method 3 PASSED: Barcode text entry endpoint works")
@@ -180,9 +172,7 @@ async def test_method_4_search_by_name():
         test_product = "Baby Monitor"
 
         # Test the updated safety-check endpoint with product_name
-        response = client.post(
-            "/api/v1/safety-check", json={"user_id": 1, "product_name": test_product}
-        )
+        response = client.post("/api/v1/safety-check", json={"user_id": 1, "product_name": test_product})
 
         if response.status_code in [200, 201, 403]:  # 403 if subscription required
             logger.info("✅ Method 4 PASSED: Product name search endpoint works")
@@ -226,9 +216,7 @@ async def test_endpoint_structure():
         found = False
         for route in app.routes:
             if hasattr(route, "path") and hasattr(route, "methods"):
-                if str(route.path) == path or path.replace("{job_id}", "") in str(
-                    route.path
-                ):
+                if str(route.path) == path or path.replace("{job_id}", "") in str(route.path):
                     if method in route.methods:
                         found = True
                         break
@@ -243,9 +231,7 @@ async def test_endpoint_structure():
         found = False
         for route in app.routes:
             if hasattr(route, "path") and hasattr(route, "methods"):
-                if str(route.path) == path or path.replace("{job_id}", "") in str(
-                    route.path
-                ):
+                if str(route.path) == path or path.replace("{job_id}", "") in str(route.path):
                     if method in route.methods:
                         found = True
                         break
@@ -312,9 +298,7 @@ All methods are now supported by the backend!
     )
 
     if all_passed:
-        logger.info(
-            "\n🎉 All 4 identification methods are WORKING and ready for frontend integration!"
-        )
+        logger.info("\n🎉 All 4 identification methods are WORKING and ready for frontend integration!")
     else:
         logger.error("\n⚠️ Some methods need configuration. Review the errors above.")
 

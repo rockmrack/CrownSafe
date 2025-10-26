@@ -82,9 +82,7 @@ try:
     print("✅ ConnectorRegistry initialized")
     print(f"   Total connectors: {len(registry.connectors)}")
 
-    uk_agencies_in_registry = [
-        key for key in registry.connectors.keys() if key.startswith("UK")
-    ]
+    uk_agencies_in_registry = [key for key in registry.connectors.keys() if key.startswith("UK")]
     print(f"\n   UK Agencies in Registry ({len(uk_agencies_in_registry)}):")
     for agency in sorted(uk_agencies_in_registry):
         connector = registry.connectors[agency]
@@ -118,9 +116,7 @@ try:
     print("✅ API v1_endpoints imported")
     print(f"   Total agencies: {len(AGENCIES)}")
 
-    uk_agencies_in_api = [
-        agency for agency in AGENCIES if agency.country == "United Kingdom"
-    ]
+    uk_agencies_in_api = [agency for agency in AGENCIES if agency.country == "United Kingdom"]
     print(f"\n   UK Agencies in API ({len(uk_agencies_in_api)}):")
     for agency in uk_agencies_in_api:
         print(f"   ✅ {agency.code}: {agency.name}")

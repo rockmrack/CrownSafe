@@ -16,6 +16,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+try:
+    from defusedxml.ElementTree import fromstring as secure_fromstring
+except ImportError:  # pragma: no cover - fallback if defusedxml is unavailable
+    from xml.etree.ElementTree import fromstring as secure_fromstring  # type: ignore
+
 import aiohttp
 
 # import re # Not currently used, can be removed if not needed later
@@ -455,7 +460,7 @@ class WebResearchLogic:
                 f"ESearch for '{constructed_api_query_term[:50]}'",
             )
 
-            search_xml_root = ET.fromstring(search_response_xml_str)
+            search_xml_root = secure_fromstring(search_response_xml_str)
             id_list_node = search_xml_root.find("IdList")
             article_ids = (
                 [id_node.text for id_node in id_list_node.findall("Id") if id_node.text]
@@ -489,7 +494,7 @@ class WebResearchLogic:
                     efetch_params,
                     f"EFetch for {len(ids_to_fetch)} IDs",
                 )
-                fetch_xml_root = ET.fromstring(fetch_response_xml_str)
+                fetch_xml_root = secure_fromstring(fetch_response_xml_str)
                 articles_data = [
                     self._parse_article_xml_details(article_element)
                     for article_element in fetch_xml_root.findall(".//PubmedArticle")

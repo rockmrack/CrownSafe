@@ -3,9 +3,7 @@ import logging
 from core_infra.mcp_client_library.client import MCPClient
 from .agent_logic import COPPA_ComplianceAgentLogic
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 AGENT_ID = "coppa_compliance_agent_01"
@@ -18,12 +16,8 @@ class COPPA_ComplianceAgent:
         self.mcp_client = MCPClient(agent_id=self.agent_id, server_url=MCP_SERVER_URL)
         self.logic = COPPA_ComplianceAgentLogic(agent_id=self.agent_id)
 
-        self.mcp_client.register_capability(
-            "check_coppa_consent", self.handle_check_consent
-        )
-        self.mcp_client.register_capability(
-            "plan_data_deletion", self.handle_plan_deletion
-        )
+        self.mcp_client.register_capability("check_coppa_consent", self.handle_check_consent)
+        self.mcp_client.register_capability("plan_data_deletion", self.handle_plan_deletion)
 
     async def handle_check_consent(self, task_payload: dict) -> dict:
         user_profile = task_payload.get("user_profile")

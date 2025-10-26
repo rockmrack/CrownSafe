@@ -73,8 +73,7 @@ def get_security_config() -> dict:
     return {
         "max_request_bytes": int(os.getenv("MAX_REQUEST_BYTES", "100000")),
         "cors_origins": os.getenv("CORS_ALLOWED_ORIGINS", "").split(","),
-        "ua_blocking_enabled": os.getenv("ENABLE_UA_BLOCKING", "true").lower()
-        == "true",
+        "ua_blocking_enabled": os.getenv("ENABLE_UA_BLOCKING", "true").lower() == "true",
         "gzip_minimum_size": int(os.getenv("GZIP_MINIMUM_SIZE", "1024")),
         "environment": os.getenv("ENVIRONMENT", "production"),
         "hsts_enabled": True,
@@ -97,9 +96,7 @@ def validate_security_config():
 
     # Check environment
     if config["environment"].lower() in ("development", "dev", "local"):
-        logger.warning(
-            "Running in development mode - some security features may be relaxed"
-        )
+        logger.warning("Running in development mode - some security features may be relaxed")
 
     # Check request size limit
     if config["max_request_bytes"] > 1_000_000:  # 1MB

@@ -11,9 +11,7 @@ def send_push_notification_task(user_device_token: str, title: str, message: str
     In a real system, this would contain the logic to call Firebase Cloud Messaging (FCM)
     or Apple Push Notification service (APNs).
     """
-    logger.info(
-        f"--- SENDING PUSH NOTIFICATION (Task ID: {send_push_notification_task.request.id}) ---"
-    )
+    logger.info(f"--- SENDING PUSH NOTIFICATION (Task ID: {send_push_notification_task.request.id}) ---")
     logger.info(f"  -> To Device Token: {user_device_token}")
     logger.info(f"  -> Title: {title}")
     logger.info(f"  -> Message: {message}")

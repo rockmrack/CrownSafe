@@ -19,9 +19,7 @@ from agents.recall_data_agent.connectors import (
 
 load_dotenv()
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s │ %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s │ %(message)s")
 logger = logging.getLogger("test-live")
 
 
@@ -35,9 +33,7 @@ async def main():
         logger.info(f"   → Retrieved {len(fda_recs)} FDA recalls")
         print(
             "\nUS FDA LIVE SAMPLE:\n",
-            json.dumps(
-                [json.loads(r.model_dump_json()) for r in fda_recs[:3]], indent=2
-            ),
+            json.dumps([json.loads(r.model_dump_json()) for r in fda_recs[:3]], indent=2),
         )
     except Exception:
         logger.exception("‼︎ US FDA live fetch failed")
@@ -49,9 +45,7 @@ async def main():
         logger.info(f"   → Retrieved {len(cpsc_recs)} CPSC recalls")
         print(
             "\nUS CPSC LIVE SAMPLE:\n",
-            json.dumps(
-                [json.loads(r.model_dump_json()) for r in cpsc_recs[:3]], indent=2
-            ),
+            json.dumps([json.loads(r.model_dump_json()) for r in cpsc_recs[:3]], indent=2),
         )
     except Exception:
         logger.exception("‼︎ US CPSC live fetch failed")
@@ -63,9 +57,7 @@ async def main():
         logger.info(f"   → Retrieved {len(nhtsa_recs)} NHTSA recalls")
         print(
             "\nUS NHTSA LIVE SAMPLE:\n",
-            json.dumps(
-                [json.loads(r.model_dump_json()) for r in nhtsa_recs[:3]], indent=2
-            ),
+            json.dumps([json.loads(r.model_dump_json()) for r in nhtsa_recs[:3]], indent=2),
         )
     except Exception:
         logger.exception("‼︎ US NHTSA live fetch failed")
@@ -77,9 +69,7 @@ async def main():
         logger.info(f"   → Retrieved {len(usda_recs)} USDA FSIS recalls")
         print(
             "\nUSDA FSIS LIVE SAMPLE:\n",
-            json.dumps(
-                [json.loads(r.model_dump_json()) for r in usda_recs[:3]], indent=2
-            ),
+            json.dumps([json.loads(r.model_dump_json()) for r in usda_recs[:3]], indent=2),
         )
     except Exception:
         logger.exception("‼︎ USDA FSIS live fetch failed")
@@ -91,9 +81,7 @@ async def main():
         logger.info(f"   → Retrieved {len(rapex_recs)} EU RAPEX recalls")
         print(
             "\nEU RAPEX LIVE SAMPLE:\n",
-            json.dumps(
-                [json.loads(r.model_dump_json()) for r in rapex_recs[:3]], indent=2
-            ),
+            json.dumps([json.loads(r.model_dump_json()) for r in rapex_recs[:3]], indent=2),
         )
     except Exception:
         logger.exception("‼︎ EU RAPEX live fetch failed")
@@ -105,9 +93,7 @@ async def main():
         logger.info(f"   → Retrieved {len(uk_recs)} UK OPSS recalls")
         print(
             "\nUK OPSS LIVE SAMPLE:\n",
-            json.dumps(
-                [json.loads(r.model_dump_json()) for r in uk_recs[:3]], indent=2
-            ),
+            json.dumps([json.loads(r.model_dump_json()) for r in uk_recs[:3]], indent=2),
         )
     except Exception:
         logger.exception("‼︎ UK OPSS live fetch failed")
@@ -137,9 +123,7 @@ async def main():
                 print(f"{name:12} → {len(recalls):3d} recalls")
                 if recalls:
                     sample = recalls[0]
-                    print(
-                        f"             Sample: {sample.recall_id} - {sample.product_name[:50]}..."
-                    )
+                    print(f"             Sample: {sample.recall_id} - {sample.product_name[:50]}...")
             except Exception as e:
                 print(f"{name:12} → ERROR: {str(e)[:50]}...")
         print("=" * 60)

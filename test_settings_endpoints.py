@@ -90,9 +90,7 @@ print(f"Request: POST {BASE_URL}/api/v1/user/data/export")
 export_payload = {"email": "test@example.com", "format": "json"}
 
 try:
-    response = requests.post(
-        f"{BASE_URL}/api/v1/user/data/export", json=export_payload, timeout=10
-    )
+    response = requests.post(f"{BASE_URL}/api/v1/user/data/export", json=export_payload, timeout=10)
     print(f"Status Code: {response.status_code}")
     if response.status_code in [200, 202]:
         data = response.json()
@@ -120,9 +118,7 @@ deletion_payload = {
 }
 
 try:
-    response = requests.post(
-        f"{BASE_URL}/api/v1/user/data/delete", json=deletion_payload, timeout=10
-    )
+    response = requests.post(f"{BASE_URL}/api/v1/user/data/delete", json=deletion_payload, timeout=10)
     print(f"Status Code: {response.status_code}")
     if response.status_code in [200, 202]:
         data = response.json()
@@ -150,9 +146,7 @@ feedback_payload = {
 }
 
 try:
-    response = requests.post(
-        f"{BASE_URL}/api/v1/feedback", json=feedback_payload, timeout=10
-    )
+    response = requests.post(f"{BASE_URL}/api/v1/feedback", json=feedback_payload, timeout=10)
     print(f"Status Code: {response.status_code}")
     if response.status_code in [200, 201]:
         data = response.json()

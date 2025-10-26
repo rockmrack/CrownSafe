@@ -6,9 +6,7 @@ import os
 import psycopg
 
 # Connect to production database
-DATABASE_URL = os.environ["DATABASE_URL"].replace(
-    "postgresql+psycopg://", "postgresql://"
-)
+DATABASE_URL = os.environ["DATABASE_URL"].replace("postgresql+psycopg://", "postgresql://")
 conn = psycopg.connect(DATABASE_URL)
 cur = conn.cursor()
 
@@ -75,9 +73,7 @@ else:
     cur.execute("CREATE INDEX idx_user_reports_severity ON user_reports(severity);")
     cur.execute("CREATE INDEX idx_user_reports_created_at ON user_reports(created_at);")
     cur.execute("CREATE INDEX idx_user_reports_barcode ON user_reports(barcode);")
-    cur.execute(
-        "CREATE INDEX idx_user_reports_model_number ON user_reports(model_number);"
-    )
+    cur.execute("CREATE INDEX idx_user_reports_model_number ON user_reports(model_number);")
 
     conn.commit()
     print("✅ user_reports table created successfully!")

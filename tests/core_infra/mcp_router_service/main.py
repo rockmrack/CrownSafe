@@ -14,14 +14,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 # --- Environment & Path Setup ---
-project_root_main_py = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..")
-)
+project_root_main_py = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 env_path = os.path.join(project_root_main_py, ".env")
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 bootstrap_logger = logging.getLogger("MCPRouterService_Bootstrap")
 
 if os.path.exists(env_path):
@@ -39,9 +35,7 @@ try:
     from . import discovery
     from .router import handle_message
 
-    bootstrap_logger.info(
-        "Successfully imported local modules (config, state, discovery, router)."
-    )
+    bootstrap_logger.info("Successfully imported local modules (config, state, discovery, router).")
 except ImportError as e:
     bootstrap_logger.critical(
         f"CRITICAL IMPORT ERROR: Failed to import local modules: {e}. Check module structure, PYTHONPATH, or if running from the correct directory.",
@@ -56,40 +50,24 @@ async def lifespan(app: FastAPI):
     logger.info("MCP Router Service: Lifespan startup sequence initiated...")
     try:
         # Initialize or clear agent registry
-        if hasattr(discovery, "initialize_registry") and callable(
-            discovery.initialize_registry
-        ):
+        if hasattr(discovery, "initialize_registry") and callable(discovery.initialize_registry):
             discovery.initialize_registry()
-            logger.info(
-                "Lifespan: In-memory agent registry explicitly initialized via initialize_registry()."
-            )
-        elif hasattr(discovery, "agent_registry") and isinstance(
-            discovery.agent_registry, dict
-        ):
+            logger.info("Lifespan: In-memory agent registry explicitly initialized via initialize_registry().")
+        elif hasattr(discovery, "agent_registry") and isinstance(discovery.agent_registry, dict):
             discovery.agent_registry.clear()
-            logger.info(
-                "Lifespan: In-memory agent registry cleared via agent_registry.clear()."
-            )
+            logger.info("Lifespan: In-memory agent registry cleared via agent_registry.clear().")
         else:
             logger.warning(
                 "Lifespan: Agent registry not found or not a dict in discovery module. Cannot clear/initialize."
             )
 
         # Clear any existing connections from a previous unclean shutdown
-        if hasattr(state, "close_all_connections") and callable(
-            state.close_all_connections
-        ):
+        if hasattr(state, "close_all_connections") and callable(state.close_all_connections):
             await state.close_all_connections()
-            logger.info(
-                "Lifespan: Cleared any stale connections via close_all_connections()."
-            )
-        elif hasattr(state, "active_connections") and isinstance(
-            state.active_connections, dict
-        ):
+            logger.info("Lifespan: Cleared any stale connections via close_all_connections().")
+        elif hasattr(state, "active_connections") and isinstance(state.active_connections, dict):
             state.active_connections.clear()
-            logger.info(
-                "Lifespan: Cleared stale connections via active_connections.clear()."
-            )
+            logger.info("Lifespan: Cleared stale connections via active_connections.clear().")
 
         logger.info("Lifespan: Startup tasks completed.")
     except Exception as startup_e:
@@ -103,12 +81,8 @@ async def lifespan(app: FastAPI):
     # Shutdown
     logger.info("MCP Router Service: Lifespan shutdown sequence initiated...")
     try:
-        if hasattr(state, "close_all_connections") and callable(
-            state.close_all_connections
-        ):
-            logger.info(
-                "Lifespan: Attempting to close all active WebSocket connections..."
-            )
+        if hasattr(state, "close_all_connections") and callable(state.close_all_connections):
+            logger.info("Lifespan: Attempting to close all active WebSocket connections...")
             await state.close_all_connections()
             logger.info("Lifespan: All active WebSocket connections closed.")
         else:
@@ -127,11 +101,7 @@ async def lifespan(app: FastAPI):
 
 # --- FastAPI App Initialization ---
 SERVICE_NAME = getattr(settings, "SERVICE_NAME", "MCP_Router_Service")
-app_logger = (
-    logger
-    if "logger" in locals() and isinstance(logger, logging.Logger)
-    else bootstrap_logger
-)
+app_logger = logger if "logger" in locals() and isinstance(logger, logging.Logger) else bootstrap_logger
 
 app = FastAPI(
     title=SERVICE_NAME,
@@ -158,13 +128,8 @@ async def websocket_endpoint(websocket: WebSocket, agent_id: str):
     # Validate required functions exist
     if (
         not (hasattr(state, "add_connection") and callable(state.add_connection))
-        or not (
-            hasattr(state, "remove_connection") and callable(state.remove_connection)
-        )
-        or not (
-            hasattr(state, "get_all_connections")
-            and callable(state.get_all_connections)
-        )
+        or not (hasattr(state, "remove_connection") and callable(state.remove_connection))
+        or not (hasattr(state, "get_all_connections") and callable(state.get_all_connections))
         or not callable(handle_message)
     ):
         app_logger.critical(
@@ -175,9 +140,7 @@ async def websocket_endpoint(websocket: WebSocket, agent_id: str):
         return
 
     await websocket.accept()
-    app_logger.info(
-        f"Agent '{agent_id}' attempting connection from {websocket.client.host}:{websocket.client.port}"
-    )
+    app_logger.info(f"Agent '{agent_id}' attempting connection from {websocket.client.host}:{websocket.client.port}")
 
     # FIXED: Properly check return value of add_connection
     connection_added = state.add_connection(agent_id, websocket)
@@ -231,16 +194,8 @@ async def websocket_endpoint(websocket: WebSocket, agent_id: str):
 async def read_root():
     app_logger.debug("Root endpoint '/' requested.")
     try:
-        active_conn_count = (
-            len(state.get_all_connections())
-            if hasattr(state, "get_all_connections")
-            else "N/A"
-        )
-        reg_agent_count = (
-            len(discovery.agent_registry)
-            if hasattr(discovery, "agent_registry")
-            else "N/A"
-        )
+        active_conn_count = len(state.get_all_connections()) if hasattr(state, "get_all_connections") else "N/A"
+        reg_agent_count = len(discovery.agent_registry) if hasattr(discovery, "agent_registry") else "N/A"
     except Exception:
         active_conn_count = "Error"
         reg_agent_count = "Error"
@@ -269,11 +224,7 @@ async def healthz():
 if __name__ == "__main__":
     import uvicorn
 
-    main_execution_logger = (
-        logger
-        if "logger" in locals() and isinstance(logger, logging.Logger)
-        else bootstrap_logger
-    )
+    main_execution_logger = logger if "logger" in locals() and isinstance(logger, logging.Logger) else bootstrap_logger
 
     main_execution_logger.info("Starting MCP Router Service directly using Uvicorn...")
 

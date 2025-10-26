@@ -188,9 +188,7 @@ def auth_token(test_user) -> str:
     """
     from core_infra.auth import create_access_token
 
-    token = create_access_token(
-        data={"sub": str(test_user["id"]), "email": test_user["email"]}
-    )
+    token = create_access_token(data={"sub": str(test_user["id"]), "email": test_user["email"]})
     return token
 
 
@@ -298,9 +296,7 @@ def temp_file():
 
 def pytest_configure(config):
     """Configure pytest"""
-    config.addinivalue_line(
-        "markers", "slow: marks tests as slow (deselect with '-m \"not slow\"')"
-    )
+    config.addinivalue_line("markers", "slow: marks tests as slow (deselect with '-m \"not slow\"')")
     config.addinivalue_line("markers", "integration: marks tests as integration tests")
     config.addinivalue_line("markers", "unit: marks tests as unit tests")
     config.addinivalue_line("markers", "api: marks tests as API tests")

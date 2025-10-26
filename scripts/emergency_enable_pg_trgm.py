@@ -47,9 +47,7 @@ try:
 
     # Check if extension already exists
     print("🔍 Checking if pg_trgm is already enabled...")
-    cursor.execute(
-        "SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';"
-    )
+    cursor.execute("SELECT extname, extversion FROM pg_extension WHERE extname = 'pg_trgm';")
     result = cursor.fetchone()
 
     if result:

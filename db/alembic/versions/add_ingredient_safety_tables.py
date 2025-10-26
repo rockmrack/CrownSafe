@@ -38,16 +38,10 @@ def upgrade():
         sa.Column("created_at", sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        "idx_product_ingredients_upc", "product_ingredients", ["upc"], unique=True
-    )
-    op.create_index(
-        "idx_product_ingredients_name", "product_ingredients", ["product_name"]
-    )
+    op.create_index("idx_product_ingredients_upc", "product_ingredients", ["upc"], unique=True)
+    op.create_index("idx_product_ingredients_name", "product_ingredients", ["product_name"])
     op.create_index("idx_product_ingredients_brand", "product_ingredients", ["brand"])
-    op.create_index(
-        "idx_product_ingredients_category", "product_ingredients", ["category"]
-    )
+    op.create_index("idx_product_ingredients_category", "product_ingredients", ["category"])
     op.create_index(
         "idx_product_safety",
         "product_ingredients",
@@ -80,12 +74,8 @@ def upgrade():
         ["ingredient_name"],
         unique=True,
     )
-    op.create_index(
-        "idx_ingredient_pregnancy_risk", "ingredient_safety", ["pregnancy_risk_level"]
-    )
-    op.create_index(
-        "idx_ingredient_baby_risk", "ingredient_safety", ["baby_risk_level"]
-    )
+    op.create_index("idx_ingredient_pregnancy_risk", "ingredient_safety", ["pregnancy_risk_level"])
+    op.create_index("idx_ingredient_baby_risk", "ingredient_safety", ["baby_risk_level"])
     op.create_index(
         "idx_ingredient_allergen",
         "ingredient_safety",

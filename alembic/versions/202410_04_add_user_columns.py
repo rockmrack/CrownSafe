@@ -7,6 +7,7 @@ Create Date: 2025-10-04 09:05:00.000000
 COPILOT AUDIT FIX: Replace runtime schema modifications with proper migrations
 This migration adds columns that were previously being added at runtime by ensure_user_columns()
 """
+
 from alembic import op
 import sqlalchemy as sa
 
@@ -31,9 +32,7 @@ def upgrade():
         if "hashed_password" not in existing_columns:
             op.add_column(
                 "users",
-                sa.Column(
-                    "hashed_password", sa.Text(), nullable=False, server_default=""
-                ),
+                sa.Column("hashed_password", sa.Text(), nullable=False, server_default=""),
             )
             # Remove the server_default so future inserts must provide a value
             op.alter_column("users", "hashed_password", server_default=None)

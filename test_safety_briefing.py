@@ -16,9 +16,9 @@ import sys
 from datetime import datetime, timedelta
 
 # Force production database
-os.environ[
-    "DATABASE_URL"
-] = "postgresql+psycopg://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
+os.environ["DATABASE_URL"] = (
+    "postgresql+psycopg://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
+)
 
 print("\n" + "=" * 80)
 print("🔔 SAFETY BRIEFING / SAFETY UPDATES - FULL VERIFICATION")
@@ -89,11 +89,7 @@ for app_agency in agencies_in_app:
     # Test each possible database code
     for db_code in db_codes:
         # Direct database query
-        count = (
-            db.query(EnhancedRecallDB)
-            .filter(EnhancedRecallDB.source_agency == db_code)
-            .count()
-        )
+        count = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.source_agency == db_code).count()
 
         if count > 0:
             print(f"  ✅ {db_code}: {count:,} recalls in production database")
@@ -109,17 +105,11 @@ for app_agency in agencies_in_app:
 
             for i, sample in enumerate(samples, 1):
                 product = (sample.product_name or "Unknown")[:50]
-                date = (
-                    sample.recall_date.strftime("%Y-%m-%d")
-                    if sample.recall_date
-                    else "N/A"
-                )
+                date = sample.recall_date.strftime("%Y-%m-%d") if sample.recall_date else "N/A"
                 print(f"     {i}. {product} ({date})")
 
             # Test via API
-            response = client.post(
-                "/api/v1/search/advanced", json={"agencies": [db_code], "limit": 5}
-            )
+            response = client.post("/api/v1/search/advanced", json={"agencies": [db_code], "limit": 5})
 
             if response.status_code == 200:
                 data = response.json()
@@ -174,21 +164,11 @@ for i, recall in enumerate(recent_recalls, 1):
 print()
 
 # Test 2: Count by time period
-last_30_count = (
-    db.query(EnhancedRecallDB)
-    .filter(EnhancedRecallDB.recall_date >= last_30_days.date())
-    .count()
-)
+last_30_count = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.recall_date >= last_30_days.date()).count()
 
-last_7_count = (
-    db.query(EnhancedRecallDB)
-    .filter(EnhancedRecallDB.recall_date >= last_7_days.date())
-    .count()
-)
+last_7_count = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.recall_date >= last_7_days.date()).count()
 
-today_count = (
-    db.query(EnhancedRecallDB).filter(EnhancedRecallDB.recall_date == today).count()
-)
+today_count = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.recall_date == today).count()
 
 print("Time-based Statistics:")
 print(f"  Today: {today_count:,} recalls")
@@ -200,9 +180,7 @@ print()
 print("Testing API with date filters:")
 thirty_days_ago = (now - timedelta(days=30)).strftime("%Y-%m-%d")
 
-response = client.post(
-    "/api/v1/search/advanced", json={"date_from": thirty_days_ago, "limit": 5}
-)
+response = client.post("/api/v1/search/advanced", json={"date_from": thirty_days_ago, "limit": 5})
 
 if response.status_code == 200:
     data = response.json()
@@ -316,9 +294,7 @@ for page in range(3):
     print(f"Page {page + 1} (offset={offset}, limit=20):")
 
     # Test via API
-    response = client.post(
-        "/api/v1/search/advanced", json={"limit": 20, "offset": offset}
-    )
+    response = client.post("/api/v1/search/advanced", json={"limit": 20, "offset": offset})
 
     if response.status_code == 200:
         data = response.json()
@@ -342,11 +318,7 @@ page_size = 20
 for page in range(3):
     offset = page * page_size
     recalls = (
-        db.query(EnhancedRecallDB)
-        .order_by(desc(EnhancedRecallDB.recall_date))
-        .offset(offset)
-        .limit(page_size)
-        .all()
+        db.query(EnhancedRecallDB).order_by(desc(EnhancedRecallDB.recall_date)).offset(offset).limit(page_size).all()
     )
 
     print(f"  Page {page + 1}: {len(recalls)} recalls")
@@ -390,11 +362,7 @@ print("Testing API agency filtering:")
 test_agencies = ["CPSC", "FDA", "Health Canada", "ACCC"]
 for agency in test_agencies:
     # Check if agency exists
-    count = (
-        db.query(EnhancedRecallDB)
-        .filter(EnhancedRecallDB.source_agency == agency)
-        .count()
-    )
+    count = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.source_agency == agency).count()
 
     if count > 0:
         print(f"  {agency}: {count:,} recalls available ✅")

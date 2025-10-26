@@ -22,9 +22,7 @@ from core_infra.database import (
     drop_tables,
 )
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 # --- Test Configuration ---
 API_BASE_URL = "http://127.0.0.1:8001"
@@ -44,12 +42,8 @@ async def main():
     create_tables()
     with SessionLocal() as db:
         # --- THIS IS THE FIX ---
-        subscriber = User(
-            id=SUBSCRIBER_ID, email="subscriber@test.com", is_subscribed=True
-        )
-        non_subscriber = User(
-            id=NON_SUBSCRIBER_ID, email="nonsubscriber@test.com", is_subscribed=False
-        )
+        subscriber = User(id=SUBSCRIBER_ID, email="subscriber@test.com", is_subscribed=True)
+        non_subscriber = User(id=NON_SUBSCRIBER_ID, email="nonsubscriber@test.com", is_subscribed=False)
         db.add_all([subscriber, non_subscriber])
         db.commit()
     logger.info("Database seeded with a subscriber and a non-subscriber.")
@@ -75,9 +69,7 @@ async def main():
             print(f"Response Body: {response_non_subscriber.json()}")
 
             if response_non_subscriber.status_code == 403:
-                print(
-                    "\n✅✅✅ NON-SUBSCRIBER TEST PASSED: API correctly blocked access with a 403 Forbidden error."
-                )
+                print("\n✅✅✅ NON-SUBSCRIBER TEST PASSED: API correctly blocked access with a 403 Forbidden error.")
             else:
                 print(
                     f"\n❌❌❌ NON-SUBSCRIBER TEST FAILED: Expected status code 403, but got {response_non_subscriber.status_code}."
@@ -88,9 +80,7 @@ async def main():
             # --- Test 2: Subscriber (Should Succeed) ---
             logger.info("--- Testing Subscriber (expect 200 OK) ---")
             subscriber_payload = {"barcode": TEST_BARCODE, "user_id": SUBSCRIBER_ID}
-            response_subscriber = await client.post(
-                f"{API_BASE_URL}/api/v1/safety-check", json=subscriber_payload
-            )
+            response_subscriber = await client.post(f"{API_BASE_URL}/api/v1/safety-check", json=subscriber_payload)
 
             print("\n" + "=" * 50)
             print("          TEST RESULT for Subscriber")
@@ -98,13 +88,8 @@ async def main():
             print(f"Status Code: {response_subscriber.status_code}")
             print(f"Response Body: {json.dumps(response_subscriber.json(), indent=2)}")
 
-            if (
-                response_subscriber.status_code == 200
-                and response_subscriber.json().get("status") == "COMPLETED"
-            ):
-                print(
-                    "\n✅✅✅ SUBSCRIBER TEST PASSED: API correctly allowed access and the workflow completed."
-                )
+            if response_subscriber.status_code == 200 and response_subscriber.json().get("status") == "COMPLETED":
+                print("\n✅✅✅ SUBSCRIBER TEST PASSED: API correctly allowed access and the workflow completed.")
             else:
                 print(
                     f"\n❌❌❌ SUBSCRIBER TEST FAILED: Expected status code 200, but got {response_subscriber.status_code}."
@@ -113,9 +98,7 @@ async def main():
     except httpx.ConnectError:
         print("\n" + "=" * 50)
         print("❌ TEST FAILED: Could not connect to the API server.")
-        print(
-            "Please ensure the FastAPI server is running in a separate terminal on port 8001."
-        )
+        print("Please ensure the FastAPI server is running in a separate terminal on port 8001.")
         print("Command: uvicorn api.main_crownsafe:app --port 8001")
     finally:
         # 3. Clean up the test database.

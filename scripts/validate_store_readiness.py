@@ -37,9 +37,7 @@ CRITICAL_ENDPOINTS = [
 ]
 
 
-def test_endpoint(
-    method: str, path: str, data: dict, name: str
-) -> Tuple[bool, str, int]:
+def test_endpoint(method: str, path: str, data: dict, name: str) -> Tuple[bool, str, int]:
     """Test a single endpoint and return status"""
     url = f"{BASE_URL}{path}"
     headers = {
@@ -75,12 +73,9 @@ def check_headers(url: str) -> Dict[str, bool]:
         headers = response.headers
 
         checks = {
-            "X-Content-Type-Options": "nosniff"
-            in headers.get("X-Content-Type-Options", ""),
-            "X-Frame-Options": headers.get("X-Frame-Options", "")
-            in ["DENY", "SAMEORIGIN"],
-            "Strict-Transport-Security": "max-age="
-            in headers.get("Strict-Transport-Security", ""),
+            "X-Content-Type-Options": "nosniff" in headers.get("X-Content-Type-Options", ""),
+            "X-Frame-Options": headers.get("X-Frame-Options", "") in ["DENY", "SAMEORIGIN"],
+            "Strict-Transport-Security": "max-age=" in headers.get("Strict-Transport-Security", ""),
             "X-API-Version": bool(headers.get("X-API-Version")),
             "Server": bool(headers.get("Server")),
         }

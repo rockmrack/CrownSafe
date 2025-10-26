@@ -2,9 +2,10 @@
 Alembic migration: Add user_reports table for community unsafe product reporting
 
 Revision ID: add_user_reports_table
-Revises: 
+Revises:
 Create Date: 2025-10-12 15:45:00.000000
 """
+
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql

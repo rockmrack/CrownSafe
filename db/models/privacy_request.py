@@ -29,17 +29,13 @@ class PrivacyRequest(Base):
     )
 
     # Request details
-    kind = Column(
-        String(16), nullable=False
-    )  # export, delete, rectify, access, restrict, object
+    kind = Column(String(16), nullable=False)  # export, delete, rectify, access, restrict, object
     email = Column(String(320), nullable=False)  # RFC 5321 max email length
     email_hash = Column(String(64), nullable=False, index=True)  # SHA-256 for privacy
 
     # Status tracking
     status = Column(String(16), nullable=False, default="queued", index=True)
-    submitted_at = Column(
-        DateTime(timezone=True), server_default=func.current_timestamp(), nullable=False
-    )
+    submitted_at = Column(DateTime(timezone=True), server_default=func.current_timestamp(), nullable=False)
     verified_at = Column(DateTime(timezone=True), nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)
     expires_at = Column(DateTime(timezone=True), nullable=True)
@@ -97,13 +93,9 @@ class PrivacyRequest(Base):
             "id": str(self.id) if self.id else None,
             "kind": self.kind,
             "status": self.status,
-            "submitted_at": self.submitted_at.isoformat()
-            if self.submitted_at
-            else None,
+            "submitted_at": self.submitted_at.isoformat() if self.submitted_at else None,
             "verified_at": self.verified_at.isoformat() if self.verified_at else None,
-            "completed_at": self.completed_at.isoformat()
-            if self.completed_at
-            else None,
+            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
             "expires_at": self.expires_at.isoformat() if self.expires_at else None,
             "jurisdiction": self.jurisdiction,
             "source": self.source,

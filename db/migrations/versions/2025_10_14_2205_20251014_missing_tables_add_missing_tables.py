@@ -142,9 +142,7 @@ def upgrade():
         ["created_at"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_incident_reports_id"), "incident_reports", ["id"], unique=False
-    )
+    op.create_index(op.f("ix_incident_reports_id"), "incident_reports", ["id"], unique=False)
     op.create_index(
         op.f("ix_incident_reports_incident_type"),
         "incident_reports",
@@ -287,9 +285,7 @@ def upgrade():
     )
     op.create_index("ix_image_jobs_user_id", "image_jobs", ["user_id"], unique=False)
     op.create_index("ix_image_jobs_status", "image_jobs", ["status"], unique=False)
-    op.create_index(
-        "ix_image_jobs_created_at", "image_jobs", ["created_at"], unique=False
-    )
+    op.create_index("ix_image_jobs_created_at", "image_jobs", ["created_at"], unique=False)
     op.create_index("ix_image_jobs_file_hash", "image_jobs", ["file_hash"], unique=True)
 
     # ========================================================================
@@ -313,12 +309,8 @@ def upgrade():
         sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        "ix_scan_history_user_id", "scan_history", ["user_id"], unique=False
-    )
-    op.create_index(
-        "ix_scan_history_barcode", "scan_history", ["barcode"], unique=False
-    )
+    op.create_index("ix_scan_history_user_id", "scan_history", ["user_id"], unique=False)
+    op.create_index("ix_scan_history_barcode", "scan_history", ["barcode"], unique=False)
     op.create_index(
         "ix_scan_history_scan_timestamp",
         "scan_history",
@@ -409,9 +401,7 @@ def upgrade():
         sa.PrimaryKeyConstraint("id"),
     )
 
-    print(
-        "✅ Created all missing tables: incident_reports, image_jobs, scan_history, and related tables"
-    )
+    print("✅ Created all missing tables: incident_reports, image_jobs, scan_history, and related tables")
 
 
 def downgrade():
@@ -428,15 +418,9 @@ def downgrade():
 
     # Drop incident_reports with indexes
     op.drop_index(op.f("ix_incident_reports_status"), table_name="incident_reports")
-    op.drop_index(
-        op.f("ix_incident_reports_severity_level"), table_name="incident_reports"
-    )
-    op.drop_index(
-        op.f("ix_incident_reports_product_name"), table_name="incident_reports"
-    )
-    op.drop_index(
-        op.f("ix_incident_reports_incident_type"), table_name="incident_reports"
-    )
+    op.drop_index(op.f("ix_incident_reports_severity_level"), table_name="incident_reports")
+    op.drop_index(op.f("ix_incident_reports_product_name"), table_name="incident_reports")
+    op.drop_index(op.f("ix_incident_reports_incident_type"), table_name="incident_reports")
     op.drop_index(op.f("ix_incident_reports_id"), table_name="incident_reports")
     op.drop_index(op.f("ix_incident_reports_created_at"), table_name="incident_reports")
     op.drop_index(op.f("ix_incident_reports_cluster_id"), table_name="incident_reports")

@@ -14,18 +14,14 @@ from typing import Dict, Any, Optional
 logger = logging.getLogger(__name__)
 
 # Path to directory containing legal documents (data/legal)
-LEGAL_DOCS_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "legal")
-)
+LEGAL_DOCS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "legal"))
 
 
 class LegalContentAgentLogic:
     def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
-        self.logger.info(
-            f"LegalContentAgentLogic initialized. Document path: {LEGAL_DOCS_PATH}"
-        )
+        self.logger.info(f"LegalContentAgentLogic initialized. Document path: {LEGAL_DOCS_PATH}")
 
     async def get_document(self, document_name: str) -> Optional[str]:
         # Sanitize filename to prevent path traversal
@@ -46,9 +42,7 @@ class LegalContentAgentLogic:
             return content
 
         except Exception as e:
-            self.logger.error(
-                f"Failed to read document {safe_name}: {e}", exc_info=True
-            )
+            self.logger.error(f"Failed to read document {safe_name}: {e}", exc_info=True)
             return None
 
     async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:

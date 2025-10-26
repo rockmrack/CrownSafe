@@ -3,6 +3,7 @@
 # Comprehensive Memory-Augmented Planner Test Analysis
 
 import argparse
+import ast
 import json
 import os
 import re
@@ -19,8 +20,6 @@ sys.path.insert(0, project_root)
 
 try:
     import asyncio
-
-    import chromadb
 
     from core_infra.memory_manager import MemoryManager
 except ImportError as e:
@@ -113,6 +112,55 @@ class MemoryPlannerAnalyzer:
             print(f"[ERROR] Failed to connect to memory: {e}")
             return False
 
+    def _is_safe_path(self, candidate: Path) -> bool:
+        """Ensure candidate path resolves within allowed project directories."""
+        try:
+            resolved_candidate = candidate.expanduser().resolve()
+        except (OSError, RuntimeError):
+            return False
+
+        allowed_roots = {self.project_root.resolve()}
+
+        # Include common log/report directories inside the project root
+        potential_roots = [
+            self.project_root / "logs",
+            self.project_root / "RossNetAgents",
+            self.project_root / "RossNetAgents" / "logs",
+            self.project_root / "generated_reports",
+            self.project_root / "reports",
+        ]
+
+        for root in potential_roots:
+            try:
+                allowed_roots.add(root.resolve())
+            except (OSError, RuntimeError):
+                continue
+
+        return any(resolved_candidate.is_relative_to(root) for root in allowed_roots)
+
+    def _resolve_if_safe(self, candidate: Path) -> Optional[Path]:
+        """Resolve candidate path when it satisfies safety requirements."""
+        try:
+            resolved_candidate = candidate.expanduser().resolve()
+        except (OSError, RuntimeError):
+            return None
+
+        return resolved_candidate if self._is_safe_path(resolved_candidate) else None
+
+    @staticmethod
+    def _safe_parse_structured_block(raw_block: str) -> Optional[Dict[str, Any]]:
+        """Parse structured log dictionaries without using eval."""
+        normalized = (
+            raw_block.replace("'", '"').replace("None", "null").replace("True", "true").replace("False", "false")
+        )
+        try:
+            return json.loads(normalized)
+        except json.JSONDecodeError:
+            try:
+                return ast.literal_eval(raw_block)
+            except (ValueError, SyntaxError):
+                return None
+
     def _find_pdf_for_drug(self, drug_name: str) -> Optional[Tuple[Path, float]]:
         """Find PDF file for the drug and return its path and timestamp"""
         if drug_name in self._pdf_timestamps:
@@ -140,9 +188,9 @@ class MemoryPlannerAnalyzer:
     def _score_log_candidate(
         self,
         candidate: LogCandidate,
-        drug_name: str = None,
-        workflow_id: str = None,
-        reference_time: float = None,
+        drug_name: Optional[str] = None,
+        workflow_id: Optional[str] = None,
+        reference_time: Optional[float] = None,
     ) -> float:
         """Score a log candidate based on multiple factors"""
         score = 0.0
@@ -193,15 +241,23 @@ class MemoryPlannerAnalyzer:
     def _analyze_log_content(
         self,
         log_path: Path,
-        drug_name: str = None,
-        workflow_id: str = None,
+        drug_name: Optional[str] = None,
+        workflow_id: Optional[str] = None,
         check_depth: int = 50000,
     ) -> LogCandidate:
         """Analyze log content and create a scored candidate"""
-        candidate = LogCandidate(path=log_path, modification_time=log_path.stat().st_mtime)
+        safe_log_path = self._resolve_if_safe(log_path)
+        if not safe_log_path or not safe_log_path.exists():
+            print(f"[WARNING] Skipping unsafe or missing log file: {log_path}")
+            return LogCandidate(path=log_path)
+
+        candidate = LogCandidate(
+            path=safe_log_path,
+            modification_time=safe_log_path.stat().st_mtime,
+        )
 
         try:
-            with open(log_path, "r", encoding="utf-8", errors="ignore") as f:
+            with open(safe_log_path, "r", encoding="utf-8", errors="ignore") as f:
                 # Read limited content for analysis
                 content = f.read(check_depth)
                 candidate.content_preview = content[:500]
@@ -209,12 +265,13 @@ class MemoryPlannerAnalyzer:
                 # Check for drug name
                 if drug_name:
                     candidate.drug_found = drug_name.lower() in content.lower()
+                    escaped_drug = re.escape(drug_name)
 
                     # Look for entity extraction with this drug
                     entity_patterns = [
-                        rf"primary_drug['\"]:\s*['\"]({drug_name})['\"]",
-                        rf"drug_name['\"]:\s*['\"]({drug_name})['\"]",
-                        rf"Entities extracted:.*Drug=({drug_name})",
+                        rf"primary_drug['\"]:\s*['\"]({escaped_drug})['\"]",
+                        rf"drug_name['\"]:\s*['\"]({escaped_drug})['\"]",
+                        rf"Entities extracted:.*Drug=({escaped_drug})",
                     ]
 
                     for pattern in entity_patterns:
@@ -227,33 +284,34 @@ class MemoryPlannerAnalyzer:
                     candidate.workflow_found = workflow_id in content
 
         except Exception as e:
-            print(f"[WARNING] Error reading {log_path}: {e}")
+            print(f"[WARNING] Error reading {safe_log_path}: {e}")
 
         return candidate
 
     def _find_best_log_file(
         self,
         agent_type: str,
-        drug_name: str = None,
-        workflow_id: str = None,
-        specific_log_path: str = None,
+        drug_name: Optional[str] = None,
+        workflow_id: Optional[str] = None,
+        specific_log_path: Optional[str] = None,
         time_window_minutes: int = 60,
     ) -> Optional[Path]:
         """Find the most appropriate log file for analysis with advanced scoring"""
 
-        # If specific log path provided, use it
+        # If specific log path provided, validate and use it when safe
         if specific_log_path:
-            log_path = Path(specific_log_path)
-            if log_path.exists():
-                print(f"[INFO] Using specified log file: {log_path}")
-                return log_path
-            else:
-                # Try in logs directory
-                log_path = self.logs_dir / specific_log_path
-                if log_path.exists():
-                    print(f"[INFO] Using specified log file: {log_path}")
-                    return log_path
-                print(f"[WARNING] Specified log file not found: {specific_log_path}")
+            direct_candidate = self._resolve_if_safe(Path(specific_log_path))
+            if direct_candidate and direct_candidate.exists():
+                print(f"[INFO] Using specified log file: {direct_candidate}")
+                return direct_candidate
+
+            if self.logs_dir:
+                nested_candidate = self._resolve_if_safe(self.logs_dir / specific_log_path)
+                if nested_candidate and nested_candidate.exists():
+                    print(f"[INFO] Using specified log file: {nested_candidate}")
+                    return nested_candidate
+
+            print(f"[WARNING] Specified log file not found or failed safety checks: {specific_log_path}")
 
         # Get reference time from PDF if available
         reference_time = None
@@ -262,9 +320,8 @@ class MemoryPlannerAnalyzer:
             if pdf_info:
                 pdf_path, pdf_time = pdf_info
                 reference_time = pdf_time
-                print(
-                    f"[INFO] Using PDF timestamp as reference: {datetime.fromtimestamp(pdf_time).strftime('%Y-%m-%d %H:%M:%S')}"
-                )
+                timestamp = datetime.fromtimestamp(pdf_time).strftime("%Y-%m-%d %H:%M:%S")
+                print(f"[INFO] Using PDF timestamp as reference: {timestamp}")
 
         # Build patterns based on drug name
         patterns = []
@@ -334,8 +391,13 @@ class MemoryPlannerAnalyzer:
         if not candidates:
             # If no scored candidates, just return the most recent file
             latest = max(all_matches, key=lambda p: p.stat().st_mtime)
-            print(f"[WARNING] No high-scoring candidates found, using most recent: {latest.name}")
-            return latest
+            safe_latest = self._resolve_if_safe(latest)
+            if safe_latest:
+                print(f"[WARNING] No high-scoring candidates found, using most recent: {latest.name}")
+                return safe_latest
+
+            print(f"[ERROR] Most recent log candidate failed safety checks; skipping: {latest}")
+            return None
 
         # Sort by score and show top candidates
         candidates.sort(key=lambda c: c.score, reverse=True)
@@ -345,9 +407,8 @@ class MemoryPlannerAnalyzer:
             print(f"  {i + 1}. {candidate.path.name} (score: {candidate.score:.1f})")
             print(f"     - Drug found: {candidate.drug_found}, Workflow found: {candidate.workflow_found}")
             print(f"     - Entities match: {candidate.entities_match}")
-            print(
-                f"     - Modified: {datetime.fromtimestamp(candidate.modification_time).strftime('%Y-%m-%d %H:%M:%S')}"
-            )
+            modified_at = datetime.fromtimestamp(candidate.modification_time).strftime("%Y-%m-%d %H:%M:%S")
+            print(f"     - Modified: {modified_at}")
 
         # Return the highest scoring candidate
         selected = candidates[0]
@@ -363,13 +424,18 @@ class MemoryPlannerAnalyzer:
             "candidates_analyzed": len(candidates),
         }
 
-        return selected.path
+        safe_selection = self._resolve_if_safe(selected.path)
+        if safe_selection:
+            return safe_selection
+
+        print(f"[ERROR] Selected log candidate failed safety checks; skipping: {selected.path}")
+        return None
 
     def analyze_planner_logs(
         self,
-        workflow_id: str = None,
-        drug_name: str = None,
-        planner_log_path: str = None,
+        workflow_id: Optional[str] = None,
+        drug_name: Optional[str] = None,
+        planner_log_path: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Analyze planner logs for memory-augmented behavior"""
         print("\n=== ANALYZING PLANNER LOGS ===")
@@ -377,16 +443,28 @@ class MemoryPlannerAnalyzer:
         print(f"Target workflow: {workflow_id or 'Not specified'}")
 
         # Find the best planner log file
-        planner_log = self._find_best_log_file("planner_agent", drug_name, workflow_id, planner_log_path)
+        planner_log = self._find_best_log_file(
+            "planner_agent",
+            drug_name,
+            workflow_id,
+            planner_log_path,
+        )
 
         if not planner_log:
             print(f"[ERROR] No suitable planner log found for drug='{drug_name}', workflow='{workflow_id}'")
             print(f"[INFO] Searched in: {self.logs_dir}")
             return {}
 
-        print(f"\nAnalyzing: {planner_log.name}")
-        print(f"Log size: {planner_log.stat().st_size:,} bytes")
-        print(f"Log modified: {datetime.fromtimestamp(planner_log.stat().st_mtime).strftime('%Y-%m-%d %H:%M:%S')}")
+        safe_planner_log = self._resolve_if_safe(planner_log)
+        if not safe_planner_log:
+            print(f"[ERROR] Selected planner log failed safety validation; skipping: {planner_log}")
+            return {}
+
+        print(f"\nAnalyzing: {safe_planner_log.name}")
+        log_size = safe_planner_log.stat().st_size
+        print(f"Log size: {log_size:,} bytes")
+        modified_at = datetime.fromtimestamp(safe_planner_log.stat().st_mtime).strftime("%Y-%m-%d %H:%M:%S")
+        print(f"Log modified: {modified_at}")
 
         analysis = {
             "memory_queries": [],
@@ -396,19 +474,24 @@ class MemoryPlannerAnalyzer:
             "memory_insights_used": False,
             "gpt4_called": False,
             "fallback_used": False,
-            "log_file": str(planner_log.name),
+            "log_file": str(safe_planner_log.name),
             "enhanced_features_used": False,
             "correct_drug_found": False,
             "workflow_id_found": False,
         }
 
         try:
-            with open(planner_log, "r", encoding="utf-8", errors="ignore") as f:
+            with open(safe_planner_log, "r", encoding="utf-8", errors="ignore") as f:
                 content = f.read()
+
+                escaped_drug_name: Optional[str] = None
+                drug_name_lower: Optional[str] = None
 
                 # Verify this log contains the drug we're looking for
                 if drug_name:
-                    drug_occurrences = len(re.findall(rf"\b{drug_name}\b", content, re.IGNORECASE))
+                    escaped_drug_name = re.escape(drug_name)
+                    drug_name_lower = drug_name.lower()
+                    drug_occurrences = len(re.findall(rf"\b{escaped_drug_name}\b", content, re.IGNORECASE))
                     if drug_occurrences > 0:
                         analysis["correct_drug_found"] = True
                         print(f"[OK] Confirmed: Drug '{drug_name}' found {drug_occurrences} times in log")
@@ -442,58 +525,33 @@ class MemoryPlannerAnalyzer:
                     matches = list(re.finditer(pattern, content, re.DOTALL))
 
                     for match in matches:
-                        try:
-                            # Clean up the match
-                            entities_str = match.group(1)
-                            # Replace single quotes with double quotes for valid JSON
-                            entities_str = entities_str.replace("'", '"')
-                            # Handle None values
-                            entities_str = entities_str.replace("None", "null")
+                        extracted_entities = self._safe_parse_structured_block(match.group(1))
+                        if not extracted_entities:
+                            continue
 
-                            # Try to parse
-                            extracted_entities = json.loads(entities_str)
-                            extracted_drug = extracted_entities.get("primary_drug") or extracted_entities.get(
-                                "drug_name"
-                            )
-                            extracted_disease = extracted_entities.get("primary_disease") or extracted_entities.get(
-                                "disease_name"
-                            )
+                        extracted_drug = extracted_entities.get("primary_drug") or extracted_entities.get("drug_name")
+                        extracted_disease = extracted_entities.get("primary_disease") or extracted_entities.get(
+                            "disease_name"
+                        )
 
-                            # Check if this extraction matches our target drug
-                            if drug_name and extracted_drug:
-                                if extracted_drug.lower() == drug_name.lower():
-                                    analysis["entities_extracted"] = extracted_entities
-                                    print(
-                                        f"[OK] Found matching entity extraction: Drug={extracted_drug}, Disease={extracted_disease}"
-                                    )
-                                    entity_found = True
-                                    break
-                                else:
-                                    print(
-                                        f"[INFO] Found entity extraction for different drug: {extracted_drug} (looking for {drug_name})"
-                                    )
-                            elif not drug_name:
-                                # If no specific drug specified, take the first valid extraction
+                        if drug_name and extracted_drug:
+                            if extracted_drug.lower() == drug_name_lower:
                                 analysis["entities_extracted"] = extracted_entities
-                                print(f"[OK] Entities extracted: Drug={extracted_drug}, Disease={extracted_disease}")
+                                print(
+                                    "[OK] Found matching entity extraction: "
+                                    f"Drug={extracted_drug}, Disease={extracted_disease}"
+                                )
                                 entity_found = True
                                 break
-
-                        except Exception:
-                            # Try eval as fallback
-                            try:
-                                extracted_entities = eval(match.group(1))
-                                extracted_drug = extracted_entities.get("primary_drug") or extracted_entities.get(
-                                    "drug_name"
-                                )
-
-                                if drug_name and extracted_drug and extracted_drug.lower() == drug_name.lower():
-                                    analysis["entities_extracted"] = extracted_entities
-                                    print(f"[OK] Found matching entity extraction (via eval): {extracted_entities}")
-                                    entity_found = True
-                                    break
-                            except:
-                                pass
+                            print(
+                                "[INFO] Found entity extraction for different drug: "
+                                f"{extracted_drug} (looking for {drug_name})"
+                            )
+                        elif not drug_name:
+                            analysis["entities_extracted"] = extracted_entities
+                            print(f"[OK] Entities extracted: Drug={extracted_drug}, Disease={extracted_disease}")
+                            entity_found = True
+                            break
 
                     if entity_found:
                         break
@@ -543,7 +601,9 @@ class MemoryPlannerAnalyzer:
                     # If drug_name specified, try to find strategy near drug mention
                     if drug_name and len(all_strategies) > 1:
                         # Find drug mentions
-                        drug_positions = [m.start() for m in re.finditer(rf"\b{drug_name}\b", content, re.IGNORECASE)]
+                        drug_positions = [
+                            m.start() for m in re.finditer(rf"\b{escaped_drug_name}\b", content, re.IGNORECASE)
+                        ]
 
                         if drug_positions:
                             # Find strategy closest to a drug mention
@@ -650,9 +710,9 @@ class MemoryPlannerAnalyzer:
                                 "extracted_drug_name": plan.get("extracted_drug_name"),
                                 "extracted_disease_name": plan.get("extracted_disease_name"),
                             }
-                            print(
-                                f"[OK] Plan structure analyzed: {analysis['plan_structure']['steps_count']} steps, strategy={analysis['plan_structure']['research_strategy']}"
-                            )
+                            steps = analysis["plan_structure"]["steps_count"]
+                            strategy = analysis["plan_structure"]["research_strategy"]
+                            print(f"[OK] Plan structure analyzed: {steps} steps, strategy={strategy}")
                             plan_found = True
                             break
 
@@ -684,10 +744,10 @@ class MemoryPlannerAnalyzer:
 
     def analyze_workflow_execution(
         self,
-        workflow_id: str = None,
-        drug_name: str = None,
-        router_log_path: str = None,
-        commander_log_path: str = None,
+        workflow_id: Optional[str] = None,
+        drug_name: Optional[str] = None,
+        router_log_path: Optional[str] = None,
+        commander_log_path: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Analyze complete workflow execution efficiency"""
         print("\n=== ANALYZING WORKFLOW EXECUTION ===")
@@ -707,7 +767,12 @@ class MemoryPlannerAnalyzer:
         }
 
         # Check RouterAgent logs
-        router_log = self._find_best_log_file("router_agent", drug_name, workflow_id, router_log_path)
+        router_log = self._find_best_log_file(
+            "router_agent",
+            drug_name,
+            workflow_id,
+            router_log_path,
+        )
 
         if router_log:
             try:
@@ -798,7 +863,12 @@ class MemoryPlannerAnalyzer:
             print(f"     Created: {datetime.fromtimestamp(pdf_time).strftime('%Y-%m-%d %H:%M:%S')}")
 
         # Check CommanderAgent for memory storage
-        commander_log = self._find_best_log_file("commander_agent", drug_name, workflow_id, commander_log_path)
+        commander_log = self._find_best_log_file(
+            "commander_agent",
+            drug_name,
+            workflow_id,
+            commander_log_path,
+        )
 
         if commander_log:
             try:
@@ -919,7 +989,11 @@ class MemoryPlannerAnalyzer:
                 # Show workflow distribution
                 if workflow_counts:
                     print("\n[INFO] Documents by workflow:")
-                    for wf, count in sorted(workflow_counts.items(), key=lambda x: x[1], reverse=True)[:5]:
+                    for wf, count in sorted(
+                        workflow_counts.items(),
+                        key=lambda x: x[1],
+                        reverse=True,
+                    )[:5]:
                         print(f"  - {wf[:20]}...: {count} docs")
 
             else:
@@ -947,7 +1021,10 @@ class MemoryPlannerAnalyzer:
                     sglt2_breakdown = {}
 
                     for sglt2_drug in sglt2_drugs:
-                        drug_pattern = analytics.get("drug_class_patterns", {}).get(sglt2_drug.title(), {})
+                        drug_pattern = analytics.get("drug_class_patterns", {}).get(
+                            sglt2_drug.title(),
+                            {},
+                        )
                         drug_count = drug_pattern.get("document_count", 0)
                         if drug_count > 0:
                             sglt2_breakdown[sglt2_drug.title()] = drug_count
@@ -977,9 +1054,10 @@ class MemoryPlannerAnalyzer:
                         "strategy_appropriate": True,  # Can't validate without knowing the class
                     }
 
-                print(
-                    f"\n[OK] Strategy validation: {planner_strategy} strategy was {'appropriate' if analysis['strategy_validation']['strategy_appropriate'] else 'questionable'}"
+                validation_status = (
+                    "appropriate" if analysis["strategy_validation"].get("strategy_appropriate") else "questionable"
                 )
+                print(f"\n[OK] Strategy validation: {planner_strategy} strategy was {validation_status}")
 
         except Exception as e:
             print(f"[ERROR] Error analyzing memory impact: {e}")
@@ -998,11 +1076,11 @@ class MemoryPlannerAnalyzer:
         planner = self.analysis_results.get("planner_performance", {})
         if not planner:
             recommendations.append(
-                f"No planner logs found - ensure logs are retained and check log directory: {self.logs_dir}"
+                (f"No planner logs found - ensure logs are retained and check log directory: {self.logs_dir}")
             )
         elif planner.get("fallback_used"):
             recommendations.append(
-                "Consider improving GPT-4 prompt reliability or implementing better fallback handling"
+                ("Consider improving GPT-4 prompt reliability or implementing better fallback handling")
             )
 
         if planner.get("enhanced_features_used"):
@@ -1013,9 +1091,12 @@ class MemoryPlannerAnalyzer:
             extracted_drug = planner["entities_extracted"]["primary_drug"]
             if drug_name and extracted_drug.lower() != drug_name.lower():
                 recommendations.append(
-                    f"[CRITICAL] Analysis may be for wrong drug: extracted '{extracted_drug}' but expected '{drug_name}'"
+                    "[CRITICAL] Analysis may be for wrong drug: "
+                    f"extracted '{extracted_drug}' but expected '{drug_name}'"
                 )
-                recommendations.append("[ACTION] Verify log selection or use --planner-log to specify correct log file")
+                recommendations.append(
+                    ("[ACTION] Verify log selection or use --planner-log to specify the correct log file")
+                )
 
         # Check log selection confidence
         log_metadata = self.analysis_results.get("log_analysis_metadata", {})
@@ -1024,7 +1105,8 @@ class MemoryPlannerAnalyzer:
             score = planner_metadata.get("score", 0)
             if score < 30:
                 recommendations.append(
-                    f"[WARNING] Low confidence in log selection (score: {score:.1f}). Consider using --planner-log parameter"
+                    "[WARNING] Low confidence in log selection "
+                    f"(score: {score:.1f}). Consider using --planner-log parameter"
                 )
 
         # Based on strategy
@@ -1047,18 +1129,19 @@ class MemoryPlannerAnalyzer:
             total_docs = memory_util.get("strategy_validation", {}).get("class_documents", 0)
             if total_docs > 30 and strategy == "comprehensive":
                 recommendations.append(
-                    f"Consider using 'focused' or 'update' strategy for SGLT2 inhibitors (already have {total_docs} docs)"
+                    "Consider using 'focused' or 'update' strategy for SGLT2 "
+                    f"inhibitors (already have {total_docs} docs)"
                 )
             elif strategy in ["focused", "update"]:
                 recommendations.append(
-                    f"[OK] Good strategy choice! Using '{strategy}' strategy for well-studied drug class"
+                    (f"[OK] Good strategy choice! Using '{strategy}' strategy for well-studied drug class")
                 )
 
         # Based on workflow efficiency
         workflow = self.analysis_results.get("workflow_efficiency", {})
         total_data = sum(workflow.get("data_retrieved", {}).values())
         if total_data > 0:
-            recommendations.append(f"[OK] Successfully retrieved {total_data} data items - good API connectivity")
+            recommendations.append((f"[OK] Successfully retrieved {total_data} data items - good API connectivity"))
         else:
             recommendations.append("No data retrieval detected - check API connectivity and logs")
 
@@ -1068,11 +1151,11 @@ class MemoryPlannerAnalyzer:
             recommendations.append(f"[OK] Total {drug_name} documents in memory: {total_docs}")
 
         if memory_util.get("new_documents", 0) > 0:
-            recommendations.append(f"[OK] Successfully stored {memory_util['new_documents']} new documents in memory")
+            recommendations.append((f"[OK] Successfully stored {memory_util['new_documents']} new documents in memory"))
 
         cross_drug_count = len(memory_util.get("cross_drug_evidence", []))
         if cross_drug_count > 0:
-            recommendations.append(f"[OK] Building cross-drug knowledge: {cross_drug_count} shared documents")
+            recommendations.append((f"[OK] Building cross-drug knowledge: {cross_drug_count} shared documents"))
             # Show some examples
             examples = memory_util["cross_drug_evidence"][:2]
             for ex in examples:
@@ -1082,7 +1165,7 @@ class MemoryPlannerAnalyzer:
         # Next test recommendations
         if drug_name:
             if drug_name.lower() == "empagliflozin":
-                recommendations.append("Next: Test Canagliflozin (another SGLT2) - should trigger 'focused' strategy")
+                recommendations.append(("Next: Test Canagliflozin (another SGLT2) - should trigger 'focused' strategy"))
             elif drug_name.lower() == "canagliflozin":
                 recommendations.append("Next: Test Dapagliflozin (3rd SGLT2) - should trigger 'update' strategy")
             elif drug_name.lower() in [
@@ -1091,7 +1174,7 @@ class MemoryPlannerAnalyzer:
                 "sotagliflozin",
             ]:
                 recommendations.append(
-                    "Next: Test a different drug class (e.g., Lisinopril) - should trigger 'comprehensive' strategy"
+                    ("Next: Test a different drug class (e.g., Lisinopril) - should trigger 'comprehensive' strategy")
                 )
 
         # Log naming recommendations
@@ -1105,9 +1188,9 @@ class MemoryPlannerAnalyzer:
         self,
         workflow_id: Optional[str] = None,
         drug_name: str = "Empagliflozin",
-        planner_log: str = None,
-        router_log: str = None,
-        commander_log: str = None,
+        planner_log: Optional[str] = None,
+        router_log: Optional[str] = None,
+        commander_log: Optional[str] = None,
     ):
         """Run complete analysis of memory-augmented planner test"""
         print("\n" + "=" * 60)
@@ -1146,59 +1229,59 @@ class MemoryPlannerAnalyzer:
         if log_metadata:
             print("\n[LOG SELECTION CONFIDENCE]:")
             for agent, metadata in log_metadata.items():
-                print(f"  - {agent}: {metadata.get('selected_log')} (score: {metadata.get('score', 0):.1f})")
+                log_name = metadata.get("selected_log")
+                score = metadata.get("score", 0.0)
+                print(f"  - {agent}: {log_name} (score: {score:.1f})")
 
         # Strategy effectiveness
-        strategy = self.analysis_results["planner_performance"].get("strategy_determined", "unknown")
-        memory_augmented = (
-            self.analysis_results["planner_performance"].get("plan_structure", {}).get("memory_augmented", False)
-        )
-        enhanced_features = self.analysis_results["planner_performance"].get("enhanced_features_used", False)
+        planner_perf = self.analysis_results.get("planner_performance", {})
+        strategy = planner_perf.get("strategy_determined", "unknown")
+        plan_structure = planner_perf.get("plan_structure", {})
+        memory_augmented = plan_structure.get("memory_augmented", False)
+        enhanced_features = planner_perf.get("enhanced_features_used", False)
 
         print("\n[BRAIN] MEMORY-AUGMENTED PLANNING:")
         print(f"  - Strategy: {strategy}")
         print(f"  - Memory-Augmented: {memory_augmented}")
         print(f"  - Enhanced Features (V2.0): {enhanced_features}")
-        print(f"  - GPT-4 Used: {self.analysis_results['planner_performance'].get('gpt4_called', False)}")
-        print(f"  - Fallback Used: {self.analysis_results['planner_performance'].get('fallback_used', False)}")
+        print(f"  - GPT-4 Used: {planner_perf.get('gpt4_called', False)}")
+        print(f"  - Fallback Used: {planner_perf.get('fallback_used', False)}")
 
         # Show extracted entities
-        entities = self.analysis_results["planner_performance"].get("entities_extracted", {})
+        entities = planner_perf.get("entities_extracted", {})
         if entities:
             print(f"  - Extracted Drug: {entities.get('primary_drug', 'N/A')}")
             print(f"  - Extracted Disease: {entities.get('primary_disease', 'N/A')}")
 
         print("\n[CHART] WORKFLOW EXECUTION:")
-        print(f"  - Completed: {self.analysis_results['workflow_efficiency'].get('workflow_completed', False)}")
-        print(f"  - Steps Executed: {len(self.analysis_results['workflow_efficiency'].get('steps_executed', []))}")
-        print(
-            f"  - Total Data Retrieved: {sum(self.analysis_results['workflow_efficiency'].get('data_retrieved', {}).values())}"
-        )
+        workflow_eff = self.analysis_results.get("workflow_efficiency", {})
+        steps_executed = len(workflow_eff.get("steps_executed", []))
+        data_retrieved = workflow_eff.get("data_retrieved", {})
+        total_data = sum(data_retrieved.values())
+        print(f"  - Completed: {workflow_eff.get('workflow_completed', False)}")
+        print(f"  - Steps Executed: {steps_executed}")
+        print(f"  - Total Data Retrieved: {total_data}")
 
         # Show data breakdown
-        data_retrieved = self.analysis_results["workflow_efficiency"].get("data_retrieved", {})
         if any(data_retrieved.values()):
             print(f"    - PubMed Articles: {data_retrieved.get('pubmed_articles', 0)}")
             print(f"    - Clinical Trials: {data_retrieved.get('clinical_trials', 0)}")
             print(f"    - Adverse Events: {data_retrieved.get('adverse_events', 0)}")
 
-        print(f"  - PDF Generated: {self.analysis_results['workflow_efficiency'].get('pdf_generated', False)}")
+        print(f"  - PDF Generated: {workflow_eff.get('pdf_generated', False)}")
 
         print("\n[DISK] MEMORY IMPACT:")
-        print(
-            f"  - Total {drug_name} Documents: {self.analysis_results['memory_utilization'].get('total_drug_documents', 0)}"
-        )
-        print(f"  - New Documents: {self.analysis_results['memory_utilization'].get('new_documents', 0)}")
-        print(f"  - Updated Documents: {self.analysis_results['memory_utilization'].get('updated_documents', 0)}")
-        print(
-            f"  - Cross-Drug Evidence: {len(self.analysis_results['memory_utilization'].get('cross_drug_evidence', []))}"
-        )
-        print(
-            f"  - High-Quality Docs: {self.analysis_results['memory_utilization'].get('quality_distribution', {}).get('high', 0)}"
-        )
+        memory_util = self.analysis_results.get("memory_utilization", {})
+        cross_drug = len(memory_util.get("cross_drug_evidence", []))
+        quality_distribution = memory_util.get("quality_distribution", {})
+        print(f"  - Total {drug_name} Documents: {memory_util.get('total_drug_documents', 0)}")
+        print(f"  - New Documents: {memory_util.get('new_documents', 0)}")
+        print(f"  - Updated Documents: {memory_util.get('updated_documents', 0)}")
+        print(f"  - Cross-Drug Evidence: {cross_drug}")
+        print(f"  - High-Quality Docs: {quality_distribution.get('high', 0)}")
 
         # Show SGLT2 breakdown if available
-        validation = self.analysis_results["memory_utilization"].get("strategy_validation", {})
+        validation = memory_util.get("strategy_validation", {})
         if validation.get("class_breakdown"):
             print("\n  SGLT2 Class Distribution:")
             for drug, count in validation["class_breakdown"].items():
@@ -1240,13 +1323,16 @@ Examples:
   python analyze_memory_planner_test.py --drug Sotagliflozin
   
   # With workflow ID
-  python analyze_memory_planner_test.py --drug Empagliflozin --workflow 687839be-3d1a-47ef-aa90-a246c7eabae6
+    python analyze_memory_planner_test.py --drug Empagliflozin \
+            --workflow 687839be-3d1a-47ef-aa90-a246c7eabae6
   
   # With specific log files
-  python analyze_memory_planner_test.py --drug Sotagliflozin --planner-log planner_agent_Sota_FRESH.log
+    python analyze_memory_planner_test.py --drug Sotagliflozin \
+            --planner-log planner_agent_Sota_FRESH.log
   
   # With full paths
-  python analyze_memory_planner_test.py -d Canagliflozin --planner-log "C:\\logs\\planner_agent_Cana.log"
+    python analyze_memory_planner_test.py -d Canagliflozin \
+            --planner-log "C:\\logs\\planner_agent_Cana.log"
         """,
     )
 
@@ -1296,8 +1382,12 @@ Examples:
 
     # Override logs directory if specified
     if args.logs_dir:
-        analyzer.logs_dir = Path(args.logs_dir)
-        print(f"[INFO] Using custom logs directory: {analyzer.logs_dir}")
+        custom_logs_dir = analyzer._resolve_if_safe(Path(args.logs_dir))
+        if custom_logs_dir and custom_logs_dir.is_dir():
+            analyzer.logs_dir = custom_logs_dir
+            print(f"[INFO] Using custom logs directory: {custom_logs_dir}")
+        else:
+            print(f"[WARNING] Ignoring custom logs directory due to safety checks: {args.logs_dir}")
 
     # Run analysis
     asyncio.run(

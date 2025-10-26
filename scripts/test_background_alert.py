@@ -24,17 +24,11 @@ def main():
 
     # --- Patch the async process_task methods that the task actually invokes ---
     push_path = "agents.engagement.push_notification_agent.agent_logic.PushNotificationAgentLogic.process_task"
-    metrics_path = (
-        "agents.business.metrics_agent.agent_logic.MetricsAgentLogic.process_task"
-    )
+    metrics_path = "agents.business.metrics_agent.agent_logic.MetricsAgentLogic.process_task"
 
     with (
-        patch(
-            push_path, new=AsyncMock(return_value={"status": "COMPLETED"})
-        ) as mock_push,
-        patch(
-            metrics_path, new=AsyncMock(return_value={"status": "COMPLETED"})
-        ) as mock_metrics,
+        patch(push_path, new=AsyncMock(return_value={"status": "COMPLETED"})) as mock_push,
+        patch(metrics_path, new=AsyncMock(return_value={"status": "COMPLETED"})) as mock_metrics,
     ):
         # Execute the Celery task synchronously
         logger.info("Executing the Celery task directly (agents are mocked)...")
@@ -51,15 +45,11 @@ def main():
         # Verify that our mocked process_task calls ran
         try:
             mock_push.assert_awaited_once()
-            logger.info(
-                "Verified: PushNotificationAgentLogic.process_task was called once."
-            )
+            logger.info("Verified: PushNotificationAgentLogic.process_task was called once.")
             mock_metrics.assert_awaited_once()
             logger.info("Verified: MetricsAgentLogic.process_task was called once.")
 
-            print(
-                "\n✅✅✅ TEST PASSED: The background task correctly invoked both agents."
-            )
+            print("\n✅✅✅ TEST PASSED: The background task correctly invoked both agents.")
 
         except AssertionError as e:
             print("\n❌ TEST FAILED: An agent was not called as expected.")

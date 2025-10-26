@@ -31,10 +31,7 @@ class AsyncWorkflowOptimizer:
 
         try:
             # Run all queries in parallel
-            tasks = [
-                asyncio.get_event_loop().run_in_executor(self.thread_pool, query)
-                for query in queries
-            ]
+            tasks = [asyncio.get_event_loop().run_in_executor(self.thread_pool, query) for query in queries]
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
             # Filter out exceptions and log them
@@ -58,9 +55,7 @@ class AsyncWorkflowOptimizer:
             self.logger.error(f"Parallel query execution failed: {e}")
             return []
 
-    async def concurrent_agent_calls(
-        self, agent_tasks: Dict[str, Callable]
-    ) -> Dict[str, Any]:
+    async def concurrent_agent_calls(self, agent_tasks: Dict[str, Callable]) -> Dict[str, Any]:
         """
         Execute multiple agent operations concurrently when possible
         """
@@ -82,9 +77,7 @@ class AsyncWorkflowOptimizer:
                     results[agent_name] = {"status": "FAILED", "error": str(e)}
 
             elapsed = time.time() - start_time
-            successful = len(
-                [r for r in results.values() if r.get("status") == "COMPLETED"]
-            )
+            successful = len([r for r in results.values() if r.get("status") == "COMPLETED"])
             # Use DEBUG level to reduce log noise in production
             if self.logger.isEnabledFor(logging.DEBUG):
                 self.logger.debug(
@@ -97,18 +90,14 @@ class AsyncWorkflowOptimizer:
             self.logger.error(f"Concurrent agent execution failed: {e}")
             return {}
 
-    async def optimized_safety_check(
-        self, user_request: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def optimized_safety_check(self, user_request: Dict[str, Any]) -> Dict[str, Any]:
         """
         Optimized safety check workflow with parallel processing where possible
         """
         start_time = time.time()
         workflow_id = f"opt_{int(time.time())}"
 
-        self.logger.info(
-            f"🚀 Starting optimized workflow {workflow_id} for: {user_request}"
-        )
+        self.logger.info(f"🚀 Starting optimized workflow {workflow_id} for: {user_request}")
 
         try:
             # Extract request parameters
@@ -124,16 +113,12 @@ class AsyncWorkflowOptimizer:
                 from core_infra.connection_pool_optimizer import optimized_recall_search
 
                 # Single optimized query instead of multiple separate queries
-                pre_results = await optimized_recall_search(
-                    upc=barcode, model_number=model_number, product_name=None
-                )
+                pre_results = await optimized_recall_search(upc=barcode, model_number=model_number, product_name=None)
 
                 # If we found direct matches, return immediately (MASSIVE speedup!)
                 if pre_results:
                     elapsed = time.time() - start_time
-                    self.logger.info(
-                        f"⚡ INSTANT MATCH found in {elapsed:.3f}s - skipping full workflow!"
-                    )
+                    self.logger.info(f"⚡ INSTANT MATCH found in {elapsed:.3f}s - skipping full workflow!")
 
                     first_result = pre_results[0]
                     return {
@@ -191,14 +176,10 @@ class AsyncWorkflowOptimizer:
                 try:
                     plan_result = planner.process_task(user_request)
                     if plan_result.get("status") != "COMPLETED":
-                        self.logger.error(
-                            f"Planning failed for image request: {plan_result}"
-                        )
+                        self.logger.error(f"Planning failed for image request: {plan_result}")
                         return {"status": "FAILED", "error": "Planning failed"}
                 except Exception as plan_error:
-                    self.logger.error(
-                        f"Planner error with image_url: {plan_error}", exc_info=True
-                    )
+                    self.logger.error(f"Planner error with image_url: {plan_error}", exc_info=True)
                     return {
                         "status": "FAILED",
                         "error": f"Planner error: {str(plan_error)}",
@@ -212,9 +193,7 @@ class AsyncWorkflowOptimizer:
             # Add performance metrics to result
             if execution_result.get("status") == "COMPLETED":
                 if execution_result.get("final_result"):
-                    execution_result["final_result"]["response_time_ms"] = int(
-                        elapsed * 1000
-                    )
+                    execution_result["final_result"]["response_time_ms"] = int(elapsed * 1000)
                     execution_result["final_result"]["optimization"] = "async_workflow"
                     execution_result["final_result"]["agencies_checked"] = 39
 
@@ -224,9 +203,7 @@ class AsyncWorkflowOptimizer:
 
             # If execution failed, provide a fallback response
             if execution_result.get("status") != "COMPLETED":
-                self.logger.warning(
-                    "Optimized workflow execution failed, providing fallback response"
-                )
+                self.logger.warning("Optimized workflow execution failed, providing fallback response")
                 return {
                     "status": "COMPLETED",
                     "data": {
@@ -247,9 +224,7 @@ class AsyncWorkflowOptimizer:
 
         except Exception as e:
             elapsed = time.time() - start_time
-            self.logger.error(
-                f"Optimized workflow failed after {elapsed:.3f}s: {e}", exc_info=True
-            )
+            self.logger.error(f"Optimized workflow failed after {elapsed:.3f}s: {e}", exc_info=True)
             return {
                 "status": "FAILED",
                 "error": f"Optimized workflow error: {str(e)}",

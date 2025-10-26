@@ -10,9 +10,9 @@ import os
 import sys
 
 # Force production database
-os.environ[
-    "DATABASE_URL"
-] = "postgresql+psycopg://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
+os.environ["DATABASE_URL"] = (
+    "postgresql+psycopg://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/babyshield_db"
+)
 
 print("\n" + "=" * 80)
 print("🔍 DATABASE ROUTING VERIFICATION")
@@ -104,9 +104,7 @@ from api.main_crownsafe import app
 client = TestClient(app)
 
 # Test advanced search
-response = client.post(
-    "/api/v1/search/advanced", json={"product": "stroller", "limit": 2}
-)
+response = client.post("/api/v1/search/advanced", json={"product": "stroller", "limit": 2})
 print("   POST /api/v1/search/advanced (product='stroller')")
 print(f"   Status: {response.status_code}")
 
@@ -132,30 +130,20 @@ print("-" * 80)
 db = SessionLocal()
 
 # Simulate agent queries
-cpsc_count = (
-    db.query(EnhancedRecallDB).filter(EnhancedRecallDB.source_agency == "CPSC").count()
-)
+cpsc_count = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.source_agency == "CPSC").count()
 print(f"   CPSC recalls: {cpsc_count:,}")
 
-fda_count = (
-    db.query(EnhancedRecallDB).filter(EnhancedRecallDB.source_agency == "FDA").count()
-)
+fda_count = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.source_agency == "FDA").count()
 print(f"   FDA recalls: {fda_count:,}")
 
 model_count = (
     db.query(EnhancedRecallDB)
-    .filter(
-        EnhancedRecallDB.model_number.isnot(None), EnhancedRecallDB.model_number != ""
-    )
+    .filter(EnhancedRecallDB.model_number.isnot(None), EnhancedRecallDB.model_number != "")
     .count()
 )
 print(f"   Recalls with model numbers: {model_count:,}")
 
-upc_count = (
-    db.query(EnhancedRecallDB)
-    .filter(EnhancedRecallDB.upc.isnot(None), EnhancedRecallDB.upc != "")
-    .count()
-)
+upc_count = db.query(EnhancedRecallDB).filter(EnhancedRecallDB.upc.isnot(None), EnhancedRecallDB.upc != "").count()
 print(f"   Recalls with UPC/barcodes: {upc_count:,}")
 
 print("   ✅ Agent queries work on production database\n")
