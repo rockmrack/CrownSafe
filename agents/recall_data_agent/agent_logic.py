@@ -2,22 +2,24 @@
 """
 RecallDataAgent Core Business Logic
 Handles both live queries (for safety check workflow) and background ingestion.
-Version: 2.0 - Adapted for BabyShield EnhancedRecallDB
+Version: 3.0 - Adapted for Crown Safe (Hair/Cosmetic Products)
 """
 
 import logging
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-# Import Pydantic model
-from .models import Recall
-
-# Import BabyShield database components
-from core_infra.database import SessionLocal, RecallDB
 from sqlalchemy import or_
+
+# Import Crown Safe database components
+from core_infra.database import RecallDB, SessionLocal
 
 # Import connectors
 from .connectors import ConnectorRegistry
+
+# Import Crown Safe filtering configuration
+# Import Pydantic model
+from .models import Recall
 
 
 class RecallDataAgentLogic:
@@ -134,7 +136,9 @@ class RecallDataAgentLogic:
                 else:
                     recalled_products = []
 
-                self.logger.info(f"[{self.agent_id}] Found {len(recalled_products)} matching recalls")
+                self.logger.info(
+                    f"[{self.agent_id}] Found {len(recalled_products)} matching recalls"
+                )
 
                 # Convert to dictionaries using Pydantic validation
                 found_recalls = []
@@ -142,10 +146,23 @@ class RecallDataAgentLogic:
                     try:
                         # Convert SQLAlchemy model to Pydantic model
                         recall_obj = Recall.model_validate(db_recall)
-                        found_recalls.append(recall_obj.model_dump())
+                        recall_dict = recall_obj.model_dump()
+
+                        # Filter for Crown Safe relevance (hair/cosmetic products only)
+                        if is_crown_safe_recall(
+                            recall_dict.get("title", ""),
+                            recall_dict.get("description", ""),
+                            recall_dict.get("product_category", ""),
+                        ):
+                            found_recalls.append(recall_dict)
+
                     except Exception as e:
                         self.logger.error(f"Error converting recall {db_recall.id}: {e}")
                         continue
+
+                self.logger.info(
+                    f"[{self.agent_id}] Filtered to {len(found_recalls)} Crown Safe relevant recalls"
+                )
 
                 return {
                     "status": "COMPLETED",
@@ -198,16 +215,48 @@ class RecallDataAgentLogic:
                     "duration_seconds": (datetime.now() - start_time).total_seconds(),
                 }
 
-            self.logger.info(f"[{self.agent_id}] Fetched {len(all_recalls)} total recalls from all agencies")
+            self.logger.info(
+                f"[{self.agent_id}] Fetched {len(all_recalls)} total recalls from all agencies"
+            )
 
-            # Upsert into database
+            # Filter recalls for Crown Safe relevance (hair/cosmetic products only)
+            crown_safe_recalls = []
+            for recall_data in all_recalls:
+                recall_dict = recall_data.model_dump()
+                if is_crown_safe_recall(
+                    recall_dict.get("title", ""),
+                    recall_dict.get("description", ""),
+                    recall_dict.get("product_category", ""),
+                ):
+                    crown_safe_recalls.append(recall_data)
+
+            filtered_count = len(all_recalls) - len(crown_safe_recalls)
+            self.logger.info(
+                f"[{self.agent_id}] Filtered to {len(crown_safe_recalls)} Crown Safe relevant recalls "
+                f"(excluded {filtered_count} non-hair/cosmetic products)"
+            )
+
+            if not crown_safe_recalls:
+                self.logger.warning(
+                    f"[{self.agent_id}] No Crown Safe relevant recalls found after filtering."
+                )
+                return {
+                    "status": "success",
+                    "total_fetched": len(all_recalls),
+                    "total_upserted": 0,
+                    "total_skipped": 0,
+                    "total_filtered": filtered_count,
+                    "duration_seconds": (datetime.now() - start_time).total_seconds(),
+                }
+
+            # Upsert into database (only Crown Safe relevant recalls)
             db = SessionLocal()
             upserted_count = 0
             skipped_count = 0
             errors = []
 
             try:
-                for recall_data in all_recalls:
+                for recall_data in crown_safe_recalls:
                     try:
                         # Check if recall already exists
                         existing = db.query(RecallDB).filter(RecallDB.recall_id == recall_data.recall_id).first()
@@ -245,14 +294,16 @@ class RecallDataAgentLogic:
             self.logger.info(
                 f"[{self.agent_id}] Ingestion complete. "
                 f"Upserted: {upserted_count}, Skipped: {skipped_count}, "
-                f"Duration: {duration:.2f}s"
+                f"Filtered: {filtered_count}, Duration: {duration:.2f}s"
             )
 
             return {
                 "status": "success",
                 "total_fetched": len(all_recalls),
+                "total_crown_safe": len(crown_safe_recalls),
                 "total_upserted": upserted_count,
                 "total_skipped": skipped_count,
+                "total_filtered": filtered_count,
                 "duration_seconds": duration,
                 "errors": errors if errors else None,
             }

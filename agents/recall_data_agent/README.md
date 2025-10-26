@@ -1,20 +1,29 @@
 # RecallDataAgent
 
-**Multi-Agency Recall Database Management**
+**Multi-Agency Recall Database Management for Crown Safe**
 
-The RecallDataAgent is responsible for ingesting recall data from 39+ international regulatory agencies and providing fast queries during product safety checks.
+The RecallDataAgent is responsible for ingesting recall data from 39+ international regulatory agencies and providing fast queries during product safety checks. **Adapted for Crown Safe**: Filters recalls for hair/cosmetic products only.
 
 ---
 
 ## 📋 Overview
 
 ### Purpose
-- **Ingestion**: Fetch recalls from 39+ global agencies (CPSC, FDA, NHTSA, Health Canada, EU RAPEX, etc.)
-- **Storage**: Upsert recalls into `recalls_enhanced` database table
+- **Ingestion**: Fetch recalls from 39+ global agencies (FDA Cosmetics, CPSC, UKPSD, Health Canada, EU RAPEX, etc.)
+- **Filtering**: Automatically filter for hair/cosmetic products (shampoos, conditioners, relaxers, dyes, styling products)
+- **Storage**: Upsert Crown Safe relevant recalls into `recalls_enhanced` database table
 - **Querying**: Fast lookup during safety check workflow (called by RouterAgent)
 
+### Crown Safe Adaptations
+- ✅ **Filters for hair/cosmetic products only** (shampoo, conditioner, relaxer, dye, styling products)
+- ✅ **Excludes baby-specific recalls** (baby bottles, car seats, strollers, cribs)
+- ✅ **Prioritizes FDA Cosmetics** (primary agency for hair product safety)
+- ✅ **Severity mapping for hair hazards** (hair_loss=CRITICAL, chemical_burn=CRITICAL, scalp_burn=CRITICAL)
+- ✅ **30+ hair product categories** (see `crown_safe_config.py`)
+
 ### Architecture
-- **agent_logic.py**: Core business logic (query + ingestion)
+- **agent_logic.py**: Core business logic with Crown Safe filtering (query + ingestion)
+- **crown_safe_config.py**: Crown Safe filtering configuration (categories, keywords, severity mapping)
 - **connectors.py**: 39+ agency-specific API connectors
 - **models.py**: Pydantic validation models
 - **main.py**: Standalone entry point for manual/scheduled execution
@@ -44,7 +53,7 @@ python agents/recall_data_agent/main.py --test
 ```
 
 ### 4. Integration with Safety Check Workflow
-The agent is automatically called by `RouterAgent` during safety checks:
+The agent is automatically called by `RouterAgent` during safety checks. **All results are filtered for Crown Safe relevance (hair/cosmetic products only).**
 
 ```python
 # In RouterAgent workflow (step2_check_recalls)
@@ -52,11 +61,49 @@ from agents.recall_data_agent.agent_logic import RecallDataAgentLogic
 
 recall_agent = RecallDataAgentLogic(agent_id="router_query")
 result = await recall_agent.process_task({
-    "product_name": "Baby Crib",
-    "model_number": "ABC123",
+    "product_name": "Hair Relaxer",
+    "model_number": "REL123",
     "upc": "123456789012"
 })
+# Returns only hair/cosmetic product recalls
 ```
+
+---
+
+## 🎯 Crown Safe Filtering
+
+### Included Product Categories (30+)
+- **Hair Care**: shampoo, conditioner, hair treatment, hair mask, hair oil, hair serum, leave-in, deep conditioner
+- **Styling**: gel, mousse, cream, pomade, wax, spray, curl cream, edge control
+- **Chemical Treatments**: relaxer, straightener, hair color, dye, bleach, perm, texturizer
+- **Scalp Care**: scalp treatment, scalp oil, dandruff shampoo, medicated shampoo
+- **General**: cosmetic, personal care, beauty product
+
+### Excluded Product Categories
+- Baby bottles, pacifiers, cribs, strollers, car seats
+- Infant formula, baby food, diapers, teething products
+- **Note**: Children's hair products ARE included (e.g., "Kids Shampoo")
+
+### Filtering Keywords
+- **Positive Match**: hair, scalp, shampoo, conditioner, relaxer, straightener, curl, styling, cosmetic, beauty, salon, barber
+- **Negative Match**: baby bottle, pacifier, crib, stroller, car seat, infant formula, baby food, diaper, teething
+
+### Crown Safe Severity Mapping
+- **CRITICAL**: hair_loss, chemical_burn, scalp_burn, formaldehyde, lead, mercury, asbestos
+- **HIGH**: allergic_reaction, contamination, undeclared_ingredient, carcinogen
+- **MEDIUM**: skin_irritation, rash, mislabeled
+- **LOW**: itching
+
+### Priority Agencies for Crown Safe
+1. **FDA** (Cosmetics Division) - Primary for hair/cosmetic products
+2. **CPSC** - Consumer Product Safety Commission
+3. **UKPSD** - UK Product Safety Database
+4. **Health Canada** - Consumer Product Safety
+5. **EU RAPEX** - EU Rapid Alert System
+6. **TGA** - Australia Therapeutic Goods Administration
+7. **ANVISA** - Brazil health regulator
+
+**Deprioritized**: NHTSA (car seats, not relevant for hair products)
 
 ---
 
@@ -171,20 +218,20 @@ recall_class: str
 ## 🔧 API Methods
 
 ### `process_task(inputs: Dict) -> Dict`
-**Query recalls database**
+**Query recalls database (Crown Safe filtered)**
 
 **Input:**
 ```json
 {
-  "product_name": "Baby Crib",
-  "model_number": "ABC123",
+  "product_name": "Hair Relaxer",
+  "model_number": "REL123",
   "upc": "123456789012",
-  "brand": "SafeSleep",
+  "brand": "SoftSheen",
   "lot_number": "LOT2024"
 }
 ```
 
-**Output:**
+**Output:** (Only hair/cosmetic recalls returned)
 ```json
 {
   "status": "COMPLETED",
@@ -192,10 +239,11 @@ recall_class: str
     "recalls_found": 2,
     "recalls": [
       {
-        "recall_id": "CPSC-12345",
-        "product_name": "Baby Crib Model ABC123",
-        "hazard": "Entrapment hazard",
+        "recall_id": "FDA-12345",
+        "product_name": "Hair Relaxer Model REL123",
+        "hazard": "Chemical burn hazard",
         "recall_date": "2024-10-01",
+        "severity": "CRITICAL",
         ...
       }
     ]
@@ -204,19 +252,23 @@ recall_class: str
 ```
 
 ### `run_ingestion_cycle() -> Dict`
-**Fetch and store recalls from all agencies**
+**Fetch and store recalls from all agencies (Crown Safe filtered)**
 
 **Output:**
 ```json
 {
   "status": "success",
   "total_fetched": 1234,
-  "total_upserted": 567,
-  "total_skipped": 667,
+  "total_crown_safe": 345,
+  "total_upserted": 300,
+  "total_skipped": 45,
+  "total_filtered": 889,
   "duration_seconds": 45.2,
   "errors": null
 }
 ```
+
+**Note**: Only Crown Safe relevant recalls (hair/cosmetic products) are stored in the database. Baby products and non-relevant items are filtered out.
 
 ### `get_statistics() -> Dict`
 **Get database statistics**
@@ -391,5 +443,6 @@ MIT License - See LICENSE file
 
 ---
 
-**Last Updated**: October 9, 2025  
-**Maintained By**: BabyShield Development Team
+**Last Updated**: October 26, 2025  
+**Maintained By**: Crown Safe Development Team  
+**Version**: 3.0 - Adapted for Crown Safe (Hair/Cosmetic Products)

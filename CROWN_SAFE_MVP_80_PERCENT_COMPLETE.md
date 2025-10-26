@@ -234,19 +234,19 @@ if is_crown_safe_recall(recall.title, recall.description, recall.category):
 
 ## 📊 Progress Summary
 
-| Task | Status | Completion | LOC Added | Endpoints |
-|------|--------|------------|-----------|-----------|
-| Agent Cleanup | ✅ Complete | 100% | -11 agents | - |
-| Hair Profile Endpoints | ✅ Complete | 100% | 330 | 4 |
-| Ingredient Explainer | ✅ Complete | 100% | 333 | 2 |
-| Cabinet Audit Endpoint | ✅ Complete | 100% | 620 | 1 |
-| Routine Check Endpoint | ✅ Complete | 100% | (same file) | 1 |
-| Recall Agent Config | ✅ Complete | 100% | 180 | - |
-| Crown Score Engine | ✅ Already Complete | 100% | 773 | - |
-| Database Models | ✅ Already Complete | 100% | - | - |
-| Recall Integration | 🔄 Config Done | 50% | - | - |
-| Data Population | ⏳ Pending | 0% | - | - |
-| **TOTAL** | **80% Complete** | **80%** | **2,236** | **8** |
+| Task                   | Status             | Completion | LOC Added   | Endpoints |
+| ---------------------- | ------------------ | ---------- | ----------- | --------- |
+| Agent Cleanup          | ✅ Complete         | 100%       | -11 agents  | -         |
+| Hair Profile Endpoints | ✅ Complete         | 100%       | 330         | 4         |
+| Ingredient Explainer   | ✅ Complete         | 100%       | 333         | 2         |
+| Cabinet Audit Endpoint | ✅ Complete         | 100%       | 620         | 1         |
+| Routine Check Endpoint | ✅ Complete         | 100%       | (same file) | 1         |
+| Recall Agent Config    | ✅ Complete         | 100%       | 180         | -         |
+| Crown Score Engine     | ✅ Already Complete | 100%       | 773         | -         |
+| Database Models        | ✅ Already Complete | 100%       | -           | -         |
+| Recall Integration     | 🔄 Config Done      | 50%        | -           | -         |
+| Data Population        | ⏳ Pending          | 0%         | -           | -         |
+| **TOTAL**              | **80% Complete**   | **80%**    | **2,236**   | **8**     |
 
 ---
 
