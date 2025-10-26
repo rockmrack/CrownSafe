@@ -1,13 +1,13 @@
-﻿[![API Smoke — Endpoints CSV](https://github.com/BabyShield/babyshield-backend/actions/workflows/api-smoke.yml/badge.svg?branch=main)](https://github.com/BabyShield/babyshield-backend/actions/workflows/api-smoke.yml)
+﻿[![API Smoke — Endpoints CSV](https://github.com/rockmrack/CrownSafe/actions/workflows/api-smoke.yml/badge.svg?branch=main)](https://github.com/rockmrack/CrownSafe/actions/workflows/api-smoke.yml)
 
-# BabyShield Backend
+# CrownSafe Backend
 
-[![Test Coverage](https://github.com/BabyShield/babyshield-backend/actions/workflows/test-coverage.yml/badge.svg)](https://github.com/BabyShield/babyshield-backend/actions/workflows/test-coverage.yml)
-[![codecov](https://codecov.io/gh/BabyShield/babyshield-backend/branch/main/graph/badge.svg)](https://codecov.io/gh/BabyShield/babyshield-backend)
-[![API Contract](https://github.com/BabyShield/babyshield-backend/actions/workflows/api-contract.yml/badge.svg)](https://github.com/BabyShield/babyshield-backend/actions/workflows/api-contract.yml)
-[![Security Scan](https://github.com/BabyShield/babyshield-backend/actions/workflows/security-scan.yml/badge.svg)](https://github.com/BabyShield/babyshield-backend/actions/workflows/security-scan.yml)
+[![Test Coverage](https://github.com/rockmrack/CrownSafe/actions/workflows/test-coverage.yml/badge.svg)](https://github.com/rockmrack/CrownSafe/actions/workflows/test-coverage.yml)
+[![codecov](https://codecov.io/gh/rockmrack/CrownSafe/branch/main/graph/badge.svg)](https://codecov.io/gh/rockmrack/CrownSafe)
+[![API Contract](https://github.com/rockmrack/CrownSafe/actions/workflows/api-contract.yml/badge.svg)](https://github.com/rockmrack/CrownSafe/actions/workflows/api-contract.yml)
+[![Security Scan](https://github.com/rockmrack/CrownSafe/actions/workflows/security-scan.yml/badge.svg)](https://github.com/rockmrack/CrownSafe/actions/workflows/security-scan.yml)
 
-Production-ready backend for the BabyShield agent platform, providing comprehensive baby product safety monitoring across 39 international regulatory agencies.
+Production-ready backend for the CrownSafe agent platform, providing comprehensive product safety monitoring across 39 international regulatory agencies.
 
 ## 🧪 Testing & Quality Assurance
 
@@ -33,8 +33,8 @@ See [tests/README.md](tests/README.md) for detailed testing documentation.
 
 ```bash
 # Clone the repository
-git clone https://github.com/BabyShield/babyshield-backend.git
-cd babyshield-backend
+git clone https://github.com/rockmrack/CrownSafe.git
+cd CrownSafe
 
 # Create virtual environment
 python -m venv venv
@@ -58,7 +58,7 @@ uvicorn api.main_babyshield:app --reload --port 8001
 
 ```bash
 # Build production image
-docker build -f Dockerfile.final -t babyshield-backend:latest .
+docker build -f Dockerfile.final -t crownsafe-backend:latest .
 
 # Run with Docker Compose
 docker-compose up -d
@@ -67,7 +67,7 @@ docker-compose up -d
 ## 🏗️ Architecture
 
 ```
-babyshield-backend/
+CrownSafe/
 ├── api/                    # FastAPI endpoints
 │   ├── main_babyshield.py # Main application entry
 │   ├── auth_endpoints.py  # Authentication & authorization
@@ -120,7 +120,7 @@ babyshield-backend/
 - `GET /api/v1/notifications` - List notifications
 - `POST /api/v1/notifications/{id}/read` - Mark as read
 
-Full API documentation: https://babyshield.cureviax.ai/docs
+Full API documentation: https://crownsafe.cureviax.ai/docs
 
 ## 🧪 Testing
 
@@ -170,13 +170,13 @@ See [FINAL_TEST_RESULTS_500.md](FINAL_TEST_RESULTS_500.md) for detailed test rep
 - ✅ Regular security scanning (Bandit, Safety)
 
 ### Reporting Security Issues
-Please report security vulnerabilities to **security@babyshield.dev**  
+Please report security vulnerabilities to **security@crownsafe.com**  
 See [SECURITY.md](SECURITY.md) for our security policy.
 
 ## 🚀 Deployment
 
 ### Production Environment
-- **URL**: https://babyshield.cureviax.ai
+- **URL**: https://crownsafe.cureviax.ai
 - **Container Registry**: AWS ECR
 - **Infrastructure**: AWS ECS/EKS
 - **Database**: AWS RDS PostgreSQL
@@ -273,7 +273,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
 ## 📚 Documentation
 
-- **API Documentation**: https://babyshield.cureviax.ai/docs (Swagger/OpenAPI)
+- **API Documentation**: https://crownsafe.cureviax.ai/docs (Swagger/OpenAPI)
 - **Test Results**: [FINAL_TEST_RESULTS_500.md](FINAL_TEST_RESULTS_500.md)
 - **Deployment Guide**: [DEPLOYMENT_OCTOBER_9_BUGFIXES.md](DEPLOYMENT_OCTOBER_9_BUGFIXES.md)
 - **Security Policy**: [SECURITY.md](SECURITY.md)
@@ -282,25 +282,25 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
 ## 🌐 Related Projects
 
-- **BabyShield Mobile App**: iOS and Android applications
-- **BabyShield Web**: React-based web application
-- **BabyShield Admin**: Administrative dashboard
+- **CrownSafe Mobile App**: iOS and Android applications
+- **CrownSafe Web**: React-based web application
+- **CrownSafe Admin**: Administrative dashboard
 
 ## 📈 Project Status
 
 - **Version**: 1.0.0
 - **Status**: Production
-- **Last Updated**: October 9, 2025
+- **Last Updated**: October 26, 2025
 - **Maintained**: ✅ Actively maintained
-- **Issues**: [GitHub Issues](https://github.com/BabyShield/babyshield-backend/issues)
-- **Pull Requests**: [GitHub PRs](https://github.com/BabyShield/babyshield-backend/pulls)
+- **Issues**: [GitHub Issues](https://github.com/rockmrack/CrownSafe/issues)
+- **Pull Requests**: [GitHub PRs](https://github.com/rockmrack/CrownSafe/pulls)
 
 ## 📞 Support
 
-- **Technical Support**: dev@babyshield.dev
-- **Security Issues**: security@babyshield.dev
-- **General Inquiries**: info@babyshield.dev
-- **Discussions**: [GitHub Discussions](https://github.com/BabyShield/babyshield-backend/discussions)
+- **Technical Support**: dev@crownsafe.com
+- **Security Issues**: security@crownsafe.com
+- **General Inquiries**: info@crownsafe.com
+- **Discussions**: [GitHub Discussions](https://github.com/rockmrack/CrownSafe/discussions)
 
 ## 📄 License
 
@@ -311,9 +311,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - FastAPI framework for excellent async API support
 - SQLAlchemy for robust database ORM
 - Schemathesis for comprehensive API testing
-- All contributors and supporters of the BabyShield project
+- All contributors and supporters of the CrownSafe project
 
 ---
 
-**Made with ❤️ by the BabyShield Team**
+**Made with ❤️ by the CrownSafe Team**
 
