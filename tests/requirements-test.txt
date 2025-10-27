@@ -2,12 +2,12 @@
 # Install with: pip install -r tests/requirements-test.txt
 
 # Core Testing Framework
-pytest==7.4.3
-pytest-asyncio==0.21.1
+pytest==7.4.4
+pytest-asyncio==0.26.0
 pytest-cov==4.1.0
-pytest-mock==3.12.0
-pytest-xdist==3.5.0  # Parallel test execution
-pytest-timeout==2.2.0
+pytest-mock==3.15.1
+pytest-xdist==3.8.0  # Parallel test execution
+pytest-timeout==2.4.0
 pytest-benchmark==4.0.0
 pytest-sugar==0.9.7  # Better test output
 
@@ -27,7 +27,7 @@ requests-mock==1.11.0
 locust>=2.20.0  # Load testing framework - updated for pydantic v2 compatibility
 
 # Security Testing
-bandit==1.7.5  # Static security linter for code analysis
+bandit==1.8.6  # Static security linter for code analysis
 pip-audit>=2.6.1  # PyPA's official dependency vulnerability scanner (PyPI Advisory Database)
 
 # Security Coverage Strategy:
@@ -52,7 +52,7 @@ pytest-html==4.1.1  # HTML test reports
 pytest-json-report==1.5.0  # JSON test reports
 
 # Additional Utilities
-pytest-env==1.1.3  # Environment variable management
+pytest-env==1.2.0  # Environment variable management
 pytest-dotenv==0.5.2
 
 # Note: Removed conflicting packages to resolve dependency issues:
