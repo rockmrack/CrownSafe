@@ -70,7 +70,7 @@ def main():
             print("✅ API server is already running")
         else:
             print("⚠️  API server returned unexpected status")
-    except:
+    except (httpx.RequestError, httpx.TimeoutException):
         print("❌ API server is not running")
         print("Please start your API server with the same DATABASE_URL:")
         print(f"   export DATABASE_URL=sqlite:///{db_path}")

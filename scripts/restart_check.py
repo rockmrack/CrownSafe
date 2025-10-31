@@ -7,7 +7,7 @@ import redis
 print("Killing all agents...")
 try:
     subprocess.run(["taskkill", "/F", "/IM", "python.exe"], capture_output=True)
-except:
+except (subprocess.SubprocessError, OSError):
     print("Failed to kill processes")
 
 # 2. Clear Redis

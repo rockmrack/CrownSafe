@@ -56,5 +56,5 @@ try:
     result = subprocess.run(["tasklist", "/FI", "IMAGENAME eq python.exe"], capture_output=True, text=True)
     python_processes = result.stdout.count("python.exe")
     print(f"   Found {python_processes} Python processes")
-except:
-    pass
+except (subprocess.SubprocessError, OSError):
+    pass  # Process check failed on this OS

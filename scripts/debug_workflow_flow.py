@@ -37,7 +37,7 @@ def monitor_redis_for_workflow(workflow_id, duration=30):
                         data = json.loads(value) if value else {}
                         print(f"   Status: {data.get('status', 'N/A')}")
                         print(f"   Type: {data.get('message_type', 'N/A')}")
-                    except:
+                    except (json.JSONDecodeError, TypeError, KeyError):
                         print("   (Could not parse value)")
 
         # Also check specific expected keys
@@ -108,7 +108,7 @@ def check_agent_queues():
                 msg_data = json.loads(message)
                 msg_type = msg_data.get("mcp_header", {}).get("message_type", "Unknown")
                 print(f"   First message type: {msg_type}")
-            except:
+            except (json.JSONDecodeError, TypeError, AttributeError):
                 print("   (Could not parse message)")
 
 

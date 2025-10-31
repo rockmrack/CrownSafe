@@ -32,7 +32,7 @@ async def monitor_workflow(workflow_id: str):
             try:
                 data = json.loads(value)
                 print(f"\n  Content: {json.dumps(data, indent=2)}")
-            except:
+            except (json.JSONDecodeError, TypeError):
                 print(f"  Raw content: {value}")
 
     # List all keys matching workflow pattern

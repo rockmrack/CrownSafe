@@ -25,8 +25,8 @@ if workflows:
                     plan = data["original_plan_payload"]
                     print(json.dumps(plan, indent=2)[:500] + "...")
                     break
-        except:
-            pass
+        except (KeyError, json.JSONDecodeError, TypeError):
+            pass  # Invalid message format
 
 # Let's also check what messages Commander IS processing
 print("\n🔍 Checking Commander message patterns...")
