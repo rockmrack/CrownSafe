@@ -16,7 +16,7 @@ class CircuitBreaker:
     Opens when failures >= threshold within 'window_sec'; stays open for cooldown_sec.
     """
 
-    def __init__(self, threshold: int = 5, window_sec: int = 60, cooldown_sec: int = 120):
+    def __init__(self, threshold: int = 5, window_sec: int = 60, cooldown_sec: int = 120) -> None:
         self.threshold = threshold
         self.window = window_sec
         self.cooldown = cooldown_sec

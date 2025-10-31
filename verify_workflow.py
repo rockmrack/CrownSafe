@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Comprehensive Workflow Verification Script
-Verifies that RecallDataAgent is properly integrated into the BabyShield workflow
+Verifies that RecallDataAgent is properly integrated into the BabyShield workflow.
 """
 
 import json

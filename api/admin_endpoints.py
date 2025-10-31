@@ -1,5 +1,5 @@
 """Admin Endpoints - Administrative user management
-Requires admin role/permissions
+Requires admin role/permissions.
 """
 
 import logging
@@ -20,7 +20,7 @@ router = APIRouter(prefix="/api/v1/admin", tags=["Admin"])
 
 
 class AdminUserListItem(AppModel):
-    """User information for admin listing"""
+    """User information for admin listing."""
 
     id: int
     email: str

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""BabyShield Recalls Data Ingestion Script
+"""BabyShield Recalls Data Ingestion Script.
 
 This script:
 1. Runs Alembic migration to create recalls_enhanced table if needed
@@ -44,9 +44,9 @@ logger = logging.getLogger(__name__)
 
 
 class RecallDataIngester:
-    """Handles fetching and ingesting recall data into the database"""
+    """Handles fetching and ingesting recall data into the database."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.connectors = {
             "FDA": FDAConnector(),
             "CPSC": CPSCConnector(),
@@ -54,8 +54,8 @@ class RecallDataIngester:
             "EU_RAPEX": EURAPEXConnector(),
         }
 
-    async def run_migration(self):
-        """Run Alembic migration to create/update database schema"""
+    async def run_migration(self) -> bool | None:
+        """Run Alembic migration to create/update database schema."""
         try:
             logger.info("🔧 Running database migration...")
 
@@ -70,7 +70,7 @@ class RecallDataIngester:
             return False
 
     def check_table_exists(self) -> bool:
-        """Check if recalls_enhanced table exists"""
+        """Check if recalls_enhanced table exists."""
         try:
             with get_db_session() as db:
                 result = db.execute(
@@ -89,7 +89,7 @@ class RecallDataIngester:
             return False
 
     def get_table_count(self) -> int:
-        """Get current number of records in recalls_enhanced table"""
+        """Get current number of records in recalls_enhanced table."""
         try:
             with get_db_session() as db:
                 result = db.execute(text("SELECT COUNT(*) FROM recalls_enhanced"))
@@ -99,7 +99,7 @@ class RecallDataIngester:
             return 0
 
     async def fetch_agency_data(self, agency_name: str, since_date: date | None = None) -> list[dict]:
-        """Fetch recall data from a specific agency"""
+        """Fetch recall data from a specific agency."""
         try:
             connector = self.connectors.get(agency_name)
             if not connector:
@@ -123,7 +123,7 @@ class RecallDataIngester:
             return []
 
     def convert_recall_to_db_record(self, recall_data) -> dict:
-        """Convert Recall object to database record dict"""
+        """Convert Recall object to database record dict."""
         try:
             # Build search keywords for full-text search
             search_keywords = " ".join(
@@ -188,7 +188,7 @@ class RecallDataIngester:
             return None
 
     def insert_recalls_batch(self, recalls: list[dict], agency_name: str) -> int:
-        """Insert batch of recalls using optimized UPSERT"""
+        """Insert batch of recalls using optimized UPSERT."""
         from core_infra.upsert_handler import upsert_handler
 
         processed_count = 0
@@ -217,7 +217,7 @@ class RecallDataIngester:
         return processed_count
 
     async def ingest_agency_data(self, agency_name: str, since_date: date | None = None) -> int:
-        """Ingest data from a specific agency"""
+        """Ingest data from a specific agency."""
         try:
             # Fetch data from agency
             recalls = await self.fetch_agency_data(agency_name, since_date)
@@ -235,8 +235,8 @@ class RecallDataIngester:
             logger.exception(f"❌ Failed to ingest data for {agency_name}: {e}")
             return 0
 
-    async def run_full_ingestion(self, agencies: list[str], since_date: date | None = None):
-        """Run full data ingestion for specified agencies"""
+    async def run_full_ingestion(self, agencies: list[str], since_date: date | None = None) -> bool:
+        """Run full data ingestion for specified agencies."""
         logger.info(f"🚀 Starting data ingestion for agencies: {', '.join(agencies)}")
 
         # Check/create table first
@@ -266,8 +266,8 @@ class RecallDataIngester:
         return True
 
 
-async def main():
-    """Main entry point"""
+async def main() -> int | None:
+    """Main entry point."""
     parser = argparse.ArgumentParser(description="BabyShield Recalls Data Ingestion")
     parser.add_argument("--since", type=str, help="Fetch recalls since date (YYYY-MM-DD)")
     parser.add_argument("--agencies", type=str, help="Comma-separated list of agencies (default: all)")

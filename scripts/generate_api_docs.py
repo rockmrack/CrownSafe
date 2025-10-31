@@ -1,5 +1,5 @@
 """API Documentation Enhancement Tool
-Automatically generates comprehensive API documentation
+Automatically generates comprehensive API documentation.
 
 Features:
 - OpenAPI/Swagger schema enhancement
@@ -14,12 +14,12 @@ from typing import Any
 
 class APIDocumentationEnhancer:
     """Enhances FastAPI automatic documentation
-    Adds comprehensive examples and descriptions
+    Adds comprehensive examples and descriptions.
     """
 
     @staticmethod
     def get_monitoring_endpoints_docs() -> list[dict[str, Any]]:
-        """Get documentation for monitoring endpoints
+        """Get documentation for monitoring endpoints.
 
         Returns:
             List of endpoint documentation objects
@@ -203,7 +203,7 @@ class APIDocumentationEnhancer:
 
     @staticmethod
     def get_api_best_practices() -> dict[str, Any]:
-        """Get API best practices documentation
+        """Get API best practices documentation.
 
         Returns:
             Dictionary with best practices
@@ -260,8 +260,8 @@ class APIDocumentationEnhancer:
 
 
 # Generate documentation
-def generate_api_documentation():
-    """Generate comprehensive API documentation"""
+def generate_api_documentation() -> None:
+    """Generate comprehensive API documentation."""
     enhancer = APIDocumentationEnhancer()
 
     print("Crown Safe API Documentation")

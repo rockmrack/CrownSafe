@@ -1,4 +1,4 @@
-"""Tests for conversation with real tools"""
+"""Tests for conversation with real tools."""
 
 import unittest
 from unittest.mock import Mock
@@ -7,12 +7,12 @@ from sqlalchemy.orm import Session
 
 
 class TestConversationWithRealTools(unittest.TestCase):
-    def test_session_import(self):
-        """Test that Session can be imported"""
+    def test_session_import(self) -> None:
+        """Test that Session can be imported."""
         self.assertIsNotNone(Session)
 
-    def test_mock_session_creation(self):
-        """Test creating a mock session"""
+    def test_mock_session_creation(self) -> None:
+        """Test creating a mock session."""
         mock_session = Mock(spec=Session)
         self.assertIsNotNone(mock_session)
 

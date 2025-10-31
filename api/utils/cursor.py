@@ -1,5 +1,5 @@
 """Cursor utilities for secure, opaque pagination tokens
-Uses HMAC-SHA256 for signing to prevent tampering
+Uses HMAC-SHA256 for signing to prevent tampering.
 """
 
 import base64
@@ -7,24 +7,24 @@ import hashlib
 import hmac
 import json
 import os
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 
 def _b64u_encode(data: bytes) -> str:
-    """URL-safe base64 encode without padding"""
+    """URL-safe base64 encode without padding."""
     return base64.urlsafe_b64encode(data).decode("utf-8").rstrip("=")
 
 
 def _b64u_decode(s: str) -> bytes:
-    """URL-safe base64 decode with padding restoration"""
+    """URL-safe base64 decode with padding restoration."""
     # Add padding if needed
     padding = "=" * (-len(s) % 4)
     return base64.urlsafe_b64decode(s + padding)
 
 
 def sign_cursor(payload: dict[str, Any], key: str | None = None) -> str:
-    """Create a signed cursor token from a payload
+    """Create a signed cursor token from a payload.
 
     Args:
         payload: Dictionary containing cursor data
@@ -58,7 +58,7 @@ def sign_cursor(payload: dict[str, Any], key: str | None = None) -> str:
 
 
 def verify_cursor(token: str, key: str | None = None) -> dict[str, Any]:
-    """Verify and decode a signed cursor token
+    """Verify and decode a signed cursor token.
 
     Args:
         token: Signed cursor token
@@ -124,7 +124,7 @@ def create_search_cursor(
     after_tuple: tuple | None = None,
     ttl_hours: int = 24,
 ) -> str:
-    """Create a cursor specifically for search pagination
+    """Create a cursor specifically for search pagination.
 
     Args:
         filters_hash: SHA256 hash of canonical filter JSON
@@ -166,7 +166,7 @@ def create_search_cursor(
 
 
 def hash_filters(filters: dict[str, Any], exclude_cursor: bool = True) -> str:
-    """Create a deterministic hash of search filters
+    """Create a deterministic hash of search filters.
 
     Args:
         filters: Search filter parameters
@@ -192,7 +192,7 @@ def hash_filters(filters: dict[str, Any], exclude_cursor: bool = True) -> str:
 
 
 def validate_cursor_filters(cursor_data: dict[str, Any], current_filters_hash: str) -> None:
-    """Validate that cursor filters match current request filters
+    """Validate that cursor filters match current request filters.
 
     Args:
         cursor_data: Decoded cursor payload

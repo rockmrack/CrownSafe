@@ -56,15 +56,15 @@ else:
 
 # --- Workflow Monitor ---
 class WorkflowMonitor:
-    def __init__(self):
+    def __init__(self) -> None:
         self.workflow_complete = False
         self.workflow_failed = False
         self.error_message = None
         self.pdf_path = None
         self.task_updates = []
 
-    async def handle_message(self, message: MCPMessage):
-        """Process messages to track workflow status"""
+    async def handle_message(self, message: MCPMessage) -> None:
+        """Process messages to track workflow status."""
         msg_type = message.mcp_header.message_type
         sender = message.mcp_header.sender_id
         corr_id = message.mcp_header.correlation_id
@@ -106,7 +106,7 @@ class WorkflowMonitor:
             logger.debug(f"Message type {msg_type} from {sender}: {json.dumps(message.payload, indent=2)[:200]}...")
 
 
-async def run_test():
+async def run_test() -> None:
     logger.info("Starting Enhanced MCP Commander Flow Test Script...")
     logger.info(f"Goal: {USER_RESEARCH_GOAL_STRING}")
 

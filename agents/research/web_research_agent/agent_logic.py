@@ -572,9 +572,8 @@ class WebResearchLogic:
         self.logger.info(f"Processing {message_type.value} from {sender_id} (CorrID: {correlation_id})")
         if message_type == MessageType.TASK_ASSIGN:
             return await self._handle_task_assign(payload, correlation_id)
-        else:
-            self.logger.warning(f"Unhandled message type: {message_type.value}")
-            return None
+        self.logger.warning(f"Unhandled message type: {message_type.value}")
+        return None
 
     async def _handle_task_assign(self, payload: dict[str, Any], correlation_id: str | None) -> dict[str, Any]:
         task_id = payload.get("task_id", "unknown_task")

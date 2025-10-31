@@ -9,7 +9,7 @@ import hashlib  # noqa: E402
 import logging  # noqa: E402
 import re  # noqa: E402
 from collections import OrderedDict  # noqa: E402
-from datetime import datetime, timedelta, timezone, UTC  # noqa: E402
+from datetime import datetime, timedelta, UTC  # noqa: E402
 from typing import Any  # noqa: E402
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, Query  # noqa: E402
@@ -63,7 +63,7 @@ def _normalize_scan_payload(barcode: str, payload: dict, trace_id: str, cached: 
 
 
 class BarcodeScanRequest(BaseModel):
-    """Enhanced barcode scan request"""
+    """Enhanced barcode scan request."""
 
     barcode: str = Field(..., description="UPC/EAN barcode value")
     barcode_type: str | None = Field("UPC", description="Barcode type: UPC, EAN, CODE128, etc")
@@ -73,7 +73,7 @@ class BarcodeScanRequest(BaseModel):
 
 
 class BarcodeProduct(AppModel):
-    """Product information from barcode"""
+    """Product information from barcode."""
 
     model_config = {"protected_namespaces": ()}  # Allow model_number field
 
@@ -86,7 +86,7 @@ class BarcodeProduct(AppModel):
 
 
 class RecallMatch(BaseModel):
-    """Recall match information"""
+    """Recall match information."""
 
     recall_id: str
     product_name: str
@@ -100,7 +100,7 @@ class RecallMatch(BaseModel):
 
 
 class BarcodeScanResponse(BaseModel):
-    """Enhanced barcode scan response"""
+    """Enhanced barcode scan response."""
 
     ok: bool = True
     barcode: str
@@ -118,20 +118,20 @@ class BarcodeScanResponse(BaseModel):
 
 
 class BarcodeCache:
-    """Simple in-memory LRU cache for last 50 barcode scans"""
+    """Simple in-memory LRU cache for last 50 barcode scans."""
 
     def __init__(self, max_size: int = 50) -> None:
         self.cache: OrderedDict[str, dict[str, Any]] = OrderedDict()
         self.max_size = max_size
 
     def get_key(self, barcode: str, user_id: str | None = None) -> str:
-        """Generate cache key"""
+        """Generate cache key."""
         if user_id:
             return f"{user_id}:{barcode}"
         return f"anon:{barcode}"
 
     def get(self, barcode: str, user_id: str | None = None) -> dict[str, Any] | None:
-        """Get cached scan result"""
+        """Get cached scan result."""
         key = self.get_key(barcode, user_id)
 
         if key in self.cache:
@@ -143,14 +143,13 @@ class BarcodeCache:
             if datetime.now() - cached_data["timestamp"] < timedelta(hours=24):
                 logger.info(f"Cache hit for barcode: {barcode[:4]}****")
                 return cached_data
-            else:
-                # Expired, remove it
-                del self.cache[key]
+            # Expired, remove it
+            del self.cache[key]
 
         return None
 
     def set(self, barcode: str, data: dict[str, Any], user_id: str | None = None) -> None:
-        """Cache scan result"""
+        """Cache scan result."""
         key = self.get_key(barcode, user_id)
 
         # Add timestamp
@@ -167,24 +166,24 @@ class BarcodeCache:
         logger.info(f"Cached scan result for barcode: {barcode[:4]}**** (cache size: {len(self.cache)})")
 
     def clear_user_cache(self, user_id: str) -> None:
-        """Clear all cache entries for a specific user"""
+        """Clear all cache entries for a specific user."""
         keys_to_remove = [k for k in self.cache.keys() if k.startswith(f"{user_id}:")]
         for key in keys_to_remove:
             del self.cache[key]
 
     def clear_barcode(self, barcode: str) -> bool:
-        """Clear cache entry for a specific barcode"""
+        """Clear cache entry for a specific barcode."""
         keys_to_remove = [k for k in self.cache.keys() if k.endswith(f":{barcode}")]
         for key in keys_to_remove:
             del self.cache[key]
         return len(keys_to_remove) > 0
 
     def clear_all_cache(self) -> None:
-        """Clear all cache entries"""
+        """Clear all cache entries."""
         self.cache.clear()
 
     def get_cache_size(self) -> int:
-        """Get current cache size"""
+        """Get current cache size."""
         return len(self.cache)
 
 
@@ -196,7 +195,7 @@ barcode_cache = BarcodeCache(max_size=50)
 
 
 def validate_upc(upc: str) -> bool:
-    """Validate UPC-A (12 digits) or UPC-E (8 digits) with check digit"""
+    """Validate UPC-A (12 digits) or UPC-E (8 digits) with check digit."""
     upc = upc.strip()
 
     # Remove any non-digits
@@ -213,15 +212,14 @@ def validate_upc(upc: str) -> bool:
             even_sum = sum(int(upc[i]) for i in range(1, 10, 2))
             check = (10 - ((odd_sum * 3 + even_sum) % 10)) % 10
             return check == int(upc[11])
-        else:
-            # UPC-E validation (simplified)
-            return True
+        # UPC-E validation (simplified)
+        return True
     except (ValueError, IndexError, TypeError):
         return False
 
 
 def validate_ean(ean: str) -> bool:
-    """Validate EAN-13 or EAN-8 with check digit"""
+    """Validate EAN-13 or EAN-8 with check digit."""
     ean = ean.strip()
 
     # Remove any non-digits
@@ -247,7 +245,7 @@ def validate_ean(ean: str) -> bool:
 
 def normalize_barcode(barcode: str) -> tuple[str, str]:
     """Normalize barcode and detect type
-    Returns: (normalized_barcode, barcode_type)
+    Returns: (normalized_barcode, barcode_type).
     """
     # Remove spaces and special characters
     barcode = re.sub(r"[^0-9A-Za-z]", "", barcode)
@@ -256,11 +254,11 @@ def normalize_barcode(barcode: str) -> tuple[str, str]:
     if barcode.isdigit():
         if len(barcode) == 12 and validate_upc(barcode):
             return barcode, "UPC-A"
-        elif len(barcode) == 8 and validate_upc(barcode):
+        if len(barcode) == 8 and validate_upc(barcode):
             return barcode, "UPC-E"
-        elif len(barcode) == 13 and validate_ean(barcode):
+        if len(barcode) == 13 and validate_ean(barcode):
             return barcode, "EAN-13"
-        elif len(barcode) == 8 and validate_ean(barcode):
+        if len(barcode) == 8 and validate_ean(barcode):
             return barcode, "EAN-8"
 
     # Default to original
@@ -269,7 +267,7 @@ def normalize_barcode(barcode: str) -> tuple[str, str]:
 
 def extract_brand_from_barcode(barcode: str) -> str | None:
     """Extract potential brand from barcode prefix
-    Common manufacturer prefixes (simplified)
+    Common manufacturer prefixes (simplified).
     """
     if not barcode.isdigit() or len(barcode) < 6:
         return None
@@ -300,17 +298,17 @@ def extract_brand_from_barcode(barcode: str) -> str | None:
 
 
 def search_exact_barcode(barcode: str, db: Session) -> list:
-    """Search for exact barcode match - DEPRECATED FOR CROWN SAFE"""
+    """Search for exact barcode match - DEPRECATED FOR CROWN SAFE."""
     return []
 
 
 def search_similar_products(barcode: str, brand: str | None, category: str | None, db: Session) -> list:
-    """Search for similar products - DEPRECATED FOR CROWN SAFE"""
+    """Search for similar products - DEPRECATED FOR CROWN SAFE."""
     return []
 
 
 def calculate_match_confidence(barcode: str, recall: Any) -> float:
-    """Calculate confidence score - DEPRECATED FOR CROWN SAFE"""
+    """Calculate confidence score - DEPRECATED FOR CROWN SAFE."""
     return 0.0
 
 
@@ -325,7 +323,7 @@ async def scan_barcode(
     user_id: str | None = Header(None, alias="X-User-ID"),
     device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
-    """Enhanced barcode scanning with intelligent matching and fallback
+    """Enhanced barcode scanning with intelligent matching and fallback.
 
     Flow:
     1. Check cache for recent scan
@@ -566,7 +564,7 @@ async def scan_barcode(
 
 @router.get("/cache/status")
 async def get_cache_status(user_id: str | None = Header(None, alias="X-User-ID")):
-    """Get cache status and optionally user's cached items"""
+    """Get cache status and optionally user's cached items."""
     cache_info = {
         "ok": True,
         "total_cached": len(barcode_cache.cache),
@@ -588,7 +586,7 @@ async def clear_cache(
     barcode: str | None = Query(None, description="Specific barcode to clear (optional)"),
     user_id: str | None = Header(None, alias="X-User-ID", description="User ID for user-specific cache"),
 ):
-    """Clear cache - all or specific barcode"""
+    """Clear cache - all or specific barcode."""
     if barcode:
         # Clear specific barcode
         if hasattr(barcode_cache, "clear_barcode"):
@@ -604,7 +602,7 @@ async def clear_cache(
             "cleared": 1 if cleared else 0,
             "total_cached_after": getattr(barcode_cache, "get_cache_size", lambda: len(barcode_cache.cache))(),
         }
-    elif user_id:
+    if user_id:
         # Clear user-specific cache
         if hasattr(barcode_cache, "clear_user_cache"):
             barcode_cache.clear_user_cache(user_id)
@@ -618,15 +616,14 @@ async def clear_cache(
             "cleared": 1,
             "total_cached_after": getattr(barcode_cache, "get_cache_size", lambda: len(barcode_cache.cache))(),
         }
+    # Clear all cache
+    total_before = getattr(barcode_cache, "get_cache_size", lambda: len(barcode_cache.cache))()
+    if hasattr(barcode_cache, "clear_all_cache"):
+        barcode_cache.clear_all_cache()
     else:
-        # Clear all cache
-        total_before = getattr(barcode_cache, "get_cache_size", lambda: len(barcode_cache.cache))()
-        if hasattr(barcode_cache, "clear_all_cache"):
-            barcode_cache.clear_all_cache()
-        else:
-            # Fallback: manually clear all cache
-            barcode_cache.cache.clear()
-        return {"ok": True, "cleared": total_before, "total_cached_after": 0}
+        # Fallback: manually clear all cache
+        barcode_cache.cache.clear()
+    return {"ok": True, "cleared": total_before, "total_cached_after": 0}
 
 
 # ========================= TEST BARCODES =========================
@@ -634,7 +631,7 @@ async def clear_cache(
 
 @router.get("/test/barcodes")
 async def get_test_barcodes():
-    """Get 5 test barcodes with expected behaviors for acceptance testing"""
+    """Get 5 test barcodes with expected behaviors for acceptance testing."""
     return {
         "ok": True,
         "test_barcodes": [

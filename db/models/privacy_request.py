@@ -1,8 +1,8 @@
-"""SQLAlchemy model for privacy request (DSAR) tracking"""
+"""SQLAlchemy model for privacy request (DSAR) tracking."""
 
 import hashlib
 import secrets
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from typing import Any
 
 from sqlalchemy import CheckConstraint, Column, DateTime, String, Text
@@ -14,7 +14,7 @@ from core_infra.database import Base  # Use existing Base from project
 
 class PrivacyRequest(Base):
     """Model for tracking privacy requests (Data Subject Access Requests)
-    Compliant with GDPR, CCPA, and other privacy regulations
+    Compliant with GDPR, CCPA, and other privacy regulations.
     """
 
     __tablename__ = "privacy_requests"
@@ -75,11 +75,11 @@ class PrivacyRequest(Base):
         ),
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<PrivacyRequest(id={self.id}, kind={self.kind}, email_hash={self.email_hash[:8]}..., status={self.status})>"  # noqa: E501
 
     def to_dict(self, include_pii: bool = False) -> dict[str, Any]:
-        """Convert to dictionary for JSON serialization
+        """Convert to dictionary for JSON serialization.
 
         Args:
             include_pii: Whether to include personally identifiable information
@@ -118,7 +118,7 @@ class PrivacyRequest(Base):
 
     @property
     def sla_days(self) -> int:
-        """Get SLA in days based on jurisdiction"""
+        """Get SLA in days based on jurisdiction."""
         sla_map = {
             "gdpr": 30,
             "uk_gdpr": 30,
@@ -132,7 +132,7 @@ class PrivacyRequest(Base):
 
     @property
     def is_overdue(self) -> bool:
-        """Check if request is overdue based on SLA"""
+        """Check if request is overdue based on SLA."""
         if self.status in ("done", "rejected", "cancelled", "expired"):
             return False
 
@@ -144,7 +144,7 @@ class PrivacyRequest(Base):
 
     @property
     def days_elapsed(self) -> int | None:
-        """Calculate days elapsed since submission"""
+        """Calculate days elapsed since submission."""
         if self.submitted_at:
             elapsed = datetime.now(UTC) - self.submitted_at
             return elapsed.days
@@ -152,17 +152,17 @@ class PrivacyRequest(Base):
 
     @property
     def is_pending(self) -> bool:
-        """Check if request is still pending"""
+        """Check if request is still pending."""
         return self.status in ("queued", "verifying", "processing")
 
     @property
     def is_complete(self) -> bool:
-        """Check if request is complete"""
+        """Check if request is complete."""
         return self.status in ("done", "rejected", "cancelled", "expired")
 
     @classmethod
     def hash_email(cls, email: str) -> str:
-        """Generate SHA-256 hash of normalized email
+        """Generate SHA-256 hash of normalized email.
 
         Args:
             email: Email address to hash
@@ -176,7 +176,7 @@ class PrivacyRequest(Base):
 
     @classmethod
     def generate_verification_token(cls) -> str:
-        """Generate secure verification token
+        """Generate secure verification token.
 
         Returns:
             URL-safe token
@@ -184,14 +184,14 @@ class PrivacyRequest(Base):
         """
         return secrets.token_urlsafe(48)  # 64 characters after encoding
 
-    def set_verified(self):
-        """Mark request as verified"""
+    def set_verified(self) -> None:
+        """Mark request as verified."""
         self.status = "processing"
         self.verified_at = datetime.now(UTC)
         self.verification_token = None  # Clear token after use
 
-    def set_completed(self, export_url: str | None = None, expiry_days: int = 7):
-        """Mark request as completed
+    def set_completed(self, export_url: str | None = None, expiry_days: int = 7) -> None:
+        """Mark request as completed.
 
         Args:
             export_url: URL for data export download
@@ -205,8 +205,8 @@ class PrivacyRequest(Base):
             self.export_url = export_url
             self.expires_at = datetime.now(UTC) + timedelta(days=expiry_days)
 
-    def set_rejected(self, reason: str):
-        """Mark request as rejected
+    def set_rejected(self, reason: str) -> None:
+        """Mark request as rejected.
 
         Args:
             reason: Reason for rejection
@@ -216,8 +216,8 @@ class PrivacyRequest(Base):
         self.completed_at = datetime.now(UTC)
         self.rejection_reason = reason
 
-    def set_expired(self):
-        """Mark request as expired"""
+    def set_expired(self) -> None:
+        """Mark request as expired."""
         self.status = "expired"
         self.export_url = None  # Clear expired URL
 
@@ -233,7 +233,7 @@ class PrivacyRequest(Base):
         user_agent: str | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> "PrivacyRequest":
-        """Factory method to create a new privacy request
+        """Factory method to create a new privacy request.
 
         Args:
             kind: Type of request (export, delete, etc.)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Run local tests with proper database configuration
-Sets environment variables for local testing
+Sets environment variables for local testing.
 """
 
 import asyncio
@@ -11,8 +11,8 @@ import time
 from pathlib import Path
 
 
-def setup_local_environment():
-    """Set up environment variables for local testing"""
+def setup_local_environment() -> None:
+    """Set up environment variables for local testing."""
     print("🔧 Setting up local test environment...")
 
     # Use SQLite for local testing
@@ -30,7 +30,7 @@ def setup_local_environment():
 
 
 def start_api_server():
-    """Start the API server in the background"""
+    """Start the API server in the background."""
     print("\n🚀 Starting API server...")
 
     # Start the server with the local environment
@@ -74,8 +74,8 @@ def start_api_server():
     return None
 
 
-async def run_test(script_name, description):
-    """Run a single test script"""
+async def run_test(script_name, description) -> bool | None:
+    """Run a single test script."""
     print(f"\n{'=' * 60}")
     print(f"🧪 {description}")
     print(f"Script: {script_name}")
@@ -107,9 +107,8 @@ async def run_test(script_name, description):
         if result.returncode == 0:
             print(f"✅ {description} - PASSED")
             return True
-        else:
-            print(f"❌ {description} - FAILED (exit code: {result.returncode})")
-            return False
+        print(f"❌ {description} - FAILED (exit code: {result.returncode})")
+        return False
 
     except subprocess.TimeoutExpired:
         print(f"⏱️ {description} - TIMEOUT (exceeded 60 seconds)")
@@ -119,8 +118,8 @@ async def run_test(script_name, description):
         return False
 
 
-async def main():
-    """Main test runner"""
+async def main() -> None:
+    """Main test runner."""
     print("\n" + "🎯 BABYSHIELD LOCAL TEST SUITE 🎯".center(70, "="))
     print("Running tests with local SQLite database")
     print("=" * 70)

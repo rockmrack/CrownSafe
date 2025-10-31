@@ -1,5 +1,5 @@
 """Crown Safe - Recall Agent Configuration
-Adapts recall_data_agent to filter for hair/cosmetic products only
+Adapts recall_data_agent to filter for hair/cosmetic products only.
 
 Changes from BabyShield:
 - Filter for cosmetic/hair product categories

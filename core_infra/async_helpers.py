@@ -1,5 +1,5 @@
 """Async helpers for BabyShield
-Prevents timeouts with non-blocking external API calls
+Prevents timeouts with non-blocking external API calls.
 """
 
 import asyncio
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class AsyncAPIClient:
-    """Async HTTP client with timeout, retry, and error handling"""
+    """Async HTTP client with timeout, retry, and error handling."""
 
     def __init__(self, timeout: int = 30, max_retries: int = 3, backoff_factor: float = 1.0) -> None:
         self.timeout = aiohttp.ClientTimeout(total=timeout)
@@ -24,25 +24,25 @@ class AsyncAPIClient:
         self.session: aiohttp.ClientSession | None = None
 
     async def __aenter__(self):
-        """Context manager entry"""
+        """Context manager entry."""
         self.session = aiohttp.ClientSession(timeout=self.timeout)
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Context manager exit"""
+        """Context manager exit."""
         if self.session:
             await self.session.close()
 
     async def get(self, url: str, **kwargs) -> dict[str, Any]:
-        """Async GET request with retry logic"""
+        """Async GET request with retry logic."""
         return await self._request("GET", url, **kwargs)
 
     async def post(self, url: str, **kwargs) -> dict[str, Any]:
-        """Async POST request with retry logic"""
+        """Async POST request with retry logic."""
         return await self._request("POST", url, **kwargs)
 
     async def _request(self, method: str, url: str, **kwargs) -> dict[str, Any]:
-        """Make async request with retry logic"""
+        """Make async request with retry logic."""
         if not self.session:
             self.session = aiohttp.ClientSession(timeout=self.timeout)
 
@@ -59,7 +59,7 @@ class AsyncAPIClient:
                         data = await response.json()
                         logger.info(f"API call successful: {method} {url} ({response_time:.2f}s)")
                         return data
-                    elif response.status == 429:  # Rate limited
+                    if response.status == 429:  # Rate limited
                         retry_after = int(response.headers.get("Retry-After", 60))
                         logger.warning(f"Rate limited, waiting {retry_after}s")
                         await asyncio.sleep(retry_after)
@@ -87,7 +87,7 @@ class AsyncAPIClient:
 
 
 async def fetch_multiple_apis(urls: list[str], timeout: int = 30) -> list[dict[str, Any] | None]:
-    """Fetch data from multiple APIs concurrently"""
+    """Fetch data from multiple APIs concurrently."""
     async with AsyncAPIClient(timeout=timeout) as client:
         tasks = [client.get(url) for url in urls]
         results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -105,7 +105,7 @@ async def fetch_multiple_apis(urls: list[str], timeout: int = 30) -> list[dict[s
 
 
 def async_endpoint(func):
-    """Decorator to convert sync endpoint to async"""
+    """Decorator to convert sync endpoint to async."""
 
     @wraps(func)
     async def wrapper(*args, **kwargs):
@@ -121,14 +121,14 @@ def async_endpoint(func):
 
 
 class AsyncBatchProcessor:
-    """Process items in batches asynchronously"""
+    """Process items in batches asynchronously."""
 
     def __init__(self, batch_size: int = 10, max_concurrent: int = 5) -> None:
         self.batch_size = batch_size
         self.semaphore = asyncio.Semaphore(max_concurrent)
 
     async def process(self, items: list[Any], process_func: Callable) -> list[Any]:
-        """Process items in concurrent batches"""
+        """Process items in concurrent batches."""
         results = []
 
         for i in range(0, len(items), self.batch_size):
@@ -141,15 +141,14 @@ class AsyncBatchProcessor:
         return results
 
     async def _process_batch(self, batch: list[Any], process_func: Callable) -> list[Any]:
-        """Process a single batch with concurrency limit"""
+        """Process a single batch with concurrency limit."""
 
         async def process_with_semaphore(item):
             async with self.semaphore:
                 if asyncio.iscoroutinefunction(process_func):
                     return await process_func(item)
-                else:
-                    loop = asyncio.get_event_loop()
-                    return await loop.run_in_executor(None, process_func, item)
+                loop = asyncio.get_event_loop()
+                return await loop.run_in_executor(None, process_func, item)
 
         tasks = [process_with_semaphore(item) for item in batch]
         return await asyncio.gather(*tasks, return_exceptions=True)
@@ -157,7 +156,7 @@ class AsyncBatchProcessor:
 
 # Async cache decorator
 def async_cache(ttl: int = 300):
-    """Cache async function results"""
+    """Cache async function results."""
     cache = {}
 
     def decorator(func):
@@ -188,17 +187,17 @@ def async_cache(ttl: int = 300):
 
 # Convert blocking operations to async
 class AsyncConverter:
-    """Convert blocking database/API calls to async"""
+    """Convert blocking database/API calls to async."""
 
     @staticmethod
     async def run_sync_in_thread(sync_func: Callable, *args, **kwargs):
-        """Run synchronous function in thread pool"""
+        """Run synchronous function in thread pool."""
         loop = asyncio.get_event_loop()
         return await loop.run_in_executor(None, sync_func, *args, **kwargs)
 
     @staticmethod
     async def convert_requests_to_async(url: str, method: str = "GET", **kwargs):
-        """Convert requests library call to async"""
+        """Convert requests library call to async."""
         async with httpx.AsyncClient() as client:
             response = await client.request(method, url, **kwargs)
             return response.json() if response.status_code == 200 else None
@@ -206,7 +205,7 @@ class AsyncConverter:
 
 # Example usage functions
 async def fetch_recalls_async() -> dict[str, Any]:
-    """Example: Fetch recalls from multiple sources concurrently"""
+    """Example: Fetch recalls from multiple sources concurrently."""
     urls = [
         "https://api.cpsc.gov/recalls",
         "https://api.fda.gov/drug/enforcement.json",
@@ -220,14 +219,14 @@ async def fetch_recalls_async() -> dict[str, Any]:
 
 @async_cache(ttl=600)
 async def get_product_data_async(barcode: str) -> dict[str, Any]:
-    """Example: Get product data with caching"""
+    """Example: Get product data with caching."""
     async with AsyncAPIClient() as client:
         return await client.get(f"https://api.upcitemdb.com/prod/v1/lookup?upc={barcode}")
 
 
 # Async task queue
 class AsyncTaskQueue:
-    """Simple async task queue for background processing"""
+    """Simple async task queue for background processing."""
 
     def __init__(self, max_workers: int = 10) -> None:
         self.queue = asyncio.Queue()
@@ -236,23 +235,23 @@ class AsyncTaskQueue:
         self.running = False
 
     async def add_task(self, task: Callable, *args, **kwargs) -> None:
-        """Add task to queue"""
+        """Add task to queue."""
         await self.queue.put((task, args, kwargs))
 
     async def start(self) -> None:
-        """Start processing tasks"""
+        """Start processing tasks."""
         self.running = True
         self.workers = [asyncio.create_task(self._worker(f"worker-{i}")) for i in range(self.max_workers)]
 
     async def stop(self) -> None:
-        """Stop processing tasks"""
+        """Stop processing tasks."""
         self.running = False
         await self.queue.join()
         for worker in self.workers:
             worker.cancel()
 
     async def _worker(self, name: str) -> None:
-        """Worker to process tasks"""
+        """Worker to process tasks."""
         while self.running:
             try:
                 task, args, kwargs = await asyncio.wait_for(self.queue.get(), timeout=1.0)

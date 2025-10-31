@@ -1,11 +1,11 @@
-"""Tests for api/models/chat_memory.py"""
+"""Tests for api/models/chat_memory.py."""
 
 import unittest
 
 
 class TestChatMemory(unittest.TestCase):
-    def test_chat_memory_module_import(self):
-        """Test that chat_memory module can be imported"""
+    def test_chat_memory_module_import(self) -> None:
+        """Test that chat_memory module can be imported."""
         try:
             from api.models import chat_memory
 
@@ -13,8 +13,8 @@ class TestChatMemory(unittest.TestCase):
         except ImportError:
             self.skipTest("chat_memory module not found")
 
-    def test_chat_memory_model_creation(self):
-        """Test creating a chat memory model"""
+    def test_chat_memory_model_creation(self) -> None:
+        """Test creating a chat memory model."""
         try:
             from api.models.chat_memory import ChatMemory
 

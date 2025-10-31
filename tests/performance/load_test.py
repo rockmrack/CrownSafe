@@ -1,5 +1,5 @@
 """Crown Safe Performance and Load Testing
-Automated performance benchmarking for critical endpoints
+Automated performance benchmarking for critical endpoints.
 
 Features:
 - Concurrent request testing
@@ -20,11 +20,11 @@ import httpx
 
 class LoadTester:
     """Performance and load testing framework
-    Tests system behavior under concurrent load
+    Tests system behavior under concurrent load.
     """
 
-    def __init__(self, base_url: str = "http://localhost:8001"):
-        """Initialize load tester
+    def __init__(self, base_url: str = "http://localhost:8001") -> None:
+        """Initialize load tester.
 
         Args:
             base_url: Base URL of API to test
@@ -40,7 +40,7 @@ class LoadTester:
         num_requests: int = 100,
         concurrent_requests: int = 10,
     ) -> dict[str, Any]:
-        """Load test a specific endpoint
+        """Load test a specific endpoint.
 
         Args:
             endpoint: API endpoint path
@@ -110,7 +110,7 @@ class LoadTester:
         return results
 
     async def _make_request(self, client: httpx.AsyncClient, url: str, method: str) -> dict[str, Any]:
-        """Make single HTTP request and measure time"""
+        """Make single HTTP request and measure time."""
         start_time = time.time()
 
         try:
@@ -132,7 +132,7 @@ class LoadTester:
             return {"response_time": time.time() - start_time, "status_code": 0, "error": str(e)}
 
     async def run_comprehensive_load_test(self) -> dict[str, Any]:
-        """Run comprehensive load tests on critical endpoints
+        """Run comprehensive load tests on critical endpoints.
 
         Returns:
             Dictionary with all test results
@@ -189,8 +189,8 @@ class LoadTester:
         return test_suite
 
 
-async def main():
-    """Run load tests"""
+async def main() -> None:
+    """Run load tests."""
     tester = LoadTester()
 
     print("Starting comprehensive load test...")

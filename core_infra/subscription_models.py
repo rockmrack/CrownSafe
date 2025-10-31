@@ -1,10 +1,10 @@
 """Subscription models for mobile app IAP (Apple/Google)
-Supports monthly ($7.99) and annual ($79.99) plans
+Supports monthly ($7.99) and annual ($79.99) plans.
 """
 
 import enum
 import uuid
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 
 from sqlalchemy import (
     Boolean,
@@ -26,14 +26,14 @@ from core_infra.database import Base
 
 
 class SubscriptionPlan(enum.Enum):
-    """Subscription plan types"""
+    """Subscription plan types."""
 
     MONTHLY = "monthly"
     ANNUAL = "annual"
 
 
 class SubscriptionStatus(enum.Enum):
-    """Subscription status"""
+    """Subscription status."""
 
     ACTIVE = "active"
     EXPIRED = "expired"
@@ -43,7 +43,7 @@ class SubscriptionStatus(enum.Enum):
 
 
 class PaymentProvider(enum.Enum):
-    """Payment provider"""
+    """Payment provider."""
 
     APPLE = "apple"
     GOOGLE = "google"
@@ -51,7 +51,7 @@ class PaymentProvider(enum.Enum):
 
 class Subscription(Base):
     """Subscription model for mobile app IAP
-    Tracks user subscriptions from Apple App Store and Google Play
+    Tracks user subscriptions from Apple App Store and Google Play.
     """
 
     __tablename__ = "subscriptions"
@@ -99,19 +99,19 @@ class Subscription(Base):
     )
 
     def is_active(self) -> bool:
-        """Check if subscription is currently active"""
+        """Check if subscription is currently active."""
         return self.status == SubscriptionStatus.ACTIVE and self.expires_at > datetime.now(UTC)
 
     def calculate_expiry(self) -> DateTime:
-        """Calculate expiry date based on plan"""
+        """Calculate expiry date based on plan."""
         if self.plan == SubscriptionPlan.MONTHLY:
             return self.started_at + timedelta(days=30)
-        elif self.plan == SubscriptionPlan.ANNUAL:
+        if self.plan == SubscriptionPlan.ANNUAL:
             return self.started_at + timedelta(days=365)
         return self.started_at
 
     def to_dict(self) -> dict:
-        """Convert to dictionary for API responses"""
+        """Convert to dictionary for API responses."""
         return {
             "id": self.id,
             "user_id": self.user_id,
@@ -135,7 +135,7 @@ class Subscription(Base):
 
 
 class ReceiptValidation(Base):
-    """Track receipt validation attempts for audit and debugging"""
+    """Track receipt validation attempts for audit and debugging."""
 
     __tablename__ = "receipt_validations"
 

@@ -7,7 +7,7 @@ import sys
 import uuid
 from collections import Counter
 from dataclasses import asdict
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -554,15 +554,14 @@ class ReportBuilderAgentLogic:
                     return True
                 self.logger.error("Generated file is not a valid PDF (missing %PDF header)")
                 return False
-            else:
-                self.logger.error("PDF file created but empty or missing.")
-                return False
+            self.logger.error("PDF file created but empty or missing.")
+            return False
         except Exception as e:
             self.logger.error(f"Exception during HTML-to-PDF: {e}", exc_info=True)
             return False
 
     def generate_pdf_from_template(self, template_name: str, context: dict) -> str:
-        """Generate PDF from Jinja2 template"""
+        """Generate PDF from Jinja2 template."""
         try:
             # Check if template exists
             template_path = TEMPLATES_DIR / template_name
@@ -584,15 +583,14 @@ class ReportBuilderAgentLogic:
             if self._convert_html_to_pdf(html_content, pdf_filepath):
                 self.logger.info(f"PDF successfully generated: {pdf_filepath}")
                 return pdf_filepath
-            else:
-                raise Exception("PDF conversion failed")
+            raise Exception("PDF conversion failed")
 
         except Exception as e:
             self.logger.error(f"Failed to generate PDF from template: {e}", exc_info=True)
             raise
 
     def _build_pa_summary_report(self, data: dict, workflow_id: str = None) -> dict:
-        """Build Prior Authorization Summary Report"""
+        """Build Prior Authorization Summary Report."""
         self.logger.info("Building Prior Authorization Summary PDF...")
         self.logger.info(f"Received data keys: {list(data.keys())}")
 
@@ -818,7 +816,7 @@ class ReportBuilderAgentLogic:
 
     def _build_nursery_quarterly_report(self, data: dict, workflow_id: str | None = None) -> dict:
         """Build Nursery Quarterly Report over multiple products.
-        Expects data: { products: [ {product, recalls, personalized, community, manufacturer, hazards}, ... ] }
+        Expects data: { products: [ {product, recalls, personalized, community, manufacturer, hazards}, ... ] }.
         """
         try:
             template_name = "nursery_quarterly_report.html"
@@ -944,7 +942,7 @@ class ReportBuilderAgentLogic:
             return {"status": "error", "message": str(e)}
 
     def _build_default_research_report(self, data: dict) -> dict:
-        """Keep the existing logic for building the old research reports"""
+        """Keep the existing logic for building the old research reports."""
         self.logger.info("Building default research report...")
         return {"status": "success", "message": "Default research report built"}
 
@@ -1003,7 +1001,7 @@ class ReportBuilderAgentLogic:
             return {"status": "error", "message": str(e)}
 
     async def build_report(self, task_payload: dict) -> dict:
-        """Main method to build reports based on type"""
+        """Main method to build reports based on type."""
         report_type = task_payload.get("report_type", "default_research")
         report_data = task_payload.get("report_data", {})
         workflow_id = task_payload.get("workflow_id")
@@ -1013,17 +1011,16 @@ class ReportBuilderAgentLogic:
         if report_type == "prior_authorization_summary":
             # Call the dedicated method for PA reports
             return self._build_pa_summary_report(report_data, workflow_id)
-        elif report_type == "product_safety":
+        if report_type == "product_safety":
             return self._build_product_safety_report(report_data, workflow_id)
-        elif report_type == "nursery_quarterly":
+        if report_type == "nursery_quarterly":
             return self._build_nursery_quarterly_report(report_data, workflow_id)
-        elif report_type == "safety_summary":
+        if report_type == "safety_summary":
             db = report_data.get("db") if isinstance(report_data, dict) else None
             user_id = report_data.get("user_id") if isinstance(report_data, dict) else None
             return self.build_safety_summary(db, user_id=user_id or 0)
-        else:
-            # Keep the existing logic for building the old research reports
-            return self._build_default_research_report(report_data)
+        # Keep the existing logic for building the old research reports
+        return self._build_default_research_report(report_data)
 
     def _extract_data_from_dependency_result(self, dep_result: Any, expected_key: str) -> dict[str, Any]:
         """Enhanced extraction logic that handles various formats of dependency results.
@@ -1434,9 +1431,8 @@ a {{ color: #2561b1; text-decoration: none; }}
                 else MessageType.TASK_FAIL.value,
                 "payload": response_payload,
             }
-        else:
-            self.logger.warning(f"ReportBuilderLogic received unhandled message type: {message_type.value}")
-            return None
+        self.logger.warning(f"ReportBuilderLogic received unhandled message type: {message_type.value}")
+        return None
 
     async def shutdown(self) -> None:
         self.logger.info(f"ReportBuilderAgentLogic shutting down for agent {self.agent_id}.")
@@ -1444,7 +1440,7 @@ a {{ color: #2561b1; text-decoration: none; }}
 
     # Add this method for direct task processing (for testing without MCP)
     def process_task(self, task_payload: dict) -> dict:
-        """Process task directly without MCP messaging"""
+        """Process task directly without MCP messaging."""
         report_type = task_payload.get("report_type", "prior_authorization_summary")
         report_data = task_payload.get("report_data", {})
         workflow_id = task_payload.get("workflow_id", f"WF_{str(uuid.uuid4())[:8]}")
@@ -1453,8 +1449,7 @@ a {{ color: #2561b1; text-decoration: none; }}
 
         if report_type == "prior_authorization_summary":
             return self._build_pa_summary_report(report_data, workflow_id)
-        else:
-            return {
-                "status": "error",
-                "message": f"Unsupported report type: {report_type}",
-            }
+        return {
+            "status": "error",
+            "message": f"Unsupported report type: {report_type}",
+        }

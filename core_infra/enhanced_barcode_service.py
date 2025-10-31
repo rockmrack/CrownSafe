@@ -1,10 +1,10 @@
 """A-5 Exact/Valid Scan: Enhanced Barcode Scanning Service
-Integrates comprehensive validation with exact product matching
+Integrates comprehensive validation with exact product matching.
 """
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 # REMOVED FOR CROWN SAFE: RecallDB barcode scanning no longer applicable
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ExactScanResult:
-    """Result of exact barcode scanning with validation"""
+    """Result of exact barcode scanning with validation."""
 
     is_valid: bool
     barcode_validation: BarcodeValidationResult
@@ -37,14 +37,14 @@ class ExactScanResult:
 
 
 class EnhancedBarcodeService:
-    """Enhanced barcode scanning service with exact validation"""
+    """Enhanced barcode scanning service with exact validation."""
 
     def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
         self.validator = barcode_validator
 
     async def scan_barcode_exact(self, barcode: str, user_id: int) -> ExactScanResult:
-        """Perform exact barcode scan with comprehensive validation
+        """Perform exact barcode scan with comprehensive validation.
 
         Args:
             barcode: Raw barcode string to scan
@@ -121,7 +121,7 @@ class EnhancedBarcodeService:
     async def _find_exact_product_matches(
         self, normalized_barcode: str, barcode_type: BarcodeType,
     ) -> list[dict[str, Any]]:
-        """Find exact product matches in database"""
+        """Find exact product matches in database."""
         # REMOVED FOR CROWN SAFE: Recall database search no longer applicable
         # Crown Safe uses hair products (HairProductModel), not baby product recalls
 
@@ -148,7 +148,7 @@ class EnhancedBarcodeService:
     def _calculate_overall_confidence(
         self, validation_result: BarcodeValidationResult, matches: list[dict[str, Any]],
     ) -> float:
-        """Calculate overall confidence score"""
+        """Calculate overall confidence score."""
         base_confidence = validation_result.confidence_score
 
         if not matches:
@@ -161,7 +161,7 @@ class EnhancedBarcodeService:
     def _get_scan_recommendations(
         self, validation_result: BarcodeValidationResult, matches: list[dict[str, Any]],
     ) -> list[str]:
-        """Get recommendations based on scan results"""
+        """Get recommendations based on scan results."""
         recommendations = []
 
         if not matches:
@@ -182,7 +182,7 @@ class EnhancedBarcodeService:
         return recommendations
 
     def get_scan_summary(self, result: ExactScanResult) -> dict[str, Any]:
-        """Get comprehensive scan summary"""
+        """Get comprehensive scan summary."""
         return {
             "scan_timestamp": result.scan_timestamp.isoformat(),
             "is_valid": result.is_valid,

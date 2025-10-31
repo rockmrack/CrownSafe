@@ -3,13 +3,13 @@
 import asyncio
 import json
 import uuid
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 
 import redis
 
 
-async def test_flow():
-    """Test the complete flow from API to Router"""
+async def test_flow() -> bool | None:
+    """Test the complete flow from API to Router."""
     r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
     # Create a unique workflow ID

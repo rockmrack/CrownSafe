@@ -1,7 +1,7 @@
 # agents/recall_data_agent/agent_logic.py
 """RecallDataAgent Core Business Logic
 Handles both live queries (for safety check workflow) and background ingestion.
-Version: 3.0 - Adapted for Crown Safe (Hair/Cosmetic Products)
+Version: 3.0 - Adapted for Crown Safe (Hair/Cosmetic Products).
 """
 
 import logging
@@ -393,7 +393,7 @@ async def test_query(
     upc: str | None = None,
     brand: str | None = None,
 ):
-    """Test the query functionality"""
+    """Test the query functionality."""
     agent = RecallDataAgentLogic(agent_id="test_agent")
 
     inputs = {}
@@ -412,7 +412,7 @@ async def test_query(
 
 
 async def test_ingestion():
-    """Test the ingestion functionality"""
+    """Test the ingestion functionality."""
     agent = RecallDataAgentLogic(agent_id="test_ingestor")
     result = await agent.run_ingestion_cycle()
     print(f"Ingestion result: {result}")

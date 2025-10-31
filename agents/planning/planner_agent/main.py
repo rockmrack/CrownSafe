@@ -47,7 +47,7 @@ except ImportError as e:
 
 # Environment setup
 def setup_environment():
-    """Setup environment variables with proper fallback"""
+    """Setup environment variables with proper fallback."""
     dotenv_paths = [os.path.join(project_root_main, ".env"), ".env"]
 
     for dotenv_path in dotenv_paths:
@@ -85,7 +85,7 @@ shutdown_in_progress = False
 
 
 class PlannerAgentManager:
-    """Main agent manager for PlannerAgent"""
+    """Main agent manager for PlannerAgent."""
 
     def __init__(self) -> None:
         self.mcp_client: MCPClient | None = None
@@ -94,7 +94,7 @@ class PlannerAgentManager:
         self.shutdown_complete = False
 
     async def handle_incoming_message(self, message: MCPMessage) -> None:
-        """Handle incoming messages with proper response structure validation"""
+        """Handle incoming messages with proper response structure validation."""
         if not self.planner_logic or not self.mcp_client:
             logger.error("Logic/MCPClient instance missing in PlannerAgent handler")
             return
@@ -110,7 +110,7 @@ class PlannerAgentManager:
             if message_type == "ERROR":
                 await self._handle_error_message(message)
                 return
-            elif message_type == "PONG":
+            if message_type == "PONG":
                 # Simply acknowledge PONG messages
                 logger.debug(f"Received PONG from {sender_id}")
                 return
@@ -197,7 +197,7 @@ class PlannerAgentManager:
             await self._handle_message_error(message, e)
 
     async def _handle_error_message(self, message: MCPMessage) -> None:
-        """FIXED: Handle ERROR messages from the server"""
+        """FIXED: Handle ERROR messages from the server."""
         header = message.mcp_header
         payload = message.payload
         correlation_id = header.correlation_id
@@ -222,7 +222,7 @@ class PlannerAgentManager:
             logger.error(f"Non-fatal error received: {payload}")
 
     async def _handle_logic_response(self, response: dict[str, Any], original_header: MCPHeader) -> None:
-        """Handle response from logic with proper validation"""
+        """Handle response from logic with proper validation."""
         try:
             if not isinstance(response, dict):
                 logger.error(f"Logic returned non-dict response: {type(response)}")
@@ -263,7 +263,7 @@ class PlannerAgentManager:
             logger.error(f"Error handling logic response: {e}", exc_info=True)
 
     async def _handle_message_error(self, message: MCPMessage, error: Exception) -> None:
-        """Handle errors during message processing"""
+        """Handle errors during message processing."""
         try:
             if not message or not message.mcp_header:
                 logger.error("Cannot send error response: message/header missing")
@@ -297,7 +297,7 @@ class PlannerAgentManager:
             logger.error(f"Failed to send error response: {send_error}", exc_info=True)
 
     def _get_capabilities_list(self) -> list[dict[str, Any]]:
-        """FIXED: Get capabilities in the correct format - list of dictionaries"""
+        """FIXED: Get capabilities in the correct format - list of dictionaries."""
         # Check if logic has memory manager
         memory_augmented = False
         if self.planner_logic and hasattr(self.planner_logic, "memory_manager"):
@@ -324,7 +324,7 @@ class PlannerAgentManager:
         return capabilities
 
     async def initialize_components(self) -> bool | None:
-        """Initialize PlannerLogic and MCPClient"""
+        """Initialize PlannerLogic and MCPClient."""
         try:
             # Initialize PlannerLogic (MemoryAugmentedPlannerLogic)
             self.planner_logic = PlannerLogic(agent_id=AGENT_ID, logger_instance=logic_logger)
@@ -361,7 +361,7 @@ class PlannerAgentManager:
             return False
 
     def setup_signal_handlers(self) -> None:
-        """Setup signal handlers for graceful shutdown"""
+        """Setup signal handlers for graceful shutdown."""
         try:
             loop = asyncio.get_running_loop()
 
@@ -381,7 +381,7 @@ class PlannerAgentManager:
             logger.warning(f"Could not setup signal handlers: {e}")
 
     async def connect_and_register(self) -> bool | None:
-        """Connect to MCP server and register agent"""
+        """Connect to MCP server and register agent."""
         try:
             await self.mcp_client.connect()
 
@@ -401,7 +401,7 @@ class PlannerAgentManager:
             return False
 
     async def run_main_loop(self) -> None:
-        """Main agent event loop"""
+        """Main agent event loop."""
         logger.info(f"{AGENT_ID} entering main event loop...")
 
         try:
@@ -413,7 +413,7 @@ class PlannerAgentManager:
             logger.error(f"Error in main event loop: {e}", exc_info=True)
 
     async def shutdown(self) -> None:
-        """Graceful shutdown of all components"""
+        """Graceful shutdown of all components."""
         if self.shutdown_complete:
             return
 
@@ -441,7 +441,7 @@ class PlannerAgentManager:
 
 
 async def main() -> int | None:
-    """Main entry point"""
+    """Main entry point."""
     agent_manager = PlannerAgentManager()
 
     # Update global instances for backward compatibility

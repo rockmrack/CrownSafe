@@ -25,7 +25,7 @@ TEST_BARCODE = "381370037248"
 # --------------------------
 
 
-async def main():
+async def main() -> None:
     logger = logging.getLogger(__name__)
     logger.info("--- Starting Golden Master (Live End-to-End) Test for Baby Product ---")
 

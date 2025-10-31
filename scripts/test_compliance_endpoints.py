@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Test script for Legal Compliance API endpoints
-Tests COPPA, Children's Code, GDPR, and legal content management
+Tests COPPA, Children's Code, GDPR, and legal content management.
 """
 
 import asyncio
@@ -13,8 +13,8 @@ BASE_URL = "http://localhost:8001"  # Local testing
 # BASE_URL = "https://babyshield.cureviax.ai"  # Production
 
 
-async def test_coppa_age_verification():
-    """Test COPPA age verification"""
+async def test_coppa_age_verification() -> None:
+    """Test COPPA age verification."""
     print("\n" + "=" * 60)
     print("Testing COPPA Age Verification")
     print("=" * 60)
@@ -60,8 +60,8 @@ async def test_coppa_age_verification():
                 print(f"  ❌ Connection error: {e}")
 
 
-async def test_parental_consent():
-    """Test parental consent submission"""
+async def test_parental_consent() -> None:
+    """Test parental consent submission."""
     print("\n" + "=" * 60)
     print("Testing Parental Consent")
     print("=" * 60)
@@ -103,8 +103,8 @@ async def test_parental_consent():
             print(f"❌ Connection error: {e}")
 
 
-async def test_childrens_code():
-    """Test Children's Code compliance assessment"""
+async def test_childrens_code() -> None:
+    """Test Children's Code compliance assessment."""
     print("\n" + "=" * 60)
     print("Testing Children's Code Compliance")
     print("=" * 60)
@@ -162,8 +162,8 @@ async def test_childrens_code():
                 print(f"  ❌ Connection error: {e}")
 
 
-async def test_gdpr_data_requests():
-    """Test GDPR data request submission"""
+async def test_gdpr_data_requests() -> None:
+    """Test GDPR data request submission."""
     print("\n" + "=" * 60)
     print("Testing GDPR Data Requests")
     print("=" * 60)
@@ -209,8 +209,8 @@ async def test_gdpr_data_requests():
                 print(f"  ❌ Connection error: {e}")
 
 
-async def test_legal_documents():
-    """Test legal document retrieval"""
+async def test_legal_documents() -> None:
+    """Test legal document retrieval."""
     print("\n" + "=" * 60)
     print("Testing Legal Documents")
     print("=" * 60)
@@ -261,8 +261,8 @@ async def test_legal_documents():
                 print(f"  ❌ Connection error: {e}")
 
 
-async def test_privacy_dashboard():
-    """Test privacy dashboard"""
+async def test_privacy_dashboard() -> None:
+    """Test privacy dashboard."""
     print("\n" + "=" * 60)
     print("Testing Privacy Dashboard")
     print("=" * 60)
@@ -309,8 +309,8 @@ async def test_privacy_dashboard():
             print(f"❌ Connection error: {e}")
 
 
-async def main():
-    """Run all compliance tests"""
+async def main() -> None:
+    """Run all compliance tests."""
     print("\n" + "⚖️ LEGAL COMPLIANCE API TEST SUITE ⚖️".center(60, "="))
     print(f"Testing against: {BASE_URL}")
     print(f"Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")

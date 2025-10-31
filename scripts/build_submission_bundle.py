@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build store submission bundle (ZIP) with all required assets and documents"""
+"""Build store submission bundle (ZIP) with all required assets and documents."""
 
 import json
 import os
@@ -65,8 +65,8 @@ ASSETS = [
 ]
 
 
-def main():
-    """Build the submission bundle"""
+def main() -> int:
+    """Build the submission bundle."""
     print("📦 Building store submission bundle...")
     print("=" * 60)
 

@@ -1,5 +1,5 @@
 """Crown Safe Database Models
-Hair product safety database for Black hair care (3C-4C)
+Hair product safety database for Black hair care (3C-4C).
 
 Version: 1.0.0
 Last Updated: October 24, 2025
@@ -28,7 +28,7 @@ Base = declarative_base()
 
 
 class HairProfileModel(Base):
-    """User's hair profile for personalized product recommendations"""
+    """User's hair profile for personalized product recommendations."""
 
     __tablename__ = "hair_profiles"
 
@@ -70,7 +70,7 @@ class HairProfileModel(Base):
 
 
 class HairProductModel(Base):
-    """Hair product catalog (15,000+ products planned)"""
+    """Hair product catalog (15,000+ products planned)."""
 
     __tablename__ = "hair_products"
 
@@ -135,7 +135,7 @@ class HairProductModel(Base):
 
 
 class IngredientModel(Base):
-    """Individual ingredient database (200+ ingredients in MVP)"""
+    """Individual ingredient database (200+ ingredients in MVP)."""
 
     __tablename__ = "ingredients"
 
@@ -193,7 +193,7 @@ class IngredientModel(Base):
 
 
 class ProductScanModel(Base):
-    """User's product scan history with Crown Score analysis"""
+    """User's product scan history with Crown Score analysis."""
 
     __tablename__ = "product_scans"
 
@@ -247,7 +247,7 @@ class ProductScanModel(Base):
 
 
 class ProductReviewModel(Base):
-    """Community product reviews"""
+    """Community product reviews."""
 
     __tablename__ = "product_reviews"
 
@@ -292,7 +292,7 @@ class ProductReviewModel(Base):
 
 
 class BrandCertificationModel(Base):
-    """Crown Safe Certified brands (revenue model)"""
+    """Crown Safe Certified brands (revenue model)."""
 
     __tablename__ = "brand_certifications"
 
@@ -332,7 +332,7 @@ class BrandCertificationModel(Base):
 
 
 class SalonAccountModel(Base):
-    """Professional salon accounts ($49/month)"""
+    """Professional salon accounts ($49/month)."""
 
     __tablename__ = "salon_accounts"
 
@@ -378,7 +378,7 @@ class SalonAccountModel(Base):
 
 
 class MarketInsightModel(Base):
-    """Aggregated market data for brands ($50K+ per report)"""
+    """Aggregated market data for brands ($50K+ per report)."""
 
     __tablename__ = "market_insights"
 
@@ -412,12 +412,12 @@ class MarketInsightModel(Base):
 
 
 def create_all_tables(engine) -> None:
-    """Create all Crown Safe database tables"""
+    """Create all Crown Safe database tables."""
     Base.metadata.create_all(bind=engine)
     print("✅ All Crown Safe tables created successfully!")
 
 
 def drop_all_tables(engine) -> None:
-    """Drop all Crown Safe tables (use with caution!)"""
+    """Drop all Crown Safe tables (use with caution!)."""
     Base.metadata.drop_all(bind=engine)
     print("⚠️ All Crown Safe tables dropped!")

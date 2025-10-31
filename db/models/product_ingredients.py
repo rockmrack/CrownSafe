@@ -1,5 +1,5 @@
 """Product Ingredients Database Model
-Stores product ingredient data locally for immediate offline access
+Stores product ingredient data locally for immediate offline access.
 """
 
 from datetime import datetime
@@ -10,7 +10,7 @@ from core_infra.database import Base
 
 
 class ProductIngredient(Base):
-    """Local database of product ingredients for immediate safety checks"""
+    """Local database of product ingredients for immediate safety checks."""
 
     __tablename__ = "product_ingredients"
 
@@ -47,7 +47,7 @@ class ProductIngredient(Base):
 
 
 class IngredientSafety(Base):
-    """Database of ingredient safety information"""
+    """Database of ingredient safety information."""
 
     __tablename__ = "ingredient_safety"
 
@@ -84,7 +84,7 @@ class IngredientSafety(Base):
 
 
 class ProductNutrition(Base):
-    """Nutritional information for products"""
+    """Nutritional information for products."""
 
     __tablename__ = "product_nutrition"
 

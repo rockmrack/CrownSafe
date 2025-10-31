@@ -25,7 +25,7 @@ class ExplainFeedbackPayload(BaseModel):
     @field_validator("helpful", mode="before")
     @classmethod
     def validate_helpful_is_bool(cls, v):
-        """Ensure helpful field is a strict boolean, not coerced from string/int"""
+        """Ensure helpful field is a strict boolean, not coerced from string/int."""
         if not isinstance(v, bool):
             raise ValueError("helpful field must be a boolean (true/false), not a string or number")
         return v

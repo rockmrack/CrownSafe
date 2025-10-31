@@ -87,7 +87,7 @@ target_metadata = Base.metadata
 
 
 def get_database_url():
-    """Get database URL from environment or config"""
+    """Get database URL from environment or config."""
     # First try environment variable (for Docker/production)
     database_url = os.getenv("DATABASE_URL")
     if database_url:

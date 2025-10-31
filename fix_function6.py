@@ -1,7 +1,7 @@
-"""Fix function 6 (fix_upc_data) by replacing RecallDB dead code"""
+"""Fix function 6 (fix_upc_data) by replacing RecallDB dead code."""
 
 
-def fix_function6():
+def fix_function6() -> bool:
     file_path = "api/main_crownsafe.py"
 
     # Read the file

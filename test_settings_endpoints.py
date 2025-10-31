@@ -1,5 +1,5 @@
 """Test Settings Screen Endpoints
-Tests all endpoints shown in mobile app Settings screen
+Tests all endpoints shown in mobile app Settings screen.
 """
 
 import json

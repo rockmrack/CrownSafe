@@ -26,7 +26,7 @@ TEST_USER_ID = 1
 # --------------------------
 
 
-async def main():
+async def main() -> None:
     """Main function to run the OnboardingAgent test."""
     logger = logging.getLogger(__name__)
     logger.info("--- Starting OnboardingAgent Test ---")

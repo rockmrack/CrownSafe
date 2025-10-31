@@ -1,6 +1,6 @@
 """COMPREHENSIVE AGENT TEST SUITE
 Tests all major agents in the BabyShield system
-Date: October 10, 2025
+Date: October 10, 2025.
 """
 
 from datetime import datetime
@@ -69,9 +69,9 @@ if not _REPORT_BUILDER_AVAILABLE:
 
 
 class TestResults:
-    """Track test results for summary report"""
+    """Track test results for summary report."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.results: dict[str, dict[str, Any]] = {}
         self.start_time = datetime.now()
 
@@ -81,7 +81,7 @@ class TestResults:
         test_name: str,
         status: str,
         details: str = "",
-    ):
+    ) -> None:
         if agent_name not in self.results:
             self.results[agent_name] = {"tests": [], "passed": 0, "failed": 0}
 
@@ -98,7 +98,7 @@ class TestResults:
         else:
             self.results[agent_name]["failed"] += 1
 
-    def print_summary(self):
+    def print_summary(self) -> None:
         print("\n" + "=" * 80)
         print("COMPREHENSIVE AGENT TEST SUITE - SUMMARY REPORT")
         print("=" * 80)
@@ -144,8 +144,8 @@ test_results = TestResults()
 
 
 @pytest.mark.unit
-def test_recall_agent_initialization():
-    """Test RecallDataAgent initialization"""
+def test_recall_agent_initialization() -> None:
+    """Test RecallDataAgent initialization."""
     agent_name = "RecallDataAgent"
     test_name = "Initialization"
 
@@ -161,8 +161,8 @@ def test_recall_agent_initialization():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_recall_agent_cpsc_live_api():
-    """Test RecallDataAgent with live CPSC API"""
+async def test_recall_agent_cpsc_live_api() -> None:
+    """Test RecallDataAgent with live CPSC API."""
     agent_name = "RecallDataAgent"
     test_name = "CPSC Live API Integration"
 
@@ -196,8 +196,8 @@ async def test_recall_agent_cpsc_live_api():
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_recall_agent_connectors():
-    """Test RecallDataAgent connector initialization"""
+async def test_recall_agent_connectors() -> None:
+    """Test RecallDataAgent connector initialization."""
     agent_name = "RecallDataAgent"
     test_name = "Connector Initialization"
 
@@ -223,8 +223,8 @@ async def test_recall_agent_connectors():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_recall_agent_process_task():
-    """Test RecallDataAgent process_task method"""
+async def test_recall_agent_process_task() -> None:
+    """Test RecallDataAgent process_task method."""
     agent_name = "RecallDataAgent"
     test_name = "Process Task"
 
@@ -271,8 +271,8 @@ class MockLLMClient:
 
 
 @pytest.mark.unit
-def test_chat_agent_initialization():
-    """Test ChatAgent initialization"""
+def test_chat_agent_initialization() -> None:
+    """Test ChatAgent initialization."""
     agent_name = "ChatAgent"
     test_name = "Initialization"
 
@@ -289,8 +289,8 @@ def test_chat_agent_initialization():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_chat_agent_process_simple_query():
-    """Test ChatAgent with simple query"""
+async def test_chat_agent_process_simple_query() -> None:
+    """Test ChatAgent with simple query."""
     agent_name = "ChatAgent"
     test_name = "Simple Query Processing"
 
@@ -323,8 +323,8 @@ async def test_chat_agent_process_simple_query():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_chat_agent_emergency_detection():
-    """Test ChatAgent emergency detection"""
+async def test_chat_agent_emergency_detection() -> None:
+    """Test ChatAgent emergency detection."""
     agent_name = "ChatAgent"
     test_name = "Emergency Detection"
 
@@ -356,8 +356,8 @@ async def test_chat_agent_emergency_detection():
 
 
 @pytest.mark.unit
-def test_report_builder_initialization():
-    """Test ReportBuilderAgent initialization"""
+def test_report_builder_initialization() -> None:
+    """Test ReportBuilderAgent initialization."""
     agent_name = "ReportBuilderAgent"
     test_name = "Initialization"
 
@@ -372,8 +372,8 @@ def test_report_builder_initialization():
 
 
 @pytest.mark.integration
-def test_report_builder_generate_report():
-    """Test ReportBuilderAgent report generation"""
+def test_report_builder_generate_report() -> None:
+    """Test ReportBuilderAgent report generation."""
     agent_name = "ReportBuilderAgent"
     test_name = "Report Generation"
 
@@ -411,8 +411,8 @@ def test_report_builder_generate_report():
 
 
 @pytest.mark.unit
-def test_visual_search_initialization():
-    """Test VisualSearchAgent initialization"""
+def test_visual_search_initialization() -> None:
+    """Test VisualSearchAgent initialization."""
     agent_name = "VisualSearchAgent"
     test_name = "Initialization"
 
@@ -428,8 +428,8 @@ def test_visual_search_initialization():
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_visual_search_capabilities():
-    """Test VisualSearchAgent capabilities"""
+async def test_visual_search_capabilities() -> None:
+    """Test VisualSearchAgent capabilities."""
     agent_name = "VisualSearchAgent"
     test_name = "Capabilities Check"
 
@@ -451,8 +451,8 @@ async def test_visual_search_capabilities():
 
 
 @pytest.mark.unit
-def test_alternatives_agent_initialization():
-    """Test AlternativesAgent initialization"""
+def test_alternatives_agent_initialization() -> None:
+    """Test AlternativesAgent initialization."""
     agent_name = "AlternativesAgent"
     test_name = "Initialization"
 
@@ -468,8 +468,8 @@ def test_alternatives_agent_initialization():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_alternatives_agent_find_alternatives():
-    """Test AlternativesAgent finding alternatives"""
+async def test_alternatives_agent_find_alternatives() -> None:
+    """Test AlternativesAgent finding alternatives."""
     agent_name = "AlternativesAgent"
     test_name = "Find Alternatives"
 
@@ -502,8 +502,8 @@ async def test_alternatives_agent_find_alternatives():
     not _PRODUCT_IDENTIFIER_AVAILABLE,
     reason="ProductIdentifierAgent not available",
 )
-def test_product_identifier_initialization():
-    """Test ProductIdentifierAgent initialization"""
+def test_product_identifier_initialization() -> None:
+    """Test ProductIdentifierAgent initialization."""
     agent_name = "ProductIdentifierAgent"
     test_name = "Initialization"
 
@@ -523,8 +523,8 @@ def test_product_identifier_initialization():
     not _PRODUCT_IDENTIFIER_AVAILABLE,
     reason="ProductIdentifierAgent not available",
 )
-async def test_product_identifier_process():
-    """Test ProductIdentifierAgent processing"""
+async def test_product_identifier_process() -> None:
+    """Test ProductIdentifierAgent processing."""
     agent_name = "ProductIdentifierAgent"
     test_name = "Product Identification"
 
@@ -548,8 +548,8 @@ async def test_product_identifier_process():
 
 @pytest.mark.unit
 @pytest.mark.skipif(not _ROUTER_AVAILABLE, reason="RouterAgent not available")
-def test_router_agent_initialization():
-    """Test RouterAgent initialization"""
+def test_router_agent_initialization() -> None:
+    """Test RouterAgent initialization."""
     agent_name = "RouterAgent"
     test_name = "Initialization"
 
@@ -565,8 +565,8 @@ def test_router_agent_initialization():
 
 @pytest.mark.integration
 @pytest.mark.skipif(not _ROUTER_AVAILABLE, reason="RouterAgent not available")
-def test_router_agent_capabilities():
-    """Test RouterAgent capabilities mapping"""
+def test_router_agent_capabilities() -> None:
+    """Test RouterAgent capabilities mapping."""
     agent_name = "RouterAgent"
     test_name = "Capabilities Mapping"
 
@@ -587,8 +587,8 @@ def test_router_agent_capabilities():
 # ============================================================================
 
 
-def pytest_sessionfinish(session, exitstatus):
-    """Hook to print summary after all tests complete"""
+def pytest_sessionfinish(session, exitstatus) -> None:
+    """Hook to print summary after all tests complete."""
     test_results.print_summary()
 
 

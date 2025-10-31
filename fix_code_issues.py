@@ -1,5 +1,5 @@
 """Script to fix all remaining code quality issues in babyshield-backend
-Fixes: unused imports, unused loop variables, long lines, exception chaining
+Fixes: unused imports, unused loop variables, long lines, exception chaining.
 """
 
 import re
@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 def fix_unused_loop_variables(content):
-    """Fix unused loop variables by prefixing with underscore"""
+    """Fix unused loop variables by prefixing with underscore."""
     # Pattern: for i in range(...):
     content = re.sub(r"(\s+for\s+)([a-z_][a-z0-9_]*)\s+(in\s+range\([^)]+\):)", r"\1_\2 \3", content)
     # Pattern: for i, var in enumerate(...):
@@ -20,7 +20,7 @@ def fix_unused_loop_variables(content):
 
 
 def fix_long_comment_line(content):
-    """Fix the specific long line in auth_endpoints.py"""
+    """Fix the specific long line in auth_endpoints.py."""
     content = content.replace(
         '        # response.set_cookie("access_token", access_token, httponly=True, secure=True, samesite="lax")',
         "        # response.set_cookie(\n"
@@ -32,7 +32,7 @@ def fix_long_comment_line(content):
 
 
 def fix_exception_chaining(content):
-    """Add 'from None' to raise statements in except clauses"""
+    """Add 'from None' to raise statements in except clauses."""
     # Find raise HTTPException within except blocks and add from None
     pattern = r"(except\s+\w+.*?:.*?)(raise\s+HTTPException\([^)]+\))"
 
@@ -48,8 +48,8 @@ def fix_exception_chaining(content):
     return content
 
 
-def remove_unused_imports(file_path, unused_imports):
-    """Remove specified unused imports from a file"""
+def remove_unused_imports(file_path, unused_imports) -> None:
+    """Remove specified unused imports from a file."""
     with open(file_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
 

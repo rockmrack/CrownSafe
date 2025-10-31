@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Emergency pg_trgm enablement script for AWS CloudShell
-Uses direct database connection (works if security group allows CloudShell)
+Uses direct database connection (works if security group allows CloudShell).
 """
 
 import os

@@ -1,11 +1,11 @@
 """OAuth Authentication Endpoints for Apple and Google Sign-In
-Stores only internal user_id and provider subject ID
+Stores only internal user_id and provider subject ID.
 """
 
 import hashlib
 import logging
 import uuid
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from typing import Any
 
 import httpx
@@ -30,7 +30,7 @@ GOOGLE_ISSUER = "https://accounts.google.com"
 
 
 class OAuthLoginRequest(BaseModel):
-    """OAuth login request with provider token"""
+    """OAuth login request with provider token."""
 
     provider: str = Field(..., pattern="^(apple|google)$", description="OAuth provider (apple or google)")
     id_token: str = Field(..., description="ID token from provider")
@@ -40,7 +40,7 @@ class OAuthLoginRequest(BaseModel):
 
 
 class OAuthLoginResponse(BaseModel):
-    """OAuth login response with JWT tokens"""
+    """OAuth login response with JWT tokens."""
 
     ok: bool = True
     access_token: str
@@ -52,16 +52,16 @@ class OAuthLoginResponse(BaseModel):
 
 
 class OAuthProvider:
-    """Base class for OAuth providers"""
+    """Base class for OAuth providers."""
 
     @staticmethod
     async def verify_token(id_token: str) -> dict[str, Any]:
-        """Verify and decode provider token"""
+        """Verify and decode provider token."""
         raise NotImplementedError
 
 
 class AppleOAuth(OAuthProvider):
-    """Apple Sign-In implementation"""
+    """Apple Sign-In implementation."""
 
     APPLE_PUBLIC_KEY_URL = "https://appleid.apple.com/auth/keys"
     APPLE_ISSUER = "https://appleid.apple.com"
@@ -69,7 +69,7 @@ class AppleOAuth(OAuthProvider):
     @staticmethod
     async def verify_token(id_token: str, client_id: str = None) -> dict[str, Any]:
         """Verify Apple ID token
-        Returns decoded token with 'sub' (subject) and 'email' (if available)
+        Returns decoded token with 'sub' (subject) and 'email' (if available).
         """
         try:
             # For production, fetch Apple's public keys and verify properly
@@ -108,7 +108,7 @@ class AppleOAuth(OAuthProvider):
 
 
 class GoogleOAuth(OAuthProvider):
-    """Google Sign-In implementation"""
+    """Google Sign-In implementation."""
 
     GOOGLE_TOKEN_INFO_URL = "https://oauth2.googleapis.com/tokeninfo"
     GOOGLE_ISSUER = "https://accounts.google.com"
@@ -116,7 +116,7 @@ class GoogleOAuth(OAuthProvider):
     @staticmethod
     async def verify_token(id_token: str, client_id: str = None) -> dict[str, Any]:
         """Verify Google ID token
-        Returns decoded token with 'sub' (subject) and 'email'
+        Returns decoded token with 'sub' (subject) and 'email'.
         """
         try:
             # Verify token with Google
@@ -177,7 +177,7 @@ async def oauth_login(
     db: Session = Depends(get_db),
     user_agent: str | None = Header(None),
 ):
-    """OAuth login with Apple or Google
+    """OAuth login with Apple or Google.
 
     This endpoint:
     1. Verifies the provider token
@@ -307,7 +307,7 @@ async def oauth_login(
 
 @router.post("/logout")
 async def oauth_logout(request: Request, user_id: str | None = None, device_id: str | None = None):
-    """OAuth logout
+    """OAuth logout.
 
     This endpoint logs out the user and invalidates their session.
     In a production environment, you would also:
@@ -336,7 +336,7 @@ async def oauth_logout(request: Request, user_id: str | None = None, device_id: 
 
 @router.post("/revoke")
 async def revoke_token(request: Request, token: str, token_type: str = "access_token"):
-    """Revoke a specific token
+    """Revoke a specific token.
 
     This endpoint allows revoking access or refresh tokens.
     Useful for security purposes or when a device is lost.
@@ -373,7 +373,7 @@ async def revoke_token(request: Request, token: str, token_type: str = "access_t
 
 @router.get("/providers")
 async def get_oauth_providers():
-    """Get list of supported OAuth providers"""
+    """Get list of supported OAuth providers."""
     return {
         "ok": True,
         "providers": [

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test SDK compilation and validity"""
+"""Test SDK compilation and validity."""
 
 import json
 import sys
@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 def test_typescript_sdk():
-    """Check TypeScript SDK exists and has proper structure"""
+    """Check TypeScript SDK exists and has proper structure."""
     sdk_path = Path("clients/mobile/babyshield_client.ts")
 
     if not sdk_path.exists():
@@ -42,7 +42,7 @@ def test_typescript_sdk():
 
 
 def test_swift_sdk():
-    """Check Swift SDK exists and has proper structure"""
+    """Check Swift SDK exists and has proper structure."""
     sdk_path = Path("clients/ios/BabyShieldClient.swift")
 
     if not sdk_path.exists():
@@ -77,7 +77,7 @@ def test_swift_sdk():
 
 
 def test_postman_collection():
-    """Check Postman collection is valid JSON with proper structure"""
+    """Check Postman collection is valid JSON with proper structure."""
     collection_path = Path("docs/api/postman/BabyShield_v1.postman_collection.json")
 
     if not collection_path.exists():
@@ -120,8 +120,8 @@ def test_postman_collection():
     return total_requests > 0
 
 
-def test_openapi_exists():
-    """Check OpenAPI spec exists"""
+def test_openapi_exists() -> bool:
+    """Check OpenAPI spec exists."""
     spec_path = Path("docs/api/openapi_v1.yaml")
 
     if spec_path.exists():
@@ -129,13 +129,12 @@ def test_openapi_exists():
             lines = len(f.read().split("\n"))
         print(f"   ✅ OpenAPI spec exists ({lines} lines)")
         return True
-    else:
-        print("   ❌ OpenAPI spec not found")
-        return False
+    print("   ❌ OpenAPI spec not found")
+    return False
 
 
-def test_readme_exists():
-    """Check API README exists"""
+def test_readme_exists() -> bool:
+    """Check API README exists."""
     readme_path = Path("docs/api/README.md")
 
     if readme_path.exists():
@@ -143,13 +142,12 @@ def test_readme_exists():
             lines = len(f.read().split("\n"))
         print(f"   ✅ API README exists ({lines} lines)")
         return True
-    else:
-        print("   ❌ API README not found")
-        return False
+    print("   ❌ API README not found")
+    return False
 
 
-def main():
-    """Run all tests"""
+def main() -> int:
+    """Run all tests."""
     print("=" * 60)
     print("📱 Mobile SDK & API Documentation Test")
     print("=" * 60)
@@ -177,10 +175,9 @@ def main():
         print("🎉 All SDK and documentation tests passed!")
         print("✅ Task 3 completed successfully")
         return 0
-    else:
-        print("⚠️  Some tests failed")
-        print("Please review and fix the issues above")
-        return 1
+    print("⚠️  Some tests failed")
+    print("Please review and fix the issues above")
+    return 1
 
 
 if __name__ == "__main__":

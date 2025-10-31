@@ -1,4 +1,4 @@
-"""Autocomplete utility functions for query normalization and text processing"""
+"""Autocomplete utility functions for query normalization and text processing."""
 
 import re
 import unicodedata
@@ -47,7 +47,7 @@ BABY_DOMAINS = {
 
 
 def normalize_query(query: str) -> str:
-    """Normalize search query for consistent matching"""
+    """Normalize search query for consistent matching."""
     if not query:
         return ""
 
@@ -73,7 +73,7 @@ def normalize_query(query: str) -> str:
 
 
 def canonicalize_brand(brand: str) -> str:
-    """Canonicalize brand names using alias table"""
+    """Canonicalize brand names using alias table."""
     if not brand:
         return ""
 
@@ -82,7 +82,7 @@ def canonicalize_brand(brand: str) -> str:
 
 
 def is_baby_domain(text: str) -> bool:
-    """Check if text contains baby-related keywords"""
+    """Check if text contains baby-related keywords."""
     if not text:
         return False
 
@@ -91,7 +91,7 @@ def is_baby_domain(text: str) -> bool:
 
 
 def clean_product_name(name: str) -> str:
-    """Clean product names by removing trademark symbols and normalizing"""
+    """Clean product names by removing trademark symbols and normalizing."""
     if not name:
         return ""
 
@@ -111,7 +111,7 @@ def calculate_suggestion_score(
     domain: str = None,
     is_baby_product: bool = False,
 ) -> float:
-    """Calculate relevance score for autocomplete suggestions"""
+    """Calculate relevance score for autocomplete suggestions."""
     if not query or not product_name:
         return 0.0
 
@@ -145,7 +145,7 @@ def calculate_suggestion_score(
 
 
 def highlight_match(text: str, query: str) -> str:
-    """Highlight matching text (simple implementation)"""
+    """Highlight matching text (simple implementation)."""
     if not text or not query:
         return text
 

@@ -1,5 +1,5 @@
 """Crown Safe - Routine Analysis Tests
-Tests for POST /api/v1/cabinet-audit and /api/v1/routine-check endpoints
+Tests for POST /api/v1/cabinet-audit and /api/v1/routine-check endpoints.
 
 Test Coverage:
 - Cabinet audit with protein overload detection
@@ -25,13 +25,13 @@ from core_infra.database import User, get_db
 
 @pytest.fixture
 def client():
-    """FastAPI test client"""
+    """FastAPI test client."""
     return TestClient(app)
 
 
 @pytest.fixture
 def test_user(db_session: Session):
-    """Create test user with hair profile"""
+    """Create test user with hair profile."""
     user = User(
         email="test_routine@crownsafe.com",
         username="test_routine",
@@ -60,14 +60,14 @@ def test_user(db_session: Session):
 
 @pytest.fixture
 def auth_headers(test_user):
-    """Generate authentication headers"""
+    """Generate authentication headers."""
     token = create_access_token(data={"sub": str(test_user.id)})
     return {"Authorization": f"Bearer {token}"}
 
 
 @pytest.fixture
 def db_session():
-    """Database session fixture"""
+    """Database session fixture."""
     db = next(get_db())
     try:
         yield db
@@ -82,8 +82,8 @@ def db_session():
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_cabinet_audit_protein_overload_detected(client, auth_headers):
-    """Test that cabinet audit detects protein overload (3+ products)"""
+def test_cabinet_audit_protein_overload_detected(client, auth_headers) -> None:
+    """Test that cabinet audit detects protein overload (3+ products)."""
     audit_data = {
         "products": [
             {
@@ -128,8 +128,8 @@ def test_cabinet_audit_protein_overload_detected(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_cabinet_audit_no_protein_overload(client, auth_headers):
-    """Test that cabinet audit does NOT flag protein when only 1-2 products have it"""
+def test_cabinet_audit_no_protein_overload(client, auth_headers) -> None:
+    """Test that cabinet audit does NOT flag protein when only 1-2 products have it."""
     audit_data = {
         "products": [
             {
@@ -166,8 +166,8 @@ def test_cabinet_audit_no_protein_overload(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_cabinet_audit_buildup_detected(client, auth_headers):
-    """Test that cabinet audit detects buildup risk (silicones without clarifying)"""
+def test_cabinet_audit_buildup_detected(client, auth_headers) -> None:
+    """Test that cabinet audit detects buildup risk (silicones without clarifying)."""
     audit_data = {
         "products": [
             {
@@ -203,8 +203,8 @@ def test_cabinet_audit_buildup_detected(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_cabinet_audit_no_buildup_with_clarifying(client, auth_headers):
-    """Test that cabinet audit does NOT flag buildup when clarifying shampoo present"""
+def test_cabinet_audit_no_buildup_with_clarifying(client, auth_headers) -> None:
+    """Test that cabinet audit does NOT flag buildup when clarifying shampoo present."""
     audit_data = {
         "products": [
             {
@@ -236,8 +236,8 @@ def test_cabinet_audit_no_buildup_with_clarifying(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_cabinet_audit_stripping_detected(client, auth_headers):
-    """Test that cabinet audit detects stripping (harsh sulfates daily)"""
+def test_cabinet_audit_stripping_detected(client, auth_headers) -> None:
+    """Test that cabinet audit detects stripping (harsh sulfates daily)."""
     audit_data = {
         "products": [
             {
@@ -278,8 +278,8 @@ def test_cabinet_audit_stripping_detected(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_cabinet_audit_moisture_imbalance_detected(client, auth_headers):
-    """Test that cabinet audit detects moisture imbalance (missing key steps)"""
+def test_cabinet_audit_moisture_imbalance_detected(client, auth_headers) -> None:
+    """Test that cabinet audit detects moisture imbalance (missing key steps)."""
     audit_data = {
         "products": [
             {
@@ -310,8 +310,8 @@ def test_cabinet_audit_moisture_imbalance_detected(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_cabinet_audit_calculates_crown_score(client, auth_headers):
-    """Test that cabinet audit calculates Crown Score for each product"""
+def test_cabinet_audit_calculates_crown_score(client, auth_headers) -> None:
+    """Test that cabinet audit calculates Crown Score for each product."""
     audit_data = {
         "products": [
             {
@@ -344,8 +344,8 @@ def test_cabinet_audit_calculates_crown_score(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_cabinet_audit_calculates_average_score(client, auth_headers):
-    """Test that cabinet audit calculates average Crown Score"""
+def test_cabinet_audit_calculates_average_score(client, auth_headers) -> None:
+    """Test that cabinet audit calculates average Crown Score."""
     audit_data = {
         "products": [
             {
@@ -377,8 +377,8 @@ def test_cabinet_audit_calculates_average_score(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_cabinet_audit_generates_rotation_plan(client, auth_headers):
-    """Test that cabinet audit generates rotation plan"""
+def test_cabinet_audit_generates_rotation_plan(client, auth_headers) -> None:
+    """Test that cabinet audit generates rotation plan."""
     audit_data = {
         "products": [
             {
@@ -419,8 +419,8 @@ def test_cabinet_audit_generates_rotation_plan(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_routine_check_silicone_buildup_warning(client, auth_headers):
-    """Test routine check detects silicone buildup (silicone + no sulfates)"""
+def test_routine_check_silicone_buildup_warning(client, auth_headers) -> None:
+    """Test routine check detects silicone buildup (silicone + no sulfates)."""
     check_data = {
         "product_a": {
             "name": "Silicone Leave-In",
@@ -452,8 +452,8 @@ def test_routine_check_silicone_buildup_warning(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_routine_check_protein_sulfate_stripping(client, auth_headers):
-    """Test routine check detects protein + sulfate stripping"""
+def test_routine_check_protein_sulfate_stripping(client, auth_headers) -> None:
+    """Test routine check detects protein + sulfate stripping."""
     check_data = {
         "product_a": {
             "name": "Protein Treatment",
@@ -483,8 +483,8 @@ def test_routine_check_protein_sulfate_stripping(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_routine_check_oil_water_incompatibility(client, auth_headers):
-    """Test routine check detects oil + water gel incompatibility"""
+def test_routine_check_oil_water_incompatibility(client, auth_headers) -> None:
+    """Test routine check detects oil + water gel incompatibility."""
     check_data = {
         "product_a": {
             "name": "Heavy Oil",
@@ -514,8 +514,8 @@ def test_routine_check_oil_water_incompatibility(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_routine_check_no_warnings(client, auth_headers):
-    """Test routine check with compatible products (no warnings)"""
+def test_routine_check_no_warnings(client, auth_headers) -> None:
+    """Test routine check with compatible products (no warnings)."""
     check_data = {
         "product_a": {
             "name": "Gentle Shampoo",
@@ -544,8 +544,8 @@ def test_routine_check_no_warnings(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_cabinet_audit_empty_products(client, auth_headers):
-    """Test cabinet audit with empty products array"""
+def test_cabinet_audit_empty_products(client, auth_headers) -> None:
+    """Test cabinet audit with empty products array."""
     audit_data = {"products": []}
 
     response = client.post("/api/v1/cabinet-audit", json=audit_data, headers=auth_headers)
@@ -556,8 +556,8 @@ def test_cabinet_audit_empty_products(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_cabinet_audit_unauthenticated(client):
-    """Test cabinet audit without authentication"""
+def test_cabinet_audit_unauthenticated(client) -> None:
+    """Test cabinet audit without authentication."""
     audit_data = {
         "products": [{"name": "Shampoo", "type": "Shampoo", "ingredients": ["Water", "Cocamidopropyl Betaine"]}],
     }
@@ -569,8 +569,8 @@ def test_cabinet_audit_unauthenticated(client):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_routine_check_unauthenticated(client):
-    """Test routine check without authentication"""
+def test_routine_check_unauthenticated(client) -> None:
+    """Test routine check without authentication."""
     check_data = {
         "product_a": {"name": "Product A", "type": "Shampoo", "ingredients": ["Water"]},
         "product_b": {"name": "Product B", "type": "Conditioner", "ingredients": ["Water"]},
@@ -583,8 +583,8 @@ def test_routine_check_unauthenticated(client):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_cabinet_audit_no_profile(client):
-    """Test cabinet audit for user without hair profile"""
+def test_cabinet_audit_no_profile(client) -> None:
+    """Test cabinet audit for user without hair profile."""
     # Create user without profile
     db = next(get_db())
     user = User(

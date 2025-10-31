@@ -1,5 +1,5 @@
 """Rate limiting configuration and handlers
-Uses Redis for distributed rate limiting across instances
+Uses Redis for distributed rate limiting across instances.
 """
 
 import logging
@@ -16,7 +16,7 @@ logger = logging.getLogger("app")
 
 
 class RateLimitConfig:
-    """Configuration for rate limiting"""
+    """Configuration for rate limiting."""
 
     # Default limits per endpoint category
     SEARCH_LIMIT = 60  # 60 requests per minute for search
@@ -34,7 +34,7 @@ class RateLimitConfig:
 
 
 async def init_rate_limiter() -> bool:
-    """Initialize FastAPI rate limiter with Redis
+    """Initialize FastAPI rate limiter with Redis.
 
     Returns:
         True if successful, False otherwise
@@ -56,7 +56,7 @@ async def init_rate_limiter() -> bool:
 
 
 async def close_rate_limiter() -> None:
-    """Close rate limiter connections"""
+    """Close rate limiter connections."""
     try:
         await FastAPILimiter.close()
         logger.info("Rate limiter closed")
@@ -66,7 +66,7 @@ async def close_rate_limiter() -> None:
 
 async def rate_limit_exceeded_handler(request: Request, exc) -> JSONResponse:
     """Handler for rate limit exceeded errors
-    Returns consistent error format
+    Returns consistent error format.
     """
     trace_id = getattr(request.state, "trace_id", None)
 
@@ -107,7 +107,7 @@ async def rate_limit_exceeded_handler(request: Request, exc) -> JSONResponse:
 
 
 def get_rate_limiter(times: int = 100, seconds: int = 60, key_func: callable | None = None) -> RateLimiter:
-    """Factory function to create rate limiter dependencies
+    """Factory function to create rate limiter dependencies.
 
     Args:
         times: Number of allowed requests
@@ -123,7 +123,7 @@ def get_rate_limiter(times: int = 100, seconds: int = 60, key_func: callable | N
 
 # Pre-configured rate limiters for common use cases
 class RateLimiters:
-    """Pre-configured rate limiters for different endpoint types"""
+    """Pre-configured rate limiters for different endpoint types."""
 
     # Heavy operations - 60 req/min
     search = RateLimiter(times=RateLimitConfig.SEARCH_LIMIT, seconds=RateLimitConfig.WINDOW)
@@ -144,7 +144,7 @@ class RateLimiters:
 @asynccontextmanager
 async def rate_limit_lifespan():
     """Async context manager for rate limiter lifecycle
-    Use with FastAPI lifespan
+    Use with FastAPI lifespan.
     """
     # Startup
     await init_rate_limiter()

@@ -1,5 +1,5 @@
 """Receipt validation for Apple App Store and Google Play
-Validates receipts and creates/updates subscriptions
+Validates receipts and creates/updates subscriptions.
 """
 
 import hashlib
@@ -42,7 +42,7 @@ else:
 
 
 class AppleReceiptValidator:
-    """Validates Apple App Store receipts"""
+    """Validates Apple App Store receipts."""
 
     def __init__(self) -> None:
         self.shared_secret = SubscriptionConfig.APPLE_SHARED_SECRET
@@ -50,7 +50,7 @@ class AppleReceiptValidator:
 
     async def validate(self, receipt_data: str) -> tuple[bool, dict | None]:
         """Validate Apple receipt
-        Returns: (is_valid, receipt_info)
+        Returns: (is_valid, receipt_info).
         """
         try:
             # Prepare request
@@ -97,7 +97,7 @@ class AppleReceiptValidator:
             return False, None
 
     def _parse_receipt(self, receipt_data: dict) -> dict:
-        """Parse Apple receipt response"""
+        """Parse Apple receipt response."""
         latest_receipt_info = receipt_data.get("latest_receipt_info", [])
 
         if not latest_receipt_info:
@@ -124,14 +124,14 @@ class AppleReceiptValidator:
 
 
 class GoogleReceiptValidator:
-    """Validates Google Play receipts"""
+    """Validates Google Play receipts."""
 
     def __init__(self) -> None:
         self.package_name = SubscriptionConfig.GOOGLE_PACKAGE_NAME
         self.service = self._init_service()
 
     def _init_service(self):
-        """Initialize Google Play API service"""
+        """Initialize Google Play API service."""
         try:
             if not ENABLE_RECEIPT_VALIDATION:
                 logger.info("Receipt validation disabled - skipping Google service initialization")
@@ -176,7 +176,7 @@ class GoogleReceiptValidator:
 
     async def validate(self, purchase_token: str, product_id: str) -> tuple[bool, dict | None]:
         """Validate Google Play receipt
-        Returns: (is_valid, receipt_info)
+        Returns: (is_valid, receipt_info).
         """
         try:
             if not self.service:
@@ -207,7 +207,7 @@ class GoogleReceiptValidator:
             return False, None
 
     def _parse_purchase(self, purchase: dict, product_id: str) -> dict:
-        """Parse Google Play purchase response"""
+        """Parse Google Play purchase response."""
 
         # Parse dates (Google uses milliseconds)
         def parse_date(ms_string):
@@ -227,7 +227,7 @@ class GoogleReceiptValidator:
 
 
 class ReceiptValidationService:
-    """Main service for validating receipts and managing subscriptions"""
+    """Main service for validating receipts and managing subscriptions."""
 
     def __init__(self) -> None:
         self.apple_validator = AppleReceiptValidator()
@@ -240,7 +240,7 @@ class ReceiptValidationService:
         receipt_data: str,
         product_id: str | None = None,
     ) -> dict:
-        """Validate receipt and activate subscription
+        """Validate receipt and activate subscription.
 
         Args:
             user_id: User ID
@@ -324,7 +324,7 @@ class ReceiptValidationService:
         product_info: dict,
         receipt_data: str,
     ) -> Subscription:
-        """Create or update subscription in database"""
+        """Create or update subscription in database."""
         with get_db_session() as db:
             # Use optimized UPSERT for subscription
             from core_infra.upsert_handler import upsert_handler
@@ -372,7 +372,7 @@ class ReceiptValidationService:
             return subscription
 
     def _hash_receipt(self, receipt_data: str) -> str:
-        """Generate hash of receipt for deduplication"""
+        """Generate hash of receipt for deduplication."""
         return hashlib.sha256(receipt_data.encode()).hexdigest()
 
     def _log_validation(
@@ -386,7 +386,7 @@ class ReceiptValidationService:
         transaction_id: str | None = None,
         error: str | None = None,
     ) -> None:
-        """Log receipt validation attempt"""
+        """Log receipt validation attempt."""
         try:
             with get_db_session() as db:
                 validation = ReceiptValidation(

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """FINAL 100% VERIFICATION TEST FOR BABYSHIELD API
-Tests all implemented endpoints with correct parameters
+Tests all implemented endpoints with correct parameters.
 """
 
 from datetime import datetime
@@ -10,8 +10,8 @@ import requests
 BASE_URL = "http://localhost:8001"
 
 
-def test_endpoint(name, method, path, data=None, params=None, expected_status=[200, 201]):
-    """Test a single endpoint"""
+def test_endpoint(name, method, path, data=None, params=None, expected_status=[200, 201]) -> bool | None:
+    """Test a single endpoint."""
     try:
         url = f"{BASE_URL}{path}"
 
@@ -29,9 +29,8 @@ def test_endpoint(name, method, path, data=None, params=None, expected_status=[2
         if success:
             print(f"✅ {name}")
             return True
-        else:
-            print(f"❌ {name} - Status: {response.status_code}")
-            return False
+        print(f"❌ {name} - Status: {response.status_code}")
+        return False
 
     except Exception as e:
         print(f"❌ {name} - Error: {str(e)[:50]}")
@@ -49,7 +48,7 @@ def main():
     results = {"passed": 0, "failed": 0}
 
     # Track test results
-    def run_test(name, method, path, data=None, params=None, expected=[200, 201]):
+    def run_test(name, method, path, data=None, params=None, expected=[200, 201]) -> None:
         if test_endpoint(name, method, path, data, params, expected_status=expected):
             results["passed"] += 1
         else:

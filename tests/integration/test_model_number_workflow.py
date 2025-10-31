@@ -76,7 +76,7 @@ def test_db():
 
 
 @pytest.mark.integration
-def test_model_number_entry_with_known_model(test_db):
+def test_model_number_entry_with_known_model(test_db) -> None:
     """Test manual model number entry for a product WITH a recall.
 
     Workflow:
@@ -138,7 +138,7 @@ def test_model_number_entry_with_known_model(test_db):
 
 
 @pytest.mark.integration
-def test_model_number_entry_without_recall(test_db):
+def test_model_number_entry_without_recall(test_db) -> None:
     """Test manual model number entry for a product WITHOUT a recall.
 
     Workflow:
@@ -189,7 +189,7 @@ def test_model_number_entry_without_recall(test_db):
 
 
 @pytest.mark.integration
-def test_model_number_empty_string():
+def test_model_number_empty_string() -> None:
     """Test that empty model number is handled gracefully."""
     print("\n" + "=" * 80)
     print("TEST: Empty Model Number Input")

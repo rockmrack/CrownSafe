@@ -1,18 +1,19 @@
 """Integration tests for API endpoints
-Tests complete request/response cycles with database
+Tests complete request/response cycles with database.
 """
 
 import uuid
 
 import pytest
 from fastapi.testclient import TestClient
+from typing import Never
 
 
 @pytest.mark.integration
 class TestHealthEndpoints:
-    """Test suite for health check endpoints"""
+    """Test suite for health check endpoints."""
 
-    def test_healthz_endpoint_returns_200(self, client):
+    def test_healthz_endpoint_returns_200(self, client) -> None:
         """Test health check endpoint.
 
         Given: Application is running
@@ -28,7 +29,7 @@ class TestHealthEndpoints:
         assert response.status_code == 200
         assert response.json()["status"] == "ok"
 
-    def test_readyz_endpoint_checks_database(self, client):
+    def test_readyz_endpoint_checks_database(self, client) -> None:
         """Test readiness check includes database.
 
         Given: Database is available
@@ -40,7 +41,7 @@ class TestHealthEndpoints:
         assert response.json()["status"] == "ready"
         assert response.json()["database"] == "connected"
 
-    def test_api_prefixed_health_aliases(self, client):
+    def test_api_prefixed_health_aliases(self, client) -> None:
         """Ensure API-prefixed health endpoints return OK for readiness probes."""
         for path in (
             "/api/health",
@@ -54,9 +55,9 @@ class TestHealthEndpoints:
 
 
 class TestAuthenticationFlow:
-    """Test suite for complete authentication workflow"""
+    """Test suite for complete authentication workflow."""
 
-    def test_complete_user_registration_and_login_flow(self, client, db_session):
+    def test_complete_user_registration_and_login_flow(self, client, db_session) -> None:
         """Test complete user registration and login.
 
         Given: New user data
@@ -79,7 +80,7 @@ class TestAuthenticationFlow:
         assert login_response.status_code == 200
         assert "access_token" in login_response.json()
 
-    def test_user_profile_access_with_authentication(self, client, authenticated_user):
+    def test_user_profile_access_with_authentication(self, client, authenticated_user) -> None:
         """Test accessing protected endpoints with authentication.
 
         Given: Valid authentication token
@@ -98,9 +99,9 @@ class TestAuthenticationFlow:
 
 
 class TestBarcodeScanningFlow:
-    """Test suite for barcode scanning workflow"""
+    """Test suite for barcode scanning workflow."""
 
-    def test_complete_barcode_scan_and_safety_check_flow(self, client, authenticated_user, sample_barcode_image):
+    def test_complete_barcode_scan_and_safety_check_flow(self, client, authenticated_user, sample_barcode_image) -> None:
         """Test complete barcode scan to safety check workflow.
 
         Given: Authenticated user and barcode image
@@ -128,9 +129,9 @@ class TestBarcodeScanningFlow:
 
 
 class TestSearchFlow:
-    """Test suite for search functionality"""
+    """Test suite for search functionality."""
 
-    def test_search_product_by_name(self, client, authenticated_user):
+    def test_search_product_by_name(self, client, authenticated_user) -> None:
         """Test product search by name.
 
         Given: Product name search query
@@ -145,7 +146,7 @@ class TestSearchFlow:
         assert response.status_code == 200
         assert "results" in response.json()
 
-    def test_search_with_pagination(self, client, authenticated_user):
+    def test_search_with_pagination(self, client, authenticated_user) -> None:
         """Test search pagination.
 
         Given: Search query with pagination
@@ -170,9 +171,9 @@ class TestSearchFlow:
 
 
 class TestSubscriptionFlow:
-    """Test suite for subscription management"""
+    """Test suite for subscription management."""
 
-    def test_subscription_upgrade_flow(self, client, authenticated_user):
+    def test_subscription_upgrade_flow(self, client, authenticated_user) -> None:
         """Test subscription upgrade workflow.
 
         Given: Free tier user
@@ -197,9 +198,9 @@ class TestSubscriptionFlow:
 
 
 class TestRateLimiting:
-    """Test suite for rate limiting"""
+    """Test suite for rate limiting."""
 
-    def test_rate_limit_exceeded_returns_429(self, client):
+    def test_rate_limit_exceeded_returns_429(self, client) -> None:
         """Test rate limiting enforcement.
 
         Given: Multiple rapid requests
@@ -217,9 +218,9 @@ class TestRateLimiting:
 
 
 class TestErrorHandling:
-    """Test suite for error handling"""
+    """Test suite for error handling."""
 
-    def test_404_for_nonexistent_endpoint(self, client):
+    def test_404_for_nonexistent_endpoint(self, client) -> None:
         """Test 404 handling for non-existent endpoints.
 
         Given: Request to non-existent endpoint
@@ -230,7 +231,7 @@ class TestErrorHandling:
         assert response.status_code == 404
         assert "error" in response.json()
 
-    def test_500_error_returns_generic_message(self, client, monkeypatch):
+    def test_500_error_returns_generic_message(self, client, monkeypatch) -> None:
         """Test 500 error doesn't leak implementation details.
 
         Given: Internal server error occurs
@@ -239,7 +240,7 @@ class TestErrorHandling:
         """
 
         # Mock an internal error
-        def mock_error(*args, **kwargs):
+        def mock_error(*args, **kwargs) -> Never:
             raise Exception("Internal error")
 
         # Trigger error and verify response
@@ -250,7 +251,7 @@ class TestErrorHandling:
 # Add pytest fixtures
 @pytest.fixture
 def client():
-    """FastAPI test client"""
+    """FastAPI test client."""
     from api.main import (
         app,
     )  # Update this path to the actual location of your FastAPI app instance
@@ -259,8 +260,8 @@ def client():
 
 
 @pytest.fixture
-def db_session():
-    """Database session for tests"""
+def db_session() -> None:
+    """Database session for tests."""
     # Setup test database
     # Yield session
     # Teardown
@@ -269,7 +270,7 @@ def db_session():
 
 @pytest.fixture
 def authenticated_user(client, db_session):
-    """Create and authenticate a test user"""
+    """Create and authenticate a test user."""
     # Register user
     # Generate unique credentials
     email = f"testuser_{uuid.uuid4().hex[:8]}@example.com"
@@ -304,7 +305,7 @@ def authenticated_user(client, db_session):
 
 
 @pytest.fixture
-def sample_barcode_image():
-    """Sample barcode image for testing"""
+def sample_barcode_image() -> None:
+    """Sample barcode image for testing."""
     # Return test barcode image
     pass

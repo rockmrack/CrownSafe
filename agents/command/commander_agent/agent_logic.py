@@ -140,8 +140,7 @@ class CrownSafeCommanderLogic:
                                 "url": recall.url,
                             }
                         return {"status": "COMPLETED", "data": recall_data}
-                    else:
-                        self.logger.error("Recall not found even with direct DB fallback.")
+                    self.logger.error("Recall not found even with direct DB fallback.")
                 except Exception as fallback_exc:
                     self.logger.exception(f"DB fallback failed: {fallback_exc}")
                 # --------- END DB FALLBACK -----------

@@ -60,9 +60,8 @@ def remove_connection(agent_id: str) -> bool:
         del active_connections[agent_id]
         logger.debug(f"State: Connection for agent '{agent_id}' removed.")
         return True
-    else:
-        logger.warning(f"State: Attempted to remove non-existent connection for agent '{agent_id}'.")
-        return False
+    logger.warning(f"State: Attempted to remove non-existent connection for agent '{agent_id}'.")
+    return False
 
 
 def get_connection(agent_id: str) -> Any | None:
@@ -80,7 +79,7 @@ def get_all_connections() -> dict[str, Any | None]:
     return active_connections
 
 
-async def close_all_connections():
+async def close_all_connections() -> None:
     """Close all active WebSocket connections."""
     logger.info("State: Closing all active WebSocket connections...")
     for agent_id, websocket in list(active_connections.items()):
@@ -97,7 +96,7 @@ async def close_all_connections():
 # --- Workflow State Management Functions ---
 
 
-def add_workflow(workflow_id: str, initial_state: Any):
+def add_workflow(workflow_id: str, initial_state: Any) -> None:
     """Adds a new workflow state."""
     if not isinstance(workflow_id, str) or not workflow_id:
         logger.error("State Error: add_workflow called with invalid workflow_id.")
@@ -108,7 +107,7 @@ def add_workflow(workflow_id: str, initial_state: Any):
     active_workflows[workflow_id] = initial_state
 
 
-def update_workflow(workflow_id: str, updated_state: Any):
+def update_workflow(workflow_id: str, updated_state: Any) -> None:
     """Updates an existing workflow state."""
     if not isinstance(workflow_id, str) or not workflow_id:
         logger.error("State Error: update_workflow called with invalid workflow_id.")
@@ -129,7 +128,7 @@ def get_workflow(workflow_id: str) -> Any | None:
     return active_workflows.get(workflow_id)
 
 
-def remove_workflow(workflow_id: str):
+def remove_workflow(workflow_id: str) -> None:
     """Removes a workflow state upon completion or failure."""
     if not isinstance(workflow_id, str) or not workflow_id:
         logger.error("State Error: remove_workflow called with invalid workflow_id.")

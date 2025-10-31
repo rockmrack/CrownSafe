@@ -26,7 +26,7 @@ TEST_USER_ID_TO_DELETE = 99
 # --------------------------
 
 
-async def main():
+async def main() -> None:
     """Main function to run the DataGovernanceAgent test."""
     logger = logging.getLogger(__name__)
     logger.info("--- Starting DataGovernanceAgent Test ---")

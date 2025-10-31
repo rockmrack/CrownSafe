@@ -24,7 +24,7 @@ TEST_USER_EMAIL = "test.user@example.com"
 # --------------------------
 
 
-async def main():
+async def main() -> None:
     """Main function to run the MonetizationAgent test with a mocked Stripe API and a live test database."""
     logger = logging.getLogger(__name__)
     logger.info("--- Starting MonetizationAgent Test ---")

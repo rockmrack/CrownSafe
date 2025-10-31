@@ -1,4 +1,4 @@
-"""COMPLETE MODEL NUMBER TEST
+"""COMPLETE MODEL NUMBER TEST.
 
 This test creates the necessary database tables and test data,
 then tests the model number entry workflow end-to-end.
@@ -145,7 +145,7 @@ def setup_test_database():
     print("\n🧹 Test database cleaned up")
 
 
-def test_model_number_with_recall():
+def test_model_number_with_recall() -> None:
     """Test model number entry for a recalled product.
 
     Expected: System finds recalls matching "ABC-123" in product name.
@@ -194,7 +194,7 @@ def test_model_number_with_recall():
         print(f"   Response: {response.text[:300]}")
 
 
-def test_model_number_without_recall():
+def test_model_number_without_recall() -> None:
     """Test model number entry for a safe product (no recall).
 
     Expected: System returns LOW risk or no recalls found.
@@ -240,7 +240,7 @@ def test_model_number_without_recall():
         print(f"\n⚠️  Got status {response.status_code}")
 
 
-def test_empty_model_number():
+def test_empty_model_number() -> None:
     """Test that empty model number is rejected."""
     print("\n" + "=" * 70)
     print("TEST 3: Empty Model Number")

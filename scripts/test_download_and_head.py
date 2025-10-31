@@ -60,7 +60,7 @@ def generate(h, uid, rtype):
     return extract_report(last.json())
 
 
-def head_and_get(h, url, label):
+def head_and_get(h, url, label) -> None:
     # HEAD
     rh = client.head(url, headers=h)
     print(f"{label} HEAD_status", rh.status_code)
@@ -83,7 +83,7 @@ def head_and_get(h, url, label):
             print(f"{label} {k}: {rg.headers[k]}")
 
 
-def run():
+def run() -> None:
     h, uid = auth_and_get_user_id()
 
     for rtype in ["product_safety", "nursery_quarterly"]:

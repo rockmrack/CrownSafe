@@ -1,5 +1,5 @@
 """Registration and Subscription Verification Test
-Tests all authentication and subscription endpoints for mobile app
+Tests all authentication and subscription endpoints for mobile app.
 """
 
 from datetime import datetime

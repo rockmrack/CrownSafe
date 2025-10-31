@@ -1,12 +1,12 @@
-"""Quick fix for fix_upc_data function - removes RecallDB references"""
+"""Quick fix for fix_upc_data function - removes RecallDB references."""
 
 import subprocess
 import sys
 import time
 
 
-def pause_onedrive():
-    """Pause OneDrive sync"""
+def pause_onedrive() -> bool | None:
+    """Pause OneDrive sync."""
     try:
         subprocess.run(
             [
@@ -28,8 +28,8 @@ def pause_onedrive():
         return False
 
 
-def fix_function():
-    """Fix the fix_upc_data function"""
+def fix_function() -> bool | None:
+    """Fix the fix_upc_data function."""
     filepath = r"c:\Users\rossd\OneDrive\Documents\Crown Safe\api\main_crownsafe.py"
 
     try:
@@ -72,10 +72,9 @@ def fix_function():
             print(f"✅ Lines {start_idx + 1}-{end_idx} replaced with safe default")
             print("✅ CRITICAL FIX COMPLETE - RecallDB references removed!")
             return True
-        else:
-            print("❌ Could not locate the exact section to fix")
-            print(f"   start_idx: {start_idx}, end_idx: {end_idx}")
-            return False
+        print("❌ Could not locate the exact section to fix")
+        print(f"   start_idx: {start_idx}, end_idx: {end_idx}")
+        return False
 
     except Exception as e:
         print(f"❌ Error fixing file: {e}")

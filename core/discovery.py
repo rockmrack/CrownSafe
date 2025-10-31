@@ -5,7 +5,7 @@ import asyncio
 import copy
 import json
 import logging
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 print(f"Loading discovery.py (Step 77 Version - Fixed): {__file__}")
@@ -76,7 +76,7 @@ def _get_agent_capabilities(agent_info: dict[str, Any]) -> set[str]:
     return capabilities
 
 
-async def handle_discovery_message(message: dict[str, Any], sender_id: str):
+async def handle_discovery_message(message: dict[str, Any], sender_id: str) -> None:
     """Handles incoming discovery service messages (REGISTER or QUERY)."""
     if not message or not isinstance(message, dict):
         discovery_logger.error(

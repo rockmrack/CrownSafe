@@ -1,4 +1,4 @@
-"""Check production database schema"""
+"""Check production database schema."""
 
 import sys
 

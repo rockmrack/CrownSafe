@@ -8,7 +8,7 @@ import json
 import logging
 import traceback
 import uuid
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from pathlib import Path
 from typing import Any
 
@@ -83,12 +83,11 @@ def substitute_placeholders(obj: Any, params: dict[str, Any]) -> Any:
                 sub_value = "" if value is None else str(value)
                 obj = obj.replace(placeholder, sub_value)
         return obj
-    elif isinstance(obj, list):
+    if isinstance(obj, list):
         return [substitute_placeholders(item, params) for item in obj]
-    elif isinstance(obj, dict):
+    if isinstance(obj, dict):
         return {k: substitute_placeholders(v, params) for k, v in obj.items()}
-    else:
-        return obj
+    return obj
 
 
 class BabyShieldPlannerLogic:

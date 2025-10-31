@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Validate OpenAPI specification
-Ensures the API spec is valid and matches implementation
+Ensures the API spec is valid and matches implementation.
 """
 
 import json
@@ -10,8 +10,8 @@ from pathlib import Path
 import yaml
 
 
-def validate_openapi_spec():
-    """Validate OpenAPI spec using openapi-spec-validator if available"""
+def validate_openapi_spec() -> bool | None:
+    """Validate OpenAPI spec using openapi-spec-validator if available."""
     spec_path = Path("docs/api/openapi_v1.yaml")
 
     if not spec_path.exists():
@@ -68,8 +68,8 @@ def validate_openapi_spec():
         return False
 
 
-def check_endpoints_match():
-    """Check if documented endpoints match implementation"""
+def check_endpoints_match() -> bool | None:
+    """Check if documented endpoints match implementation."""
     spec_path = Path("docs/api/openapi_v1.yaml")
 
     try:
@@ -115,7 +115,7 @@ def check_endpoints_match():
 
 
 def validate_examples():
-    """Validate that examples in spec are valid JSON"""
+    """Validate that examples in spec are valid JSON."""
     spec_path = Path("docs/api/openapi_v1.yaml")
 
     try:
@@ -153,8 +153,8 @@ def validate_examples():
         return False
 
 
-def main():
-    """Main validation routine"""
+def main() -> int:
+    """Main validation routine."""
     print("=" * 60)
     print("🔍 OpenAPI Specification Validation")
     print("=" * 60)

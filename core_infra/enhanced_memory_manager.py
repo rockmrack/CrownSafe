@@ -1,6 +1,6 @@
 """EnhancedMemoryManager V2.0 - Advanced Memory with Temporal Analysis & Contradiction Detection
 Built on MVP-1.4 foundation with sophisticated pharmaceutical research intelligence
-ENHANCED: Fixed get_enhanced_research_recommendations with proper similarity search and debugging
+ENHANCED: Fixed get_enhanced_research_recommendations with proper similarity search and debugging.
 """
 
 import logging
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class TemporalPattern:
-    """Represents a temporal research pattern"""
+    """Represents a temporal research pattern."""
 
     pattern_id: str
     entity: str  # Drug name, indication, etc.
@@ -40,7 +40,7 @@ class TemporalPattern:
 
 @dataclass
 class Contradiction:
-    """Represents conflicting evidence in research"""
+    """Represents conflicting evidence in research."""
 
     contradiction_id: str
     entity: str
@@ -54,7 +54,7 @@ class Contradiction:
 
 @dataclass
 class ResearchGap:
-    """Represents identified research gaps"""
+    """Represents identified research gaps."""
 
     gap_id: str
     entity: str
@@ -67,7 +67,7 @@ class ResearchGap:
 
 @dataclass
 class CrossWorkflowInsight:
-    """Advanced insights from cross-workflow analysis"""
+    """Advanced insights from cross-workflow analysis."""
 
     insight_id: str
     insight_type: str  # "drug_class_pattern", "indication_synergy", "safety_correlation"
@@ -80,7 +80,7 @@ class CrossWorkflowInsight:
 
 
 class EnhancedMemoryManager(MemoryManager):
-    """Enhanced Memory Manager V2.0
+    """Enhanced Memory Manager V2.0.
 
     Extends MVP-1.4 with:
     - Temporal pattern analysis
@@ -96,7 +96,7 @@ class EnhancedMemoryManager(MemoryManager):
         collection_name: str = "cureviax_knowledge_base_v1",
         logger_instance: logging.Logger | None = None,
     ) -> None:
-        """Initialize Enhanced Memory Manager"""
+        """Initialize Enhanced Memory Manager."""
         # Initialize parent class first
         super().__init__(
             logger_instance=logger_instance,
@@ -133,7 +133,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error("Failed to initialize EnhancedMemoryManager - base MemoryManager initialization failed")
 
     def _init_enhanced_collections(self) -> None:
-        """Initialize additional ChromaDB collections for enhanced features"""
+        """Initialize additional ChromaDB collections for enhanced features."""
         try:
             # FIXED: Use self.chroma_client instead of self.client
             # Temporal patterns collection
@@ -170,7 +170,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.insights_collection = None
 
     async def store_workflow_outputs_enhanced(self, workflow_data: dict[str, Any]) -> dict[str, Any]:
-        """Enhanced workflow storage with temporal analysis and contradiction detection"""
+        """Enhanced workflow storage with temporal analysis and contradiction detection."""
         self.logger.info("Starting enhanced workflow storage with advanced analysis")
 
         # First, perform standard storage from MVP-1.4
@@ -238,7 +238,7 @@ class EnhancedMemoryManager(MemoryManager):
             return enhanced_results
 
     def _extract_entities_enhanced(self, workflow_data: dict[str, Any]) -> dict[str, list[str]]:
-        """Enhanced entity extraction for temporal and contradiction analysis"""
+        """Enhanced entity extraction for temporal and contradiction analysis."""
         entities = {
             "drugs": [],
             "indications": [],
@@ -303,7 +303,7 @@ class EnhancedMemoryManager(MemoryManager):
     async def _analyze_temporal_patterns(
         self, entities: dict[str, list[str]], workflow_data: dict[str, Any],
     ) -> dict[str, Any]:
-        """Analyze temporal patterns in research data"""
+        """Analyze temporal patterns in research data."""
         self.logger.info("Starting temporal pattern analysis")
 
         temporal_results = {
@@ -348,7 +348,7 @@ class EnhancedMemoryManager(MemoryManager):
             return temporal_results
 
     async def _get_historical_documents(self, entity: str) -> list[dict[str, Any]]:
-        """Retrieve historical documents for temporal analysis"""
+        """Retrieve historical documents for temporal analysis."""
         try:
             # Query for documents containing the entity
             results = self.collection.query(
@@ -380,7 +380,7 @@ class EnhancedMemoryManager(MemoryManager):
             return []
 
     def _extract_timestamp(self, metadata: dict[str, Any]) -> datetime | None:
-        """Extract timestamp from document metadata"""
+        """Extract timestamp from document metadata."""
         try:
             # Try various timestamp fields
             timestamp_fields = ["timestamp", "created_at", "publication_date", "date"]
@@ -412,7 +412,7 @@ class EnhancedMemoryManager(MemoryManager):
     async def _detect_temporal_pattern(
         self, entity: str, historical_docs: list[dict[str, Any]], current_time: datetime,
     ) -> TemporalPattern | None:
-        """Detect temporal patterns in historical documents"""
+        """Detect temporal patterns in historical documents."""
         try:
             if len(historical_docs) < 2:
                 return None
@@ -466,7 +466,7 @@ class EnhancedMemoryManager(MemoryManager):
             return None
 
     async def _generate_temporal_insights(self, entities: dict[str, list[str]]) -> list[str]:
-        """Generate actionable temporal insights"""
+        """Generate actionable temporal insights."""
         insights = []
 
         try:
@@ -498,7 +498,7 @@ class EnhancedMemoryManager(MemoryManager):
     async def _detect_contradictions(
         self, entities: dict[str, list[str]], workflow_data: dict[str, Any],
     ) -> dict[str, Any]:
-        """Detect contradictory evidence across research"""
+        """Detect contradictory evidence across research."""
         self.logger.info("Starting contradiction detection")
 
         contradiction_results = {
@@ -537,7 +537,7 @@ class EnhancedMemoryManager(MemoryManager):
             return contradiction_results
 
     async def _find_contradictory_evidence(self, entity: str) -> list[Contradiction]:
-        """Find contradictory evidence for a specific entity"""
+        """Find contradictory evidence for a specific entity."""
         contradictions = []
 
         try:
@@ -595,7 +595,7 @@ class EnhancedMemoryManager(MemoryManager):
     async def _analyze_statement_contradictions(
         self, entity: str, category: str, statements: list[tuple[str, str]],
     ) -> list[Contradiction]:
-        """Analyze statements for contradictions"""
+        """Analyze statements for contradictions."""
         contradictions = []
 
         try:
@@ -655,7 +655,7 @@ class EnhancedMemoryManager(MemoryManager):
             return contradictions
 
     async def _suggest_contradiction_resolutions(self) -> list[str]:
-        """Suggest ways to resolve detected contradictions"""
+        """Suggest ways to resolve detected contradictions."""
         suggestions = []
 
         try:
@@ -697,7 +697,7 @@ class EnhancedMemoryManager(MemoryManager):
     async def _identify_research_gaps(
         self, entities: dict[str, list[str]], workflow_data: dict[str, Any],
     ) -> dict[str, Any]:
-        """Identify gaps in current research"""
+        """Identify gaps in current research."""
         self.logger.info("Starting research gap identification")
 
         gap_results = {
@@ -735,7 +735,7 @@ class EnhancedMemoryManager(MemoryManager):
             return gap_results
 
     async def _analyze_research_gaps_for_entity(self, entity: str) -> list[ResearchGap]:
-        """Analyze research gaps for a specific entity"""
+        """Analyze research gaps for a specific entity."""
         gaps = []
 
         try:
@@ -831,7 +831,7 @@ class EnhancedMemoryManager(MemoryManager):
             return gaps
 
     def _generate_gap_specific_suggestions(self, entity: str, gap_type: str) -> list[str]:
-        """Generate specific research suggestions for identified gaps"""
+        """Generate specific research suggestions for identified gaps."""
         suggestions_map = {
             "clinical_trials": [
                 f"Design randomized controlled trial for {entity}",
@@ -863,7 +863,7 @@ class EnhancedMemoryManager(MemoryManager):
         return suggestions_map.get(gap_type, [f"Conduct additional research on {entity}"])
 
     async def _prioritize_research_areas(self) -> list[str]:
-        """Prioritize identified research areas"""
+        """Prioritize identified research areas."""
         priority_areas = []
 
         try:
@@ -899,7 +899,7 @@ class EnhancedMemoryManager(MemoryManager):
             return priority_areas
 
     async def _generate_research_suggestions(self) -> list[str]:
-        """Generate actionable research suggestions"""
+        """Generate actionable research suggestions."""
         suggestions = []
 
         try:
@@ -938,7 +938,7 @@ class EnhancedMemoryManager(MemoryManager):
     async def _generate_cross_workflow_insights(
         self, entities: dict[str, list[str]], workflow_data: dict[str, Any],
     ) -> dict[str, Any]:
-        """Generate advanced cross-workflow insights"""
+        """Generate advanced cross-workflow insights."""
         self.logger.info("Starting cross-workflow insight generation")
 
         insight_results = {
@@ -969,7 +969,7 @@ class EnhancedMemoryManager(MemoryManager):
             return insight_results
 
     async def _analyze_drug_class_patterns(self, entities: dict[str, list[str]]) -> list[dict[str, Any]]:
-        """Analyze patterns across drug classes"""
+        """Analyze patterns across drug classes."""
         insights = []
 
         try:
@@ -1020,7 +1020,7 @@ class EnhancedMemoryManager(MemoryManager):
             return insights
 
     async def _find_common_outcomes(self, drugs: list[str]) -> list[str]:
-        """Find common outcomes across drugs"""
+        """Find common outcomes across drugs."""
         outcome_patterns = defaultdict(int)
 
         try:
@@ -1058,7 +1058,7 @@ class EnhancedMemoryManager(MemoryManager):
             return []
 
     async def _find_common_indications(self, drugs: list[str]) -> list[str]:
-        """Find common indications across drugs"""
+        """Find common indications across drugs."""
         indication_patterns = defaultdict(int)
 
         try:
@@ -1094,7 +1094,7 @@ class EnhancedMemoryManager(MemoryManager):
             return []
 
     async def _analyze_indication_patterns(self, entities: dict[str, list[str]]) -> list[dict[str, Any]]:
-        """Analyze patterns across indications"""
+        """Analyze patterns across indications."""
         insights = []
 
         try:
@@ -1132,7 +1132,7 @@ class EnhancedMemoryManager(MemoryManager):
             return insights
 
     async def _generate_insight_recommendations(self) -> list[str]:
-        """Generate actionable recommendations from insights"""
+        """Generate actionable recommendations from insights."""
         recommendations = []
 
         try:
@@ -1160,7 +1160,7 @@ class EnhancedMemoryManager(MemoryManager):
             return recommendations
 
     def get_enhanced_analytics(self) -> dict[str, Any]:
-        """Get comprehensive analytics including enhanced features"""
+        """Get comprehensive analytics including enhanced features."""
         try:
             # Get base analytics from MVP-1.4
             base_analytics = self.get_document_usage_analytics()
@@ -1225,7 +1225,7 @@ class EnhancedMemoryManager(MemoryManager):
             return {"error": str(e)}
 
     async def get_enhanced_research_recommendations(self, entities: dict[str, Any]) -> dict[str, Any]:
-        """ENHANCED: Get comprehensive research recommendations based on similarity search and existing evidence
+        """ENHANCED: Get comprehensive research recommendations based on similarity search and existing evidence.
 
         This is the FIXED version that performs actual similarity searches to find existing evidence
         for new entities and provides intelligent research strategies.
@@ -1367,7 +1367,7 @@ class EnhancedMemoryManager(MemoryManager):
         primary_disease: str | None = None,
         drug_class: str | None = None,
     ) -> dict[str, Any]:
-        """Find existing evidence for an entity using multiple similarity search strategies"""
+        """Find existing evidence for an entity using multiple similarity search strategies."""
         self.logger.debug(f"=== FINDING EXISTING EVIDENCE FOR {primary_drug} ===")
 
         evidence_results = {
@@ -1526,7 +1526,7 @@ class EnhancedMemoryManager(MemoryManager):
         primary_drug: str,
         drug_class: str | None = None,
     ) -> dict[str, Any]:
-        """Determine the appropriate research strategy based on existing evidence analysis"""
+        """Determine the appropriate research strategy based on existing evidence analysis."""
         self.logger.debug(f"=== DETERMINING RESEARCH STRATEGY FOR {primary_drug} ===")
 
         total_docs = evidence_results.get("total_documents", 0)
@@ -1625,7 +1625,7 @@ class EnhancedMemoryManager(MemoryManager):
     async def _generate_strategy_specific_recommendations(
         self, strategy: str, primary_drug: str, evidence_results: dict[str, Any],
     ) -> dict[str, Any]:
-        """Generate specific recommendations based on the determined research strategy"""
+        """Generate specific recommendations based on the determined research strategy."""
         self.logger.debug(f"=== GENERATING {strategy.upper()} STRATEGY RECOMMENDATIONS FOR {primary_drug} ===")
 
         recommendations = {

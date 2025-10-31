@@ -71,8 +71,8 @@ def db_session():
     session.close()
 
 
-def test_create_user_profile(db_session):
-    """Test creating a user profile"""
+def test_create_user_profile(db_session) -> None:
+    """Test creating a user profile."""
     user_id = str(uuid4())
 
     profile = UserProfileModel(
@@ -93,8 +93,8 @@ def test_create_user_profile(db_session):
     assert profile.pregnancy_due_date == date(2025, 6, 15)
 
 
-def test_create_conversation(db_session):
-    """Test creating a conversation"""
+def test_create_conversation(db_session) -> None:
+    """Test creating a conversation."""
     conv_id = str(uuid4())
     user_id = str(uuid4())
     scan_id = "test_scan_123"
@@ -109,8 +109,8 @@ def test_create_conversation(db_session):
     assert conv.scan_id == scan_id
 
 
-def test_create_conversation_message(db_session):
-    """Test creating a conversation message"""
+def test_create_conversation_message(db_session) -> None:
+    """Test creating a conversation message."""
     conv_id = str(uuid4())
 
     # Create conversation first

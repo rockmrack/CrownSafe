@@ -1,5 +1,5 @@
 """Privacy compliance integration for FastAPI app
-Integrates all privacy features from Task 8
+Integrates all privacy features from Task 8.
 """
 
 import logging
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def setup_privacy_compliance(app: FastAPI) -> None:
-    """Integrate all privacy compliance features into the FastAPI app
+    """Integrate all privacy compliance features into the FastAPI app.
 
     This includes:
     - User privacy endpoints (GDPR/CCPA rights)
@@ -61,14 +61,14 @@ def setup_privacy_compliance(app: FastAPI) -> None:
 
 
 def configure_privacy_logging() -> None:
-    """Configure logging to mask PII in logs"""
+    """Configure logging to mask PII in logs."""
     import logging
 
     from api.utils.privacy import mask_pii
 
     # Create custom formatter that masks PII
     class PIIMaskingFormatter(logging.Formatter):
-        """Custom formatter that masks PII in log messages"""
+        """Custom formatter that masks PII in log messages."""
 
         def format(self, record):
             # Format the base message
@@ -90,7 +90,7 @@ def configure_privacy_logging() -> None:
 
 
 def get_privacy_config():
-    """Get privacy configuration from environment
+    """Get privacy configuration from environment.
 
     Returns:
         Dictionary with privacy configuration
@@ -127,7 +127,7 @@ def get_privacy_config():
 
 
 def validate_privacy_setup():
-    """Validate that privacy features are properly configured
+    """Validate that privacy features are properly configured.
 
     Returns:
         Tuple of (is_valid, errors)

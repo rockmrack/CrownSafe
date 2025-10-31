@@ -1,5 +1,5 @@
 """Scan History Model for tracking user product scans
-Used for generating 90-day safety summaries
+Used for generating 90-day safety summaries.
 """
 
 from datetime import datetime
@@ -18,7 +18,7 @@ from core_infra.database import Base
 
 
 class ScanHistory(Base):
-    """Track user scan history for safety reports"""
+    """Track user scan history for safety reports."""
 
     __tablename__ = "scan_history"
 
@@ -59,7 +59,7 @@ class ScanHistory(Base):
     # user = relationship("User", back_populates="scan_history")
 
     def to_dict(self):
-        """Convert to dictionary for API responses"""
+        """Convert to dictionary for API responses."""
         return {
             "scan_id": self.scan_id,
             "scan_timestamp": self.scan_timestamp.isoformat() if self.scan_timestamp else None,
@@ -85,7 +85,7 @@ class ScanHistory(Base):
 
 
 class SafetyReport(Base):
-    """Track generated safety reports"""
+    """Track generated safety reports."""
 
     __tablename__ = "safety_reports"
 

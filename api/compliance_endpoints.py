@@ -1,6 +1,6 @@
 """Legal Compliance API Endpoints
 Provides endpoints for COPPA, Children's Code, GDPR, and legal content management
-Critical for app store approval and regulatory compliance
+Critical for app store approval and regulatory compliance.
 """
 
 import logging
@@ -64,7 +64,7 @@ class DataCategory(str, Enum):
 
 # COPPA Compliance Models
 class AgeVerificationRequest(BaseModel):
-    """Request model for age verification"""
+    """Request model for age verification."""
 
     user_id: int | None = Field(None, description="Existing user ID if available")
     email: EmailStr = Field(..., description="User email")
@@ -75,7 +75,7 @@ class AgeVerificationRequest(BaseModel):
 
 
 class AgeVerificationResponse(BaseModel):
-    """Response model for age verification"""
+    """Response model for age verification."""
 
     verified: bool
     age: int
@@ -89,7 +89,7 @@ class AgeVerificationResponse(BaseModel):
 
 
 class ParentalConsentRequest(BaseModel):
-    """Request model for parental consent"""
+    """Request model for parental consent."""
 
     child_email: EmailStr
     parent_email: EmailStr
@@ -101,7 +101,7 @@ class ParentalConsentRequest(BaseModel):
 
 
 class ParentalConsentResponse(BaseModel):
-    """Response model for parental consent"""
+    """Response model for parental consent."""
 
     consent_id: str
     status: str  # "pending", "verified", "rejected"
@@ -115,7 +115,7 @@ class ParentalConsentResponse(BaseModel):
 
 # Children's Code Compliance Models
 class ChildrenCodeAssessmentRequest(BaseModel):
-    """Request for Children's Code compliance assessment"""
+    """Request for Children's Code compliance assessment."""
 
     user_id: int
     age: int
@@ -126,7 +126,7 @@ class ChildrenCodeAssessmentRequest(BaseModel):
 
 
 class ChildrenCodeAssessmentResponse(BaseModel):
-    """Response for Children's Code assessment"""
+    """Response for Children's Code assessment."""
 
     compliant: bool
     age_appropriate: bool
@@ -140,7 +140,7 @@ class ChildrenCodeAssessmentResponse(BaseModel):
 
 # Data Governance Models
 class DataRequestModel(BaseModel):
-    """Request model for data governance operations"""
+    """Request model for data governance operations."""
 
     user_id: int
     request_type: PrivacyRight
@@ -151,7 +151,7 @@ class DataRequestModel(BaseModel):
 
 
 class DataRequestResponse(BaseModel):
-    """Response model for data requests"""
+    """Response model for data requests."""
 
     request_id: str
     status: str  # "pending", "processing", "completed", "rejected"
@@ -163,7 +163,7 @@ class DataRequestResponse(BaseModel):
 
 
 class DataRetentionPolicyRequest(BaseModel):
-    """Request model for data retention settings"""
+    """Request model for data retention settings."""
 
     user_id: int
     data_category: DataCategory
@@ -173,7 +173,7 @@ class DataRetentionPolicyRequest(BaseModel):
 
 
 class DataRetentionPolicyResponse(BaseModel):
-    """Response model for retention policy"""
+    """Response model for retention policy."""
 
     policy_id: str
     user_id: int
@@ -185,7 +185,7 @@ class DataRetentionPolicyResponse(BaseModel):
 
 # Legal Content Models
 class LegalDocumentRequest(BaseModel):
-    """Request model for legal documents"""
+    """Request model for legal documents."""
 
     document_type: str = Field(..., description="tos, privacy, cookie, child_privacy")
     language: str = Field("en", description="Language code")
@@ -195,7 +195,7 @@ class LegalDocumentRequest(BaseModel):
 
 
 class LegalDocumentResponse(BaseModel):
-    """Response model for legal documents"""
+    """Response model for legal documents."""
 
     document_type: str
     version: str
@@ -209,7 +209,7 @@ class LegalDocumentResponse(BaseModel):
 
 
 class ConsentUpdateRequest(BaseModel):
-    """Request model for updating consent"""
+    """Request model for updating consent."""
 
     user_id: int
     consent_types: dict[ConsentType, bool]
@@ -218,7 +218,7 @@ class ConsentUpdateRequest(BaseModel):
 
 
 class ConsentUpdateResponse(BaseModel):
-    """Response model for consent update"""
+    """Response model for consent update."""
 
     user_id: int
     consents_updated: dict[ConsentType, bool]

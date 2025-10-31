@@ -1,5 +1,5 @@
 """S3 upload helper utilities
-Generates region-correct presigned POST URLs for client-side uploads
+Generates region-correct presigned POST URLs for client-side uploads.
 """
 
 import os

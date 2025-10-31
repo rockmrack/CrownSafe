@@ -28,7 +28,7 @@ TEST_USER_ID = 1
 
 
 class MockProductIdentifierLogic:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.process_task = AsyncMock(
             return_value={
                 "status": "COMPLETED",
@@ -47,7 +47,7 @@ class MockProductIdentifierLogic:
 
 
 class MockRecallDataAgentLogic:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.process_task = AsyncMock(
             return_value={
                 "status": "COMPLETED",
@@ -57,7 +57,7 @@ class MockRecallDataAgentLogic:
 
 
 class MockAllergySensitivityLogic:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.process_task = AsyncMock(
             return_value={
                 "status": "COMPLETED",
@@ -67,7 +67,7 @@ class MockAllergySensitivityLogic:
 
 
 class MockHazardAnalysisLogic:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.process_task = AsyncMock(
             return_value={
                 "status": "COMPLETED",
@@ -77,7 +77,7 @@ class MockHazardAnalysisLogic:
 
 
 # ─── 3) Utility: drop all tables (cascade support) ────────────────────────────
-def drop_all_cascade():
+def drop_all_cascade() -> None:
     dialect = engine.dialect.name
     conn = engine.connect()
     trans = conn.begin()
@@ -93,7 +93,7 @@ def drop_all_cascade():
 
 
 # ─── 4) Main Test Runner ───────────────────────────────────────────────────────
-async def main():
+async def main() -> None:
     # 4.1 Load the JSON plan
     plan_path = os.path.join(PROJECT_ROOT, "tests", "fixtures", "test_plan_with_allergy_check.json")
     with open(plan_path, "r") as f:

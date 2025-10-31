@@ -8,7 +8,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     op.create_table(
         "report_records",
         sa.Column("id", sa.Integer, primary_key=True),
@@ -31,7 +31,7 @@ def upgrade():
     )
 
 
-def downgrade():
+def downgrade() -> None:
     op.drop_index("ix_report_records_type_created", table_name="report_records")
     op.drop_index("ix_report_records_user_created", table_name="report_records")
     op.drop_table("report_records")

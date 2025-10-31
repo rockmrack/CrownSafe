@@ -1,4 +1,4 @@
-"""Tests for core_infra/audit_logger.py"""
+"""Tests for core_infra/audit_logger.py."""
 
 import unittest
 from unittest.mock import Mock
@@ -9,19 +9,19 @@ from core_infra.audit_logger import AuditLogger, AuditQuery
 
 
 class TestAuditLogger(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.mock_db = Mock(spec=Session)
         self.audit_logger = AuditLogger(self.mock_db)
 
-    def test_init_with_session(self):
+    def test_init_with_session(self) -> None:
         self.assertEqual(self.audit_logger.db_session, self.mock_db)
         self.assertIsNotNone(self.audit_logger.logger)
 
-    def test_init_without_session(self):
+    def test_init_without_session(self) -> None:
         logger = AuditLogger()
         self.assertIsNone(logger.db_session)
 
-    def test_calculate_diff_changed(self):
+    def test_calculate_diff_changed(self) -> None:
         old = {"name": "Alice", "age": 25}
         new = {"name": "Alice", "age": 26}
         diff = self.audit_logger._calculate_diff(old, new)
@@ -30,34 +30,34 @@ class TestAuditLogger(unittest.TestCase):
         self.assertEqual(diff["age"]["old"], 25)
         self.assertEqual(diff["age"]["new"], 26)
 
-    def test_calculate_diff_no_changes(self):
+    def test_calculate_diff_no_changes(self) -> None:
         old = {"name": "Bob", "age": 30}
         new = {"name": "Bob", "age": 30}
         diff = self.audit_logger._calculate_diff(old, new)
         self.assertIsNone(diff)
 
-    def test_calculate_diff_added_key(self):
+    def test_calculate_diff_added_key(self) -> None:
         old = {"name": "Charlie"}
         new = {"name": "Charlie", "age": 35}
         diff = self.audit_logger._calculate_diff(old, new)
         self.assertIn("age", diff)
 
-    def test_calculate_diff_removed_key(self):
+    def test_calculate_diff_removed_key(self) -> None:
         old = {"name": "Diana", "age": 40}
         new = {"name": "Diana"}
         diff = self.audit_logger._calculate_diff(old, new)
         self.assertIn("age", diff)
 
-    def test_serialize_entity_with_to_dict(self):
+    def test_serialize_entity_with_to_dict(self) -> None:
         entity = Mock()
         entity.to_dict = Mock(return_value={"id": 1, "name": "Test"})
         result = self.audit_logger._serialize_entity(entity)
         self.assertEqual(result, {"id": 1, "name": "Test"})
 
-    def test_serialize_entity_with_dict(self):
+    def test_serialize_entity_with_dict(self) -> None:
         # Create a simple object with __dict__ instead of Mock
         class SimpleEntity:
-            def __init__(self):
+            def __init__(self) -> None:
                 self.id = 2
                 self.value = "data"
                 self._private = "hidden"
@@ -69,7 +69,7 @@ class TestAuditLogger(unittest.TestCase):
         self.assertIn("value", result)
         self.assertNotIn("_private", result)
 
-    def test_log_create(self):
+    def test_log_create(self) -> None:
         entity = Mock()
         entity.__class__.__name__ = "User"
         entity.id = 123
@@ -77,7 +77,7 @@ class TestAuditLogger(unittest.TestCase):
         self.audit_logger.log_create(entity)
         # Should not raise
 
-    def test_log_update(self):
+    def test_log_update(self) -> None:
         entity = Mock()
         entity.__class__.__name__ = "Product"
         entity.id = 456
@@ -86,7 +86,7 @@ class TestAuditLogger(unittest.TestCase):
         self.audit_logger.log_update(entity, old_state)
         # Should not raise
 
-    def test_log_delete(self):
+    def test_log_delete(self) -> None:
         entity = Mock()
         entity.__class__.__name__ = "Order"
         entity.id = 789
@@ -96,7 +96,7 @@ class TestAuditLogger(unittest.TestCase):
 
 
 class TestAuditQuery(unittest.TestCase):
-    def test_init(self):
+    def test_init(self) -> None:
         mock_db = Mock(spec=Session)
         query = AuditQuery(mock_db)
         self.assertEqual(query.db, mock_db)

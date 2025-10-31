@@ -2,7 +2,7 @@
 # MODIFIED for Step 98.1.14: Add CRITICAL entry log to handle_message
 
 import json
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 from fastapi import WebSocket
@@ -55,7 +55,7 @@ async def forward_message(
         return False
 
 
-async def handle_message(agent_id: str, message_text: str, websocket: WebSocket):
+async def handle_message(agent_id: str, message_text: str, websocket: WebSocket) -> None:
     """Handles incoming messages, parses them, and routes them appropriately."""
     # --- ADDED CRITICAL LOG (GPT Suggestion B) ---
     # Attempt to parse for logging details, but log raw snippet regardless

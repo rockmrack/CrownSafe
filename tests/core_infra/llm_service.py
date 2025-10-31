@@ -9,7 +9,7 @@ import threading
 import time
 from collections import deque
 from dataclasses import dataclass, field
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from enum import Enum
 from typing import Any, Callable, Union
 
@@ -52,7 +52,7 @@ except ImportError:
 
 
 class LLMProvider(Enum):
-    """Supported LLM providers"""
+    """Supported LLM providers."""
 
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
@@ -65,7 +65,7 @@ class LLMProvider(Enum):
 
 @dataclass
 class LLMConfig:
-    """Comprehensive configuration for LLM client"""
+    """Comprehensive configuration for LLM client."""
 
     provider: Union[LLMProvider, str] = "mock"  # Default to mock for testing
     model: str = "gpt-4-turbo"
@@ -110,7 +110,7 @@ class LLMConfig:
 
 @dataclass
 class LLMResponse:
-    """Structured LLM response"""
+    """Structured LLM response."""
 
     content: str
     model: str
@@ -124,7 +124,7 @@ class LLMResponse:
 
 @dataclass
 class LLMMetrics:
-    """Metrics tracking for LLM usage"""
+    """Metrics tracking for LLM usage."""
 
     total_requests: int = 0
     successful_requests: int = 0
@@ -141,9 +141,9 @@ class LLMMetrics:
 
 
 class LLMRateLimiter:
-    """Advanced rate limiter with token tracking"""
+    """Advanced rate limiter with token tracking."""
 
-    def __init__(self, requests_per_minute: int = 60, tokens_per_minute: int = 90000):
+    def __init__(self, requests_per_minute: int = 60, tokens_per_minute: int = 90000) -> None:
         self.requests_per_minute = requests_per_minute
         self.tokens_per_minute = tokens_per_minute
         self.request_times = deque()
@@ -151,7 +151,7 @@ class LLMRateLimiter:
         self.lock = threading.Lock()
 
     def check_limits(self, estimated_tokens: int = 1000) -> tuple[bool, float]:
-        """Check if request can proceed, return (can_proceed, wait_time)"""
+        """Check if request can proceed, return (can_proceed, wait_time)."""
         with self.lock:
             now = time.time()
 
@@ -178,8 +178,8 @@ class LLMRateLimiter:
 
             return True, 0
 
-    def record_usage(self, tokens_used: int):
-        """Record actual token usage"""
+    def record_usage(self, tokens_used: int) -> None:
+        """Record actual token usage."""
         with self.lock:
             now = time.time()
             self.request_times.append(now)
@@ -187,9 +187,9 @@ class LLMRateLimiter:
 
 
 class LLMCache:
-    """Response cache with TTL and size limits"""
+    """Response cache with TTL and size limits."""
 
-    def __init__(self, ttl_seconds: int = 3600, max_size: int = 1000):
+    def __init__(self, ttl_seconds: int = 3600, max_size: int = 1000) -> None:
         self.ttl_seconds = ttl_seconds
         self.max_size = max_size
         self.cache = {}
@@ -204,7 +204,7 @@ class LLMCache:
         temperature: float,
         max_tokens: int,
     ) -> str:
-        """Generate cache key from request parameters"""
+        """Generate cache key from request parameters."""
         key_data = {
             "provider": provider,
             "model": model,
@@ -216,7 +216,7 @@ class LLMCache:
         return hashlib.sha256(key_str.encode()).hexdigest()
 
     def get(self, key: str) -> Any | None:
-        """Get cached response if valid"""
+        """Get cached response if valid."""
         with self.lock:
             if key not in self.cache:
                 return None
@@ -231,8 +231,8 @@ class LLMCache:
             self.access_times[key] = time.time()
             return self.cache[key]
 
-    def set(self, key: str, value: Any):
-        """Set cache entry with TTL"""
+    def set(self, key: str, value: Any) -> None:
+        """Set cache entry with TTL."""
         with self.lock:
             # Implement LRU if at capacity
             if len(self.cache) >= self.max_size:
@@ -246,14 +246,14 @@ class LLMCache:
 
 
 class MockLLMProvider:
-    """Sophisticated mock provider for testing"""
+    """Sophisticated mock provider for testing."""
 
-    def __init__(self, config: LLMConfig):
+    def __init__(self, config: LLMConfig) -> None:
         self.config = config
         self.call_count = 0
 
     def generate_response(self, messages: list[dict], **kwargs) -> LLMResponse:
-        """Generate mock response based on context"""
+        """Generate mock response based on context."""
         self.call_count += 1
 
         # Analyze the messages to determine response type
@@ -445,9 +445,9 @@ class MockLLMProvider:
 
 
 class LLMClient:
-    """Unified LLM client with comprehensive features"""
+    """Unified LLM client with comprehensive features."""
 
-    def __init__(self, config: LLMConfig):
+    def __init__(self, config: LLMConfig) -> None:
         self.config = config
         self.metrics = LLMMetrics()
         self.rate_limiter = LLMRateLimiter(config.requests_per_minute, config.tokens_per_minute)
@@ -467,8 +467,8 @@ class LLMClient:
 
         logger.info(f"LLMClient initialized with provider: {config.provider.value}, model: {config.model}")
 
-    def _initialize_provider(self):
-        """Initialize the appropriate provider client"""
+    def _initialize_provider(self) -> None:
+        """Initialize the appropriate provider client."""
         load_dotenv()
 
         if self.config.provider == LLMProvider.MOCK:
@@ -499,8 +499,8 @@ class LLMClient:
             logger.warning("Falling back to mock provider")
             self.config.provider = LLMProvider.MOCK
 
-    def _initialize_openai(self, api_key: str):
-        """Initialize OpenAI provider"""
+    def _initialize_openai(self, api_key: str) -> None:
+        """Initialize OpenAI provider."""
         if "openai" not in AVAILABLE_PROVIDERS:
             raise ImportError("OpenAI library not available")
 
@@ -531,8 +531,8 @@ class LLMClient:
                 openai.api_base = self.config.api_base
             self._provider = openai
 
-    def _initialize_anthropic(self, api_key: str):
-        """Initialize Anthropic provider"""
+    def _initialize_anthropic(self, api_key: str) -> None:
+        """Initialize Anthropic provider."""
         if "anthropic" not in AVAILABLE_PROVIDERS:
             raise ImportError("Anthropic library not available")
 
@@ -541,8 +541,8 @@ class LLMClient:
         self._provider = anthropic.Anthropic(api_key=api_key)
         self._async_provider = anthropic.AsyncAnthropic(api_key=api_key)
 
-    def _initialize_azure(self, api_key: str):
-        """Initialize Azure OpenAI provider"""
+    def _initialize_azure(self, api_key: str) -> None:
+        """Initialize Azure OpenAI provider."""
         if "openai" not in AVAILABLE_PROVIDERS:
             raise ImportError("OpenAI library not available (required for Azure)")
 
@@ -565,8 +565,8 @@ class LLMClient:
             openai.api_version = api_version
             self._provider = openai
 
-    def _initialize_google(self, api_key: str):
-        """Initialize Google AI provider"""
+    def _initialize_google(self, api_key: str) -> None:
+        """Initialize Google AI provider."""
         if "google" not in AVAILABLE_PROVIDERS:
             raise ImportError("Google AI library not available")
 
@@ -577,16 +577,16 @@ class LLMClient:
 
     @property
     def chat(self):
-        """Get chat interface"""
+        """Get chat interface."""
         return self
 
     @property
     def completions(self):
-        """Get completions interface"""
+        """Get completions interface."""
         return self
 
     def create(self, **kwargs) -> Any:
-        """Sync chat completion with proper event loop handling"""
+        """Sync chat completion with proper event loop handling."""
         # Try to get the current event loop
         try:
             loop = asyncio.get_running_loop()
@@ -619,7 +619,7 @@ class LLMClient:
                 asyncio.set_event_loop(None)
 
     async def acreate(self, **kwargs) -> Any:
-        """Async chat completion with all features"""
+        """Async chat completion with all features."""
         request_id = self._get_request_id()
         start_time = time.time()
 
@@ -680,7 +680,7 @@ class LLMClient:
             raise
 
     async def _make_async_request(self, **kwargs) -> Any:
-        """Make actual API request based on provider"""
+        """Make actual API request based on provider."""
         if self.config.provider == LLMProvider.MOCK:
             # Extract messages from kwargs to avoid duplicate argument error
             messages = kwargs.pop("messages", [])
@@ -708,53 +708,50 @@ class LLMClient:
         if self.config.provider == LLMProvider.OPENAI and self._async_provider:
             response = await self._async_provider.chat.completions.create(**params)
             return response
-        elif self.config.provider == LLMProvider.ANTHROPIC and self._async_provider:
+        if self.config.provider == LLMProvider.ANTHROPIC and self._async_provider:
             # Convert to Anthropic format
             anthropic_params = self._convert_to_anthropic_format(params)
             response = await self._async_provider.messages.create(**anthropic_params)
             return self._convert_from_anthropic_format(response)
-        else:
-            # Fallback to sync call in thread
-            return await asyncio.to_thread(self._make_sync_request, **params)
+        # Fallback to sync call in thread
+        return await asyncio.to_thread(self._make_sync_request, **params)
 
     def _make_sync_request(self, **params) -> Any:
-        """Make synchronous API request"""
+        """Make synchronous API request."""
         if self.config.provider == LLMProvider.OPENAI:
             if AVAILABLE_PROVIDERS.get("openai") == "new":
                 return self._provider.chat.completions.create(**params)
-            else:
-                # Legacy OpenAI
-                response = self._provider.ChatCompletion.create(**params)
-                return self._convert_legacy_openai_response(response)
+            # Legacy OpenAI
+            response = self._provider.ChatCompletion.create(**params)
+            return self._convert_legacy_openai_response(response)
 
-        elif self.config.provider == LLMProvider.ANTHROPIC:
+        if self.config.provider == LLMProvider.ANTHROPIC:
             anthropic_params = self._convert_to_anthropic_format(params)
             response = self._provider.messages.create(**anthropic_params)
             return self._convert_from_anthropic_format(response)
 
-        else:
-            raise ValueError(f"Sync request not implemented for {self.config.provider}")
+        raise ValueError(f"Sync request not implemented for {self.config.provider}")
 
     def _wrap_response(self, llm_response: LLMResponse) -> Any:
-        """Wrap LLMResponse in OpenAI-compatible format"""
+        """Wrap LLMResponse in OpenAI-compatible format."""
 
         class WrappedResponse:
             class Choice:
                 class Message:
-                    def __init__(self, content):
+                    def __init__(self, content) -> None:
                         self.content = content
 
-                def __init__(self, content):
+                def __init__(self, content) -> None:
                     self.message = self.Message(content)
                     self.finish_reason = "stop"
 
             class Usage:
-                def __init__(self, usage_dict):
+                def __init__(self, usage_dict) -> None:
                     self.prompt_tokens = usage_dict.get("prompt_tokens", 0)
                     self.completion_tokens = usage_dict.get("completion_tokens", 0)
                     self.total_tokens = usage_dict.get("total_tokens", 0)
 
-            def __init__(self, llm_response):
+            def __init__(self, llm_response) -> None:
                 self.choices = [self.Choice(llm_response.content)]
                 self.usage = self.Usage(llm_response.usage)
                 self.model = llm_response.model
@@ -763,7 +760,7 @@ class LLMClient:
         return WrappedResponse(llm_response)
 
     def _convert_to_anthropic_format(self, params: dict[str, Any]) -> dict[str, Any]:
-        """Convert OpenAI format to Anthropic format"""
+        """Convert OpenAI format to Anthropic format."""
         messages = params["messages"]
         system_message = ""
         user_messages = []
@@ -788,25 +785,25 @@ class LLMClient:
         return anthropic_params
 
     def _convert_from_anthropic_format(self, response) -> Any:
-        """Convert Anthropic response to OpenAI format"""
+        """Convert Anthropic response to OpenAI format."""
 
         class ConvertedResponse:
             class Choice:
                 class Message:
-                    def __init__(self, content):
+                    def __init__(self, content) -> None:
                         self.content = content
 
-                def __init__(self, content):
+                def __init__(self, content) -> None:
                     self.message = self.Message(content)
                     self.finish_reason = "stop"
 
             class Usage:
-                def __init__(self, input_tokens, output_tokens):
+                def __init__(self, input_tokens, output_tokens) -> None:
                     self.prompt_tokens = input_tokens
                     self.completion_tokens = output_tokens
                     self.total_tokens = input_tokens + output_tokens
 
-            def __init__(self, anthropic_response):
+            def __init__(self, anthropic_response) -> None:
                 content = anthropic_response.content[0].text if anthropic_response.content else ""
                 self.choices = [self.Choice(content)]
                 self.usage = self.Usage(
@@ -819,25 +816,25 @@ class LLMClient:
         return ConvertedResponse(response)
 
     def _convert_legacy_openai_response(self, response: dict) -> Any:
-        """Convert legacy OpenAI response to new format"""
+        """Convert legacy OpenAI response to new format."""
 
         class ConvertedResponse:
             class Choice:
                 class Message:
-                    def __init__(self, content):
+                    def __init__(self, content) -> None:
                         self.content = content
 
-                def __init__(self, choice_data):
+                def __init__(self, choice_data) -> None:
                     self.message = self.Message(choice_data["message"]["content"])
                     self.finish_reason = choice_data.get("finish_reason", "stop")
 
             class Usage:
-                def __init__(self, usage_data):
+                def __init__(self, usage_data) -> None:
                     self.prompt_tokens = usage_data.get("prompt_tokens", 0)
                     self.completion_tokens = usage_data.get("completion_tokens", 0)
                     self.total_tokens = usage_data.get("total_tokens", 0)
 
-            def __init__(self, response_data):
+            def __init__(self, response_data) -> None:
                 self.choices = [self.Choice(choice) for choice in response_data["choices"]]
                 self.usage = self.Usage(response_data.get("usage", {}))
                 self.model = response_data.get("model", "unknown")
@@ -846,13 +843,13 @@ class LLMClient:
         return ConvertedResponse(response)
 
     def _estimate_tokens(self, messages: list[dict[str, Any]]) -> int:
-        """Estimate token count for messages"""
+        """Estimate token count for messages."""
         # Simple estimation: ~4 characters per token
         total_chars = sum(len(msg.get("content", "")) for msg in messages)
         return max(int(total_chars / 4), 100)
 
-    def _record_metrics(self, response: Any, latency_ms: float, model: str):
-        """Record metrics from response"""
+    def _record_metrics(self, response: Any, latency_ms: float, model: str) -> None:
+        """Record metrics from response."""
         self.metrics.total_requests += 1
         self.metrics.successful_requests += 1
         self.metrics.total_latency_ms += latency_ms
@@ -874,7 +871,7 @@ class LLMClient:
         self.metrics.requests_by_model[model] = self.metrics.requests_by_model.get(model, 0) + 1
 
     def _estimate_cost(self, tokens: int, model: str) -> float:
-        """Estimate cost based on token usage"""
+        """Estimate cost based on token usage."""
         # Cost per 1K tokens (approximate)
         cost_map = {
             "gpt-4-turbo": 0.01,
@@ -895,13 +892,13 @@ class LLMClient:
         return (tokens / 1000) * 0.01
 
     def _get_request_id(self) -> str:
-        """Generate unique request ID"""
+        """Generate unique request ID."""
         with self._lock:
             self._request_id += 1
             return f"req_{self._request_id}_{int(time.time() * 1000)}"
 
     def get_metrics(self) -> dict[str, Any]:
-        """Get current metrics"""
+        """Get current metrics."""
         return {
             "total_requests": self.metrics.total_requests,
             "successful_requests": self.metrics.successful_requests,
@@ -922,7 +919,7 @@ _registry_lock = threading.Lock()
 
 
 def get_llm_client(config: LLMConfig | None = None) -> LLMClient:
-    """Get or create LLM client with advanced caching"""
+    """Get or create LLM client with advanced caching."""
     if config is None:
         config = LLMConfig()
 
@@ -938,14 +935,14 @@ def get_llm_client(config: LLMConfig | None = None) -> LLMClient:
 
 
 def get_all_metrics() -> dict[str, Any]:
-    """Get metrics for all clients"""
+    """Get metrics for all clients."""
     with _registry_lock:
         return {client_key: client.get_metrics() for client_key, client in _client_registry.items()}
 
 
 # Utility functions
 def build_structured_prompt(sections: dict[str, Any], separator: str = "\n" + "=" * 50 + "\n") -> str:
-    """Build a structured prompt from sections"""
+    """Build a structured prompt from sections."""
     prompt_parts = []
 
     for section_name, content in sections.items():
@@ -963,7 +960,7 @@ def build_structured_prompt(sections: dict[str, Any], separator: str = "\n" + "=
 
 
 def parse_llm_json_response(response_text: str, strict: bool = False) -> dict[str, Any]:
-    """Safely parse JSON from LLM response with multiple strategies"""
+    """Safely parse JSON from LLM response with multiple strategies."""
     # Strategy 1: Direct JSON parsing
     try:
         return json.loads(response_text)
@@ -1038,23 +1035,22 @@ def parse_llm_json_response(response_text: str, strict: bool = False) -> dict[st
 
 
 def estimate_tokens(text: str, model: str = "gpt-4") -> int:
-    """Estimate token count for text"""
+    """Estimate token count for text."""
     # More accurate estimation based on model
     if "gpt" in model.lower():
         # GPT models: ~4 characters per token for English
         return max(int(len(text) / 4), 1)
-    elif "claude" in model.lower():
+    if "claude" in model.lower():
         # Claude: similar to GPT
         return max(int(len(text) / 4), 1)
-    else:
-        # Conservative estimate
-        return max(int(len(text) / 3), 1)
+    # Conservative estimate
+    return max(int(len(text) / 3), 1)
 
 
 class LLMStreamHandler:
-    """Handler for streaming responses"""
+    """Handler for streaming responses."""
 
-    def __init__(self, callback: Callable[[str], None] | None = None):
+    def __init__(self, callback: Callable[[str], None] | None = None) -> None:
         self.callback = callback or print
         self.accumulated_text = ""
 
@@ -1066,14 +1062,14 @@ class LLMStreamHandler:
 
 # Cost tracking utilities
 class CostTracker:
-    """Track and analyze LLM costs"""
+    """Track and analyze LLM costs."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.sessions = {}
         self.current_session = None
 
-    def start_session(self, session_name: str):
-        """Start a new cost tracking session"""
+    def start_session(self, session_name: str) -> None:
+        """Start a new cost tracking session."""
         self.current_session = session_name
         self.sessions[session_name] = {
             "start_time": datetime.now(UTC),
@@ -1082,8 +1078,8 @@ class CostTracker:
             "cost": 0.0,
         }
 
-    def record_usage(self, tokens: int, cost: float):
-        """Record usage for current session"""
+    def record_usage(self, tokens: int, cost: float) -> None:
+        """Record usage for current session."""
         if self.current_session and self.current_session in self.sessions:
             session = self.sessions[self.current_session]
             session["requests"] += 1
@@ -1091,7 +1087,7 @@ class CostTracker:
             session["cost"] += cost
 
     def get_session_report(self, session_name: str) -> dict[str, Any]:
-        """Get report for a specific session"""
+        """Get report for a specific session."""
         if session_name not in self.sessions:
             return {"error": f"Session '{session_name}' not found"}
 
@@ -1109,7 +1105,7 @@ class CostTracker:
         }
 
     def get_all_sessions_report(self) -> dict[str, Any]:
-        """Get report for all sessions"""
+        """Get report for all sessions."""
         return {name: self.get_session_report(name) for name in self.sessions}
 
 
@@ -1118,5 +1114,5 @@ _cost_tracker = CostTracker()
 
 
 def get_cost_tracker() -> CostTracker:
-    """Get global cost tracker instance"""
+    """Get global cost tracker instance."""
     return _cost_tracker

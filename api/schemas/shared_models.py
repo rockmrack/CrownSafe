@@ -1,5 +1,5 @@
 """Shared Pydantic Models
-Reduces duplication of model definitions across endpoint files
+Reduces duplication of model definitions across endpoint files.
 """
 
 from datetime import date, datetime
@@ -18,7 +18,7 @@ from utils.security.input_validator import (
 
 
 class RiskLevel(str, Enum):
-    """Product risk level"""
+    """Product risk level."""
 
     LOW = "low"
     MEDIUM = "medium"
@@ -28,7 +28,7 @@ class RiskLevel(str, Enum):
 
 
 class RecallStatus(str, Enum):
-    """Recall status"""
+    """Recall status."""
 
     ACTIVE = "active"
     RESOLVED = "resolved"
@@ -37,7 +37,7 @@ class RecallStatus(str, Enum):
 
 
 class SubscriptionTier(str, Enum):
-    """Subscription tier"""
+    """Subscription tier."""
 
     FREE = "free"
     BASIC = "basic"
@@ -47,7 +47,7 @@ class SubscriptionTier(str, Enum):
 
 
 class NotificationChannel(str, Enum):
-    """Notification delivery channel"""
+    """Notification delivery channel."""
 
     PUSH = "push"
     EMAIL = "email"
@@ -56,7 +56,7 @@ class NotificationChannel(str, Enum):
 
 
 class ScanType(str, Enum):
-    """Type of barcode scan"""
+    """Type of barcode scan."""
 
     BARCODE = "barcode"
     QR_CODE = "qr_code"
@@ -71,7 +71,7 @@ class ScanType(str, Enum):
 
 
 class UserIdRequest(BaseModel):
-    """Base request with user ID"""
+    """Base request with user ID."""
 
     user_id: int = Field(..., gt=0, description="User ID")
 
@@ -82,7 +82,7 @@ class UserIdRequest(BaseModel):
 
 
 class PaginationRequest(BaseModel):
-    """Standard pagination request"""
+    """Standard pagination request."""
 
     limit: int = Field(20, ge=1, le=100, description="Items per page")
     offset: int = Field(0, ge=0, le=10000, description="Number of items to skip")
@@ -91,7 +91,7 @@ class PaginationRequest(BaseModel):
 
 
 class DateRangeRequest(BaseModel):
-    """Date range filter"""
+    """Date range filter."""
 
     date_from: date | None = Field(None, description="Start date (YYYY-MM-DD)")
     date_to: date | None = Field(None, description="End date (YYYY-MM-DD)")
@@ -107,7 +107,7 @@ class DateRangeRequest(BaseModel):
 
 
 class BarcodeScanRequest(BaseModel):
-    """Request to scan a barcode"""
+    """Request to scan a barcode."""
 
     model_config = {"protected_namespaces": ()}
 
@@ -127,7 +127,7 @@ class BarcodeScanRequest(BaseModel):
 
 
 class ProductSearchRequest(BaseModel):
-    """Request to search for products/recalls"""
+    """Request to search for products/recalls."""
 
     query: str | None = Field(None, max_length=200, description="Search query")
     product_name: str | None = Field(None, max_length=500, description="Product name")
@@ -161,7 +161,7 @@ class ProductSearchRequest(BaseModel):
 
 
 class EmailRequest(BaseModel):
-    """Request with email address"""
+    """Request with email address."""
 
     email: EmailStr = Field(..., description="Email address")
 
@@ -177,7 +177,7 @@ class EmailRequest(BaseModel):
 
 
 class ApiResponse(BaseModel):
-    """Standard API response"""
+    """Standard API response."""
 
     success: bool = Field(..., description="Whether request was successful")
     data: Any | None = Field(None, description="Response data")
@@ -188,7 +188,7 @@ class ApiResponse(BaseModel):
 
 
 class PaginatedResponse(BaseModel):
-    """Paginated API response"""
+    """Paginated API response."""
 
     success: bool = True
     data: list[Any] = Field(default_factory=list, description="List of items")
@@ -201,7 +201,7 @@ class PaginatedResponse(BaseModel):
 
 
 class UserResponse(BaseModel):
-    """User data response"""
+    """User data response."""
 
     id: int
     email: str
@@ -212,7 +212,7 @@ class UserResponse(BaseModel):
 
 
 class ProductInfo(BaseModel):
-    """Product information"""
+    """Product information."""
 
     model_config = {"protected_namespaces": ()}
 
@@ -226,7 +226,7 @@ class ProductInfo(BaseModel):
 
 
 class RecallInfo(BaseModel):
-    """Recall information"""
+    """Recall information."""
 
     recall_id: str
     product_name: str
@@ -243,7 +243,7 @@ class RecallInfo(BaseModel):
 
 
 class ScanResult(BaseModel):
-    """Barcode scan result"""
+    """Barcode scan result."""
 
     model_config = {"protected_namespaces": ()}
 
@@ -270,7 +270,7 @@ class ScanResult(BaseModel):
 
 
 class NotificationResponse(BaseModel):
-    """Notification data"""
+    """Notification data."""
 
     notification_id: str
     user_id: int
@@ -283,7 +283,7 @@ class NotificationResponse(BaseModel):
 
 
 class SubscriptionResponse(BaseModel):
-    """Subscription information"""
+    """Subscription information."""
 
     user_id: int
     tier: SubscriptionTier
@@ -300,7 +300,7 @@ class SubscriptionResponse(BaseModel):
 
 
 class AnalyticsData(BaseModel):
-    """Analytics data point"""
+    """Analytics data point."""
 
     metric_name: str
     value: float
@@ -309,7 +309,7 @@ class AnalyticsData(BaseModel):
 
 
 class ReportMetadata(BaseModel):
-    """Report metadata"""
+    """Report metadata."""
 
     report_id: str
     report_type: str
@@ -325,7 +325,7 @@ class ReportMetadata(BaseModel):
 
 
 class ErrorDetail(BaseModel):
-    """Detailed error information"""
+    """Detailed error information."""
 
     code: str = Field(..., description="Error code")
     message: str = Field(..., description="Error message")
@@ -334,7 +334,7 @@ class ErrorDetail(BaseModel):
 
 
 class ValidationError(BaseModel):
-    """Validation error response"""
+    """Validation error response."""
 
     success: bool = False
     error: str = "Validation failed"
@@ -348,7 +348,7 @@ class ValidationError(BaseModel):
 
 
 class HealthCheckResponse(BaseModel):
-    """Health check response"""
+    """Health check response."""
 
     status: str = "healthy"
     version: str

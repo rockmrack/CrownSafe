@@ -13,7 +13,7 @@ from agents.premium.pregnancy_product_safety_agent.agent_logic import (  # noqa:
 logging.basicConfig(level=logging.INFO)
 
 
-def test_pregnancy_safety_logic():
+def test_pregnancy_safety_logic() -> None:
     print("--- Testing PregnancyProductSafetyAgent Logic ---")
 
     logic = PregnancyProductSafetyAgentLogic(agent_id="test_preg_agent_01")

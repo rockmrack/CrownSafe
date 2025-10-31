@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """BabyShield API v1 Endpoints
-Implements versioned API endpoints with backward compatibility
+Implements versioned API endpoints with backward compatibility.
 """
 
 import logging
@@ -37,7 +37,7 @@ ALLOW_UPSTREAM_FALLBACK = os.getenv("ALLOW_UPSTREAM_FALLBACK", "true").lower() =
 
 
 class Agency(BaseModel):
-    """Agency information model"""
+    """Agency information model."""
 
     code: str = Field(..., description="Agency code (e.g., 'FDA')")
     name: str = Field(..., description="Full agency name")
@@ -46,7 +46,7 @@ class Agency(BaseModel):
 
 
 class SafetyIssue(BaseModel):
-    """Safety issue/recall model with all required fields"""
+    """Safety issue/recall model with all required fields."""
 
     id: str = Field(..., description="Unique identifier")
     agencyCode: str = Field(..., description="Agency code")
@@ -68,7 +68,7 @@ class SafetyIssue(BaseModel):
 
 
 class SearchResults(BaseModel):
-    """Search results with pagination"""
+    """Search results with pagination."""
 
     items: list[SafetyIssue]
     nextCursor: str | None = None
@@ -76,7 +76,7 @@ class SearchResults(BaseModel):
 
 
 class SuccessResponse(BaseModel):
-    """Success response envelope"""
+    """Success response envelope."""
 
     ok: bool = True
     data: Any
@@ -84,14 +84,14 @@ class SuccessResponse(BaseModel):
 
 
 class ErrorDetail(BaseModel):
-    """Error detail model"""
+    """Error detail model."""
 
     code: str
     message: str
 
 
 class ErrorResponse(BaseModel):
-    """Error response envelope"""
+    """Error response envelope."""
 
     ok: bool = False
     error: ErrorDetail
@@ -441,7 +441,7 @@ router = APIRouter()
 
 @router.get("/", include_in_schema=False)
 def api_v1_index():
-    """API v1 index endpoint to prevent 404 logs"""
+    """API v1 index endpoint to prevent 404 logs."""
     return {
         "ok": True,
         "version": "1.2.0",
@@ -459,12 +459,12 @@ def api_v1_index():
 
 
 def generate_trace_id() -> str:
-    """Generate a unique trace ID for the request"""
+    """Generate a unique trace ID for the request."""
     return f"trace_{uuid.uuid4().hex[:16]}_{int(datetime.now().timestamp())}"
 
 
 def convert_recall_to_safety_issue(recall: Any, agency_code: str) -> SafetyIssue:
-    """Convert recall object to SafetyIssue model - DEPRECATED FOR CROWN SAFE"""
+    """Convert recall object to SafetyIssue model - DEPRECATED FOR CROWN SAFE."""
     # REMOVED FOR CROWN SAFE: This function converted RecallDB objects to SafetyIssue
     # Crown Safe focuses on hair product testing (HairProductModel), not baby recalls
     # Return minimal valid object with deprecation notice
@@ -490,7 +490,7 @@ def convert_recall_to_safety_issue(recall: Any, agency_code: str) -> SafetyIssue
 
 
 def check_table_exists(db_session) -> bool:
-    """Check if recalls_enhanced table exists"""
+    """Check if recalls_enhanced table exists."""
     try:
         from sqlalchemy import inspect
 
@@ -502,12 +502,12 @@ def check_table_exists(db_session) -> bool:
 
 
 def get_empty_search_result() -> dict:
-    """Return empty search result structure"""
+    """Return empty search result structure."""
     return {"items": [], "nextCursor": None, "total": 0}
 
 
 async def search_agency_upstream(agency_code: str, product: str, limit: int = 20) -> dict:
-    """Search using upstream agency connectors (bypass database)"""
+    """Search using upstream agency connectors (bypass database)."""
     logger.info(f"🔄 Using upstream search for {agency_code} (product: {product})")
 
     # Import connectors dynamically to avoid circular imports
@@ -571,9 +571,8 @@ async def search_agency_upstream(agency_code: str, product: str, limit: int = 20
                 "nextCursor": None,  # Upstream doesn't support cursor pagination
                 "total": len(items),
             }
-        else:
-            logger.warning(f"No upstream connector available for {agency_code}")
-            return get_empty_search_result()
+        logger.warning(f"No upstream connector available for {agency_code}")
+        return get_empty_search_result()
 
     except Exception as e:
         logger.error(f"Upstream search failed for {agency_code}: {e}", exc_info=True)
@@ -581,7 +580,7 @@ async def search_agency_upstream(agency_code: str, product: str, limit: int = 20
 
 
 async def search_agency_recalls(agency_code: str, product: str, limit: int = 20, cursor: str | None = None) -> dict:
-    """Search recalls for a specific agency with graceful table missing handling
+    """Search recalls for a specific agency with graceful table missing handling.
 
     Returns empty results if table doesn't exist, preventing 500 errors
     """
@@ -639,9 +638,8 @@ async def search_agency_recalls(agency_code: str, product: str, limit: int = 20,
                 logger.info(f"🔄 Falling back to upstream search for {agency_code}")
                 return await search_agency_upstream(agency_code, product, limit)
             return get_empty_search_result()
-        else:
-            logger.error(f"Database programming error for {agency_code}: {e}", exc_info=True)
-            raise
+        logger.error(f"Database programming error for {agency_code}: {e}", exc_info=True)
+        raise
     except Exception as e:
         logger.error(f"Search failed for agency {agency_code}: {e}", exc_info=True)
         if ALLOW_UPSTREAM_FALLBACK:
@@ -655,7 +653,7 @@ async def search_agency_recalls(agency_code: str, product: str, limit: int = 20,
 
 @router.get("/api/v1/agencies", response_model=SuccessResponse, tags=["agencies"])
 async def list_agencies_v1(request: Request):
-    """List all supported agencies (versioned)"""
+    """List all supported agencies (versioned)."""
     trace_id = generate_trace_id()
     logger.info(f"[{trace_id}] GET /api/v1/agencies")
 
@@ -669,7 +667,7 @@ async def search_fda_v1(
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
     cursor: str | None = Query(None, description="Pagination cursor"),
 ):
-    """Search FDA recalls (versioned)"""
+    """Search FDA recalls (versioned)."""
     trace_id = generate_trace_id()
     logger.info(f"[{trace_id}] GET /api/v1/fda?product={product}&limit={limit}&cursor={cursor}")
 
@@ -708,7 +706,7 @@ async def search_cpsc_v1(
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
     cursor: str | None = Query(None, description="Pagination cursor"),
 ):
-    """Search CPSC recalls (versioned)"""
+    """Search CPSC recalls (versioned)."""
     trace_id = generate_trace_id()
     logger.info(f"[{trace_id}] GET /api/v1/cpsc?product={product}&limit={limit}&cursor={cursor}")
 
@@ -747,7 +745,7 @@ async def search_eu_safety_gate_v1(
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
     cursor: str | None = Query(None, description="Pagination cursor"),
 ):
-    """Search EU Safety Gate (RAPEX) recalls (versioned)"""
+    """Search EU Safety Gate (RAPEX) recalls (versioned)."""
     trace_id = generate_trace_id()
     logger.info(f"[{trace_id}] GET /api/v1/eu_safety_gate?product={product}&limit={limit}&cursor={cursor}")
 
@@ -786,7 +784,7 @@ async def search_uk_opss_v1(
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
     cursor: str | None = Query(None, description="Pagination cursor"),
 ):
-    """Search UK OPSS recalls (versioned)"""
+    """Search UK OPSS recalls (versioned)."""
     trace_id = generate_trace_id()
     logger.info(f"[{trace_id}] GET /api/v1/uk_opss?product={product}&limit={limit}&cursor={cursor}")
 
@@ -823,7 +821,7 @@ async def search_uk_opss_v1(
 
 @router.get("/agencies", response_model=SuccessResponse, tags=["agencies"])
 async def list_agencies_alias(request: Request):
-    """List all supported agencies (unversioned alias for backward compatibility)"""
+    """List all supported agencies (unversioned alias for backward compatibility)."""
     return await list_agencies_v1(request)
 
 
@@ -834,7 +832,7 @@ async def search_fda_alias(
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
     cursor: str | None = Query(None, description="Pagination cursor"),
 ):
-    """Search FDA recalls (unversioned alias - backward compatibility)"""
+    """Search FDA recalls (unversioned alias - backward compatibility)."""
     return await search_fda_v1(request, product, limit, cursor)
 
 
@@ -845,7 +843,7 @@ async def search_cpsc_alias(
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
     cursor: str | None = Query(None, description="Pagination cursor"),
 ):
-    """Search CPSC recalls (unversioned alias for backward compatibility)"""
+    """Search CPSC recalls (unversioned alias for backward compatibility)."""
     return await search_cpsc_v1(request, product, limit, cursor)
 
 
@@ -856,7 +854,7 @@ async def search_eu_safety_gate_alias(
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
     cursor: str | None = Query(None, description="Pagination cursor"),
 ):
-    """Search EU Safety Gate recalls (unversioned alias for backward compatibility)"""
+    """Search EU Safety Gate recalls (unversioned alias for backward compatibility)."""
     return await search_eu_safety_gate_v1(request, product, limit, cursor)
 
 
@@ -867,5 +865,5 @@ async def search_uk_opss_alias(
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
     cursor: str | None = Query(None, description="Pagination cursor"),
 ):
-    """Search UK OPSS recalls (unversioned alias for backward compatibility)"""
+    """Search UK OPSS recalls (unversioned alias for backward compatibility)."""
     return await search_uk_opss_v1(request, product, limit, cursor)

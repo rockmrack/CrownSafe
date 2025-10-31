@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """BabyShield Store Asset Generator & Validator
-Creates placeholder assets and validates existing ones for app store submission
+Creates placeholder assets and validates existing ones for app store submission.
 """
 
 import sys
@@ -43,13 +43,13 @@ ASSET_SPECS = {
 
 
 class AssetGenerator:
-    def __init__(self, base_path: str = "."):
+    def __init__(self, base_path: str = ".") -> None:
         self.base_path = Path(base_path)
         self.assets_path = self.base_path / "assets" / "store"
         self.report = {"created": [], "existing": [], "missing": [], "errors": []}
 
-    def create_directories(self):
-        """Create all necessary asset directories"""
+    def create_directories(self) -> None:
+        """Create all necessary asset directories."""
         dirs = [
             self.assets_path / "icons" / "ios",
             self.assets_path / "icons" / "android",
@@ -63,7 +63,7 @@ class AssetGenerator:
             print(f"✓ Directory: {dir_path}")
 
     def create_placeholder_image(self, path: Path, size: tuple[int, int], text: str):
-        """Create a placeholder image file with specifications"""
+        """Create a placeholder image file with specifications."""
         content = f"""PLACEHOLDER IMAGE
 Size: {size[0]}x{size[1]}
 Purpose: {text}
@@ -85,8 +85,8 @@ DESIGN GUIDELINES:
         path.write_text(content)
         return path
 
-    def generate_ios_assets(self):
-        """Generate iOS asset placeholders"""
+    def generate_ios_assets(self) -> None:
+        """Generate iOS asset placeholders."""
         print("\n📱 iOS Assets:")
 
         # App icon
@@ -113,8 +113,8 @@ DESIGN GUIDELINES:
                     self.report["existing"].append(str(path))
                     print(f"  • Exists: {filename}")
 
-    def generate_android_assets(self):
-        """Generate Android asset placeholders"""
+    def generate_android_assets(self) -> None:
+        """Generate Android asset placeholders."""
         print("\n🤖 Android Assets:")
 
         # App icon
@@ -156,7 +156,7 @@ DESIGN GUIDELINES:
                     print(f"  • Exists: {filename}")
 
     def validate_assets(self):
-        """Validate that all required assets exist"""
+        """Validate that all required assets exist."""
         print("\n🔍 Validating Assets:")
 
         all_valid = True
@@ -215,7 +215,7 @@ DESIGN GUIDELINES:
         return all_valid
 
     def generate_html_preview(self):
-        """Generate an HTML file to preview all assets"""
+        """Generate an HTML file to preview all assets."""
         html = (
             """<!DOCTYPE html>
 <html lang="en">
@@ -418,8 +418,8 @@ DESIGN GUIDELINES:
         print(f"\n📄 Preview generated: {preview_path}")
         return preview_path
 
-    def print_summary(self):
-        """Print a summary report"""
+    def print_summary(self) -> None:
+        """Print a summary report."""
         print("\n" + "=" * 60)
         print("📊 ASSET GENERATION SUMMARY")
         print("=" * 60)
@@ -469,8 +469,8 @@ DESIGN GUIDELINES:
         )
 
 
-def main():
-    """Main entry point"""
+def main() -> int:
+    """Main entry point."""
     print("🎨 BabyShield Store Asset Generator")
     print("=" * 60)
 
@@ -486,28 +486,27 @@ def main():
         else:
             print("\n❌ Some required assets are missing. Generate placeholders first.")
         return 0 if is_valid else 1
-    else:
-        # Generation mode
-        print("Running in GENERATION mode\n")
+    # Generation mode
+    print("Running in GENERATION mode\n")
 
-        # Create directory structure
-        print("📁 Creating directory structure...")
-        generator.create_directories()
+    # Create directory structure
+    print("📁 Creating directory structure...")
+    generator.create_directories()
 
-        # Generate assets
-        generator.generate_ios_assets()
-        generator.generate_android_assets()
+    # Generate assets
+    generator.generate_ios_assets()
+    generator.generate_android_assets()
 
-        # Validate what we have
-        generator.validate_assets()
+    # Validate what we have
+    generator.validate_assets()
 
-        # Generate preview
-        generator.generate_html_preview()
+    # Generate preview
+    generator.generate_html_preview()
 
-        # Print summary
-        generator.print_summary()
+    # Print summary
+    generator.print_summary()
 
-        return 0
+    return 0
 
 
 if __name__ == "__main__":

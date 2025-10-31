@@ -1,4 +1,4 @@
-"""Pydantic schemas for user report endpoints"""
+"""Pydantic schemas for user report endpoints."""
 
 from datetime import date, datetime
 
@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class ReportUnsafeProductRequest(BaseModel):
-    """Request schema for reporting unsafe products"""
+    """Request schema for reporting unsafe products."""
 
     user_id: int = Field(..., description="ID of the user submitting the report")
     product_name: str = Field(..., min_length=3, max_length=255, description="Name of the unsafe product")
@@ -42,7 +42,7 @@ class ReportUnsafeProductRequest(BaseModel):
     @field_validator("photos")
     @classmethod
     def validate_photos(cls, v):
-        """Limit number of photos"""
+        """Limit number of photos."""
         if v and len(v) > 10:
             raise ValueError("Maximum 10 photos allowed per report")
         return v
@@ -67,7 +67,7 @@ class ReportUnsafeProductRequest(BaseModel):
 
 
 class ReportUnsafeProductResponse(BaseModel):
-    """Response schema for successful report submission"""
+    """Response schema for successful report submission."""
 
     report_id: int = Field(..., description="Unique ID of the created report")
     status: str = Field(default="PENDING", description="Current status of the report")
@@ -89,7 +89,7 @@ class ReportUnsafeProductResponse(BaseModel):
 
 
 class UserReportDetail(BaseModel):
-    """Detailed view of a user report (for admin/review)"""
+    """Detailed view of a user report (for admin/review)."""
 
     report_id: int
     user_id: int
@@ -118,7 +118,7 @@ class UserReportDetail(BaseModel):
 
 
 class UpdateReportStatusRequest(BaseModel):
-    """Request schema for updating report status (admin only)"""
+    """Request schema for updating report status (admin only)."""
 
     status: str = Field(
         ...,

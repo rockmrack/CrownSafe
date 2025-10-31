@@ -1,5 +1,5 @@
 """Unified error handling for consistent API responses
-All errors follow the same JSON structure with correlation IDs
+All errors follow the same JSON structure with correlation IDs.
 """
 
 import logging
@@ -14,7 +14,7 @@ logger = logging.getLogger("app")
 
 
 def create_error_payload(code: str, message: str, trace_id: str | None = None, **extra) -> dict[str, Any]:
-    """Create standardized error payload
+    """Create standardized error payload.
 
     Args:
         code: Error code (e.g., "INVALID_PARAMETERS")
@@ -37,7 +37,7 @@ def create_error_payload(code: str, message: str, trace_id: str | None = None, *
 
 
 async def json_error_response(status_code: int, code: str, message: str, request: Request, **extra) -> JSONResponse:
-    """Create JSON error response with trace ID
+    """Create JSON error response with trace ID.
 
     Args:
         status_code: HTTP status code
@@ -71,7 +71,7 @@ async def json_error_response(status_code: int, code: str, message: str, request
 
 
 async def handle_request_validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
-    """Handle Pydantic validation errors (422)"""
+    """Handle Pydantic validation errors (422)."""
     # Extract field errors
     errors = exc.errors()
 
@@ -113,7 +113,7 @@ async def handle_request_validation_error(request: Request, exc: RequestValidati
 
 
 async def handle_http_exception(request: Request, exc: StarletteHTTPException) -> JSONResponse:
-    """Handle HTTP exceptions (4xx, 5xx)"""
+    """Handle HTTP exceptions (4xx, 5xx)."""
     # Map status codes to error codes
     status_code_mapping = {
         400: "BAD_REQUEST",
@@ -167,7 +167,7 @@ async def handle_http_exception(request: Request, exc: StarletteHTTPException) -
 
 
 async def handle_generic_exception(request: Request, exc: Exception) -> JSONResponse:
-    """Handle unhandled exceptions (500)"""
+    """Handle unhandled exceptions (500)."""
     trace_id = getattr(request.state, "trace_id", None)
 
     # Log the full exception with traceback
@@ -193,7 +193,7 @@ async def handle_generic_exception(request: Request, exc: Exception) -> JSONResp
 
 
 class APIError(HTTPException):
-    """Custom API exception for consistent error responses
+    """Custom API exception for consistent error responses.
 
     Usage:
         raise APIError(

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """EMERGENCY: Enable pg_trgm extension directly on production database
-This bypasses the application startup code
+This bypasses the application startup code.
 """
 
 import os

@@ -54,7 +54,7 @@ AGENT_CAPABILITIES = [
 
 # Environment setup
 def setup_environment():
-    """Setup environment variables with proper fallback"""
+    """Setup environment variables with proper fallback."""
     try:
         # Try project root first
         project_root = Path(__file__).resolve().parents[3]
@@ -63,10 +63,9 @@ def setup_environment():
         if dotenv_path.exists():
             load_dotenv(dotenv_path)
             return str(dotenv_path)
-        else:
-            # Fallback to current directory or standard locations
-            load_dotenv()
-            return "default locations"
+        # Fallback to current directory or standard locations
+        load_dotenv()
+        return "default locations"
     except Exception as e:
         load_dotenv()  # Final fallback
         return f"fallback due to error: {e}"
@@ -82,7 +81,7 @@ LOG_LEVEL = os.getenv("PYTHON_LOGLEVEL", "INFO").upper()
 
 # Logging setup - avoid duplicate handlers
 def setup_logging() -> None:
-    """Setup logging configuration to avoid duplication"""
+    """Setup logging configuration to avoid duplication."""
     # Configure root logger
     logging.basicConfig(
         level=getattr(logging, LOG_LEVEL, logging.INFO),
@@ -110,7 +109,7 @@ shutdown_in_progress = False
 
 
 class CommanderAgentManager:
-    """Main agent manager for CommanderAgent"""
+    """Main agent manager for CommanderAgent."""
 
     def __init__(self) -> None:
         self.mcp_client: MCPClient | None = None
@@ -119,7 +118,7 @@ class CommanderAgentManager:
         self.shutdown_complete = False
 
     async def handle_incoming_message(self, message: MCPMessage) -> None:
-        """Handle incoming messages with proper error handling and response processing"""
+        """Handle incoming messages with proper error handling and response processing."""
         if not self.commander_logic:
             logger.error("CommanderLogic instance not initialized. Cannot process message.")
             return
@@ -139,7 +138,7 @@ class CommanderAgentManager:
             # Continue processing other messages rather than crashing
 
     async def initialize_components(self) -> bool | None:
-        """Initialize MCP client and CommanderLogic"""
+        """Initialize MCP client and CommanderLogic."""
         try:
             # Initialize MCPClient
             self.mcp_client = MCPClient(
@@ -166,7 +165,7 @@ class CommanderAgentManager:
             return False
 
     def setup_signal_handlers(self) -> None:
-        """Setup signal handlers for graceful shutdown"""
+        """Setup signal handlers for graceful shutdown."""
         try:
             loop = asyncio.get_running_loop()
 
@@ -187,7 +186,7 @@ class CommanderAgentManager:
             logger.warning(f"Could not setup signal handlers: {e}")
 
     async def connect_and_register(self) -> bool | None:
-        """Connect to MCP server and register agent"""
+        """Connect to MCP server and register agent."""
         try:
             await self.mcp_client.connect()
 
@@ -207,7 +206,7 @@ class CommanderAgentManager:
             return False
 
     async def run_main_loop(self) -> None:
-        """Main agent event loop"""
+        """Main agent event loop."""
         logger.info(f"{AGENT_ID} entering main event loop...")
 
         try:
@@ -231,7 +230,7 @@ class CommanderAgentManager:
             logger.error(f"Error in main event loop: {e}", exc_info=True)
 
     async def _run_timeout_checker(self) -> None:
-        """Background task to check for workflow timeouts"""
+        """Background task to check for workflow timeouts."""
         try:
             while not self.stop_event.is_set():
                 if self.commander_logic:
@@ -243,7 +242,7 @@ class CommanderAgentManager:
             logger.error(f"Error in timeout checker: {e}", exc_info=True)
 
     async def shutdown(self) -> None:
-        """Graceful shutdown of all components"""
+        """Graceful shutdown of all components."""
         if self.shutdown_complete:
             return
 
@@ -268,7 +267,7 @@ class CommanderAgentManager:
 
 
 async def main() -> int | None:
-    """Main entry point"""
+    """Main entry point."""
     agent_manager = CommanderAgentManager()
 
     # Update global instances for backward compatibility

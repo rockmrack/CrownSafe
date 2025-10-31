@@ -1,12 +1,12 @@
 """Security vulnerability tests
-Tests for OWASP Top 10 vulnerabilities and security best practices
+Tests for OWASP Top 10 vulnerabilities and security best practices.
 """
 
 
 class TestSQLInjection:
-    """Test suite for SQL injection protection"""
+    """Test suite for SQL injection protection."""
 
-    def test_search_with_sql_injection_attempt_blocked(self, client, auth_token):
+    def test_search_with_sql_injection_attempt_blocked(self, client, auth_token) -> None:
         """Test SQL injection protection in search.
 
         Given: Search query with SQL injection attempt
@@ -39,7 +39,7 @@ class TestSQLInjection:
                 assert "DROP TABLE" not in str(data).upper()
                 assert "UNION SELECT" not in str(data).upper()
 
-    def test_user_input_with_sql_injection_sanitized(self, client):
+    def test_user_input_with_sql_injection_sanitized(self, client) -> None:
         """Test user input sanitization.
 
         Given: Registration with SQL injection in email
@@ -57,9 +57,9 @@ class TestSQLInjection:
 
 
 class TestXSSProtection:
-    """Test suite for XSS protection"""
+    """Test suite for XSS protection."""
 
-    def test_product_name_with_script_tag_sanitized(self, client, auth_token):
+    def test_product_name_with_script_tag_sanitized(self, client, auth_token) -> None:
         """Test XSS protection in product names.
 
         Given: Product name with <script> tag
@@ -80,7 +80,7 @@ class TestXSSProtection:
             if response.status_code == 200:
                 assert "<script>" not in response.json().get("name", "")
 
-    def test_response_headers_prevent_xss(self, client):
+    def test_response_headers_prevent_xss(self, client) -> None:
         """Test security headers are set.
 
         Given: Any request
@@ -94,9 +94,9 @@ class TestXSSProtection:
 
 
 class TestAuthentication:
-    """Test suite for authentication security"""
+    """Test suite for authentication security."""
 
-    def test_protected_endpoint_without_auth_returns_401(self, client):
+    def test_protected_endpoint_without_auth_returns_401(self, client) -> None:
         """Test authentication requirement.
 
         Given: No authentication token
@@ -106,7 +106,7 @@ class TestAuthentication:
         response = client.get("/api/v1/user/scan-history")
         assert response.status_code == 401
 
-    def test_expired_token_rejected(self, client, expired_token):
+    def test_expired_token_rejected(self, client, expired_token) -> None:
         """Test expired token handling.
 
         Given: Expired JWT token
@@ -117,7 +117,7 @@ class TestAuthentication:
         response = client.get("/api/v1/user/profile", headers=headers)
         assert response.status_code == 401
 
-    def test_tampered_token_rejected(self, client, auth_token):
+    def test_tampered_token_rejected(self, client, auth_token) -> None:
         """Test token tampering detection.
 
         Given: Modified JWT token
@@ -129,7 +129,7 @@ class TestAuthentication:
         response = client.get("/api/v1/user/profile", headers=headers)
         assert response.status_code == 401
 
-    def test_brute_force_protection_active(self, client):
+    def test_brute_force_protection_active(self, client) -> None:
         """Test brute force protection.
 
         Given: Multiple failed login attempts
@@ -152,9 +152,9 @@ class TestAuthentication:
 
 
 class TestAuthorization:
-    """Test suite for authorization security"""
+    """Test suite for authorization security."""
 
-    def test_user_cannot_access_other_users_data(self, client, user1_token, user2_id):
+    def test_user_cannot_access_other_users_data(self, client, user1_token, user2_id) -> None:
         """Test authorization boundaries.
 
         Given: User 1 token
@@ -165,7 +165,7 @@ class TestAuthorization:
         response = client.get(f"/api/v1/user/{user2_id}/profile", headers=headers)
         assert response.status_code == 403
 
-    def test_regular_user_cannot_access_admin_endpoints(self, client, regular_user_token):
+    def test_regular_user_cannot_access_admin_endpoints(self, client, regular_user_token) -> None:
         """Test admin endpoint protection.
 
         Given: Regular user token
@@ -178,9 +178,9 @@ class TestAuthorization:
 
 
 class TestCSRFProtection:
-    """Test suite for CSRF protection"""
+    """Test suite for CSRF protection."""
 
-    def test_state_changing_requests_require_csrf_token(self, client):
+    def test_state_changing_requests_require_csrf_token(self, client) -> None:
         """Test CSRF protection on POST/PUT/DELETE.
 
         Given: Request without CSRF token
@@ -192,9 +192,9 @@ class TestCSRFProtection:
 
 
 class TestRateLimiting:
-    """Test suite for rate limiting security"""
+    """Test suite for rate limiting security."""
 
-    def test_api_rate_limit_per_user_enforced(self, client, auth_token):
+    def test_api_rate_limit_per_user_enforced(self, client, auth_token) -> None:
         """Test per-user rate limiting.
 
         Given: Authenticated user
@@ -212,7 +212,7 @@ class TestRateLimiting:
         # Accept both 429 (rate limited) and 200 (no rate limiting in test environment)
         assert response.status_code in [200, 429]
 
-    def test_ip_based_rate_limiting_for_public_endpoints(self, client):
+    def test_ip_based_rate_limiting_for_public_endpoints(self, client) -> None:
         """Test IP-based rate limiting.
 
         Given: Multiple requests from same IP
@@ -228,9 +228,9 @@ class TestRateLimiting:
 
 
 class TestInputValidation:
-    """Test suite for input validation security"""
+    """Test suite for input validation security."""
 
-    def test_file_upload_validates_file_type(self, client, auth_token):
+    def test_file_upload_validates_file_type(self, client, auth_token) -> None:
         """Test file upload type validation.
 
         Given: Non-image file
@@ -244,7 +244,7 @@ class TestInputValidation:
         # Accept 400 (bad request), 422 (validation error), or 404 (endpoint structure different)
         assert response.status_code in [400, 404, 422]
 
-    def test_file_upload_validates_file_size(self, client, auth_token):
+    def test_file_upload_validates_file_size(self, client, auth_token) -> None:
         """Test file size limit.
 
         Given: File exceeding size limit
@@ -261,9 +261,9 @@ class TestInputValidation:
 
 
 class TestSecurityHeaders:
-    """Test suite for security headers"""
+    """Test suite for security headers."""
 
-    def test_hsts_header_present(self, client):
+    def test_hsts_header_present(self, client) -> None:
         """Test HSTS header in production.
 
         Given: Request to any endpoint
@@ -275,7 +275,7 @@ class TestSecurityHeaders:
         # assert "Strict-Transport-Security" in response.headers
         pass
 
-    def test_content_security_policy_configured(self, client):
+    def test_content_security_policy_configured(self, client) -> None:
         """Test CSP header configuration.
 
         Given: Request to any endpoint

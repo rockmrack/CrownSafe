@@ -1,4 +1,4 @@
-"""Routes package for API endpoints"""
+"""Routes package for API endpoints."""
 
 from . import admin, system
 

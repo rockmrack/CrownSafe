@@ -3,7 +3,7 @@
 1. Scan with Camera (barcode endpoint)
 2. Upload a Photo (visual upload/analyze/status endpoints)
 3. Scan Barcode Number (barcode text entry)
-4. Search by Name (product_name search)
+4. Search by Name (product_name search).
 """
 
 import asyncio
@@ -21,8 +21,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
-async def test_method_1_camera_scan():
-    """Test Method 1: Scan with Camera (barcode endpoint)"""
+async def test_method_1_camera_scan() -> bool:
+    """Test Method 1: Scan with Camera (barcode endpoint)."""
     logger.info("=" * 60)
     logger.info("METHOD 1: SCAN WITH CAMERA (Barcode)")
     logger.info("=" * 60)
@@ -66,8 +66,8 @@ async def test_method_1_camera_scan():
     return True
 
 
-async def test_method_2_upload_photo():
-    """Test Method 2: Upload a Photo (visual endpoints)"""
+async def test_method_2_upload_photo() -> bool:
+    """Test Method 2: Upload a Photo (visual endpoints)."""
     logger.info("=" * 60)
     logger.info("METHOD 2: UPLOAD A PHOTO")
     logger.info("=" * 60)
@@ -123,8 +123,8 @@ async def test_method_2_upload_photo():
     return True
 
 
-async def test_method_3_barcode_text():
-    """Test Method 3: Scan Barcode Number (text entry)"""
+async def test_method_3_barcode_text() -> bool:
+    """Test Method 3: Scan Barcode Number (text entry)."""
     logger.info("=" * 60)
     logger.info("METHOD 3: SCAN BARCODE NUMBER (Text Entry)")
     logger.info("=" * 60)
@@ -157,8 +157,8 @@ async def test_method_3_barcode_text():
     return True
 
 
-async def test_method_4_search_by_name():
-    """Test Method 4: Search by Name (product_name search)"""
+async def test_method_4_search_by_name() -> bool:
+    """Test Method 4: Search by Name (product_name search)."""
     logger.info("=" * 60)
     logger.info("METHOD 4: SEARCH BY NAME")
     logger.info("=" * 60)
@@ -192,8 +192,8 @@ async def test_method_4_search_by_name():
     return True
 
 
-async def test_endpoint_structure():
-    """Verify the complete endpoint structure matches frontend requirements"""
+async def test_endpoint_structure() -> bool:
+    """Verify the complete endpoint structure matches frontend requirements."""
     logger.info("=" * 60)
     logger.info("ENDPOINT STRUCTURE VERIFICATION")
     logger.info("=" * 60)
@@ -247,7 +247,7 @@ async def test_endpoint_structure():
 
 
 async def main():
-    """Run all product identification method tests"""
+    """Run all product identification method tests."""
     logger.info("Testing All 4 Product Identification Methods")
     logger.info("=" * 60)
 

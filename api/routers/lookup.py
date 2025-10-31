@@ -1,5 +1,5 @@
 """Clean barcode lookup endpoints
-Provides simple GET endpoints for barcode scanning
+Provides simple GET endpoints for barcode scanning.
 """
 
 import logging
@@ -21,7 +21,7 @@ def barcode_lookup(
     limit: int = Query(5, ge=1, le=50, description="Maximum number of results"),
     db: Session = Depends(get_db),
 ):
-    """Simple barcode lookup via GET request
+    """Simple barcode lookup via GET request.
 
     This endpoint provides a clean, cacheable way to lookup products by barcode.
     Uses the same advanced search backend as POST /api/v1/search/advanced.
@@ -49,7 +49,7 @@ def barcode_lookup_path(
     limit: int = Query(5, ge=1, le=50, description="Maximum number of results"),
     db: Session = Depends(get_db),
 ):
-    """Alternative barcode lookup with barcode in path
+    """Alternative barcode lookup with barcode in path.
 
     Example: GET /api/v1/lookup/barcode/012914632109
     """

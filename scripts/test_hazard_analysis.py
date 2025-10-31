@@ -32,7 +32,7 @@ TEST_RECALL_DATA = {
 # --------------------------
 
 
-async def main():
+async def main() -> None:
     """Main function to run the live HazardAnalysisAgent test."""
     logger = logging.getLogger(__name__)
     logger.info("--- Starting Live HazardAnalysisAgent Test ---")

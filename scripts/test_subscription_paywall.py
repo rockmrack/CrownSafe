@@ -31,7 +31,7 @@ TEST_BARCODE = "381370037248"
 # --------------------------
 
 
-async def main():
+async def main() -> None:
     """Main function to test the subscription paywall."""
     logger = logging.getLogger(__name__)
     logger.info("--- Starting Test Scenario 5: Subscription Paywall ---")

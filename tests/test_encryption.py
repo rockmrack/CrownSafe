@@ -1,11 +1,11 @@
-"""Tests for core_infra/encryption.py"""
+"""Tests for core_infra/encryption.py."""
 
 import unittest
 
 
 class TestEncryption(unittest.TestCase):
-    def test_encryption_module_import(self):
-        """Test that encryption module can be imported"""
+    def test_encryption_module_import(self) -> None:
+        """Test that encryption module can be imported."""
         try:
             import core_infra.encryption as enc
 
@@ -13,8 +13,8 @@ class TestEncryption(unittest.TestCase):
         except ImportError:
             self.skipTest("Module not found")
 
-    def test_encrypt_function_exists(self):
-        """Test that encrypt function exists"""
+    def test_encrypt_function_exists(self) -> None:
+        """Test that encrypt function exists."""
         try:
             from core_infra.encryption import encrypt
 
@@ -22,8 +22,8 @@ class TestEncryption(unittest.TestCase):
         except (ImportError, AttributeError):
             self.skipTest("encrypt function not found")
 
-    def test_decrypt_function_exists(self):
-        """Test that decrypt function exists"""
+    def test_decrypt_function_exists(self) -> None:
+        """Test that decrypt function exists."""
         try:
             from core_infra.encryption import decrypt
 

@@ -26,7 +26,7 @@ from core_infra.database import (  # noqa: E402
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 
-def seed_database():
+def seed_database() -> None:
     logger = logging.getLogger(__name__)
     logger.info("--- Seeding Database for Live HTTP Test ---")
     logger.info(f"Using database: {DATABASE_URL}")

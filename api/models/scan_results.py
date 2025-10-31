@@ -1,8 +1,8 @@
 """Scan Results Models for Post-Scan Results Page
-Ensures legally defensible language and transparent reporting
+Ensures legally defensible language and transparent reporting.
 """
 
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from enum import Enum
 from typing import Any
 
@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 
 
 class VerdictType(str, Enum):
-    """Legally defensible verdict types"""
+    """Legally defensible verdict types."""
 
     NO_RECALLS_FOUND = "No Recalls Found"
     NO_RECALLS_OR_SAFETY_ISSUES = "No Recalls or Safety Issues Found"
@@ -20,7 +20,7 @@ class VerdictType(str, Enum):
 
 
 class BarcodeDetectionResult(BaseModel):
-    """Raw barcode detection data for transparency"""
+    """Raw barcode detection data for transparency."""
 
     barcode_number: str = Field(..., description="Detected barcode number")
     format: str = Field(..., description="Barcode format (e.g., ean13, qrcode)")
@@ -41,7 +41,7 @@ class BarcodeDetectionResult(BaseModel):
 
 
 class ProductSummary(BaseModel):
-    """Product identification summary"""
+    """Product identification summary."""
 
     model_config = {
         "protected_namespaces": (),
@@ -58,7 +58,7 @@ class ProductSummary(BaseModel):
 
 
 class SafetyCheckStatus(BaseModel):
-    """Safety check status with accurate agency reporting"""
+    """Safety check status with accurate agency reporting."""
 
     status: str = Field(..., description="Check completion status")
     agencies_checked: str = Field(..., description="Number and status of agencies checked")
@@ -79,7 +79,7 @@ class SafetyCheckStatus(BaseModel):
 
 
 class RecallSummary(BaseModel):
-    """Recall information if found"""
+    """Recall information if found."""
 
     recall_id: str
     agency: str
@@ -91,7 +91,7 @@ class RecallSummary(BaseModel):
 
 
 class ScanResultsPage(BaseModel):
-    """Complete scan results page data structure"""
+    """Complete scan results page data structure."""
 
     # Top-level verdict - legally defensible language
     verdict: VerdictType = Field(..., description="Main verdict using legally defensible language")
@@ -168,7 +168,7 @@ def create_scan_results(
     recall_check: dict[str, Any] | None = None,
     barcode_info: dict[str, Any] | None = None,
 ) -> ScanResultsPage:
-    """Create a properly formatted scan results page response
+    """Create a properly formatted scan results page response.
 
     Args:
         scan_data: Raw scan data from scanner

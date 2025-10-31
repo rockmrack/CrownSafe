@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 from api.main_crownsafe import app
 
 
-def main():
+def main() -> None:
     c = TestClient(app)
     email = f"test+{uuid4().hex[:6]}@ex.com"
     password = "P@ssw0rd!"

@@ -1,5 +1,5 @@
 """Crown Safe - Hair Profile Management Endpoints
-Handles user hair profiles for personalized Crown Score calculations
+Handles user hair profiles for personalized Crown Score calculations.
 
 Endpoints:
 - POST /api/v1/profiles - Create new hair profile
@@ -9,7 +9,7 @@ Endpoints:
 """
 
 import logging
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -30,7 +30,7 @@ router = APIRouter(prefix="/api/v1/profiles", tags=["hair-profiles"])
 
 
 class HairProfileCreate(BaseModel):
-    """Request model for creating a hair profile"""
+    """Request model for creating a hair profile."""
 
     hair_type: str = Field(..., description="Hair type: 3C, 4A, 4B, 4C, Mixed")
     porosity: str = Field(..., description="Porosity: Low, Medium, High")
@@ -66,7 +66,7 @@ class HairProfileCreate(BaseModel):
 
 
 class HairProfileUpdate(BaseModel):
-    """Request model for updating a hair profile (all fields optional)"""
+    """Request model for updating a hair profile (all fields optional)."""
 
     hair_type: str | None = None
     porosity: str | None = None
@@ -79,7 +79,7 @@ class HairProfileUpdate(BaseModel):
 
 
 class HairProfileResponse(BaseModel):
-    """Response model for hair profile"""
+    """Response model for hair profile."""
 
     id: int
     user_id: int
@@ -99,7 +99,7 @@ class HairProfileResponse(BaseModel):
 
 
 class ApiResponse(BaseModel):
-    """Standard API response wrapper"""
+    """Standard API response wrapper."""
 
     success: bool
     message: str

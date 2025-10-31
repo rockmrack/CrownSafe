@@ -4,7 +4,7 @@
 import copy  # For deepcopy
 import json
 import uuid
-from datetime import datetime, timezone, UTC  # Ensure timezone is imported
+from datetime import datetime, UTC  # Ensure timezone is imported
 from typing import Any  # Added Union for safe_json_serialize
 
 # Attempt to import logger from config, fallback to basic logging
@@ -46,16 +46,14 @@ def parse_mcp_message(message_text: str) -> dict[str, Any] | None:
                     )
                     return None
                 return message_dict
-            else:
-                logger.error(
-                    f"parse_mcp_message: Invalid structure - header/payload not dicts. Msg: {message_text[:200]}",
-                )
-                return None
-        else:
             logger.error(
-                f"parse_mcp_message: Parsed JSON lacks basic MCP structure (mcp_header/payload keys). Msg: {message_text[:200]}",  # noqa: E501
+                f"parse_mcp_message: Invalid structure - header/payload not dicts. Msg: {message_text[:200]}",
             )
             return None
+        logger.error(
+            f"parse_mcp_message: Parsed JSON lacks basic MCP structure (mcp_header/payload keys). Msg: {message_text[:200]}",  # noqa: E501
+        )
+        return None
     except json.JSONDecodeError:
         logger.error(
             f"parse_mcp_message: Failed JSON decode for message: {message_text[:200]}",
@@ -263,7 +261,7 @@ def safe_json_serialize(obj: Any, default_msg: str = "Object not serializable") 
                     sanitized[key] = f"UNSERIALIZABLE_VALUE:{str(value)[:100]}"  # Truncate long string representations
             logger.warning(f"Attempting to send sanitized dict after serialization error: {list(sanitized.keys())}")
             return json.dumps(sanitized)
-        elif isinstance(obj, list):
+        if isinstance(obj, list):
             sanitized = []
             for item in obj:
                 try:
@@ -273,6 +271,5 @@ def safe_json_serialize(obj: Any, default_msg: str = "Object not serializable") 
                     sanitized.append(f"UNSERIALIZABLE_ITEM:{str(item)[:100]}")  # Truncate
             logger.warning(f"Attempting to send sanitized list after serialization error. Length: {len(sanitized)}")
             return json.dumps(sanitized)
-        else:
-            logger.exception(f"Cannot sanitize non-dict/list object of type {type(obj)}. Returning error placeholder.")
-            return json.dumps({"error": default_msg, "original_type": str(type(obj))})
+        logger.exception(f"Cannot sanitize non-dict/list object of type {type(obj)}. Returning error placeholder.")
+        return json.dumps({"error": default_msg, "original_type": str(type(obj))})

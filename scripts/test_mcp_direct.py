@@ -9,8 +9,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-async def test_http_endpoints():
-    """Test if MCP Router has any HTTP endpoints"""
+async def test_http_endpoints() -> None:
+    """Test if MCP Router has any HTTP endpoints."""
     print("\n🔍 Testing MCP Router HTTP endpoints...\n")
 
     base_url = "http://127.0.0.1:8001"
@@ -27,8 +27,8 @@ async def test_http_endpoints():
                 print(f"{endpoint}: Error - {e}")
 
 
-async def test_websocket_with_headers():
-    """Test WebSocket with different headers"""
+async def test_websocket_with_headers() -> None:
+    """Test WebSocket with different headers."""
     print("\n🔍 Testing WebSocket with headers...\n")
 
     import websockets
@@ -52,8 +52,8 @@ async def test_websocket_with_headers():
         print(f"❌ Failed without headers: {e}")
 
 
-async def check_mcp_router_logs():
-    """Instructions to check MCP Router logs"""
+async def check_mcp_router_logs() -> None:
+    """Instructions to check MCP Router logs."""
     print("\n📋 Check MCP Router Terminal:\n")
     print("1. Look at the terminal where MCP Router is running")
     print("2. You should see error messages when connections are rejected")

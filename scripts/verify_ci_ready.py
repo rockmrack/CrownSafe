@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Verification script to confirm all fixes are in place
-Run this locally to verify the setup before CI runs
+Run this locally to verify the setup before CI runs.
 """
 
 import sys
@@ -13,18 +13,17 @@ YELLOW = "\033[93m"
 RESET = "\033[0m"
 
 
-def check(condition, success_msg, fail_msg):
-    """Check a condition and print result"""
+def check(condition, success_msg, fail_msg) -> bool:
+    """Check a condition and print result."""
     if condition:
         print(f"{GREEN}✓{RESET} {success_msg}")
         return True
-    else:
-        print(f"{RED}✗{RESET} {fail_msg}")
-        return False
+    print(f"{RED}✗{RESET} {fail_msg}")
+    return False
 
 
-def main():
-    """Run all verification checks"""
+def main() -> int:
+    """Run all verification checks."""
     print("=" * 60)
     print("BabyShield Backend - Pre-CI Verification")
     print("=" * 60)

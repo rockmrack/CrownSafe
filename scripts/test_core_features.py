@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Simplified test script for core BabyShield features
-Tests only endpoints that don't require external dependencies
+Tests only endpoints that don't require external dependencies.
 """
 
 import asyncio
@@ -12,8 +12,8 @@ import httpx
 BASE_URL = "http://localhost:8001"
 
 
-async def test_health():
-    """Test health endpoint"""
+async def test_health() -> bool:
+    """Test health endpoint."""
     print("\n" + "=" * 60)
     print("Testing Health Endpoint")
     print("=" * 60)
@@ -32,8 +32,8 @@ async def test_health():
     return True
 
 
-async def test_safety_check():
-    """Test basic safety check endpoint"""
+async def test_safety_check() -> None:
+    """Test basic safety check endpoint."""
     print("\n" + "=" * 60)
     print("Testing Safety Check Endpoint")
     print("=" * 60)
@@ -56,8 +56,8 @@ async def test_safety_check():
             print(f"❌ Connection error: {e}")
 
 
-async def test_search_advanced():
-    """Test advanced search endpoint"""
+async def test_search_advanced() -> None:
+    """Test advanced search endpoint."""
     print("\n" + "=" * 60)
     print("Testing Advanced Search Endpoint")
     print("=" * 60)
@@ -88,8 +88,8 @@ async def test_search_advanced():
             print(f"❌ Connection error: {e}")
 
 
-async def test_mobile_scan():
-    """Test mobile scan endpoint"""
+async def test_mobile_scan() -> None:
+    """Test mobile scan endpoint."""
     print("\n" + "=" * 60)
     print("Testing Mobile Scan Endpoint")
     print("=" * 60)
@@ -114,8 +114,8 @@ async def test_mobile_scan():
             print(f"❌ Connection error: {e}")
 
 
-async def test_user_endpoints():
-    """Test user management endpoints"""
+async def test_user_endpoints() -> None:
+    """Test user management endpoints."""
     print("\n" + "=" * 60)
     print("Testing User Endpoints")
     print("=" * 60)
@@ -145,8 +145,8 @@ async def test_user_endpoints():
             print(f"❌ Connection error: {e}")
 
 
-async def test_system_stats():
-    """Test system statistics endpoint"""
+async def test_system_stats() -> None:
+    """Test system statistics endpoint."""
     print("\n" + "=" * 60)
     print("Testing System Statistics")
     print("=" * 60)
@@ -167,8 +167,8 @@ async def test_system_stats():
             print(f"❌ Connection error: {e}")
 
 
-async def main():
-    """Run core tests"""
+async def main() -> None:
+    """Run core tests."""
     print("\n" + "BABYSHIELD CORE FEATURES TEST".center(60, "="))
     print(f"Testing against: {BASE_URL}")
     print(f"Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")

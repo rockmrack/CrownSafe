@@ -1,11 +1,11 @@
-"""Simple smoke tests for API modules"""
+"""Simple smoke tests for API modules."""
 
 import unittest
 
 
 class TestAPIModules(unittest.TestCase):
-    def test_api_main_import(self):
-        """Test that api.main can be imported"""
+    def test_api_main_import(self) -> None:
+        """Test that api.main can be imported."""
         try:
             from api import main
 
@@ -13,8 +13,8 @@ class TestAPIModules(unittest.TestCase):
         except ImportError:
             self.skipTest("api.main not found")
 
-    def test_api_health_endpoints_import(self):
-        """Test that health endpoints can be imported"""
+    def test_api_health_endpoints_import(self) -> None:
+        """Test that health endpoints can be imported."""
         try:
             from api import health_endpoints
 

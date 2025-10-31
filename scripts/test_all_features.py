@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Master test script that runs all BabyShield API tests
-Tests all implemented features to ensure everything is working
+Tests all implemented features to ensure everything is working.
 """
 
 import asyncio
@@ -11,15 +11,15 @@ from datetime import datetime
 from pathlib import Path
 
 
-def print_section(title):
-    """Print a formatted section header"""
+def print_section(title) -> None:
+    """Print a formatted section header."""
     print("\n" + "=" * 70)
     print(f"🚀 {title}".center(70))
     print("=" * 70 + "\n")
 
 
 def check_api_running():
-    """Check if the API server is running"""
+    """Check if the API server is running."""
     import httpx
 
     try:
@@ -30,7 +30,7 @@ def check_api_running():
 
 
 def start_api_server():
-    """Start the API server in the background"""
+    """Start the API server in the background."""
     print("Starting BabyShield API server...")
     cmd = [
         sys.executable,
@@ -57,8 +57,8 @@ def start_api_server():
     return None
 
 
-async def run_test_script(script_name, description):
-    """Run a single test script"""
+async def run_test_script(script_name, description) -> bool | None:
+    """Run a single test script."""
     print(f"\n{'=' * 60}")
     print(f"Running: {description}")
     print(f"Script: {script_name}")
@@ -90,9 +90,8 @@ async def run_test_script(script_name, description):
         if result.returncode == 0:
             print(f"✅ {description} - PASSED")
             return True
-        else:
-            print(f"❌ {description} - FAILED (exit code: {result.returncode})")
-            return False
+        print(f"❌ {description} - FAILED (exit code: {result.returncode})")
+        return False
 
     except subprocess.TimeoutExpired:
         print(f"⏱️ {description} - TIMEOUT (exceeded 60 seconds)")
@@ -102,8 +101,8 @@ async def run_test_script(script_name, description):
         return False
 
 
-async def main():
-    """Run all tests"""
+async def main() -> None:
+    """Run all tests."""
     print("\n" + "🎯 BABYSHIELD COMPLETE TEST SUITE 🎯".center(70, "="))
     print(f"Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 70)

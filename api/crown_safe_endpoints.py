@@ -3,7 +3,7 @@
 # api/crown_safe_endpoints.py
 # Crown Safe - Hair Product Safety Analysis Endpoints
 
-"""Crown Safe API Endpoints
+"""Crown Safe API Endpoints.
 
 This module provides hair product safety analysis using the Crown Score algorithm.
 Replaces baby product recall checking with personalized hair ingredient analysis
@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 class ProductAnalysisRequest(BaseModel):
-    """Request model for hair product analysis"""
+    """Request model for hair product analysis."""
 
     user_id: int = Field(..., description="User ID for personalized analysis", example=1)
     product_name: str = Field(
@@ -47,7 +47,7 @@ class ProductAnalysisRequest(BaseModel):
 
 
 class ProductAnalysisResponse(BaseModel):
-    """Response model for hair product analysis"""
+    """Response model for hair product analysis."""
 
     status: str = Field(..., description="Analysis status", example="COMPLETED")
     crown_score: int = Field(..., description="Crown Score (0-100)", example=85)
@@ -60,7 +60,7 @@ class ProductAnalysisResponse(BaseModel):
 
 
 class HairProfileRequest(BaseModel):
-    """Request model for creating/updating hair profile"""
+    """Request model for creating/updating hair profile."""
 
     user_id: int = Field(..., description="User ID", example=1)
     hair_type: str = Field(..., description="Hair curl pattern", example="4C")
@@ -79,7 +79,7 @@ class HairProfileRequest(BaseModel):
 
 
 class HairProfileResponse(BaseModel):
-    """Response model for hair profile"""
+    """Response model for hair profile."""
 
     status: str = Field(..., description="Operation status", example="COMPLETED")
     profile: dict = Field(..., description="Hair profile data")
@@ -87,7 +87,7 @@ class HairProfileResponse(BaseModel):
 
 
 class ScanHistoryResponse(BaseModel):
-    """Response model for scan history"""
+    """Response model for scan history."""
 
     status: str = Field(..., description="Operation status", example="COMPLETED")
     scans: list[dict] = Field(..., description="List of previous product scans")

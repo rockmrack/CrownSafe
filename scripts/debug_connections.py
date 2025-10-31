@@ -11,8 +11,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
-async def test_mcp_connection():
-    """Test if we can connect to MCP Router and check registered agents"""
+async def test_mcp_connection() -> None:
+    """Test if we can connect to MCP Router and check registered agents."""
     print("\n🔍 Testing MCP Router Connection...\n")
 
     try:
@@ -59,8 +59,8 @@ async def test_mcp_connection():
         print("   Make sure MCP Router is running on port 8001")
 
 
-async def test_workflow_submission():
-    """Test submitting a workflow directly via WebSocket"""
+async def test_workflow_submission() -> None:
+    """Test submitting a workflow directly via WebSocket."""
     print("\n🔍 Testing Direct Workflow Submission...\n")
 
     try:
@@ -125,8 +125,8 @@ async def test_workflow_submission():
         print(f"❌ Error during workflow submission: {e}")
 
 
-async def check_agent_registrations():
-    """Check which agents are registered"""
+async def check_agent_registrations() -> None:
+    """Check which agents are registered."""
     print("\n🔍 Checking Agent Registrations...\n")
 
     required_agents = [
@@ -170,7 +170,7 @@ async def check_agent_registrations():
         print(f"❌ Error checking registrations: {e}")
 
 
-async def main():
+async def main() -> None:
     print("=" * 70)
     print("🔧 RossNet Connection Debugger")
     print("=" * 70)

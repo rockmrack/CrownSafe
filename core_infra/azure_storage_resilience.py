@@ -1,11 +1,11 @@
 """Azure Blob Storage Resilience Layer
-Provides retry logic, circuit breakers, and error handling for Azure storage operations
+Provides retry logic, circuit breakers, and error handling for Azure storage operations.
 """
 
 import functools
 import logging
 import time
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from enum import Enum
 from typing import Any, Callable
 
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 class CircuitState(Enum):
-    """Circuit breaker states"""
+    """Circuit breaker states."""
 
     CLOSED = "closed"  # Normal operation
     OPEN = "open"  # Failing, reject requests
@@ -31,7 +31,7 @@ class CircuitState(Enum):
 
 class CircuitBreaker:
     """Circuit breaker pattern for Azure Blob Storage operations
-    Prevents cascading failures by stopping requests when error rate is high
+    Prevents cascading failures by stopping requests when error rate is high.
     """
 
     def __init__(
@@ -40,7 +40,7 @@ class CircuitBreaker:
         recovery_timeout: int = 60,
         expected_exception: type = AzureError,
     ) -> None:
-        """Initialize circuit breaker
+        """Initialize circuit breaker.
 
         Args:
             failure_threshold: Number of failures before opening circuit
@@ -57,7 +57,7 @@ class CircuitBreaker:
         self.state = CircuitState.CLOSED
 
     def call(self, func: Callable, *args, **kwargs) -> Any:
-        """Execute function with circuit breaker protection
+        """Execute function with circuit breaker protection.
 
         Args:
             func: Function to execute
@@ -89,21 +89,21 @@ class CircuitBreaker:
             raise e
 
     def _should_attempt_reset(self) -> bool:
-        """Check if enough time has passed to attempt reset"""
+        """Check if enough time has passed to attempt reset."""
         return (
             self.last_failure_time is not None
             and (datetime.now(UTC) - self.last_failure_time).seconds >= self.recovery_timeout
         )
 
     def _on_success(self) -> None:
-        """Handle successful operation"""
+        """Handle successful operation."""
         if self.state == CircuitState.HALF_OPEN:
             logger.info("Circuit breaker recovery successful - entering CLOSED state")
         self.failure_count = 0
         self.state = CircuitState.CLOSED
 
     def _on_failure(self) -> None:
-        """Handle failed operation"""
+        """Handle failed operation."""
         self.failure_count += 1
         self.last_failure_time = datetime.now(UTC)
 
@@ -122,7 +122,7 @@ def retry_with_exponential_backoff(
     exponential_base: float = 2.0,
     jitter: bool = True,
 ):
-    """Decorator for retry logic with exponential backoff
+    """Decorator for retry logic with exponential backoff.
 
     Args:
         max_retries: Maximum number of retry attempts
@@ -196,7 +196,7 @@ def retry_with_exponential_backoff(
 
 def with_correlation_id(func: Callable) -> Callable:
     """Decorator to add correlation ID to Azure Blob Storage operations
-    Helps track requests across distributed systems
+    Helps track requests across distributed systems.
 
     Args:
         func: Function to decorate
@@ -249,7 +249,7 @@ def with_correlation_id(func: Callable) -> Callable:
 
 
 def log_azure_error(func: Callable) -> Callable:
-    """Decorator to log Azure-specific errors with detailed context
+    """Decorator to log Azure-specific errors with detailed context.
 
     Args:
         func: Function to decorate

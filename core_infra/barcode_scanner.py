@@ -1,5 +1,5 @@
 """Next-Generation Traceability: Advanced Barcode Scanner Module
-Supports QR codes, DataMatrix, GS1, and standard barcodes with lot/serial tracking
+Supports QR codes, DataMatrix, GS1, and standard barcodes with lot/serial tracking.
 """
 
 import json
@@ -63,7 +63,7 @@ logger = logging.getLogger(__name__)
 
 
 class BarcodeType(Enum):
-    """Supported barcode types"""
+    """Supported barcode types."""
 
     QR_CODE = "QR_CODE"
     DATA_MATRIX = "DATA_MATRIX"
@@ -80,7 +80,7 @@ class BarcodeType(Enum):
 
 @dataclass
 class ScanResult:
-    """Result from barcode scanning"""
+    """Result from barcode scanning."""
 
     success: bool
     barcode_type: str | None = None
@@ -96,7 +96,7 @@ class ScanResult:
     error_message: str | None = None
 
     def to_dict(self):
-        """Convert to dictionary for API response"""
+        """Convert to dictionary for API response."""
         result = {
             "success": self.success,
             "barcode_type": self.barcode_type,
@@ -124,10 +124,10 @@ class ScanResult:
 
 class BarcodeScanner:
     """Advanced barcode scanner with multi-format support
-    Now with OpenCV fallback for 100% Windows compatibility"""
+    Now with OpenCV fallback for 100% Windows compatibility."""
 
     def __init__(self) -> None:
-        """Initialize the barcode scanner with fallback methods"""
+        """Initialize the barcode scanner with fallback methods."""
         self.gs1_ai_patterns = self._init_gs1_patterns()
         self.opencv_qr_detector = None
         self.opencv_barcode_detector = None
@@ -146,7 +146,7 @@ class BarcodeScanner:
                 logger.warning(f"OpenCV detection initialization failed: {e}")
 
     def _init_gs1_patterns(self) -> dict[str, dict[str, Any]]:
-        """Initialize GS1 Application Identifier patterns"""
+        """Initialize GS1 Application Identifier patterns."""
         return {
             "01": {"name": "GTIN", "length": 14, "type": "numeric"},
             "10": {
@@ -188,7 +188,7 @@ class BarcodeScanner:
         }
 
     async def scan_image(self, image_data: bytes) -> list[ScanResult]:
-        """Scan an image for barcodes
+        """Scan an image for barcodes.
 
         Args:
             image_data: Image bytes
@@ -228,7 +228,7 @@ class BarcodeScanner:
         return results
 
     def _scan_with_opencv(self, image: Image.Image) -> list[ScanResult]:
-        """Scan using OpenCV as fallback when PyZbar is not available"""
+        """Scan using OpenCV as fallback when PyZbar is not available."""
         results = []
 
         try:
@@ -287,7 +287,7 @@ class BarcodeScanner:
         return results
 
     def _scan_with_pyzbar(self, image: Image.Image) -> list[ScanResult]:
-        """Scan using pyzbar library"""
+        """Scan using pyzbar library."""
         results = []
 
         try:
@@ -310,7 +310,7 @@ class BarcodeScanner:
         return results
 
     def _scan_datamatrix(self, image: Image.Image) -> list[ScanResult]:
-        """Scan for DataMatrix codes"""
+        """Scan for DataMatrix codes."""
         results = []
 
         if not DATAMATRIX_AVAILABLE:
@@ -335,7 +335,7 @@ class BarcodeScanner:
         return results
 
     def _scan_with_preprocessing(self, image: Image.Image) -> list[ScanResult]:
-        """Enhanced scanning with image preprocessing"""
+        """Enhanced scanning with image preprocessing."""
         results = []
 
         if not OPENCV_AVAILABLE or not PYZBAR_AVAILABLE:
@@ -399,7 +399,7 @@ class BarcodeScanner:
         return results
 
     def scan_text(self, barcode_data: str, barcode_type: str = None) -> ScanResult:
-        """Parse barcode text data directly
+        """Parse barcode text data directly.
 
         Args:
             barcode_data: Raw barcode string
@@ -412,7 +412,7 @@ class BarcodeScanner:
         return self._parse_barcode_data(barcode_data, barcode_type)
 
     def _parse_barcode_data(self, data: str, barcode_type: str = None) -> ScanResult:
-        """Parse barcode data based on type and format"""
+        """Parse barcode data based on type and format."""
         result = ScanResult(success=True, raw_data=data, barcode_type=barcode_type, parsed_data={})
 
         # Check if it's a GS1 formatted barcode
@@ -438,7 +438,7 @@ class BarcodeScanner:
         return result
 
     def _is_gs1_format(self, data: str) -> bool:
-        """Check if data follows GS1 format"""
+        """Check if data follows GS1 format."""
         # GS1-128 typically starts with FNC1 character or contains AI patterns
         return (
             data.startswith(chr(29))
@@ -447,7 +447,7 @@ class BarcodeScanner:
         )  # AI in parentheses
 
     def _parse_gs1_data(self, data: str, result: ScanResult) -> None:
-        """Parse GS1 formatted data with Application Identifiers"""
+        """Parse GS1 formatted data with Application Identifiers."""
         # Remove FNC1 characters
         data = data.replace(chr(29), "")
 
@@ -518,7 +518,7 @@ class BarcodeScanner:
         result.parsed_data = parsed
 
     def _parse_gs1_date(self, date_str: str) -> date | None:
-        """Parse GS1 date format (YYMMDD)"""
+        """Parse GS1 date format (YYMMDD)."""
         try:
             if len(date_str) != 6:
                 return None
@@ -541,7 +541,7 @@ class BarcodeScanner:
             return None
 
     def _is_json_format(self, data: str) -> bool:
-        """Check if data is JSON formatted"""
+        """Check if data is JSON formatted."""
         try:
             json.loads(data)
             return True
@@ -549,7 +549,7 @@ class BarcodeScanner:
             return False
 
     def _parse_json_qr(self, data: str, result: ScanResult) -> None:
-        """Parse JSON formatted QR code"""
+        """Parse JSON formatted QR code."""
         try:
             json_data = json.loads(data)
             result.parsed_data = json_data
@@ -569,7 +569,7 @@ class BarcodeScanner:
             logger.warning(f"Error parsing JSON QR: {e}")
 
     def _parse_url_qr(self, data: str, result: ScanResult) -> None:
-        """Parse URL formatted QR code"""
+        """Parse URL formatted QR code."""
         result.parsed_data = {"url": data}
 
         # Try to extract identifiers from URL parameters
@@ -595,12 +595,12 @@ class BarcodeScanner:
                 break
 
     def _is_standard_barcode(self, data: str) -> bool:
-        """Check if data is a standard UPC/EAN barcode"""
+        """Check if data is a standard UPC/EAN barcode."""
         # Standard barcodes are typically 8, 12, or 13 digits
         return data.isdigit() and len(data) in [8, 12, 13, 14]
 
     def _normalize_gtin(self, gtin: str) -> str:
-        """Normalize GTIN to 14 digits"""
+        """Normalize GTIN to 14 digits."""
         if not gtin or not gtin.isdigit():
             return gtin
 
@@ -611,7 +611,7 @@ class BarcodeScanner:
         return gtin
 
     def _extract_patterns(self, data: str, result: ScanResult) -> None:
-        """Extract common patterns from unstructured data"""
+        """Extract common patterns from unstructured data."""
         # Look for lot numbers
         lot_patterns = [
             r"LOT[:\s#]*([A-Z0-9\-]+)",
@@ -658,7 +658,7 @@ class BarcodeScanner:
             result.gtin = self._normalize_gtin(gtin_match.group(1))
 
     def _parse_date_string(self, date_str: str) -> date | None:
-        """Parse various date formats"""
+        """Parse various date formats."""
         formats = [
             "%Y-%m-%d",
             "%d/%m/%Y",
@@ -679,7 +679,7 @@ class BarcodeScanner:
         return None
 
     def generate_qr_code(self, data: dict[str, Any]) -> bytes:
-        """Generate a QR code with product data
+        """Generate a QR code with product data.
 
         Args:
             data: Dictionary with product information

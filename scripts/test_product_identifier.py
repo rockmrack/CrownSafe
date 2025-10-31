@@ -23,7 +23,7 @@ EXPECTED_PRODUCT_NAME_FRAGMENT = "Apple Watch"
 # --------------------------
 
 
-async def main():
+async def main() -> None:
     """Main function to run the live ProductIdentifierAgent test."""
     logger = logging.getLogger(__name__)
     logger.info("--- Starting Live ProductIdentifierAgent Test ---")

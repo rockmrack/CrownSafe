@@ -1,5 +1,5 @@
 """Subscription configuration for mobile IAP
-Centralizes all subscription-related settings
+Centralizes all subscription-related settings.
 """
 
 import os
@@ -10,7 +10,7 @@ load_dotenv()
 
 
 class SubscriptionConfig:
-    """Centralized subscription configuration"""
+    """Centralized subscription configuration."""
 
     # Product IDs
     APPLE_PRODUCT_ID_MONTHLY = os.getenv("APPLE_PRODUCT_ID_MONTHLY", "babyshield_monthly")
@@ -64,29 +64,29 @@ class SubscriptionConfig:
 
     @classmethod
     def get_product_info(cls, product_id: str) -> dict | None:
-        """Get product information by ID"""
+        """Get product information by ID."""
         return cls.PRODUCT_MAPPINGS.get(product_id)
 
     @classmethod
     def get_apple_verify_url(cls) -> str:
-        """Get appropriate Apple verification URL based on environment"""
+        """Get appropriate Apple verification URL based on environment."""
         if cls.APPLE_ENVIRONMENT == "production":
             return cls.APPLE_VERIFY_URL_PRODUCTION
         return cls.APPLE_VERIFY_URL_SANDBOX
 
     @classmethod
     def is_valid_product_id(cls, product_id: str) -> bool:
-        """Check if product ID is valid"""
+        """Check if product ID is valid."""
         return product_id in cls.PRODUCT_MAPPINGS
 
     @classmethod
     def get_duration_months(cls, product_id: str) -> int:
-        """Get subscription duration in months"""
+        """Get subscription duration in months."""
         info = cls.get_product_info(product_id)
         return info["duration_months"] if info else 0
 
     @classmethod
     def get_plan_type(cls, product_id: str) -> str | None:
-        """Get plan type (monthly/annual) from product ID"""
+        """Get plan type (monthly/annual) from product ID."""
         info = cls.get_product_info(product_id)
         return info["plan"] if info else None

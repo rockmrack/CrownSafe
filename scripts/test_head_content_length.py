@@ -31,7 +31,7 @@ def auth():
     return headers, uid
 
 
-def gen_and_check(headers, uid, report_type):
+def gen_and_check(headers, uid, report_type) -> None:
     payload = {"user_id": uid, "report_type": report_type, "format": "pdf"}
     r = c.post("/api/v1/baby/reports/generate", headers=headers, json=payload)
     print(report_type, "generate_status", r.status_code)
@@ -87,7 +87,7 @@ def auth():
     return headers, uid
 
 
-def gen_and_check(headers, uid, report_type):
+def gen_and_check(headers, uid, report_type) -> None:
     payload = {"user_id": uid, "report_type": report_type, "format": "pdf"}
     r = c.post("/api/v1/baby/reports/generate", headers=headers, json=payload)
     print(report_type, "generate_status", r.status_code)

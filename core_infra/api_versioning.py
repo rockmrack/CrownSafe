@@ -1,5 +1,5 @@
 """API versioning system for BabyShield
-Enables backward compatibility and smooth transitions
+Enables backward compatibility and smooth transitions.
 """
 
 import logging
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class APIVersion:
-    """Represents an API version"""
+    """Represents an API version."""
 
     def __init__(self, version: str, deprecated: bool = False, sunset_date: str = None) -> None:
         self.version = version
@@ -22,7 +22,7 @@ class APIVersion:
         self.major, self.minor, self.patch = self._parse_version(version)
 
     def _parse_version(self, version: str) -> tuple:
-        """Parse version string like 'v1.2.3' into components"""
+        """Parse version string like 'v1.2.3' into components."""
         version = version.lstrip("v")
         parts = version.split(".")
 
@@ -33,7 +33,7 @@ class APIVersion:
         return major, minor, patch
 
     def is_compatible_with(self, other: "APIVersion") -> bool:
-        """Check if this version is compatible with another"""
+        """Check if this version is compatible with another."""
         # Same major version = compatible
         return self.major == other.major
 
@@ -49,7 +49,7 @@ class APIVersion:
 
 
 class VersionedAPI:
-    """Manages API versioning"""
+    """Manages API versioning."""
 
     SUPPORTED_VERSIONS = {
         "v1": APIVersion("v1.0.0", deprecated=True, sunset_date="2025-01-01"),
@@ -63,7 +63,7 @@ class VersionedAPI:
     @classmethod
     def get_version_from_request(cls, request: Request) -> str:
         """Extract API version from request
-        Priority: URL path > Header > Query param > Default
+        Priority: URL path > Header > Query param > Default.
         """
         # 1. Check URL path (e.g., /api/v2/...)
         path = request.url.path
@@ -86,12 +86,12 @@ class VersionedAPI:
 
     @classmethod
     def validate_version(cls, version: str) -> bool:
-        """Check if version is supported"""
+        """Check if version is supported."""
         return version in cls.SUPPORTED_VERSIONS
 
     @classmethod
     def get_deprecation_warning(cls, version: str) -> dict[str, str] | None:
-        """Get deprecation warning for a version"""
+        """Get deprecation warning for a version."""
         ver = cls.SUPPORTED_VERSIONS.get(version)
         if ver and ver.deprecated:
             return {
@@ -103,7 +103,7 @@ class VersionedAPI:
 
 
 def versioned_endpoint(versions: list = None, deprecated_in: str = None, removed_in: str = None):
-    """Decorator for versioned endpoints
+    """Decorator for versioned endpoints.
 
     Usage:
         @versioned_endpoint(versions=["v1", "v2"])
@@ -146,7 +146,7 @@ def versioned_endpoint(versions: list = None, deprecated_in: str = None, removed
 
 
 class VersionedRouter:
-    """Router that handles multiple API versions"""
+    """Router that handles multiple API versions."""
 
     def __init__(self) -> None:
         self.routers = {}
@@ -154,7 +154,7 @@ class VersionedRouter:
             self.routers[version] = APIRouter(prefix=f"/api/{version}")
 
     def add_route(self, path: str, endpoint: Callable, methods: list, versions: list = None) -> None:
-        """Add route to specific versions"""
+        """Add route to specific versions."""
         versions = versions or list(self.routers.keys())
 
         for version in versions:
@@ -164,17 +164,17 @@ class VersionedRouter:
                     router.add_api_route(path, endpoint, methods=[method], tags=[f"{version}"])
 
     def get_routers(self):
-        """Get all version routers"""
+        """Get all version routers."""
         return list(self.routers.values())
 
 
 # Version-specific response transformers
 class ResponseTransformer:
-    """Transform responses based on API version"""
+    """Transform responses based on API version."""
 
     @staticmethod
     def transform_v1_to_v2(data: dict) -> dict:
-        """Transform v1 response to v2 format"""
+        """Transform v1 response to v2 format."""
         # Example transformation
         if "user_name" in data:
             data["username"] = data.pop("user_name")
@@ -184,7 +184,7 @@ class ResponseTransformer:
 
     @staticmethod
     def transform_v2_to_v3(data: dict) -> dict:
-        """Transform v2 response to v3 format"""
+        """Transform v2 response to v3 format."""
         # Example transformation
         if "id" in data:
             data["uuid"] = f"uuid_{data['id']}"
@@ -194,7 +194,7 @@ class ResponseTransformer:
 
     @classmethod
     def transform_response(cls, data: dict, from_version: str, to_version: str) -> dict:
-        """Transform response between versions"""
+        """Transform response between versions."""
         if from_version == to_version:
             return data
 
@@ -212,7 +212,7 @@ class ResponseTransformer:
 
 # Middleware for API versioning
 async def api_version_middleware(request: Request, call_next):
-    """Middleware to handle API versioning"""
+    """Middleware to handle API versioning."""
     # Get requested version
     version = VersionedAPI.get_version_from_request(request)
 
@@ -258,11 +258,11 @@ async def api_version_middleware(request: Request, call_next):
 
 # Backward compatibility helpers
 class BackwardCompatibility:
-    """Helpers for maintaining backward compatibility"""
+    """Helpers for maintaining backward compatibility."""
 
     @staticmethod
     def deprecated_field(old_name: str, new_name: str):
-        """Mark a field as deprecated"""
+        """Mark a field as deprecated."""
 
         def decorator(func):
             @wraps(func)
@@ -287,7 +287,7 @@ class BackwardCompatibility:
 
     @staticmethod
     def removed_endpoint(version: str, alternative: str = None):
-        """Mark an endpoint as removed"""
+        """Mark an endpoint as removed."""
 
         def decorator(func):
             @wraps(func)
@@ -305,11 +305,11 @@ class BackwardCompatibility:
 
 # Version migration helpers
 class VersionMigration:
-    """Help users migrate between API versions"""
+    """Help users migrate between API versions."""
 
     @staticmethod
     def generate_migration_guide(from_version: str, to_version: str) -> dict:
-        """Generate migration guide between versions"""
+        """Generate migration guide between versions."""
         guide = {"from_version": from_version, "to_version": to_version, "changes": []}
 
         if from_version == "v1" and to_version == "v2":

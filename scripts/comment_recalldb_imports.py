@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Comment out RecallDB imports in main_crownsafe.py
-Handles UTF-8 encoding properly
+Handles UTF-8 encoding properly.
 """
 
 import sys
 
 
-def comment_out_imports():
-    """Comment out all RecallDB imports in main_crownsafe.py"""
+def comment_out_imports() -> bool | None:
+    """Comment out all RecallDB imports in main_crownsafe.py."""
     file_path = "api/main_crownsafe.py"
 
     # Target line numbers (1-indexed from grep results)
@@ -52,9 +52,8 @@ def comment_out_imports():
                 f.writelines(lines)
             print(f"✅ Successfully commented out {modified_count} RecallDB imports")
             return True
-        else:
-            print("⚠️  No changes made - all imports already commented or not found")
-            return False
+        print("⚠️  No changes made - all imports already commented or not found")
+        return False
 
     except Exception as e:
         print(f"❌ Error: {e}")

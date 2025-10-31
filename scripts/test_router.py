@@ -19,7 +19,7 @@ from agents.routing.router_agent.agent_logic import BabyShieldRouterLogic  # noq
 # We create a fake version of the RecallDataAgentLogic.
 # This is necessary because we don't have its real logic yet.
 class MockRecallDataAgentLogic:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.process_task = AsyncMock(
             return_value={
                 "status": "COMPLETED",
@@ -35,15 +35,14 @@ def convert_sets_to_lists(obj):
     """Recursively convert all sets in a dict or list to lists for JSON serialization."""
     if isinstance(obj, dict):
         return {k: convert_sets_to_lists(v) for k, v in obj.items()}
-    elif isinstance(obj, set):
+    if isinstance(obj, set):
         return list(obj)
-    elif isinstance(obj, list):
+    if isinstance(obj, list):
         return [convert_sets_to_lists(i) for i in obj]
-    else:
-        return obj
+    return obj
 
 
-async def main():
+async def main() -> None:
     """Main function to run the simplified Router test."""
     logger = logging.getLogger(__name__)
     logger.info("--- Starting Simplified Router Test ---")

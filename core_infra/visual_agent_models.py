@@ -1,5 +1,5 @@
 """Database models for Visual Agent - Phase 2
-Includes image processing jobs, HITL review queue, and extraction results
+Includes image processing jobs, HITL review queue, and extraction results.
 """
 
 import enum
@@ -27,7 +27,7 @@ from core_infra.database import Base
 
 
 class JobStatus(enum.Enum):
-    """Status for image processing jobs"""
+    """Status for image processing jobs."""
 
     QUEUED = "queued"
     PROCESSING = "processing"
@@ -37,7 +37,7 @@ class JobStatus(enum.Enum):
 
 
 class ReviewStatus(enum.Enum):
-    """Status for HITL review queue"""
+    """Status for HITL review queue."""
 
     QUEUED = "queued"
     CLAIMED = "claimed"
@@ -47,7 +47,7 @@ class ReviewStatus(enum.Enum):
 
 
 class ConfidenceLevel(enum.Enum):
-    """Confidence level categories"""
+    """Confidence level categories."""
 
     HIGH = "high"  # >= 0.85 - Auto-accept
     MEDIUM = "medium"  # 0.60-0.84 - HITL required
@@ -55,7 +55,7 @@ class ConfidenceLevel(enum.Enum):
 
 
 class ImageJob(Base):
-    """Image processing job tracking"""
+    """Image processing job tracking."""
 
     __tablename__ = "image_jobs"
 
@@ -97,7 +97,7 @@ class ImageJob(Base):
 
 
 class ImageExtraction(Base):
-    """Extracted data from image analysis"""
+    """Extracted data from image analysis."""
 
     __tablename__ = "image_extractions"
 
@@ -141,7 +141,7 @@ class ImageExtraction(Base):
 
 
 class ReviewQueue(Base):
-    """Human-in-the-loop review queue"""
+    """Human-in-the-loop review queue."""
 
     __tablename__ = "review_queue"
 
@@ -189,7 +189,7 @@ class ReviewQueue(Base):
 
 
 class MFVSession(Base):
-    """Multi-Factor Verification session tracking"""
+    """Multi-Factor Verification session tracking."""
 
     __tablename__ = "mfv_sessions"
 
@@ -230,7 +230,7 @@ class MFVSession(Base):
 
 
 class ImageAnalysisCache(Base):
-    """Cache for expensive image analysis results"""
+    """Cache for expensive image analysis results."""
 
     __tablename__ = "image_analysis_cache"
 

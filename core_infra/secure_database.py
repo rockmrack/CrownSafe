@@ -1,5 +1,5 @@
 """Task 16: Secure Database Connection with Read-Only User
-Implements separate connections for read and write operations
+Implements separate connections for read and write operations.
 """
 
 import logging
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_database_url(mode: str = "readonly") -> str:
-    """Get database URL based on operation mode
+    """Get database URL based on operation mode.
 
     Modes:
     - readonly: For SELECT queries (default)
@@ -39,11 +39,11 @@ def get_database_url(mode: str = "readonly") -> str:
         logger.warning("No DATABASE_URL_READONLY found, using main DATABASE_URL")
         return base_url
 
-    elif mode == "write":
+    if mode == "write":
         # Use main database URL for writes
         return base_url
 
-    elif mode == "admin":
+    if mode == "admin":
         # Try dedicated admin URL for migrations
         admin_url = os.environ.get("DATABASE_URL_ADMIN")
         if admin_url:
@@ -54,8 +54,7 @@ def get_database_url(mode: str = "readonly") -> str:
         logger.warning("No DATABASE_URL_ADMIN found, using main DATABASE_URL")
         return base_url
 
-    else:
-        raise ValueError(f"Invalid database mode: {mode}")
+    raise ValueError(f"Invalid database mode: {mode}")
 
 
 # ========================= ENGINE CONFIGURATION =========================
@@ -90,7 +89,7 @@ ADMIN_POOL_SETTINGS = {
 
 
 def create_secure_engine(mode: str = "readonly") -> Engine:
-    """Create a secure SQLAlchemy engine with appropriate settings"""
+    """Create a secure SQLAlchemy engine with appropriate settings."""
     database_url = get_database_url(mode)
 
     if not database_url:
@@ -115,13 +114,13 @@ def create_secure_engine(mode: str = "readonly") -> Engine:
     # Add event listeners for monitoring
     @event.listens_for(engine, "connect")
     def receive_connect(dbapi_conn, connection_record) -> None:
-        """Log new connections"""
+        """Log new connections."""
         connection_record.info["connect_time"] = time.time()
         logger.debug(f"New {mode} database connection established")
 
     @event.listens_for(engine, "checkout")
     def receive_checkout(dbapi_conn, connection_record, connection_proxy) -> None:
-        """Monitor connection checkouts"""
+        """Monitor connection checkouts."""
         # Log long-lived connections
         if "connect_time" in connection_record.info:
             age = time.time() - connection_record.info["connect_time"]
@@ -130,7 +129,7 @@ def create_secure_engine(mode: str = "readonly") -> Engine:
 
     @event.listens_for(engine, "checkin")
     def receive_checkin(dbapi_conn, connection_record) -> None:
-        """Reset connection state on checkin"""
+        """Reset connection state on checkin."""
         if mode == "readonly":
             # Ensure readonly transaction mode
             with dbapi_conn.cursor() as cursor:
@@ -143,7 +142,7 @@ def create_secure_engine(mode: str = "readonly") -> Engine:
 
 
 class DatabaseEngines:
-    """Singleton to manage database engines"""
+    """Singleton to manage database engines."""
 
     _instance = None
     _readonly_engine: Engine | None = None
@@ -157,7 +156,7 @@ class DatabaseEngines:
 
     @property
     def readonly(self) -> Engine:
-        """Get or create readonly engine"""
+        """Get or create readonly engine."""
         if self._readonly_engine is None:
             self._readonly_engine = create_secure_engine("readonly")
             logger.info("Created readonly database engine")
@@ -165,7 +164,7 @@ class DatabaseEngines:
 
     @property
     def write(self) -> Engine:
-        """Get or create write engine"""
+        """Get or create write engine."""
         if self._write_engine is None:
             self._write_engine = create_secure_engine("write")
             logger.info("Created write database engine")
@@ -173,14 +172,14 @@ class DatabaseEngines:
 
     @property
     def admin(self) -> Engine:
-        """Get or create admin engine"""
+        """Get or create admin engine."""
         if self._admin_engine is None:
             self._admin_engine = create_secure_engine("admin")
             logger.info("Created admin database engine")
         return self._admin_engine
 
     def dispose_all(self) -> None:
-        """Dispose all engines (cleanup)"""
+        """Dispose all engines (cleanup)."""
         if self._readonly_engine:
             self._readonly_engine.dispose()
             self._readonly_engine = None
@@ -216,7 +215,7 @@ AdminSessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=db_engin
 @contextmanager
 def get_readonly_session() -> Generator[Session, None, None]:
     """Context manager for readonly database sessions
-    Use for all SELECT queries
+    Use for all SELECT queries.
     """
     session = ReadOnlySessionLocal()
     try:
@@ -233,7 +232,7 @@ def get_readonly_session() -> Generator[Session, None, None]:
 @contextmanager
 def get_write_session() -> Generator[Session, None, None]:
     """Context manager for write database sessions
-    Use for INSERT, UPDATE, DELETE operations
+    Use for INSERT, UPDATE, DELETE operations.
     """
     session = WriteSessionLocal()
     try:
@@ -250,7 +249,7 @@ def get_write_session() -> Generator[Session, None, None]:
 @contextmanager
 def get_admin_session() -> Generator[Session, None, None]:
     """Context manager for admin database sessions
-    Use for DDL operations and migrations only
+    Use for DDL operations and migrations only.
     """
     session = AdminSessionLocal()
     try:
@@ -268,19 +267,19 @@ def get_admin_session() -> Generator[Session, None, None]:
 
 
 def get_db_readonly() -> Generator[Session, None, None]:
-    """FastAPI dependency for readonly database sessions"""
+    """FastAPI dependency for readonly database sessions."""
     with get_readonly_session() as session:
         yield session
 
 
 def get_db_write() -> Generator[Session, None, None]:
-    """FastAPI dependency for write database sessions"""
+    """FastAPI dependency for write database sessions."""
     with get_write_session() as session:
         yield session
 
 
 def get_db_admin() -> Generator[Session, None, None]:
-    """FastAPI dependency for admin database sessions"""
+    """FastAPI dependency for admin database sessions."""
     with get_admin_session() as session:
         yield session
 
@@ -289,32 +288,32 @@ def get_db_admin() -> Generator[Session, None, None]:
 
 
 class SecureQuery:
-    """Helper class for secure database queries"""
+    """Helper class for secure database queries."""
 
     @staticmethod
     def fetch_one(query: str, params: dict = None) -> Any | None:
-        """Execute a SELECT query and fetch one result"""
+        """Execute a SELECT query and fetch one result."""
         with get_readonly_session() as session:
             result = session.execute(query, params or {})
             return result.first()
 
     @staticmethod
     def fetch_all(query: str, params: dict = None) -> list:
-        """Execute a SELECT query and fetch all results"""
+        """Execute a SELECT query and fetch all results."""
         with get_readonly_session() as session:
             result = session.execute(query, params or {})
             return result.fetchall()
 
     @staticmethod
     def execute_write(query: str, params: dict = None) -> int:
-        """Execute a write query (INSERT, UPDATE, DELETE)"""
+        """Execute a write query (INSERT, UPDATE, DELETE)."""
         with get_write_session() as session:
             result = session.execute(query, params or {})
             return result.rowcount
 
     @staticmethod
     def execute_admin(query: str, params: dict = None) -> Any:
-        """Execute an admin query (DDL)"""
+        """Execute an admin query (DDL)."""
         with get_admin_session() as session:
             result = session.execute(query, params or {})
             return result
@@ -324,7 +323,7 @@ class SecureQuery:
 
 
 def migrate_to_secure_database() -> None:
-    """Migrate existing code to use secure database connections"""
+    """Migrate existing code to use secure database connections."""
     print("Migrating to secure database configuration...")
 
     # Test connections

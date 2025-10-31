@@ -29,7 +29,7 @@ TEST_AGENT_ID = "test_agent_001"
 
 
 # --- Message Handler ---
-async def handle_incoming_message(message: dict[str, Any]):
+async def handle_incoming_message(message: dict[str, Any]) -> None:
     """Callback function to process messages received from the MCP Router."""
     message_type = message.get("mcp_header", {}).get("message_type", "UNKNOWN")
     sender = message.get("mcp_header", {}).get("sender_id", "UNKNOWN")
@@ -39,7 +39,7 @@ async def handle_incoming_message(message: dict[str, Any]):
 
 
 # --- Main Test Function ---
-async def run_test_client():
+async def run_test_client() -> None:
     """Instantiates the client, connects, waits, and disconnects."""
     logger.info(f"Instantiating MCPClient for agent: {TEST_AGENT_ID}")
     # Instantiate the client, passing our agent ID and message handler

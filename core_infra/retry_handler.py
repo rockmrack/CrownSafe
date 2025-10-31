@@ -1,5 +1,5 @@
 """Retry and error recovery mechanisms for BabyShield
-Implements exponential backoff, jitter, and intelligent retry strategies
+Implements exponential backoff, jitter, and intelligent retry strategies.
 """
 
 import asyncio
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class RetryStrategy(Enum):
-    """Different retry strategies"""
+    """Different retry strategies."""
 
     EXPONENTIAL_BACKOFF = "exponential"
     LINEAR_BACKOFF = "linear"
@@ -24,19 +24,19 @@ class RetryStrategy(Enum):
 
 
 class RetryableError(Exception):
-    """Base class for retryable errors"""
+    """Base class for retryable errors."""
 
     pass
 
 
 class NonRetryableError(Exception):
-    """Errors that should not be retried"""
+    """Errors that should not be retried."""
 
     pass
 
 
 class RetryConfig:
-    """Configuration for retry behavior"""
+    """Configuration for retry behavior."""
 
     def __init__(
         self,
@@ -65,7 +65,7 @@ class RetryConfig:
         self.on_success = on_success
 
     def calculate_delay(self, attempt: int) -> float:
-        """Calculate delay based on strategy"""
+        """Calculate delay based on strategy."""
         if self.strategy == RetryStrategy.EXPONENTIAL_BACKOFF:
             delay = self.initial_delay * (self.exponential_base ** (attempt - 1))
         elif self.strategy == RetryStrategy.LINEAR_BACKOFF:
@@ -87,7 +87,7 @@ class RetryConfig:
         return delay
 
     def _fibonacci(self, n: int) -> int:
-        """Calculate fibonacci number"""
+        """Calculate fibonacci number."""
         if n <= 1:
             return n
         a, b = 0, 1
@@ -96,7 +96,7 @@ class RetryConfig:
         return b
 
     def should_retry(self, exception: Exception) -> bool:
-        """Check if exception should trigger retry"""
+        """Check if exception should trigger retry."""
         # Check non-retryable first
         for exc_type in self.non_retryable_exceptions:
             if isinstance(exception, exc_type):
@@ -111,7 +111,7 @@ class RetryConfig:
 
 
 class RetryHandler:
-    """Handles retry logic with various strategies"""
+    """Handles retry logic with various strategies."""
 
     def __init__(self, config: RetryConfig = None) -> None:
         self.config = config or RetryConfig()
@@ -119,7 +119,7 @@ class RetryHandler:
         self.last_exception = None
 
     def retry(self, func: Callable) -> Callable:
-        """Decorator for sync functions with retry"""
+        """Decorator for sync functions with retry."""
 
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -128,7 +128,7 @@ class RetryHandler:
         return wrapper
 
     def async_retry(self, func: Callable) -> Callable:
-        """Decorator for async functions with retry"""
+        """Decorator for async functions with retry."""
 
         @wraps(func)
         async def wrapper(*args, **kwargs):
@@ -137,7 +137,7 @@ class RetryHandler:
         return wrapper
 
     def _execute_with_retry(self, func: Callable, args, kwargs) -> Any:
-        """Execute sync function with retry logic"""
+        """Execute sync function with retry logic."""
         for attempt in range(1, self.config.max_attempts + 1):
             self.attempts = attempt
 
@@ -181,7 +181,7 @@ class RetryHandler:
                 time.sleep(delay)
 
     async def _async_execute_with_retry(self, func: Callable, args, kwargs) -> Any:
-        """Execute async function with retry logic"""
+        """Execute async function with retry logic."""
         for attempt in range(1, self.config.max_attempts + 1):
             self.attempts = attempt
 
@@ -241,7 +241,7 @@ def retry(
     backoff: float = 2.0,
     exceptions: tuple = (Exception,),
 ):
-    """Simple retry decorator
+    """Simple retry decorator.
 
     Usage:
         @retry(max_attempts=3, delay=1.0, backoff=2.0)
@@ -260,15 +260,14 @@ def retry(
     def decorator(func):
         if asyncio.iscoroutinefunction(func):
             return handler.async_retry(func)
-        else:
-            return handler.retry(func)
+        return handler.retry(func)
 
     return decorator
 
 
 # Advanced retry patterns
 class CircuitBreakerRetry:
-    """Combines circuit breaker with retry logic"""
+    """Combines circuit breaker with retry logic."""
 
     def __init__(
         self,
@@ -284,7 +283,7 @@ class CircuitBreakerRetry:
         self.state = "closed"  # closed, open, half-open
 
     def is_open(self) -> bool:
-        """Check if circuit is open"""
+        """Check if circuit is open."""
         if self.state == "open":
             # Check if recovery timeout has passed
             if self.last_failure_time:
@@ -296,13 +295,13 @@ class CircuitBreakerRetry:
         return False
 
     def record_success(self) -> None:
-        """Record successful execution"""
+        """Record successful execution."""
         if self.state == "half-open":
             self.state = "closed"
         self.failure_count = 0
 
     def record_failure(self) -> None:
-        """Record failed execution"""
+        """Record failed execution."""
         self.failure_count += 1
         self.last_failure_time = time.time()
 
@@ -311,7 +310,7 @@ class CircuitBreakerRetry:
             logger.warning(f"Circuit breaker opened after {self.failure_count} failures")
 
     def execute_with_circuit_breaker(self, func: Callable, *args, **kwargs):
-        """Execute with circuit breaker and retry"""
+        """Execute with circuit breaker and retry."""
         if self.is_open():
             raise Exception("Circuit breaker is open")
 
@@ -326,7 +325,7 @@ class CircuitBreakerRetry:
 
 
 class BulkRetry:
-    """Retry logic for bulk operations"""
+    """Retry logic for bulk operations."""
 
     def __init__(self, config: RetryConfig = None) -> None:
         self.config = config or RetryConfig()
@@ -334,7 +333,7 @@ class BulkRetry:
     async def process_batch_with_retry(
         self, items: list[Any], process_func: Callable, batch_size: int = 100,
     ) -> dict[str, list]:
-        """Process items in batches with retry"""
+        """Process items in batches with retry."""
         results = {"success": [], "failed": [], "retried": []}
 
         for i in range(0, len(items), batch_size):
@@ -363,21 +362,20 @@ class BulkRetry:
 
 # Retry with fallback
 class FallbackRetry:
-    """Retry with fallback options"""
+    """Retry with fallback options."""
 
     def __init__(self, primary_func: Callable, fallback_funcs: list[Callable]) -> None:
         self.primary_func = primary_func
         self.fallback_funcs = fallback_funcs
 
     async def execute(self, *args, **kwargs):
-        """Execute with fallbacks"""
+        """Execute with fallbacks."""
         # Try primary function
         try:
             handler = RetryHandler(RetryConfig(max_attempts=2))
             if asyncio.iscoroutinefunction(self.primary_func):
                 return await handler._async_execute_with_retry(self.primary_func, args, kwargs)
-            else:
-                return handler._execute_with_retry(self.primary_func, args, kwargs)
+            return handler._execute_with_retry(self.primary_func, args, kwargs)
         except Exception as primary_error:
             logger.warning(f"Primary function failed: {primary_error}")
 
@@ -388,8 +386,7 @@ class FallbackRetry:
 
                     if asyncio.iscoroutinefunction(fallback):
                         return await fallback(*args, **kwargs)
-                    else:
-                        return fallback(*args, **kwargs)
+                    return fallback(*args, **kwargs)
 
                 except Exception as fallback_error:
                     logger.warning(f"Fallback {fallback.__name__} failed: {fallback_error}")

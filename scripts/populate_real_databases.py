@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Populate Real Product and Safety Databases
-Replaces mock JSON files with comprehensive local database for immediate results
+Replaces mock JSON files with comprehensive local database for immediate results.
 """
 
 import sys
@@ -283,8 +283,8 @@ PRODUCT_DATABASE = {
 }
 
 
-def populate_ingredient_safety():
-    """Populate the ingredient safety database"""
+def populate_ingredient_safety() -> None:
+    """Populate the ingredient safety database."""
     print("Populating ingredient safety database...")
 
     with get_db_session() as db:
@@ -310,8 +310,8 @@ def populate_ingredient_safety():
         print(f"✅ Added {len(INGREDIENT_SAFETY_DATA)} ingredient safety records")
 
 
-def populate_product_ingredients():
-    """Populate the product ingredients database"""
+def populate_product_ingredients() -> None:
+    """Populate the product ingredients database."""
     print("Populating product ingredients database...")
 
     with get_db_session() as db:
@@ -350,8 +350,8 @@ def populate_product_ingredients():
         print(f"✅ Added {len(PRODUCT_DATABASE)} product records")
 
 
-def create_database_tables():
-    """Create the database tables if they don't exist"""
+def create_database_tables() -> None:
+    """Create the database tables if they don't exist."""
     print("Creating database tables...")
 
     from core_infra.database import Base, engine
@@ -363,8 +363,8 @@ def create_database_tables():
     print("✅ Database tables created")
 
 
-def main():
-    """Main function to populate all databases"""
+def main() -> int:
+    """Main function to populate all databases."""
     print("🍼 BabyShield Real Database Population")
     print("=" * 50)
 

@@ -1,5 +1,5 @@
 """Unit tests for core_infra/async_helpers.py
-Tests async HTTP client, batch processing, caching, and task queue functionality
+Tests async HTTP client, batch processing, caching, and task queue functionality.
 """
 
 import asyncio
@@ -22,11 +22,11 @@ from core_infra.async_helpers import (
 
 
 class TestAsyncAPIClient:
-    """Test AsyncAPIClient functionality"""
+    """Test AsyncAPIClient functionality."""
 
     @pytest.mark.asyncio
-    async def test_context_manager(self):
-        """Test async context manager"""
+    async def test_context_manager(self) -> None:
+        """Test async context manager."""
         async with AsyncAPIClient() as client:
             assert client.session is not None
             assert isinstance(client.session, aiohttp.ClientSession)
@@ -35,8 +35,8 @@ class TestAsyncAPIClient:
         assert client.session.closed
 
     @pytest.mark.asyncio
-    async def test_get_request_success(self):
-        """Test successful GET request"""
+    async def test_get_request_success(self) -> None:
+        """Test successful GET request."""
         mock_response = AsyncMock()
         mock_response.status = 200
         mock_response.json = AsyncMock(return_value={"test": "data"})
@@ -51,8 +51,8 @@ class TestAsyncAPIClient:
                 mock_request.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_post_request_success(self):
-        """Test successful POST request"""
+    async def test_post_request_success(self) -> None:
+        """Test successful POST request."""
         mock_response = AsyncMock()
         mock_response.status = 200
         mock_response.json = AsyncMock(return_value={"created": True})
@@ -67,8 +67,8 @@ class TestAsyncAPIClient:
                 mock_request.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_rate_limit_handling(self):
-        """Test rate limit (429) handling"""
+    async def test_rate_limit_handling(self) -> None:
+        """Test rate limit (429) handling."""
         mock_response = AsyncMock()
         mock_response.status = 429
         mock_response.headers = {"Retry-After": "5"}
@@ -85,8 +85,8 @@ class TestAsyncAPIClient:
                     mock_sleep.assert_called_with(5)
 
     @pytest.mark.asyncio
-    async def test_timeout_error(self):
-        """Test timeout error handling"""
+    async def test_timeout_error(self) -> None:
+        """Test timeout error handling."""
         with patch("aiohttp.ClientSession.request") as mock_request:
             mock_request.return_value.__aenter__.side_effect = asyncio.TimeoutError()
 
@@ -95,8 +95,8 @@ class TestAsyncAPIClient:
                     await client.get("https://example.com")
 
     @pytest.mark.asyncio
-    async def test_retry_logic(self):
-        """Test retry logic with exponential backoff"""
+    async def test_retry_logic(self) -> None:
+        """Test retry logic with exponential backoff."""
         mock_response_fail = AsyncMock()
         mock_response_fail.status = 500
 
@@ -121,11 +121,11 @@ class TestAsyncAPIClient:
 
 
 class TestFetchMultipleAPIs:
-    """Test fetch_multiple_apis function"""
+    """Test fetch_multiple_apis function."""
 
     @pytest.mark.asyncio
-    async def test_successful_fetch(self):
-        """Test successful fetch from multiple APIs"""
+    async def test_successful_fetch(self) -> None:
+        """Test successful fetch from multiple APIs."""
         urls = ["https://api1.com", "https://api2.com"]
 
         mock_responses = [{"data": "api1"}, {"data": "api2"}]
@@ -142,8 +142,8 @@ class TestFetchMultipleAPIs:
             assert results[1] == {"data": "api2"}
 
     @pytest.mark.asyncio
-    async def test_partial_failure(self):
-        """Test handling of partial failures"""
+    async def test_partial_failure(self) -> None:
+        """Test handling of partial failures."""
         urls = ["https://api1.com", "https://api2.com"]
 
         mock_responses = [{"data": "api1"}, Exception("API2 failed")]
@@ -161,25 +161,25 @@ class TestFetchMultipleAPIs:
 
 
 class TestAsyncEndpoint:
-    """Test async_endpoint decorator"""
+    """Test async_endpoint decorator."""
 
     @pytest.mark.asyncio
-    async def test_async_function(self):
-        """Test decorator with async function"""
+    async def test_async_function(self) -> None:
+        """Test decorator with async function."""
 
         @async_endpoint
-        async def async_func():
+        async def async_func() -> str:
             return "async_result"
 
         result = await async_func()
         assert result == "async_result"
 
     @pytest.mark.asyncio
-    async def test_sync_function(self):
-        """Test decorator with sync function"""
+    async def test_sync_function(self) -> None:
+        """Test decorator with sync function."""
 
         @async_endpoint
-        def sync_func():
+        def sync_func() -> str:
             return "sync_result"
 
         result = await sync_func()
@@ -187,11 +187,11 @@ class TestAsyncEndpoint:
 
 
 class TestAsyncBatchProcessor:
-    """Test AsyncBatchProcessor functionality"""
+    """Test AsyncBatchProcessor functionality."""
 
     @pytest.mark.asyncio
-    async def test_process_items(self):
-        """Test processing items in batches"""
+    async def test_process_items(self) -> None:
+        """Test processing items in batches."""
         items = list(range(10))
 
         async def process_item(item):
@@ -206,8 +206,8 @@ class TestAsyncBatchProcessor:
         assert results[9] == 18
 
     @pytest.mark.asyncio
-    async def test_process_with_exceptions(self):
-        """Test processing with exceptions"""
+    async def test_process_with_exceptions(self) -> None:
+        """Test processing with exceptions."""
         items = [1, 2, 3]
 
         async def process_item(item):
@@ -225,15 +225,15 @@ class TestAsyncBatchProcessor:
 
 
 class TestAsyncCache:
-    """Test async_cache decorator"""
+    """Test async_cache decorator."""
 
     @pytest.mark.asyncio
-    async def test_cache_hit(self):
-        """Test cache hit behavior"""
+    async def test_cache_hit(self) -> None:
+        """Test cache hit behavior."""
         call_count = 0
 
         @async_cache(ttl=300)
-        async def cached_func(param):
+        async def cached_func(param) -> str:
             nonlocal call_count
             call_count += 1
             return f"result_{param}"
@@ -249,12 +249,12 @@ class TestAsyncCache:
         assert call_count == 1  # Should not increment
 
     @pytest.mark.asyncio
-    async def test_cache_miss_different_params(self):
-        """Test cache miss with different parameters"""
+    async def test_cache_miss_different_params(self) -> None:
+        """Test cache miss with different parameters."""
         call_count = 0
 
         @async_cache(ttl=300)
-        async def cached_func(param):
+        async def cached_func(param) -> str:
             nonlocal call_count
             call_count += 1
             return f"result_{param}"
@@ -269,11 +269,11 @@ class TestAsyncCache:
 
 
 class TestAsyncConverter:
-    """Test AsyncConverter functionality"""
+    """Test AsyncConverter functionality."""
 
     @pytest.mark.asyncio
-    async def test_run_sync_in_thread(self):
-        """Test running sync function in thread"""
+    async def test_run_sync_in_thread(self) -> None:
+        """Test running sync function in thread."""
 
         def sync_func(x, y):
             return x + y
@@ -282,8 +282,8 @@ class TestAsyncConverter:
         assert result == 5
 
     @pytest.mark.asyncio
-    async def test_convert_requests_to_async(self):
-        """Test converting requests to async"""
+    async def test_convert_requests_to_async(self) -> None:
+        """Test converting requests to async."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {"data": "test"}
@@ -298,11 +298,11 @@ class TestAsyncConverter:
 
 
 class TestExampleFunctions:
-    """Test example usage functions"""
+    """Test example usage functions."""
 
     @pytest.mark.asyncio
-    async def test_fetch_recalls_async(self):
-        """Test fetch_recalls_async function"""
+    async def test_fetch_recalls_async(self) -> None:
+        """Test fetch_recalls_async function."""
         mock_results = [
             {"recalls": "cpsc_data"},
             {"alerts": "fda_data"},
@@ -322,8 +322,8 @@ class TestExampleFunctions:
             assert result == expected
 
     @pytest.mark.asyncio
-    async def test_get_product_data_async(self):
-        """Test get_product_data_async function"""
+    async def test_get_product_data_async(self) -> None:
+        """Test get_product_data_async function."""
         mock_response = {"product": "test_product"}
 
         with patch("core_infra.async_helpers.AsyncAPIClient") as mock_client_class:
@@ -336,14 +336,14 @@ class TestExampleFunctions:
 
 
 class TestAsyncTaskQueue:
-    """Test AsyncTaskQueue functionality"""
+    """Test AsyncTaskQueue functionality."""
 
     @pytest.mark.asyncio
-    async def test_add_and_process_task(self):
-        """Test adding and processing tasks"""
+    async def test_add_and_process_task(self) -> None:
+        """Test adding and processing tasks."""
         processed_tasks = []
 
-        async def test_task(task_id):
+        async def test_task(task_id) -> str:
             processed_tasks.append(task_id)
             return f"processed_{task_id}"
 
@@ -368,11 +368,11 @@ class TestAsyncTaskQueue:
         assert "task2" in processed_tasks
 
     @pytest.mark.asyncio
-    async def test_task_with_exception(self):
-        """Test task processing with exceptions"""
+    async def test_task_with_exception(self) -> None:
+        """Test task processing with exceptions."""
         processed_tasks = []
 
-        async def failing_task(task_id):
+        async def failing_task(task_id) -> None:
             if task_id == "fail":
                 raise ValueError("Task failed")
             processed_tasks.append(task_id)

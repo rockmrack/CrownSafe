@@ -1,4 +1,4 @@
-"""Test data integrity and consistency"""
+"""Test data integrity and consistency."""
 
 import pytest
 import requests
@@ -7,10 +7,10 @@ BASE_URL = "https://babyshield.cureviax.ai"
 
 
 class TestDataIntegrity:
-    """Test data integrity and consistency in production"""
+    """Test data integrity and consistency in production."""
 
-    def test_recall_data_completeness(self):
-        """Verify recall records have required fields"""
+    def test_recall_data_completeness(self) -> None:
+        """Verify recall records have required fields."""
         try:
             response = requests.get(f"{BASE_URL}/api/v1/recalls", params={"limit": 10}, timeout=30)
             if response.status_code != 200:
@@ -38,8 +38,8 @@ class TestDataIntegrity:
         except requests.exceptions.RequestException as e:
             pytest.skip(f"Request failed: {e}")
 
-    def test_recall_search_relevance(self):
-        """Test that search returns relevant results"""
+    def test_recall_search_relevance(self) -> None:
+        """Test that search returns relevant results."""
         try:
             response = requests.get(
                 f"{BASE_URL}/api/v1/recalls",
@@ -63,8 +63,8 @@ class TestDataIntegrity:
         except requests.exceptions.RequestException as e:
             pytest.skip(f"Request failed: {e}")
 
-    def test_pagination_consistency(self):
-        """Verify pagination returns consistent data"""
+    def test_pagination_consistency(self) -> None:
+        """Verify pagination returns consistent data."""
         try:
             # First page
             resp1 = requests.get(
@@ -101,8 +101,8 @@ class TestDataIntegrity:
         except requests.exceptions.RequestException as e:
             pytest.skip(f"Request failed: {e}")
 
-    def test_database_health_check(self):
-        """Verify database health is reported"""
+    def test_database_health_check(self) -> None:
+        """Verify database health is reported."""
         response = requests.get(f"{BASE_URL}/healthz", timeout=10)
         data = response.json()
 

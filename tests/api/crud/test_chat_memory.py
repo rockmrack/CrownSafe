@@ -77,15 +77,15 @@ def db_session():
     session.close()
 
 
-def test_get_profile_not_found(db_session):
-    """Test getting a profile that doesn't exist"""
+def test_get_profile_not_found(db_session) -> None:
+    """Test getting a profile that doesn't exist."""
     user_id = str(uuid4())
     profile = db_session.get(TestUserProfile, user_id)
     assert profile is None
 
 
-def test_upsert_profile_create_new(db_session):
-    """Test creating a new user profile"""
+def test_upsert_profile_create_new(db_session) -> None:
+    """Test creating a new user profile."""
     import json
 
     user_id = str(uuid4())
@@ -112,8 +112,8 @@ def test_upsert_profile_create_new(db_session):
     assert profile.updated_at is not None
 
 
-def test_upsert_profile_update_existing(db_session):
-    """Test updating an existing user profile"""
+def test_upsert_profile_update_existing(db_session) -> None:
+    """Test updating an existing user profile."""
     user_id = uuid4()
 
     # Create initial profile with a known timestamp
@@ -145,8 +145,8 @@ def test_upsert_profile_update_existing(db_session):
     assert profile2.updated_at > initial_updated_at
 
 
-def test_get_or_create_conversation_new(db_session):
-    """Test creating a new conversation"""
+def test_get_or_create_conversation_new(db_session) -> None:
+    """Test creating a new conversation."""
     user_id = uuid4()
     scan_id = "test_scan_123"
 
@@ -159,8 +159,8 @@ def test_get_or_create_conversation_new(db_session):
     assert conv.last_activity_at is not None
 
 
-def test_get_or_create_conversation_existing(db_session):
-    """Test getting an existing conversation"""
+def test_get_or_create_conversation_existing(db_session) -> None:
+    """Test getting an existing conversation."""
     user_id = uuid4()
     scan_id = "test_scan_123"
 
@@ -185,8 +185,8 @@ def test_get_or_create_conversation_existing(db_session):
     reason="Test model/real model mismatch - log_message uses real ConversationMessage model "
     "which has different column types than test model. Works correctly in production PostgreSQL.",
 )
-def test_log_message(db_session):
-    """Test logging a message to a conversation"""
+def test_log_message(db_session) -> None:
+    """Test logging a message to a conversation."""
     user_id = uuid4()
     scan_id = "test_scan_123"
 
@@ -243,8 +243,8 @@ def test_log_message(db_session):
     assert conv.last_activity_at > original_activity_time
 
 
-def test_profile_privacy_defaults(db_session):
-    """Test that privacy defaults are correctly set"""
+def test_profile_privacy_defaults(db_session) -> None:
+    """Test that privacy defaults are correctly set."""
     user_id = uuid4()
     data = {"allergies": ["peanuts"]}  # Only set allergies
 
@@ -265,8 +265,8 @@ def test_profile_privacy_defaults(db_session):
     "Validation logic works correctly in production PostgreSQL. "
     "This test validates the ValueError exceptions are raised for invalid content.",
 )
-def test_log_message_content_validation(db_session):
-    """Test that log_message validates content structure"""
+def test_log_message_content_validation(db_session) -> None:
+    """Test that log_message validates content structure."""
     user_id = uuid4()
     scan_id = "test_scan_123"
 

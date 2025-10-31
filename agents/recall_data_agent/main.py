@@ -30,7 +30,7 @@ async def run_manual_ingestion():
     This can be triggered by:
     - Cron job: python agents/recall_data_agent/main.py
     - Celery task: celery worker runs this
-    - Manual execution for testing
+    - Manual execution for testing.
     """
     logger.info("=" * 80)
     logger.info("BABYSHIELD RECALL DATA AGENT - MANUAL INGESTION")
@@ -86,7 +86,7 @@ async def run_manual_ingestion():
 
 async def test_query_mode() -> None:
     """Test mode: Query for a specific product.
-    Usage: python agents/recall_data_agent/main.py --test
+    Usage: python agents/recall_data_agent/main.py --test.
     """
     logger.info("=" * 80)
     logger.info("RECALL DATA AGENT - TEST QUERY MODE")
@@ -122,7 +122,7 @@ async def test_query_mode() -> None:
 
 
 def main() -> None:
-    """Main entry point"""
+    """Main entry point."""
     import argparse
 
     parser = argparse.ArgumentParser(description="BabyShield RecallDataAgent - Manual Ingestion Tool")

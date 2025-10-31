@@ -1,4 +1,4 @@
-"""Add is_active column to users table
+"""Add is_active column to users table.
 
 Revision ID: 20251012_add_is_active
 Revises: 20251012_user_reports
@@ -16,8 +16,8 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
-    """Add is_active column to users table"""
+def upgrade() -> None:
+    """Add is_active column to users table."""
     # Check if column exists first (PostgreSQL)
     from sqlalchemy import inspect
 
@@ -32,6 +32,6 @@ def upgrade():
         )
 
 
-def downgrade():
-    """Remove is_active column from users table"""
+def downgrade() -> None:
+    """Remove is_active column from users table."""
     op.drop_column("users", "is_active")

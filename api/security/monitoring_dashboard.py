@@ -1,10 +1,10 @@
 """Security Monitoring Dashboard for BabyShield
-Real-time threat intelligence and attack visualization
+Real-time threat intelligence and attack visualization.
 """
 
 import logging
 import time
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -33,7 +33,7 @@ def update_security_metrics(
     user_agent: str,
     blocked: bool = False,
 ) -> None:
-    """Update security metrics for dashboard"""
+    """Update security metrics for dashboard."""
     global security_metrics
 
     security_metrics["total_requests"] += 1
@@ -65,7 +65,7 @@ def update_security_metrics(
 
 @router.get("/security/dashboard")
 async def security_dashboard():
-    """Real-time security dashboard (HTML)"""
+    """Real-time security dashboard (HTML)."""
     # Calculate security statistics
     total_requests = security_metrics["total_requests"]
     blocked_requests = security_metrics["blocked_requests"]
@@ -180,7 +180,7 @@ async def security_dashboard():
 
 @router.get("/security/metrics")
 async def security_metrics_api():
-    """Security metrics API endpoint"""
+    """Security metrics API endpoint."""
     return JSONResponse(
         content={
             "status": "bulletproof",
@@ -194,7 +194,7 @@ async def security_metrics_api():
 
 @router.get("/security/threats/live")
 async def live_threats():
-    """Live threat feed for real-time monitoring"""
+    """Live threat feed for real-time monitoring."""
     return JSONResponse(
         content={
             "active_threats": len(security_metrics["top_attacking_ips"]),
@@ -208,7 +208,7 @@ async def live_threats():
 
 @router.post("/security/block-ip")
 async def manual_ip_block(request: Request, ip_address: str):
-    """Manual IP blocking endpoint (admin only)"""
+    """Manual IP blocking endpoint (admin only)."""
     # In production, this would require admin authentication
     logger.warning(f"Manual IP block requested: {ip_address}")
 

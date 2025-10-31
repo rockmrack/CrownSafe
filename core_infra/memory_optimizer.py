@@ -28,7 +28,7 @@ class MemoryOptimizer:
         self.last_gc = time.time()
 
     def get_memory_usage(self) -> dict[str, Any]:
-        """Get current memory usage statistics"""
+        """Get current memory usage statistics."""
         try:
             process = psutil.Process(os.getpid())
             memory_info = process.memory_info()
@@ -49,7 +49,7 @@ class MemoryOptimizer:
             return {"error": str(e)}
 
     def optimize_memory_usage(self) -> dict[str, Any]:
-        """Perform memory optimization including garbage collection"""
+        """Perform memory optimization including garbage collection."""
         start_time = time.time()
         before_stats = self.get_memory_usage()
 
@@ -88,7 +88,7 @@ class MemoryOptimizer:
             return {"error": str(e)}
 
     def should_optimize_memory(self) -> bool:
-        """Determine if memory optimization should be triggered"""
+        """Determine if memory optimization should be triggered."""
         try:
             # Check if it's been more than 10 minutes since last GC
             if time.time() - self.last_gc > 600:
@@ -108,7 +108,7 @@ class MemoryOptimizer:
             return False
 
     async def background_memory_optimization(self) -> None:
-        """Background task for continuous memory optimization"""
+        """Background task for continuous memory optimization."""
         while True:
             try:
                 if self.should_optimize_memory():
@@ -128,15 +128,15 @@ memory_optimizer = MemoryOptimizer()
 
 
 def get_memory_stats():
-    """Get current memory statistics"""
+    """Get current memory statistics."""
     return memory_optimizer.get_memory_usage()
 
 
 def optimize_memory():
-    """Trigger memory optimization"""
+    """Trigger memory optimization."""
     return memory_optimizer.optimize_memory_usage()
 
 
 async def start_memory_monitoring():
-    """Start background memory monitoring"""
+    """Start background memory monitoring."""
     return asyncio.create_task(memory_optimizer.background_memory_optimization())

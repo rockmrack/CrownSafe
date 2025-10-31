@@ -22,7 +22,7 @@ metrics_agent = MetricsAgentLogic(agent_id="bg_metrics_agent")
 
 
 @celery_app.task(name="tasks.check_for_new_recalls_and_alert")
-def check_for_new_recalls_and_alert():
+def check_for_new_recalls_and_alert() -> str:
     """A Celery task that simulates the entire background alert workflow."""
     logger.info("--- [Celery Task] Starting: Check for new recalls and alert ---")
 

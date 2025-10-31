@@ -1,12 +1,12 @@
 """User Data Export and Deletion Endpoints
-GDPR/CCPA compliant data handling
+GDPR/CCPA compliant data handling.
 """
 
 import hashlib
 import json
 import logging
 import uuid
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from typing import Any
 
 from fastapi import (
@@ -37,7 +37,7 @@ privacy_router = APIRouter(prefix="/api/v1/user/privacy", tags=["User Privacy"])
 
 
 class DataExportRequest(BaseModel):
-    """Request for data export"""
+    """Request for data export."""
 
     user_id: str | None = Field(None, description="User ID")
     email: EmailStr | None = Field(None, description="Email for verification")
@@ -46,7 +46,7 @@ class DataExportRequest(BaseModel):
 
 
 class DataDeletionRequest(BaseModel):
-    """Request for data deletion"""
+    """Request for data deletion."""
 
     user_id: str | None = Field(None, description="User ID")
     email: EmailStr | None = Field(None, description="Email for verification")
@@ -55,7 +55,7 @@ class DataDeletionRequest(BaseModel):
 
 
 class DataOperationResponse(BaseModel):
-    """Response for data operations"""
+    """Response for data operations."""
 
     ok: bool = True
     request_id: str
@@ -68,18 +68,18 @@ class DataOperationResponse(BaseModel):
 
 
 def generate_request_id() -> str:
-    """Generate unique request ID"""
+    """Generate unique request ID."""
     return f"req_{uuid.uuid4().hex[:12]}"
 
 
 def hash_email(email: str) -> str:
-    """Hash email for privacy"""
+    """Hash email for privacy."""
     return hashlib.sha256(email.lower().strip().encode()).hexdigest()
 
 
 def get_user_data(user_id: str, db: Session) -> dict[str, Any]:
     """Gather all user data for export
-    In production, this would query all tables containing user data
+    In production, this would query all tables containing user data.
     """
     # This is a mock implementation
     # In production, query all relevant tables
@@ -116,7 +116,7 @@ def get_user_data(user_id: str, db: Session) -> dict[str, Any]:
 
 def delete_user_data(user_id: str, db: Session) -> bool:
     """Delete all user data
-    In production, this would delete from all tables
+    In production, this would delete from all tables.
     """
     try:
         # This is where you'd delete from all tables
@@ -146,7 +146,7 @@ async def export_user_data(
     db: Session = Depends(get_db),
     user_id_header: str | None = Header(None, alias="X-User-ID"),
 ):
-    """Export all user data (GDPR Article 20 - Right to Data Portability)
+    """Export all user data (GDPR Article 20 - Right to Data Portability).
 
     This endpoint allows users to export all their data in a machine-readable format.
     The export includes all data associated with the user account.
@@ -202,25 +202,23 @@ async def export_user_data(
                     },
                     status_code=200,
                 )
-            else:
-                # For CSV, we'd convert and return as file
-                # This is simplified for demo
-                return DataOperationResponse(
-                    ok=True,
-                    request_id=request_id,
-                    status="completed",
-                    message="CSV export completed (simplified demo)",
-                    estimated_completion=datetime.now(UTC),
-                )
-        else:
-            # Email verification flow would go here
+            # For CSV, we'd convert and return as file
+            # This is simplified for demo
             return DataOperationResponse(
                 ok=True,
                 request_id=request_id,
-                status="pending_verification",
-                message="Verification email sent. Please check your email to confirm the export request.",
-                estimated_completion=datetime.now(UTC) + timedelta(minutes=30),
+                status="completed",
+                message="CSV export completed (simplified demo)",
+                estimated_completion=datetime.now(UTC),
             )
+        # Email verification flow would go here
+        return DataOperationResponse(
+            ok=True,
+            request_id=request_id,
+            status="pending_verification",
+            message="Verification email sent. Please check your email to confirm the export request.",
+            estimated_completion=datetime.now(UTC) + timedelta(minutes=30),
+        )
 
     except Exception as e:
         logger.exception(
@@ -241,7 +239,7 @@ async def delete_user_data_endpoint(
     db: Session = Depends(get_db),
     user_id_header: str | None = Header(None, alias="X-User-ID"),
 ):
-    """Delete all user data (GDPR Article 17 - Right to Erasure)
+    """Delete all user data (GDPR Article 17 - Right to Erasure).
 
     This endpoint allows users to request complete deletion of their data.
     The deletion is permanent and cannot be undone.
@@ -300,11 +298,10 @@ async def delete_user_data_endpoint(
                     message="All user data has been permanently deleted",
                     estimated_completion=datetime.now(UTC),
                 )
-            else:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Failed to delete user data",
-                )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to delete user data",
+            )
         else:
             # Email verification flow would go here
             return DataOperationResponse(
@@ -330,7 +327,7 @@ async def delete_user_data_endpoint(
 
 @router.get("/export/status/{request_id}")
 async def get_export_status(request_id: str):
-    """Check status of data export request
+    """Check status of data export request.
 
     Returns the current status of a data export request.
     """
@@ -349,7 +346,7 @@ async def get_export_status(request_id: str):
 
 @router.get("/delete/status/{request_id}")
 async def get_deletion_status(request_id: str):
-    """Check status of data deletion request
+    """Check status of data deletion request.
 
     Returns the current status of a data deletion request.
     """
@@ -398,16 +395,15 @@ async def download_export(
                 media_type="text/csv",
                 headers={"Content-Disposition": f"attachment; filename=export_{request_id}.csv"},
             )
-        else:
-            # JSON download
-            import io
+        # JSON download
+        import io
 
-            payload = json.dumps(data, default=str).encode("utf-8")
-            return StreamingResponse(
-                io.BytesIO(payload),
-                media_type="application/json",
-                headers={"Content-Disposition": f"attachment; filename=export_{request_id}.json"},
-            )
+        payload = json.dumps(data, default=str).encode("utf-8")
+        return StreamingResponse(
+            io.BytesIO(payload),
+            media_type="application/json",
+            headers={"Content-Disposition": f"attachment; filename=export_{request_id}.json"},
+        )
     except HTTPException:
         raise
     except Exception as e:
@@ -420,7 +416,7 @@ async def download_export(
 
 @privacy_router.get("/summary")
 async def get_privacy_summary(user_id: str | None = Header(None, alias="X-User-ID")):
-    """Get privacy policy summary and user's privacy settings"""
+    """Get privacy policy summary and user's privacy settings."""
     try:
         summary = {
             "ok": True,

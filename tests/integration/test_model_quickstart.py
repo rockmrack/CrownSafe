@@ -1,4 +1,4 @@
-"""QUICKSTART TEST: Model Number Entry
+"""QUICKSTART TEST: Model Number Entry.
 
 Simplest possible test - just check if we can call the endpoint.
 Uses user_id=999 which might trigger dev override.
@@ -13,7 +13,7 @@ from api.main_crownsafe import app
 client = TestClient(app)
 
 
-def test_model_number_basic():
+def test_model_number_basic() -> None:
     """Basic test - does the endpoint respond?"""
     print("\n" + "=" * 70)
     print("QUICKSTART TEST: Model Number Entry")

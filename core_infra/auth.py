@@ -1,11 +1,11 @@
 """JWT Authentication for BabyShield API
-Production-ready authentication system
+Production-ready authentication system.
 """
 
 import logging
 import os
 import secrets
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from typing import Any
 
 from fastapi import Depends, HTTPException, status
@@ -50,7 +50,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token", auto_error=F
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against its hash"""
+    """Verify a password against its hash."""
     try:
         return pwd_context.verify(plain_password, hashed_password)
     except Exception as e:
@@ -61,12 +61,12 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def get_password_hash(password: str) -> str:
-    """Hash a password"""
+    """Hash a password."""
     return pwd_context.hash(password)
 
 
 def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
-    """Create a JWT access token"""
+    """Create a JWT access token."""
     import time
     import uuid
 
@@ -89,7 +89,7 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
 
 
 def create_refresh_token(data: dict[str, Any]) -> str:
-    """Create a JWT refresh token"""
+    """Create a JWT refresh token."""
     to_encode = data.copy()
     expire = datetime.now(UTC) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     to_encode.update({"exp": expire, "type": "refresh"})
@@ -98,7 +98,7 @@ def create_refresh_token(data: dict[str, Any]) -> str:
 
 
 def decode_token(token: str) -> dict[str, Any]:
-    """Decode and verify a JWT token"""
+    """Decode and verify a JWT token."""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
@@ -108,7 +108,7 @@ def decode_token(token: str) -> dict[str, Any]:
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User | None:
-    """Get the current authenticated user"""
+    """Get the current authenticated user."""
     if not token:
         return None
 
@@ -169,7 +169,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
 async def get_current_active_user(
     current_user: User = Depends(get_current_user),
 ) -> User:
-    """Ensure the current user is active"""
+    """Ensure the current user is active."""
     if not current_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -185,7 +185,7 @@ async def get_current_active_user(
 
 
 async def optional_auth(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User | None:
-    """Optional authentication - returns user if authenticated, None otherwise"""
+    """Optional authentication - returns user if authenticated, None otherwise."""
     if not token:
         return None
 
@@ -196,7 +196,7 @@ async def optional_auth(token: str = Depends(oauth2_scheme), db: Session = Depen
 
 
 def authenticate_user(db: Session, email: str, password: str) -> User | None:
-    """Authenticate a user with email and password"""
+    """Authenticate a user with email and password."""
     try:
         user = db.query(User).filter(User.email == email).first()
         if not user:

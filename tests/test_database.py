@@ -1,12 +1,12 @@
-"""Tests for core_infra/database.py"""
+"""Tests for core_infra/database.py."""
 
 import unittest
 from unittest.mock import patch
 
 
 class TestDatabase(unittest.TestCase):
-    def test_database_module_import(self):
-        """Test that database module can be imported"""
+    def test_database_module_import(self) -> None:
+        """Test that database module can be imported."""
         try:
             import core_infra.database as db
 
@@ -15,8 +15,8 @@ class TestDatabase(unittest.TestCase):
             self.skipTest("Module not found")
 
     @patch("core_infra.database.create_engine")
-    def test_session_local_exists(self, mock_engine):
-        """Test that SessionLocal exists"""
+    def test_session_local_exists(self, mock_engine) -> None:
+        """Test that SessionLocal exists."""
         try:
             from core_infra.database import SessionLocal
 
@@ -24,8 +24,8 @@ class TestDatabase(unittest.TestCase):
         except (ImportError, AttributeError):
             self.skipTest("SessionLocal not found")
 
-    def test_get_db_function_exists(self):
-        """Test that get_db function exists"""
+    def test_get_db_function_exists(self) -> None:
+        """Test that get_db function exists."""
         try:
             from core_infra.database import get_db
 

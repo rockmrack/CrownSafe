@@ -19,7 +19,7 @@ def validate_response(resp: dict[str, Any]) -> bool:
     """Validate that:
       - status == COMPLETED
       - data.summary is non-empty string
-      - data.risk_level is one of expected levels
+      - data.risk_level is one of expected levels.
     """
     if resp.get("status") != "COMPLETED":
         print(f"❌ TEST FAILED: status was '{resp.get('status')}', expected 'COMPLETED'.")
@@ -42,7 +42,7 @@ def validate_response(resp: dict[str, Any]) -> bool:
     return True
 
 
-def main():
+def main() -> None:
     logger.info("=== Starting Live End-to-End Recall Test ===")
 
     payload = {"user_id": TEST_USER_ID, "barcode": TEST_BARCODE}

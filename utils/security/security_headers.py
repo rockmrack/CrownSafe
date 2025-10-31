@@ -1,5 +1,5 @@
 """Security Headers Middleware
-Implements OWASP recommended security headers
+Implements OWASP recommended security headers.
 """
 
 import logging
@@ -14,7 +14,7 @@ logger.info("📦 utils.security.security_headers module loaded!")
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """Adds comprehensive security headers to all responses
+    """Adds comprehensive security headers to all responses.
 
     Implements OWASP Top 10 security best practices:
     - Content Security Policy (CSP)
@@ -35,7 +35,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         csp_policy: str = None,
         enable_frame_options: bool = True,
         enable_xss_protection: bool = True,
-    ):
+    ) -> None:
         try:
             logger.info("🔧 SecurityHeadersMiddleware __init__ called!")
             logger.info(
@@ -58,7 +58,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
     @staticmethod
     def _default_csp_policy() -> str:
-        """Default Content Security Policy
+        """Default Content Security Policy.
 
         This is a strict policy that prevents most XSS attacks.
         Adjust based on your frontend requirements.
@@ -76,7 +76,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         )
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
-        """Add security headers to response"""
+        """Add security headers to response."""
         import logging
 
         logger = logging.getLogger(__name__)
@@ -129,7 +129,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
-    """Simple in-memory rate limiting middleware
+    """Simple in-memory rate limiting middleware.
 
     For production, use Redis-based rate limiting (slowapi, aiolimiter, etc.)
     """
@@ -139,14 +139,14 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         app: ASGIApp,
         requests_per_minute: int = 60,
         burst_size: int = 10,
-    ):
+    ) -> None:
         super().__init__(app)
         self.requests_per_minute = requests_per_minute
         self.burst_size = burst_size
         self._request_counts: dict = {}  # {ip: [timestamp1, timestamp2, ...]}
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
-        """Check rate limit before processing request"""
+        """Check rate limit before processing request."""
         import time
 
         # Get client IP
@@ -187,18 +187,18 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
 
 class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
-    """Limit request body size to prevent DoS attacks"""
+    """Limit request body size to prevent DoS attacks."""
 
     def __init__(
         self,
         app: ASGIApp,
         max_body_size: int = 10 * 1024 * 1024,  # 10MB
-    ):
+    ) -> None:
         super().__init__(app)
         self.max_body_size = max_body_size
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
-        """Check request size before processing"""
+        """Check request size before processing."""
         content_length = request.headers.get("content-length")
 
         if content_length:
@@ -216,8 +216,8 @@ class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
 
-def configure_security_middleware(app, environment: str = "production"):
-    """Configure all security middleware for the application
+def configure_security_middleware(app, environment: str = "production") -> None:
+    """Configure all security middleware for the application.
 
     Args:
         app: FastAPI application instance

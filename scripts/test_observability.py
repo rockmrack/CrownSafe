@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Test script for Task 4 - Observability features
-Validates correlation IDs, rate limits, metrics, and error handling
+Validates correlation IDs, rate limits, metrics, and error handling.
 """
 
 import json
@@ -16,16 +16,16 @@ HEADERS = {"Content-Type": "application/json"}
 
 
 class ObservabilityTester:
-    """Test suite for observability features"""
+    """Test suite for observability features."""
 
-    def __init__(self, base_url: str = BASE_URL):
+    def __init__(self, base_url: str = BASE_URL) -> None:
         self.base_url = base_url
         self.session = requests.Session()
         self.session.headers.update(HEADERS)
         self.results = []
 
     def test(self, condition: bool, message: str):
-        """Record test result"""
+        """Record test result."""
         if condition:
             print(f"✅ {message}")
             self.results.append(True)
@@ -35,7 +35,7 @@ class ObservabilityTester:
         return condition
 
     def test_correlation_ids(self) -> bool:
-        """Test that correlation IDs are present in all responses"""
+        """Test that correlation IDs are present in all responses."""
         print("\n📝 Testing Correlation IDs...")
 
         # Test various endpoints
@@ -79,7 +79,7 @@ class ObservabilityTester:
         return all(self.results[-6:]) if len(self.results) >= 6 else False
 
     def test_security_headers(self) -> bool:
-        """Test that security headers are present"""
+        """Test that security headers are present."""
         print("\n🔒 Testing Security Headers...")
 
         response = self.session.get(f"{self.base_url}/api/v1/healthz")
@@ -97,7 +97,7 @@ class ObservabilityTester:
         return all(self.results[-4:]) if len(self.results) >= 4 else False
 
     def test_error_format(self) -> bool:
-        """Test unified error response format"""
+        """Test unified error response format."""
         print("\n❌ Testing Error Format...")
 
         # Test 404
@@ -129,7 +129,7 @@ class ObservabilityTester:
         return all(self.results[-7:]) if len(self.results) >= 7 else False
 
     def test_health_readiness(self) -> bool:
-        """Test health and readiness endpoints"""
+        """Test health and readiness endpoints."""
         print("\n💚 Testing Health & Readiness...")
 
         # Test health endpoint
@@ -159,7 +159,7 @@ class ObservabilityTester:
         return all(self.results[-7:]) if len(self.results) >= 7 else False
 
     def test_metrics(self) -> bool:
-        """Test Prometheus metrics endpoint"""
+        """Test Prometheus metrics endpoint."""
         print("\n📊 Testing Metrics...")
 
         response = self.session.get(f"{self.base_url}/metrics")
@@ -182,7 +182,7 @@ class ObservabilityTester:
         return all(self.results[-3:]) if len(self.results) >= 3 else False
 
     def test_rate_limiting(self) -> bool:
-        """Test rate limiting (simplified test)"""
+        """Test rate limiting (simplified test)."""
         print("\n⏱️ Testing Rate Limiting...")
         print("   Note: Full rate limit test requires Redis and multiple requests")
 
@@ -214,7 +214,7 @@ class ObservabilityTester:
         return all(self.results[-2:]) if len(self.results) >= 2 else True
 
     def test_server_timing(self) -> bool:
-        """Test Server-Timing header"""
+        """Test Server-Timing header."""
         print("\n⏱️ Testing Server Timing...")
 
         response = self.session.get(f"{self.base_url}/api/v1/healthz")
@@ -226,7 +226,7 @@ class ObservabilityTester:
         return self.results[-1] if self.results else False
 
     def run_all_tests(self) -> bool:
-        """Run all observability tests"""
+        """Run all observability tests."""
         print("=" * 60)
         print("🔍 OBSERVABILITY TEST SUITE")
         print("=" * 60)
@@ -270,9 +270,9 @@ class ObservabilityTester:
         return all_passed
 
 
-def test_rate_limit_stress(base_url: str = BASE_URL):
+def test_rate_limit_stress(base_url: str = BASE_URL) -> bool:
     """Stress test for rate limiting
-    Makes many requests to verify rate limiting works
+    Makes many requests to verify rate limiting works.
     """
     print("\n🔥 Rate Limit Stress Test")
     print("-" * 40)
@@ -301,8 +301,8 @@ def test_rate_limit_stress(base_url: str = BASE_URL):
     return False
 
 
-def main():
-    """Main test runner"""
+def main() -> int:
+    """Main test runner."""
     # Run observability tests
     tester = ObservabilityTester()
     observability_passed = tester.run_all_tests()

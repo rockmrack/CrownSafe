@@ -7,13 +7,13 @@ from api.main_crownsafe import app
 
 
 class TestExplainFeedbackEndpoint:
-    """Test the explain feedback analytics endpoint"""
+    """Test the explain feedback analytics endpoint."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         self.client = TestClient(app)
 
-    def test_explain_feedback_valid_payload(self):
-        """Test POST /analytics/explain-feedback with valid payload"""
+    def test_explain_feedback_valid_payload(self) -> None:
+        """Test POST /analytics/explain-feedback with valid payload."""
         with (
             patch("api.routers.analytics.get_db") as mock_get_db,
             patch("api.routers.analytics.create_explain_feedback") as mock_create,
@@ -59,8 +59,8 @@ class TestExplainFeedbackEndpoint:
             assert call_kwargs["locale"] == "en-US"
             assert call_kwargs["jurisdiction_code"] == "US"
 
-    def test_explain_feedback_minimal_payload(self):
-        """Test with only required fields"""
+    def test_explain_feedback_minimal_payload(self) -> None:
+        """Test with only required fields."""
         with (
             patch("api.routers.analytics.get_db") as mock_get_db,
             patch("api.routers.analytics.create_explain_feedback") as mock_create,
@@ -87,8 +87,8 @@ class TestExplainFeedbackEndpoint:
             assert call_kwargs["reason"] is None
             assert call_kwargs["comment"] is None
 
-    def test_explain_feedback_missing_scan_id(self):
-        """Test validation error for missing scan_id"""
+    def test_explain_feedback_missing_scan_id(self) -> None:
+        """Test validation error for missing scan_id."""
         payload = {
             "helpful": True,
             # Missing scan_id
@@ -100,8 +100,8 @@ class TestExplainFeedbackEndpoint:
         error_detail = response.json()["detail"]
         assert any("scan_id" in str(err) for err in error_detail)
 
-    def test_explain_feedback_missing_helpful(self):
-        """Test validation error for missing helpful field"""
+    def test_explain_feedback_missing_helpful(self) -> None:
+        """Test validation error for missing helpful field."""
         payload = {
             "scan_id": "test_scan_789",
             # Missing helpful
@@ -113,8 +113,8 @@ class TestExplainFeedbackEndpoint:
         error_detail = response.json()["detail"]
         assert any("helpful" in str(err) for err in error_detail)
 
-    def test_explain_feedback_invalid_field_lengths(self):
-        """Test validation for field length limits"""
+    def test_explain_feedback_invalid_field_lengths(self) -> None:
+        """Test validation for field length limits."""
         # Test scan_id too long
         payload = {"scan_id": "x" * 65, "helpful": True}  # Max is 64
 
@@ -141,8 +141,8 @@ class TestExplainFeedbackEndpoint:
         response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
         assert response.status_code == 422
 
-    def test_explain_feedback_with_headers(self):
-        """Test that request headers are used for platform info"""
+    def test_explain_feedback_with_headers(self) -> None:
+        """Test that request headers are used for platform info."""
         with (
             patch("api.routers.analytics.get_db") as mock_get_db,
             patch("api.routers.analytics.create_explain_feedback") as mock_create,
@@ -172,8 +172,8 @@ class TestExplainFeedbackEndpoint:
             assert call_kwargs["app_version"] == "2.1.0"
             assert call_kwargs["locale"] == "es-ES"
 
-    def test_explain_feedback_payload_overrides_headers(self):
-        """Test that payload values override headers"""
+    def test_explain_feedback_payload_overrides_headers(self) -> None:
+        """Test that payload values override headers."""
         with (
             patch("api.routers.analytics.get_db") as mock_get_db,
             patch("api.routers.analytics.create_explain_feedback") as mock_create,
@@ -206,8 +206,8 @@ class TestExplainFeedbackEndpoint:
             assert call_kwargs["app_version"] == "3.0.0"  # From payload
             assert call_kwargs["locale"] == "fr-FR"  # From header
 
-    def test_explain_feedback_with_authenticated_user(self):
-        """Test that user_id is resolved when authenticated"""
+    def test_explain_feedback_with_authenticated_user(self) -> None:
+        """Test that user_id is resolved when authenticated."""
         test_user_id = uuid4()
 
         with (
@@ -232,8 +232,8 @@ class TestExplainFeedbackEndpoint:
             call_kwargs = mock_create.call_args.kwargs
             assert call_kwargs["user_id"] == test_user_id
 
-    def test_explain_feedback_unauthenticated_user(self):
-        """Test that unauthenticated users can still provide feedback"""
+    def test_explain_feedback_unauthenticated_user(self) -> None:
+        """Test that unauthenticated users can still provide feedback."""
         with (
             patch("api.routers.analytics.get_db") as mock_get_db,
             patch("api.routers.analytics.create_explain_feedback") as mock_create,
@@ -253,8 +253,8 @@ class TestExplainFeedbackEndpoint:
             call_kwargs = mock_create.call_args.kwargs
             assert call_kwargs["user_id"] is None
 
-    def test_explain_feedback_database_error(self):
-        """Test handling of database errors"""
+    def test_explain_feedback_database_error(self) -> None:
+        """Test handling of database errors."""
         with (
             patch("api.routers.analytics.get_db") as mock_get_db,
             patch("api.routers.analytics.create_explain_feedback") as mock_create,
@@ -272,8 +272,8 @@ class TestExplainFeedbackEndpoint:
             assert response.status_code == 500
             assert response.json()["detail"] == "failed_to_record_feedback"
 
-    def test_explain_feedback_metrics_integration(self):
-        """Test that metrics are recorded when available"""
+    def test_explain_feedback_metrics_integration(self) -> None:
+        """Test that metrics are recorded when available."""
         with (
             patch("api.routers.analytics.get_db") as mock_get_db,
             patch("api.routers.analytics.create_explain_feedback") as mock_create,
@@ -296,8 +296,8 @@ class TestExplainFeedbackEndpoint:
             # Verify metrics were recorded
             mock_metrics.assert_called_once_with(True, "very_clear")
 
-    def test_explain_feedback_metrics_not_available(self):
-        """Test graceful handling when metrics module is not available"""
+    def test_explain_feedback_metrics_not_available(self) -> None:
+        """Test graceful handling when metrics module is not available."""
         with (
             patch("api.routers.analytics.get_db") as mock_get_db,
             patch("api.routers.analytics.create_explain_feedback") as mock_create,
@@ -321,13 +321,13 @@ class TestExplainFeedbackEndpoint:
 
 
 class TestExplainFeedbackValidation:
-    """Test detailed validation scenarios"""
+    """Test detailed validation scenarios."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         self.client = TestClient(app)
 
-    def test_helpful_boolean_validation(self):
-        """Test that helpful field requires boolean"""
+    def test_helpful_boolean_validation(self) -> None:
+        """Test that helpful field requires boolean."""
         # String instead of boolean
         payload = {"scan_id": "bool_test", "helpful": "true"}  # Should be boolean
 
@@ -340,8 +340,8 @@ class TestExplainFeedbackValidation:
         response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
         assert response.status_code == 422
 
-    def test_scan_id_empty_string(self):
-        """Test that scan_id cannot be empty string"""
+    def test_scan_id_empty_string(self) -> None:
+        """Test that scan_id cannot be empty string."""
         payload = {
             "scan_id": "",
             "helpful": True,
@@ -350,8 +350,8 @@ class TestExplainFeedbackValidation:
         response = self.client.post("/api/v1/analytics/explain-feedback", json=payload)
         assert response.status_code == 422
 
-    def test_optional_fields_null_values(self):
-        """Test that optional fields accept null values"""
+    def test_optional_fields_null_values(self) -> None:
+        """Test that optional fields accept null values."""
         with (
             patch("api.routers.analytics.get_db") as mock_get_db,
             patch("api.routers.analytics.create_explain_feedback") as mock_create,

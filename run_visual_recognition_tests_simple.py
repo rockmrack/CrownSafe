@@ -1,5 +1,5 @@
 """VISUAL RECOGNITION SYSTEM TEST SUITE - STRUCTURE & CAPABILITIES
-Tests the Visual Search Agent without requiring OpenAI API calls
+Tests the Visual Search Agent without requiring OpenAI API calls.
 """
 
 import asyncio
@@ -7,8 +7,8 @@ import sys
 from datetime import datetime
 
 
-def run_tests():
-    """Execute all visual recognition tests"""
+def run_tests() -> int:
+    """Execute all visual recognition tests."""
     print("=" * 70)
     print("VISUAL RECOGNITION SYSTEM TEST SUITE")
     print("=" * 70)
@@ -346,11 +346,10 @@ def run_tests():
         print("  - Dependencies: AVAILABLE")
         print("\nThe Visual Search Agent is ready for use!")
         return 0
-    else:
-        print("\n" + "=" * 70)
-        print(f"SOME TESTS FAILED ({tests_failed}/{total_tests})")
-        print("=" * 70)
-        return 1
+    print("\n" + "=" * 70)
+    print(f"SOME TESTS FAILED ({tests_failed}/{total_tests})")
+    print("=" * 70)
+    return 1
 
 
 if __name__ == "__main__":

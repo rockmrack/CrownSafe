@@ -1,7 +1,7 @@
-"""Share Token Model for secure result sharing"""
+"""Share Token Model for secure result sharing."""
 
 import secrets
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 
 from sqlalchemy import (
     JSON,
@@ -17,7 +17,7 @@ from core_infra.database import Base
 
 
 class ShareToken(Base):
-    """Model for secure sharing of scan results"""
+    """Model for secure sharing of scan results."""
 
     __tablename__ = "share_tokens"
 
@@ -56,11 +56,11 @@ class ShareToken(Base):
 
     @classmethod
     def generate_token(cls):
-        """Generate a secure random token"""
+        """Generate a secure random token."""
         return secrets.token_urlsafe(32)
 
-    def is_valid(self):
-        """Check if the share token is still valid"""
+    def is_valid(self) -> bool:
+        """Check if the share token is still valid."""
         if not self.is_active:
             return False
 
@@ -72,13 +72,13 @@ class ShareToken(Base):
 
         return True
 
-    def increment_view(self):
-        """Increment the view counter"""
+    def increment_view(self) -> None:
+        """Increment the view counter."""
         self.view_count += 1
         self.last_accessed = datetime.now(UTC)
 
     def to_dict(self):
-        """Convert to dictionary for API responses"""
+        """Convert to dictionary for API responses."""
         return {
             "token": self.token,
             "share_type": self.share_type,

@@ -1,17 +1,17 @@
 """Enterprise Security Validator
-Validates security configuration and best practices across the application
+Validates security configuration and best practices across the application.
 """
 
 import logging
 import os
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 logger = logging.getLogger(__name__)
 
 
 class SecurityConfigValidator:
-    """Validates security configuration against enterprise best practices"""
+    """Validates security configuration against enterprise best practices."""
 
     def __init__(self) -> None:
         self.findings: list[dict[str, Any]] = []
@@ -19,7 +19,7 @@ class SecurityConfigValidator:
         self.passed_checks: list[str] = []
 
     def validate_environment_variables(self) -> dict[str, Any]:
-        """Validate critical environment variables are properly configured
+        """Validate critical environment variables are properly configured.
 
         Returns:
             Dict with validation results
@@ -125,7 +125,7 @@ class SecurityConfigValidator:
         return results
 
     def validate_cors_configuration(self) -> dict[str, Any]:
-        """Validate CORS configuration for security
+        """Validate CORS configuration for security.
 
         Returns:
             Dict with CORS validation results
@@ -159,7 +159,7 @@ class SecurityConfigValidator:
         return results
 
     def validate_ssl_tls_configuration(self) -> dict[str, Any]:
-        """Validate SSL/TLS configuration
+        """Validate SSL/TLS configuration.
 
         Returns:
             Dict with SSL/TLS validation results
@@ -204,7 +204,7 @@ class SecurityConfigValidator:
         return results
 
     def validate_rate_limiting(self) -> dict[str, Any]:
-        """Validate rate limiting configuration
+        """Validate rate limiting configuration.
 
         Returns:
             Dict with rate limiting validation results
@@ -241,7 +241,7 @@ class SecurityConfigValidator:
         return results
 
     def validate_logging_configuration(self) -> dict[str, Any]:
-        """Validate logging configuration for security events
+        """Validate logging configuration for security events.
 
         Returns:
             Dict with logging validation results
@@ -284,7 +284,7 @@ class SecurityConfigValidator:
         return results
 
     def comprehensive_security_audit(self) -> dict[str, Any]:
-        """Run comprehensive security audit
+        """Run comprehensive security audit.
 
         Returns:
             Dict with complete audit results
@@ -350,15 +350,14 @@ class SecurityConfigValidator:
         return audit_results
 
     def _get_risk_level(self, score: float) -> str:
-        """Get risk level based on score"""
+        """Get risk level based on score."""
         if score < 2:
             return "LOW"
-        elif score < 5:
+        if score < 5:
             return "MEDIUM"
-        elif score < 8:
+        if score < 8:
             return "HIGH"
-        else:
-            return "CRITICAL"
+        return "CRITICAL"
 
 
 # Global validator instance

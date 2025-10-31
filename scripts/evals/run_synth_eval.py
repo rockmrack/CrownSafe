@@ -73,14 +73,13 @@ def get_llm_client(dummy: bool = False):
                 }
 
         return DummyLLM()
-    else:
-        try:
-            from infra.openai_client import OpenAILLMClient  # your adapter
+    try:
+        from infra.openai_client import OpenAILLMClient  # your adapter
 
-            return OpenAILLMClient()
-        except Exception:
-            print("Falling back to dummy LLM (no infra.openai_client).", file=sys.stderr)
-            return get_llm_client(dummy=True)
+        return OpenAILLMClient()
+    except Exception:
+        print("Falling back to dummy LLM (no infra.openai_client).", file=sys.stderr)
+        return get_llm_client(dummy=True)
 
 
 def load_cases(path: str, limit: int | None) -> list[dict[str, Any]]:
@@ -143,7 +142,7 @@ def check_case(resp: dict[str, Any], expect: dict[str, Any]) -> tuple[bool, list
     return ok, errors
 
 
-def main():
+def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--cases", default="evals/golden/cases.jsonl")
     ap.add_argument("--max", type=int, default=0, help="limit cases")

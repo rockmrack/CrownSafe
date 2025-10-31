@@ -1,5 +1,5 @@
 """Centralized configuration management for BabyShield
-Handles environment variables and default values
+Handles environment variables and default values.
 """
 
 import os
@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 class Config:
-    """Application configuration"""
+    """Application configuration."""
 
     # Base directory
     BASE_DIR = Path(__file__).resolve().parent.parent
@@ -59,12 +59,12 @@ class Config:
 
     @classmethod
     def is_production(cls) -> bool:
-        """Check if running in production"""
+        """Check if running in production."""
         return not cls.DEBUG
 
     @classmethod
     def validate(cls) -> bool:
-        """Validate critical configuration"""
+        """Validate critical configuration."""
         errors = []
 
         if cls.is_production():

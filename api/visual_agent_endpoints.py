@@ -1,12 +1,12 @@
 """Visual Agent API Endpoints - Phase 2
-Image upload, analysis, MFV, and HITL review queue
+Image upload, analysis, MFV, and HITL review queue.
 """
 
 import json
 import logging
 import os
 import uuid
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 import boto3
@@ -36,7 +36,7 @@ from core_infra.visual_agent_models import (
 
 # Define ApiResponse locally
 class ApiResponse(BaseModel):
-    """API response wrapper"""
+    """API response wrapper."""
 
     success: bool
     data: Any | None = None
@@ -61,7 +61,7 @@ s3_client = boto3.client("s3", region_name=S3_BUCKET_REGION)
 
 # Request/Response Models
 class ImageUploadResponse(BaseModel):
-    """Response for image upload"""
+    """Response for image upload."""
 
     job_id: str
     upload_url: str
@@ -70,7 +70,7 @@ class ImageUploadResponse(BaseModel):
 
 
 class ImageAnalysisRequest(BaseModel):
-    """Request for image analysis with MFV"""
+    """Request for image analysis with MFV."""
 
     job_id: str | None = Field(None, description="Job ID from upload")
     image_url: str | None = Field(None, description="Direct image URL for analysis")
@@ -82,7 +82,7 @@ class ImageAnalysisRequest(BaseModel):
 
 
 class ImageAnalysisResponse(BaseModel):
-    """Response for image analysis"""
+    """Response for image analysis."""
 
     job_id: str
     status: str
@@ -97,7 +97,7 @@ class ImageAnalysisResponse(BaseModel):
 
 
 class MFVConfirmationRequest(BaseModel):
-    """Multi-factor verification confirmation"""
+    """Multi-factor verification confirmation."""
 
     session_id: str
     confirmed_product: str = Field(..., min_length=1)
@@ -107,7 +107,7 @@ class MFVConfirmationRequest(BaseModel):
 
 
 class ReviewQueueFilter(BaseModel):
-    """Filter for review queue"""
+    """Filter for review queue."""
 
     status: ReviewStatus | None = None
     priority: int | None = None
@@ -117,7 +117,7 @@ class ReviewQueueFilter(BaseModel):
 
 
 class ReviewAction(BaseModel):
-    """Review action for HITL"""
+    """Review action for HITL."""
 
     action: str = Field(
         ...,
@@ -137,7 +137,7 @@ async def request_image_upload(
     user_id: int = Query(..., description="User ID"),
     db: Session = Depends(get_db_session),
 ) -> ApiResponse:
-    """Request presigned URL for image upload
+    """Request presigned URL for image upload.
 
     Returns presigned S3 URL for direct client upload
     """
@@ -183,7 +183,7 @@ async def request_image_upload(
 
 @visual_router.post("/analyze", response_model=ApiResponse)
 async def analyze_image(request: ImageAnalysisRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """Start image analysis with optional MFV
+    """Start image analysis with optional MFV.
 
     Triggers async processing and returns initial status
     """
@@ -318,7 +318,7 @@ async def analyze_image(request: ImageAnalysisRequest, db: Session = Depends(get
 
 @visual_router.get("/status/{job_id}", response_model=ApiResponse)
 async def get_job_status(job_id: str, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """Get image processing job status"""
+    """Get image processing job status."""
     try:
         job = db.query(ImageJob).filter_by(id=job_id).first()
         if not job:
@@ -364,7 +364,7 @@ async def get_job_status(job_id: str, db: Session = Depends(get_db_session)) -> 
 
 @visual_router.post("/mfv/confirm", response_model=ApiResponse)
 async def confirm_mfv(request: MFVConfirmationRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """Confirm multi-factor verification
+    """Confirm multi-factor verification.
 
     User confirms or corrects extracted product details
     """
@@ -434,7 +434,7 @@ async def get_review_queue(
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db_session),
 ) -> ApiResponse:
-    """Get HITL review queue"""
+    """Get HITL review queue."""
     try:
         query = db.query(ReviewQueue)
 
@@ -475,7 +475,7 @@ async def get_review_queue(
 
 @visual_router.post("/review/{review_id}/claim", response_model=ApiResponse)
 async def claim_review(review_id: int, request: Request, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """Claim a review task"""
+    """Claim a review task."""
     try:
         # Handle both raw string and JSON body
         body = await request.body()
@@ -550,7 +550,7 @@ async def claim_review(review_id: int, request: Request, db: Session = Depends(g
 
 @visual_router.post("/review/{review_id}/resolve", response_model=ApiResponse)
 async def resolve_review(review_id: int, action: ReviewAction, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """Resolve a review task"""
+    """Resolve a review task."""
     try:
         review = db.query(ReviewQueue).filter_by(id=review_id).first()
         if not review:
@@ -629,7 +629,7 @@ def _generate_safety_message(
     job: ImageJob, extraction: ImageExtraction | None, always_qualified: bool = False,
 ) -> str:
     """Generate safety message following legal requirements
-    Never says "safe" - only "no recalls found"
+    Never says "safe" - only "no recalls found".
     """
     if job.status == JobStatus.FAILED:
         return "Analysis failed. Please try again with a clearer image."
@@ -661,7 +661,7 @@ def _generate_safety_message(
 
 
 def _fuzzy_match(str1: str | None, str2: str | None) -> bool:
-    """Simple fuzzy string matching"""
+    """Simple fuzzy string matching."""
     if not str1 or not str2:
         return False
 
@@ -683,7 +683,7 @@ def _fuzzy_match(str1: str | None, str2: str | None) -> bool:
 
 @visual_router.post("/search", response_model=ApiResponse)
 async def visual_search(request: ImageAnalysisRequest, db: Session = Depends(get_db_session)):
-    """Visual search endpoint for product recognition and safety checking"""
+    """Visual search endpoint for product recognition and safety checking."""
     try:
         # Validate input
         if not request.image_url and not request.image_base64:

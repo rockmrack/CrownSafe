@@ -1,4 +1,4 @@
-"""Fix timestamp defaults in Crown Safe migration for SQLite compatibility"""
+"""Fix timestamp defaults in Crown Safe migration for SQLite compatibility."""
 
 file_path = "db/migrations/versions/2025_10_24_add_crown_safe_models.py"
 

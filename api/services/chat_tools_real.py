@@ -257,7 +257,7 @@ def _check_allergy_from_scan(scan: dict[str, Any], profile_allergies: list) -> d
 
 def recall_details_adapter(scan: dict[str, Any]) -> dict[str, Any]:
     """Adapter for recall lookups using the enhanced RecallDB.
-    REMOVED FOR CROWN SAFE: Recall lookups no longer applicable (hair products, not baby recalls)
+    REMOVED FOR CROWN SAFE: Recall lookups no longer applicable (hair products, not baby recalls).
     """
     # Return empty recalls for backward compatibility
     recalls_data = []

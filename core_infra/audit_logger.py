@@ -1,12 +1,12 @@
 """Audit logging system for BabyShield
-Tracks all data changes for compliance and debugging
+Tracks all data changes for compliance and debugging.
 """
 
 import json
 import logging
 import traceback
 from contextvars import ContextVar
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from functools import wraps
 from typing import Any
 
@@ -28,7 +28,7 @@ def get_base():
 
 
 class AuditLog(get_base()):
-    """Audit log table for tracking all changes"""
+    """Audit log table for tracking all changes."""
 
     __tablename__ = "audit_logs"
 
@@ -54,7 +54,7 @@ class AuditLog(get_base()):
 
 
 class AuditLogger:
-    """Main audit logging service"""
+    """Main audit logging service."""
 
     def __init__(self, db_session: Session = None) -> None:
         self.db_session = db_session
@@ -70,7 +70,7 @@ class AuditLogger:
         metadata: dict = None,
         error: str = None,
     ) -> None:
-        """Create an audit log entry"""
+        """Create an audit log entry."""
         try:
             # Get context
             user_id = current_user_context.get()
@@ -114,7 +114,7 @@ class AuditLogger:
             self.logger.exception(f"Failed to create audit log: {e}")
 
     def _calculate_diff(self, old: dict, new: dict) -> dict:
-        """Calculate differences between old and new values"""
+        """Calculate differences between old and new values."""
         changes = {}
 
         # Find changed fields
@@ -130,7 +130,7 @@ class AuditLogger:
         return changes if changes else None
 
     def log_create(self, entity: Any) -> None:
-        """Log entity creation"""
+        """Log entity creation."""
         self.log(
             action="CREATE",
             entity_type=entity.__class__.__name__,
@@ -139,7 +139,7 @@ class AuditLogger:
         )
 
     def log_update(self, entity: Any, old_state: dict) -> None:
-        """Log entity update"""
+        """Log entity update."""
         self.log(
             action="UPDATE",
             entity_type=entity.__class__.__name__,
@@ -149,7 +149,7 @@ class AuditLogger:
         )
 
     def log_delete(self, entity: Any) -> None:
-        """Log entity deletion"""
+        """Log entity deletion."""
         self.log(
             action="DELETE",
             entity_type=entity.__class__.__name__,
@@ -158,7 +158,7 @@ class AuditLogger:
         )
 
     def log_view(self, entity_type: str, entity_id: Any, metadata: dict = None) -> None:
-        """Log data access/viewing"""
+        """Log data access/viewing."""
         self.log(
             action="VIEW",
             entity_type=entity_type,
@@ -174,7 +174,7 @@ class AuditLogger:
         user_id: int = None,
         error: str = None,
     ) -> None:
-        """Log API calls"""
+        """Log API calls."""
         self.log(
             action="API_CALL",
             entity_type="API",
@@ -188,10 +188,10 @@ class AuditLogger:
         )
 
     def _serialize_entity(self, entity: Any) -> dict:
-        """Serialize entity to dictionary"""
+        """Serialize entity to dictionary."""
         if hasattr(entity, "to_dict"):
             return entity.to_dict()
-        elif hasattr(entity, "__dict__"):
+        if hasattr(entity, "__dict__"):
             data = {}
             for key, value in entity.__dict__.items():
                 if not key.startswith("_"):
@@ -203,29 +203,28 @@ class AuditLogger:
                         # Fall back to string representation
                         data[key] = str(value)
             return data
-        else:
-            return {"value": str(entity)}
+        return {"value": str(entity)}
 
 
 # SQLAlchemy event listeners for automatic audit logging
 def setup_audit_listeners(Base, db_session) -> None:
-    """Setup automatic audit logging for SQLAlchemy models"""
+    """Setup automatic audit logging for SQLAlchemy models."""
     audit_logger = AuditLogger(db_session)
 
     @event.listens_for(Base, "after_insert", propagate=True)
     def receive_after_insert(mapper, connection, target) -> None:
-        """Log after insert"""
+        """Log after insert."""
         audit_logger.log_create(target)
 
     @event.listens_for(Base, "before_update", propagate=True)
     def receive_before_update(mapper, connection, target) -> None:
-        """Store old state before update"""
+        """Store old state before update."""
         # Store old state in a temporary attribute
         target._audit_old_state = audit_logger._serialize_entity(target)
 
     @event.listens_for(Base, "after_update", propagate=True)
     def receive_after_update(mapper, connection, target) -> None:
-        """Log after update"""
+        """Log after update."""
         old_state = getattr(target, "_audit_old_state", {})
         audit_logger.log_update(target, old_state)
         # Clean up
@@ -234,13 +233,13 @@ def setup_audit_listeners(Base, db_session) -> None:
 
     @event.listens_for(Base, "after_delete", propagate=True)
     def receive_after_delete(mapper, connection, target) -> None:
-        """Log after delete"""
+        """Log after delete."""
         audit_logger.log_delete(target)
 
 
 # Decorators for audit logging
 def audit_action(action: str, entity_type: str = None):
-    """Decorator to audit function calls"""
+    """Decorator to audit function calls."""
 
     def decorator(func):
         @wraps(func)
@@ -288,7 +287,7 @@ def audit_action(action: str, entity_type: str = None):
 
 
 def audit_api_endpoint(func):
-    """Decorator for auditing API endpoints"""
+    """Decorator for auditing API endpoints."""
 
     @wraps(func)
     async def wrapper(*args, **kwargs):
@@ -335,13 +334,13 @@ def audit_api_endpoint(func):
 
 # Query audit logs
 class AuditQuery:
-    """Query audit logs"""
+    """Query audit logs."""
 
     def __init__(self, db_session: Session) -> None:
         self.db = db_session
 
     def get_user_activity(self, user_id: int, limit: int = 100) -> list[AuditLog]:
-        """Get activity for a specific user"""
+        """Get activity for a specific user."""
         return (
             self.db.query(AuditLog)
             .filter(AuditLog.user_id == user_id)
@@ -351,7 +350,7 @@ class AuditQuery:
         )
 
     def get_entity_history(self, entity_type: str, entity_id: str) -> list[AuditLog]:
-        """Get history for a specific entity"""
+        """Get history for a specific entity."""
         return (
             self.db.query(AuditLog)
             .filter(AuditLog.entity_type == entity_type, AuditLog.entity_id == entity_id)
@@ -360,7 +359,7 @@ class AuditQuery:
         )
 
     def get_recent_changes(self, hours: int = 24) -> list[AuditLog]:
-        """Get recent changes"""
+        """Get recent changes."""
         from datetime import timedelta
 
         cutoff = datetime.now(UTC) - timedelta(hours=hours)
@@ -375,7 +374,7 @@ class AuditQuery:
         start_date: datetime = None,
         end_date: datetime = None,
     ) -> list[AuditLog]:
-        """Search audit logs with filters"""
+        """Search audit logs with filters."""
         query = self.db.query(AuditLog)
 
         if action:
@@ -394,7 +393,7 @@ class AuditQuery:
 
 # Middleware to set audit context
 async def audit_middleware(request, call_next):
-    """Middleware to set audit context for requests"""
+    """Middleware to set audit context for requests."""
     import uuid
 
     # Generate request ID

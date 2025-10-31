@@ -1,4 +1,4 @@
-"""Quick verification that Report Unsafe Product endpoints work"""
+"""Quick verification that Report Unsafe Product endpoints work."""
 
 import json
 
@@ -7,8 +7,8 @@ import requests
 BASE_URL = "http://localhost:8001"  # Change to production when deployed
 
 
-def test_report_unsafe_product():
-    """Test creating an unsafe product report"""
+def test_report_unsafe_product() -> None:
+    """Test creating an unsafe product report."""
     print("\n🧪 Testing POST /api/v1/report-unsafe-product...")
 
     payload = {

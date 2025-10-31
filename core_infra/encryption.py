@@ -1,5 +1,5 @@
 """PII Encryption for BabyShield
-Protects sensitive user data with AES encryption
+Protects sensitive user data with AES encryption.
 """
 
 import base64
@@ -21,7 +21,7 @@ if not ENCRYPTION_KEY:
 
 
 class EncryptionManager:
-    """Manages encryption/decryption of sensitive data"""
+    """Manages encryption/decryption of sensitive data."""
 
     def __init__(self, key: str = None) -> None:
         if key:
@@ -32,7 +32,7 @@ class EncryptionManager:
         self.cipher = Fernet(self.key)
 
     def encrypt(self, data: str) -> str:
-        """Encrypt string data"""
+        """Encrypt string data."""
         if not data:
             return None
 
@@ -40,7 +40,7 @@ class EncryptionManager:
         return base64.urlsafe_b64encode(encrypted).decode()
 
     def decrypt(self, encrypted_data: str) -> str:
-        """Decrypt string data"""
+        """Decrypt string data."""
         if not encrypted_data:
             return None
 
@@ -54,12 +54,12 @@ class EncryptionManager:
             return None
 
     def encrypt_dict(self, data: dict) -> str:
-        """Encrypt dictionary as JSON"""
+        """Encrypt dictionary as JSON."""
         json_str = json.dumps(data)
         return self.encrypt(json_str)
 
     def decrypt_dict(self, encrypted_data: str) -> dict:
-        """Decrypt JSON dictionary"""
+        """Decrypt JSON dictionary."""
         decrypted = self.decrypt(encrypted_data)
         if decrypted:
             return json.loads(decrypted)
@@ -72,20 +72,20 @@ encryption_manager = EncryptionManager()
 
 class EncryptedString(TypeDecorator):
     """SQLAlchemy type for encrypted string columns
-    Automatically encrypts/decrypts on save/load
+    Automatically encrypts/decrypts on save/load.
     """
 
     impl = Text
     cache_ok = True
 
     def process_bind_param(self, value, dialect):
-        """Encrypt before saving to database"""
+        """Encrypt before saving to database."""
         if value is not None:
             return encryption_manager.encrypt(value)
         return value
 
     def process_result_value(self, value, dialect):
-        """Decrypt after loading from database"""
+        """Decrypt after loading from database."""
         if value is not None:
             return encryption_manager.decrypt(value)
         return value
@@ -93,44 +93,44 @@ class EncryptedString(TypeDecorator):
 
 class HashedString(TypeDecorator):
     """SQLAlchemy type for one-way hashed strings
-    Used for data that needs to be searchable but not readable
+    Used for data that needs to be searchable but not readable.
     """
 
     impl = String(64)  # SHA-256 produces 64 character hex
     cache_ok = True
 
     def process_bind_param(self, value, dialect):
-        """Hash before saving"""
+        """Hash before saving."""
         if value is not None:
             return hashlib.sha256(value.encode()).hexdigest()
         return value
 
     def process_result_value(self, value, dialect):
-        """Return hash (cannot be reversed)"""
+        """Return hash (cannot be reversed)."""
         return value
 
 
 class EncryptedJSON(TypeDecorator):
-    """SQLAlchemy type for encrypted JSON columns"""
+    """SQLAlchemy type for encrypted JSON columns."""
 
     impl = Text
     cache_ok = True
 
     def process_bind_param(self, value, dialect):
-        """Encrypt JSON before saving"""
+        """Encrypt JSON before saving."""
         if value is not None:
             return encryption_manager.encrypt_dict(value)
         return value
 
     def process_result_value(self, value, dialect):
-        """Decrypt JSON after loading"""
+        """Decrypt JSON after loading."""
         if value is not None:
             return encryption_manager.decrypt_dict(value)
         return value
 
 
 def mask_pii(data: str, mask_char: str = "*", visible_chars: int = 4) -> str:
-    """Mask PII data for display (e.g., email: j****@example.com)"""
+    """Mask PII data for display (e.g., email: j****@example.com)."""
     if not data or len(data) <= visible_chars:
         return data
 
@@ -157,7 +157,7 @@ def mask_pii(data: str, mask_char: str = "*", visible_chars: int = 4) -> str:
 
 
 def anonymize_data(data: dict, fields_to_anonymize: list) -> dict:
-    """Anonymize specific fields in a dictionary"""
+    """Anonymize specific fields in a dictionary."""
     anonymized = data.copy()
 
     for field in fields_to_anonymize:
@@ -173,7 +173,7 @@ def anonymize_data(data: dict, fields_to_anonymize: list) -> dict:
 
 
 class PIIRedactor:
-    """Redact PII from text using patterns"""
+    """Redact PII from text using patterns."""
 
     PII_PATTERNS = {
         "email": r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
@@ -185,7 +185,7 @@ class PIIRedactor:
 
     @classmethod
     def redact(cls, text: str, patterns: list = None) -> str:
-        """Redact PII from text"""
+        """Redact PII from text."""
         import re
 
         if not text:
@@ -203,7 +203,7 @@ class PIIRedactor:
 
 
 def encrypt_file(file_path: str, output_path: str = None):
-    """Encrypt a file"""
+    """Encrypt a file."""
     if not output_path:
         output_path = f"{file_path}.encrypted"
 
@@ -219,7 +219,7 @@ def encrypt_file(file_path: str, output_path: str = None):
 
 
 def decrypt_file(encrypted_path: str, output_path: str = None):
-    """Decrypt a file"""
+    """Decrypt a file."""
     if not output_path:
         output_path = encrypted_path.replace(".encrypted", "")
 
@@ -235,26 +235,26 @@ def decrypt_file(encrypted_path: str, output_path: str = None):
 
 
 class SecureToken:
-    """Generate and verify secure tokens"""
+    """Generate and verify secure tokens."""
 
     @staticmethod
     def generate(length: int = 32) -> str:
-        """Generate a secure random token"""
+        """Generate a secure random token."""
         return secrets.token_urlsafe(length)
 
     @staticmethod
     def generate_numeric(length: int = 6) -> str:
-        """Generate numeric token (e.g., for SMS codes)"""
+        """Generate numeric token (e.g., for SMS codes)."""
         return "".join(secrets.choice("0123456789") for _ in range(length))
 
     @staticmethod
     def hash_token(token: str) -> str:
-        """Hash a token for storage"""
+        """Hash a token for storage."""
         return hashlib.sha256(token.encode()).hexdigest()
 
     @staticmethod
     def verify_token(token: str, hashed: str) -> bool:
-        """Verify a token against its hash"""
+        """Verify a token against its hash."""
         return SecureToken.hash_token(token) == hashed
 
 

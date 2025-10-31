@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """App Store Readiness Check for BabyShield API
-Validates API stability, predictability, and documentation for App Store/Play review
+Validates API stability, predictability, and documentation for App Store/Play review.
 """
 
 import os
@@ -15,7 +15,7 @@ S = requests.Session()
 S.headers.update({"Content-Type": "application/json"})
 
 
-def expect(cond, msg):
+def expect(cond, msg) -> None:
     if not cond:
         print(f"❌ {msg}")
         sys.exit(1)
@@ -222,7 +222,7 @@ lat = []
 errors = []
 
 
-def worker():
+def worker() -> None:
     try:
         t0 = time.time()
         r, j = post_json("/api/v1/search/advanced", {"product": "bottle", "limit": 3})

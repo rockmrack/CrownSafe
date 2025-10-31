@@ -1,5 +1,5 @@
 """A-5 Exact/Valid Scan: Comprehensive Barcode Validation Service
-Provides exact validation, format checking, and error handling for barcode scanning
+Provides exact validation, format checking, and error handling for barcode scanning.
 """
 
 import logging
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class BarcodeType(Enum):
-    """Supported barcode types"""
+    """Supported barcode types."""
 
     UPC_A = "upc_a"
     UPC_E = "upc_e"
@@ -27,7 +27,7 @@ class BarcodeType(Enum):
 
 
 class ValidationResult(Enum):
-    """Validation result types"""
+    """Validation result types."""
 
     VALID = "valid"
     INVALID_FORMAT = "invalid_format"
@@ -39,7 +39,7 @@ class ValidationResult(Enum):
 
 @dataclass
 class BarcodeValidationResult:
-    """Result of barcode validation"""
+    """Result of barcode validation."""
 
     is_valid: bool
     barcode_type: BarcodeType
@@ -51,7 +51,7 @@ class BarcodeValidationResult:
 
 
 class BarcodeValidator:
-    """Comprehensive barcode validation service"""
+    """Comprehensive barcode validation service."""
 
     def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
@@ -83,7 +83,7 @@ class BarcodeValidator:
         }
 
     def validate_barcode(self, barcode: str) -> BarcodeValidationResult:
-        """Comprehensive barcode validation
+        """Comprehensive barcode validation.
 
         Args:
             barcode: Raw barcode string to validate
@@ -180,7 +180,7 @@ class BarcodeValidator:
         )
 
     def _clean_barcode(self, barcode: str) -> str:
-        """Clean and normalize barcode string"""
+        """Clean and normalize barcode string."""
         # Remove whitespace and common separators
         cleaned = re.sub(r"[\s\-\.]", "", barcode.strip())
 
@@ -190,17 +190,17 @@ class BarcodeValidator:
         return cleaned
 
     def _detect_barcode_type(self, barcode: str) -> BarcodeType:
-        """Detect barcode type based on format and length"""
+        """Detect barcode type based on format and length."""
         # Check numeric barcodes FIRST (most common)
         if barcode.isdigit():
             length = len(barcode)
             if length == 12:
                 return BarcodeType.UPC_A
-            elif length == 13:
+            if length == 13:
                 return BarcodeType.EAN_13
-            elif length == 8:
+            if length == 8:
                 return BarcodeType.EAN_8
-            elif 6 <= length <= 8:
+            if 6 <= length <= 8:
                 return BarcodeType.UPC_E
 
         # Check for GS1-128 patterns
@@ -226,7 +226,7 @@ class BarcodeValidator:
         return BarcodeType.UNKNOWN
 
     def _is_qr_code(self, barcode: str) -> bool:
-        """Check if barcode looks like QR code content"""
+        """Check if barcode looks like QR code content."""
         # QR codes often contain URLs, JSON, or structured data
         url_pattern = r"^https?://"
         json_pattern = r"^[\{\[].*[\}\]]$"
@@ -240,28 +240,28 @@ class BarcodeValidator:
         )  # QR codes are typically longer
 
     def _is_data_matrix(self, barcode: str) -> bool:
-        """Check if barcode looks like DataMatrix content"""
+        """Check if barcode looks like DataMatrix content."""
         # DataMatrix often contains binary-like data or specific patterns
         return len(barcode) > 20 and not barcode.isalnum() and any(ord(c) > 127 for c in barcode)
 
     def _is_gs1_128(self, barcode: str) -> bool:
-        """Check if barcode follows GS1-128 format"""
+        """Check if barcode follows GS1-128 format."""
         # GS1-128 often contains Application Identifiers in parentheses
         ai_pattern = r"\(\d{2,4}\)"
         return bool(re.search(ai_pattern, barcode))
 
     def _is_code_39(self, barcode: str) -> bool:
-        """Check if barcode follows Code 39 format"""
+        """Check if barcode follows Code 39 format."""
         code39_chars = set("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%")
         return all(c in code39_chars for c in barcode.upper())
 
     def _is_code_128(self, barcode: str) -> bool:
-        """Check if barcode follows Code 128 format"""
+        """Check if barcode follows Code 128 format."""
         # Code 128 supports ASCII printable characters
         return all(32 <= ord(c) <= 126 for c in barcode)
 
     def _validate_format(self, barcode: str, barcode_type: BarcodeType) -> bool:
-        """Validate barcode format against type-specific patterns"""
+        """Validate barcode format against type-specific patterns."""
         if barcode_type not in self.patterns:
             return False
 
@@ -269,7 +269,7 @@ class BarcodeValidator:
         return bool(re.match(pattern, barcode))
 
     def _validate_length(self, barcode: str, barcode_type: BarcodeType) -> bool:
-        """Validate barcode length"""
+        """Validate barcode length."""
         if barcode_type not in self.lengths:
             return False
 
@@ -278,24 +278,23 @@ class BarcodeValidator:
 
         if isinstance(length_req, tuple):
             return length_req[0] <= actual_length <= length_req[1]
-        else:
-            return actual_length == length_req
+        return actual_length == length_req
 
     def _validate_check_digit(self, barcode: str, barcode_type: BarcodeType) -> tuple[bool, str | None]:
-        """Validate check digit for numeric barcodes"""
+        """Validate check digit for numeric barcodes."""
         if barcode_type == BarcodeType.UPC_A:
             return self._validate_upc_a_check_digit(barcode)
-        elif barcode_type == BarcodeType.EAN_13:
+        if barcode_type == BarcodeType.EAN_13:
             return self._validate_ean_13_check_digit(barcode)
-        elif barcode_type == BarcodeType.EAN_8:
+        if barcode_type == BarcodeType.EAN_8:
             return self._validate_ean_8_check_digit(barcode)
-        elif barcode_type == BarcodeType.UPC_E:
+        if barcode_type == BarcodeType.UPC_E:
             return self._validate_upc_e_check_digit(barcode)
 
         return True, None
 
     def _validate_upc_a_check_digit(self, barcode: str) -> tuple[bool, str | None]:
-        """Validate UPC-A check digit"""
+        """Validate UPC-A check digit."""
         if len(barcode) != 12:
             return False, None
 
@@ -308,7 +307,7 @@ class BarcodeValidator:
         return int(barcode[11]) == check_digit, str(check_digit)
 
     def _validate_ean_13_check_digit(self, barcode: str) -> tuple[bool, str | None]:
-        """Validate EAN-13 check digit"""
+        """Validate EAN-13 check digit."""
         if len(barcode) != 13:
             return False, None
 
@@ -321,7 +320,7 @@ class BarcodeValidator:
         return int(barcode[12]) == check_digit, str(check_digit)
 
     def _validate_ean_8_check_digit(self, barcode: str) -> tuple[bool, str | None]:
-        """Validate EAN-8 check digit"""
+        """Validate EAN-8 check digit."""
         if len(barcode) != 8:
             return False, None
 
@@ -334,12 +333,12 @@ class BarcodeValidator:
         return int(barcode[7]) == check_digit, str(check_digit)
 
     def _validate_upc_e_check_digit(self, barcode: str) -> tuple[bool, str | None]:
-        """Validate UPC-E check digit"""
+        """Validate UPC-E check digit."""
         # UPC-E is more complex - for now, just check if it's numeric
         return barcode.isdigit(), None
 
     def _calculate_confidence(self, barcode: str, barcode_type: BarcodeType, check_digit_valid: bool) -> float:
-        """Calculate confidence score for validation"""
+        """Calculate confidence score for validation."""
         confidence = 0.5  # Base confidence
 
         # Increase confidence for exact length matches
@@ -361,7 +360,7 @@ class BarcodeValidator:
         return min(confidence, 1.0)
 
     def get_validation_summary(self, result: BarcodeValidationResult) -> dict[str, Any]:
-        """Get human-readable validation summary"""
+        """Get human-readable validation summary."""
         return {
             "is_valid": result.is_valid,
             "barcode_type": result.barcode_type.value,
@@ -374,7 +373,7 @@ class BarcodeValidator:
         }
 
     def _get_recommendations(self, result: BarcodeValidationResult) -> list[str]:
-        """Get recommendations for invalid barcodes"""
+        """Get recommendations for invalid barcodes."""
         recommendations = []
 
         if result.validation_result == ValidationResult.INVALID_FORMAT:

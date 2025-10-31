@@ -19,8 +19,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def init_database():
-    """Initialize database with all required tables"""
+def init_database() -> bool | None:
+    """Initialize database with all required tables."""
     database_url = os.getenv("DATABASE_URL")
 
     if not database_url:

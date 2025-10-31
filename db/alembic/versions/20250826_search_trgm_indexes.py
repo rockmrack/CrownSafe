@@ -1,4 +1,4 @@
-"""Add pg_trgm extension and search indexes
+"""Add pg_trgm extension and search indexes.
 
 Revision ID: 20250826_search_trgm
 Revises: add_subscription_unique_constraint
@@ -17,7 +17,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     bind = op.get_bind()
     if bind.dialect.name != "postgresql":
         return
@@ -194,7 +194,7 @@ def upgrade():
     print("✅ Search indexes created successfully!")
 
 
-def downgrade():
+def downgrade() -> None:
     bind = op.get_bind()
     if bind.dialect.name != "postgresql":
         return

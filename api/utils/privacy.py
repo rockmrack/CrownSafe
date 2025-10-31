@@ -1,5 +1,5 @@
 """Privacy utility functions for GDPR/CCPA compliance
-Handles email normalization, hashing, validation, and PII masking
+Handles email normalization, hashing, validation, and PII masking.
 """
 
 import hashlib
@@ -7,7 +7,7 @@ import json
 import logging
 import re
 import secrets
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from functools import wraps
 from typing import Any
 
@@ -29,7 +29,7 @@ PII_PATTERNS = {
 
 
 def normalize_email(email: str) -> str:
-    """Normalize email address for consistent processing
+    """Normalize email address for consistent processing.
 
     Args:
         email: Email address to normalize
@@ -44,7 +44,7 @@ def normalize_email(email: str) -> str:
 
 
 def validate_email(email: str) -> bool:
-    """Validate email address format
+    """Validate email address format.
 
     Args:
         email: Email address to validate
@@ -61,7 +61,7 @@ def validate_email(email: str) -> bool:
 
 
 def email_hash(email: str) -> str:
-    """Generate SHA-256 hash of normalized email
+    """Generate SHA-256 hash of normalized email.
 
     Args:
         email: Email address to hash
@@ -75,7 +75,7 @@ def email_hash(email: str) -> str:
 
 
 def mask_email(email: str) -> str:
-    """Mask email address for privacy (e.g., j***@example.com)
+    """Mask email address for privacy (e.g., j***@example.com).
 
     Args:
         email: Email address to mask
@@ -100,7 +100,7 @@ def mask_email(email: str) -> str:
 
 
 def mask_pii(text: str, mask: str = "***") -> str:
-    """Mask PII in text content
+    """Mask PII in text content.
 
     Args:
         text: Text to mask
@@ -125,7 +125,7 @@ def mask_pii(text: str, mask: str = "***") -> str:
 
 
 def anonymize_ip(ip_address: str) -> str:
-    """Anonymize IP address by removing last octet (IPv4) or last 64 bits (IPv6)
+    """Anonymize IP address by removing last octet (IPv4) or last 64 bits (IPv6).
 
     Args:
         ip_address: IP address to anonymize
@@ -157,7 +157,7 @@ def anonymize_ip(ip_address: str) -> str:
 
 
 def detect_jurisdiction(ip_address: str | None = None, country_code: str | None = None) -> str:
-    """Detect privacy jurisdiction based on location indicators
+    """Detect privacy jurisdiction based on location indicators.
 
     Args:
         ip_address: Client IP address
@@ -205,23 +205,23 @@ def detect_jurisdiction(ip_address: str | None = None, country_code: str | None 
 
         if country_code in eu_countries:
             return "gdpr"
-        elif country_code == "GB":
+        if country_code == "GB":
             return "uk_gdpr"
-        elif country_code == "US":
+        if country_code == "US":
             # Could be more specific with state detection for CCPA
             return "ccpa"
-        elif country_code == "CA":
+        if country_code == "CA":
             return "pipeda"
-        elif country_code == "BR":
+        if country_code == "BR":
             return "lgpd"
-        elif country_code == "JP":
+        if country_code == "JP":
             return "appi"
 
     return "other"
 
 
 def generate_dsar_token() -> str:
-    """Generate secure token for DSAR verification
+    """Generate secure token for DSAR verification.
 
     Returns:
         URL-safe token
@@ -231,7 +231,7 @@ def generate_dsar_token() -> str:
 
 
 def calculate_sla_deadline(jurisdiction: str, submitted_at: datetime | None = None) -> datetime:
-    """Calculate SLA deadline based on jurisdiction
+    """Calculate SLA deadline based on jurisdiction.
 
     Args:
         jurisdiction: Privacy jurisdiction code
@@ -262,7 +262,7 @@ def calculate_sla_deadline(jurisdiction: str, submitted_at: datetime | None = No
 
 
 def format_dsar_response(request_type: str, status: str = "queued", jurisdiction: str = "other") -> dict[str, Any]:
-    """Format standard DSAR response
+    """Format standard DSAR response.
 
     Args:
         request_type: Type of request (export, delete, etc.)
@@ -300,7 +300,7 @@ def format_dsar_response(request_type: str, status: str = "queued", jurisdiction
 
 
 def privacy_audit_log(func):
-    """Decorator to audit privacy-related operations
+    """Decorator to audit privacy-related operations.
 
     Usage:
         @privacy_audit_log
@@ -354,11 +354,11 @@ def privacy_audit_log(func):
 
 
 class PrivacyDataExporter:
-    """Helper class for exporting user data in various formats"""
+    """Helper class for exporting user data in various formats."""
 
     @staticmethod
     def to_json(data: dict[str, Any], pretty: bool = True) -> str:
-        """Export data as JSON
+        """Export data as JSON.
 
         Args:
             data: Data to export
@@ -374,7 +374,7 @@ class PrivacyDataExporter:
 
     @staticmethod
     def to_csv(data: list[dict[str, Any]]) -> str:
-        """Export data as CSV
+        """Export data as CSV.
 
         Args:
             data: List of dictionaries to export
@@ -398,7 +398,7 @@ class PrivacyDataExporter:
 
     @staticmethod
     def create_export_package(user_data: dict[str, Any]) -> dict[str, Any]:
-        """Create comprehensive data export package
+        """Create comprehensive data export package.
 
         Args:
             user_data: User data to export
@@ -430,10 +430,10 @@ class PrivacyDataExporter:
 
 
 class PIIMasker:
-    """Advanced PII masking for logs and responses"""
+    """Advanced PII masking for logs and responses."""
 
     def __init__(self, custom_patterns: dict[str, re.Pattern] | None = None) -> None:
-        """Initialize PII masker
+        """Initialize PII masker.
 
         Args:
             custom_patterns: Additional patterns to mask
@@ -444,7 +444,7 @@ class PIIMasker:
             self.patterns.update(custom_patterns)
 
     def mask_dict(self, data: dict[str, Any], sensitive_keys: list[str] | None = None) -> dict[str, Any]:
-        """Mask PII in dictionary
+        """Mask PII in dictionary.
 
         Args:
             data: Dictionary to mask

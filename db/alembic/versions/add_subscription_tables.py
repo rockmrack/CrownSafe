@@ -1,4 +1,4 @@
-"""Add subscription tables for mobile IAP
+"""Add subscription tables for mobile IAP.
 
 Revision ID: add_subscription_tables
 Revises:
@@ -17,7 +17,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     # Create subscriptions table
     op.create_table(
         "subscriptions",
@@ -120,7 +120,7 @@ def upgrade():
         pass
 
 
-def downgrade():
+def downgrade() -> None:
     # Drop indexes
     op.drop_index("idx_user_validations", table_name="receipt_validations")
     op.drop_index("idx_receipt_hash", table_name="receipt_validations")

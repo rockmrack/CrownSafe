@@ -26,8 +26,8 @@ DB_CONFIG = {
 }
 
 
-def enable_pg_trgm():
-    """Enable pg_trgm extension and create indexes"""
+def enable_pg_trgm() -> int | None:
+    """Enable pg_trgm extension and create indexes."""
     try:
         print("🔌 Connecting to PostgreSQL...")
         conn = psycopg2.connect(**DB_CONFIG)

@@ -21,7 +21,7 @@ TEST_DOCUMENT_NAME = "tos_en_us_v1.2.txt"
 # --------------------------
 
 
-async def main():
+async def main() -> None:
     """Main function to run the LegalContentAgent test."""
     logger = logging.getLogger(__name__)
     logger.info("--- Starting LegalContentAgent Test ---")

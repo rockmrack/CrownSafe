@@ -17,30 +17,30 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 
-def print_section(title: str):
-    """Print a formatted section header"""
+def print_section(title: str) -> None:
+    """Print a formatted section header."""
     print(f"\n{'=' * 60}")
     print(f"🔬 {title}")
     print("=" * 60)
 
 
-def print_success(message: str):
-    """Print success message"""
+def print_success(message: str) -> None:
+    """Print success message."""
     print(f"✅ {message}")
 
 
-def print_error(message: str):
-    """Print error message"""
+def print_error(message: str) -> None:
+    """Print error message."""
     print(f"❌ {message}")
 
 
-def print_info(message: str):
-    """Print info message"""
+def print_info(message: str) -> None:
+    """Print info message."""
     print(f"ℹ️  {message}")
 
 
 def validate_plan_structure(plan: dict[str, Any], expected_fields: list) -> bool:
-    """Validate that plan contains expected fields"""
+    """Validate that plan contains expected fields."""
     for field in expected_fields:
         if field not in plan:
             print_error(f"Missing required field: {field}")
@@ -48,8 +48,8 @@ def validate_plan_structure(plan: dict[str, Any], expected_fields: list) -> bool
     return True
 
 
-def fix_template_file():
-    """Fix the template file if it contains 'none' instead of placeholders"""
+def fix_template_file() -> bool:
+    """Fix the template file if it contains 'none' instead of placeholders."""
     template_path = project_root / "prompts" / "v1" / "prior_auth_plan_template.json"
 
     if template_path.exists():
@@ -125,8 +125,8 @@ def fix_template_file():
     return False
 
 
-def test_template_based_planning(logic: MemoryAugmentedPlannerLogic):
-    """Test template-based planning for prior authorization"""
+def test_template_based_planning(logic: MemoryAugmentedPlannerLogic) -> None:
+    """Test template-based planning for prior authorization."""
     print_section("Test 1: Template-Based Prior Authorization Planning")
 
     # Test successful prior authorization plan
@@ -215,8 +215,8 @@ def test_template_based_planning(logic: MemoryAugmentedPlannerLogic):
     print_success("Template-based planning test passed!")
 
 
-def test_memory_augmented_planning(logic: MemoryAugmentedPlannerLogic):
-    """Test memory-augmented planning for general research"""
+def test_memory_augmented_planning(logic: MemoryAugmentedPlannerLogic) -> None:
+    """Test memory-augmented planning for general research."""
     print_section("Test 2: Memory-Augmented Research Planning")
 
     # Test SGLT2 inhibitor research (should use focused strategy)
@@ -301,8 +301,8 @@ def test_memory_augmented_planning(logic: MemoryAugmentedPlannerLogic):
         print_success(f"Research planning test {i} passed!")
 
 
-def test_edge_cases(logic: MemoryAugmentedPlannerLogic):
-    """Test edge cases and error handling"""
+def test_edge_cases(logic: MemoryAugmentedPlannerLogic) -> None:
+    """Test edge cases and error handling."""
     print_section("Test 3: Edge Cases and Error Handling")
 
     # Test 3.1: Empty goal
@@ -343,8 +343,8 @@ def test_edge_cases(logic: MemoryAugmentedPlannerLogic):
     print_success(f"Extracted diseases: {entities.get('diseases', [])}")
 
 
-def test_fallback_planning(logic: MemoryAugmentedPlannerLogic):
-    """Test fallback plan generation"""
+def test_fallback_planning(logic: MemoryAugmentedPlannerLogic) -> None:
+    """Test fallback plan generation."""
     print_section("Test 4: Fallback Plan Generation")
 
     # Simulate a scenario where OpenAI might fail by using a very unusual query
@@ -371,8 +371,8 @@ def test_fallback_planning(logic: MemoryAugmentedPlannerLogic):
     print_success("Fallback planning test passed!")
 
 
-def test_plan_validation(logic: MemoryAugmentedPlannerLogic):
-    """Test plan validation with Pydantic if available"""
+def test_plan_validation(logic: MemoryAugmentedPlannerLogic) -> None:
+    """Test plan validation with Pydantic if available."""
     print_section("Test 5: Plan Structure Validation")
 
     # Generate a plan
@@ -410,8 +410,8 @@ def test_plan_validation(logic: MemoryAugmentedPlannerLogic):
     print_success("Plan structure validation passed!")
 
 
-def test_performance_metrics(logic: MemoryAugmentedPlannerLogic):
-    """Test performance and timing"""
+def test_performance_metrics(logic: MemoryAugmentedPlannerLogic) -> None:
+    """Test performance and timing."""
     print_section("Test 6: Performance Metrics")
 
     # Test multiple plan generations
@@ -449,7 +449,7 @@ def test_performance_metrics(logic: MemoryAugmentedPlannerLogic):
 
 
 def run_all_tests():
-    """Run all test suites"""
+    """Run all test suites."""
     print("\n" + "=" * 60)
     print("🧪 ENHANCED PLANNER AGENT TEST SUITE")
     print("=" * 60)

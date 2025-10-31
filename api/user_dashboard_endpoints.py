@@ -1,7 +1,7 @@
-"""User Dashboard & Statistics Endpoints"""
+"""User Dashboard & Statistics Endpoints."""
 
 import logging
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import desc, func
@@ -22,7 +22,7 @@ router = APIRouter(prefix="/api/v1/dashboard", tags=["Dashboard"])
 
 
 class DashboardStats(AppModel):
-    """Dashboard statistics"""
+    """Dashboard statistics."""
 
     total_scans: int
     scans_this_month: int
@@ -34,7 +34,7 @@ class DashboardStats(AppModel):
 
 
 class ActivitySummary(AppModel):
-    """Activity summary"""
+    """Activity summary."""
 
     date: str
     scans: int
@@ -43,7 +43,7 @@ class ActivitySummary(AppModel):
 
 
 class ProductCategory(AppModel):
-    """Product category stats"""
+    """Product category stats."""
 
     category: str
     count: int
@@ -52,7 +52,7 @@ class ProductCategory(AppModel):
 
 @router.get("/overview", response_model=ApiResponse)
 async def get_dashboard_overview(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
-    """Get dashboard overview statistics"""
+    """Get dashboard overview statistics."""
     try:
         now = datetime.now(UTC)
         month_ago = now - timedelta(days=30)
@@ -125,7 +125,7 @@ async def get_activity_timeline(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Get activity timeline for the last N days"""
+    """Get activity timeline for the last N days."""
     try:
         activities = []
         end_date = datetime.now(UTC).date()
@@ -198,7 +198,7 @@ async def get_activity_timeline(
 
 @router.get("/product-categories", response_model=ApiResponse)
 async def get_product_categories(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
-    """Get breakdown of scanned products by category"""
+    """Get breakdown of scanned products by category."""
     try:
         # Get all extractions for user
         extractions = db.query(ImageExtraction).join(ImageJob).filter(ImageJob.user_id == current_user.id).all()
@@ -252,7 +252,7 @@ async def get_product_categories(current_user=Depends(get_current_active_user), 
 
 @router.get("/safety-insights", response_model=ApiResponse)
 async def get_safety_insights(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
-    """Get personalized safety insights and recommendations"""
+    """Get personalized safety insights and recommendations."""
     try:
         insights = []
 
@@ -374,7 +374,7 @@ async def get_recent_recalls(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Get recent recalls relevant to user's products"""
+    """Get recent recalls relevant to user's products."""
     try:
         # Get user's product identifiers
         user_upcs = set()
@@ -425,7 +425,7 @@ async def get_recent_recalls(
 
 @router.get("/user-achievements", response_model=ApiResponse)
 async def get_user_achievements(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
-    """Get user achievements and milestones"""
+    """Get user achievements and milestones."""
     try:
         achievements = []
 

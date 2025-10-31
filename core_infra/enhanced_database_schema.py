@@ -11,7 +11,7 @@ from core_infra.database import Base
 
 class EnhancedRecallDB(Base):
     """🌍 COMPREHENSIVE 39-AGENCY RECALL SCHEMA
-    Supports ALL identifier types used by international recall agencies
+    Supports ALL identifier types used by international recall agencies.
     """
 
     __tablename__ = "recalls_enhanced"
@@ -110,7 +110,7 @@ class EnhancedRecallDB(Base):
     agency_specific_data = Column(JSON, nullable=True)  # 🆕 Raw agency data for fallback
 
     def to_dict(self) -> dict:
-        """Convert to dictionary with proper handling of dates and JSON fields"""
+        """Convert to dictionary with proper handling of dates and JSON fields."""
         from datetime import date
 
         result = {}

@@ -13,8 +13,8 @@ print("=" * 80)
 results = {"passed": [], "failed": []}
 
 
-def test_endpoint(name, method, path, data=None, params=None, files=None):
-    """Test a single endpoint and track results"""
+def test_endpoint(name, method, path, data=None, params=None, files=None) -> bool | None:
+    """Test a single endpoint and track results."""
     try:
         url = f"{BASE_URL}{path}"
         if method == "GET":
@@ -43,16 +43,15 @@ def test_endpoint(name, method, path, data=None, params=None, files=None):
                     print(f"   Response: {response.text[:100]}")
             results["passed"].append(name)
             return True
-        else:
-            print(f" {name}: FAILED ({response.status_code})")
-            try:
-                error = response.json()
-                print(f"   Error: {error.get('detail', error.get('error', str(error))[:100])}")
-            except (json.JSONDecodeError, ValueError):
-                # Invalid JSON error response
-                print(f"   Error: {response.text[:100]}")
-            results["failed"].append(name)
-            return False
+        print(f" {name}: FAILED ({response.status_code})")
+        try:
+            error = response.json()
+            print(f"   Error: {error.get('detail', error.get('error', str(error))[:100])}")
+        except (json.JSONDecodeError, ValueError):
+            # Invalid JSON error response
+            print(f"   Error: {response.text[:100]}")
+        results["failed"].append(name)
+        return False
     except Exception as e:
         print(f" {name}: ERROR - {str(e)[:100]}")
         results["failed"].append(name)

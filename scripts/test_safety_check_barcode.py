@@ -27,7 +27,7 @@ EXPECTED_PRODUCT_NAME_FRAGMENT = "Johnson"
 # --------------------------
 
 
-async def main():
+async def main() -> None:
     logger = logging.getLogger(__name__)
     logger.info("--- Starting Test Scenario 1: Basic Safety Check via Barcode ---")
 

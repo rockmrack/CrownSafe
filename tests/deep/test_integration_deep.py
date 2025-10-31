@@ -1,5 +1,5 @@
 """Deep Integration Tests
-Testing cross-component integration and complex workflows
+Testing cross-component integration and complex workflows.
 """
 
 import os
@@ -13,27 +13,27 @@ os.environ["BS_FEATURE_CHAT_ROLLOUT_PCT"] = "1.0"
 
 
 class TestIntegrationDeep:
-    """Deep integration tests across multiple components"""
+    """Deep integration tests across multiple components."""
 
-    def test_app_initialization(self):
-        """Test that FastAPI app initializes correctly"""
+    def test_app_initialization(self) -> None:
+        """Test that FastAPI app initializes correctly."""
         assert app is not None
         assert app.title is not None
 
-    def test_app_routes_registered(self):
-        """Test that routes are properly registered"""
+    def test_app_routes_registered(self) -> None:
+        """Test that routes are properly registered."""
         routes = [route.path for route in app.routes]
 
         # Key routes should exist
         assert "/healthz" in routes or any("/health" in r for r in routes)
 
-    def test_app_middleware_stack(self):
-        """Test that middleware is properly configured"""
+    def test_app_middleware_stack(self) -> None:
+        """Test that middleware is properly configured."""
         # App should have middleware
         assert hasattr(app, "user_middleware")
 
-    def test_openapi_schema_generation(self):
-        """Test that OpenAPI schema can be generated"""
+    def test_openapi_schema_generation(self) -> None:
+        """Test that OpenAPI schema can be generated."""
         client = TestClient(app)
         r = client.get("/openapi.json")
 
@@ -43,32 +43,32 @@ class TestIntegrationDeep:
             assert "info" in schema
             assert "paths" in schema
 
-    def test_docs_endpoint(self):
-        """Test that API documentation is accessible"""
+    def test_docs_endpoint(self) -> None:
+        """Test that API documentation is accessible."""
         client = TestClient(app)
         r = client.get("/docs")
 
         # Should redirect to docs or show docs page
         assert r.status_code in [200, 307]
 
-    def test_redoc_endpoint(self):
-        """Test that ReDoc documentation is accessible"""
+    def test_redoc_endpoint(self) -> None:
+        """Test that ReDoc documentation is accessible."""
         client = TestClient(app)
         r = client.get("/redoc")
 
         # Should show ReDoc page
         assert r.status_code in [200, 307, 404]
 
-    def test_root_endpoint(self):
-        """Test root endpoint"""
+    def test_root_endpoint(self) -> None:
+        """Test root endpoint."""
         client = TestClient(app)
         r = client.get("/")
 
         # Should either show welcome page or redirect
         assert r.status_code in [200, 307, 404]
 
-    def test_cors_configuration(self):
-        """Test CORS is configured"""
+    def test_cors_configuration(self) -> None:
+        """Test CORS is configured."""
         client = TestClient(app)
         r = client.get("/healthz", headers={"Origin": "https://babyshield.app"})
 
@@ -81,8 +81,8 @@ class TestIntegrationDeep:
                 "https://babyshield.app",
             ]
 
-    def test_error_handling_integration(self):
-        """Test that global error handlers work"""
+    def test_error_handling_integration(self) -> None:
+        """Test that global error handlers work."""
         client = TestClient(app)
         r = client.get("/api/v1/this-definitely-does-not-exist-xyz")
 
@@ -91,8 +91,8 @@ class TestIntegrationDeep:
         # Should have error structure
         assert "detail" in body or "error" in body or "message" in body
 
-    def test_logging_integration(self):
-        """Test that logging is configured"""
+    def test_logging_integration(self) -> None:
+        """Test that logging is configured."""
         client = TestClient(app)
 
         # Make request that should generate logs
@@ -100,15 +100,15 @@ class TestIntegrationDeep:
         assert r.status_code == 200
         # If no crash, logging is working
 
-    def test_environment_variables_loaded(self):
-        """Test that environment variables are accessible"""
+    def test_environment_variables_loaded(self) -> None:
+        """Test that environment variables are accessible."""
         # Key environment variables should be loadable
         db_url = os.getenv("DATABASE_URL")
         # Either set or None, should not crash
         assert db_url is None or isinstance(db_url, str)
 
-    def test_api_versioning(self):
-        """Test API versioning structure"""
+    def test_api_versioning(self) -> None:
+        """Test API versioning structure."""
         client = TestClient(app)
 
         # v1 endpoints should exist
@@ -116,8 +116,8 @@ class TestIntegrationDeep:
         # May or may not exist, but should not error badly
         assert r.status_code in [200, 404, 405]
 
-    def test_health_check_components(self):
-        """Test health check includes component status"""
+    def test_health_check_components(self) -> None:
+        """Test health check includes component status."""
         client = TestClient(app)
         r = client.get("/healthz")
 
@@ -127,8 +127,8 @@ class TestIntegrationDeep:
         # Should have status
         assert "status" in body or "health" in body
 
-    def test_metrics_endpoint(self):
-        """Test metrics endpoint if available"""
+    def test_metrics_endpoint(self) -> None:
+        """Test metrics endpoint if available."""
         client = TestClient(app)
         r = client.get("/metrics")
 
@@ -137,16 +137,16 @@ class TestIntegrationDeep:
             # If exists, should return some metrics data
             assert len(r.content) > 0
 
-    def test_static_files_serving(self):
-        """Test static file serving if configured"""
+    def test_static_files_serving(self) -> None:
+        """Test static file serving if configured."""
         client = TestClient(app)
         r = client.get("/static/test.txt")
 
         # May or may not exist
         assert r.status_code in [200, 404]
 
-    def test_websocket_support(self):
-        """Test if WebSocket support is available"""
+    def test_websocket_support(self) -> None:
+        """Test if WebSocket support is available."""
         # Check if app has WebSocket routes
         routes = [route.path for route in app.routes]
         ws_routes = [r for r in routes if "ws" in r.lower()]
@@ -154,8 +154,8 @@ class TestIntegrationDeep:
         # WebSocket is optional
         assert isinstance(ws_routes, list)
 
-    def test_database_health_check(self):
-        """Test database health check endpoint"""
+    def test_database_health_check(self) -> None:
+        """Test database health check endpoint."""
         client = TestClient(app)
         r = client.get("/healthz/db")
 
@@ -164,16 +164,16 @@ class TestIntegrationDeep:
             body = r.json()
             assert "database" in str(body).lower() or "db" in str(body).lower()
 
-    def test_cache_health_check(self):
-        """Test cache health check endpoint"""
+    def test_cache_health_check(self) -> None:
+        """Test cache health check endpoint."""
         client = TestClient(app)
         r = client.get("/healthz/cache")
 
         # Optional endpoint
         assert r.status_code in [200, 404]
 
-    def test_multiple_concurrent_endpoints(self):
-        """Test calling multiple different endpoints concurrently"""
+    def test_multiple_concurrent_endpoints(self) -> None:
+        """Test calling multiple different endpoints concurrently."""
         client = TestClient(app)
 
         endpoints = ["/healthz", "/openapi.json", "/docs"]
@@ -186,8 +186,8 @@ class TestIntegrationDeep:
         # At least health should work
         assert 200 in results
 
-    def test_request_context_propagation(self):
-        """Test that request context is propagated"""
+    def test_request_context_propagation(self) -> None:
+        """Test that request context is propagated."""
         client = TestClient(app)
 
         # Send custom header

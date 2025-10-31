@@ -8,7 +8,7 @@ from alembic.config import Config
 from alembic import command
 
 
-def run_migration():
+def run_migration() -> None:
     # Set up paths
     base_dir = os.path.dirname(os.path.abspath(__file__))
     db_dir = os.path.join(base_dir, "db")

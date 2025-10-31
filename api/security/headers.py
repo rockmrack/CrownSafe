@@ -1,5 +1,5 @@
 """Security headers configuration
-Adds comprehensive security headers to all responses
+Adds comprehensive security headers to all responses.
 """
 
 import logging
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """Middleware to add security headers to all responses"""
+    """Middleware to add security headers to all responses."""
 
     def __init__(
         self,
@@ -30,7 +30,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         cross_origin_resource_policy: str = "cross-origin",
         content_security_policy: str | None = None,
     ) -> None:
-        """Initialize security headers middleware
+        """Initialize security headers middleware.
 
         Args:
             app: ASGI application
@@ -103,7 +103,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         logger.info("Security headers middleware configured")
 
     async def dispatch(self, request: Request, call_next):
-        """Add security headers to response"""
+        """Add security headers to response."""
         response = await call_next(request)
 
         # Apply security headers
@@ -156,7 +156,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 def get_security_headers_dict() -> dict[str, str]:
-    """Get dictionary of security headers for manual application
+    """Get dictionary of security headers for manual application.
 
     Returns:
         Dictionary of header names and values
@@ -180,7 +180,7 @@ def get_security_headers_dict() -> dict[str, str]:
 
 
 def apply_security_headers(response: Response) -> Response:
-    """Apply security headers to a response object
+    """Apply security headers to a response object.
 
     Args:
         response: Response object

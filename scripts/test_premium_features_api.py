@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Test script for Premium Features API endpoints (Pregnancy & Allergy)
-Tests both direct endpoints and integration with main safety check
+Tests both direct endpoints and integration with main safety check.
 """
 
 import asyncio
@@ -13,8 +13,8 @@ BASE_URL = "http://localhost:8001"  # Local testing
 # BASE_URL = "https://babyshield.cureviax.ai"  # Production
 
 
-async def test_pregnancy_endpoint():
-    """Test the pregnancy safety check endpoint"""
+async def test_pregnancy_endpoint() -> None:
+    """Test the pregnancy safety check endpoint."""
     print("\n" + "=" * 60)
     print("Testing Pregnancy Safety Check Endpoint")
     print("=" * 60)
@@ -53,8 +53,8 @@ async def test_pregnancy_endpoint():
             print(f"❌ Connection error: {e}")
 
 
-async def test_allergy_endpoint():
-    """Test the allergy check endpoint"""
+async def test_allergy_endpoint() -> None:
+    """Test the allergy check endpoint."""
     print("\n" + "=" * 60)
     print("Testing Allergy Check Endpoint")
     print("=" * 60)
@@ -97,7 +97,7 @@ async def test_allergy_endpoint():
 
 
 async def test_family_members_endpoint():
-    """Test family member management endpoints"""
+    """Test family member management endpoints."""
     print("\n" + "=" * 60)
     print("Testing Family Member Management")
     print("=" * 60)
@@ -141,8 +141,7 @@ async def test_family_members_endpoint():
                 print(f"✅ Added: {member['name']} (ID: {member['id']})")
                 print(f"  Allergies: {', '.join(member['allergies'])}")
                 return member["id"]  # Return for later deletion
-            else:
-                print(f"❌ Error adding member: {response.status_code} - {response.text}")
+            print(f"❌ Error adding member: {response.status_code} - {response.text}")
 
         except Exception as e:
             print(f"❌ Connection error: {e}")
@@ -150,8 +149,8 @@ async def test_family_members_endpoint():
     return None
 
 
-async def test_integrated_safety_check():
-    """Test pregnancy and allergy integration in main safety check"""
+async def test_integrated_safety_check() -> None:
+    """Test pregnancy and allergy integration in main safety check."""
     print("\n" + "=" * 60)
     print("Testing Integrated Safety Check (with Premium Features)")
     print("=" * 60)
@@ -210,8 +209,8 @@ async def test_integrated_safety_check():
             print(f"❌ Connection error: {e}")
 
 
-async def test_mobile_scan_with_premium():
-    """Test mobile scan with pregnancy and allergy features"""
+async def test_mobile_scan_with_premium() -> None:
+    """Test mobile scan with pregnancy and allergy features."""
     print("\n" + "=" * 60)
     print("Testing Mobile Scan with Premium Features")
     print("=" * 60)
@@ -256,8 +255,8 @@ async def test_mobile_scan_with_premium():
             print(f"❌ Connection error: {e}")
 
 
-async def test_comprehensive_safety():
-    """Test the comprehensive safety check endpoint"""
+async def test_comprehensive_safety() -> None:
+    """Test the comprehensive safety check endpoint."""
     print("\n" + "=" * 60)
     print("Testing Comprehensive Safety Check")
     print("=" * 60)
@@ -301,8 +300,8 @@ async def test_comprehensive_safety():
             print(f"❌ Connection error: {e}")
 
 
-async def main():
-    """Run all tests"""
+async def main() -> None:
+    """Run all tests."""
     print("\n" + "🚀 BABYSHIELD PREMIUM FEATURES API TEST SUITE 🚀".center(60, "="))
     print(f"Testing against: {BASE_URL}")
     print(f"Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")

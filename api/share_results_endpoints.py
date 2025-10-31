@@ -1,12 +1,12 @@
 """Share Results API Endpoints
-Secure sharing of scan results and reports
+Secure sharing of scan results and reports.
 """
 
 import logging
 import os
 import smtplib
 import uuid
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from html import escape
@@ -36,7 +36,7 @@ storage_client = get_azure_storage_client(container_name=STORAGE_CONTAINER)
 
 
 def _is_uuid(s: str) -> bool:
-    """Check if a string is a valid UUID"""
+    """Check if a string is a valid UUID."""
     try:
         uuid.UUID(str(s))
         return True
@@ -45,7 +45,7 @@ def _is_uuid(s: str) -> bool:
 
 
 def _guess_blob_key(user_id: int, report_uuid: str, content_type: str) -> str | None:
-    """Guess Azure Blob key for report by trying common layouts"""
+    """Guess Azure Blob key for report by trying common layouts."""
     now = datetime.now(UTC)
     year = now.strftime("%Y")
     month = now.strftime("%m")
@@ -72,7 +72,7 @@ def _guess_blob_key(user_id: int, report_uuid: str, content_type: str) -> str | 
 
 
 def _build_share_urls(base_url: str, token: str) -> tuple[str, str]:
-    """Construct normalized share and QR URLs with a URL-safe token"""
+    """Construct normalized share and QR URLs with a URL-safe token."""
     normalized_base = base_url.rstrip("/") or base_url
     safe_token = quote(token, safe="")
     share_url = f"{normalized_base}/share/{safe_token}"
@@ -83,7 +83,7 @@ def _build_share_urls(base_url: str, token: str) -> tuple[str, str]:
 def create_share_token_for_azure_blob(
     user_id: int, content_type: str, content_ref: str, blob_key: str, ttl_hours: int = 24,
 ) -> tuple[str, ShareToken]:
-    """Create share token for Azure Blob Storage-based content without database record"""
+    """Create share token for Azure Blob Storage-based content without database record."""
     token = ShareToken.generate_token()
     expires_at = datetime.now(UTC) + timedelta(hours=ttl_hours)
 
@@ -115,7 +115,7 @@ def create_share_token_for_azure_blob(
 
 
 class ShareRequest(BaseModel):
-    """Request model for creating a share link"""
+    """Request model for creating a share link."""
 
     content_type: str = Field(
         ...,
@@ -142,7 +142,7 @@ class ShareRequest(BaseModel):
 
 
 class EmailShareRequest(BaseModel):
-    """Request model for sharing via email"""
+    """Request model for sharing via email."""
 
     share_token: str = Field(..., description="Share token to send")
     recipient_email: EmailStr = Field(..., description="Recipient email address")
@@ -151,7 +151,7 @@ class EmailShareRequest(BaseModel):
 
 
 class ShareResponse(BaseModel):
-    """Response model for share creation"""
+    """Response model for share creation."""
 
     success: bool
     share_token: str
@@ -161,7 +161,7 @@ class ShareResponse(BaseModel):
 
 
 class SharedContentResponse(BaseModel):
-    """Response model for viewing shared content"""
+    """Response model for viewing shared content."""
 
     success: bool
     content_type: str
@@ -172,7 +172,7 @@ class SharedContentResponse(BaseModel):
 
 @share_router.post("/create-dev", response_model=ApiResponse)
 async def create_share_link_dev(request: ShareRequest) -> ApiResponse:
-    """Dev override version of create share link for testing (no database)"""
+    """Dev override version of create share link for testing (no database)."""
     try:
         # Validate content type
         valid_content_types = [
@@ -247,7 +247,7 @@ async def create_share_link(
     request: ShareRequest,
     db: Session = Depends(get_db),  # noqa: B008
 ) -> ApiResponse:
-    """Create a shareable link for scan results or reports
+    """Create a shareable link for scan results or reports.
 
     Features:
     - Time-limited sharing (expires after X hours)
@@ -503,7 +503,7 @@ async def create_share_link(
 
 @share_router.get("/view-dev/{token}", response_model=ApiResponse)
 async def view_share_link_dev(token: str) -> ApiResponse:
-    """Dev override version of view share link for testing (no database)"""
+    """Dev override version of view share link for testing (no database)."""
     try:
         # Get share token from in-memory storage
         if not hasattr(create_share_link_dev, "mock_shares"):
@@ -557,7 +557,7 @@ async def view_shared_content(
     password: str | None = Query(None),
     db: Session = Depends(get_db),  # noqa: B008
 ) -> ApiResponse:
-    """View shared content via share token
+    """View shared content via share token.
 
     Features:
     - Token validation
@@ -627,7 +627,7 @@ async def share_via_email(
     request: EmailShareRequest,
     db: Session = Depends(get_db),  # noqa: B008
 ) -> ApiResponse:
-    """Share results via email
+    """Share results via email.
 
     Sends an email with the share link to the recipient
     """
@@ -764,7 +764,7 @@ async def share_via_email(
 async def revoke_share_link_dev(
     token: str, user_id: int = Query(..., description="User revoking the share"),
 ) -> ApiResponse:
-    """Dev override version of revoke share link for testing (no database)"""
+    """Dev override version of revoke share link for testing (no database)."""
     try:
         # Get share token from in-memory storage
         if not hasattr(create_share_link_dev, "mock_shares"):
@@ -801,7 +801,7 @@ async def revoke_share_link(
     user_id: int = Query(..., description="User revoking the share"),
     db: Session = Depends(get_db),  # noqa: B008
 ) -> ApiResponse:
-    """Revoke a share link
+    """Revoke a share link.
 
     Only the creator can revoke their share links
     """
@@ -839,7 +839,7 @@ async def get_my_share_links(
     active_only: bool = Query(True, description="Only show active shares"),
     db: Session = Depends(get_db),  # noqa: B008
 ) -> ApiResponse:
-    """Get all share links created by a user"""
+    """Get all share links created by a user."""
     try:
         query = db.query(ShareToken).filter(ShareToken.created_by == user_id)
 
@@ -864,7 +864,7 @@ async def get_my_share_links(
 
 @share_router.get("/qr/{token}")
 async def generate_share_qr_code(token: str):
-    """Generate QR code for share link"""
+    """Generate QR code for share link."""
     try:
         from io import BytesIO
 
@@ -896,7 +896,7 @@ async def generate_share_qr_code(token: str):
 
 @share_router.get("/preview-dev/{token}")
 async def preview_share_link_dev(token: str) -> HTMLResponse:
-    """Dev override version of preview share link for testing (no database)"""
+    """Dev override version of preview share link for testing (no database)."""
     try:
         # Get share token from in-memory storage
         if not hasattr(create_share_link_dev, "mock_shares"):
@@ -969,7 +969,7 @@ async def preview_shared_content(
     token: str,
     db: Session = Depends(get_db),  # noqa: B008
 ) -> HTMLResponse:
-    """Generate a preview page for shared content
+    """Generate a preview page for shared content.
 
     This returns an HTML page that can be shared on social media
     """

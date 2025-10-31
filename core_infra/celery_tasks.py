@@ -1,10 +1,10 @@
 """Celery async tasks for Visual Agent image processing
-Handles async job queue with Azure Blob Storage integration and multi-step processing
+Handles async job queue with Azure Blob Storage integration and multi-step processing.
 """
 
 import logging
 import os
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 from celery import Celery, Task
@@ -74,7 +74,7 @@ class CallbackTask(Task):
 
 @app.task(base=CallbackTask, bind=True, name="process_image")
 def process_image(self, job_id: str) -> dict[str, Any]:
-    """Main image processing task
+    """Main image processing task.
 
     Args:
         job_id: Image job ID
@@ -209,7 +209,7 @@ def process_image(self, job_id: str) -> dict[str, Any]:
 
 @app.task(name="virus_scan")
 def virus_scan(job_id: str, image_data: bytes) -> bool:
-    """Scan image for viruses
+    """Scan image for viruses.
 
     Note: This is a placeholder. In production, integrate with:
     - ClamAV Lambda layer
@@ -247,7 +247,7 @@ def virus_scan(job_id: str, image_data: bytes) -> bool:
 
 @app.task(name="normalize_image")
 def normalize_image(job_id: str, image_data: bytes) -> bytes:
-    """Normalize image (resize, strip EXIF, convert format)"""
+    """Normalize image (resize, strip EXIF, convert format)."""
     logger.info(f"Normalizing image for job {job_id}")
 
     import io
@@ -292,7 +292,7 @@ def normalize_image(job_id: str, image_data: bytes) -> bytes:
 
 @app.task(name="extract_barcodes")
 def extract_barcodes(job_id: str, image_data: bytes) -> dict[str, Any]:
-    """Extract barcodes from image"""
+    """Extract barcodes from image."""
     logger.info(f"Extracting barcodes for job {job_id}")
 
     import asyncio
@@ -324,7 +324,7 @@ def extract_barcodes(job_id: str, image_data: bytes) -> dict[str, Any]:
 
 @app.task(name="perform_ocr")
 def perform_ocr(job_id: str, image_data: bytes) -> dict[str, Any]:
-    """Perform OCR on image"""
+    """Perform OCR on image."""
     logger.info(f"Performing OCR for job {job_id}")
 
     import asyncio
@@ -357,7 +357,7 @@ def perform_ocr(job_id: str, image_data: bytes) -> dict[str, Any]:
 
 @app.task(name="extract_labels")
 def extract_labels(job_id: str, image_data: bytes) -> dict[str, Any]:
-    """Extract image labels and categories"""
+    """Extract image labels and categories."""
     logger.info(f"Extracting labels for job {job_id}")
 
     import asyncio
@@ -381,7 +381,7 @@ def extract_labels(job_id: str, image_data: bytes) -> dict[str, Any]:
 
 @app.task(base=CallbackTask, bind=True, name="save_extraction")
 def save_extraction(self, job_id: str, results: dict[str, Any]) -> None:
-    """Save extraction results to database"""
+    """Save extraction results to database."""
     logger.info(f"Saving extraction for job {job_id}")
 
     # Parse results
@@ -454,7 +454,7 @@ def save_extraction(self, job_id: str, results: dict[str, Any]) -> None:
 
 @app.task(base=CallbackTask, bind=True, name="check_needs_review")
 def check_needs_review(self, job_id: str) -> bool:
-    """Check if job needs human review"""
+    """Check if job needs human review."""
     with get_db_session() as db:
         job = db.query(ImageJob).filter_by(id=job_id).first()
         if not job:
@@ -484,7 +484,7 @@ def check_needs_review(self, job_id: str) -> bool:
 
 @app.task(base=CallbackTask, bind=True, name="create_review_task")
 def create_review_task(self, job_id: str) -> None:
-    """Create HITL review task"""
+    """Create HITL review task."""
     logger.info(f"Creating review task for job {job_id}")
     with get_db_session() as db:
         job = db.query(ImageJob).filter_by(id=job_id).first()
@@ -520,14 +520,14 @@ def create_review_task(self, job_id: str) -> None:
 
 # Utility functions
 def download_from_blob_storage(container: str, blob_name: str) -> bytes:
-    """Download file from Azure Blob Storage"""
+    """Download file from Azure Blob Storage."""
     if not storage_client:
         raise RuntimeError("Azure Blob Storage client not initialized")
     return storage_client.download_blob(blob_name, container_name=container)
 
 
 def generate_sas_url(container: str, blob_name: str, expiry_hours: int = 1) -> str:
-    """Generate SAS URL for Azure Blob"""
+    """Generate SAS URL for Azure Blob."""
     if not storage_client:
         raise RuntimeError("Azure Blob Storage client not initialized")
     temp_client = AzureBlobStorageClient(container_name=container)

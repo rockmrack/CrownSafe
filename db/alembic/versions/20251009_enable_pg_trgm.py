@@ -1,4 +1,4 @@
-"""enable pg_trgm extension for fuzzy search
+"""enable pg_trgm extension for fuzzy search.
 
 Revision ID: 20251009_enable_pg_trgm
 Revises: 20250924_chat_memory
@@ -15,8 +15,8 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
-    """Enable pg_trgm extension for fuzzy text search"""
+def upgrade() -> None:
+    """Enable pg_trgm extension for fuzzy text search."""
     # Execute raw SQL to enable the extension
     op.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm;")
 
@@ -51,8 +51,8 @@ def upgrade():
     )
 
 
-def downgrade():
-    """Remove pg_trgm indexes and extension"""
+def downgrade() -> None:
+    """Remove pg_trgm indexes and extension."""
     # Drop indexes first
     op.execute("DROP INDEX IF EXISTS idx_recalls_hazard_trgm;")
     op.execute("DROP INDEX IF EXISTS idx_recalls_description_trgm;")

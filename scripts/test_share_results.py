@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Test the Share Results functionality"""
+"""Test the Share Results functionality."""
 
 import os
 import sys
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -15,8 +15,8 @@ from db.models.scan_history import ScanHistory
 from db.models.share_token import ShareToken
 
 
-def test_share_results():
-    """Test the share results functionality"""
+def test_share_results() -> None:
+    """Test the share results functionality."""
     print("Testing Share Results Functionality...")
     print("=" * 60)
 

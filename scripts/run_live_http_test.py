@@ -22,8 +22,8 @@ TEST_BARCODE = "037000488786"  # MUST match the one in seed_for_live_test.py!
 TEST_USER_ID = 1
 
 
-async def verify_database_before_test():
-    """Verify the database has our test data before making API call"""
+async def verify_database_before_test() -> bool:
+    """Verify the database has our test data before making API call."""
     from core_infra.database import DATABASE_URL, RecallDB, SessionLocal
 
     logger = logging.getLogger(__name__)
@@ -34,16 +34,15 @@ async def verify_database_before_test():
         if test_recall:
             logger.info(f"✅ Pre-test verification: Found recall with UPC {TEST_BARCODE}")
             return True
-        else:
-            logger.error(f"❌ Pre-test verification: No recall found with UPC {TEST_BARCODE}")
-            all_recalls = db.query(RecallDB).all()
-            logger.info(f"Total recalls in DB: {len(all_recalls)}")
-            for r in all_recalls[:5]:  # Show first 5
-                logger.info(f"  - Recall: {r.recall_id}, UPC: {r.upc}")
-            return False
+        logger.error(f"❌ Pre-test verification: No recall found with UPC {TEST_BARCODE}")
+        all_recalls = db.query(RecallDB).all()
+        logger.info(f"Total recalls in DB: {len(all_recalls)}")
+        for r in all_recalls[:5]:  # Show first 5
+            logger.info(f"  - Recall: {r.recall_id}, UPC: {r.upc}")
+        return False
 
 
-async def main():
+async def main() -> None:
     logger = logging.getLogger(__name__)
     logger.info("--- Starting Live HTTP Test ---")
 

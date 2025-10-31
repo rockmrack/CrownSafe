@@ -1,5 +1,5 @@
 """Migration script to upgrade from MemoryManager MVP-1.4 to EnhancedMemoryManager V2.0
-FIXED: ChromaDB v0.6.0 API compatibility
+FIXED: ChromaDB v0.6.0 API compatibility.
 """
 
 import logging
@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 
 def check_file_paths():
-    """Check if the required files exist and show their paths"""
+    """Check if the required files exist and show their paths."""
     print("Checking file paths...")
     print(f"Project root: {project_root}")
     print(f"Current working directory: {os.getcwd()}")
@@ -64,7 +64,7 @@ def check_file_paths():
 
 
 def get_collection_names_safe(chroma_client) -> list:
-    """Safely get collection names, handling different ChromaDB API versions"""
+    """Safely get collection names, handling different ChromaDB API versions."""
     try:
         collections = chroma_client.list_collections()
 
@@ -72,20 +72,19 @@ def get_collection_names_safe(chroma_client) -> list:
         if collections and isinstance(collections[0], str):
             # v0.6.0+ - collections are already strings
             return collections
-        elif collections and hasattr(collections[0], "name"):
+        if collections and hasattr(collections[0], "name"):
             # Older versions - collections are objects with .name attribute
             return [c.name for c in collections]
-        else:
-            # Empty list or unknown format
-            return []
+        # Empty list or unknown format
+        return []
 
     except Exception as e:
         logger.exception(f"Failed to get collection names: {e}")
         return []
 
 
-def test_basic_memory_manager():
-    """Test if basic MemoryManager works before trying enhanced version"""
+def test_basic_memory_manager() -> bool | None:
+    """Test if basic MemoryManager works before trying enhanced version."""
     logger.info("Testing basic MemoryManager first...")
 
     try:
@@ -119,8 +118,8 @@ def test_basic_memory_manager():
         return False
 
 
-def migrate_memory_system():
-    """Migrate from MVP-1.4 to EnhancedMemoryManager V2.0"""
+def migrate_memory_system() -> bool | None:
+    """Migrate from MVP-1.4 to EnhancedMemoryManager V2.0."""
     if not IMPORTS_SUCCESS:
         logger.error("Cannot proceed with migration - import failures")
         return False
@@ -256,10 +255,9 @@ def migrate_memory_system():
             logger.info(f"  - Enhanced Collections: {collection_count}/4")
             logger.info(f"  - Analytics: {'Working' if analytics_working else 'Limited'}")
             return True
-        else:
-            logger.error("Migration failed - insufficient functionality")
-            logger.error(f"Feature count: {feature_count}, Collection count: {collection_count}")
-            return False
+        logger.error("Migration failed - insufficient functionality")
+        logger.error(f"Feature count: {feature_count}, Collection count: {collection_count}")
+        return False
 
     except Exception as e:
         logger.exception(f"Migration failed: {e}")
@@ -273,8 +271,8 @@ def migrate_memory_system():
         return False
 
 
-def verify_migration():
-    """Verify migration was successful"""
+def verify_migration() -> bool | None:
+    """Verify migration was successful."""
     if not IMPORTS_SUCCESS:
         logger.error("Cannot verify migration - import failures")
         return False
@@ -334,9 +332,8 @@ def verify_migration():
         if len(available_features) >= 2:  # More lenient criteria
             logger.info(f"Enhanced features verified: {len(available_features)}/4")
             return True
-        else:
-            logger.error(f"Insufficient enhanced features: {len(available_features)}/4")
-            return False
+        logger.error(f"Insufficient enhanced features: {len(available_features)}/4")
+        return False
 
     except Exception as e:
         logger.exception(f"Migration verification failed: {e}")
@@ -348,8 +345,8 @@ def verify_migration():
         return False
 
 
-def cleanup_old_backups(keep_count=3):
-    """Clean up old backup directories, keeping only the most recent ones"""
+def cleanup_old_backups(keep_count=3) -> None:
+    """Clean up old backup directories, keeping only the most recent ones."""
     try:
         # Change to project root
         original_cwd = os.getcwd()
@@ -382,8 +379,8 @@ def cleanup_old_backups(keep_count=3):
             pass
 
 
-def simple_enhanced_test():
-    """Simple test to verify EnhancedMemoryManager can be imported and basic methods work"""
+def simple_enhanced_test() -> bool | None:
+    """Simple test to verify EnhancedMemoryManager can be imported and basic methods work."""
     if not IMPORTS_SUCCESS:
         logger.error("Cannot run enhanced test - import failures")
         return False

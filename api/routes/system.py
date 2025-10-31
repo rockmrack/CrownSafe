@@ -1,5 +1,5 @@
 """System health and readiness endpoints
-Provides health checks for monitoring and orchestration
+Provides health checks for monitoring and orchestration.
 """
 
 import logging
@@ -20,7 +20,7 @@ router = APIRouter()
 @router.get("/api/v1/healthz")
 async def healthz(response: Response) -> dict[str, Any]:
     """Basic health check endpoint
-    Returns 200 if the service is running
+    Returns 200 if the service is running.
 
     Used for:
     - Kubernetes liveness probe
@@ -40,7 +40,7 @@ async def healthz(response: Response) -> dict[str, Any]:
 @router.get("/api/v1/readyz")
 async def readyz(response: Response) -> JSONResponse:
     """Readiness check endpoint
-    Checks all critical dependencies
+    Checks all critical dependencies.
 
     Returns:
     - 200 if all dependencies are ready
@@ -105,10 +105,10 @@ async def readyz(response: Response) -> JSONResponse:
 @router.get("/api/v1/status")
 async def status(response: Response) -> dict[str, Any]:
     """Detailed status endpoint
-    Provides comprehensive system information
+    Provides comprehensive system information.
     """
     import platform
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     import psutil
 

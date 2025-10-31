@@ -5,8 +5,8 @@ import tempfile
 from scripts.evals.run_synth_eval import check_case, get_llm_client, load_cases
 
 
-def test_load_cases():
-    """Test loading cases from JSONL file"""
+def test_load_cases() -> None:
+    """Test loading cases from JSONL file."""
     test_data = [
         {"id": "test1", "scan_data": {"product_name": "Test Product"}, "expect": {}},
         {
@@ -35,8 +35,8 @@ def test_load_cases():
         os.unlink(temp_path)
 
 
-def test_check_case_schema():
-    """Test basic schema validation"""
+def test_check_case_schema() -> None:
+    """Test basic schema validation."""
     resp = {
         "summary": "Test summary",
         "disclaimer": "Test disclaimer",
@@ -58,8 +58,8 @@ def test_check_case_schema():
     assert any("missing key" in err for err in errors)
 
 
-def test_check_case_must_checks():
-    """Test must_checks validation"""
+def test_check_case_must_checks() -> None:
+    """Test must_checks validation."""
     resp = {
         "summary": "Test",
         "disclaimer": "Test",
@@ -80,8 +80,8 @@ def test_check_case_must_checks():
     assert any("missing check contains: sterilization" in err for err in errors)
 
 
-def test_check_case_must_flags():
-    """Test must_flags validation"""
+def test_check_case_must_flags() -> None:
+    """Test must_flags validation."""
     resp = {
         "summary": "Test",
         "disclaimer": "Test",
@@ -102,8 +102,8 @@ def test_check_case_must_flags():
     assert any("missing flag: missing_flag" in err for err in errors)
 
 
-def test_check_case_must_flags_any():
-    """Test must_flags_any validation"""
+def test_check_case_must_flags_any() -> None:
+    """Test must_flags_any validation."""
     resp = {
         "summary": "Test",
         "disclaimer": "Test",
@@ -124,8 +124,8 @@ def test_check_case_must_flags_any():
     assert any("missing any-of flags" in err for err in errors)
 
 
-def test_check_case_must_reasons():
-    """Test must_reasons validation"""
+def test_check_case_must_reasons() -> None:
+    """Test must_reasons validation."""
     resp = {
         "summary": "Test",
         "disclaimer": "Test",
@@ -146,8 +146,8 @@ def test_check_case_must_reasons():
     assert any("missing reason contains: dairy" in err for err in errors)
 
 
-def test_check_case_evidence():
-    """Test evidence validation"""
+def test_check_case_evidence() -> None:
+    """Test evidence validation."""
     resp = {
         "summary": "Test",
         "disclaimer": "Test",
@@ -169,8 +169,8 @@ def test_check_case_evidence():
     assert any("missing evidence type: regulation" in err for err in errors)
 
 
-def test_dummy_llm_client():
-    """Test that dummy LLM client works"""
+def test_dummy_llm_client() -> None:
+    """Test that dummy LLM client works."""
     llm = get_llm_client(dummy=True)
 
     # Test basic response
@@ -191,8 +191,8 @@ def test_dummy_llm_client():
     assert any("pasteuris" in reason.lower() for reason in resp["reasons"])
 
 
-def test_dummy_llm_peanut_detection():
-    """Test dummy LLM detects peanut allergies"""
+def test_dummy_llm_peanut_detection() -> None:
+    """Test dummy LLM detects peanut allergies."""
     llm = get_llm_client(dummy=True)
 
     resp = llm.chat_json(
@@ -207,8 +207,8 @@ def test_dummy_llm_peanut_detection():
     assert any("peanut" in reason.lower() for reason in resp["reasons"])
 
 
-def test_dummy_llm_recall_detection():
-    """Test dummy LLM detects recalls"""
+def test_dummy_llm_recall_detection() -> None:
+    """Test dummy LLM detects recalls."""
     llm = get_llm_client(dummy=True)
 
     resp = llm.chat_json(

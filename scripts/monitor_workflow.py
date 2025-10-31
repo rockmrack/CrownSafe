@@ -6,8 +6,8 @@ import json
 import redis.asyncio as aioredis
 
 
-async def monitor_workflow(workflow_id: str):
-    """Monitor a workflow in Redis"""
+async def monitor_workflow(workflow_id: str) -> None:
+    """Monitor a workflow in Redis."""
     print(f"\n🔍 Monitoring workflow: {workflow_id}\n")
 
     # Use the new Redis API
@@ -48,8 +48,8 @@ async def monitor_workflow(workflow_id: str):
     await redis.close()
 
 
-async def trace_workflow_creation():
-    """Submit a workflow and trace its creation"""
+async def trace_workflow_creation() -> None:
+    """Submit a workflow and trace its creation."""
     import requests
 
     # Submit a new workflow

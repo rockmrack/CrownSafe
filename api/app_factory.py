@@ -1,5 +1,5 @@
 """FastAPI Application Factory
-Creates and configures the BabyShield API application with all middleware and settings
+Creates and configures the BabyShield API application with all middleware and settings.
 """
 
 import logging
@@ -21,7 +21,7 @@ def create_app(
     config: object | None = None,
     enable_docs: bool = True,
 ) -> FastAPI:
-    """Create and configure FastAPI application
+    """Create and configure FastAPI application.
 
     Args:
         environment: Application environment (development, staging, production)
@@ -64,7 +64,7 @@ def create_app(
 
 
 def _configure_logging(app: FastAPI, environment: str) -> None:
-    """Configure application logging"""
+    """Configure application logging."""
     log_level = "INFO" if environment == "production" else "DEBUG"
 
     logging.basicConfig(level=log_level, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -77,7 +77,7 @@ def _configure_logging(app: FastAPI, environment: str) -> None:
 
 
 def _configure_middleware(app: FastAPI, environment: str, config: object | None) -> None:
-    """Configure all application middleware"""
+    """Configure all application middleware."""
     # 1. Security headers and rate limiting
     configure_security_middleware(app, environment=environment)
 
@@ -147,11 +147,11 @@ def _configure_middleware(app: FastAPI, environment: str, config: object | None)
 
 
 def _configure_exception_handlers(app: FastAPI) -> None:
-    """Configure global exception handlers"""
+    """Configure global exception handlers."""
 
     @app.exception_handler(ValueError)
     async def value_error_handler(request, exc):
-        """Handle ValueError exceptions"""
+        """Handle ValueError exceptions."""
         logger.warning(f"ValueError: {exc!s}")
         return JSONResponse(
             status_code=400,
@@ -160,7 +160,7 @@ def _configure_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(Exception)
     async def general_exception_handler(request, exc):
-        """Handle unexpected exceptions"""
+        """Handle unexpected exceptions."""
         logger.error(f"Unhandled exception: {exc!s}", exc_info=True)
 
         # Don't expose internal errors in production
@@ -178,7 +178,7 @@ def _configure_exception_handlers(app: FastAPI) -> None:
 
 
 def register_routers(app: FastAPI) -> None:
-    """Register all API routers
+    """Register all API routers.
 
     This function is called from main_crownsafe.py to keep router
     registration visible and easy to modify
@@ -192,11 +192,11 @@ def register_routers(app: FastAPI) -> None:
 
 
 def configure_startup_events(app: FastAPI) -> None:
-    """Configure application startup events"""
+    """Configure application startup events."""
 
     @app.on_event("startup")
     async def startup_event() -> None:
-        """Run on application startup"""
+        """Run on application startup."""
         logger.info("🚀 BabyShield API starting up...")
 
         # Initialize database connection pool
@@ -222,7 +222,7 @@ def configure_startup_events(app: FastAPI) -> None:
 
     @app.on_event("shutdown")
     async def shutdown_event() -> None:
-        """Run on application shutdown"""
+        """Run on application shutdown."""
         logger.info("🛑 BabyShield API shutting down...")
 
         # Close database connections
@@ -238,7 +238,7 @@ def configure_startup_events(app: FastAPI) -> None:
 
 
 def create_openapi_schema(app: FastAPI) -> dict:
-    """Create custom OpenAPI schema with fixes
+    """Create custom OpenAPI schema with fixes.
 
     Returns:
         OpenAPI schema dictionary

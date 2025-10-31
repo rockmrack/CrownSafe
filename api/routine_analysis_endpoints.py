@@ -1,5 +1,5 @@
 """Crown Safe - Routine Analysis Endpoints
-Batch product analysis and interaction warnings
+Batch product analysis and interaction warnings.
 
 Endpoints:
 - POST /api/v1/cabinet-audit - Analyze entire routine for issues
@@ -42,7 +42,7 @@ router = APIRouter(prefix="/api/v1", tags=["routine-analysis"])
 
 
 class ProductInput(BaseModel):
-    """Product for analysis (either by product_id or manual input)"""
+    """Product for analysis (either by product_id or manual input)."""
 
     product_id: int | None = Field(None, description="Product ID from database")
     product_name: str | None = Field(None, description="Product name (if manual)")
@@ -53,7 +53,7 @@ class ProductInput(BaseModel):
 
 
 class CabinetAuditRequest(BaseModel):
-    """Request for cabinet audit (batch product analysis)"""
+    """Request for cabinet audit (batch product analysis)."""
 
     products: list[ProductInput] = Field(..., min_length=1, description="Products to analyze")
     user_id: int | None = Field(None, description="User ID (for fetching hair profile)")
@@ -87,7 +87,7 @@ class CabinetAuditRequest(BaseModel):
 
 
 class RoutineIssue(BaseModel):
-    """Identified issue in routine"""
+    """Identified issue in routine."""
 
     issue_type: str  # protein_overload, buildup, stripping, moisture_imbalance
     severity: str  # low, medium, high, critical
@@ -98,7 +98,7 @@ class RoutineIssue(BaseModel):
 
 
 class RotationPlan(BaseModel):
-    """Recommended product rotation schedule"""
+    """Recommended product rotation schedule."""
 
     frequency: str  # daily, weekly, bi-weekly, monthly
     products: list[str]
@@ -106,7 +106,7 @@ class RotationPlan(BaseModel):
 
 
 class CabinetAuditResponse(BaseModel):
-    """Cabinet audit analysis results"""
+    """Cabinet audit analysis results."""
 
     success: bool
     total_products: int
@@ -119,7 +119,7 @@ class CabinetAuditResponse(BaseModel):
 
 
 class RoutineCheckRequest(BaseModel):
-    """Request for product interaction check"""
+    """Request for product interaction check."""
 
     product_1_ingredients: list[str] = Field(..., description="First product ingredients")
     product_2_ingredients: list[str] = Field(..., description="Second product ingredients")
@@ -129,7 +129,7 @@ class RoutineCheckRequest(BaseModel):
 
 
 class InteractionWarning(BaseModel):
-    """Product interaction warning"""
+    """Product interaction warning."""
 
     warning_type: str  # buildup, stripping, incompatible, neutralizing
     severity: str  # low, medium, high
@@ -138,7 +138,7 @@ class InteractionWarning(BaseModel):
 
 
 class RoutineCheckResponse(BaseModel):
-    """Product interaction check results"""
+    """Product interaction check results."""
 
     success: bool
     safe_combination: bool
@@ -147,7 +147,7 @@ class RoutineCheckResponse(BaseModel):
 
 
 class ApiResponse(BaseModel):
-    """Standard API response wrapper"""
+    """Standard API response wrapper."""
 
     success: bool
     message: str
@@ -160,7 +160,7 @@ class ApiResponse(BaseModel):
 
 
 def detect_protein_overload(products: list[ProductInput]) -> RoutineIssue | None:
-    """Detect if routine has too much protein"""
+    """Detect if routine has too much protein."""
     protein_keywords = [
         "hydrolyzed",
         "protein",
@@ -202,7 +202,7 @@ def detect_protein_overload(products: list[ProductInput]) -> RoutineIssue | None
 
 
 def detect_buildup(products: list[ProductInput]) -> RoutineIssue | None:
-    """Detect silicone/heavy oil build-up risk"""
+    """Detect silicone/heavy oil build-up risk."""
     buildup_keywords = [
         "dimethicone",
         "cyclomethicone",
@@ -244,7 +244,7 @@ def detect_buildup(products: list[ProductInput]) -> RoutineIssue | None:
 
 
 def detect_stripping(products: list[ProductInput]) -> RoutineIssue | None:
-    """Detect harsh stripping from too many sulfates"""
+    """Detect harsh stripping from too many sulfates."""
     stripping_sulfates = ["sodium lauryl sulfate", "sodium laureth sulfate", "sls", "sles"]
 
     harsh_products = []
@@ -271,7 +271,7 @@ def detect_stripping(products: list[ProductInput]) -> RoutineIssue | None:
 
 
 def detect_moisture_imbalance(products: list[ProductInput]) -> RoutineIssue | None:
-    """Detect lack of moisturizing products"""
+    """Detect lack of moisturizing products."""
     moisturizing_keywords = [
         "shea butter",
         "coconut oil",

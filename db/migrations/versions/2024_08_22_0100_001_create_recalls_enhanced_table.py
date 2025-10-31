@@ -1,4 +1,4 @@
-"""Create recalls_enhanced table
+"""Create recalls_enhanced table.
 
 Revision ID: 001
 Revises:
@@ -20,7 +20,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    """Create the recalls_enhanced table with comprehensive schema"""
+    """Create the recalls_enhanced table with comprehensive schema."""
     bind = op.get_bind()
     if bind.dialect.name != "postgresql":
         print("Skipping Postgres-only migration on", bind.dialect.name)
@@ -192,5 +192,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    """Drop the recalls_enhanced table"""
+    """Drop the recalls_enhanced table."""
     op.drop_table("recalls_enhanced")

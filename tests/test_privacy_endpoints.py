@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Test suite for privacy endpoints (Task 8)
-Tests GDPR/CCPA compliance features and privacy management
+Tests GDPR/CCPA compliance features and privacy management.
 """
 
 import os
@@ -15,9 +15,9 @@ ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "test-admin-key")
 
 
 class PrivacyEndpointTester:
-    """Test suite for privacy and DSAR endpoints"""
+    """Test suite for privacy and DSAR endpoints."""
 
-    def __init__(self, base_url: str = BASE_URL):
+    def __init__(self, base_url: str = BASE_URL) -> None:
         self.base_url = base_url
         self.session = requests.Session()
         self.admin_headers = {"X-Admin-Key": ADMIN_API_KEY}
@@ -25,7 +25,7 @@ class PrivacyEndpointTester:
         self.test_email = f"test_{uuid.uuid4().hex[:8]}@example.com"
 
     def test(self, condition: bool, message: str) -> bool:
-        """Record test result"""
+        """Record test result."""
         if condition:
             print(f"✅ {message}")
             self.test_results.append(True)
@@ -35,7 +35,7 @@ class PrivacyEndpointTester:
         return condition
 
     def test_legal_pages(self) -> bool:
-        """Test 1: Legal pages are accessible"""
+        """Test 1: Legal pages are accessible."""
         print("\n📝 Test 1: Legal Pages")
 
         pages = [
@@ -59,7 +59,7 @@ class PrivacyEndpointTester:
         return all_ok
 
     def test_export_request(self) -> bool:
-        """Test 2: Data export request"""
+        """Test 2: Data export request."""
         print("\n📝 Test 2: Data Export Request")
 
         response = self.session.post(
@@ -103,7 +103,7 @@ class PrivacyEndpointTester:
         return response.status_code == 200
 
     def test_delete_request(self) -> bool:
-        """Test 3: Data deletion request"""
+        """Test 3: Data deletion request."""
         print("\n📝 Test 3: Data Deletion Request")
 
         test_email = f"delete_{uuid.uuid4().hex[:8]}@example.com"
@@ -135,7 +135,7 @@ class PrivacyEndpointTester:
         return response.status_code == 200
 
     def test_privacy_summary(self) -> bool:
-        """Test 4: Privacy summary endpoint"""
+        """Test 4: Privacy summary endpoint."""
         print("\n📝 Test 4: Privacy Summary")
 
         response = self.session.get(f"{self.base_url}/api/v1/user/privacy/summary")
@@ -172,7 +172,7 @@ class PrivacyEndpointTester:
         return response.status_code == 200
 
     def test_admin_list_requests(self) -> bool:
-        """Test 5: Admin can list privacy requests"""
+        """Test 5: Admin can list privacy requests."""
         print("\n📝 Test 5: Admin List Privacy Requests")
 
         # Test without auth first
@@ -213,7 +213,7 @@ class PrivacyEndpointTester:
         return response.status_code == 200
 
     def test_admin_update_status(self) -> bool:
-        """Test 6: Admin can update request status"""
+        """Test 6: Admin can update request status."""
         print("\n📝 Test 6: Admin Update Request Status")
 
         # First create a request to update
@@ -268,7 +268,7 @@ class PrivacyEndpointTester:
         return response.status_code == 200
 
     def test_request_status_check(self) -> bool:
-        """Test 7: Check request status"""
+        """Test 7: Check request status."""
         print("\n📝 Test 7: Request Status Check")
 
         # Use the export request ID from earlier test
@@ -309,7 +309,7 @@ class PrivacyEndpointTester:
         return response.status_code == 200
 
     def test_rate_limiting(self) -> bool:
-        """Test 8: Rate limiting on DSAR endpoints"""
+        """Test 8: Rate limiting on DSAR endpoints."""
         print("\n📝 Test 8: Rate Limiting")
 
         # Note: This test assumes rate limiting is configured (5 per hour)
@@ -319,7 +319,7 @@ class PrivacyEndpointTester:
         return True
 
     def test_invalid_email(self) -> bool:
-        """Test 9: Invalid email validation"""
+        """Test 9: Invalid email validation."""
         print("\n📝 Test 9: Email Validation")
 
         invalid_emails = [
@@ -345,7 +345,7 @@ class PrivacyEndpointTester:
         return all_ok
 
     def test_privacy_headers(self) -> bool:
-        """Test 10: Privacy-related headers"""
+        """Test 10: Privacy-related headers."""
         print("\n📝 Test 10: Privacy Headers")
 
         response = self.session.get(f"{self.base_url}/api/v1/user/privacy/summary")
@@ -369,7 +369,7 @@ class PrivacyEndpointTester:
         return True
 
     def test_gdpr_rights(self) -> bool:
-        """Test 11: Additional GDPR rights endpoints"""
+        """Test 11: Additional GDPR rights endpoints."""
         print("\n📝 Test 11: GDPR Rights Endpoints")
 
         test_email = f"gdpr_{uuid.uuid4().hex[:8]}@example.com"
@@ -395,7 +395,7 @@ class PrivacyEndpointTester:
         return all_ok
 
     def test_admin_statistics(self) -> bool:
-        """Test 12: Privacy statistics endpoint"""
+        """Test 12: Privacy statistics endpoint."""
         print("\n📝 Test 12: Privacy Statistics")
 
         response = self.session.get(
@@ -424,7 +424,7 @@ class PrivacyEndpointTester:
         return response.status_code == 200
 
     def run_all_tests(self) -> bool:
-        """Run all privacy endpoint tests"""
+        """Run all privacy endpoint tests."""
         print("=" * 60)
         print("🔐 PRIVACY ENDPOINTS TEST SUITE")
         print("=" * 60)
@@ -473,8 +473,8 @@ class PrivacyEndpointTester:
         return all_passed
 
 
-def main():
-    """Main test runner"""
+def main() -> int:
+    """Main test runner."""
     tester = PrivacyEndpointTester()
     success = tester.run_all_tests()
     return 0 if success else 1

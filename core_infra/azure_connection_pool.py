@@ -1,5 +1,5 @@
 """Azure Blob Storage Connection Pool Manager
-Enterprise-grade connection pooling for optimal performance
+Enterprise-grade connection pooling for optimal performance.
 
 Features:
 - Connection pooling for Azure Blob Storage clients
@@ -12,7 +12,7 @@ Features:
 import logging
 import os
 import threading
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 
 from azure.storage.blob import BlobServiceClient
 
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 class AzureBlobConnectionPool:
     """Connection pool manager for Azure Blob Storage
-    Maintains a pool of reusable BlobServiceClient instances
+    Maintains a pool of reusable BlobServiceClient instances.
     """
 
     def __init__(
@@ -31,7 +31,7 @@ class AzureBlobConnectionPool:
         account_key: str | None = None,
         pool_size: int = 10,
     ) -> None:
-        """Initialize connection pool
+        """Initialize connection pool.
 
         Args:
             connection_string: Azure Storage connection string
@@ -61,7 +61,7 @@ class AzureBlobConnectionPool:
         logger.info(f"Azure Blob connection pool initialized (size: {pool_size})")
 
     def _initialize_pool(self) -> None:
-        """Pre-create connections in the pool"""
+        """Pre-create connections in the pool."""
         with self._pool_lock:
             for _ in range(self.pool_size):
                 client = self._create_client()
@@ -77,22 +77,21 @@ class AzureBlobConnectionPool:
                     self.connections_created += 1
 
     def _create_client(self) -> BlobServiceClient | None:
-        """Create a new BlobServiceClient"""
+        """Create a new BlobServiceClient."""
         try:
             if self.connection_string:
                 return BlobServiceClient.from_connection_string(self.connection_string)
-            elif self.account_name and self.account_key:
+            if self.account_name and self.account_key:
                 account_url = f"https://{self.account_name}.blob.core.windows.net"
                 return BlobServiceClient(account_url=account_url, credential=self.account_key)
-            else:
-                logger.error("Azure Storage credentials not configured")
-                return None
+            logger.error("Azure Storage credentials not configured")
+            return None
         except Exception as e:
             logger.exception(f"Failed to create Azure Blob client: {e}")
             return None
 
     def acquire(self) -> BlobServiceClient | None:
-        """Acquire a connection from the pool
+        """Acquire a connection from the pool.
 
         Returns:
             BlobServiceClient instance or None if pool exhausted
@@ -110,25 +109,24 @@ class AzureBlobConnectionPool:
 
                 logger.debug(f"Acquired connection from pool (pool: {len(self._pool)}, in_use: {len(self._in_use)})")
                 return conn_data["client"]
-            else:
-                # Pool exhausted
-                self.pool_exhaustion_count += 1
-                logger.warning(
-                    f"Connection pool exhausted "
-                    f"(in_use: {len(self._in_use)}, exhaustions: {self.pool_exhaustion_count})",
-                )
+            # Pool exhausted
+            self.pool_exhaustion_count += 1
+            logger.warning(
+                f"Connection pool exhausted "
+                f"(in_use: {len(self._in_use)}, exhaustions: {self.pool_exhaustion_count})",
+            )
 
-                # Create new connection on-demand
-                client = self._create_client()
-                if client:
-                    self._in_use.add(id(client))
-                    self.connections_created += 1
-                    return client
+            # Create new connection on-demand
+            client = self._create_client()
+            if client:
+                self._in_use.add(id(client))
+                self.connections_created += 1
+                return client
 
-                return None
+            return None
 
     def release(self, client: BlobServiceClient) -> None:
-        """Release a connection back to the pool
+        """Release a connection back to the pool.
 
         Args:
             client: BlobServiceClient to release
@@ -162,7 +160,7 @@ class AzureBlobConnectionPool:
                         logger.warning(f"Error closing connection: {e}")
 
     def get_stats(self) -> dict:
-        """Get connection pool statistics
+        """Get connection pool statistics.
 
         Returns:
             Dictionary with pool statistics
@@ -187,7 +185,7 @@ class AzureBlobConnectionPool:
             }
 
     def clear_pool(self) -> None:
-        """Clear all connections in the pool (emergency use)"""
+        """Clear all connections in the pool (emergency use)."""
         with self._pool_lock:
             for conn_data in self._pool:
                 try:
@@ -210,7 +208,7 @@ def get_connection_pool(
     account_key: str | None = None,
     pool_size: int = 10,
 ) -> AzureBlobConnectionPool:
-    """Get or create global connection pool instance
+    """Get or create global connection pool instance.
 
     Args:
         connection_string: Azure Storage connection string

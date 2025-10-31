@@ -35,7 +35,7 @@ class SmartCacheWarmer:
         }
 
     async def analyze_popular_products(self) -> dict[str, list[str]]:
-        """Analyze 3,218+ recalls to identify most popular products and brands for cache warming"""
+        """Analyze 3,218+ recalls to identify most popular products and brands for cache warming."""
         start_time = time.time()
 
         try:
@@ -66,7 +66,7 @@ class SmartCacheWarmer:
             return {"products": [], "brands": []}
 
     async def warm_cache_for_products(self, products: list[str]) -> int:
-        """Pre-warm cache for popular products with optimized batch operations"""
+        """Pre-warm cache for popular products with optimized batch operations."""
         start_time = time.time()
         successful_warming = 0
 
@@ -124,7 +124,7 @@ class SmartCacheWarmer:
             return 0
 
     async def warm_cache_for_autocomplete(self, products: list[str], brands: list[str]) -> int:
-        """Pre-warm autocomplete cache for instant typing responses"""
+        """Pre-warm autocomplete cache for instant typing responses."""
         try:
             # Pre-generate common autocomplete queries
             common_queries = []
@@ -169,7 +169,7 @@ class SmartCacheWarmer:
             return 0
 
     async def start_intelligent_cache_warming(self) -> dict[str, Any]:
-        """Start intelligent cache warming process for maximum performance"""
+        """Start intelligent cache warming process for maximum performance."""
         if self.warming_active:
             self.logger.info("Cache warming already in progress...")
             return {"status": "already_running"}
@@ -225,7 +225,7 @@ class SmartCacheWarmer:
                 self.warming_active = False
 
     def should_refresh_cache(self) -> bool:
-        """Determine if cache should be refreshed based on time and usage patterns"""
+        """Determine if cache should be refreshed based on time and usage patterns."""
         if not self.last_warming:
             return True
 
@@ -233,7 +233,7 @@ class SmartCacheWarmer:
         return elapsed > self.config["warming_interval"]
 
     async def background_cache_refresh(self) -> None:
-        """Background task for continuous cache optimization"""
+        """Background task for continuous cache optimization."""
         while True:
             try:
                 if self.should_refresh_cache():
@@ -254,10 +254,10 @@ cache_warmer = SmartCacheWarmer()
 
 # Convenience functions
 async def warm_cache_now():
-    """Start intelligent cache warming immediately"""
+    """Start intelligent cache warming immediately."""
     return await cache_warmer.start_intelligent_cache_warming()
 
 
 async def start_background_cache_warming():
-    """Start background cache warming task"""
+    """Start background cache warming task."""
     return asyncio.create_task(cache_warmer.background_cache_refresh())

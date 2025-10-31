@@ -62,10 +62,8 @@ class DataGovernanceAgentLogic:
                     "status": "COMPLETED",
                     "result": {"message": f"Data deletion process completed for user_id: {user_id}."},
                 }
-            else:
-                return {
-                    "status": "FAILED",
-                    "error": "Failed to process data deletion request.",
-                }
-        else:
-            return {"status": "FAILED", "error": f"Unknown action: {action}"}
+            return {
+                "status": "FAILED",
+                "error": "Failed to process data deletion request.",
+            }
+        return {"status": "FAILED", "error": f"Unknown action: {action}"}

@@ -19,7 +19,7 @@ TRACE_LOG = []
 
 
 def trace_calls(obj):
-    """Wrap all methods of an object to trace calls"""
+    """Wrap all methods of an object to trace calls."""
     for name in dir(obj):
         if name.startswith("_"):
             continue
@@ -31,7 +31,7 @@ def trace_calls(obj):
 
 
 def trace_wrapper(func, name):
-    """Wrapper that logs all calls"""
+    """Wrapper that logs all calls."""
 
     @functools.wraps(func)
     async def async_wrapper(*args, **kwargs):
@@ -57,11 +57,11 @@ MESSAGES_SENT = []
 
 
 class DebugMockClient:
-    def __init__(self):
+    def __init__(self) -> None:
         self.discoveries = {}
         print("🔍 DebugMockClient created")
 
-    async def send_message(self, payload, message_type, target_agent_id, correlation_id):
+    async def send_message(self, payload, message_type, target_agent_id, correlation_id) -> bool:
         msg = {
             "payload": payload,
             "message_type": message_type,
@@ -80,7 +80,7 @@ class DebugMockClient:
 
 
 class DebugRedis:
-    def __init__(self):
+    def __init__(self) -> None:
         self.data = {}
 
     async def get(self, key):
@@ -89,7 +89,7 @@ class DebugRedis:
             return val.encode()
         return val
 
-    async def set(self, key, value):
+    async def set(self, key, value) -> bool:
         if isinstance(value, bytes):
             value = value.decode()
         self.data[key] = value
@@ -98,14 +98,14 @@ class DebugRedis:
     async def setex(self, key, ttl, value):
         return await self.set(key, value)
 
-    async def ping(self):
+    async def ping(self) -> bool:
         return True
 
-    async def close(self):
+    async def close(self) -> None:
         pass
 
 
-async def debug_router():
+async def debug_router() -> None:
     print("\n" + "=" * 70)
     print("🔍 ROUTER DEBUGGING - TRACING ALL CALLS")
     print("=" * 70 + "\n")
@@ -236,8 +236,8 @@ async def debug_router():
     await router.shutdown()
 
 
-async def simple_trace_test():
-    """Even simpler test to trace what's happening"""
+async def simple_trace_test() -> None:
+    """Even simpler test to trace what's happening."""
     print("\n🔬 SIMPLE TRACE TEST\n")
 
     # Track ALL method calls on mcp_client
@@ -260,11 +260,11 @@ async def simple_trace_test():
                 return wrapper
             return attr
 
-        async def send_message(self, *args, **kwargs):
+        async def send_message(self, *args, **kwargs) -> None:
             print(f"✅ send_message called! args={args}, kwargs={kwargs}")
             MESSAGES_SENT.append({"args": args, "kwargs": kwargs})
 
-        async def query_discovery(self, capabilities):
+        async def query_discovery(self, capabilities) -> str:
             print(f"✅ query_discovery called! {capabilities}")
             return "test_corr_id"
 

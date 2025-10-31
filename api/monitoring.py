@@ -1,5 +1,5 @@
 """Task 14: Monitoring, Metrics, and SLO Implementation
-Provides Prometheus metrics, health checks, and monitoring endpoints
+Provides Prometheus metrics, health checks, and monitoring endpoints.
 """
 
 import asyncio
@@ -172,7 +172,7 @@ metrics_router = APIRouter(tags=["Metrics"])
 # Note: Middleware should be added at the app level, not router level
 # This function is kept for reference but not used as middleware
 async def track_metrics(request: Request, call_next):
-    """Middleware to track request metrics - should be added at app level"""
+    """Middleware to track request metrics - should be added at app level."""
     # Skip metrics endpoint itself
     if request.url.path == "/metrics":
         return await call_next(request)
@@ -230,7 +230,7 @@ async def track_metrics(request: Request, call_next):
 @router.get("/readyz")
 async def readiness_check():
     """Readiness check - verifies all dependencies are ready
-    Used by Kubernetes readiness probes
+    Used by Kubernetes readiness probes.
     """
     checks = {
         "database": False,
@@ -301,7 +301,7 @@ async def readiness_check():
 @router.get("/livez")
 async def liveness_check():
     """Liveness check - minimal check to verify process is alive
-    Returns 200 if the service is alive, used for container restarts
+    Returns 200 if the service is alive, used for container restarts.
     """
     return {"alive": True, "timestamp": datetime.now().isoformat()}
 
@@ -312,7 +312,7 @@ async def liveness_check():
 @metrics_router.get("/metrics", response_class=PlainTextResponse)
 async def get_metrics():
     """Prometheus metrics endpoint
-    Returns metrics in Prometheus exposition format
+    Returns metrics in Prometheus exposition format.
     """
     # Update system metrics
     memory = psutil.virtual_memory()
@@ -345,7 +345,7 @@ async def get_metrics():
 
 
 class SLOTracker:
-    """Tracks Service Level Objectives"""
+    """Tracks Service Level Objectives."""
 
     def __init__(self) -> None:
         self.reset_period = timedelta(days=30)  # 30-day rolling window
@@ -371,7 +371,7 @@ class SLOTracker:
         }
 
     def record_uptime(self, is_up: bool) -> None:
-        """Record uptime status"""
+        """Record uptime status."""
         self.data["uptime"]["total_minutes"] += 1
         if not is_up:
             self.data["uptime"]["downtime_minutes"] += 1
@@ -382,7 +382,7 @@ class SLOTracker:
         self.data["uptime"]["current"] = (total - down) / total if total > 0 else 1.0
 
     def record_latency(self, latency_seconds: float) -> None:
-        """Record request latency"""
+        """Record request latency."""
         self.data["latency_p95"]["measurements"].append(latency_seconds)
 
         # Keep only last 10000 measurements
@@ -390,13 +390,13 @@ class SLOTracker:
             self.data["latency_p95"]["measurements"] = self.data["latency_p95"]["measurements"][-10000:]
 
     def record_request(self, is_error: bool) -> None:
-        """Record request and error status"""
+        """Record request and error status."""
         self.data["error_rate"]["total_requests"] += 1
         if is_error:
             self.data["error_rate"]["error_requests"] += 1
 
     def get_slo_status(self) -> dict[str, Any]:
-        """Get current SLO status"""
+        """Get current SLO status."""
         import numpy as np
 
         # Calculate uptime
@@ -446,7 +446,7 @@ slo_tracker = SLOTracker()
 
 @router.get("/slo")
 async def get_slo_status():
-    """Get current SLO status"""
+    """Get current SLO status."""
     return slo_tracker.get_slo_status()
 
 
@@ -454,7 +454,7 @@ async def get_slo_status():
 
 
 class SyntheticProbe:
-    """Runs synthetic probes against key endpoints"""
+    """Runs synthetic probes against key endpoints."""
 
     def __init__(self) -> None:
         self.base_url = os.getenv("API_BASE_URL", "http://localhost:8001")
@@ -484,7 +484,7 @@ class SyntheticProbe:
         }
 
     async def run_probe(self, probe_name: str) -> dict[str, Any]:
-        """Run a single synthetic probe"""
+        """Run a single synthetic probe."""
         if probe_name not in self.probes:
             return {"error": f"Unknown probe: {probe_name}"}
 
@@ -532,7 +532,7 @@ class SyntheticProbe:
                 }
 
     async def run_all_probes(self) -> list[dict[str, Any]]:
-        """Run all synthetic probes"""
+        """Run all synthetic probes."""
         tasks = [self.run_probe(name) for name in self.probes]
         results = await asyncio.gather(*tasks)
 
@@ -549,13 +549,13 @@ synthetic_probe = SyntheticProbe()
 
 @router.get("/probe/{probe_name}")
 async def run_single_probe(probe_name: str):
-    """Run a single synthetic probe"""
+    """Run a single synthetic probe."""
     return await synthetic_probe.run_probe(probe_name)
 
 
 @router.get("/probe")
 async def run_all_probes():
-    """Run all synthetic probes"""
+    """Run all synthetic probes."""
     results = await synthetic_probe.run_all_probes()
 
     all_success = all(r.get("success", False) for r in results)
@@ -571,41 +571,41 @@ async def run_all_probes():
 
 
 def track_barcode_scan(scan_type: str, result: str) -> None:
-    """Track barcode scan metrics"""
+    """Track barcode scan metrics."""
     barcode_scans_total.labels(type=scan_type, result=result).inc()
 
 
 def track_search_query(query_type: str) -> None:
-    """Track search query metrics"""
+    """Track search query metrics."""
     search_queries_total.labels(type=query_type).inc()
 
 
 def track_recall_found(severity: str) -> None:
-    """Track recall found metrics"""
+    """Track recall found metrics."""
     recalls_found_total.labels(severity=severity).inc()
 
 
 def track_rate_limit(endpoint: str, user: str, remaining: int) -> None:
-    """Track rate limit metrics"""
+    """Track rate limit metrics."""
     rate_limit_hits_total.labels(endpoint=endpoint, user=user).inc()
     rate_limit_remaining.labels(endpoint=endpoint, user=user).set(remaining)
 
 
 def track_cache_hit(cache_type: str) -> None:
-    """Track cache hit"""
+    """Track cache hit."""
     cache_hits_total.labels(cache_type=cache_type).inc()
 
 
 def track_cache_miss(cache_type: str) -> None:
-    """Track cache miss"""
+    """Track cache miss."""
     cache_misses_total.labels(cache_type=cache_type).inc()
 
 
 def track_cache_size(cache_type: str, size: int) -> None:
-    """Track cache size"""
+    """Track cache size."""
     cache_size.labels(cache_type=cache_type).set(size)
 
 
 def track_database_query(query_type: str, duration: float) -> None:
-    """Track database query metrics"""
+    """Track database query metrics."""
     database_query_duration_seconds.labels(query_type=query_type).observe(duration)

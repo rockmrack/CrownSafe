@@ -1,6 +1,6 @@
 """COMPREHENSIVE CHAT AGENT TEST SUITE
 Tests all possible scenarios for the BabyShield ChatAgent
-Date: October 10, 2025
+Date: October 10, 2025.
 
 Tests cover:
 1. Basic initialization and setup
@@ -40,9 +40,9 @@ print("=" * 80 + "\n")
 
 
 class MockLLMClient:
-    """Mock LLM client for testing without real API calls"""
+    """Mock LLM client for testing without real API calls."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.call_count = 0
         self.last_request = None
 
@@ -55,7 +55,7 @@ class MockLLMClient:
         response_schema: dict[str, Any],
         timeout: float = 8.0,
     ) -> dict[str, Any]:
-        """Mock chat_json method"""
+        """Mock chat_json method."""
         self.call_count += 1
         self.last_request = {
             "model": model,
@@ -261,8 +261,8 @@ class MockLLMClient:
 
 
 @pytest.mark.unit
-def test_01_chat_agent_initialization():
-    """Test 1: ChatAgent initialization with mock LLM"""
+def test_01_chat_agent_initialization() -> None:
+    """Test 1: ChatAgent initialization with mock LLM."""
     print("\n[TEST 1] ChatAgent - Initialization with Mock LLM")
 
     llm = MockLLMClient()
@@ -276,8 +276,8 @@ def test_01_chat_agent_initialization():
 
 
 @pytest.mark.unit
-def test_02_explanation_response_model():
-    """Test 2: ExplanationResponse model validation"""
+def test_02_explanation_response_model() -> None:
+    """Test 2: ExplanationResponse model validation."""
     print("\n[TEST 2] ExplanationResponse - Model Validation")
 
     response = ExplanationResponse(
@@ -297,8 +297,8 @@ def test_02_explanation_response_model():
 
 
 @pytest.mark.unit
-def test_03_evidence_item_model():
-    """Test 3: EvidenceItem model validation"""
+def test_03_evidence_item_model() -> None:
+    """Test 3: EvidenceItem model validation."""
     print("\n[TEST 3] EvidenceItem - Model Validation")
 
     evidence = EvidenceItem(type="recall", source="CPSC", id="REC-001", url="https://cpsc.gov/recall/001")
@@ -311,8 +311,8 @@ def test_03_evidence_item_model():
 
 
 @pytest.mark.unit
-def test_04_emergency_notice_model():
-    """Test 4: EmergencyNotice model validation"""
+def test_04_emergency_notice_model() -> None:
+    """Test 4: EmergencyNotice model validation."""
     print("\n[TEST 4] EmergencyNotice - Model Validation")
 
     emergency = EmergencyNotice(level="red", reason="Life-threatening", cta="Call 911")
@@ -325,8 +325,8 @@ def test_04_emergency_notice_model():
 
 
 @pytest.mark.unit
-def test_05_mock_llm_client():
-    """Test 5: Mock LLM client functionality"""
+def test_05_mock_llm_client() -> None:
+    """Test 5: Mock LLM client functionality."""
     print("\n[TEST 5] MockLLMClient - Functionality Test")
 
     llm = MockLLMClient()
@@ -352,8 +352,8 @@ def test_05_mock_llm_client():
 
 
 @pytest.mark.unit
-def test_06_intent_pregnancy_risk():
-    """Test 6: Intent classification - Pregnancy Risk"""
+def test_06_intent_pregnancy_risk() -> None:
+    """Test 6: Intent classification - Pregnancy Risk."""
     print("\n[TEST 6] Intent Classification - Pregnancy Risk")
 
     llm = MockLLMClient()
@@ -375,8 +375,8 @@ def test_06_intent_pregnancy_risk():
 
 
 @pytest.mark.unit
-def test_07_intent_allergy_question():
-    """Test 7: Intent classification - Allergy Question"""
+def test_07_intent_allergy_question() -> None:
+    """Test 7: Intent classification - Allergy Question."""
     print("\n[TEST 7] Intent Classification - Allergy Question")
 
     llm = MockLLMClient()
@@ -399,8 +399,8 @@ def test_07_intent_allergy_question():
 
 
 @pytest.mark.unit
-def test_08_intent_age_appropriateness():
-    """Test 8: Intent classification - Age Appropriateness"""
+def test_08_intent_age_appropriateness() -> None:
+    """Test 8: Intent classification - Age Appropriateness."""
     print("\n[TEST 8] Intent Classification - Age Appropriateness")
 
     llm = MockLLMClient()
@@ -422,8 +422,8 @@ def test_08_intent_age_appropriateness():
 
 
 @pytest.mark.unit
-def test_09_intent_ingredient_info():
-    """Test 9: Intent classification - Ingredient Info"""
+def test_09_intent_ingredient_info() -> None:
+    """Test 9: Intent classification - Ingredient Info."""
     print("\n[TEST 9] Intent Classification - Ingredient Info")
 
     llm = MockLLMClient()
@@ -445,8 +445,8 @@ def test_09_intent_ingredient_info():
 
 
 @pytest.mark.unit
-def test_10_intent_alternative_products():
-    """Test 10: Intent classification - Alternative Products"""
+def test_10_intent_alternative_products() -> None:
+    """Test 10: Intent classification - Alternative Products."""
     print("\n[TEST 10] Intent Classification - Alternative Products")
 
     llm = MockLLMClient()
@@ -468,8 +468,8 @@ def test_10_intent_alternative_products():
 
 
 @pytest.mark.unit
-def test_11_intent_recall_details():
-    """Test 11: Intent classification - Recall Details"""
+def test_11_intent_recall_details() -> None:
+    """Test 11: Intent classification - Recall Details."""
     print("\n[TEST 11] Intent Classification - Recall Details")
 
     llm = MockLLMClient()
@@ -492,8 +492,8 @@ def test_11_intent_recall_details():
 
 
 @pytest.mark.unit
-def test_12_intent_unclear():
-    """Test 12: Intent classification - Unclear Intent"""
+def test_12_intent_unclear() -> None:
+    """Test 12: Intent classification - Unclear Intent."""
     print("\n[TEST 12] Intent Classification - Unclear Intent")
 
     llm = MockLLMClient()
@@ -524,8 +524,8 @@ def test_12_intent_unclear():
 
 
 @pytest.mark.integration
-def test_13_emergency_choking():
-    """Test 13: Emergency detection - Choking"""
+def test_13_emergency_choking() -> None:
+    """Test 13: Emergency detection - Choking."""
     print("\n[TEST 13] Emergency Detection - Choking Scenario")
 
     llm = MockLLMClient()
@@ -542,8 +542,8 @@ def test_13_emergency_choking():
 
 
 @pytest.mark.integration
-def test_14_emergency_battery():
-    """Test 14: Emergency detection - Battery Ingestion"""
+def test_14_emergency_battery() -> None:
+    """Test 14: Emergency detection - Battery Ingestion."""
     print("\n[TEST 14] Emergency Detection - Battery Ingestion")
 
     llm = MockLLMClient()
@@ -560,8 +560,8 @@ def test_14_emergency_battery():
 
 
 @pytest.mark.integration
-def test_15_emergency_call_911():
-    """Test 15: Emergency detection - General Emergency"""
+def test_15_emergency_call_911() -> None:
+    """Test 15: Emergency detection - General Emergency."""
     print("\n[TEST 15] Emergency Detection - Call 911")
 
     llm = MockLLMClient()
@@ -583,8 +583,8 @@ def test_15_emergency_call_911():
 
 
 @pytest.mark.integration
-def test_16_allergen_peanuts():
-    """Test 16: Allergen detection - Peanuts"""
+def test_16_allergen_peanuts() -> None:
+    """Test 16: Allergen detection - Peanuts."""
     print("\n[TEST 16] Allergen Detection - Peanuts")
 
     llm = MockLLMClient()
@@ -601,8 +601,8 @@ def test_16_allergen_peanuts():
 
 
 @pytest.mark.integration
-def test_17_allergen_dairy():
-    """Test 17: Allergen detection - Dairy/Lactose"""
+def test_17_allergen_dairy() -> None:
+    """Test 17: Allergen detection - Dairy/Lactose."""
     print("\n[TEST 17] Allergen Detection - Dairy/Lactose")
 
     llm = MockLLMClient()
@@ -619,8 +619,8 @@ def test_17_allergen_dairy():
 
 
 @pytest.mark.integration
-def test_18_allergen_multiple():
-    """Test 18: Allergen detection - Multiple Allergens"""
+def test_18_allergen_multiple() -> None:
+    """Test 18: Allergen detection - Multiple Allergens."""
     print("\n[TEST 18] Allergen Detection - Multiple Allergens")
 
     llm = MockLLMClient()
@@ -645,8 +645,8 @@ def test_18_allergen_multiple():
 
 
 @pytest.mark.integration
-def test_19_age_newborn():
-    """Test 19: Age appropriateness - Newborn"""
+def test_19_age_newborn() -> None:
+    """Test 19: Age appropriateness - Newborn."""
     print("\n[TEST 19] Age Appropriateness - Newborn")
 
     llm = MockLLMClient()
@@ -663,8 +663,8 @@ def test_19_age_newborn():
 
 
 @pytest.mark.integration
-def test_20_age_specific_months():
-    """Test 20: Age appropriateness - Specific Months"""
+def test_20_age_specific_months() -> None:
+    """Test 20: Age appropriateness - Specific Months."""
     print("\n[TEST 20] Age Appropriateness - Specific Months (6 months)")
 
     llm = MockLLMClient()
@@ -681,8 +681,8 @@ def test_20_age_specific_months():
 
 
 @pytest.mark.integration
-def test_21_age_toddler():
-    """Test 21: Age appropriateness - Toddler"""
+def test_21_age_toddler() -> None:
+    """Test 21: Age appropriateness - Toddler."""
     print("\n[TEST 21] Age Appropriateness - Toddler (2 years)")
 
     llm = MockLLMClient()
@@ -704,8 +704,8 @@ def test_21_age_toddler():
 
 
 @pytest.mark.integration
-def test_22_pregnancy_safety():
-    """Test 22: Pregnancy safety concerns"""
+def test_22_pregnancy_safety() -> None:
+    """Test 22: Pregnancy safety concerns."""
     print("\n[TEST 22] Pregnancy Safety - General")
 
     llm = MockLLMClient()
@@ -722,8 +722,8 @@ def test_22_pregnancy_safety():
 
 
 @pytest.mark.integration
-def test_23_breastfeeding():
-    """Test 23: Breastfeeding safety"""
+def test_23_breastfeeding() -> None:
+    """Test 23: Breastfeeding safety."""
     print("\n[TEST 23] Breastfeeding Safety")
 
     llm = MockLLMClient()
@@ -740,8 +740,8 @@ def test_23_breastfeeding():
 
 
 @pytest.mark.integration
-def test_24_listeria_concern():
-    """Test 24: Listeria/Food safety in pregnancy"""
+def test_24_listeria_concern() -> None:
+    """Test 24: Listeria/Food safety in pregnancy."""
     print("\n[TEST 24] Pregnancy - Listeria Concern")
 
     llm = MockLLMClient()
@@ -763,8 +763,8 @@ def test_24_listeria_concern():
 
 
 @pytest.mark.integration
-def test_25_recall_check():
-    """Test 25: Recall information check"""
+def test_25_recall_check() -> None:
+    """Test 25: Recall information check."""
     print("\n[TEST 25] Recall Information - Check")
 
     llm = MockLLMClient()
@@ -781,8 +781,8 @@ def test_25_recall_check():
 
 
 @pytest.mark.integration
-def test_26_recall_with_evidence():
-    """Test 26: Recall with evidence citation"""
+def test_26_recall_with_evidence() -> None:
+    """Test 26: Recall with evidence citation."""
     print("\n[TEST 26] Recall Information - With Evidence")
 
     llm = MockLLMClient()
@@ -806,8 +806,8 @@ def test_26_recall_with_evidence():
 
 
 @pytest.mark.integration
-def test_27_alternative_products():
-    """Test 27: Alternative product recommendations"""
+def test_27_alternative_products() -> None:
+    """Test 27: Alternative product recommendations."""
     print("\n[TEST 27] Alternative Products - Recommendations")
 
     llm = MockLLMClient()
@@ -824,8 +824,8 @@ def test_27_alternative_products():
 
 
 @pytest.mark.integration
-def test_28_product_comparison():
-    """Test 28: Product comparison request"""
+def test_28_product_comparison() -> None:
+    """Test 28: Product comparison request."""
     print("\n[TEST 28] Alternative Products - Comparison")
 
     llm = MockLLMClient()
@@ -847,8 +847,8 @@ def test_28_product_comparison():
 
 
 @pytest.mark.integration
-def test_29_ingredient_list():
-    """Test 29: Ingredient information request"""
+def test_29_ingredient_list() -> None:
+    """Test 29: Ingredient information request."""
     print("\n[TEST 29] Ingredient Information - List")
 
     llm = MockLLMClient()
@@ -865,8 +865,8 @@ def test_29_ingredient_list():
 
 
 @pytest.mark.integration
-def test_30_specific_ingredient():
-    """Test 30: Specific ingredient check"""
+def test_30_specific_ingredient() -> None:
+    """Test 30: Specific ingredient check."""
     print("\n[TEST 30] Ingredient Information - Specific (BPA)")
 
     llm = MockLLMClient()
@@ -888,8 +888,8 @@ def test_30_specific_ingredient():
 
 
 @pytest.mark.unit
-def test_31_empty_query():
-    """Test 31: Handle empty query"""
+def test_31_empty_query() -> None:
+    """Test 31: Handle empty query."""
     print("\n[TEST 31] Edge Case - Empty Query")
 
     llm = MockLLMClient()
@@ -904,8 +904,8 @@ def test_31_empty_query():
 
 
 @pytest.mark.unit
-def test_32_none_query():
-    """Test 32: Handle None query"""
+def test_32_none_query() -> None:
+    """Test 32: Handle None query."""
     print("\n[TEST 32] Edge Case - None Query")
 
     llm = MockLLMClient()
@@ -920,8 +920,8 @@ def test_32_none_query():
 
 
 @pytest.mark.integration
-def test_33_very_long_query():
-    """Test 33: Handle very long query"""
+def test_33_very_long_query() -> None:
+    """Test 33: Handle very long query."""
     print("\n[TEST 33] Edge Case - Very Long Query")
 
     llm = MockLLMClient()
@@ -939,8 +939,8 @@ def test_33_very_long_query():
 
 
 @pytest.mark.integration
-def test_34_special_characters():
-    """Test 34: Handle special characters"""
+def test_34_special_characters() -> None:
+    """Test 34: Handle special characters."""
     print("\n[TEST 34] Edge Case - Special Characters")
 
     llm = MockLLMClient()
@@ -957,8 +957,8 @@ def test_34_special_characters():
 
 
 @pytest.mark.integration
-def test_35_mixed_language():
-    """Test 35: Handle potential mixed language"""
+def test_35_mixed_language() -> None:
+    """Test 35: Handle potential mixed language."""
     print("\n[TEST 35] Edge Case - Mixed Content")
 
     llm = MockLLMClient()
@@ -980,8 +980,8 @@ def test_35_mixed_language():
 
 
 @pytest.mark.integration
-def test_36_suggested_questions():
-    """Test 36: Suggested questions generation"""
+def test_36_suggested_questions() -> None:
+    """Test 36: Suggested questions generation."""
     print("\n[TEST 36] Conversation Flow - Suggested Questions")
 
     llm = MockLLMClient()
@@ -1001,8 +1001,8 @@ def test_36_suggested_questions():
 
 
 @pytest.mark.integration
-def test_37_disclaimer_present():
-    """Test 37: Disclaimer always present"""
+def test_37_disclaimer_present() -> None:
+    """Test 37: Disclaimer always present."""
     print("\n[TEST 37] Conversation Flow - Disclaimer Present")
 
     llm = MockLLMClient()
@@ -1021,8 +1021,8 @@ def test_37_disclaimer_present():
 
 
 @pytest.mark.integration
-def test_38_response_structure():
-    """Test 38: Response structure validation"""
+def test_38_response_structure() -> None:
+    """Test 38: Response structure validation."""
     print("\n[TEST 38] Conversation Flow - Response Structure")
 
     llm = MockLLMClient()
@@ -1046,8 +1046,8 @@ def test_38_response_structure():
 # ============================================================================
 
 
-def test_39_final_summary():
-    """Test 39: Print comprehensive test summary"""
+def test_39_final_summary() -> None:
+    """Test 39: Print comprehensive test summary."""
     print("\n" + "=" * 80)
     print("CHAT AGENT TEST SUMMARY")
     print("=" * 80)

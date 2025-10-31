@@ -1,4 +1,4 @@
-"""Add monitoring and notification tables
+"""Add monitoring and notification tables.
 
 Revision ID: 20250105_monitoring_notifications
 Revises: 20250904_add_report_records
@@ -17,7 +17,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     # Create password_reset_tokens table
     op.create_table(
         "password_reset_tokens",
@@ -122,7 +122,7 @@ def upgrade():
     )
 
 
-def downgrade():
+def downgrade() -> None:
     op.drop_table("monitoring_runs")
     op.drop_table("monitored_products")
     op.drop_table("notification_history")

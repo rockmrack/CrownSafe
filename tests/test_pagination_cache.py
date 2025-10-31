@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Test suite for pagination and caching functionality (Task 5)
-Tests keyset pagination, snapshot isolation, cursor security, and HTTP caching
+Tests keyset pagination, snapshot isolation, cursor security, and HTTP caching.
 """
 
 import os
@@ -15,16 +15,16 @@ HEADERS = {"Content-Type": "application/json"}
 
 
 class PaginationCacheTester:
-    """Test suite for pagination and caching features"""
+    """Test suite for pagination and caching features."""
 
-    def __init__(self, base_url: str = BASE_URL):
+    def __init__(self, base_url: str = BASE_URL) -> None:
         self.base_url = base_url
         self.session = requests.Session()
         self.session.headers.update(HEADERS)
         self.test_results = []
 
     def test(self, condition: bool, message: str) -> bool:
-        """Record test result"""
+        """Record test result."""
         if condition:
             print(f"✅ {message}")
             self.test_results.append(True)
@@ -34,7 +34,7 @@ class PaginationCacheTester:
         return condition
 
     def test_keyset_correctness(self) -> bool:
-        """Test 1: Keyset pagination has no duplicates or gaps"""
+        """Test 1: Keyset pagination has no duplicates or gaps."""
         print("\n📝 Test 1: Keyset Pagination Correctness")
 
         # Initial search
@@ -97,7 +97,7 @@ class PaginationCacheTester:
         return len(all_ids) == len(unique_ids)
 
     def test_snapshot_isolation(self) -> bool:
-        """Test 2: Snapshot isolation prevents mid-pagination drift"""
+        """Test 2: Snapshot isolation prevents mid-pagination drift."""
         print("\n📝 Test 2: Snapshot Isolation")
 
         # Note: This test requires the ability to insert data, which may not be possible
@@ -137,7 +137,7 @@ class PaginationCacheTester:
         return True
 
     def test_cursor_tampering(self) -> bool:
-        """Test 3: Tampered cursor returns 400 error"""
+        """Test 3: Tampered cursor returns 400 error."""
         print("\n📝 Test 3: Cursor Tampering Protection")
 
         # Get a valid cursor first
@@ -218,7 +218,7 @@ class PaginationCacheTester:
         return True
 
     def test_etag_search(self) -> bool:
-        """Test 4: Search endpoint returns 304 with matching ETag"""
+        """Test 4: Search endpoint returns 304 with matching ETag."""
         print("\n📝 Test 4: ETag Support for Search")
 
         # First request
@@ -257,7 +257,7 @@ class PaginationCacheTester:
         return True
 
     def test_etag_detail(self) -> bool:
-        """Test 5: Detail endpoint ETag and Last-Modified support"""
+        """Test 5: Detail endpoint ETag and Last-Modified support."""
         print("\n📝 Test 5: ETag for Detail Endpoint")
 
         # First, get a valid recall ID
@@ -322,7 +322,7 @@ class PaginationCacheTester:
         return True
 
     def test_cache_headers(self) -> bool:
-        """Test 6: Proper Cache-Control headers"""
+        """Test 6: Proper Cache-Control headers."""
         print("\n📝 Test 6: Cache-Control Headers")
 
         # Test search endpoint
@@ -352,7 +352,7 @@ class PaginationCacheTester:
         return True
 
     def test_performance(self) -> bool:
-        """Test 7: Pagination performance (no OFFSET degradation)"""
+        """Test 7: Pagination performance (no OFFSET degradation)."""
         print("\n📝 Test 7: Pagination Performance")
 
         # Measure time for different pages
@@ -395,7 +395,7 @@ class PaginationCacheTester:
         return True
 
     def run_all_tests(self) -> bool:
-        """Run all pagination and cache tests"""
+        """Run all pagination and cache tests."""
         print("=" * 60)
         print("🔍 PAGINATION & CACHE TEST SUITE")
         print("=" * 60)
@@ -439,8 +439,8 @@ class PaginationCacheTester:
         return all_passed
 
 
-def main():
-    """Main test runner"""
+def main() -> int:
+    """Main test runner."""
     tester = PaginationCacheTester()
     success = tester.run_all_tests()
     return 0 if success else 1

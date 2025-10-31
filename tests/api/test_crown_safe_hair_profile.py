@@ -1,5 +1,5 @@
 """Crown Safe - Hair Profile Endpoints Tests
-Tests for POST/GET/PUT/DELETE /api/v1/profiles endpoints
+Tests for POST/GET/PUT/DELETE /api/v1/profiles endpoints.
 
 Test Coverage:
 - Profile creation with valid data
@@ -24,13 +24,13 @@ from core_infra.database import User, get_db
 
 @pytest.fixture
 def client():
-    """FastAPI test client"""
+    """FastAPI test client."""
     return TestClient(app)
 
 
 @pytest.fixture
 def test_user(db_session: Session):
-    """Create test user for authentication"""
+    """Create test user for authentication."""
     user = User(
         email="test_profile@crownsafe.com",
         username="test_profile",
@@ -45,14 +45,14 @@ def test_user(db_session: Session):
 
 @pytest.fixture
 def auth_headers(test_user):
-    """Generate authentication headers"""
+    """Generate authentication headers."""
     token = create_access_token(data={"sub": str(test_user.id)})
     return {"Authorization": f"Bearer {token}"}
 
 
 @pytest.fixture
 def db_session():
-    """Database session fixture"""
+    """Database session fixture."""
     db = next(get_db())
     try:
         yield db
@@ -67,8 +67,8 @@ def db_session():
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_create_hair_profile_success(client, auth_headers, test_user, db_session):
-    """Test creating hair profile with valid data"""
+def test_create_hair_profile_success(client, auth_headers, test_user, db_session) -> None:
+    """Test creating hair profile with valid data."""
     profile_data = {
         "hair_type": "4C",
         "porosity": "Low",
@@ -96,8 +96,8 @@ def test_create_hair_profile_success(client, auth_headers, test_user, db_session
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_create_duplicate_profile_fails(client, auth_headers, test_user, db_session):
-    """Test that creating duplicate profile fails"""
+def test_create_duplicate_profile_fails(client, auth_headers, test_user, db_session) -> None:
+    """Test that creating duplicate profile fails."""
     profile_data = {
         "hair_type": "4B",
         "porosity": "Medium",
@@ -119,8 +119,8 @@ def test_create_duplicate_profile_fails(client, auth_headers, test_user, db_sess
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_create_profile_invalid_hair_type(client, auth_headers):
-    """Test creating profile with invalid hair type"""
+def test_create_profile_invalid_hair_type(client, auth_headers) -> None:
+    """Test creating profile with invalid hair type."""
     profile_data = {
         "hair_type": "5Z",  # Invalid
         "porosity": "Low",
@@ -136,8 +136,8 @@ def test_create_profile_invalid_hair_type(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_create_profile_unauthenticated(client):
-    """Test creating profile without authentication"""
+def test_create_profile_unauthenticated(client) -> None:
+    """Test creating profile without authentication."""
     profile_data = {
         "hair_type": "4C",
         "porosity": "Low",
@@ -158,8 +158,8 @@ def test_create_profile_unauthenticated(client):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_get_hair_profile_success(client, auth_headers, test_user, db_session):
-    """Test retrieving own hair profile"""
+def test_get_hair_profile_success(client, auth_headers, test_user, db_session) -> None:
+    """Test retrieving own hair profile."""
     # Create profile first
     profile = HairProfileModel(
         user_id=test_user.id,
@@ -186,16 +186,16 @@ def test_get_hair_profile_success(client, auth_headers, test_user, db_session):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_get_profile_not_found(client, auth_headers):
-    """Test retrieving non-existent profile"""
+def test_get_profile_not_found(client, auth_headers) -> None:
+    """Test retrieving non-existent profile."""
     response = client.get("/api/v1/profiles/99999", headers=auth_headers)
     assert response.status_code == 404
 
 
 @pytest.mark.api
 @pytest.mark.security
-def test_get_profile_unauthorized_access(client, auth_headers, test_user, db_session):
-    """Test that users cannot access other users' profiles"""
+def test_get_profile_unauthorized_access(client, auth_headers, test_user, db_session) -> None:
+    """Test that users cannot access other users' profiles."""
     # Create another user's profile
     other_user = User(
         email="other@crownsafe.com",
@@ -231,8 +231,8 @@ def test_get_profile_unauthorized_access(client, auth_headers, test_user, db_ses
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_update_hair_profile_success(client, auth_headers, test_user, db_session):
-    """Test updating hair profile with partial data"""
+def test_update_hair_profile_success(client, auth_headers, test_user, db_session) -> None:
+    """Test updating hair profile with partial data."""
     # Create profile
     profile = HairProfileModel(
         user_id=test_user.id,
@@ -262,8 +262,8 @@ def test_update_hair_profile_success(client, auth_headers, test_user, db_session
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_update_profile_not_found(client, auth_headers):
-    """Test updating non-existent profile"""
+def test_update_profile_not_found(client, auth_headers) -> None:
+    """Test updating non-existent profile."""
     update_data = {"porosity": "High"}
     response = client.put("/api/v1/profiles/99999", json=update_data, headers=auth_headers)
     assert response.status_code == 404
@@ -271,8 +271,8 @@ def test_update_profile_not_found(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.security
-def test_update_profile_unauthorized(client, auth_headers, test_user, db_session):
-    """Test that users cannot update other users' profiles"""
+def test_update_profile_unauthorized(client, auth_headers, test_user, db_session) -> None:
+    """Test that users cannot update other users' profiles."""
     # Create another user's profile
     other_user = User(
         email="other2@crownsafe.com",
@@ -309,8 +309,8 @@ def test_update_profile_unauthorized(client, auth_headers, test_user, db_session
 
 @pytest.mark.api
 @pytest.mark.privacy
-def test_delete_hair_profile_success(client, auth_headers, test_user, db_session):
-    """Test deleting hair profile (GDPR compliance)"""
+def test_delete_hair_profile_success(client, auth_headers, test_user, db_session) -> None:
+    """Test deleting hair profile (GDPR compliance)."""
     # Create profile
     profile = HairProfileModel(
         user_id=test_user.id,
@@ -339,16 +339,16 @@ def test_delete_hair_profile_success(client, auth_headers, test_user, db_session
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_delete_profile_not_found(client, auth_headers):
-    """Test deleting non-existent profile"""
+def test_delete_profile_not_found(client, auth_headers) -> None:
+    """Test deleting non-existent profile."""
     response = client.delete("/api/v1/profiles/99999", headers=auth_headers)
     assert response.status_code == 404
 
 
 @pytest.mark.api
 @pytest.mark.security
-def test_delete_profile_unauthorized(client, auth_headers, test_user, db_session):
-    """Test that users cannot delete other users' profiles"""
+def test_delete_profile_unauthorized(client, auth_headers, test_user, db_session) -> None:
+    """Test that users cannot delete other users' profiles."""
     # Create another user's profile
     other_user = User(
         email="other3@crownsafe.com",
@@ -384,8 +384,8 @@ def test_delete_profile_unauthorized(client, auth_headers, test_user, db_session
 
 @pytest.mark.api
 @pytest.mark.edge_cases
-def test_create_profile_with_empty_arrays(client, auth_headers):
-    """Test creating profile with empty arrays (valid)"""
+def test_create_profile_with_empty_arrays(client, auth_headers) -> None:
+    """Test creating profile with empty arrays (valid)."""
     profile_data = {
         "hair_type": "4B",
         "porosity": "Medium",
@@ -401,8 +401,8 @@ def test_create_profile_with_empty_arrays(client, auth_headers):
 
 @pytest.mark.api
 @pytest.mark.edge_cases
-def test_update_profile_with_no_changes(client, auth_headers, test_user, db_session):
-    """Test updating profile with no actual changes"""
+def test_update_profile_with_no_changes(client, auth_headers, test_user, db_session) -> None:
+    """Test updating profile with no actual changes."""
     # Create profile
     profile = HairProfileModel(
         user_id=test_user.id,

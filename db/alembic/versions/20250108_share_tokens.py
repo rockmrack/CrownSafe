@@ -1,4 +1,4 @@
-"""Add share tokens table for result sharing
+"""Add share tokens table for result sharing.
 
 Revision ID: 20250108_share_tokens
 Revises: 20250108_scan_history
@@ -16,7 +16,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     # Create share_tokens table
     op.create_table(
         "share_tokens",
@@ -58,7 +58,7 @@ def upgrade():
     op.create_index(op.f("ix_share_tokens_content_id"), "share_tokens", ["content_id"], unique=False)
 
 
-def downgrade():
+def downgrade() -> None:
     op.drop_index(op.f("ix_share_tokens_content_id"), table_name="share_tokens")
     op.drop_index(op.f("ix_share_tokens_created_by"), table_name="share_tokens")
     op.drop_index(op.f("ix_share_tokens_token"), table_name="share_tokens")

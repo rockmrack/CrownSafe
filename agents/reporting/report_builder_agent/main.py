@@ -40,7 +40,7 @@ except ImportError:
 
 # Environment setup
 def setup_environment():
-    """Setup environment variables with proper fallback"""
+    """Setup environment variables with proper fallback."""
     dotenv_paths = [os.path.join(project_root_main, ".env"), ".env"]
 
     for dotenv_path in dotenv_paths:
@@ -85,7 +85,7 @@ agent_logic_instance: ReportBuilderAgentLogic | None = None
 
 
 class ReportBuilderAgentManager:
-    """Main agent manager for ReportBuilderAgent with enhanced connection stability"""
+    """Main agent manager for ReportBuilderAgent with enhanced connection stability."""
 
     def __init__(self) -> None:
         self.mcp_client: MCPClient | None = None
@@ -97,7 +97,7 @@ class ReportBuilderAgentManager:
         self._health_check_task: asyncio.Task | None = None
 
     async def handle_incoming_message(self, message: MCPMessage) -> None:
-        """Handle incoming messages with proper response processing"""
+        """Handle incoming messages with proper response processing."""
         if not self.report_builder_logic or not self.mcp_client:
             logger.error("Logic/MCPClient instance missing in ReportBuilderAgent handler")
             return
@@ -133,7 +133,7 @@ class ReportBuilderAgentManager:
             await self._handle_message_error(message, e)
 
     async def _handle_logic_response(self, response: dict[str, Any], original_header: MCPHeader) -> None:
-        """Handle response from logic with proper validation - FIXED VERSION"""
+        """Handle response from logic with proper validation - FIXED VERSION."""
         try:
             # The response from logic is a flat structure with message_type and payload at top level
             if not isinstance(response, dict):
@@ -176,7 +176,7 @@ class ReportBuilderAgentManager:
             logger.error(f"Error handling logic response: {e}", exc_info=True)
 
     async def _handle_message_error(self, message: MCPMessage, error: Exception) -> None:
-        """Handle errors during message processing"""
+        """Handle errors during message processing."""
         try:
             if not message or not message.mcp_header:
                 logger.error("Cannot send error response: message/header missing")
@@ -214,7 +214,7 @@ class ReportBuilderAgentManager:
             logger.error(f"Failed to send error response: {send_error}", exc_info=True)
 
     async def connect_with_retry(self) -> bool:
-        """Connect to MCP server with exponential backoff retry logic"""
+        """Connect to MCP server with exponential backoff retry logic."""
         logger.info(f"Starting connection attempt for {AGENT_ID}")
 
         for attempt in range(1, MAX_CONNECT_RETRIES + 1):
@@ -271,7 +271,7 @@ class ReportBuilderAgentManager:
         return False
 
     async def _start_health_monitoring(self) -> None:
-        """Start periodic health check to monitor connection stability"""
+        """Start periodic health check to monitor connection stability."""
         if self._health_check_task and not self._health_check_task.done():
             self._health_check_task.cancel()
 
@@ -279,7 +279,7 @@ class ReportBuilderAgentManager:
         logger.debug(f"Started connection health monitoring for {AGENT_ID}")
 
     async def _connection_health_monitor(self) -> None:
-        """Monitor connection health and attempt reconnection if needed"""
+        """Monitor connection health and attempt reconnection if needed."""
         logger.debug(f"Connection health monitor started for {AGENT_ID}")
 
         while not self.stop_event.is_set():
@@ -309,7 +309,7 @@ class ReportBuilderAgentManager:
                 logger.error(f"Error in connection health monitor: {e}", exc_info=True)
 
     async def initialize_components(self) -> bool | None:
-        """Initialize ReportBuilderAgentLogic and MCPClient"""
+        """Initialize ReportBuilderAgentLogic and MCPClient."""
         try:
             # Initialize ReportBuilderAgentLogic
             self.report_builder_logic = ReportBuilderAgentLogic(
@@ -349,7 +349,7 @@ class ReportBuilderAgentManager:
             return False
 
     def setup_signal_handlers(self) -> None:
-        """Setup signal handlers for graceful shutdown"""
+        """Setup signal handlers for graceful shutdown."""
         try:
             loop = asyncio.get_running_loop()
 
@@ -369,11 +369,11 @@ class ReportBuilderAgentManager:
             logger.warning(f"Could not setup signal handlers: {e}")
 
     async def connect_and_register(self):
-        """Connect to MCP server and register agent with retry logic"""
+        """Connect to MCP server and register agent with retry logic."""
         return await self.connect_with_retry()
 
     async def run_main_loop(self) -> None:
-        """Main agent event loop with enhanced monitoring"""
+        """Main agent event loop with enhanced monitoring."""
         logger.info(f"{AGENT_ID} entering main event loop...")
 
         try:
@@ -391,7 +391,7 @@ class ReportBuilderAgentManager:
             logger.error(f"Error in main event loop: {e}", exc_info=True)
 
     async def shutdown(self) -> None:
-        """Graceful shutdown of all components"""
+        """Graceful shutdown of all components."""
         if self.shutdown_complete:
             logger.debug(f"{AGENT_ID} shutdown already in progress or complete")
             return
@@ -429,7 +429,7 @@ class ReportBuilderAgentManager:
 
 
 async def main() -> int | None:
-    """Main entry point with enhanced startup sequencing"""
+    """Main entry point with enhanced startup sequencing."""
     logger.info(f"🚀 Starting {AGENT_NAME} (ID: {AGENT_ID}, Version: {AGENT_VERSION})")
 
     agent_manager = ReportBuilderAgentManager()

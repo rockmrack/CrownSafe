@@ -1,7 +1,7 @@
-"""Enhanced Notification Endpoints - Push notifications, history, and device management"""
+"""Enhanced Notification Endpoints - Push notifications, history, and device management."""
 
 import logging
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
@@ -30,7 +30,7 @@ router = APIRouter(prefix="/api/v1/notifications", tags=["Notifications"])
 
 # Database Models
 class DeviceToken(Base):
-    """User device tokens for push notifications"""
+    """User device tokens for push notifications."""
 
     __tablename__ = "device_tokens"
 
@@ -63,7 +63,7 @@ class DeviceToken(Base):
 
 
 class NotificationHistory(Base):
-    """History of all notifications sent to users"""
+    """History of all notifications sent to users."""
 
     __tablename__ = "notification_history"
 
@@ -100,7 +100,7 @@ class NotificationHistory(Base):
 
 # Request/Response Models
 class RegisterDeviceRequest(AppModel):
-    """Register a device for push notifications"""
+    """Register a device for push notifications."""
 
     token: str
     platform: str  # ios, android, web
@@ -110,7 +110,7 @@ class RegisterDeviceRequest(AppModel):
 
 
 class NotificationPreferences(AppModel):
-    """User notification preferences"""
+    """User notification preferences."""
 
     quiet_hours_enabled: bool = False
     quiet_hours_start: str | None = None  # HH:MM
@@ -125,7 +125,7 @@ class NotificationPreferences(AppModel):
 
 
 class NotificationItem(AppModel):
-    """Single notification in history"""
+    """Single notification in history."""
 
     id: int
     type: str
@@ -139,7 +139,7 @@ class NotificationItem(AppModel):
 
 
 class SendNotificationRequest(AppModel):
-    """Send a notification to user"""
+    """Send a notification to user."""
 
     title: str
     body: str
@@ -150,7 +150,7 @@ class SendNotificationRequest(AppModel):
 
 # Firebase integration
 def get_firebase_app():
-    """Get or initialize Firebase app"""
+    """Get or initialize Firebase app."""
     try:
         import os
 
@@ -171,9 +171,8 @@ def get_firebase_app():
             app = firebase_admin.initialize_app(cred)
             logger.info("Firebase initialized successfully")
             return app
-        else:
-            logger.warning(f"Firebase credentials not found at {cred_path}")
-            return None
+        logger.warning(f"Firebase credentials not found at {cred_path}")
+        return None
 
     except Exception as e:
         logger.exception(f"Failed to initialize Firebase: {e}")
@@ -187,7 +186,7 @@ async def send_push_notification(
     data: dict | None = None,
     platform: str = "android",
 ) -> bool:
-    """Send push notification via Firebase"""
+    """Send push notification via Firebase."""
     try:
         from firebase_admin import messaging
 
@@ -230,7 +229,7 @@ async def register_device(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Register a device for push notifications"""
+    """Register a device for push notifications."""
     try:
         # Check if token already exists
         existing = db.query(DeviceToken).filter(DeviceToken.token == request.token).first()
@@ -270,7 +269,7 @@ async def register_device(
 
 @router.post("/device/register-dev", response_model=ApiResponse)
 async def register_device_dev(request: RegisterDeviceRequest):
-    """DEV OVERRIDE: Register device without authentication/database dependencies"""
+    """DEV OVERRIDE: Register device without authentication/database dependencies."""
     try:
         # Simulate device registration
         device_id = f"DEV-{request.token[:8].upper()}"
@@ -292,7 +291,7 @@ async def register_device_dev(request: RegisterDeviceRequest):
 
 @router.get("/devices-dev", response_model=ApiResponse)
 async def get_devices_dev():
-    """DEV OVERRIDE: Get devices without authentication/database dependencies"""
+    """DEV OVERRIDE: Get devices without authentication/database dependencies."""
     try:
         # Mock device data
         mock_devices = [
@@ -329,7 +328,7 @@ async def get_devices_dev():
 
 @router.delete("/device-dev/{token}", response_model=ApiResponse)
 async def unregister_device_dev(token: str):
-    """DEV OVERRIDE: Unregister device without authentication/database dependencies"""
+    """DEV OVERRIDE: Unregister device without authentication/database dependencies."""
     try:
         # Simulate device unregistration
         return ok(
@@ -346,7 +345,7 @@ async def unregister_device_dev(token: str):
 
 @router.get("/history-dev", response_model=ApiResponse)
 async def get_notification_history_dev():
-    """DEV OVERRIDE: Get notification history without authentication/database dependencies"""
+    """DEV OVERRIDE: Get notification history without authentication/database dependencies."""
     try:
         # Mock notification history
         mock_notifications = [
@@ -385,7 +384,7 @@ async def get_notification_history_dev():
 
 @router.put("/preferences-dev", response_model=ApiResponse)
 async def update_preferences_dev(request: dict):
-    """DEV OVERRIDE: Update notification preferences without authentication/database dependencies"""
+    """DEV OVERRIDE: Update notification preferences without authentication/database dependencies."""
     try:
         # Simulate preferences update
         return ok(
@@ -403,7 +402,7 @@ async def update_preferences_dev(request: dict):
 
 @router.post("/test-dev", response_model=ApiResponse)
 async def send_test_notification_dev(request: dict):
-    """DEV OVERRIDE: Send test notification without authentication/database dependencies"""
+    """DEV OVERRIDE: Send test notification without authentication/database dependencies."""
     try:
         # Simulate test notification
         notification_id = f"TEST-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
@@ -431,7 +430,7 @@ async def unregister_device(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Unregister a device from push notifications"""
+    """Unregister a device from push notifications."""
     try:
         device = (
             db.query(DeviceToken).filter(DeviceToken.token == token, DeviceToken.user_id == current_user.id).first()
@@ -441,8 +440,7 @@ async def unregister_device(
             device.is_active = False
             db.commit()
             return ok({"message": "Device unregistered successfully"})
-        else:
-            return fail("Device not found", code="NOT_FOUND", status=404)
+        return fail("Device not found", code="NOT_FOUND", status=404)
 
     except Exception as e:
         logger.error(f"Error unregistering device: {e}", exc_info=True)
@@ -451,7 +449,7 @@ async def unregister_device(
 
 @router.get("/devices", response_model=ApiResponse)
 async def get_registered_devices(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
-    """Get all registered devices for current user"""
+    """Get all registered devices for current user."""
     try:
         devices = db.query(DeviceToken).filter(DeviceToken.user_id == current_user.id, DeviceToken.is_active).all()
 
@@ -484,7 +482,7 @@ async def get_notification_history(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Get notification history with pagination"""
+    """Get notification history with pagination."""
     try:
         query = db.query(NotificationHistory).filter(NotificationHistory.user_id == current_user.id)
 
@@ -550,7 +548,7 @@ async def mark_notification_read(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Mark a notification as read"""
+    """Mark a notification as read."""
     try:
         notification = (
             db.query(NotificationHistory)
@@ -577,7 +575,7 @@ async def mark_notification_read(
 
 @router.post("/mark-all-read", response_model=ApiResponse)
 async def mark_all_notifications_read(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
-    """Mark all notifications as read"""
+    """Mark all notifications as read."""
     try:
         db.query(NotificationHistory).filter(
             NotificationHistory.user_id == current_user.id,
@@ -598,7 +596,7 @@ async def update_notification_preferences(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Update notification preferences for all user devices"""
+    """Update notification preferences for all user devices."""
     try:
         devices = db.query(DeviceToken).filter(DeviceToken.user_id == current_user.id, DeviceToken.is_active).all()
 
@@ -632,7 +630,7 @@ async def send_test_notification(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Send a test notification to all user devices"""
+    """Send a test notification to all user devices."""
     try:
         devices = db.query(DeviceToken).filter(DeviceToken.user_id == current_user.id, DeviceToken.is_active).all()
 

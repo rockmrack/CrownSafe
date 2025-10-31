@@ -1,7 +1,7 @@
-"""Chat memory CRUD operations - stub implementation for chat router"""
+"""Chat memory CRUD operations - stub implementation for chat router."""
 
 import json
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any, Union
 from uuid import UUID, uuid4
 
@@ -44,7 +44,7 @@ def _normalize_uuid_for_column(
 
 
 def get_profile(db: Session, user_id: UUID | None):
-    """Get user profile for chat personalization"""
+    """Get user profile for chat personalization."""
     if user_id is None:
         return None
     normalized_user_id = _normalize_uuid_for_column(UserProfile.user_id, user_id)
@@ -136,7 +136,7 @@ def log_message(
 
 
 def upsert_profile(db: Session, user_id: UUID, profile_data: dict[str, Any]):
-    """Update or insert user profile
+    """Update or insert user profile.
 
     Note: Converts UUID to appropriate type based on database.
     SQLite uses String(36), PostgreSQL uses UUID type.
@@ -180,7 +180,7 @@ def upsert_profile(db: Session, user_id: UUID, profile_data: dict[str, Any]):
 
 
 def mark_erase_requested(db: Session, user_id: Union[UUID, str]) -> None:
-    """Mark user data for erasure
+    """Mark user data for erasure.
 
     Creates profile if it doesn't exist.
 
@@ -209,7 +209,7 @@ def mark_erase_requested(db: Session, user_id: Union[UUID, str]) -> None:
 
 
 def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
-    """Purge all conversations for user
+    """Purge all conversations for user.
 
     Deletes all conversations and their associated messages (via cascade).
     Uses synchronize_session='fetch' to ensure ORM tracks the deletion properly.

@@ -1,10 +1,10 @@
 """Safety Data Connectors for CPSC, EU Safety Gate, and Commercial Sources
-Part of the Proactive Consumer Product Safety Framework
+Part of the Proactive Consumer Product Safety Framework.
 """
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 
 import aiohttp
 
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class SafetyDataRecord:
-    """Standardized safety data record from any source"""
+    """Standardized safety data record from any source."""
 
     source: str
     source_id: str
@@ -38,7 +38,7 @@ class SafetyDataRecord:
 
 class CPSCDataConnector:
     """Comprehensive CPSC data connector
-    Integrates Recalls, NEISS, Violations, and Penalties
+    Integrates Recalls, NEISS, Violations, and Penalties.
     """
 
     def __init__(self, api_key: str | None = None) -> None:
@@ -52,7 +52,7 @@ class CPSCDataConnector:
         end_date: datetime | None = None,
         limit: int = 1000,
     ) -> list[SafetyDataRecord]:
-        """Fetch recall data from CPSC Recall API"""
+        """Fetch recall data from CPSC Recall API."""
         logger.info("Fetching CPSC recall data...")
         records = []
 
@@ -117,7 +117,7 @@ class CPSCDataConnector:
         product_codes: list[int] | None = None,
     ) -> list[SafetyDataRecord]:
         """Fetch NEISS injury data
-        Note: NEISS data requires special access and processing
+        Note: NEISS data requires special access and processing.
         """
         logger.info("Fetching NEISS injury data...")
         records = []
@@ -139,7 +139,7 @@ class CPSCDataConnector:
         return records
 
     async def fetch_violations(self, company_name: str | None = None, limit: int = 1000) -> list[SafetyDataRecord]:
-        """Fetch violation data from CPSC"""
+        """Fetch violation data from CPSC."""
         logger.info("Fetching CPSC violation data...")
         records = []
 
@@ -225,7 +225,7 @@ class CPSCDataConnector:
         return articles
 
     def _parse_date(self, date_str: str) -> datetime | None:
-        """Parse CPSC date format"""
+        """Parse CPSC date format."""
         if not date_str:
             return None
         try:
@@ -240,22 +240,21 @@ class CPSCDataConnector:
         return None
 
     def _determine_severity(self, recall_data: dict) -> str:
-        """Determine severity based on CPSC data"""
+        """Determine severity based on CPSC data."""
         deaths = recall_data.get("Deaths", {}).get("Count", 0)
         injuries = recall_data.get("Injuries", {}).get("Count", 0)
 
         if deaths > 0:
             return "critical"
-        elif injuries > 10:
+        if injuries > 10:
             return "high"
-        elif injuries > 0:
+        if injuries > 0:
             return "medium"
-        else:
-            return "low"
+        return "low"
 
 
 class EUSafetyGateConnector:
-    """EU Safety Gate (RAPEX) data connector"""
+    """EU Safety Gate (RAPEX) data connector."""
 
     def __init__(self) -> None:
         self.base_url = "https://ec.europa.eu/safety-gate-api"
@@ -268,7 +267,7 @@ class EUSafetyGateConnector:
         risk_types: list[str] | None = None,
         limit: int = 1000,
     ) -> list[SafetyDataRecord]:
-        """Fetch alerts from EU Safety Gate"""
+        """Fetch alerts from EU Safety Gate."""
         logger.info("Fetching EU Safety Gate alerts...")
         records = []
 
@@ -311,7 +310,7 @@ class EUSafetyGateConnector:
         return records
 
     def _parse_feed_entry(self, entry) -> dict:
-        """Parse Atom feed entry"""
+        """Parse Atom feed entry."""
         # Extract structured data from entry
         data = {
             "id": entry.id,
@@ -331,7 +330,7 @@ class EUSafetyGateConnector:
 
 class CommercialDatabaseConnector:
     """Connector for commercial product databases
-    Integrates with UPC/EAN/GTIN lookup services
+    Integrates with UPC/EAN/GTIN lookup services.
     """
 
     def __init__(self, api_keys: dict[str, str] = None) -> None:
@@ -339,7 +338,7 @@ class CommercialDatabaseConnector:
 
     async def lookup_product_by_barcode(self, barcode: str) -> dict | None:
         """Look up product information by barcode
-        Tries multiple services in order of preference
+        Tries multiple services in order of preference.
         """
         # Try services in order
         services = [
@@ -361,7 +360,7 @@ class CommercialDatabaseConnector:
         return None
 
     async def _lookup_upcitemdb(self, barcode: str) -> dict | None:
-        """Look up in UPCitemdb"""
+        """Look up in UPCitemdb."""
         async with aiohttp.ClientSession() as session:
             url = "https://api.upcitemdb.com/prod/v1/lookup"
             params = {"upc": barcode}
@@ -383,26 +382,26 @@ class CommercialDatabaseConnector:
         return None
 
     async def _lookup_go_upc(self, barcode: str) -> dict | None:
-        """Look up in Go-UPC"""
+        """Look up in Go-UPC."""
         # Implementation for Go-UPC API
         return None
 
     async def _lookup_ean_search(self, barcode: str) -> dict | None:
-        """Look up in EAN-Search"""
+        """Look up in EAN-Search."""
         # Implementation for EAN-Search API
         return None
 
 
 class DataUnificationEngine:
     """Entity resolution and data unification engine
-    Creates golden records from multiple data sources
+    Creates golden records from multiple data sources.
     """
 
     def __init__(self) -> None:
         self.matching_threshold = 0.8
 
     def create_golden_record(self, records: list[SafetyDataRecord]) -> dict:
-        """Create a unified golden record from multiple sources"""
+        """Create a unified golden record from multiple sources."""
         if not records:
             return None
 
@@ -425,7 +424,7 @@ class DataUnificationEngine:
 
     def match_records(self, record1: SafetyDataRecord, record2: SafetyDataRecord) -> float:
         """Calculate match score between two records
-        Returns score between 0 and 1
+        Returns score between 0 and 1.
         """
         score = 0.0
         weights = {
@@ -461,7 +460,7 @@ class DataUnificationEngine:
         return score
 
     def _find_most_complete_record(self, records: list[SafetyDataRecord]) -> dict:
-        """Find the record with the most non-null fields"""
+        """Find the record with the most non-null fields."""
         best_record = None
         best_score = 0
 
@@ -474,7 +473,7 @@ class DataUnificationEngine:
         return best_record
 
     def _merge_record(self, golden: dict, record: SafetyDataRecord) -> None:
-        """Merge data from a record into the golden record"""
+        """Merge data from a record into the golden record."""
         for field, value in record.__dict__.items():
             if value is not None:
                 if field not in golden or golden[field] is None:
@@ -489,7 +488,7 @@ class DataUnificationEngine:
                         golden[field] = value
 
     def _calculate_confidence(self, golden: dict, source_records: list[SafetyDataRecord]) -> float:
-        """Calculate confidence score for the golden record"""
+        """Calculate confidence score for the golden record."""
         # Factors that increase confidence:
         # - Multiple sources agree
         # - Presence of unique identifiers (UPC, GTIN)
@@ -513,7 +512,7 @@ class DataUnificationEngine:
 
     def _string_similarity(self, str1: str, str2: str) -> float:
         """Calculate string similarity using Levenshtein distance
-        Returns value between 0 and 1
+        Returns value between 0 and 1.
         """
         if not str1 or not str2:
             return 0.0

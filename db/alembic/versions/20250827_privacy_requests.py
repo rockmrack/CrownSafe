@@ -1,4 +1,4 @@
-"""Create privacy_requests table
+"""Create privacy_requests table.
 
 Revision ID: 20250827_privacy_requests
 Revises: 20250827_admin_ingestion_runs
@@ -17,8 +17,8 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
-    """Create privacy_requests table for GDPR/CCPA compliance"""
+def upgrade() -> None:
+    """Create privacy_requests table for GDPR/CCPA compliance."""
     # Detect database dialect
     bind = op.get_bind()
     is_sqlite = bind.dialect.name == "sqlite"
@@ -122,8 +122,8 @@ def upgrade():
         )
 
 
-def downgrade():
-    """Drop privacy_requests table and indexes"""
+def downgrade() -> None:
+    """Drop privacy_requests table and indexes."""
     # Drop indexes
     op.drop_index("ix_privacy_kind_status", table_name="privacy_requests")
     op.drop_index("ix_privacy_submitted_at", table_name="privacy_requests")

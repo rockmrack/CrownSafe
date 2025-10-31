@@ -1,4 +1,4 @@
-"""Test "Safety Alerts" Screen from Mobile App Screenshot
+"""Test "Safety Alerts" Screen from Mobile App Screenshot.
 
 Tests three main sections:
 1. Critical Alerts - "View Full Report" button

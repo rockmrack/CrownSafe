@@ -4,16 +4,17 @@ from unittest.mock import patch
 import pytest
 
 from core.resilience import CircuitBreaker, call_with_timeout
+from typing import Never
 
 
-def test_circuit_breaker_allows_initially():
-    """Test that circuit breaker allows requests initially"""
+def test_circuit_breaker_allows_initially() -> None:
+    """Test that circuit breaker allows requests initially."""
     cb = CircuitBreaker(threshold=3, window_sec=60, cooldown_sec=30)
     assert cb.allow("test_key")
 
 
-def test_circuit_breaker_opens_after_failures():
-    """Test that circuit breaker opens after threshold failures"""
+def test_circuit_breaker_opens_after_failures() -> None:
+    """Test that circuit breaker opens after threshold failures."""
     cb = CircuitBreaker(threshold=2, window_sec=60, cooldown_sec=30)
 
     # Should allow initially
@@ -27,8 +28,8 @@ def test_circuit_breaker_opens_after_failures():
     assert not cb.allow("test_key")  # Opens after threshold reached
 
 
-def test_circuit_breaker_resets_on_success():
-    """Test that circuit breaker resets failure count on success"""
+def test_circuit_breaker_resets_on_success() -> None:
+    """Test that circuit breaker resets failure count on success."""
     cb = CircuitBreaker(threshold=3, window_sec=60, cooldown_sec=30)
 
     # Record some failures
@@ -43,8 +44,8 @@ def test_circuit_breaker_resets_on_success():
     assert cb.allow("test_key")
 
 
-def test_circuit_breaker_window_reset():
-    """Test that circuit breaker resets after window expires"""
+def test_circuit_breaker_window_reset() -> None:
+    """Test that circuit breaker resets after window expires."""
     cb = CircuitBreaker(threshold=2, window_sec=1, cooldown_sec=30)
 
     # Record failures
@@ -60,20 +61,20 @@ def test_circuit_breaker_window_reset():
     assert cb.allow("test_key")
 
 
-def test_call_with_timeout_success():
-    """Test successful function call with timeout"""
+def test_call_with_timeout_success() -> None:
+    """Test successful function call with timeout."""
 
-    def quick_function():
+    def quick_function() -> str:
         return "success"
 
     result = call_with_timeout(quick_function, 1.0)
     assert result == "success"
 
 
-def test_call_with_timeout_timeout():
-    """Test that timeout raises TimeoutError"""
+def test_call_with_timeout_timeout() -> None:
+    """Test that timeout raises TimeoutError."""
 
-    def slow_function():
+    def slow_function() -> str:
         time.sleep(2.0)
         return "too_late"
 
@@ -81,18 +82,18 @@ def test_call_with_timeout_timeout():
         call_with_timeout(slow_function, 0.1)
 
 
-def test_call_with_timeout_exception():
-    """Test that exceptions are propagated"""
+def test_call_with_timeout_exception() -> None:
+    """Test that exceptions are propagated."""
 
-    def failing_function():
+    def failing_function() -> Never:
         raise ValueError("test error")
 
     with pytest.raises(ValueError, match="test error"):
         call_with_timeout(failing_function, 1.0)
 
 
-def test_circuit_breaker_different_keys():
-    """Test that circuit breaker tracks different keys independently"""
+def test_circuit_breaker_different_keys() -> None:
+    """Test that circuit breaker tracks different keys independently."""
     cb = CircuitBreaker(threshold=2, window_sec=60, cooldown_sec=30)
 
     # Fail key1
@@ -114,8 +115,8 @@ def test_circuit_breaker_different_keys():
 
 
 @patch("core.resilience.monotonic")
-def test_circuit_breaker_cooldown_recovery(mock_monotonic):
-    """Test that circuit breaker recovers after cooldown period"""
+def test_circuit_breaker_cooldown_recovery(mock_monotonic) -> None:
+    """Test that circuit breaker recovers after cooldown period."""
     # Mock time progression: 2 failures at time 0, check at time 0, then check at time 150
     mock_times = [0, 0, 0, 150]  # 150 seconds later (after 120s cooldown)
     mock_monotonic.side_effect = mock_times

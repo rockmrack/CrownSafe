@@ -1,5 +1,5 @@
 """Unit tests for core_infra/soft_delete.py
-Tests soft delete functionality, mixins, query classes, and recycle bin operations
+Tests soft delete functionality, mixins, query classes, and recycle bin operations.
 """
 
 from datetime import datetime
@@ -19,7 +19,7 @@ from core_infra.soft_delete import (
 
 
 class TestModel(SoftDeleteMixin):
-    """Test model for soft delete functionality"""
+    """Test model for soft delete functionality."""
 
     __tablename__ = "test_model"
 
@@ -29,17 +29,17 @@ class TestModel(SoftDeleteMixin):
 
 
 class TestSoftDeleteMixin:
-    """Test SoftDeleteMixin functionality"""
+    """Test SoftDeleteMixin functionality."""
 
-    def test_soft_delete_columns(self):
-        """Test that soft delete columns are properly defined"""
+    def test_soft_delete_columns(self) -> None:
+        """Test that soft delete columns are properly defined."""
         # Check that columns are declared attributes
         assert hasattr(TestModel, "is_deleted")
         assert hasattr(TestModel, "deleted_at")
         assert hasattr(TestModel, "deleted_by")
 
-    def test_soft_delete_method(self):
-        """Test soft_delete method"""
+    def test_soft_delete_method(self) -> None:
+        """Test soft_delete method."""
         model = TestModel()
         model.id = 1
         model.name = "Test Item"
@@ -57,8 +57,8 @@ class TestSoftDeleteMixin:
         assert model.deleted_at is not None
         assert model.deleted_by == 123
 
-    def test_restore_method(self):
-        """Test restore method"""
+    def test_restore_method(self) -> None:
+        """Test restore method."""
         model = TestModel()
         model.id = 1
         model.name = "Test Item"
@@ -77,8 +77,8 @@ class TestSoftDeleteMixin:
         assert model.deleted_at is None
         assert model.deleted_by is None
 
-    def test_hard_delete_method(self):
-        """Test hard_delete method"""
+    def test_hard_delete_method(self) -> None:
+        """Test hard_delete method."""
         model = TestModel()
         model.id = 1
         model.name = "Test Item"
@@ -91,8 +91,8 @@ class TestSoftDeleteMixin:
         # Should call session.delete
         mock_session.delete.assert_called_once_with(model)
 
-    def test_query_active_classmethod(self):
-        """Test query_active class method"""
+    def test_query_active_classmethod(self) -> None:
+        """Test query_active class method."""
         mock_session = Mock()
         mock_query = Mock()
         mock_session.query.return_value = mock_query
@@ -103,8 +103,8 @@ class TestSoftDeleteMixin:
         mock_query.filter.assert_called_once()
         assert result == mock_query.filter.return_value
 
-    def test_query_deleted_classmethod(self):
-        """Test query_deleted class method"""
+    def test_query_deleted_classmethod(self) -> None:
+        """Test query_deleted class method."""
         mock_session = Mock()
         mock_query = Mock()
         mock_session.query.return_value = mock_query
@@ -115,8 +115,8 @@ class TestSoftDeleteMixin:
         mock_query.filter.assert_called_once()
         assert result == mock_query.filter.return_value
 
-    def test_query_all_classmethod(self):
-        """Test query_all class method"""
+    def test_query_all_classmethod(self) -> None:
+        """Test query_all class method."""
         mock_session = Mock()
         mock_query = Mock()
         mock_session.query.return_value = mock_query
@@ -128,23 +128,23 @@ class TestSoftDeleteMixin:
 
 
 class TestSoftDeleteQuery:
-    """Test SoftDeleteQuery functionality"""
+    """Test SoftDeleteQuery functionality."""
 
-    def test_init(self):
-        """Test SoftDeleteQuery initialization"""
+    def test_init(self) -> None:
+        """Test SoftDeleteQuery initialization."""
         query = SoftDeleteQuery()
         assert query._include_deleted is False
 
-    def test_include_deleted(self):
-        """Test include_deleted method"""
+    def test_include_deleted(self) -> None:
+        """Test include_deleted method."""
         query = SoftDeleteQuery()
         result = query.include_deleted()
 
         assert result == query
         assert query._include_deleted is True
 
-    def test_only_deleted(self):
-        """Test only_deleted method"""
+    def test_only_deleted(self) -> None:
+        """Test only_deleted method."""
         query = SoftDeleteQuery()
         mock_model = Mock()
         mock_model.is_deleted = Mock()
@@ -158,8 +158,8 @@ class TestSoftDeleteQuery:
         query.filter.assert_called_once()
         assert result == query.filter.return_value
 
-    def test_iter_without_include_deleted(self):
-        """Test __iter__ method without include_deleted"""
+    def test_iter_without_include_deleted(self) -> None:
+        """Test __iter__ method without include_deleted."""
 
         class TestQuery(SoftDeleteQuery):
             def __iter__(self):
@@ -178,8 +178,8 @@ class TestSoftDeleteQuery:
         query.filter.assert_called_once()
         assert result == query.filter.return_value.__iter__.return_value
 
-    def test_iter_with_include_deleted(self):
-        """Test __iter__ method with include_deleted"""
+    def test_iter_with_include_deleted(self) -> None:
+        """Test __iter__ method with include_deleted."""
 
         class TestQuery(SoftDeleteQuery):
             def __iter__(self):
@@ -194,8 +194,8 @@ class TestSoftDeleteQuery:
         query.filter.assert_not_called()
         assert result == "mocked_iter"
 
-    def test_all_without_include_deleted(self):
-        """Test all() method without include_deleted"""
+    def test_all_without_include_deleted(self) -> None:
+        """Test all() method without include_deleted."""
         query = SoftDeleteQuery()
         mock_model = Mock()
         mock_model.is_deleted = Mock()
@@ -209,8 +209,8 @@ class TestSoftDeleteQuery:
         query.filter.assert_called_once()
         assert result == query.filter.return_value.all.return_value
 
-    def test_all_with_include_deleted(self):
-        """Test all() method with include_deleted"""
+    def test_all_with_include_deleted(self) -> None:
+        """Test all() method with include_deleted."""
         query = SoftDeleteQuery()
         query._include_deleted = True
 
@@ -224,8 +224,8 @@ class TestSoftDeleteQuery:
             query.filter.assert_not_called()
             assert result == mock_super_all.return_value
 
-    def test_first_without_include_deleted(self):
-        """Test first() method without include_deleted"""
+    def test_first_without_include_deleted(self) -> None:
+        """Test first() method without include_deleted."""
         query = SoftDeleteQuery()
         mock_model = Mock()
         mock_model.is_deleted = Mock()
@@ -239,8 +239,8 @@ class TestSoftDeleteQuery:
         query.filter.assert_called_once()
         assert result == query.filter.return_value.first.return_value
 
-    def test_one_without_include_deleted(self):
-        """Test one() method without include_deleted"""
+    def test_one_without_include_deleted(self) -> None:
+        """Test one() method without include_deleted."""
         query = SoftDeleteQuery()
         mock_model = Mock()
         mock_model.is_deleted = Mock()
@@ -254,8 +254,8 @@ class TestSoftDeleteQuery:
         query.filter.assert_called_once()
         assert result == query.filter.return_value.one.return_value
 
-    def test_count_without_include_deleted(self):
-        """Test count() method without include_deleted"""
+    def test_count_without_include_deleted(self) -> None:
+        """Test count() method without include_deleted."""
         query = SoftDeleteQuery()
         mock_model = Mock()
         mock_model.is_deleted = Mock()
@@ -271,10 +271,10 @@ class TestSoftDeleteQuery:
 
 
 class TestSoftDeleteFilter:
-    """Test soft_delete_filter function"""
+    """Test soft_delete_filter function."""
 
-    def test_soft_delete_filter(self):
-        """Test soft_delete_filter event listener"""
+    def test_soft_delete_filter(self) -> None:
+        """Test soft_delete_filter event listener."""
         # This is more of an integration test
         # We'll test that the function can be called without error
         try:
@@ -286,16 +286,16 @@ class TestSoftDeleteFilter:
 
 
 class TestRecycleBin:
-    """Test RecycleBin functionality"""
+    """Test RecycleBin functionality."""
 
-    def test_init(self):
-        """Test RecycleBin initialization"""
+    def test_init(self) -> None:
+        """Test RecycleBin initialization."""
         mock_session = Mock()
         bin = RecycleBin(mock_session)
         assert bin.session == mock_session
 
-    def test_get_deleted_items(self):
-        """Test get_deleted_items method"""
+    def test_get_deleted_items(self) -> None:
+        """Test get_deleted_items method."""
         mock_session = Mock()
         mock_query = Mock()
         mock_session.query.return_value = mock_query
@@ -314,8 +314,8 @@ class TestRecycleBin:
         mock_query.filter.return_value.order_by.return_value.offset.assert_called_once_with(0)
         mock_query.filter.return_value.offset.return_value.limit.assert_called_once_with(10)
 
-    def test_get_deleted_items_invalid_model(self):
-        """Test get_deleted_items with model that doesn't support soft delete"""
+    def test_get_deleted_items_invalid_model(self) -> None:
+        """Test get_deleted_items with model that doesn't support soft delete."""
         mock_session = Mock()
         bin = RecycleBin(mock_session)
 
@@ -326,8 +326,8 @@ class TestRecycleBin:
         with pytest.raises(ValueError, match="doesn't support soft delete"):
             bin.get_deleted_items(NonSoftDeleteModel)
 
-    def test_restore_item(self):
-        """Test restore_item method"""
+    def test_restore_item(self) -> None:
+        """Test restore_item method."""
         mock_session = Mock()
         mock_item = Mock()
         mock_item.restore = Mock()
@@ -339,8 +339,8 @@ class TestRecycleBin:
         mock_item.restore.assert_called_once()
         mock_session.commit.assert_called_once()
 
-    def test_restore_item_failure(self):
-        """Test restore_item method with failure"""
+    def test_restore_item_failure(self) -> None:
+        """Test restore_item method with failure."""
         mock_session = Mock()
         mock_item = Mock()
         mock_item.restore = Mock(side_effect=Exception("Restore failed"))
@@ -352,8 +352,8 @@ class TestRecycleBin:
         mock_item.restore.assert_called_once()
         mock_session.rollback.assert_called_once()
 
-    def test_restore_item_invalid_item(self):
-        """Test restore_item with item that doesn't support restore"""
+    def test_restore_item_invalid_item(self) -> None:
+        """Test restore_item with item that doesn't support restore."""
         mock_session = Mock()
         mock_item = Mock()
         # Remove restore method
@@ -364,8 +364,8 @@ class TestRecycleBin:
         with pytest.raises(ValueError, match="doesn't support restore"):
             bin.restore_item(mock_item)
 
-    def test_restore_all(self):
-        """Test restore_all method"""
+    def test_restore_all(self) -> None:
+        """Test restore_all method."""
         mock_session = Mock()
         mock_query = Mock()
         mock_session.query.return_value = mock_query
@@ -380,8 +380,8 @@ class TestRecycleBin:
         mock_query.filter.return_value.update.assert_called_once()
         mock_session.commit.assert_called_once()
 
-    def test_empty_trash(self):
-        """Test empty_trash method"""
+    def test_empty_trash(self) -> None:
+        """Test empty_trash method."""
         mock_session = Mock()
         mock_query = Mock()
         mock_session.query.return_value = mock_query
@@ -400,8 +400,8 @@ class TestRecycleBin:
         assert mock_session.delete.call_count == 2
         mock_session.commit.assert_called_once()
 
-    def test_get_deletion_stats(self):
-        """Test get_deletion_stats method"""
+    def test_get_deletion_stats(self) -> None:
+        """Test get_deletion_stats method."""
         mock_session = Mock()
         mock_query = Mock()
         mock_session.query.return_value = mock_query
@@ -420,10 +420,10 @@ class TestRecycleBin:
 
 
 class TestCascadeSoftDelete:
-    """Test cascade_soft_delete function"""
+    """Test cascade_soft_delete function."""
 
-    def test_cascade_soft_delete_list(self):
-        """Test cascade_soft_delete with list of items"""
+    def test_cascade_soft_delete_list(self) -> None:
+        """Test cascade_soft_delete with list of items."""
         parent = Mock()
         parent.deleted_by = 123
 
@@ -439,8 +439,8 @@ class TestCascadeSoftDelete:
         item1.soft_delete.assert_called_once_with(deleted_by_id=123)
         item2.soft_delete.assert_called_once_with(deleted_by_id=123)
 
-    def test_cascade_soft_delete_single_item(self):
-        """Test cascade_soft_delete with single item"""
+    def test_cascade_soft_delete_single_item(self) -> None:
+        """Test cascade_soft_delete with single item."""
         parent = Mock()
         parent.deleted_by = 123
 
@@ -453,15 +453,15 @@ class TestCascadeSoftDelete:
 
         item.soft_delete.assert_called_once_with(deleted_by_id=123)
 
-    def test_cascade_soft_delete_no_attribute(self):
-        """Test cascade_soft_delete with non-existent attribute"""
+    def test_cascade_soft_delete_no_attribute(self) -> None:
+        """Test cascade_soft_delete with non-existent attribute."""
         parent = Mock()
 
         # Should not raise an exception
         cascade_soft_delete(parent, "non_existent_attribute")
 
-    def test_cascade_soft_delete_no_soft_delete_method(self):
-        """Test cascade_soft_delete with item without soft_delete method"""
+    def test_cascade_soft_delete_no_soft_delete_method(self) -> None:
+        """Test cascade_soft_delete with item without soft_delete method."""
         parent = Mock()
         parent.deleted_by = 123
 
@@ -476,10 +476,10 @@ class TestCascadeSoftDelete:
 
 
 class TestDeletionTracker:
-    """Test DeletionTracker functionality"""
+    """Test DeletionTracker functionality."""
 
-    def test_track_deletion(self):
-        """Test track_deletion method"""
+    def test_track_deletion(self) -> None:
+        """Test track_deletion method."""
         mock_session = Mock()
         user_id = 123
 
@@ -490,8 +490,8 @@ class TestDeletionTracker:
             # Should register a before_flush listener
             mock_event.listens_for.assert_called_once_with(mock_session, "before_flush")
 
-    def test_track_deletion_callback(self):
-        """Test the before_flush callback behavior"""
+    def test_track_deletion_callback(self) -> None:
+        """Test the before_flush callback behavior."""
         mock_session = Mock()
         user_id = 123
 

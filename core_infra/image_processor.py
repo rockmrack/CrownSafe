@@ -1,5 +1,5 @@
 """Image Processing Module for Visual Agent - Phase 2
-Handles OCR, barcode detection, label extraction with multiple providers
+Handles OCR, barcode detection, label extraction with multiple providers.
 """
 
 import hashlib
@@ -70,7 +70,7 @@ logger = logging.getLogger(__name__)
 
 
 class Provider(Enum):
-    """Available vision API providers"""
+    """Available vision API providers."""
 
     GOOGLE_VISION = "google_vision"
     AWS_REKOGNITION = "aws_rekognition"
@@ -81,7 +81,7 @@ class Provider(Enum):
 
 @dataclass
 class OCRResult:
-    """OCR extraction result"""
+    """OCR extraction result."""
 
     text: str
     confidence: float
@@ -92,7 +92,7 @@ class OCRResult:
 
 @dataclass
 class LabelResult:
-    """Image labeling/classification result"""
+    """Image labeling/classification result."""
 
     labels: list[dict[str, float]]  # [{"name": "baby bottle", "confidence": 0.92}]
     categories: list[str]
@@ -102,7 +102,7 @@ class LabelResult:
 
 @dataclass
 class ExtractionResult:
-    """Complete extraction result from image"""
+    """Complete extraction result from image."""
 
     # Core extractions
     ocr: OCRResult | None = None
@@ -134,7 +134,7 @@ class ExtractionResult:
 
 class ImageAnalysisService:
     """Unified image analysis service with multi-provider support
-    Implements abstraction layer for easy provider switching
+    Implements abstraction layer for easy provider switching.
     """
 
     def __init__(
@@ -143,7 +143,7 @@ class ImageAnalysisService:
         aws_region: str = "us-east-1",
         enable_caching: bool = True,
     ) -> None:
-        """Initialize image analysis service
+        """Initialize image analysis service.
 
         Args:
             google_credentials_path: Path to Google Cloud credentials JSON
@@ -182,7 +182,7 @@ class ImageAnalysisService:
         self._compile_patterns()
 
     def _compile_patterns(self) -> None:
-        """Compile regex patterns for extraction"""
+        """Compile regex patterns for extraction."""
         self.patterns = {
             "model": [
                 r"Model[:\s#]*([A-Z0-9\-]+)",
@@ -230,7 +230,7 @@ class ImageAnalysisService:
         providers: list[Provider] = None,
         extract_all: bool = True,
     ) -> ExtractionResult:
-        """Analyze image with specified providers
+        """Analyze image with specified providers.
 
         Args:
             image_data: Image bytes
@@ -293,7 +293,7 @@ class ImageAnalysisService:
         return result
 
     def _auto_select_providers(self) -> list[Provider]:
-        """Auto-select best available providers"""
+        """Auto-select best available providers."""
         providers = []
 
         # Prefer cloud providers for accuracy
@@ -314,7 +314,7 @@ class ImageAnalysisService:
         return providers
 
     async def _extract_barcodes(self, image_data: bytes) -> list[dict[str, Any]]:
-        """Extract barcodes using Phase 1 scanner"""
+        """Extract barcodes using Phase 1 scanner."""
         try:
             scan_results = await barcode_scanner.scan_image(image_data)
             barcodes = []
@@ -338,16 +338,16 @@ class ImageAnalysisService:
             return []
 
     async def _extract_text(self, image: Image.Image, providers: list[Provider]) -> OCRResult | None:
-        """Extract text using specified providers"""
+        """Extract text using specified providers."""
         for provider in providers:
             try:
                 if provider == Provider.GOOGLE_VISION and self.vision_client:
                     return await self._ocr_google_vision(image)
-                elif provider == Provider.AWS_REKOGNITION and self.rekognition_client:
+                if provider == Provider.AWS_REKOGNITION and self.rekognition_client:
                     return await self._ocr_aws_rekognition(image)
-                elif provider == Provider.TESSERACT and TESSERACT_AVAILABLE:
+                if provider == Provider.TESSERACT and TESSERACT_AVAILABLE:
                     return await self._ocr_tesseract(image)
-                elif provider == Provider.EASYOCR and self.easyocr_reader:
+                if provider == Provider.EASYOCR and self.easyocr_reader:
                     return await self._ocr_easyocr(image)
             except Exception as e:
                 logger.warning(f"OCR failed with {provider.value}: {e}")
@@ -356,7 +356,7 @@ class ImageAnalysisService:
         return None
 
     async def _ocr_google_vision(self, image: Image.Image) -> OCRResult:
-        """OCR using Google Cloud Vision"""
+        """OCR using Google Cloud Vision."""
         start_time = datetime.now()
 
         # Convert PIL to bytes
@@ -401,7 +401,7 @@ class ImageAnalysisService:
         return OCRResult(text="", confidence=0.0, provider="google_vision")
 
     async def _ocr_tesseract(self, image: Image.Image) -> OCRResult:
-        """OCR using Tesseract"""
+        """OCR using Tesseract."""
         start_time = datetime.now()
 
         # Convert to numpy array
@@ -434,12 +434,12 @@ class ImageAnalysisService:
         )
 
     async def _extract_labels(self, image_data: bytes, providers: list[Provider]) -> LabelResult | None:
-        """Extract image labels/tags"""
+        """Extract image labels/tags."""
         for provider in providers:
             try:
                 if provider == Provider.GOOGLE_VISION and self.vision_client:
                     return await self._labels_google_vision(image_data)
-                elif provider == Provider.AWS_REKOGNITION and self.rekognition_client:
+                if provider == Provider.AWS_REKOGNITION and self.rekognition_client:
                     return await self._labels_aws_rekognition(image_data)
             except Exception as e:
                 logger.warning(f"Label extraction failed with {provider.value}: {e}")
@@ -448,7 +448,7 @@ class ImageAnalysisService:
         return None
 
     async def _labels_google_vision(self, image_data: bytes) -> LabelResult:
-        """Extract labels using Google Vision"""
+        """Extract labels using Google Vision."""
         start_time = datetime.now()
 
         vision_image = vision.Image(content=image_data)
@@ -477,7 +477,7 @@ class ImageAnalysisService:
         )
 
     def _parse_product_info(self, text: str, result: ExtractionResult) -> None:
-        """Parse product information from OCR text"""
+        """Parse product information from OCR text."""
         if not text:
             return
 
@@ -524,7 +524,7 @@ class ImageAnalysisService:
                     break
 
     def _calculate_confidence(self, result: ExtractionResult) -> None:
-        """Calculate overall confidence score and level"""
+        """Calculate overall confidence score and level."""
         scores = []
 
         # OCR confidence
@@ -563,7 +563,7 @@ class ImageAnalysisService:
             result.confidence_level = "low"
 
     def _detect_issues(self, result: ExtractionResult, image: Image.Image) -> None:
-        """Detect potential issues with the image/extraction"""
+        """Detect potential issues with the image/extraction."""
         if not result.flags:
             result.flags = []
 
@@ -595,17 +595,17 @@ class ImageAnalysisService:
             result.flags.append("multiple_products_detected")
 
     def _check_cache(self, file_hash: str) -> ExtractionResult | None:
-        """Check cache for existing analysis"""
+        """Check cache for existing analysis."""
         # TODO: Implement cache lookup from database
         return None
 
     def _cache_result(self, file_hash: str, result: ExtractionResult) -> None:
-        """Cache analysis result"""
+        """Cache analysis result."""
         # TODO: Implement cache storage to database
         pass
 
     def detect_visual_defects(self, pil_image: Image) -> list[dict[str, Any]]:
-        """Detect visual defects using OpenCV computer vision
+        """Detect visual defects using OpenCV computer vision.
 
         Args:
             pil_image: PIL Image object
@@ -761,7 +761,7 @@ class ImageAnalysisService:
 
 # PII Redaction utility
 def redact_pii(text: str) -> str:
-    """Redact potential PII from text"""
+    """Redact potential PII from text."""
     if not text:
         return text
 

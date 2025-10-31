@@ -2,7 +2,7 @@
 """Test the enhanced report generation with the new improvements:
 1. Data Sources Checked section
 2. Actionable QR codes linking to live web version
-3. Conditional section visibility based on risk level
+3. Conditional section visibility based on risk level.
 """
 
 import os
@@ -15,8 +15,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from agents.reporting.report_builder_agent.agent_logic import ReportBuilderAgentLogic
 
 
-def test_product_safety_report():
-    """Test enhanced product safety report generation"""
+def test_product_safety_report() -> None:
+    """Test enhanced product safety report generation."""
     print("Testing Enhanced Product Safety Report Generation...")
 
     # Initialize the report builder

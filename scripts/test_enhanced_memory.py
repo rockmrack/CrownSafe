@@ -1,4 +1,4 @@
-"""Comprehensive test suite for EnhancedMemoryManager V2.0"""
+"""Comprehensive test suite for EnhancedMemoryManager V2.0."""
 
 import asyncio
 import logging
@@ -17,8 +17,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-async def test_enhanced_memory():
-    """Test all enhanced memory features"""
+async def test_enhanced_memory() -> bool | None:
+    """Test all enhanced memory features."""
     print("Testing EnhancedMemoryManager V2.0...")
 
     try:
@@ -86,8 +86,8 @@ async def test_enhanced_memory():
         return False
 
 
-async def test_basic_functionality():
-    """Test basic memory functionality"""
+async def test_basic_functionality() -> bool | None:
+    """Test basic memory functionality."""
     print("\n4. Testing basic functionality...")
 
     try:
@@ -114,8 +114,8 @@ async def test_basic_functionality():
         return False
 
 
-async def test_memory_integration():
-    """Test integration with existing memory data"""
+async def test_memory_integration() -> bool | None:
+    """Test integration with existing memory data."""
     print("\n5. Testing memory integration...")
 
     try:
@@ -145,8 +145,8 @@ async def test_memory_integration():
         return False
 
 
-async def run_all_tests():
-    """Run complete test suite"""
+async def run_all_tests() -> bool:
+    """Run complete test suite."""
     print("Running EnhancedMemoryManager V2.0 Test Suite")
     print("=" * 50)
 
@@ -175,9 +175,8 @@ async def run_all_tests():
     if passed == total:
         print("All tests passed! EnhancedMemoryManager V2.0 is ready for use.")
         return True
-    else:
-        print("Some tests failed. Please check the output above.")
-        return False
+    print("Some tests failed. Please check the output above.")
+    return False
 
 
 if __name__ == "__main__":

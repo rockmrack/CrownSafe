@@ -17,7 +17,7 @@ from core_infra.database import Role, User, create_tables, get_db_session  # noq
 logging.basicConfig(level=logging.INFO)
 
 
-def seed_users():
+def seed_users() -> None:
     print("\n--- Seeding Alpha Users and Roles ---")
     create_tables()  # Ensure tables exist
 

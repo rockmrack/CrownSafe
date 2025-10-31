@@ -35,7 +35,7 @@ except ImportError:
 
 # Environment setup
 def setup_environment():
-    """Setup environment variables with proper fallback"""
+    """Setup environment variables with proper fallback."""
     dotenv_paths = [
         os.path.join(project_root_main, ".env"),
         ".env",  # For running from project root
@@ -103,7 +103,7 @@ router_logic_instance: RouterLogic | None = None
 
 
 class RouterAgentManager:
-    """Main agent manager for RouterAgent"""
+    """Main agent manager for RouterAgent."""
 
     def __init__(self) -> None:
         self.mcp_client: MCPClient | None = None
@@ -112,7 +112,7 @@ class RouterAgentManager:
         self.shutdown_complete = False  # Flag to prevent multiple shutdown calls
 
     async def handle_incoming_message(self, message: MCPMessage) -> None:
-        """Handle incoming messages with proper response processing"""
+        """Handle incoming messages with proper response processing."""
         if not self.router_logic or not self.mcp_client:
             logger.error("Logic/MCPClient instance missing in RouterAgent handler during message processing.")
             return
@@ -153,7 +153,7 @@ class RouterAgentManager:
     # Kept for structural similarity if needed in future.
 
     async def initialize_components(self) -> bool | None:
-        """Initialize RouterLogic and MCPClient"""
+        """Initialize RouterLogic and MCPClient."""
         try:
             base_mcp_url = MCP_SERVER_URL
             if "/ws/" in base_mcp_url.lower():  # Ensure we get the base URL
@@ -183,7 +183,7 @@ class RouterAgentManager:
             return False
 
     def setup_signal_handlers(self) -> None:
-        """Setup signal handlers for graceful shutdown"""
+        """Setup signal handlers for graceful shutdown."""
         try:
             loop = asyncio.get_running_loop()
 
@@ -213,7 +213,7 @@ class RouterAgentManager:
             logger.warning(f"Could not setup signal handlers: {e}. This might be normal if not running in main thread.")
 
     async def connect_and_register(self) -> bool | None:
-        """Connect to MCP server and register agent"""
+        """Connect to MCP server and register agent."""
         if not self.mcp_client:
             logger.critical("MCPClient not initialized. Cannot connect.")
             return False
@@ -233,7 +233,7 @@ class RouterAgentManager:
             return False
 
     async def run_main_loop(self) -> None:
-        """Main agent event loop"""
+        """Main agent event loop."""
         if not self.mcp_client or not self.router_logic:
             logger.critical("Agent not initialized properly. Cannot run main loop.")
             return
@@ -248,7 +248,7 @@ class RouterAgentManager:
             logger.error(f"Error in main event loop for {AGENT_ID}: {e}", exc_info=True)
 
     async def shutdown(self) -> None:
-        """Graceful shutdown of all components"""
+        """Graceful shutdown of all components."""
         if self.shutdown_complete:
             logger.debug(f"{AGENT_ID} shutdown already in progress or completed.")
             return
@@ -274,7 +274,7 @@ class RouterAgentManager:
 
 
 async def main_async_runner() -> int | None:  # Renamed to avoid conflict with module-level main
-    """Main entry point for the agent"""
+    """Main entry point for the agent."""
     agent_manager = RouterAgentManager()
 
     # For direct script execution context, update globals if any part relies on them (legacy)

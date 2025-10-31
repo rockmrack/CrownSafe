@@ -7,14 +7,14 @@ import redis
 
 
 def check_all_redis_keys(pattern="*"):
-    """Check all Redis keys matching pattern"""
+    """Check all Redis keys matching pattern."""
     r = redis.Redis(host="localhost", port=6379, decode_responses=True)
     keys = r.keys(pattern)
     return keys
 
 
 def monitor_redis_for_workflow(workflow_id, duration=30):
-    """Monitor Redis for any appearance of the workflow ID"""
+    """Monitor Redis for any appearance of the workflow ID."""
     r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
     print(f"🔍 Monitoring Redis for workflow: {workflow_id}")
@@ -61,8 +61,8 @@ def monitor_redis_for_workflow(workflow_id, duration=30):
     return found_keys
 
 
-def check_commander_to_router_flow():
-    """Check if messages are flowing from Commander to Router"""
+def check_commander_to_router_flow() -> None:
+    """Check if messages are flowing from Commander to Router."""
     r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
     print("🔍 Checking message flow...\n")
@@ -88,8 +88,8 @@ def check_commander_to_router_flow():
                 print(f"   - {key} (TTL: {ttl}s)")
 
 
-def check_agent_queues():
-    """Check agent message queues"""
+def check_agent_queues() -> None:
+    """Check agent message queues."""
     r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
     print("\n🔍 Checking agent queues...\n")

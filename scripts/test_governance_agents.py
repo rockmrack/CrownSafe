@@ -12,7 +12,7 @@ from agents.governance.legalcontent_agent.agent_logic import LegalContentAgentLo
 logging.basicConfig(level=logging.INFO)
 
 
-def test_governance_agents():
+def test_governance_agents() -> None:
     print("--- Testing DataGovernanceAgent Logic ---")
     dg_logic = DataGovernanceAgentLogic(agent_id="test_dg_agent_01")
 

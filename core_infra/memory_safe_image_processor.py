@@ -1,5 +1,5 @@
 """Memory-safe image processing for BabyShield
-Prevents memory leaks and manages resources properly
+Prevents memory leaks and manages resources properly.
 """
 
 import gc
@@ -19,13 +19,13 @@ logger = logging.getLogger(__name__)
 
 # Track memory usage
 def get_memory_usage() -> float:
-    """Get current memory usage in MB"""
+    """Get current memory usage in MB."""
     process = psutil.Process()
     return process.memory_info().rss / 1024 / 1024
 
 
 def log_memory(func):
-    """Decorator to log memory usage"""
+    """Decorator to log memory usage."""
 
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -43,7 +43,7 @@ def log_memory(func):
 
 
 class MemorySafeImageProcessor:
-    """Memory-safe image processing with automatic cleanup"""
+    """Memory-safe image processing with automatic cleanup."""
 
     # Maximum image dimensions to prevent memory explosion
     MAX_WIDTH = 4096
@@ -55,11 +55,11 @@ class MemorySafeImageProcessor:
         self._open_resources = []
 
     def __del__(self) -> None:
-        """Cleanup on deletion"""
+        """Cleanup on deletion."""
         self.cleanup()
 
     def cleanup(self) -> None:
-        """Clean up all resources"""
+        """Clean up all resources."""
         # Clean temp files
         for temp_file in list(self._temp_files):
             try:
@@ -83,7 +83,7 @@ class MemorySafeImageProcessor:
 
     @contextmanager
     def process_image_safely(self, image_path: str):
-        """Context manager for safe image processing"""
+        """Context manager for safe image processing."""
         import cv2
 
         image = None
@@ -121,7 +121,7 @@ class MemorySafeImageProcessor:
 
     @log_memory
     def process_with_pil(self, image_bytes: bytes) -> dict[str, Any] | None:
-        """Process image with PIL, ensuring memory cleanup"""
+        """Process image with PIL, ensuring memory cleanup."""
         from PIL import Image
 
         img = None
@@ -155,7 +155,7 @@ class MemorySafeImageProcessor:
 
     @log_memory
     def extract_text_ocr(self, image_path: str) -> str | None:
-        """Extract text using OCR with memory management"""
+        """Extract text using OCR with memory management."""
         import pytesseract
         from PIL import Image
 
@@ -191,7 +191,7 @@ class MemorySafeImageProcessor:
 
     @contextmanager
     def temporary_file(self, suffix: str = ".tmp"):
-        """Create a temporary file that's automatically cleaned up"""
+        """Create a temporary file that's automatically cleaned up."""
         temp_file = None
         try:
             # Create temp file
@@ -212,7 +212,7 @@ class MemorySafeImageProcessor:
                     pass  # File might be in use or already deleted
 
     def detect_barcodes_safe(self, image_path: str) -> list:
-        """Detect barcodes with memory safety"""
+        """Detect barcodes with memory safety."""
         import cv2
         from pyzbar import pyzbar
 
@@ -247,19 +247,19 @@ class MemorySafeImageProcessor:
 
 
 class ImageMemoryManager:
-    """Manage memory for batch image processing"""
+    """Manage memory for batch image processing."""
 
     def __init__(self, max_memory_mb: int = 500) -> None:
         self.max_memory_mb = max_memory_mb
         self.processors = []
 
     def should_cleanup(self) -> bool:
-        """Check if cleanup is needed"""
+        """Check if cleanup is needed."""
         current_memory = get_memory_usage()
         return current_memory > self.max_memory_mb
 
     def process_batch(self, image_paths: list, process_func: callable) -> list:
-        """Process batch of images with memory management"""
+        """Process batch of images with memory management."""
         results = []
         processor = MemorySafeImageProcessor()
 
@@ -293,7 +293,7 @@ class ImageMemoryManager:
 
 # Memory-safe wrapper for existing functions
 def make_memory_safe(func):
-    """Decorator to make image processing functions memory-safe"""
+    """Decorator to make image processing functions memory-safe."""
 
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -325,7 +325,7 @@ def make_memory_safe(func):
 
 # Update existing image processor to use memory-safe version
 def patch_image_processor() -> None:
-    """Patch existing image processor with memory-safe version"""
+    """Patch existing image processor with memory-safe version."""
     try:
         from core_infra import image_processor
 
@@ -346,14 +346,14 @@ def patch_image_processor() -> None:
 
 # Resource monitoring
 class ResourceMonitor:
-    """Monitor resource usage and alert on issues"""
+    """Monitor resource usage and alert on issues."""
 
     def __init__(self, alert_memory_mb: int = 1000, alert_cpu_percent: int = 80) -> None:
         self.alert_memory_mb = alert_memory_mb
         self.alert_cpu_percent = alert_cpu_percent
 
     def check_resources(self) -> dict[str, Any]:
-        """Check current resource usage"""
+        """Check current resource usage."""
         process = psutil.Process()
 
         memory_mb = process.memory_info().rss / 1024 / 1024

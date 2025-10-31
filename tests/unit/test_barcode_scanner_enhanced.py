@@ -1,5 +1,5 @@
 """Unit tests for core_infra/barcode_scanner_enhanced.py
-Tests enhanced barcode scanner with multiple fallback methods
+Tests enhanced barcode scanner with multiple fallback methods.
 """
 
 from unittest.mock import Mock, patch
@@ -18,10 +18,10 @@ from core_infra.barcode_scanner_enhanced import (
 
 
 class TestBarcodeType:
-    """Test BarcodeType enum"""
+    """Test BarcodeType enum."""
 
-    def test_barcode_type_values(self):
-        """Test BarcodeType enum values"""
+    def test_barcode_type_values(self) -> None:
+        """Test BarcodeType enum values."""
         assert BarcodeType.QRCODE.value == "QRCODE"
         assert BarcodeType.EAN13.value == "EAN13"
         assert BarcodeType.EAN8.value == "EAN8"
@@ -34,10 +34,10 @@ class TestBarcodeType:
 
 
 class TestBarcodeResult:
-    """Test BarcodeResult dataclass"""
+    """Test BarcodeResult dataclass."""
 
-    def test_barcode_result_init(self):
-        """Test BarcodeResult initialization"""
+    def test_barcode_result_init(self) -> None:
+        """Test BarcodeResult initialization."""
         result = BarcodeResult(
             data="test_data",
             type=BarcodeType.QRCODE,
@@ -52,8 +52,8 @@ class TestBarcodeResult:
         assert result.confidence == 0.95
         assert result.method == "pyzbar"
 
-    def test_barcode_result_defaults(self):
-        """Test BarcodeResult with default values"""
+    def test_barcode_result_defaults(self) -> None:
+        """Test BarcodeResult with default values."""
         result = BarcodeResult(data="test_data", type=BarcodeType.QRCODE)
 
         assert result.data == "test_data"
@@ -64,10 +64,10 @@ class TestBarcodeResult:
 
 
 class TestEnhancedBarcodeScanner:
-    """Test EnhancedBarcodeScanner functionality"""
+    """Test EnhancedBarcodeScanner functionality."""
 
-    def test_init(self):
-        """Test EnhancedBarcodeScanner initialization"""
+    def test_init(self) -> None:
+        """Test EnhancedBarcodeScanner initialization."""
         scanner = EnhancedBarcodeScanner()
 
         assert scanner.logger is not None
@@ -75,8 +75,8 @@ class TestEnhancedBarcodeScanner:
 
     @patch("core_infra.barcode_scanner_enhanced.OPENCV_AVAILABLE", True)
     @patch("core_infra.barcode_scanner_enhanced.cv2")
-    def test_init_with_opencv(self, mock_cv2):
-        """Test initialization with OpenCV available"""
+    def test_init_with_opencv(self, mock_cv2) -> None:
+        """Test initialization with OpenCV available."""
         mock_cv2.QRCodeDetector.return_value = Mock()
         mock_cv2.barcode = Mock()
         mock_cv2.barcode.BarcodeDetector.return_value = Mock()
@@ -87,8 +87,8 @@ class TestEnhancedBarcodeScanner:
         assert scanner.barcode_detector is not None
 
     @patch("core_infra.barcode_scanner_enhanced.OPENCV_AVAILABLE", False)
-    def test_init_without_opencv(self):
-        """Test initialization without OpenCV"""
+    def test_init_without_opencv(self) -> None:
+        """Test initialization without OpenCV."""
         scanner = EnhancedBarcodeScanner()
 
         assert scanner.qr_detector is None
@@ -96,8 +96,8 @@ class TestEnhancedBarcodeScanner:
 
     @patch("core_infra.barcode_scanner_enhanced.PIL_AVAILABLE", True)
     @patch("core_infra.barcode_scanner_enhanced.Image")
-    def test_bytes_to_cv2_with_pil(self, mock_image):
-        """Test _bytes_to_cv2 with PIL available"""
+    def test_bytes_to_cv2_with_pil(self, mock_image) -> None:
+        """Test _bytes_to_cv2 with PIL available."""
         scanner = EnhancedBarcodeScanner()
 
         mock_img = Mock()
@@ -114,8 +114,8 @@ class TestEnhancedBarcodeScanner:
     @patch("core_infra.barcode_scanner_enhanced.PIL_AVAILABLE", False)
     @patch("core_infra.barcode_scanner_enhanced.OPENCV_AVAILABLE", True)
     @patch("core_infra.barcode_scanner_enhanced.cv2")
-    def test_bytes_to_cv2_with_opencv_only(self, mock_cv2):
-        """Test _bytes_to_cv2 with OpenCV only"""
+    def test_bytes_to_cv2_with_opencv_only(self, mock_cv2) -> None:
+        """Test _bytes_to_cv2 with OpenCV only."""
         scanner = EnhancedBarcodeScanner()
 
         mock_cv2.imdecode.return_value = np.array([[1, 2], [3, 4]])
@@ -128,8 +128,8 @@ class TestEnhancedBarcodeScanner:
 
     @patch("core_infra.barcode_scanner_enhanced.PIL_AVAILABLE", False)
     @patch("core_infra.barcode_scanner_enhanced.OPENCV_AVAILABLE", False)
-    def test_bytes_to_cv2_no_libraries(self):
-        """Test _bytes_to_cv2 with no libraries available"""
+    def test_bytes_to_cv2_no_libraries(self) -> None:
+        """Test _bytes_to_cv2 with no libraries available."""
         scanner = EnhancedBarcodeScanner()
 
         image_data = b"fake_image_data"
@@ -137,8 +137,8 @@ class TestEnhancedBarcodeScanner:
 
         assert result is None
 
-    def test_bytes_to_cv2_exception(self):
-        """Test _bytes_to_cv2 with exception"""
+    def test_bytes_to_cv2_exception(self) -> None:
+        """Test _bytes_to_cv2 with exception."""
         scanner = EnhancedBarcodeScanner()
 
         with patch("core_infra.barcode_scanner_enhanced.PIL_AVAILABLE", True):
@@ -150,8 +150,8 @@ class TestEnhancedBarcodeScanner:
 
                 assert result is None
 
-    def test_pyzbar_type_to_enum(self):
-        """Test _pyzbar_type_to_enum method"""
+    def test_pyzbar_type_to_enum(self) -> None:
+        """Test _pyzbar_type_to_enum method."""
         scanner = EnhancedBarcodeScanner()
 
         assert scanner._pyzbar_type_to_enum("QRCODE") == BarcodeType.QRCODE
@@ -165,8 +165,8 @@ class TestEnhancedBarcodeScanner:
 
     @patch("core_infra.barcode_scanner_enhanced.PYZBAR_AVAILABLE", True)
     @patch("core_infra.barcode_scanner_enhanced.pyzbar")
-    def test_scan_with_pyzbar_success(self, mock_pyzbar):
-        """Test _scan_with_pyzbar with success"""
+    def test_scan_with_pyzbar_success(self, mock_pyzbar) -> None:
+        """Test _scan_with_pyzbar with success."""
         scanner = EnhancedBarcodeScanner()
 
         # Mock decoded object
@@ -192,8 +192,8 @@ class TestEnhancedBarcodeScanner:
 
     @patch("core_infra.barcode_scanner_enhanced.PYZBAR_AVAILABLE", True)
     @patch("core_infra.barcode_scanner_enhanced.pyzbar")
-    def test_scan_with_pyzbar_exception(self, mock_pyzbar):
-        """Test _scan_with_pyzbar with exception"""
+    def test_scan_with_pyzbar_exception(self, mock_pyzbar) -> None:
+        """Test _scan_with_pyzbar with exception."""
         scanner = EnhancedBarcodeScanner()
 
         mock_pyzbar.decode.side_effect = Exception("PyZbar error")
@@ -204,8 +204,8 @@ class TestEnhancedBarcodeScanner:
         assert len(results) == 0
 
     @patch("core_infra.barcode_scanner_enhanced.OPENCV_AVAILABLE", True)
-    def test_scan_with_opencv_qr_success(self):
-        """Test _scan_with_opencv with QR code success"""
+    def test_scan_with_opencv_qr_success(self) -> None:
+        """Test _scan_with_opencv with QR code success."""
         scanner = EnhancedBarcodeScanner()
 
         # Mock QR detector
@@ -227,8 +227,8 @@ class TestEnhancedBarcodeScanner:
         assert results[0].confidence == 0.9
 
     @patch("core_infra.barcode_scanner_enhanced.OPENCV_AVAILABLE", True)
-    def test_scan_with_opencv_qr_no_data(self):
-        """Test _scan_with_opencv with QR detector but no data"""
+    def test_scan_with_opencv_qr_no_data(self) -> None:
+        """Test _scan_with_opencv with QR detector but no data."""
         scanner = EnhancedBarcodeScanner()
 
         # Mock QR detector returning no data
@@ -242,8 +242,8 @@ class TestEnhancedBarcodeScanner:
         assert len(results) == 0
 
     @patch("core_infra.barcode_scanner_enhanced.OPENCV_AVAILABLE", True)
-    def test_scan_with_opencv_barcode_success(self):
-        """Test _scan_with_opencv with barcode detector success"""
+    def test_scan_with_opencv_barcode_success(self) -> None:
+        """Test _scan_with_opencv with barcode detector success."""
         scanner = EnhancedBarcodeScanner()
 
         # Mock barcode detector
@@ -266,8 +266,8 @@ class TestEnhancedBarcodeScanner:
         assert results[0].confidence == 0.8
 
     @patch("core_infra.barcode_scanner_enhanced.OPENCV_AVAILABLE", True)
-    def test_scan_with_opencv_exception(self):
-        """Test _scan_with_opencv with exception"""
+    def test_scan_with_opencv_exception(self) -> None:
+        """Test _scan_with_opencv with exception."""
         scanner = EnhancedBarcodeScanner()
 
         # Mock QR detector that raises exception
@@ -281,8 +281,8 @@ class TestEnhancedBarcodeScanner:
         assert len(results) == 0
 
     @patch("core_infra.barcode_scanner_enhanced.PYZBAR_AVAILABLE", True)
-    def test_scan_image_pyzbar_success(self):
-        """Test scan_image with PyZbar success"""
+    def test_scan_image_pyzbar_success(self) -> None:
+        """Test scan_image with PyZbar success."""
         scanner = EnhancedBarcodeScanner()
 
         with patch.object(scanner, "_bytes_to_cv2") as mock_bytes_to_cv2:
@@ -299,8 +299,8 @@ class TestEnhancedBarcodeScanner:
 
     @patch("core_infra.barcode_scanner_enhanced.PYZBAR_AVAILABLE", False)
     @patch("core_infra.barcode_scanner_enhanced.OPENCV_AVAILABLE", True)
-    def test_scan_image_opencv_fallback(self):
-        """Test scan_image with OpenCV fallback"""
+    def test_scan_image_opencv_fallback(self) -> None:
+        """Test scan_image with OpenCV fallback."""
         scanner = EnhancedBarcodeScanner()
 
         with patch.object(scanner, "_bytes_to_cv2") as mock_bytes_to_cv2:
@@ -315,8 +315,8 @@ class TestEnhancedBarcodeScanner:
                 assert results[0].data == "test_data"
                 assert results[0].method == "opencv"
 
-    def test_scan_image_conversion_failure(self):
-        """Test scan_image with image conversion failure"""
+    def test_scan_image_conversion_failure(self) -> None:
+        """Test scan_image with image conversion failure."""
         scanner = EnhancedBarcodeScanner()
 
         with patch.object(scanner, "_bytes_to_cv2") as mock_bytes_to_cv2:
@@ -329,8 +329,8 @@ class TestEnhancedBarcodeScanner:
 
     @patch("core_infra.barcode_scanner_enhanced.QRCODE_AVAILABLE", True)
     @patch("core_infra.barcode_scanner_enhanced.qrcode")
-    def test_generate_qrcode_success(self, mock_qrcode):
-        """Test generate_qrcode with success"""
+    def test_generate_qrcode_success(self, mock_qrcode) -> None:
+        """Test generate_qrcode with success."""
         scanner = EnhancedBarcodeScanner()
 
         # Mock QR code generation
@@ -355,8 +355,8 @@ class TestEnhancedBarcodeScanner:
             mock_img.save.assert_called_once()
 
     @patch("core_infra.barcode_scanner_enhanced.QRCODE_AVAILABLE", False)
-    def test_generate_qrcode_not_available(self):
-        """Test generate_qrcode when QRCode library not available"""
+    def test_generate_qrcode_not_available(self) -> None:
+        """Test generate_qrcode when QRCode library not available."""
         scanner = EnhancedBarcodeScanner()
 
         with pytest.raises(ValueError, match="QRCode library not available"):
@@ -364,8 +364,8 @@ class TestEnhancedBarcodeScanner:
 
     @patch("core_infra.barcode_scanner_enhanced.BARCODE_GEN_AVAILABLE", True)
     @patch("core_infra.barcode_scanner_enhanced.python_barcode")
-    def test_generate_barcode_success(self, mock_barcode):
-        """Test generate_barcode with success"""
+    def test_generate_barcode_success(self, mock_barcode) -> None:
+        """Test generate_barcode with success."""
         scanner = EnhancedBarcodeScanner()
 
         # Mock barcode generation
@@ -390,15 +390,15 @@ class TestEnhancedBarcodeScanner:
                 mock_code.write.assert_called_once()
 
     @patch("core_infra.barcode_scanner_enhanced.BARCODE_GEN_AVAILABLE", False)
-    def test_generate_barcode_not_available(self):
-        """Test generate_barcode when barcode generation library not available"""
+    def test_generate_barcode_not_available(self) -> None:
+        """Test generate_barcode when barcode generation library not available."""
         scanner = EnhancedBarcodeScanner()
 
         with pytest.raises(ValueError, match="Barcode generation library not available"):
             scanner.generate_barcode("123456789")
 
-    def test_test_functionality(self):
-        """Test test_functionality method"""
+    def test_test_functionality(self) -> None:
+        """Test test_functionality method."""
         scanner = EnhancedBarcodeScanner()
 
         with patch("core_infra.barcode_scanner_enhanced.PYZBAR_AVAILABLE", True):
@@ -422,15 +422,15 @@ class TestEnhancedBarcodeScanner:
 
 
 class TestGlobalFunctions:
-    """Test global functions"""
+    """Test global functions."""
 
-    def test_enhanced_scanner_singleton(self):
-        """Test enhanced_scanner singleton instance"""
+    def test_enhanced_scanner_singleton(self) -> None:
+        """Test enhanced_scanner singleton instance."""
         assert enhanced_scanner is not None
         assert isinstance(enhanced_scanner, EnhancedBarcodeScanner)
 
-    def test_scan_barcode_function(self):
-        """Test scan_barcode function"""
+    def test_scan_barcode_function(self) -> None:
+        """Test scan_barcode function."""
         with patch.object(enhanced_scanner, "scan_image") as mock_scan_image:
             mock_scan_image.return_value = [BarcodeResult("test_data", BarcodeType.QRCODE, method="pyzbar")]
 
@@ -442,8 +442,8 @@ class TestGlobalFunctions:
             assert results[0].type.value == "QRCODE"
             assert results[0].method == "pyzbar"
 
-    def test_test_scanner_status_function(self):
-        """Test test_scanner_status function"""
+    def test_test_scanner_status_function(self) -> None:
+        """Test test_scanner_status function."""
         with patch.object(enhanced_scanner, "test_functionality") as mock_test_func:
             mock_test_func.return_value = {
                 "pyzbar": True,
@@ -461,8 +461,8 @@ class TestGlobalFunctions:
             assert "OpenCV Barcode" not in status["working_methods"]
             assert "Barcode scanning operational" in status["message"]
 
-    def test_test_scanner_status_not_working(self):
-        """Test test_scanner_status when no methods work"""
+    def test_test_scanner_status_not_working(self) -> None:
+        """Test test_scanner_status when no methods work."""
         with patch.object(enhanced_scanner, "test_functionality") as mock_test_func:
             mock_test_func.return_value = {
                 "pyzbar": False,
@@ -480,26 +480,26 @@ class TestGlobalFunctions:
 
 
 class TestEdgeCases:
-    """Test edge cases and error conditions"""
+    """Test edge cases and error conditions."""
 
-    def test_scan_image_empty_data(self):
-        """Test scan_image with empty data"""
+    def test_scan_image_empty_data(self) -> None:
+        """Test scan_image with empty data."""
         scanner = EnhancedBarcodeScanner()
 
         results = scanner.scan_image(b"")
 
         assert len(results) == 0
 
-    def test_scan_image_none_data(self):
-        """Test scan_image with None data"""
+    def test_scan_image_none_data(self) -> None:
+        """Test scan_image with None data."""
         scanner = EnhancedBarcodeScanner()
 
         results = scanner.scan_image(None)
 
         assert len(results) == 0
 
-    def test_generate_qrcode_empty_data(self):
-        """Test generate_qrcode with empty data"""
+    def test_generate_qrcode_empty_data(self) -> None:
+        """Test generate_qrcode with empty data."""
         scanner = EnhancedBarcodeScanner()
 
         with patch("core_infra.barcode_scanner_enhanced.QRCODE_AVAILABLE", True):
@@ -509,8 +509,8 @@ class TestEdgeCases:
 
                     assert result is not None
 
-    def test_generate_barcode_empty_data(self):
-        """Test generate_barcode with empty data"""
+    def test_generate_barcode_empty_data(self) -> None:
+        """Test generate_barcode with empty data."""
         scanner = EnhancedBarcodeScanner()
 
         with patch("core_infra.barcode_scanner_enhanced.BARCODE_GEN_AVAILABLE", True):
@@ -520,8 +520,8 @@ class TestEdgeCases:
 
                     assert result is not None
 
-    def test_scan_with_opencv_color_image(self):
-        """Test _scan_with_opencv with color image"""
+    def test_scan_with_opencv_color_image(self) -> None:
+        """Test _scan_with_opencv with color image."""
         scanner = EnhancedBarcodeScanner()
 
         with patch("core_infra.barcode_scanner_enhanced.OPENCV_AVAILABLE", True):

@@ -1,10 +1,10 @@
 """Safety Reports API Endpoints
-Generate comprehensive safety summaries for users
+Generate comprehensive safety summaries for users.
 """
 
 import logging
 import uuid
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
@@ -26,7 +26,7 @@ safety_reports_router = APIRouter(prefix="/api/v1/safety-reports", tags=["safety
 
 
 class SafetyReportRequest(BaseModel):
-    """Request model for generating safety reports"""
+    """Request model for generating safety reports."""
 
     user_id: int = Field(..., description="User ID")
     report_type: str = Field(
@@ -39,7 +39,7 @@ class SafetyReportRequest(BaseModel):
 
 
 class SafetySummaryStats(BaseModel):
-    """Summary statistics for safety report"""
+    """Summary statistics for safety report."""
 
     total_scans: int
     unique_products: int
@@ -53,7 +53,7 @@ class SafetySummaryStats(BaseModel):
 
 
 class ProductScanSummary(BaseModel):
-    """Summary of a scanned product"""
+    """Summary of a scanned product."""
 
     product_name: str
     brand: str | None
@@ -67,7 +67,7 @@ class ProductScanSummary(BaseModel):
 
 
 class NurseryProductCategory(BaseModel):
-    """Nursery product categorization"""
+    """Nursery product categorization."""
 
     category: str
     product_count: int
@@ -77,7 +77,7 @@ class NurseryProductCategory(BaseModel):
 
 
 class NurseryReportStats(BaseModel):
-    """Statistics specific to nursery safety audit"""
+    """Statistics specific to nursery safety audit."""
 
     total_products: int
     categories_audited: int
@@ -94,7 +94,7 @@ class NurseryReportStats(BaseModel):
 
 
 class SafetyReportResponse(BaseModel):
-    """Response model for safety report generation"""
+    """Response model for safety report generation."""
 
     success: bool
     report_id: str
@@ -113,7 +113,7 @@ async def generate_safety_report(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """Generate a comprehensive safety report for a user
+    """Generate a comprehensive safety report for a user.
 
     This is the main report generation endpoint that handles all report types.
     """
@@ -128,11 +128,10 @@ async def generate_safety_report(
         # Generate report based on type
         if request.report_type == "90_day":
             return await generate_90_day_report(request, background_tasks, db)
-        elif request.report_type == "quarterly_nursery":
+        if request.report_type == "quarterly_nursery":
             return await generate_quarterly_nursery_report(request, background_tasks, db)
-        else:
-            # Default to 90-day report
-            return await generate_90_day_report(request, background_tasks, db)
+        # Default to 90-day report
+        return await generate_90_day_report(request, background_tasks, db)
 
     except HTTPException:
         raise
@@ -143,7 +142,7 @@ async def generate_safety_report(
 
 @safety_reports_router.post("/generate-90-day-dev", response_model=ApiResponse)
 async def generate_90_day_report_dev(request: SafetyReportRequest) -> ApiResponse:
-    """Dev override version of 90-day report generation for testing"""
+    """Dev override version of 90-day report generation for testing."""
     try:
         # Check dev override for premium features
         from api.services.dev_override import dev_entitled
@@ -186,7 +185,7 @@ async def generate_90_day_report(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ) -> ApiResponse:
-    """Generate a comprehensive 90-day safety summary report
+    """Generate a comprehensive 90-day safety summary report.
 
     Includes:
     - All products scanned in the last 90 days
@@ -411,7 +410,7 @@ async def get_user_reports_dev(
     sort: str = "created_at",
     order: str = "desc",
 ) -> ApiResponse:
-    """Dev override version of my-reports endpoint for testing"""
+    """Dev override version of my-reports endpoint for testing."""
     try:
         # Mock report data for testing
         mock_reports = [
@@ -467,7 +466,7 @@ async def get_user_reports_dev(
 
 @safety_reports_router.get("/my-reports", response_model=ApiResponse)
 async def get_my_reports(user_id: int, limit: int = 10, db: Session = Depends(get_db)) -> ApiResponse:
-    """Get list of user's generated safety reports"""
+    """Get list of user's generated safety reports."""
     try:
         reports = (
             db.query(SafetyReport)
@@ -501,7 +500,7 @@ async def get_my_reports(user_id: int, limit: int = 10, db: Session = Depends(ge
 
 @safety_reports_router.get("/report-dev/{report_id}", response_model=ApiResponse)
 async def get_report_details_dev(report_id: str, user_id: int) -> ApiResponse:
-    """Dev override version of report details endpoint for testing"""
+    """Dev override version of report details endpoint for testing."""
     try:
         # Mock report details
         mock_report = {
@@ -552,7 +551,7 @@ async def get_report_details_dev(report_id: str, user_id: int) -> ApiResponse:
 
 @safety_reports_router.get("/report/{report_id}", response_model=ApiResponse)
 async def get_report_details(report_id: str, db: Session = Depends(get_db)) -> ApiResponse:
-    """Get detailed information about a specific safety report"""
+    """Get detailed information about a specific safety report."""
     try:
         report = db.query(SafetyReport).filter(SafetyReport.report_id == report_id).first()
 
@@ -588,7 +587,7 @@ async def get_report_details(report_id: str, db: Session = Depends(get_db)) -> A
 @safety_reports_router.post("/track-scan", response_model=ApiResponse)
 async def track_scan(scan_data: dict[str, Any], db: Session = Depends(get_db)) -> ApiResponse:
     """Track a product scan in user's history
-    Called after each scan to build history for reports
+    Called after each scan to build history for reports.
     """
     try:
         # Validate required fields
@@ -640,7 +639,7 @@ async def track_scan(scan_data: dict[str, Any], db: Session = Depends(get_db)) -
 async def generate_quarterly_nursery_report_dev(
     request: SafetyReportRequest,
 ) -> ApiResponse:
-    """Dev override version of quarterly nursery report generation for testing"""
+    """Dev override version of quarterly nursery report generation for testing."""
     try:
         # Check dev override for premium features
         from api.services.dev_override import dev_entitled
@@ -686,7 +685,7 @@ async def generate_quarterly_nursery_report(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ) -> ApiResponse:
-    """Generate a comprehensive quarterly nursery safety audit report
+    """Generate a comprehensive quarterly nursery safety audit report.
 
     Provides:
     - Complete inventory of nursery products

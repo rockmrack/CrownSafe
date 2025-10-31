@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_ssl_context():
-    """Create SSL context for HTTPS connections with certificate verification disabled"""
+    """Create SSL context for HTTPS connections with certificate verification disabled."""
     ssl_context = ssl.create_default_context()
     ssl_context.check_hostname = False
     ssl_context.verify_mode = ssl.CERT_NONE
@@ -35,12 +35,12 @@ def create_ssl_context():
 
 
 class CPSCConnector:
-    """US Consumer Product Safety Commission - SaferProducts.gov API"""
+    """US Consumer Product Safety Commission - SaferProducts.gov API."""
 
     BASE_URL = "https://www.saferproducts.gov/RestWebServices/Recall"
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch recalls from CPSC SaferProducts API"""
+        """Fetch recalls from CPSC SaferProducts API."""
         logger.info("Fetching recent recalls from CPSC...")
         recalls: list[Recall] = []
         start_date = (datetime.now() - timedelta(days=365 * 5)).strftime("%Y-%m-%d")  # 5 years
@@ -94,7 +94,7 @@ class CPSCConnector:
 
 
 class FDAConnector:
-    """US Food and Drug Administration - OpenFDA API"""
+    """US Food and Drug Administration - OpenFDA API."""
 
     FOOD_URL = "https://api.fda.gov/food/enforcement.json"
     DEVICE_URL = "https://api.fda.gov/device/enforcement.json"
@@ -104,7 +104,7 @@ class FDAConnector:
         self.api_key = os.getenv("FDA_API_KEY")
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch recalls from FDA OpenFDA API"""
+        """Fetch recalls from FDA OpenFDA API."""
         if not self.api_key:
             logger.warning("FDA_API_KEY not set; skipping FDA recalls.")
             return []
@@ -164,12 +164,12 @@ class FDAConnector:
 
 
 class NHTSAConnector:
-    """US National Highway Traffic Safety Administration"""
+    """US National Highway Traffic Safety Administration."""
 
     BASE_URL = "https://api.nhtsa.gov/recalls/recallsByVehicle"
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch vehicle recalls from NHTSA"""
+        """Fetch vehicle recalls from NHTSA."""
         logger.info("Fetching recent recalls from NHTSA...")
         recalls: list[Recall] = []
 
@@ -219,12 +219,12 @@ class NHTSAConnector:
 
 
 class USDA_FSIS_Connector:
-    """US Department of Agriculture - Food Safety and Inspection Service"""
+    """US Department of Agriculture - Food Safety and Inspection Service."""
 
     BASE_URL = "https://www.fsis.usda.gov/fsis-content/api/recall"
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch food recalls from USDA FSIS"""
+        """Fetch food recalls from USDA FSIS."""
         logger.info("Fetching recent recalls from USDA FSIS...")
         recalls: list[Recall] = []
 
@@ -272,12 +272,12 @@ class USDA_FSIS_Connector:
 
 
 class HealthCanadaConnector:
-    """Health Canada - Consumer Product Recalls"""
+    """Health Canada - Consumer Product Recalls."""
 
     BASE_URL = "https://health-products.canada.ca/api/recalls"
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch recalls from Health Canada"""
+        """Fetch recalls from Health Canada."""
         logger.info("Fetching recent recalls from Health Canada...")
         recalls: list[Recall] = []
 
@@ -316,12 +316,12 @@ class HealthCanadaConnector:
 
 
 class CFIAConnector:
-    """Canadian Food Inspection Agency"""
+    """Canadian Food Inspection Agency."""
 
     BASE_URL = "https://inspection.canada.ca/eng/1351519587174/1351519588221"
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch food recalls from CFIA"""
+        """Fetch food recalls from CFIA."""
         logger.info("Fetching recent recalls from CFIA...")
         # Note: CFIA requires web scraping - placeholder implementation
         logger.warning("CFIA connector requires web scraping - not yet implemented")
@@ -329,12 +329,12 @@ class CFIAConnector:
 
 
 class TransportCanadaConnector:
-    """Transport Canada - Vehicle Recalls"""
+    """Transport Canada - Vehicle Recalls."""
 
     BASE_URL = "https://wwwapps.tc.gc.ca/Saf-Sec-Sur/7/VRDB-BDRV/search-recherche/menu.aspx"
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch vehicle recalls from Transport Canada"""
+        """Fetch vehicle recalls from Transport Canada."""
         logger.info("Fetching recent recalls from Transport Canada...")
         # Note: Requires web scraping - placeholder implementation
         logger.warning("Transport Canada connector requires web scraping - not yet implemented")
@@ -347,13 +347,13 @@ class TransportCanadaConnector:
 
 
 class EU_RAPEX_Connector:
-    """EU Safety Gate (RAPEX) - Product Safety Alerts"""
+    """EU Safety Gate (RAPEX) - Product Safety Alerts."""
 
     ENDPOINT = "https://public.opendatasoft.com/api/records/1.0/search/"
     DATASET = "eu-safety-gate-rapid-alert-system-for-dangerous-non-food-products"
 
     async def fetch_recent_recalls(self, limit: int = 100) -> list[Recall]:
-        """Fetch recalls from EU RAPEX"""
+        """Fetch recalls from EU RAPEX."""
         logger.info("Fetching recent recalls from EU RAPEX...")
         recalls: list[Recall] = []
 
@@ -397,12 +397,12 @@ class EU_RAPEX_Connector:
 
 
 class UK_OPSS_Connector:
-    """UK Office for Product Safety and Standards"""
+    """UK Office for Product Safety and Standards."""
 
     BASE_URL = "https://www.gov.uk/product-safety-alerts-reports-recalls"
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch recalls from UK OPSS"""
+        """Fetch recalls from UK OPSS."""
         logger.info("Fetching recent recalls from UK OPSS...")
         # Note: Requires web scraping - placeholder implementation
         logger.warning("UK OPSS connector requires web scraping - not yet implemented")
@@ -410,12 +410,12 @@ class UK_OPSS_Connector:
 
 
 class UK_FSA_Connector:
-    """UK Food Standards Agency"""
+    """UK Food Standards Agency."""
 
     BASE_URL = "https://www.food.gov.uk/news-alerts/search/alerts"
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch food recalls from UK FSA"""
+        """Fetch food recalls from UK FSA."""
         logger.info("Fetching recent recalls from UK FSA...")
         # Note: Requires web scraping - placeholder implementation
         logger.warning("UK FSA connector requires web scraping - not yet implemented")
@@ -423,12 +423,12 @@ class UK_FSA_Connector:
 
 
 class UK_TradingStandards_Connector:
-    """UK Trading Standards (Local Authorities)"""
+    """UK Trading Standards (Local Authorities)."""
 
     BASE_URL = "https://www.tradingstandards.uk/consumers/product-recalls"
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch recalls from UK Trading Standards"""
+        """Fetch recalls from UK Trading Standards."""
         logger.info("Fetching recent recalls from UK Trading Standards...")
         # Note: Requires web scraping - placeholder implementation
         logger.warning("UK Trading Standards connector requires web scraping - not yet implemented")
@@ -436,12 +436,12 @@ class UK_TradingStandards_Connector:
 
 
 class UK_DVSA_Connector:
-    """UK Driver and Vehicle Standards Agency (Car Seats & Vehicle Safety)"""
+    """UK Driver and Vehicle Standards Agency (Car Seats & Vehicle Safety)."""
 
     BASE_URL = "https://www.gov.uk/vehicle-recalls-and-faults"
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch vehicle and car seat recalls from UK DVSA"""
+        """Fetch vehicle and car seat recalls from UK DVSA."""
         logger.info("Fetching recent recalls from UK DVSA...")
         # Note: Requires web scraping - placeholder implementation
         logger.warning("UK DVSA connector requires web scraping - not yet implemented")
@@ -449,12 +449,12 @@ class UK_DVSA_Connector:
 
 
 class UK_MHRA_Connector:
-    """UK Medicines and Healthcare products Regulatory Agency"""
+    """UK Medicines and Healthcare products Regulatory Agency."""
 
     BASE_URL = "https://www.gov.uk/drug-device-alerts"
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch medical device and pharmaceutical recalls from UK MHRA"""
+        """Fetch medical device and pharmaceutical recalls from UK MHRA."""
         logger.info("Fetching recent recalls from UK MHRA...")
         # Note: Requires web scraping - placeholder implementation
         logger.warning("UK MHRA connector requires web scraping - not yet implemented")
@@ -467,12 +467,12 @@ class UK_MHRA_Connector:
 
 
 class ACCCConnector:
-    """Australian Competition and Consumer Commission"""
+    """Australian Competition and Consumer Commission."""
 
     BASE_URL = "https://www.productsafety.gov.au/recalls"
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch recalls from ACCC"""
+        """Fetch recalls from ACCC."""
         logger.info("Fetching recent recalls from ACCC...")
         # Note: Requires web scraping - placeholder implementation
         logger.warning("ACCC connector requires web scraping - not yet implemented")
@@ -480,12 +480,12 @@ class ACCCConnector:
 
 
 class CommerceCommissionNZConnector:
-    """New Zealand Commerce Commission"""
+    """New Zealand Commerce Commission."""
 
     BASE_URL = "https://www.consumerprotection.govt.nz/recalls"
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch recalls from NZ Commerce Commission"""
+        """Fetch recalls from NZ Commerce Commission."""
         logger.info("Fetching recent recalls from NZ Commerce Commission...")
         # Note: Requires web scraping - placeholder implementation
         logger.warning(  # noqa: E501
@@ -500,12 +500,12 @@ class CommerceCommissionNZConnector:
 
 
 class SG_CPSO_Connector:
-    """Singapore Consumer Product Safety Office"""
+    """Singapore Consumer Product Safety Office."""
 
     BASE_URL = "https://www.enterprisesg.gov.sg/cpso/recalls"
 
     async def fetch_recent_recalls(self) -> list[Recall]:
-        """Fetch recalls from Singapore CPSO"""
+        """Fetch recalls from Singapore CPSO."""
         logger.info("Fetching recent recalls from Singapore CPSO...")
         # Note: Requires web scraping - placeholder implementation
         logger.warning("Singapore CPSO connector requires web scraping - not yet implemented")
@@ -514,7 +514,7 @@ class SG_CPSO_Connector:
 
 # Placeholder connectors for remaining Asian agencies
 class JapanMHLWConnector:
-    """Japan Ministry of Health, Labour and Welfare"""
+    """Japan Ministry of Health, Labour and Welfare."""
 
     async def fetch_recent_recalls(self) -> list[Recall]:
         logger.warning("Japan MHLW connector not yet implemented")
@@ -522,7 +522,7 @@ class JapanMHLWConnector:
 
 
 class ChinaSAMRConnector:
-    """China State Administration for Market Regulation"""
+    """China State Administration for Market Regulation."""
 
     async def fetch_recent_recalls(self) -> list[Recall]:
         logger.warning("China SAMR connector not yet implemented")
@@ -530,7 +530,7 @@ class ChinaSAMRConnector:
 
 
 class SouthKoreaKCAConnector:
-    """South Korea Consumer Agency"""
+    """South Korea Consumer Agency."""
 
     async def fetch_recent_recalls(self) -> list[Recall]:
         logger.warning("South Korea KCA connector not yet implemented")
@@ -543,7 +543,7 @@ class SouthKoreaKCAConnector:
 
 
 class ANMATConnector:
-    """Argentina - ANMAT (Administración Nacional de Medicamentos, Alimentos y Tecnología Médica)"""
+    """Argentina - ANMAT (Administración Nacional de Medicamentos, Alimentos y Tecnología Médica)."""
 
     async def fetch_recent_recalls(self) -> list[Recall]:
         logger.warning("ANMAT connector not yet implemented")
@@ -551,7 +551,7 @@ class ANMATConnector:
 
 
 class ANVISAConnector:
-    """Brazil - ANVISA (Agência Nacional de Vigilância Sanitária)"""
+    """Brazil - ANVISA (Agência Nacional de Vigilância Sanitária)."""
 
     async def fetch_recent_recalls(self) -> list[Recall]:
         logger.warning("ANVISA connector not yet implemented")
@@ -559,7 +559,7 @@ class ANVISAConnector:
 
 
 class SENACONConnector:
-    """Brazil - SENACON (Secretaria Nacional do Consumidor)"""
+    """Brazil - SENACON (Secretaria Nacional do Consumidor)."""
 
     async def fetch_recent_recalls(self) -> list[Recall]:
         logger.warning("SENACON connector not yet implemented")
@@ -567,7 +567,7 @@ class SENACONConnector:
 
 
 class PROFECOConnector:
-    """Mexico - PROFECO (Procuraduría Federal del Consumidor)"""
+    """Mexico - PROFECO (Procuraduría Federal del Consumidor)."""
 
     async def fetch_recent_recalls(self) -> list[Recall]:
         logger.warning("PROFECO connector not yet implemented")
@@ -580,7 +580,7 @@ class PROFECOConnector:
 
 
 class UAEMOICCPDConnector:
-    """UAE Ministry of Industry and Advanced Technology"""
+    """UAE Ministry of Industry and Advanced Technology."""
 
     async def fetch_recent_recalls(self) -> list[Recall]:
         logger.warning("UAE MOICCPD connector not yet implemented")
@@ -588,7 +588,7 @@ class UAEMOICCPDConnector:
 
 
 class SaudiArabiaGACConnector:
-    """Saudi Arabia General Authority for Competition"""
+    """Saudi Arabia General Authority for Competition."""
 
     async def fetch_recent_recalls(self) -> list[Recall]:
         logger.warning("Saudi Arabia GAC connector not yet implemented")
@@ -596,7 +596,7 @@ class SaudiArabiaGACConnector:
 
 
 class SouthAfricaNCCConnector:
-    """South Africa National Consumer Commission"""
+    """South Africa National Consumer Commission."""
 
     async def fetch_recent_recalls(self) -> list[Recall]:
         logger.warning("South Africa NCC connector not yet implemented")
@@ -609,13 +609,13 @@ class SouthAfricaNCCConnector:
 
 
 class ConnectorRegistry:
-    """Central registry for all recall data connectors"""
+    """Central registry for all recall data connectors."""
 
     def __init__(self) -> None:
         self.connectors = self._initialize_connectors()
 
     def _initialize_connectors(self) -> dict[str, Any]:
-        """Initialize all available connectors"""
+        """Initialize all available connectors."""
         return {
             # US Agencies (6)
             "CPSC": CPSCConnector(),
@@ -653,7 +653,7 @@ class ConnectorRegistry:
         }
 
     async def fetch_all_recalls(self) -> list[Recall]:
-        """Fetch recalls from all enabled connectors concurrently"""
+        """Fetch recalls from all enabled connectors concurrently."""
         logger.info(f"Starting to fetch recalls from {len(self.connectors)} connectors...")
 
         fetch_tasks = [connector.fetch_recent_recalls() for connector in self.connectors.values()]
@@ -678,14 +678,14 @@ class ConnectorRegistry:
 
 
 async def fetch_all_recalls() -> list[Recall]:
-    """Convenience function to fetch from all connectors"""
+    """Convenience function to fetch from all connectors."""
     registry = ConnectorRegistry()
     return await registry.fetch_all_recalls()
 
 
 # For testing individual connectors
 async def test_connector(connector_name: str) -> list[Recall]:
-    """Test a specific connector"""
+    """Test a specific connector."""
     registry = ConnectorRegistry()
     if connector_name not in registry.connectors:
         logger.error(f"Connector {connector_name} not found")

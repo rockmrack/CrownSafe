@@ -22,7 +22,7 @@ TEST_USER_ID = "user_test_123"
 # --------------------------
 
 
-async def main():
+async def main() -> None:
     """Main function to run the MetricsAgent test with a mocked Mixpanel API."""
     logger = logging.getLogger(__name__)
     logger.info("--- Starting MetricsAgent Test ---")

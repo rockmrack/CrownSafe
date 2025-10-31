@@ -1,8 +1,8 @@
-"""Subscription service for entitlement checks and management"""
+"""Subscription service for entitlement checks and management."""
 
 import logging
 import os
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
@@ -18,14 +18,14 @@ logger = logging.getLogger(__name__)
 
 
 class SubscriptionService:
-    """Service for managing subscription entitlements"""
+    """Service for managing subscription entitlements."""
 
     @staticmethod
     def _dev_entitlement_override(user_id: int, feature: str = None) -> dict | None:
         """DEV/QA only: allow entitlements via env without touching DB.
         ENTITLEMENTS_ALLOW_ALL: "1|true|yes" -> grant everything
         ENTITLEMENTS_ALLOWLIST: "67,123"      -> user_id allow-list
-        ENTITLEMENTS_FEATURES:  "safety.check,safety.comprehensive" -> feature scope (empty = all)
+        ENTITLEMENTS_FEATURES:  "safety.check,safety.comprehensive" -> feature scope (empty = all).
         """
         val = os.getenv("ENTITLEMENTS_ALLOW_ALL", "").strip().lower()
         if val in ("1", "true", "yes"):
@@ -48,7 +48,7 @@ class SubscriptionService:
 
     @staticmethod
     def is_active(user_id: int, db: Session | None = None, feature: str = None) -> bool:
-        """Check if user has an active subscription
+        """Check if user has an active subscription.
 
         Args:
             user_id: User ID to check
@@ -73,7 +73,7 @@ class SubscriptionService:
 
     @staticmethod
     def _check_active_with_session(user_id: int, db: Session) -> bool:
-        """Check active subscription with provided session"""
+        """Check active subscription with provided session."""
         # Get most recent active subscription
         subscription = (
             db.query(Subscription)
@@ -120,7 +120,7 @@ class SubscriptionService:
 
     @staticmethod
     def get_active_subscription(user_id: int) -> dict | None:
-        """Get user's active subscription details
+        """Get user's active subscription details.
 
         Args:
             user_id: User ID
@@ -150,7 +150,7 @@ class SubscriptionService:
 
     @staticmethod
     def get_subscription_status(user_id: int) -> dict:
-        """Get detailed subscription status for user
+        """Get detailed subscription status for user.
 
         Args:
             user_id: User ID
@@ -220,7 +220,7 @@ class SubscriptionService:
 
     @staticmethod
     def cancel_subscription(user_id: int) -> dict:
-        """Cancel user's subscription (will remain active until expiry)
+        """Cancel user's subscription (will remain active until expiry).
 
         Args:
             user_id: User ID
@@ -259,7 +259,7 @@ class SubscriptionService:
 
     @staticmethod
     def get_subscription_history(user_id: int, limit: int = 10) -> list[dict]:
-        """Get user's subscription history
+        """Get user's subscription history.
 
         Args:
             user_id: User ID
@@ -282,7 +282,7 @@ class SubscriptionService:
 
     @staticmethod
     def check_expiring_soon(days_threshold: int = 3) -> list[dict]:
-        """Find subscriptions expiring soon
+        """Find subscriptions expiring soon.
 
         Args:
             days_threshold: Days before expiry to check
@@ -320,7 +320,7 @@ class SubscriptionService:
 
     @staticmethod
     def cleanup_expired_subscriptions() -> int:
-        """Clean up expired subscriptions (mark as expired and update users)
+        """Clean up expired subscriptions (mark as expired and update users).
 
         Returns:
             Number of subscriptions cleaned up
@@ -377,7 +377,7 @@ class SubscriptionService:
 
     @staticmethod
     def get_subscription_metrics() -> dict:
-        """Get subscription metrics for analytics
+        """Get subscription metrics for analytics.
 
         Returns:
             Dict with subscription metrics

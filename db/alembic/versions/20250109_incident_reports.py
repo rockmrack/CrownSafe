@@ -1,4 +1,4 @@
-"""Add incident reporting tables
+"""Add incident reporting tables.
 
 Revision ID: 20250109_incident_reports
 Revises: 20250108_share_tokens
@@ -17,7 +17,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     # Create incident_reports table
     op.create_table(
         "incident_reports",
@@ -231,7 +231,7 @@ def upgrade():
     )
 
 
-def downgrade():
+def downgrade() -> None:
     op.drop_table("agency_notifications")
     op.drop_index(op.f("ix_incident_clusters_product_name"), table_name="incident_clusters")
     op.drop_table("incident_clusters")

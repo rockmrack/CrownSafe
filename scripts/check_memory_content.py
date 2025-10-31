@@ -34,9 +34,9 @@ logger = logging.getLogger("memory_validator")
 
 
 class MemoryValidationSuite:
-    """Comprehensive validation suite for MemoryManager MVP-1.4"""
+    """Comprehensive validation suite for MemoryManager MVP-1.4."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.memory: MemoryManager | None = None
         self.test_results = {
             "basic_functionality": False,
@@ -46,8 +46,8 @@ class MemoryValidationSuite:
             "performance": {},
         }
 
-    def print_header(self, title: str, level: int = 1):
-        """Print formatted section headers"""
+    def print_header(self, title: str, level: int = 1) -> None:
+        """Print formatted section headers."""
         if level == 1:
             print(f"\n{'=' * 80}")
             print(f"[TEST] {title}")
@@ -57,20 +57,20 @@ class MemoryValidationSuite:
             print(f"[STEP] {title}")
             print(f"{'-' * 60}")
 
-    def print_success(self, message: str):
-        """Print success message"""
+    def print_success(self, message: str) -> None:
+        """Print success message."""
         print(f"[PASS] {message}")
 
-    def print_error(self, message: str):
-        """Print error message"""
+    def print_error(self, message: str) -> None:
+        """Print error message."""
         print(f"[FAIL] {message}")
 
-    def print_info(self, message: str):
-        """Print info message"""
+    def print_info(self, message: str) -> None:
+        """Print info message."""
         print(f"[INFO] {message}")
 
     async def initialize_memory(self) -> bool:
-        """Initialize and validate MemoryManager connection"""
+        """Initialize and validate MemoryManager connection."""
         self.print_header("Memory Manager Initialization", 2)
 
         # Load environment
@@ -106,7 +106,7 @@ class MemoryValidationSuite:
             return False
 
     async def test_basic_functionality(self) -> bool:
-        """Test core MemoryManager functionality - FIXED VERSION"""
+        """Test core MemoryManager functionality - FIXED VERSION."""
         self.print_header("Basic Functionality Tests", 2)
 
         try:
@@ -173,7 +173,7 @@ class MemoryValidationSuite:
             return False
 
     async def test_enhanced_retrieval(self) -> bool:
-        """Test enhanced retrieval features"""
+        """Test enhanced retrieval features."""
         self.print_header("Enhanced Retrieval Features", 2)
 
         try:
@@ -251,7 +251,7 @@ class MemoryValidationSuite:
             return False
 
     async def test_memory_augmented_methods(self) -> bool:
-        """Test new memory-augmented methods for PlannerAgent"""
+        """Test new memory-augmented methods for PlannerAgent."""
         self.print_header("Memory-Augmented Methods", 2)
 
         try:
@@ -340,7 +340,7 @@ class MemoryValidationSuite:
             return False
 
     async def test_analytics(self) -> bool:
-        """Test enhanced analytics functionality"""
+        """Test enhanced analytics functionality."""
         self.print_header("Enhanced Analytics", 2)
 
         try:
@@ -394,8 +394,8 @@ class MemoryValidationSuite:
             logger.exception("Analytics error details:")
             return False
 
-    def print_performance_summary(self):
-        """Print performance metrics summary"""
+    def print_performance_summary(self) -> None:
+        """Print performance metrics summary."""
         self.print_header("Performance Summary", 2)
 
         perf = self.test_results["performance"]
@@ -415,8 +415,8 @@ class MemoryValidationSuite:
         else:
             self.print_error(f"Slow performance: {total_time:.2f}s total")
 
-    def print_final_summary(self):
-        """Print final test summary"""
+    def print_final_summary(self) -> None:
+        """Print final test summary."""
         self.print_header("Final Validation Summary")
 
         total_tests = len([k for k in self.test_results.keys() if k != "performance"])
@@ -441,8 +441,8 @@ class MemoryValidationSuite:
             print(f"\n[WARNING] {total_tests - passed_tests} test(s) failed. Please review errors above.")
             print("[FAIL] MemoryManager MVP-1.4 needs fixes before proceeding")
 
-    async def run_full_validation(self):
-        """Run complete validation suite"""
+    async def run_full_validation(self) -> None:
+        """Run complete validation suite."""
         print("[START] Starting MemoryManager MVP-1.4 Validation Suite - FIXED VERSION")
         print(f"[TIME] Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
@@ -464,8 +464,8 @@ class MemoryValidationSuite:
         print(f"\n[TIME] Completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 
-async def main():
-    """Main entry point"""
+async def main() -> None:
+    """Main entry point."""
     validator = MemoryValidationSuite()
     await validator.run_full_validation()
 

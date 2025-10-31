@@ -1,5 +1,5 @@
 """Complete Settings Screen Verification - ALL Screenshots
-Tests ALL endpoints shown in both Settings screen views
+Tests ALL endpoints shown in both Settings screen views.
 """
 
 import requests

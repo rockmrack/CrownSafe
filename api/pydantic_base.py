@@ -1,5 +1,5 @@
 """Legacy pydantic base - now imports from core.schemas.base
-Maintained for backward compatibility
+Maintained for backward compatibility.
 """
 
 from core.schemas.base import APIResponse, AppModel, BaseSchema, ErrorResponse

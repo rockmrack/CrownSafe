@@ -1,5 +1,5 @@
 """Crown Safe Database Seeding Script
-Seeds hair products and ingredients for barcode scanning functionality
+Seeds hair products and ingredients for barcode scanning functionality.
 """
 
 import os
@@ -8,7 +8,7 @@ import sys
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 
 from sqlalchemy.orm import Session
 
@@ -575,7 +575,7 @@ HAIR_PRODUCTS_DATA = [
 
 
 def seed_ingredients(db: Session) -> int:
-    """Seed ingredient database with safety information
+    """Seed ingredient database with safety information.
 
     Returns:
         Number of ingredients inserted
@@ -609,7 +609,7 @@ def seed_ingredients(db: Session) -> int:
 
 
 def seed_hair_products(db: Session) -> int:
-    """Seed hair product database with barcode and ingredient information
+    """Seed hair product database with barcode and ingredient information.
 
     Returns:
         Number of products inserted
@@ -651,8 +651,8 @@ def seed_hair_products(db: Session) -> int:
     return count
 
 
-def main():
-    """Main seeding function"""
+def main() -> None:
+    """Main seeding function."""
     print("=" * 60)
     print("CROWN SAFE DATABASE SEEDING")
     print("=" * 60)

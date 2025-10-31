@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 
 @pytest.fixture
 def client():
-    """Provide FastAPI test client"""
+    """Provide FastAPI test client."""
     # Set test environment
     os.environ["ENVIRONMENT"] = "test"
     os.environ["TEST_MODE"] = "true"
@@ -28,7 +28,7 @@ def client():
 
 @pytest.fixture
 def db_session():
-    """Provide database session for tests"""
+    """Provide database session for tests."""
     from core_infra.database import SessionLocal
 
     db = SessionLocal()
@@ -40,7 +40,7 @@ def db_session():
 
 @pytest.fixture
 def test_user(db_session):
-    """Create a test user for authentication tests"""
+    """Create a test user for authentication tests."""
     from passlib.context import CryptContext
 
     from core_infra.database import User
@@ -83,7 +83,7 @@ def test_user(db_session):
 
 @pytest.fixture
 def auth_token(test_user):
-    """Generate authentication token for test user"""
+    """Generate authentication token for test user."""
     try:
         from core_infra.auth import create_access_token
 
@@ -96,7 +96,7 @@ def auth_token(test_user):
 
 @pytest.fixture
 def valid_token():
-    """Generate valid authentication token"""
+    """Generate valid authentication token."""
     try:
         from core_infra.auth import create_access_token
 
@@ -109,7 +109,7 @@ def valid_token():
 
 @pytest.fixture
 def expired_token():
-    """Generate an expired authentication token"""
+    """Generate an expired authentication token."""
     try:
         from datetime import timedelta
 
@@ -127,7 +127,7 @@ def expired_token():
 
 @pytest.fixture
 def user1_token(test_user):
-    """Generate token for user 1 (test_user)"""
+    """Generate token for user 1 (test_user)."""
     try:
         from core_infra.auth import create_access_token
 
@@ -138,14 +138,14 @@ def user1_token(test_user):
 
 
 @pytest.fixture
-def user2_id():
-    """Return a different user ID for authorization tests"""
+def user2_id() -> int:
+    """Return a different user ID for authorization tests."""
     return 9999  # Different from test_user.id (which is typically 1)
 
 
 @pytest.fixture
 def regular_user_token():
-    """Generate token for a regular (non-admin) user"""
+    """Generate token for a regular (non-admin) user."""
     try:
         from core_infra.auth import create_access_token
 
@@ -155,8 +155,8 @@ def regular_user_token():
         return "regular_user_mock_token"
 
 
-def pytest_collection_modifyitems(config, items):
-    """Skip tests that require unavailable dependencies"""
+def pytest_collection_modifyitems(config, items) -> None:
+    """Skip tests that require unavailable dependencies."""
     skip_locust = pytest.mark.skip(reason="locust not installed")
     skip_mcp = pytest.mark.skip(reason="mcp_client_library not available")
 

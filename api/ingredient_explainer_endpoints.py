@@ -1,5 +1,5 @@
 """Crown Safe - Ingredient Explainer Endpoints
-Plain-English ingredient explanations for user education
+Plain-English ingredient explanations for user education.
 
 Endpoint:
 - GET /api/v1/ingredients/{ingredient_name} - Get ingredient details
@@ -28,7 +28,7 @@ router = APIRouter(prefix="/api/v1/ingredients", tags=["ingredients"])
 
 
 class IngredientExplanation(BaseModel):
-    """Plain-English ingredient explanation"""
+    """Plain-English ingredient explanation."""
 
     # Basic info
     name: str = Field(..., description="Common ingredient name")
@@ -71,7 +71,7 @@ class IngredientExplanation(BaseModel):
 
 
 class IngredientSearchResult(BaseModel):
-    """Search result for ingredient lookup"""
+    """Search result for ingredient lookup."""
 
     name: str
     category: str
@@ -81,7 +81,7 @@ class IngredientSearchResult(BaseModel):
 
 
 class ApiResponse(BaseModel):
-    """Standard API response wrapper"""
+    """Standard API response wrapper."""
 
     success: bool
     message: str

@@ -22,7 +22,7 @@ class AsyncWorkflowOptimizer:
         self.logger = logger
 
     async def parallel_database_queries(self, queries: list[Callable]) -> list[Any]:
-        """Execute multiple database queries concurrently for massive speedup"""
+        """Execute multiple database queries concurrently for massive speedup."""
         start_time = time.time()
 
         try:
@@ -52,7 +52,7 @@ class AsyncWorkflowOptimizer:
             return []
 
     async def concurrent_agent_calls(self, agent_tasks: dict[str, Callable]) -> dict[str, Any]:
-        """Execute multiple agent operations concurrently when possible"""
+        """Execute multiple agent operations concurrently when possible."""
         start_time = time.time()
 
         try:
@@ -85,7 +85,7 @@ class AsyncWorkflowOptimizer:
             return {}
 
     async def optimized_safety_check(self, user_request: dict[str, Any]) -> dict[str, Any]:
-        """Optimized safety check workflow with parallel processing where possible"""
+        """Optimized safety check workflow with parallel processing where possible."""
         start_time = time.time()
         workflow_id = f"opt_{int(time.time())}"
 
@@ -230,5 +230,5 @@ workflow_optimizer = AsyncWorkflowOptimizer()
 
 # Convenience function for easy usage
 async def run_optimized_safety_check(user_request: dict[str, Any]) -> dict[str, Any]:
-    """Run optimized safety check workflow"""
+    """Run optimized safety check workflow."""
     return await workflow_optimizer.optimized_safety_check(user_request)

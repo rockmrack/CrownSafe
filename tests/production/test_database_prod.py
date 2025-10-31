@@ -1,5 +1,5 @@
 """Production Database Tests
-Testing live production database connectivity, performance, and integrity
+Testing live production database connectivity, performance, and integrity.
 """
 
 import os
@@ -12,10 +12,10 @@ from core_infra.database import engine, get_db
 
 
 class TestProductionDatabase:
-    """Critical production database tests"""
+    """Critical production database tests."""
 
-    def test_database_connection_success(self):
-        """Test that production database is accessible"""
+    def test_database_connection_success(self) -> None:
+        """Test that production database is accessible."""
         db = next(get_db())
         assert db is not None, "Database session should be created"
 
@@ -25,8 +25,8 @@ class TestProductionDatabase:
 
         db.close()
 
-    def test_database_connection_speed(self):
-        """Test database connection time is acceptable"""
+    def test_database_connection_speed(self) -> None:
+        """Test database connection time is acceptable."""
         start_time = time.time()
 
         db = next(get_db())
@@ -37,8 +37,8 @@ class TestProductionDatabase:
 
         db.close()
 
-    def test_database_query_performance(self):
-        """Test database query performance"""
+    def test_database_query_performance(self) -> None:
+        """Test database query performance."""
         db = next(get_db())
 
         start_time = time.time()
@@ -50,8 +50,8 @@ class TestProductionDatabase:
 
         db.close()
 
-    def test_database_concurrent_connections(self):
-        """Test multiple simultaneous database connections"""
+    def test_database_concurrent_connections(self) -> None:
+        """Test multiple simultaneous database connections."""
         sessions = []
 
         try:
@@ -71,8 +71,8 @@ class TestProductionDatabase:
             for session in sessions:
                 session.close()
 
-    def test_database_connection_pool_health(self):
-        """Test database connection pool is healthy"""
+    def test_database_connection_pool_health(self) -> None:
+        """Test database connection pool is healthy."""
         # Check pool statistics
         pool = engine.pool
 
@@ -95,8 +95,8 @@ class TestProductionDatabase:
         # Just verify pool exists and is functioning
         assert isinstance(pool_size, int), "Pool size should be an integer"
 
-    def test_database_transaction_isolation(self):
-        """Test transaction isolation works correctly"""
+    def test_database_transaction_isolation(self) -> None:
+        """Test transaction isolation works correctly."""
         db1 = next(get_db())
         db2 = next(get_db())
 
@@ -115,8 +115,8 @@ class TestProductionDatabase:
             db1.close()
             db2.close()
 
-    def test_database_table_existence(self):
-        """Test that all critical tables exist"""
+    def test_database_table_existence(self) -> None:
+        """Test that all critical tables exist."""
         db = next(get_db())
 
         critical_tables = ["users", "products", "recalls", "scans", "alembic_version"]
@@ -168,8 +168,8 @@ class TestProductionDatabase:
 
         db.close()
 
-    def test_database_migration_status(self):
-        """Test that database migrations are up to date"""
+    def test_database_migration_status(self) -> None:
+        """Test that database migrations are up to date."""
         db = next(get_db())
 
         try:
@@ -194,8 +194,8 @@ class TestProductionDatabase:
         finally:
             db.close()
 
-    def test_database_write_operation(self):
-        """Test database write operations work"""
+    def test_database_write_operation(self) -> None:
+        """Test database write operations work."""
         db = next(get_db())
 
         try:
@@ -244,8 +244,8 @@ class TestProductionDatabase:
         finally:
             db.close()
 
-    def test_database_error_handling(self):
-        """Test database handles errors gracefully"""
+    def test_database_error_handling(self) -> None:
+        """Test database handles errors gracefully."""
         db = next(get_db())
 
         try:
@@ -265,8 +265,8 @@ class TestProductionDatabase:
         finally:
             db.close()
 
-    def test_database_unicode_support(self):
-        """Test database supports Unicode characters"""
+    def test_database_unicode_support(self) -> None:
+        """Test database supports Unicode characters."""
         db = next(get_db())
 
         try:
@@ -281,8 +281,8 @@ class TestProductionDatabase:
         finally:
             db.close()
 
-    def test_database_null_handling(self):
-        """Test database handles NULL values correctly"""
+    def test_database_null_handling(self) -> None:
+        """Test database handles NULL values correctly."""
         db = next(get_db())
 
         try:
@@ -294,8 +294,8 @@ class TestProductionDatabase:
         finally:
             db.close()
 
-    def test_database_large_result_set(self):
-        """Test database can handle larger result sets"""
+    def test_database_large_result_set(self) -> None:
+        """Test database can handle larger result sets."""
         db = next(get_db())
 
         try:
@@ -312,8 +312,8 @@ class TestProductionDatabase:
         finally:
             db.close()
 
-    def test_database_connection_recovery(self):
-        """Test database connection can recover from issues"""
+    def test_database_connection_recovery(self) -> None:
+        """Test database connection can recover from issues."""
         db = next(get_db())
 
         try:
@@ -337,10 +337,10 @@ class TestProductionDatabase:
 
 @pytest.mark.production
 class TestProductionDatabaseHealth:
-    """Production-specific health checks"""
+    """Production-specific health checks."""
 
-    def test_database_url_configured(self):
-        """Test that DATABASE_URL is properly configured"""
+    def test_database_url_configured(self) -> None:
+        """Test that DATABASE_URL is properly configured."""
         database_url = os.getenv("DATABASE_URL")
 
         # Allow fallback to SQLite for local testing
@@ -354,8 +354,8 @@ class TestProductionDatabaseHealth:
 
         assert "://" in database_url, "DATABASE_URL should have protocol (postgresql://, sqlite://, etc.)"
 
-    def test_database_production_mode(self):
-        """Test database is in production mode"""
+    def test_database_production_mode(self) -> None:
+        """Test database is in production mode."""
         environment = os.getenv("ENVIRONMENT", "production")
 
         # In production, we should be using production database
@@ -364,8 +364,8 @@ class TestProductionDatabaseHealth:
             assert "localhost" not in database_url, "Production should not use localhost"
             assert "127.0.0.1" not in database_url, "Production should not use 127.0.0.1"
 
-    def test_database_connection_limit_not_exceeded(self):
-        """Test we're not near connection limits"""
+    def test_database_connection_limit_not_exceeded(self) -> None:
+        """Test we're not near connection limits."""
         db = next(get_db())
 
         try:

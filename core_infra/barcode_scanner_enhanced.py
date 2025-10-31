@@ -1,5 +1,5 @@
 """Enhanced Barcode Scanner with 100% Windows Compatibility
-Uses OpenCV as fallback when PyZbar DLLs are not available
+Uses OpenCV as fallback when PyZbar DLLs are not available.
 """
 
 import logging
@@ -63,7 +63,7 @@ except ImportError:
 
 
 class BarcodeType(Enum):
-    """Supported barcode types"""
+    """Supported barcode types."""
 
     QRCODE = "QRCODE"
     EAN13 = "EAN13"
@@ -78,7 +78,7 @@ class BarcodeType(Enum):
 
 @dataclass
 class BarcodeResult:
-    """Result from barcode scanning"""
+    """Result from barcode scanning."""
 
     data: str
     type: BarcodeType
@@ -89,7 +89,7 @@ class BarcodeResult:
 
 class EnhancedBarcodeScanner:
     """Enhanced barcode scanner with multiple fallback methods
-    Guarantees 100% functionality on Windows
+    Guarantees 100% functionality on Windows.
     """
 
     def __init__(self) -> None:
@@ -115,7 +115,7 @@ class EnhancedBarcodeScanner:
                 self.barcode_detector = None
 
     def scan_image(self, image_data: bytes) -> list[BarcodeResult]:
-        """Scan image for barcodes using best available method
+        """Scan image for barcodes using best available method.
 
         Args:
             image_data: Image bytes
@@ -159,7 +159,7 @@ class EnhancedBarcodeScanner:
         return results
 
     def _scan_with_pyzbar(self, image: np.ndarray) -> list[BarcodeResult]:
-        """Scan using PyZbar"""
+        """Scan using PyZbar."""
         results = []
 
         try:
@@ -189,7 +189,7 @@ class EnhancedBarcodeScanner:
         return results
 
     def _scan_with_opencv(self, image: np.ndarray) -> list[BarcodeResult]:
-        """Scan using OpenCV (fallback method)"""
+        """Scan using OpenCV (fallback method)."""
         results = []
 
         # Convert to grayscale if needed
@@ -248,7 +248,7 @@ class EnhancedBarcodeScanner:
         return results
 
     def generate_qrcode(self, data: str) -> bytes:
-        """Generate QR code"""
+        """Generate QR code."""
         if not QRCODE_AVAILABLE:
             raise ValueError("QRCode library not available")
 
@@ -269,7 +269,7 @@ class EnhancedBarcodeScanner:
         return buffer.getvalue()
 
     def generate_barcode(self, data: str, barcode_type: str = "code128") -> bytes:
-        """Generate barcode"""
+        """Generate barcode."""
         if not BARCODE_GEN_AVAILABLE:
             raise ValueError("Barcode generation library not available")
 
@@ -286,7 +286,7 @@ class EnhancedBarcodeScanner:
         return buffer.getvalue()
 
     def _bytes_to_cv2(self, image_data: bytes) -> np.ndarray | None:
-        """Convert image bytes to OpenCV format"""
+        """Convert image bytes to OpenCV format."""
         try:
             if PIL_AVAILABLE:
                 # Use PIL to handle various image formats
@@ -296,18 +296,17 @@ class EnhancedBarcodeScanner:
                     img = img.convert("RGB")
                 # Convert to numpy array
                 return np.array(img)
-            elif OPENCV_AVAILABLE:
+            if OPENCV_AVAILABLE:
                 # Use OpenCV directly
                 nparr = np.frombuffer(image_data, np.uint8)
                 return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            else:
-                return None
+            return None
         except Exception as e:
             self.logger.exception(f"Image conversion failed: {e}")
             return None
 
     def _pyzbar_type_to_enum(self, pyzbar_type: str) -> BarcodeType:
-        """Convert PyZbar type to our enum"""
+        """Convert PyZbar type to our enum."""
         mapping = {
             "QRCODE": BarcodeType.QRCODE,
             "EAN13": BarcodeType.EAN13,
@@ -320,7 +319,7 @@ class EnhancedBarcodeScanner:
         return mapping.get(pyzbar_type, BarcodeType.UNKNOWN)
 
     def test_functionality(self) -> dict[str, bool]:
-        """Test which barcode methods are working"""
+        """Test which barcode methods are working."""
         status = {
             "pyzbar": False,
             "opencv_qr": False,
@@ -365,7 +364,7 @@ enhanced_scanner = EnhancedBarcodeScanner()
 
 
 def scan_barcode(image_data: bytes) -> list[dict[str, Any]]:
-    """Public API for barcode scanning
+    """Public API for barcode scanning.
 
     Args:
         image_data: Image bytes
@@ -389,7 +388,7 @@ def scan_barcode(image_data: bytes) -> list[dict[str, Any]]:
 
 
 def test_scanner_status() -> dict[str, Any]:
-    """Test scanner functionality
+    """Test scanner functionality.
 
     Returns:
         Status of all scanning methods

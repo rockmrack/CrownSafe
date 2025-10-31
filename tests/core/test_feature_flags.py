@@ -5,49 +5,49 @@ from core.feature_flags import _bucket, chat_enabled_for, env_bool, env_float
 
 
 class TestEnvHelpers:
-    def test_env_bool_default_false(self):
+    def test_env_bool_default_false(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
             assert env_bool("MISSING_VAR") is False
 
-    def test_env_bool_default_true(self):
+    def test_env_bool_default_true(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
             assert env_bool("MISSING_VAR", default=True) is True
 
-    def test_env_bool_truthy_values(self):
+    def test_env_bool_truthy_values(self) -> None:
         for val in ["1", "true", "TRUE", "yes", "YES", "on", "ON"]:
             with patch.dict(os.environ, {"TEST_VAR": val}):
                 assert env_bool("TEST_VAR") is True
 
-    def test_env_bool_falsy_values(self):
+    def test_env_bool_falsy_values(self) -> None:
         for val in ["0", "false", "FALSE", "no", "NO", "off", "OFF", "random"]:
             with patch.dict(os.environ, {"TEST_VAR": val}):
                 assert env_bool("TEST_VAR") is False
 
-    def test_env_float_default(self):
+    def test_env_float_default(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
             assert env_float("MISSING_VAR", 3.14) == 3.14
 
-    def test_env_float_valid(self):
+    def test_env_float_valid(self) -> None:
         with patch.dict(os.environ, {"TEST_VAR": "2.5"}):
             assert env_float("TEST_VAR", 0.0) == 2.5
 
-    def test_env_float_invalid_returns_default(self):
+    def test_env_float_invalid_returns_default(self) -> None:
         with patch.dict(os.environ, {"TEST_VAR": "not_a_number"}):
             assert env_float("TEST_VAR", 1.0) == 1.0
 
 
 class TestBucketFunction:
-    def test_bucket_deterministic(self):
+    def test_bucket_deterministic(self) -> None:
         # Same input should always give same output
         assert _bucket("user123") == _bucket("user123")
 
-    def test_bucket_range(self):
+    def test_bucket_range(self) -> None:
         # Should return values between 0.0 and 1.0
         for user_id in ["user1", "user2", "user3", "test@example.com", "device_abc123"]:
             bucket_val = _bucket(user_id)
             assert 0.0 <= bucket_val <= 1.0
 
-    def test_bucket_distribution(self):
+    def test_bucket_distribution(self) -> None:
         # Different inputs should generally give different outputs
         buckets = [_bucket(f"user{i}") for i in range(100)]
         unique_buckets = set(buckets)
@@ -56,19 +56,19 @@ class TestBucketFunction:
 
 
 class TestChatEnabledFor:
-    def test_disabled_globally(self):
+    def test_disabled_globally(self) -> None:
         with patch("core.feature_flags.FEATURE_CHAT_ENABLED", False):
             assert chat_enabled_for("user123") is False
             assert chat_enabled_for("user123", "device456") is False
 
-    def test_no_user_or_device_id(self):
+    def test_no_user_or_device_id(self) -> None:
         with patch("core.feature_flags.FEATURE_CHAT_ENABLED", True):
             assert chat_enabled_for(None) is False
             assert chat_enabled_for("") is False
             assert chat_enabled_for(None, None) is False
             assert chat_enabled_for("", "") is False
 
-    def test_rollout_percentage(self):
+    def test_rollout_percentage(self) -> None:
         with patch("core.feature_flags.FEATURE_CHAT_ENABLED", True):
             # Test 0% rollout
             with patch("core.feature_flags.FEATURE_CHAT_ROLLOUT_PCT", 0.0):
@@ -97,7 +97,7 @@ class TestChatEnabledFor:
                 assert found_enabled, "Should find at least one user in 10% rollout"
                 assert found_disabled, "Should find at least one user NOT in 10% rollout"
 
-    def test_prefers_user_id_over_device_id(self):
+    def test_prefers_user_id_over_device_id(self) -> None:
         with patch("core.feature_flags.FEATURE_CHAT_ENABLED", True):
             with patch("core.feature_flags.FEATURE_CHAT_ROLLOUT_PCT", 1.0):
                 # Both should work
@@ -109,8 +109,8 @@ class TestChatEnabledFor:
                 result2 = chat_enabled_for("user123", "different_device")
                 assert result1 == result2
 
-    def test_sticky_rollout(self):
-        """Test that the same user always gets the same result"""
+    def test_sticky_rollout(self) -> None:
+        """Test that the same user always gets the same result."""
         with patch("core.feature_flags.FEATURE_CHAT_ENABLED", True):
             with patch("core.feature_flags.FEATURE_CHAT_ROLLOUT_PCT", 0.5):
                 # Same user should always get same result

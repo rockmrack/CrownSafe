@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Security limits test suite for Task 6
-Tests request size limits, CORS, compression, input validation, and abuse protection
+Tests request size limits, CORS, compression, input validation, and abuse protection.
 """
 
 import json
@@ -14,15 +14,15 @@ BASE_URL = os.getenv("BABYSHIELD_BASE_URL", "http://localhost:8000")
 
 
 class SecurityLimitsTester:
-    """Test suite for security limits and protections"""
+    """Test suite for security limits and protections."""
 
-    def __init__(self, base_url: str = BASE_URL):
+    def __init__(self, base_url: str = BASE_URL) -> None:
         self.base_url = base_url
         self.session = requests.Session()
         self.test_results = []
 
     def test(self, condition: bool, message: str) -> bool:
-        """Record test result"""
+        """Record test result."""
         if condition:
             print(f"✅ {message}")
             self.test_results.append(True)
@@ -32,7 +32,7 @@ class SecurityLimitsTester:
         return condition
 
     def test_oversize_payload_413(self) -> bool:
-        """Test 1: Oversize payload returns 413"""
+        """Test 1: Oversize payload returns 413."""
         print("\n📝 Test 1: Request Size Limits")
 
         # Create large payload (200KB)
@@ -76,7 +76,7 @@ class SecurityLimitsTester:
         return response.status_code == 413
 
     def test_cors_allowed_origin(self) -> bool:
-        """Test 2: CORS allows configured origins"""
+        """Test 2: CORS allows configured origins."""
         print("\n📝 Test 2: CORS Allowed Origins")
 
         # Test allowed origin
@@ -124,7 +124,7 @@ class SecurityLimitsTester:
         return True
 
     def test_cors_denied_origin(self) -> bool:
-        """Test 3: CORS denies unknown origins"""
+        """Test 3: CORS denies unknown origins."""
         print("\n📝 Test 3: CORS Denied Origins")
 
         # Test denied origin
@@ -157,7 +157,7 @@ class SecurityLimitsTester:
         return True
 
     def test_field_length_limits(self) -> bool:
-        """Test 4: Field length validation"""
+        """Test 4: Field length validation."""
         print("\n📝 Test 4: Input Field Length Limits")
 
         # Test oversized product field (>128 chars)
@@ -195,7 +195,7 @@ class SecurityLimitsTester:
         return True
 
     def test_keywords_size_limits(self) -> bool:
-        """Test 5: Keywords list size limits"""
+        """Test 5: Keywords list size limits."""
         print("\n📝 Test 5: Keywords List Limits")
 
         # Test too many keywords (>8)
@@ -225,7 +225,7 @@ class SecurityLimitsTester:
         return True
 
     def test_compression(self) -> bool:
-        """Test 6: Response compression"""
+        """Test 6: Response compression."""
         print("\n📝 Test 6: GZip Compression")
 
         # Request with compression
@@ -256,7 +256,7 @@ class SecurityLimitsTester:
         return True
 
     def test_security_headers(self) -> bool:
-        """Test 7: Security headers present"""
+        """Test 7: Security headers present."""
         print("\n📝 Test 7: Security Headers")
 
         response = self.session.get(f"{self.base_url}/api/v1/healthz")
@@ -285,7 +285,7 @@ class SecurityLimitsTester:
         return True
 
     def test_ua_blocking(self) -> bool:
-        """Test 8: User-Agent blocking"""
+        """Test 8: User-Agent blocking."""
         print("\n📝 Test 8: User-Agent Blocking")
 
         # Test malicious user agents
@@ -325,7 +325,7 @@ class SecurityLimitsTester:
         return True
 
     def test_sql_injection_protection(self) -> bool:
-        """Test 9: SQL injection protection"""
+        """Test 9: SQL injection protection."""
         print("\n📝 Test 9: SQL Injection Protection")
 
         # Test SQL injection in search
@@ -353,7 +353,7 @@ class SecurityLimitsTester:
         return True
 
     def test_xss_protection(self) -> bool:
-        """Test 10: XSS protection"""
+        """Test 10: XSS protection."""
         print("\n📝 Test 10: XSS Protection")
 
         # Test XSS payloads
@@ -383,7 +383,7 @@ class SecurityLimitsTester:
         return True
 
     def run_all_tests(self) -> bool:
-        """Run all security tests"""
+        """Run all security tests."""
         print("=" * 60)
         print("🔒 SECURITY LIMITS TEST SUITE")
         print("=" * 60)
@@ -430,8 +430,8 @@ class SecurityLimitsTester:
         return all_passed
 
 
-def main():
-    """Main test runner"""
+def main() -> int:
+    """Main test runner."""
     tester = SecurityLimitsTester()
     success = tester.run_all_tests()
     return 0 if success else 1

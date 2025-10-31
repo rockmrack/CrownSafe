@@ -1,5 +1,5 @@
 """Request size limit middleware
-Prevents oversized payloads from consuming server resources
+Prevents oversized payloads from consuming server resources.
 """
 
 import logging
@@ -14,11 +14,11 @@ logger = logging.getLogger(__name__)
 
 class SizeLimitMiddleware(BaseHTTPMiddleware):
     """Middleware to enforce maximum request body size
-    Returns 413 Payload Too Large for oversized requests
+    Returns 413 Payload Too Large for oversized requests.
     """
 
     def __init__(self, app, max_bytes: int | None = None) -> None:
-        """Initialize size limit middleware
+        """Initialize size limit middleware.
 
         Args:
             app: ASGI application
@@ -30,7 +30,7 @@ class SizeLimitMiddleware(BaseHTTPMiddleware):
         logger.info(f"Request size limit configured: {self.max_bytes} bytes ({self.max_bytes / 1024:.1f} KB)")
 
     async def dispatch(self, request: Request, call_next):
-        """Process request with size validation"""
+        """Process request with size validation."""
         # Get trace ID for error responses
         trace_id = getattr(request.state, "trace_id", None)
 
@@ -145,7 +145,7 @@ class SizeLimitMiddleware(BaseHTTPMiddleware):
 
 
 class ConfigurableSizeLimits:
-    """Configuration for different endpoint size limits"""
+    """Configuration for different endpoint size limits."""
 
     # Default limits
     DEFAULT_LIMIT = 100_000  # 100KB
@@ -154,7 +154,7 @@ class ConfigurableSizeLimits:
 
     @classmethod
     def get_limit_for_path(cls, path: str) -> int:
-        """Get size limit based on endpoint path
+        """Get size limit based on endpoint path.
 
         Args:
             path: Request path
@@ -165,7 +165,6 @@ class ConfigurableSizeLimits:
         """
         if "/upload" in path or "/image" in path:
             return cls.UPLOAD_LIMIT
-        elif "/search" in path:
+        if "/search" in path:
             return cls.SEARCH_LIMIT
-        else:
-            return cls.DEFAULT_LIMIT
+        return cls.DEFAULT_LIMIT

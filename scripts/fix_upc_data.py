@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 async def fix_upc_data_with_product_identifier():
-    """Use ProductIdentifier agent to enhance existing recalls with UPC data"""
+    """Use ProductIdentifier agent to enhance existing recalls with UPC data."""
     logger.info("🚀 Starting UPC data enhancement for existing recalls...")
 
     try:

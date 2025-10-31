@@ -1,5 +1,5 @@
 """Comprehensive tests for Azure storage resilience layer
-Tests circuit breaker, retry logic, correlation IDs, and error handling
+Tests circuit breaker, retry logic, correlation IDs, and error handling.
 """
 
 import time
@@ -21,13 +21,14 @@ from core_infra.azure_storage_resilience import (
     retry_with_exponential_backoff,
     with_correlation_id,
 )
+from typing import Never
 
 
 class TestCircuitBreaker:
-    """Test suite for CircuitBreaker pattern"""
+    """Test suite for CircuitBreaker pattern."""
 
-    def test_init_default_values(self):
-        """Test circuit breaker initialization with defaults"""
+    def test_init_default_values(self) -> None:
+        """Test circuit breaker initialization with defaults."""
         cb = CircuitBreaker()
 
         assert cb.failure_threshold == 5
@@ -35,18 +36,18 @@ class TestCircuitBreaker:
         assert cb.state == CircuitBreakerState.CLOSED
         assert cb.failure_count == 0
 
-    def test_init_custom_values(self):
-        """Test circuit breaker with custom configuration"""
+    def test_init_custom_values(self) -> None:
+        """Test circuit breaker with custom configuration."""
         cb = CircuitBreaker(failure_threshold=3, recovery_timeout=30)
 
         assert cb.failure_threshold == 3
         assert cb.recovery_timeout == 30
 
-    def test_successful_call_in_closed_state(self):
-        """Test successful operation in CLOSED state"""
+    def test_successful_call_in_closed_state(self) -> None:
+        """Test successful operation in CLOSED state."""
         cb = CircuitBreaker(failure_threshold=2)
 
-        def success_func():
+        def success_func() -> str:
             return "success"
 
         result = cb.call(success_func)
@@ -55,11 +56,11 @@ class TestCircuitBreaker:
         assert cb.state == CircuitBreakerState.CLOSED
         assert cb.failure_count == 0
 
-    def test_failure_increments_count(self):
-        """Test that failures increment failure count"""
+    def test_failure_increments_count(self) -> None:
+        """Test that failures increment failure count."""
         cb = CircuitBreaker(failure_threshold=3)
 
-        def failing_func():
+        def failing_func() -> Never:
             raise Exception("Test error")
 
         # First failure
@@ -69,11 +70,11 @@ class TestCircuitBreaker:
         assert cb.failure_count == 1
         assert cb.state == CircuitBreakerState.CLOSED
 
-    def test_circuit_opens_after_threshold(self):
-        """Test circuit opens after reaching failure threshold"""
+    def test_circuit_opens_after_threshold(self) -> None:
+        """Test circuit opens after reaching failure threshold."""
         cb = CircuitBreaker(failure_threshold=3)
 
-        def failing_func():
+        def failing_func() -> Never:
             raise Exception("Test error")
 
         # Trigger failures to reach threshold
@@ -84,11 +85,11 @@ class TestCircuitBreaker:
         assert cb.state == CircuitBreakerState.OPEN
         assert cb.failure_count == 3
 
-    def test_open_circuit_prevents_calls(self):
-        """Test that OPEN circuit prevents function calls"""
+    def test_open_circuit_prevents_calls(self) -> None:
+        """Test that OPEN circuit prevents function calls."""
         cb = CircuitBreaker(failure_threshold=2)
 
-        def failing_func():
+        def failing_func() -> Never:
             raise Exception("Test error")
 
         # Open the circuit
@@ -102,11 +103,11 @@ class TestCircuitBreaker:
         with pytest.raises(Exception, match="Circuit breaker is OPEN"):
             cb.call(failing_func)
 
-    def test_half_open_after_recovery_timeout(self):
-        """Test circuit moves to HALF_OPEN after recovery timeout"""
+    def test_half_open_after_recovery_timeout(self) -> None:
+        """Test circuit moves to HALF_OPEN after recovery timeout."""
         cb = CircuitBreaker(failure_threshold=2, recovery_timeout=1)
 
-        def failing_func():
+        def failing_func() -> Never:
             raise Exception("Test error")
 
         # Open the circuit
@@ -122,14 +123,14 @@ class TestCircuitBreaker:
         # Check if circuit is now HALF_OPEN
         assert cb._should_attempt_reset()
 
-    def test_successful_call_closes_half_open_circuit(self):
-        """Test successful call in HALF_OPEN closes circuit"""
+    def test_successful_call_closes_half_open_circuit(self) -> None:
+        """Test successful call in HALF_OPEN closes circuit."""
         cb = CircuitBreaker(failure_threshold=2, recovery_timeout=1)
 
-        def failing_func():
+        def failing_func() -> Never:
             raise Exception("Test error")
 
-        def success_func():
+        def success_func() -> str:
             return "success"
 
         # Open the circuit
@@ -147,11 +148,11 @@ class TestCircuitBreaker:
         assert cb.state == CircuitBreakerState.CLOSED
         assert cb.failure_count == 0
 
-    def test_failure_in_half_open_reopens_circuit(self):
-        """Test failure in HALF_OPEN reopens circuit"""
+    def test_failure_in_half_open_reopens_circuit(self) -> None:
+        """Test failure in HALF_OPEN reopens circuit."""
         cb = CircuitBreaker(failure_threshold=2, recovery_timeout=1)
 
-        def failing_func():
+        def failing_func() -> Never:
             raise Exception("Test error")
 
         # Open the circuit
@@ -170,14 +171,14 @@ class TestCircuitBreaker:
 
 
 class TestRetryWithExponentialBackoff:
-    """Test suite for retry decorator"""
+    """Test suite for retry decorator."""
 
-    def test_successful_call_no_retry(self):
-        """Test successful call doesn't trigger retries"""
+    def test_successful_call_no_retry(self) -> None:
+        """Test successful call doesn't trigger retries."""
         call_count = {"count": 0}
 
         @retry_with_exponential_backoff(max_retries=3)
-        def success_func():
+        def success_func() -> str:
             call_count["count"] += 1
             return "success"
 
@@ -186,12 +187,12 @@ class TestRetryWithExponentialBackoff:
         assert result == "success"
         assert call_count["count"] == 1
 
-    def test_retry_on_transient_failure(self):
-        """Test retry on transient errors"""
+    def test_retry_on_transient_failure(self) -> None:
+        """Test retry on transient errors."""
         call_count = {"count": 0}
 
         @retry_with_exponential_backoff(max_retries=3, base_delay=0.1)
-        def transient_failure():
+        def transient_failure() -> str:
             call_count["count"] += 1
             if call_count["count"] < 3:
                 raise HttpResponseError("Transient error")
@@ -202,12 +203,12 @@ class TestRetryWithExponentialBackoff:
         assert result == "success"
         assert call_count["count"] == 3
 
-    def test_max_retries_exceeded(self):
-        """Test that retries stop after max_retries"""
+    def test_max_retries_exceeded(self) -> None:
+        """Test that retries stop after max_retries."""
         call_count = {"count": 0}
 
         @retry_with_exponential_backoff(max_retries=3, base_delay=0.1)
-        def always_fails():
+        def always_fails() -> Never:
             call_count["count"] += 1
             raise HttpResponseError("Always fails")
 
@@ -216,12 +217,12 @@ class TestRetryWithExponentialBackoff:
 
         assert call_count["count"] == 3
 
-    def test_no_retry_on_resource_not_found(self):
-        """Test no retry on 404 errors (ResourceNotFoundError)"""
+    def test_no_retry_on_resource_not_found(self) -> None:
+        """Test no retry on 404 errors (ResourceNotFoundError)."""
         call_count = {"count": 0}
 
         @retry_with_exponential_backoff(max_retries=3)
-        def not_found_error():
+        def not_found_error() -> Never:
             call_count["count"] += 1
             raise ResourceNotFoundError("Not found")
 
@@ -230,12 +231,12 @@ class TestRetryWithExponentialBackoff:
 
         assert call_count["count"] == 1
 
-    def test_no_retry_on_resource_exists(self):
-        """Test no retry on conflict errors (ResourceExistsError)"""
+    def test_no_retry_on_resource_exists(self) -> None:
+        """Test no retry on conflict errors (ResourceExistsError)."""
         call_count = {"count": 0}
 
         @retry_with_exponential_backoff(max_retries=3)
-        def conflict_error():
+        def conflict_error() -> Never:
             call_count["count"] += 1
             raise ResourceExistsError("Already exists")
 
@@ -245,12 +246,12 @@ class TestRetryWithExponentialBackoff:
         assert call_count["count"] == 1
 
     @patch("time.sleep")
-    def test_exponential_backoff_timing(self, mock_sleep):
-        """Test exponential backoff delay calculation"""
+    def test_exponential_backoff_timing(self, mock_sleep) -> None:
+        """Test exponential backoff delay calculation."""
         call_count = {"count": 0}
 
         @retry_with_exponential_backoff(max_retries=4, base_delay=1.0, exponential_base=2.0, jitter=False)
-        def failing_func():
+        def failing_func() -> str:
             call_count["count"] += 1
             if call_count["count"] < 4:
                 raise HttpResponseError("Error")
@@ -268,12 +269,12 @@ class TestRetryWithExponentialBackoff:
         assert delays[2] == 4.0
 
     @patch("time.sleep")
-    def test_max_delay_cap(self, mock_sleep):
-        """Test that delay is capped at max_delay"""
+    def test_max_delay_cap(self, mock_sleep) -> None:
+        """Test that delay is capped at max_delay."""
         call_count = {"count": 0}
 
         @retry_with_exponential_backoff(max_retries=5, base_delay=10.0, max_delay=20.0, jitter=False)
-        def failing_func():
+        def failing_func() -> str:
             call_count["count"] += 1
             if call_count["count"] < 5:
                 raise HttpResponseError("Error")
@@ -287,14 +288,14 @@ class TestRetryWithExponentialBackoff:
 
 
 class TestCorrelationID:
-    """Test suite for correlation ID decorator"""
+    """Test suite for correlation ID decorator."""
 
-    def test_correlation_id_generated(self):
-        """Test that correlation ID is generated and logged"""
+    def test_correlation_id_generated(self) -> None:
+        """Test that correlation ID is generated and logged."""
         with patch("core_infra.azure_storage_resilience.logger") as mock_logger:
 
             @with_correlation_id
-            def test_func():
+            def test_func() -> str:
                 return "success"
 
             result = test_func()
@@ -306,14 +307,14 @@ class TestCorrelationID:
             log_call = mock_logger.info.call_args_list[0][0][0]
             assert "correlation_id" in log_call.lower()
 
-    def test_correlation_id_is_uuid(self):
-        """Test that generated correlation ID is valid UUID"""
+    def test_correlation_id_is_uuid(self) -> None:
+        """Test that generated correlation ID is valid UUID."""
         correlation_ids = []
 
         with patch("core_infra.azure_storage_resilience.logger"):
 
             @with_correlation_id
-            def capture_id(**kwargs):
+            def capture_id(**kwargs) -> str:
                 # Check if correlation_id is in kwargs
                 if "correlation_id" in kwargs:
                     correlation_ids.append(kwargs["correlation_id"])
@@ -324,14 +325,14 @@ class TestCorrelationID:
         # Note: The decorator may not pass correlation_id as kwarg
         # It mainly logs it, so we'll test that it's a valid UUID format
 
-    def test_correlation_id_different_per_call(self):
-        """Test that each call gets a unique correlation ID"""
+    def test_correlation_id_different_per_call(self) -> None:
+        """Test that each call gets a unique correlation ID."""
         ids = []
 
         with patch("core_infra.azure_storage_resilience.logger") as mock_logger:
 
             @with_correlation_id
-            def test_func():
+            def test_func() -> str:
                 return "success"
 
             # Make multiple calls
@@ -349,14 +350,14 @@ class TestCorrelationID:
 
 
 class TestLogAzureError:
-    """Test suite for Azure error logging decorator"""
+    """Test suite for Azure error logging decorator."""
 
-    def test_http_response_error_logging(self):
-        """Test logging of HttpResponseError"""
+    def test_http_response_error_logging(self) -> None:
+        """Test logging of HttpResponseError."""
         with patch("core_infra.azure_storage_resilience.logger") as mock_logger:
 
             @log_azure_error
-            def raise_http_error():
+            def raise_http_error() -> Never:
                 error = HttpResponseError("Service unavailable")
                 error.status_code = 503
                 raise error
@@ -369,12 +370,12 @@ class TestLogAzureError:
             log_call = mock_logger.error.call_args[0][0]
             assert "503" in log_call or "HttpResponseError" in log_call
 
-    def test_resource_not_found_warning(self):
-        """Test ResourceNotFoundError is logged as warning"""
+    def test_resource_not_found_warning(self) -> None:
+        """Test ResourceNotFoundError is logged as warning."""
         with patch("core_infra.azure_storage_resilience.logger") as mock_logger:
 
             @log_azure_error
-            def raise_not_found():
+            def raise_not_found() -> Never:
                 raise ResourceNotFoundError("Blob not found")
 
             with pytest.raises(ResourceNotFoundError):
@@ -383,12 +384,12 @@ class TestLogAzureError:
             # Should log as warning, not error
             assert mock_logger.warning.call_count >= 1
 
-    def test_resource_exists_warning(self):
-        """Test ResourceExistsError is logged as warning"""
+    def test_resource_exists_warning(self) -> None:
+        """Test ResourceExistsError is logged as warning."""
         with patch("core_infra.azure_storage_resilience.logger") as mock_logger:
 
             @log_azure_error
-            def raise_exists():
+            def raise_exists() -> Never:
                 raise ResourceExistsError("Resource already exists")
 
             with pytest.raises(ResourceExistsError):
@@ -397,12 +398,12 @@ class TestLogAzureError:
             # Should log as warning
             assert mock_logger.warning.call_count >= 1
 
-    def test_service_request_error_logging(self):
-        """Test ServiceRequestError is logged with traceback"""
+    def test_service_request_error_logging(self) -> None:
+        """Test ServiceRequestError is logged with traceback."""
         with patch("core_infra.azure_storage_resilience.logger") as mock_logger:
 
             @log_azure_error
-            def raise_request_error():
+            def raise_request_error() -> Never:
                 raise ServiceRequestError("Request failed")
 
             with pytest.raises(ServiceRequestError):
@@ -413,12 +414,12 @@ class TestLogAzureError:
             log_call = mock_logger.error.call_args[0][0]
             assert "ServiceRequestError" in log_call or "Request failed" in log_call
 
-    def test_generic_azure_error_logging(self):
-        """Test generic AzureError logging"""
+    def test_generic_azure_error_logging(self) -> None:
+        """Test generic AzureError logging."""
         with patch("core_infra.azure_storage_resilience.logger") as mock_logger:
 
             @log_azure_error
-            def raise_azure_error():
+            def raise_azure_error() -> Never:
                 raise AzureError("Generic Azure error")
 
             with pytest.raises(AzureError):
@@ -427,12 +428,12 @@ class TestLogAzureError:
             # Should log as error
             assert mock_logger.error.call_count >= 1
 
-    def test_successful_call_no_error_logging(self):
-        """Test successful calls don't trigger error logging"""
+    def test_successful_call_no_error_logging(self) -> None:
+        """Test successful calls don't trigger error logging."""
         with patch("core_infra.azure_storage_resilience.logger") as mock_logger:
 
             @log_azure_error
-            def success_func():
+            def success_func() -> str:
                 return "success"
 
             result = success_func()
@@ -444,17 +445,17 @@ class TestLogAzureError:
 
 
 class TestDecoratorIntegration:
-    """Test combining multiple decorators"""
+    """Test combining multiple decorators."""
 
-    def test_retry_and_error_logging_together(self):
-        """Test retry decorator with error logging"""
+    def test_retry_and_error_logging_together(self) -> None:
+        """Test retry decorator with error logging."""
         call_count = {"count": 0}
 
         with patch("core_infra.azure_storage_resilience.logger") as mock_logger:
 
             @retry_with_exponential_backoff(max_retries=3, base_delay=0.1)
             @log_azure_error
-            def transient_error():
+            def transient_error() -> str:
                 call_count["count"] += 1
                 if call_count["count"] < 3:
                     raise HttpResponseError("Transient")
@@ -468,8 +469,8 @@ class TestDecoratorIntegration:
             # Error should be logged for each failure
             assert mock_logger.error.call_count >= 2
 
-    def test_all_decorators_together(self):
-        """Test all three decorators working together"""
+    def test_all_decorators_together(self) -> None:
+        """Test all three decorators working together."""
         call_count = {"count": 0}
 
         with patch("core_infra.azure_storage_resilience.logger"):
@@ -477,7 +478,7 @@ class TestDecoratorIntegration:
             @retry_with_exponential_backoff(max_retries=3, base_delay=0.1)
             @log_azure_error
             @with_correlation_id
-            def full_decorated_func():
+            def full_decorated_func() -> str:
                 call_count["count"] += 1
                 if call_count["count"] < 2:
                     raise HttpResponseError("Error")
@@ -490,28 +491,28 @@ class TestDecoratorIntegration:
 
 
 class TestResilienceEdgeCases:
-    """Test edge cases and error scenarios"""
+    """Test edge cases and error scenarios."""
 
-    def test_circuit_breaker_with_zero_threshold(self):
-        """Test circuit breaker with threshold of 0"""
+    def test_circuit_breaker_with_zero_threshold(self) -> None:
+        """Test circuit breaker with threshold of 0."""
         with pytest.raises(ValueError):
             CircuitBreaker(failure_threshold=0)
 
-    def test_retry_with_zero_retries(self):
-        """Test retry with max_retries=0"""
+    def test_retry_with_zero_retries(self) -> None:
+        """Test retry with max_retries=0."""
 
         @retry_with_exponential_backoff(max_retries=0)
-        def no_retry():
+        def no_retry() -> Never:
             raise HttpResponseError("Error")
 
         with pytest.raises(HttpResponseError):
             no_retry()
 
-    def test_circuit_breaker_thread_safety(self):
-        """Test circuit breaker is thread-safe (basic check)"""
+    def test_circuit_breaker_thread_safety(self) -> None:
+        """Test circuit breaker is thread-safe (basic check)."""
         cb = CircuitBreaker(failure_threshold=5)
 
-        def test_func():
+        def test_func() -> str:
             return "success"
 
         # Multiple calls should not cause issues

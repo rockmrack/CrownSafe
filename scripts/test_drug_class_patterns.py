@@ -44,9 +44,9 @@ logger = logging.getLogger("drug_class_tester")
 
 
 class DrugClassPatternTester:
-    """Test drug class pattern recognition with SGLT2 inhibitors"""
+    """Test drug class pattern recognition with SGLT2 inhibitors."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.memory: EnhancedMemoryManager | None = None
 
         # Test drugs in SGLT2 inhibitor class with correct names
@@ -80,40 +80,40 @@ class DrugClassPatternTester:
             ],
         }
 
-    def print_header(self, title: str):
-        """Print formatted headers"""
+    def print_header(self, title: str) -> None:
+        """Print formatted headers."""
         print(f"\n{'=' * 80}")
         print(f"[TEST] {title}")
         print(f"{'=' * 80}")
 
-    def print_section(self, title: str):
-        """Print section headers"""
+    def print_section(self, title: str) -> None:
+        """Print section headers."""
         print(f"\n{'-' * 60}")
         print(f"[SECTION] {title}")
         print(f"{'-' * 60}")
 
-    def print_success(self, message: str):
-        """Print success message"""
+    def print_success(self, message: str) -> None:
+        """Print success message."""
         print(f"[PASS] {message}")
 
-    def print_error(self, message: str):
-        """Print error message"""
+    def print_error(self, message: str) -> None:
+        """Print error message."""
         print(f"[FAIL] {message}")
 
-    def print_info(self, message: str):
-        """Print info message"""
+    def print_info(self, message: str) -> None:
+        """Print info message."""
         print(f"[INFO] {message}")
 
-    def print_debug(self, message: str):
-        """Print debug message"""
+    def print_debug(self, message: str) -> None:
+        """Print debug message."""
         print(f"[DEBUG] {message}")
 
-    def print_warning(self, message: str):
-        """Print warning message"""
+    def print_warning(self, message: str) -> None:
+        """Print warning message."""
         print(f"[WARN] {message}")
 
     async def initialize_memory(self) -> bool:
-        """Initialize memory manager"""
+        """Initialize memory manager."""
         self.print_section("Memory Initialization")
 
         # Load environment
@@ -151,7 +151,7 @@ class DrugClassPatternTester:
             return False
 
     async def analyze_current_patterns(self) -> dict[str, Any]:
-        """Analyze current drug class patterns in memory"""
+        """Analyze current drug class patterns in memory."""
         self.print_section("Current Drug Class Pattern Analysis")
 
         try:
@@ -313,7 +313,7 @@ class DrugClassPatternTester:
             return {}
 
     async def _get_sglt2_cross_workflow_evidence(self) -> list[dict[str, Any]]:
-        """Get SGLT2-specific cross-workflow evidence by querying ChromaDB directly"""
+        """Get SGLT2-specific cross-workflow evidence by querying ChromaDB directly."""
         try:
             # Query with correct drug names
             results = self.memory.collection.query(
@@ -367,7 +367,7 @@ class DrugClassPatternTester:
             return []
 
     async def test_ertugliflozin_simulation(self) -> dict[str, Any]:
-        """Simulate what would happen if we query Ertugliflozin (a new SGLT2) with detailed debugging"""
+        """Simulate what would happen if we query Ertugliflozin (a new SGLT2) with detailed debugging."""
         self.print_section("Ertugliflozin Query Simulation (New SGLT2) - Enhanced Debugging")
 
         try:
@@ -529,8 +529,8 @@ class DrugClassPatternTester:
             traceback.print_exc()
             return {}
 
-    async def _debug_existing_sglt2_knowledge(self):
-        """Debug what SGLT2 knowledge exists in the system"""
+    async def _debug_existing_sglt2_knowledge(self) -> None:
+        """Debug what SGLT2 knowledge exists in the system."""
         self.print_debug("=== DEBUGGING EXISTING SGLT2 KNOWLEDGE ===")
 
         try:
@@ -570,8 +570,8 @@ class DrugClassPatternTester:
         except Exception as e:
             self.print_debug(f"Failed to debug existing SGLT2 knowledge: {e}")
 
-    async def _debug_ertugliflozin_similarity_search(self):
-        """Debug what similar content is found for Ertugliflozin"""
+    async def _debug_ertugliflozin_similarity_search(self) -> None:
+        """Debug what similar content is found for Ertugliflozin."""
         self.print_debug("=== DEBUGGING ERTUGLIFLOZIN SIMILARITY SEARCH ===")
 
         try:
@@ -606,7 +606,7 @@ class DrugClassPatternTester:
             self.print_debug(f"Failed to debug Ertugliflozin similarity: {e}")
 
     async def _manual_ertugliflozin_analysis(self) -> dict[str, Any]:
-        """Manual analysis of Ertugliflozin similarity"""
+        """Manual analysis of Ertugliflozin similarity."""
         try:
             # Search for related content with correct drug names
             results = self.memory.collection.query(
@@ -684,16 +684,15 @@ class DrugClassPatternTester:
                     "predicted_strategy": predicted_strategy,
                     "research_strategy": predicted_strategy,  # Add for consistency
                 }
-            else:
-                self.print_error("No related documents found")
-                return {"research_strategy": "comprehensive", "sglt2_related": 0}
+            self.print_error("No related documents found")
+            return {"research_strategy": "comprehensive", "sglt2_related": 0}
 
         except Exception as e:
             self.print_error(f"Manual analysis failed: {e}")
             return {"research_strategy": "comprehensive", "sglt2_related": 0}
 
     async def test_cross_drug_evidence_retrieval(self) -> dict[str, Any]:
-        """Test retrieval of evidence relevant to multiple SGLT2 inhibitors"""
+        """Test retrieval of evidence relevant to multiple SGLT2 inhibitors."""
         self.print_section("Cross-Drug Evidence Retrieval Test")
 
         try:
@@ -850,7 +849,7 @@ class DrugClassPatternTester:
             return {"success": False, "multi_drug_count": 0, "comparative_examples": []}
 
     async def analyze_sglt2_knowledge_base(self) -> dict[str, Any]:
-        """Analyze the complete SGLT2 knowledge base"""
+        """Analyze the complete SGLT2 knowledge base."""
         self.print_section("SGLT2 Knowledge Base Analysis")
 
         try:
@@ -1062,7 +1061,7 @@ class DrugClassPatternTester:
         cross_drug_results: dict[str, Any],
         sglt2_kb: dict[str, Any],
     ) -> None:
-        """Generate comprehensive test summary with corrected logic"""
+        """Generate comprehensive test summary with corrected logic."""
         self.print_header("SGLT2 Inhibitor Class Testing Summary")
 
         # ANALYZE THE ACTUAL RESULTS FROM YOUR LOG
@@ -1207,8 +1206,8 @@ class DrugClassPatternTester:
         print("  Manual predicted strategy: update (correct)")
         print("  get_enhanced_research_recommendations result: FAILED (empty arrays)")
 
-    async def run_complete_analysis(self):
-        """Run complete drug class pattern analysis"""
+    async def run_complete_analysis(self) -> None:
+        """Run complete drug class pattern analysis."""
         print("[START] SGLT2 Inhibitor Class Pattern Recognition Test")
         print(f"[TIME] Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("[VERSION] test_drug_class_patterns.py v4.2-UNICODE-FIXED")
@@ -1237,8 +1236,8 @@ class DrugClassPatternTester:
         print(f"\n[TIME] Completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 
-async def main():
-    """Main entry point"""
+async def main() -> None:
+    """Main entry point."""
     tester = DrugClassPatternTester()
     await tester.run_complete_analysis()
 

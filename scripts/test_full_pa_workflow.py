@@ -37,7 +37,7 @@ API_BASE_URL = "http://127.0.0.1:8000"
 
 
 def check_endpoint(method: str, endpoint: str, data: dict | None = None, expected_status: int = 200) -> tuple:
-    """Check a single endpoint and return (success, response_data, error_message)"""
+    """Check a single endpoint and return (success, response_data, error_message)."""
     url = f"{API_BASE_URL}{endpoint}"
 
     try:
@@ -62,12 +62,11 @@ def check_endpoint(method: str, endpoint: str, data: dict | None = None, expecte
 
         if response.status_code == expected_status:
             return True, response_data, None
-        else:
-            return (
-                False,
-                response_data,
-                f"Expected {expected_status}, got {response.status_code}",
-            )
+        return (
+            False,
+            response_data,
+            f"Expected {expected_status}, got {response.status_code}",
+        )
 
     except requests.exceptions.ConnectionError:
         return False, None, "Connection refused - is the API running?"
@@ -78,7 +77,7 @@ def check_endpoint(method: str, endpoint: str, data: dict | None = None, expecte
 
 
 def check_redis_for_workflow(workflow_id: str) -> dict[str, Any]:
-    """Check Redis directly for workflow information"""
+    """Check Redis directly for workflow information."""
     try:
         r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
@@ -122,8 +121,8 @@ def check_redis_for_workflow(workflow_id: str) -> dict[str, Any]:
         return {"error": str(e)}
 
 
-def diagnose_api():
-    """Run diagnostic checks on the API"""
+def diagnose_api() -> None:
+    """Run diagnostic checks on the API."""
     logger.info("=" * 70)
     logger.info("🔍 RossNet API Diagnostic Tool")
     logger.info("=" * 70 + "\n")
@@ -303,8 +302,8 @@ def diagnose_api():
     logger.info("2. Start it again: python -m agents.routing.router_agent.main")
 
 
-def test_minimal_workflow():
-    """Test the absolute minimum workflow"""
+def test_minimal_workflow() -> None:
+    """Test the absolute minimum workflow."""
     logger.info("\n" + "=" * 70)
     logger.info("🧪 Minimal Workflow Test")
     logger.info("=" * 70 + "\n")
@@ -378,8 +377,8 @@ def test_minimal_workflow():
         logger.exception(f"❌ Error: {e!s}")
 
 
-def check_workflow_id_fix():
-    """Check if the workflow_id fix is needed"""
+def check_workflow_id_fix() -> None:
+    """Check if the workflow_id fix is needed."""
     logger.info("\n" + "=" * 70)
     logger.info("🔧 Checking for workflow_id issue")
     logger.info("=" * 70 + "\n")

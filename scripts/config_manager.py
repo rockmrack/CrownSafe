@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""BabyShield Configuration Management Utility
+"""BabyShield Configuration Management Utility.
 
 This script helps manage configuration files, validate settings,
 and generate secure secrets for production deployment.
@@ -34,19 +34,19 @@ except ImportError as e:
 
 
 class ConfigManager:
-    """Configuration management utility"""
+    """Configuration management utility."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.project_root = project_root
         self.config_dir = self.project_root / "config"
 
     def generate_secret_key(self, length: int = 64) -> str:
-        """Generate a secure secret key"""
+        """Generate a secure secret key."""
         alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
         return "".join(secrets.choice(alphabet) for _ in range(length))
 
     def generate_secrets(self) -> dict[str, str]:
-        """Generate secure secrets for production"""
+        """Generate secure secrets for production."""
         return {
             "SECRET_KEY": self.generate_secret_key(64),
             "POSTGRES_PASSWORD": self.generate_secret_key(32),
@@ -54,7 +54,7 @@ class ConfigManager:
         }
 
     def validate_config(self, environment: str = "development") -> bool:
-        """Validate configuration for given environment"""
+        """Validate configuration for given environment."""
         print(f"🔍 Validating {environment} configuration...")
 
         try:
@@ -91,7 +91,7 @@ class ConfigManager:
             return False
 
     def create_env_file(self, environment: str) -> bool:
-        """Create environment file from template"""
+        """Create environment file from template."""
         allowed_envs = {"development", "staging", "production"}
         if environment not in allowed_envs:
             raise ValueError(f"Unsupported environment '{environment}'. Expected one of: {sorted(allowed_envs)}")
@@ -126,7 +126,7 @@ class ConfigManager:
         return True
 
     def check_requirements(self) -> bool:
-        """Check if all required packages are available"""
+        """Check if all required packages are available."""
         print("🔍 Checking configuration requirements...")
 
         # Package mapping: import_name -> package_name
@@ -154,8 +154,8 @@ class ConfigManager:
         print("✅ All configuration requirements satisfied")
         return True
 
-    def show_structure(self):
-        """Show configuration directory structure"""
+    def show_structure(self) -> None:
+        """Show configuration directory structure."""
         print("📁 Configuration structure:")
         for root, dirs, files in os.walk(self.config_dir):
             level = root.replace(str(self.config_dir), "").count(os.sep)
@@ -166,7 +166,7 @@ class ConfigManager:
                 print(f"{subindent}{file}")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="BabyShield Configuration Manager")
     parser.add_argument(
         "command",

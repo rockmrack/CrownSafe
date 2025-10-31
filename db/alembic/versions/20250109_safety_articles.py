@@ -1,4 +1,4 @@
-"""Add safety articles table for Safety Hub
+"""Add safety articles table for Safety Hub.
 
 Revision ID: 20250109_safety_articles
 Revises: 20250109_incident_reports
@@ -17,7 +17,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     # Create safety_articles table
     op.create_table(
         "safety_articles",
@@ -55,7 +55,7 @@ def upgrade():
     )
 
 
-def downgrade():
+def downgrade() -> None:
     # Drop indexes
     op.drop_index(op.f("ix_safety_articles_source_agency"), table_name="safety_articles")
     op.drop_index(op.f("ix_safety_articles_is_featured"), table_name="safety_articles")

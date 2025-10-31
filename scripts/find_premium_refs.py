@@ -20,7 +20,7 @@ def search_file(path: Path):
         pass  # skip things we can’t read
 
 
-def walk_tree(root: Path):
+def walk_tree(root: Path) -> None:
     for p in root.rglob("*"):
         # skip directories we don’t care about
         if any(part in IGNORES for part in p.parts):

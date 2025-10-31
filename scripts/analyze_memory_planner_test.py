@@ -29,7 +29,7 @@ except ImportError as e:
 
 @dataclass
 class LogCandidate:
-    """Represents a candidate log file with scoring information"""
+    """Represents a candidate log file with scoring information."""
 
     path: Path
     score: float = 0.0
@@ -42,9 +42,9 @@ class LogCandidate:
 
 
 class MemoryPlannerAnalyzer:
-    """Analyzes Memory-Augmented Planner performance and strategy effectiveness"""
+    """Analyzes Memory-Augmented Planner performance and strategy effectiveness."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Fix log paths - check multiple possible locations INCLUDING PROJECT ROOT
         self.project_root = Path(project_root)
 
@@ -101,8 +101,8 @@ class MemoryPlannerAnalyzer:
         self._workflow_cache = {}
         self._pdf_timestamps = {}
 
-    async def initialize_memory(self):
-        """Initialize memory manager for analysis"""
+    async def initialize_memory(self) -> bool | None:
+        """Initialize memory manager for analysis."""
         try:
             self.memory_manager = MemoryManager()
             doc_count = self.memory_manager.collection.count()
@@ -162,7 +162,7 @@ class MemoryPlannerAnalyzer:
                 return None
 
     def _find_pdf_for_drug(self, drug_name: str) -> tuple[Path, float] | None:
-        """Find PDF file for the drug and return its path and timestamp"""
+        """Find PDF file for the drug and return its path and timestamp."""
         if drug_name in self._pdf_timestamps:
             return self._pdf_timestamps[drug_name]
 
@@ -192,7 +192,7 @@ class MemoryPlannerAnalyzer:
         workflow_id: str | None = None,
         reference_time: float | None = None,
     ) -> float:
-        """Score a log candidate based on multiple factors"""
+        """Score a log candidate based on multiple factors."""
         score = 0.0
 
         # Drug name match (highest priority)
@@ -245,7 +245,7 @@ class MemoryPlannerAnalyzer:
         workflow_id: str | None = None,
         check_depth: int = 50000,
     ) -> LogCandidate:
-        """Analyze log content and create a scored candidate"""
+        """Analyze log content and create a scored candidate."""
         safe_log_path = self._resolve_if_safe(log_path)
         if not safe_log_path or not safe_log_path.exists():
             print(f"[WARNING] Skipping unsafe or missing log file: {log_path}")
@@ -296,7 +296,7 @@ class MemoryPlannerAnalyzer:
         specific_log_path: str | None = None,
         time_window_minutes: int = 60,
     ) -> Path | None:
-        """Find the most appropriate log file for analysis with advanced scoring"""
+        """Find the most appropriate log file for analysis with advanced scoring."""
         # If specific log path provided, validate and use it when safe
         if specific_log_path:
             direct_candidate = self._resolve_if_safe(Path(specific_log_path))
@@ -436,7 +436,7 @@ class MemoryPlannerAnalyzer:
         drug_name: str | None = None,
         planner_log_path: str | None = None,
     ) -> dict[str, Any]:
-        """Analyze planner logs for memory-augmented behavior"""
+        """Analyze planner logs for memory-augmented behavior."""
         print("\n=== ANALYZING PLANNER LOGS ===")
         print(f"Target drug: {drug_name}")
         print(f"Target workflow: {workflow_id or 'Not specified'}")
@@ -748,7 +748,7 @@ class MemoryPlannerAnalyzer:
         router_log_path: str | None = None,
         commander_log_path: str | None = None,
     ) -> dict[str, Any]:
-        """Analyze complete workflow execution efficiency"""
+        """Analyze complete workflow execution efficiency."""
         print("\n=== ANALYZING WORKFLOW EXECUTION ===")
 
         analysis = {
@@ -895,7 +895,7 @@ class MemoryPlannerAnalyzer:
         return analysis
 
     async def analyze_memory_impact(self, drug_name: str) -> dict[str, Any]:
-        """Analyze how memory was impacted by the workflow"""
+        """Analyze how memory was impacted by the workflow."""
         print(f"\n=== ANALYZING MEMORY IMPACT FOR {drug_name} ===")
 
         if not self.memory_manager:
@@ -1068,7 +1068,7 @@ class MemoryPlannerAnalyzer:
         return analysis
 
     def generate_recommendations(self, drug_name: str) -> list[str]:
-        """Generate recommendations based on analysis"""
+        """Generate recommendations based on analysis."""
         recommendations = []
 
         # Based on planner performance
@@ -1191,7 +1191,7 @@ class MemoryPlannerAnalyzer:
         router_log: str | None = None,
         commander_log: str | None = None,
     ):
-        """Run complete analysis of memory-augmented planner test"""
+        """Run complete analysis of memory-augmented planner test."""
         print("\n" + "=" * 60)
         print("MEMORY-AUGMENTED PLANNER TEST ANALYSIS v4.0")
         print("=" * 60)
@@ -1311,8 +1311,8 @@ class MemoryPlannerAnalyzer:
         return self.analysis_results
 
 
-def main():
-    """Main function with argparse support"""
+def main() -> None:
+    """Main function with argparse support."""
     parser = argparse.ArgumentParser(
         description="Analyze Memory-Augmented Planner test results (v4.0)",
         formatter_class=argparse.RawDescriptionHelpFormatter,

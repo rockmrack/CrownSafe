@@ -1,5 +1,5 @@
 """UPSERT Handler for Optimized Database Operations
-Implements PostgreSQL ON CONFLICT for atomic upsert operations
+Implements PostgreSQL ON CONFLICT for atomic upsert operations.
 """
 
 import logging
@@ -13,12 +13,12 @@ logger = logging.getLogger(__name__)
 
 class UpsertHandler:
     """Handles UPSERT operations for various tables using PostgreSQL's ON CONFLICT
-    This provides atomic, single-query insert-or-update operations
+    This provides atomic, single-query insert-or-update operations.
     """
 
     @staticmethod
     def upsert_recall(db: Session, recall_data: dict[str, Any]) -> bool:
-        """Perform atomic UPSERT for a single recall record
+        """Perform atomic UPSERT for a single recall record.
 
         Args:
             db: Database session
@@ -154,7 +154,7 @@ class UpsertHandler:
 
     @staticmethod
     def bulk_upsert_recalls(db: Session, recalls: list[dict[str, Any]], batch_size: int = 100) -> dict[str, int]:
-        """Perform bulk UPSERT for multiple recalls with batching
+        """Perform bulk UPSERT for multiple recalls with batching.
 
         Args:
             db: Database session
@@ -285,7 +285,7 @@ class UpsertHandler:
 
     @staticmethod
     def upsert_subscription(db: Session, subscription_data: dict[str, Any]) -> bool:
-        """Perform atomic UPSERT for subscription records
+        """Perform atomic UPSERT for subscription records.
 
         Args:
             db: Database session
@@ -340,7 +340,7 @@ class UpsertHandler:
 
 
 class EnhancedUpsertHandler(UpsertHandler):
-    """Enhanced UPSERT handler with additional features"""
+    """Enhanced UPSERT handler with additional features."""
 
     @staticmethod
     def upsert_with_history(
@@ -350,7 +350,7 @@ class EnhancedUpsertHandler(UpsertHandler):
         unique_key: str,
         track_changes: bool = True,
     ) -> bool:
-        """UPSERT with optional change history tracking
+        """UPSERT with optional change history tracking.
 
         Args:
             db: Database session

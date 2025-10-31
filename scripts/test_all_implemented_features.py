@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Comprehensive test script for ALL BabyShield API features
-Tests Premium, Baby, Advanced, and Compliance features
+Tests Premium, Baby, Advanced, and Compliance features.
 """
 
 import asyncio
@@ -15,8 +15,8 @@ BASE_URL = "http://localhost:8001"
 test_results = {"passed": 0, "failed": 0, "errors": []}
 
 
-def log_result(test_name: str, success: bool, details: str = ""):
-    """Log test result"""
+def log_result(test_name: str, success: bool, details: str = "") -> None:
+    """Log test result."""
     if success:
         print(f"✅ {test_name}")
         test_results["passed"] += 1
@@ -26,8 +26,8 @@ def log_result(test_name: str, success: bool, details: str = ""):
         test_results["errors"].append(f"{test_name}: {details}")
 
 
-async def test_core_features():
-    """Test core BabyShield features"""
+async def test_core_features() -> None:
+    """Test core BabyShield features."""
     print("\n" + "=" * 60)
     print("TESTING CORE FEATURES")
     print("=" * 60)
@@ -102,8 +102,8 @@ async def test_core_features():
             log_result("Advanced Search", False, str(e))
 
 
-async def test_premium_features():
-    """Test Premium features (Pregnancy & Allergy)"""
+async def test_premium_features() -> None:
+    """Test Premium features (Pregnancy & Allergy)."""
     print("\n" + "=" * 60)
     print("TESTING PREMIUM FEATURES")
     print("=" * 60)
@@ -148,8 +148,8 @@ async def test_premium_features():
             print(f"  ⚠️ Family member endpoints not available: {e}")
 
 
-async def test_baby_features():
-    """Test Baby-specific features"""
+async def test_baby_features() -> None:
+    """Test Baby-specific features."""
     print("\n" + "=" * 60)
     print("TESTING BABY SAFETY FEATURES")
     print("=" * 60)
@@ -206,8 +206,8 @@ async def test_baby_features():
             print(f"  ⚠️ Report generation not available: {e}")
 
 
-async def test_advanced_features():
-    """Test Advanced features"""
+async def test_advanced_features() -> None:
+    """Test Advanced features."""
     print("\n" + "=" * 60)
     print("TESTING ADVANCED FEATURES")
     print("=" * 60)
@@ -257,8 +257,8 @@ async def test_advanced_features():
             print(f"  ⚠️ Visual recognition not available: {e}")
 
 
-async def test_compliance_features():
-    """Test Legal Compliance features"""
+async def test_compliance_features() -> None:
+    """Test Legal Compliance features."""
     print("\n" + "=" * 60)
     print("TESTING COMPLIANCE FEATURES")
     print("=" * 60)
@@ -315,8 +315,8 @@ async def test_compliance_features():
             print(f"  ⚠️ GDPR features not available: {e}")
 
 
-async def test_system_features():
-    """Test System and Admin features"""
+async def test_system_features() -> None:
+    """Test System and Admin features."""
     print("\n" + "=" * 60)
     print("TESTING SYSTEM FEATURES")
     print("=" * 60)
@@ -347,8 +347,8 @@ async def test_system_features():
             log_result("Root Endpoint", False, str(e))
 
 
-async def main():
-    """Run all tests"""
+async def main() -> None:
+    """Run all tests."""
     print("\n" + "🚀 COMPREHENSIVE BABYSHIELD API TEST SUITE 🚀".center(60, "="))
     print(f"Testing against: {BASE_URL}")
     print(f"Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")

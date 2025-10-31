@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Comprehensive deployment verification and fix script"""
+"""Comprehensive deployment verification and fix script."""
 
 import sys
 
@@ -9,7 +9,7 @@ BASE_URL = "https://babyshield.cureviax.ai"
 
 
 def check_endpoint(path: str, method: str = "GET", data: dict = None) -> tuple[int, dict]:
-    """Check if an endpoint is working"""
+    """Check if an endpoint is working."""
     url = f"{BASE_URL}{path}"
     headers = {"Content-Type": "application/json"}
 
@@ -32,7 +32,7 @@ def check_endpoint(path: str, method: str = "GET", data: dict = None) -> tuple[i
         return 0, {"error": str(e)}
 
 
-def main():
+def main() -> int:
     print("=" * 70)
     print("BABYSHIELD API DEPLOYMENT VERIFICATION")
     print("=" * 70)

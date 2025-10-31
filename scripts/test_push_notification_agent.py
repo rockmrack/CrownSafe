@@ -23,7 +23,7 @@ TEST_DEVICE_TOKEN = "fake_device_token_for_testing_12345"
 # --------------------------
 
 
-async def main():
+async def main() -> None:
     """Main function to run the PushNotificationAgent test with mocked Firebase Admin SDK."""
     logger = logging.getLogger(__name__)
     logger.info("--- Starting PushNotificationAgent Test ---")

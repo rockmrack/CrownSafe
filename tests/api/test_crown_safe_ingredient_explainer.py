@@ -1,5 +1,5 @@
 """Crown Safe - Ingredient Explainer Tests
-Tests for GET /api/v1/ingredients/{name} and /api/v1/ingredients?query=... endpoints
+Tests for GET /api/v1/ingredients/{name} and /api/v1/ingredients?query=... endpoints.
 
 Test Coverage:
 - Ingredient lookup by exact name
@@ -24,13 +24,13 @@ from core_infra.database import get_db
 
 @pytest.fixture
 def client():
-    """FastAPI test client"""
+    """FastAPI test client."""
     return TestClient(app)
 
 
 @pytest.fixture
 def db_session():
-    """Database session fixture"""
+    """Database session fixture."""
     db = next(get_db())
     try:
         yield db
@@ -40,7 +40,7 @@ def db_session():
 
 @pytest.fixture
 def sample_ingredients(db_session):
-    """Create sample ingredients for testing"""
+    """Create sample ingredients for testing."""
     ingredients = [
         IngredientModel(
             name="Shea Butter",
@@ -110,8 +110,8 @@ def sample_ingredients(db_session):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_get_ingredient_by_name_success(client, sample_ingredients):
-    """Test getting ingredient by exact name"""
+def test_get_ingredient_by_name_success(client, sample_ingredients) -> None:
+    """Test getting ingredient by exact name."""
     response = client.get("/api/v1/ingredients/Shea Butter")
 
     assert response.status_code == 200
@@ -124,8 +124,8 @@ def test_get_ingredient_by_name_success(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_get_ingredient_by_inci_name(client, sample_ingredients):
-    """Test getting ingredient by INCI name"""
+def test_get_ingredient_by_inci_name(client, sample_ingredients) -> None:
+    """Test getting ingredient by INCI name."""
     response = client.get("/api/v1/ingredients/Sodium Lauryl Sulfate")
 
     assert response.status_code == 200
@@ -136,8 +136,8 @@ def test_get_ingredient_by_inci_name(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_get_ingredient_case_insensitive(client, sample_ingredients):
-    """Test that ingredient lookup is case-insensitive"""
+def test_get_ingredient_case_insensitive(client, sample_ingredients) -> None:
+    """Test that ingredient lookup is case-insensitive."""
     response = client.get("/api/v1/ingredients/shea butter")  # lowercase
 
     assert response.status_code == 200
@@ -147,8 +147,8 @@ def test_get_ingredient_case_insensitive(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_get_ingredient_by_common_name(client, sample_ingredients):
-    """Test getting ingredient by common name (JSON search)"""
+def test_get_ingredient_by_common_name(client, sample_ingredients) -> None:
+    """Test getting ingredient by common name (JSON search)."""
     response = client.get("/api/v1/ingredients/SLS")
 
     assert response.status_code == 200
@@ -158,8 +158,8 @@ def test_get_ingredient_by_common_name(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_get_ingredient_not_found(client):
-    """Test getting non-existent ingredient"""
+def test_get_ingredient_not_found(client) -> None:
+    """Test getting non-existent ingredient."""
     response = client.get("/api/v1/ingredients/Nonexistent Ingredient XYZ")
 
     assert response.status_code == 404
@@ -173,8 +173,8 @@ def test_get_ingredient_not_found(client):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_ingredient_includes_porosity_notes(client, sample_ingredients):
-    """Test that ingredient response includes porosity-specific guidance"""
+def test_ingredient_includes_porosity_notes(client, sample_ingredients) -> None:
+    """Test that ingredient response includes porosity-specific guidance."""
     response = client.get("/api/v1/ingredients/Shea Butter")
 
     assert response.status_code == 200
@@ -190,8 +190,8 @@ def test_ingredient_includes_porosity_notes(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_ingredient_porosity_warnings(client, sample_ingredients):
-    """Test that harsh ingredients have proper porosity warnings"""
+def test_ingredient_porosity_warnings(client, sample_ingredients) -> None:
+    """Test that harsh ingredients have proper porosity warnings."""
     response = client.get("/api/v1/ingredients/Sodium Lauryl Sulfate")
 
     assert response.status_code == 200
@@ -208,8 +208,8 @@ def test_ingredient_porosity_warnings(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_ingredient_best_for_recommendations(client, sample_ingredients):
-    """Test that ingredients include best-for curl pattern recommendations"""
+def test_ingredient_best_for_recommendations(client, sample_ingredients) -> None:
+    """Test that ingredients include best-for curl pattern recommendations."""
     response = client.get("/api/v1/ingredients/Shea Butter")
 
     assert response.status_code == 200
@@ -224,8 +224,8 @@ def test_ingredient_best_for_recommendations(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_ingredient_best_for_filtering(client, sample_ingredients):
-    """Test that best-for only includes patterns with score > 5"""
+def test_ingredient_best_for_filtering(client, sample_ingredients) -> None:
+    """Test that best-for only includes patterns with score > 5."""
     response = client.get("/api/v1/ingredients/Coconut Oil")
 
     assert response.status_code == 200
@@ -246,8 +246,8 @@ def test_ingredient_best_for_filtering(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_ingredient_avoid_if_warnings(client, sample_ingredients):
-    """Test that ingredients include avoid-if warnings based on effects"""
+def test_ingredient_avoid_if_warnings(client, sample_ingredients) -> None:
+    """Test that ingredients include avoid-if warnings based on effects."""
     response = client.get("/api/v1/ingredients/Sodium Lauryl Sulfate")
 
     assert response.status_code == 200
@@ -262,8 +262,8 @@ def test_ingredient_avoid_if_warnings(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_ingredient_protein_warning(client, sample_ingredients):
-    """Test that protein-heavy ingredients have protein warning"""
+def test_ingredient_protein_warning(client, sample_ingredients) -> None:
+    """Test that protein-heavy ingredients have protein warning."""
     response = client.get("/api/v1/ingredients/Coconut Oil")
 
     assert response.status_code == 200
@@ -281,8 +281,8 @@ def test_ingredient_protein_warning(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_ingredient_leave_in_guidance(client, sample_ingredients):
-    """Test that leave-in ingredients have proper guidance"""
+def test_ingredient_leave_in_guidance(client, sample_ingredients) -> None:
+    """Test that leave-in ingredients have proper guidance."""
     response = client.get("/api/v1/ingredients/Shea Butter")
 
     assert response.status_code == 200
@@ -295,8 +295,8 @@ def test_ingredient_leave_in_guidance(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_ingredient_rinse_off_guidance(client, sample_ingredients):
-    """Test that rinse-off ingredients have proper guidance"""
+def test_ingredient_rinse_off_guidance(client, sample_ingredients) -> None:
+    """Test that rinse-off ingredients have proper guidance."""
     response = client.get("/api/v1/ingredients/Sodium Lauryl Sulfate")
 
     assert response.status_code == 200
@@ -313,8 +313,8 @@ def test_ingredient_rinse_off_guidance(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_search_ingredients_success(client, sample_ingredients):
-    """Test searching ingredients by query"""
+def test_search_ingredients_success(client, sample_ingredients) -> None:
+    """Test searching ingredients by query."""
     response = client.get("/api/v1/ingredients?query=butter")
 
     assert response.status_code == 200
@@ -329,8 +329,8 @@ def test_search_ingredients_success(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_search_ingredients_case_insensitive(client, sample_ingredients):
-    """Test that search is case-insensitive"""
+def test_search_ingredients_case_insensitive(client, sample_ingredients) -> None:
+    """Test that search is case-insensitive."""
     response = client.get("/api/v1/ingredients?query=COCONUT")
 
     assert response.status_code == 200
@@ -342,8 +342,8 @@ def test_search_ingredients_case_insensitive(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_search_ingredients_partial_match(client, sample_ingredients):
-    """Test that search supports partial matching"""
+def test_search_ingredients_partial_match(client, sample_ingredients) -> None:
+    """Test that search supports partial matching."""
     response = client.get("/api/v1/ingredients?query=sul")
 
     assert response.status_code == 200
@@ -356,8 +356,8 @@ def test_search_ingredients_partial_match(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_search_ingredients_empty_query(client):
-    """Test searching with empty query"""
+def test_search_ingredients_empty_query(client) -> None:
+    """Test searching with empty query."""
     response = client.get("/api/v1/ingredients?query=")
 
     assert response.status_code == 400
@@ -366,8 +366,8 @@ def test_search_ingredients_empty_query(client):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_search_ingredients_no_results(client):
-    """Test searching with query that matches nothing"""
+def test_search_ingredients_no_results(client) -> None:
+    """Test searching with query that matches nothing."""
     response = client.get("/api/v1/ingredients?query=xyznonexistent")
 
     assert response.status_code == 200
@@ -377,8 +377,8 @@ def test_search_ingredients_no_results(client):
 
 @pytest.mark.api
 @pytest.mark.unit
-def test_search_ingredients_limit(client, sample_ingredients):
-    """Test that search respects 10-result limit"""
+def test_search_ingredients_limit(client, sample_ingredients) -> None:
+    """Test that search respects 10-result limit."""
     # Create 15 ingredients with "test" in name
     db = next(get_db())
     for i in range(15):
@@ -411,8 +411,8 @@ def test_search_ingredients_limit(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.edge_cases
-def test_get_ingredient_with_special_characters(client, db_session):
-    """Test getting ingredient with special characters in name"""
+def test_get_ingredient_with_special_characters(client, db_session) -> None:
+    """Test getting ingredient with special characters in name."""
     ingredient = IngredientModel(
         name="PEG-100 Stearate",
         inci_name="PEG-100 Stearate",
@@ -433,8 +433,8 @@ def test_get_ingredient_with_special_characters(client, db_session):
 
 @pytest.mark.api
 @pytest.mark.edge_cases
-def test_get_ingredient_with_whitespace(client, sample_ingredients):
-    """Test getting ingredient with extra whitespace"""
+def test_get_ingredient_with_whitespace(client, sample_ingredients) -> None:
+    """Test getting ingredient with extra whitespace."""
     response = client.get("/api/v1/ingredients/  Shea  Butter  ")
 
     assert response.status_code == 200
@@ -444,8 +444,8 @@ def test_get_ingredient_with_whitespace(client, sample_ingredients):
 
 @pytest.mark.api
 @pytest.mark.edge_cases
-def test_search_ingredients_with_sql_injection_attempt(client):
-    """Test that search is protected against SQL injection"""
+def test_search_ingredients_with_sql_injection_attempt(client) -> None:
+    """Test that search is protected against SQL injection."""
     response = client.get("/api/v1/ingredients?query='; DROP TABLE ingredients; --")
 
     # Should not crash, should return 200 with empty results

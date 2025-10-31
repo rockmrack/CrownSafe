@@ -95,7 +95,7 @@ except ValueError as err:
 
 
 # --- Dynamically Import and Run Agent ---
-async def start_agent(module_path: str):
+async def start_agent(module_path: str) -> None:
     """Dynamically imports and runs the main() function of the specified agent module."""
     try:
         logger.info(f"Attempting to import agent module: {module_path}")

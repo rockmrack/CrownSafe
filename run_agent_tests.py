@@ -1,5 +1,5 @@
 """Quick Agent Test Runner
-Runs tests for all major BabyShield agents
+Runs tests for all major BabyShield agents.
 """
 
 import subprocess
@@ -7,8 +7,8 @@ import sys
 from datetime import datetime
 
 
-def run_command(cmd, description):
-    """Run a command and return success status"""
+def run_command(cmd, description) -> bool | None:
+    """Run a command and return success status."""
     print(f"\n{'=' * 80}")
     print(f"🧪 {description}")
     print(f"{'=' * 80}")
@@ -19,11 +19,10 @@ def run_command(cmd, description):
         if result.returncode == 0:
             print(f"✅ PASSED - {description}")
             return True
-        else:
-            print(f"⚠️  COMPLETED - {description}")
-            if "passed" in result.stdout.lower() or "passed" in result.stderr.lower():
-                return True
-            return False
+        print(f"⚠️  COMPLETED - {description}")
+        if "passed" in result.stdout.lower() or "passed" in result.stderr.lower():
+            return True
+        return False
     except subprocess.TimeoutExpired:
         print(f"⏱️  TIMEOUT - {description}")
         return False
@@ -32,7 +31,7 @@ def run_command(cmd, description):
         return False
 
 
-def main():
+def main() -> int:
     print("\n" + "=" * 80)
     print("🚀 BABYSHIELD AGENT TEST SUITE")
     print("=" * 80)
@@ -180,9 +179,8 @@ def main():
     if critical_passed:
         print("\n✅ ALL CRITICAL TESTS PASSED!")
         return 0
-    else:
-        print("\n⚠️  Some critical tests failed")
-        return 1
+    print("\n⚠️  Some critical tests failed")
+    return 1
 
 
 if __name__ == "__main__":

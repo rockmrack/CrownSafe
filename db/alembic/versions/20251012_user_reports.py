@@ -1,4 +1,4 @@
-"""Add user_reports table for community unsafe product reporting
+"""Add user_reports table for community unsafe product reporting.
 
 Revision ID: 20251012_user_reports
 Revises: bcef138c88a2
@@ -17,8 +17,8 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
-    """Add user_reports table for community reporting of unsafe products"""
+def upgrade() -> None:
+    """Add user_reports table for community reporting of unsafe products."""
     # Create user_reports table
     op.create_table(
         "user_reports",
@@ -63,8 +63,8 @@ def upgrade():
     op.create_index("idx_user_reports_model_number", "user_reports", ["model_number"])
 
 
-def downgrade():
-    """Remove user_reports table"""
+def downgrade() -> None:
+    """Remove user_reports table."""
     op.drop_index("idx_user_reports_model_number", table_name="user_reports")
     op.drop_index("idx_user_reports_barcode", table_name="user_reports")
     op.drop_index("idx_user_reports_created_at", table_name="user_reports")

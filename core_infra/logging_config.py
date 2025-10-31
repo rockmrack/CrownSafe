@@ -1,16 +1,16 @@
 """Structured logging configuration for BabyShield
-Provides consistent logging across the application
+Provides consistent logging across the application.
 """
 
 import json
 import logging
 import logging.config
 import os
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 
 
 class StructuredFormatter(logging.Formatter):
-    """Custom formatter that outputs structured JSON logs"""
+    """Custom formatter that outputs structured JSON logs."""
 
     def format(self, record: logging.LogRecord) -> str:
         log_obj = {
@@ -45,7 +45,7 @@ class StructuredFormatter(logging.Formatter):
 
 
 class ConsoleFormatter(logging.Formatter):
-    """Colored console formatter for development"""
+    """Colored console formatter for development."""
 
     COLORS = {
         "DEBUG": "\033[36m",  # Cyan
@@ -92,7 +92,7 @@ def setup_logging(
     log_format: str = "console",
     log_file: str = None,  # "console" or "json"
 ) -> None:
-    """Setup logging configuration for the application
+    """Setup logging configuration for the application.
 
     Args:
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
@@ -170,7 +170,7 @@ def setup_logging(
 
 
 def get_logger(name: str) -> logging.Logger:
-    """Get a logger instance with the given name
+    """Get a logger instance with the given name.
 
     Args:
         name: Logger name (typically __name__)
@@ -184,7 +184,7 @@ def get_logger(name: str) -> logging.Logger:
 
 # Request logging middleware
 class RequestLogger:
-    """Middleware to log all requests and responses"""
+    """Middleware to log all requests and responses."""
 
     def __init__(self, app) -> None:
         self.app = app

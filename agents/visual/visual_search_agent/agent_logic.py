@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def _is_azure_blob_url(url: str) -> bool:
-    """Check if URL is an Azure Blob Storage URL"""
+    """Check if URL is an Azure Blob Storage URL."""
     u = urlparse(url)
     return u.scheme == "blob" or ("blob.core.windows.net" in (u.netloc or ""))
 
@@ -74,7 +74,7 @@ class VisualSearchAgentLogic:
 
     async def suggest_products_from_image(self, image_url: str) -> dict[str, Any]:
         """Analyzes an image and returns a list of potential product matches.
-        (Kept for backward compatibility with Phase 2 endpoints)
+        (Kept for backward compatibility with Phase 2 endpoints).
         """
         self.logger.info(f"Analyzing image for product suggestions: {image_url}")
 
@@ -392,5 +392,4 @@ class VisualSearchAgentLogic:
         # Check if this is a full workflow call (Phase 3) or suggestion call (Phase 2)
         if inputs.get("mode") == "identify":
             return await self.identify_product_from_image(image_url)
-        else:
-            return await self.suggest_products_from_image(image_url)
+        return await self.suggest_products_from_image(image_url)

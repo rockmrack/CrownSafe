@@ -1,4 +1,4 @@
-"""Create users and family_members tables
+"""Create users and family_members tables.
 
 Revision ID: 20251014_users_tables
 Revises: 001
@@ -18,7 +18,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     # Create users table
     op.create_table(
         "users",
@@ -59,7 +59,7 @@ def upgrade():
     print("✅ Created users, family_members, and allergies tables")
 
 
-def downgrade():
+def downgrade() -> None:
     op.drop_table("allergies")
     op.drop_table("family_members")
     op.drop_table("users")

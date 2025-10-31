@@ -6,10 +6,10 @@ from api.main_crownsafe import app
 
 
 class TestChatFlags:
-    def setup_method(self):
+    def setup_method(self) -> None:
         self.client = TestClient(app)
 
-    def test_chat_flags_default_values(self):
+    def test_chat_flags_default_values(self) -> None:
         with (
             patch("api.routers.chat.FEATURE_CHAT_ENABLED", False),
             patch("api.routers.chat.FEATURE_CHAT_ROLLOUT_PCT", 0.10),
@@ -23,7 +23,7 @@ class TestChatFlags:
             assert body["data"]["chat_enabled_global"] is False
             assert body["data"]["chat_rollout_pct"] == 0.10
 
-    def test_chat_flags_enabled(self):
+    def test_chat_flags_enabled(self) -> None:
         with (
             patch("api.routers.chat.FEATURE_CHAT_ENABLED", True),
             patch("api.routers.chat.FEATURE_CHAT_ROLLOUT_PCT", 0.50),
@@ -37,7 +37,7 @@ class TestChatFlags:
             assert body["data"]["chat_enabled_global"] is True
             assert body["data"]["chat_rollout_pct"] == 0.50
 
-    def test_chat_flags_full_rollout(self):
+    def test_chat_flags_full_rollout(self) -> None:
         with (
             patch("api.routers.chat.FEATURE_CHAT_ENABLED", True),
             patch("api.routers.chat.FEATURE_CHAT_ROLLOUT_PCT", 1.0),
@@ -51,7 +51,7 @@ class TestChatFlags:
             assert body["data"]["chat_enabled_global"] is True
             assert body["data"]["chat_rollout_pct"] == 1.0
 
-    def test_chat_flags_zero_rollout(self):
+    def test_chat_flags_zero_rollout(self) -> None:
         with (
             patch("api.routers.chat.FEATURE_CHAT_ENABLED", True),
             patch("api.routers.chat.FEATURE_CHAT_ROLLOUT_PCT", 0.0),

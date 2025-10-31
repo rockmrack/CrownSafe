@@ -1,5 +1,5 @@
 """Graceful shutdown handler for BabyShield
-Ensures clean shutdown without data loss
+Ensures clean shutdown without data loss.
 """
 
 import asyncio
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class GracefulShutdownHandler:
-    """Manages graceful shutdown of the application"""
+    """Manages graceful shutdown of the application."""
 
     def __init__(self, timeout: int = 30) -> None:
         self.timeout = timeout
@@ -28,23 +28,23 @@ class GracefulShutdownHandler:
         self._original_sigterm = None
 
     def register_cleanup(self, task: Callable) -> None:
-        """Register a cleanup task to run on shutdown"""
+        """Register a cleanup task to run on shutdown."""
         self.cleanup_tasks.append(task)
         logger.info(f"Registered cleanup task: {task.__name__}")
 
     def increment_active_requests(self) -> None:
-        """Track active request"""
+        """Track active request."""
         with self.lock:
             self.active_requests += 1
 
     def decrement_active_requests(self) -> None:
-        """Track completed request"""
+        """Track completed request."""
         with self.lock:
             self.active_requests -= 1
 
     @contextmanager
     def track_request(self):
-        """Context manager to track requests"""
+        """Context manager to track requests."""
         self.increment_active_requests()
         try:
             yield
@@ -52,7 +52,7 @@ class GracefulShutdownHandler:
             self.decrement_active_requests()
 
     def signal_handler(self, signum, frame) -> None:
-        """Handle shutdown signals"""
+        """Handle shutdown signals."""
         signal_name = signal.Signals(signum).name
         logger.info(f"Received signal {signal_name}, initiating graceful shutdown...")
 
@@ -63,7 +63,7 @@ class GracefulShutdownHandler:
         threading.Thread(target=self._shutdown, daemon=False).start()
 
     def _shutdown(self) -> None:
-        """Perform graceful shutdown"""
+        """Perform graceful shutdown."""
         start_time = time.time()
 
         # Step 1: Stop accepting new requests
@@ -101,7 +101,7 @@ class GracefulShutdownHandler:
         sys.exit(0)
 
     def _close_resources(self) -> None:
-        """Close all resources"""
+        """Close all resources."""
         try:
             # Close database connections
             from core_infra.database import engine
@@ -129,7 +129,7 @@ class GracefulShutdownHandler:
             logger.exception(f"  Error stopping Celery: {e}")
 
     def install(self) -> None:
-        """Install signal handlers"""
+        """Install signal handlers."""
         # Store original handlers
         self._original_sigint = signal.signal(signal.SIGINT, self.signal_handler)
         self._original_sigterm = signal.signal(signal.SIGTERM, self.signal_handler)
@@ -137,7 +137,7 @@ class GracefulShutdownHandler:
         logger.info("✅ Graceful shutdown handler installed")
 
     def uninstall(self) -> None:
-        """Restore original signal handlers"""
+        """Restore original signal handlers."""
         if self._original_sigint:
             signal.signal(signal.SIGINT, self._original_sigint)
         if self._original_sigterm:
@@ -150,7 +150,7 @@ shutdown_handler = GracefulShutdownHandler()
 
 # Middleware for tracking requests
 async def request_tracking_middleware(request, call_next):
-    """Track active requests for graceful shutdown"""
+    """Track active requests for graceful shutdown."""
     with shutdown_handler.track_request():
         # Check if shutting down
         if shutdown_handler.shutdown_event.is_set():
@@ -164,7 +164,7 @@ async def request_tracking_middleware(request, call_next):
 
 # Cleanup tasks
 def cleanup_temp_files() -> None:
-    """Clean up temporary files"""
+    """Clean up temporary files."""
     import shutil
     import tempfile
 
@@ -185,7 +185,7 @@ def cleanup_temp_files() -> None:
 
 
 def flush_logs() -> None:
-    """Flush all log handlers"""
+    """Flush all log handlers."""
     logger.info("  Flushing logs...")
     for handler in logging.root.handlers:
         try:
@@ -195,7 +195,7 @@ def flush_logs() -> None:
 
 
 def save_application_state() -> None:
-    """Save application state for recovery"""
+    """Save application state for recovery."""
     import json
     import os
 
@@ -221,17 +221,17 @@ shutdown_handler.register_cleanup(save_application_state)
 
 # FastAPI integration
 def setup_graceful_shutdown(app) -> None:
-    """Setup graceful shutdown for FastAPI app"""
+    """Setup graceful shutdown for FastAPI app."""
 
     @app.on_event("startup")
     async def startup_event() -> None:
-        """Install shutdown handler on startup"""
+        """Install shutdown handler on startup."""
         shutdown_handler.install()
         logger.info("✅ Graceful shutdown configured")
 
     @app.on_event("shutdown")
     async def shutdown_event() -> None:
-        """Handle FastAPI shutdown"""
+        """Handle FastAPI shutdown."""
         logger.info("FastAPI shutdown event triggered")
         # This is called by FastAPI on shutdown
         # Our signal handler will handle the actual cleanup
@@ -246,12 +246,12 @@ def setup_graceful_shutdown(app) -> None:
 
 # Celery integration
 def setup_celery_graceful_shutdown(celery_app) -> None:
-    """Setup graceful shutdown for Celery workers"""
+    """Setup graceful shutdown for Celery workers."""
     from celery.signals import worker_shutdown, worker_shutting_down
 
     @worker_shutting_down.connect
     def worker_shutting_down_handler(sig, how, exitcode, **kwargs) -> None:
-        """Handle Celery worker shutdown"""
+        """Handle Celery worker shutdown."""
         logger.info(f"Celery worker shutting down: signal={sig}, how={how}")
 
         # Wait for current tasks to complete
@@ -275,14 +275,14 @@ def setup_celery_graceful_shutdown(celery_app) -> None:
 
     @worker_shutdown.connect
     def worker_shutdown_handler(**kwargs) -> None:
-        """Clean up after Celery worker shutdown"""
+        """Clean up after Celery worker shutdown."""
         logger.info("Celery worker shutdown complete")
 
 
 # Context manager for graceful operations
 @contextmanager
 def graceful_operation(name: str, timeout: int = 10):
-    """Context manager for operations that need graceful handling"""
+    """Context manager for operations that need graceful handling."""
     if shutdown_handler.shutdown_event.is_set():
         raise RuntimeError(f"Cannot start {name}: shutdown in progress")
 
@@ -301,7 +301,7 @@ def graceful_operation(name: str, timeout: int = 10):
 
 # Recovery on startup
 def check_previous_shutdown() -> None:
-    """Check if previous shutdown was clean"""
+    """Check if previous shutdown was clean."""
     import json
     import os
 

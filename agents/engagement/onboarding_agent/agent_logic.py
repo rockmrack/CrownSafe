@@ -54,8 +54,7 @@ class OnboardingAgentLogic:
                 "status": "COMPLETED",
                 "result": {"message": "User profile updated successfully."},
             }
-        else:
-            return {
-                "status": "FAILED",
-                "error": "Failed to update user profile in the database.",
-            }
+        return {
+            "status": "FAILED",
+            "error": "Failed to update user profile in the database.",
+        }

@@ -1,5 +1,5 @@
 """Correlation ID Middleware for request tracking
-Ensures every request has a unique trace ID for debugging and monitoring
+Ensures every request has a unique trace ID for debugging and monitoring.
 """
 
 import time
@@ -11,14 +11,14 @@ from starlette.types import ASGIApp
 
 
 class CorrelationIdMiddleware(BaseHTTPMiddleware):
-    """Middleware to add correlation IDs to all requests and responses"""
+    """Middleware to add correlation IDs to all requests and responses."""
 
     def __init__(self, app: ASGIApp, api_version: str = "v1.2.0") -> None:
         super().__init__(app)
         self.api_version = api_version
 
     async def dispatch(self, request: Request, call_next):
-        """Process request with correlation ID"""
+        """Process request with correlation ID."""
         # Get or generate correlation ID
         correlation_id = (
             request.headers.get("X-Request-ID")

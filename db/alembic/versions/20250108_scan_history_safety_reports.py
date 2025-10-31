@@ -1,4 +1,4 @@
-"""Add scan history and safety reports tables
+"""Add scan history and safety reports tables.
 
 Revision ID: 20250108_scan_history
 Revises: 20250905_add_serial_verifications
@@ -16,7 +16,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     # Create scan_history table
     op.create_table(
         "scan_history",
@@ -98,7 +98,7 @@ def upgrade():
     op.create_index(op.f("ix_safety_reports_user_id"), "safety_reports", ["user_id"], unique=False)
 
 
-def downgrade():
+def downgrade() -> None:
     op.drop_index(op.f("ix_safety_reports_user_id"), table_name="safety_reports")
     op.drop_index(op.f("ix_safety_reports_report_id"), table_name="safety_reports")
     op.drop_table("safety_reports")

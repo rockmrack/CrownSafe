@@ -104,7 +104,7 @@ from core_infra.crown_safe_models import HairProfileModel  # noqa: E402
 
 
 class User(Base):
-    """Crown Safe user model - authentication and subscription management"""
+    """Crown Safe user model - authentication and subscription management."""
 
     __tablename__ = "users"
 
@@ -123,7 +123,7 @@ class User(Base):
 
 
 class FamilyMember(Base):
-    """Family member profile for multi-user household management"""
+    """Family member profile for multi-user household management."""
 
     __tablename__ = "family_members"
 
@@ -143,7 +143,7 @@ class FamilyMember(Base):
 
 
 class Allergy(Base):
-    """Allergy tracking for family members"""
+    """Allergy tracking for family members."""
 
     __tablename__ = "allergies"
 
@@ -247,7 +247,7 @@ def get_test_session():
 
 
 def create_tables() -> None:
-    """Create all database tables from all Base classes"""
+    """Create all database tables from all Base classes."""
     # Import all models to ensure they're registered with Base
     try:
         # Import models that use the main Base
@@ -443,7 +443,7 @@ def get_user_hair_profile(user_id: int):
 # Safety Hub - Safety Articles Model
 # -------------------------------------------------------------------
 class SafetyArticle(Base):
-    """Stores educational safety articles and campaigns from trusted agencies"""
+    """Stores educational safety articles and campaigns from trusted agencies."""
 
     __tablename__ = "safety_articles"
 
@@ -464,7 +464,7 @@ class SafetyArticle(Base):
 # Recalls Model - for recalls table
 # -------------------------------------------------------------------
 class RecallDB(Base):
-    """Model for recalls table - used for recall data storage and queries"""
+    """Model for recalls table - used for recall data storage and queries."""
 
     __tablename__ = "recalls"
 
@@ -485,7 +485,7 @@ class RecallDB(Base):
     url = Column(String, nullable=True)
 
     def to_dict(self) -> dict:
-        """Convert to dictionary"""
+        """Convert to dictionary."""
         result = {}
         for c in self.__table__.columns:
             v = getattr(self, c.name)

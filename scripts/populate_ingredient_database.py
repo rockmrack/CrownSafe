@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Populate ingredient and safety databases with real data
-This replaces the mock JSON files with comprehensive database tables
+This replaces the mock JSON files with comprehensive database tables.
 """
 
 import logging
 import sys
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from pathlib import Path
 
 # Add the project root to Python path
@@ -224,8 +224,8 @@ SAMPLE_PRODUCTS = {
 }
 
 
-def populate_ingredient_safety_table():
-    """Populate the ingredient_safety table with real safety data"""
+def populate_ingredient_safety_table() -> None:
+    """Populate the ingredient_safety table with real safety data."""
     logger.info("Populating ingredient safety database...")
 
     with get_db_session() as db:
@@ -287,8 +287,8 @@ def populate_ingredient_safety_table():
         logger.info(f"✅ Added {count} ingredient safety records")
 
 
-def populate_product_ingredients_table():
-    """Populate the product_ingredients table with sample products"""
+def populate_product_ingredients_table() -> None:
+    """Populate the product_ingredients table with sample products."""
     logger.info("Populating product ingredients database...")
 
     with get_db_session() as db:
@@ -320,8 +320,8 @@ def populate_product_ingredients_table():
         logger.info(f"✅ Added {count} product ingredient records")
 
 
-def main():
-    """Main function to populate all ingredient databases"""
+def main() -> None:
+    """Main function to populate all ingredient databases."""
     logger.info("🍼 BabyShield Real Database Population Starting...")
 
     try:

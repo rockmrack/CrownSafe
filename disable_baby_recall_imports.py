@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Disable baby/recall code in main_crownsafe.py
-This script comments out all baby/recall import and router registration lines
+This script comments out all baby/recall import and router registration lines.
 """
 
 import re
 
 
-def disable_baby_recall_code():
+def disable_baby_recall_code() -> None:
     main_file = r"c:\Users\rossd\OneDrive\Documents\Crown Safe\api\main_crownsafe.py"
 
     with open(main_file, "r", encoding="utf-8") as f:

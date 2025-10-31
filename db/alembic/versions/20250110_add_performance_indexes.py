@@ -1,4 +1,4 @@
-"""Add performance indexes for recall queries
+"""Add performance indexes for recall queries.
 
 Revision ID: 20250110_add_performance_indexes
 Revises: 20250105_monitoring_notifications
@@ -15,7 +15,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     # Add indexes for recalls_enhanced table
     op.create_index("idx_recalls_enhanced_recall_id", "recalls_enhanced", ["recall_id"])
     op.create_index("idx_recalls_enhanced_upc", "recalls_enhanced", ["upc"])
@@ -54,7 +54,7 @@ def upgrade():
     op.create_index("idx_users_created_at", "users", ["created_at"])
 
 
-def downgrade():
+def downgrade() -> None:
     # Drop indexes for recalls_enhanced table
     op.drop_index("idx_recalls_enhanced_recall_id", "recalls_enhanced")
     op.drop_index("idx_recalls_enhanced_upc", "recalls_enhanced")

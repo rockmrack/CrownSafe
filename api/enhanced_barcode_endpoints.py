@@ -1,9 +1,9 @@
 """A-5 Exact/Valid Scan: Enhanced Barcode Scanning Endpoints
-Provides exact validation and comprehensive error handling
+Provides exact validation and comprehensive error handling.
 """
 
 import logging
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -25,7 +25,7 @@ enhanced_barcode_router = APIRouter(prefix="/api/v1/enhanced-scan", tags=["enhan
 
 # Request/Response Models
 class EnhancedScanRequest(BaseModel):
-    """Request model for enhanced barcode scanning"""
+    """Request model for enhanced barcode scanning."""
 
     barcode: str = Field(..., min_length=1, max_length=100, description="Barcode to scan")
     user_id: int = Field(..., ge=1, description="User ID")
@@ -34,7 +34,7 @@ class EnhancedScanRequest(BaseModel):
 
 
 class EnhancedScanResponse(BaseModel):
-    """Response model for enhanced barcode scanning"""
+    """Response model for enhanced barcode scanning."""
 
     success: bool
     scan_timestamp: str
@@ -52,14 +52,14 @@ class EnhancedScanResponse(BaseModel):
 
 
 class ValidationTestRequest(BaseModel):
-    """Request model for barcode validation testing"""
+    """Request model for barcode validation testing."""
 
     barcode: str = Field(..., description="Barcode to validate")
     expected_type: str | None = Field(None, description="Expected barcode type")
 
 
 class ValidationTestResponse(BaseModel):
-    """Response model for barcode validation testing"""
+    """Response model for barcode validation testing."""
 
     success: bool
     is_valid: bool
@@ -76,7 +76,7 @@ class ValidationTestResponse(BaseModel):
 async def exact_barcode_scan(
     request: EnhancedScanRequest, db: Session = Depends(get_db_session),
 ) -> EnhancedScanResponse:
-    """A-5 Exact/Valid Scan: Perform exact barcode scanning with comprehensive validation
+    """A-5 Exact/Valid Scan: Perform exact barcode scanning with comprehensive validation.
 
     This endpoint provides:
     - Exact barcode format validation
@@ -136,7 +136,7 @@ async def exact_barcode_scan(
 async def validate_barcode_format(
     request: ValidationTestRequest,
 ) -> ValidationTestResponse:
-    """A-5 Exact/Valid Scan: Validate barcode format and type
+    """A-5 Exact/Valid Scan: Validate barcode format and type.
 
     This endpoint provides:
     - Format validation
@@ -191,7 +191,7 @@ async def test_barcode_validation(
     barcode: str = Query(..., description="Barcode to test"),
     expected_type: str | None = Query(None, description="Expected barcode type"),
 ) -> dict[str, Any]:
-    """A-5 Exact/Valid Scan: Test endpoint for barcode validation
+    """A-5 Exact/Valid Scan: Test endpoint for barcode validation.
 
     Quick test endpoint for validating barcode formats
     """
@@ -215,7 +215,7 @@ async def test_barcode_validation(
 
 
 async def _basic_scan_fallback(request: EnhancedScanRequest) -> EnhancedScanResponse:
-    """Fallback for non-premium users - basic validation only"""
+    """Fallback for non-premium users - basic validation only."""
     try:
         # Basic validation only
         validation_result = enhanced_barcode_service.validator.validate_barcode(request.barcode)
@@ -258,7 +258,7 @@ async def _basic_scan_fallback(request: EnhancedScanRequest) -> EnhancedScanResp
 
 @enhanced_barcode_router.get("/health")
 async def enhanced_scan_health() -> dict[str, Any]:
-    """Health check for enhanced barcode scanning service"""
+    """Health check for enhanced barcode scanning service."""
     return {
         "service": "enhanced-barcode-scanning",
         "status": "healthy",

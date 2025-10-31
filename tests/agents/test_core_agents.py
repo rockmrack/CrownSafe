@@ -1,6 +1,6 @@
 """COMPREHENSIVE AGENT TEST SUITE - CORE AGENTS
 Tests all critical agents in the BabyShield system
-Date: October 10, 2025
+Date: October 10, 2025.
 
 Focus: Core agents that don't require heavy dependencies
 """
@@ -31,8 +31,8 @@ print("=" * 80 + "\n")
 
 
 @pytest.mark.unit
-def test_1_recall_agent_initialization():
-    """Test 1: RecallDataAgent initialization"""
+def test_1_recall_agent_initialization() -> None:
+    """Test 1: RecallDataAgent initialization."""
     print("\n[TEST 1] RecallDataAgent - Initialization")
     agent = RecallDataAgentLogic(agent_id="test-recall-agent")
     assert agent is not None
@@ -42,8 +42,8 @@ def test_1_recall_agent_initialization():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_2_recall_agent_cpsc_live_api():
-    """Test 2: RecallDataAgent with live CPSC API"""
+async def test_2_recall_agent_cpsc_live_api() -> None:
+    """Test 2: RecallDataAgent with live CPSC API."""
     print("\n[TEST 2] RecallDataAgent - LIVE CPSC API Integration")
     print("  Connecting to CPSC SaferProducts.gov API...")
 
@@ -67,8 +67,8 @@ async def test_2_recall_agent_cpsc_live_api():
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_3_recall_agent_all_connectors():
-    """Test 3: RecallDataAgent connector initialization"""
+async def test_3_recall_agent_all_connectors() -> None:
+    """Test 3: RecallDataAgent connector initialization."""
     print("\n[TEST 3] RecallDataAgent - All Connectors")
 
     connectors = [
@@ -87,8 +87,8 @@ async def test_3_recall_agent_all_connectors():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_4_recall_agent_process_task():
-    """Test 4: RecallDataAgent process_task"""
+async def test_4_recall_agent_process_task() -> None:
+    """Test 4: RecallDataAgent process_task."""
     print("\n[TEST 4] RecallDataAgent - Process Task")
 
     agent = RecallDataAgentLogic(agent_id="test-process-task")
@@ -101,8 +101,8 @@ async def test_4_recall_agent_process_task():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_5_recall_agent_statistics():
-    """Test 5: RecallDataAgent statistics"""
+async def test_5_recall_agent_statistics() -> None:
+    """Test 5: RecallDataAgent statistics."""
     print("\n[TEST 5] RecallDataAgent - Statistics")
 
     agent = RecallDataAgentLogic(agent_id="test-stats")
@@ -119,8 +119,8 @@ async def test_5_recall_agent_statistics():
 
 
 @pytest.mark.unit
-def test_6_visual_search_initialization():
-    """Test 6: VisualSearchAgent initialization"""
+def test_6_visual_search_initialization() -> None:
+    """Test 6: VisualSearchAgent initialization."""
     print("\n[TEST 6] VisualSearchAgent - Initialization")
 
     agent = VisualSearchAgentLogic(agent_id="test-visual-search")
@@ -133,8 +133,8 @@ def test_6_visual_search_initialization():
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_7_visual_search_capabilities():
-    """Test 7: VisualSearchAgent capabilities"""
+async def test_7_visual_search_capabilities() -> None:
+    """Test 7: VisualSearchAgent capabilities."""
     print("\n[TEST 7] VisualSearchAgent - Capabilities")
 
     agent = VisualSearchAgentLogic(agent_id="test-visual-caps")
@@ -151,8 +151,8 @@ async def test_7_visual_search_capabilities():
 
 
 @pytest.mark.unit
-def test_8_alternatives_agent_initialization():
-    """Test 8: AlternativesAgent initialization"""
+def test_8_alternatives_agent_initialization() -> None:
+    """Test 8: AlternativesAgent initialization."""
     print("\n[TEST 8] AlternativesAgent - Initialization")
 
     agent = AlternativesAgentLogic(agent_id="test-alternatives")
@@ -165,8 +165,8 @@ def test_8_alternatives_agent_initialization():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_9_alternatives_agent_process_task():
-    """Test 9: AlternativesAgent process task"""
+async def test_9_alternatives_agent_process_task() -> None:
+    """Test 9: AlternativesAgent process task."""
     print("\n[TEST 9] AlternativesAgent - Process Task")
 
     agent = AlternativesAgentLogic(agent_id="test-find-alt")
@@ -190,8 +190,8 @@ async def test_9_alternatives_agent_process_task():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_10_workflow_scan_to_recall():
-    """Test 10: Complete workflow - Scan to Recall"""
+async def test_10_workflow_scan_to_recall() -> None:
+    """Test 10: Complete workflow - Scan to Recall."""
     print("\n[TEST 10] Integration - Scan → Recall Check")
 
     recall_agent = RecallDataAgentLogic(agent_id="workflow-test")
@@ -204,8 +204,8 @@ async def test_10_workflow_scan_to_recall():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_11_multiple_connectors_parallel():
-    """Test 11: Multiple connectors in parallel"""
+async def test_11_multiple_connectors_parallel() -> None:
+    """Test 11: Multiple connectors in parallel."""
     print("\n[TEST 11] Integration - Parallel Connector Calls")
 
     cpsc = CPSCConnector()
@@ -224,8 +224,8 @@ async def test_11_multiple_connectors_parallel():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_12_recall_agent_with_alternatives():
-    """Test 12: RecallAgent + AlternativesAgent workflow"""
+async def test_12_recall_agent_with_alternatives() -> None:
+    """Test 12: RecallAgent + AlternativesAgent workflow."""
     print("\n[TEST 12] Integration - Recall Check → Alternatives")
 
     # Step 1: Check recalls
@@ -255,8 +255,8 @@ async def test_12_recall_agent_with_alternatives():
 
 @pytest.mark.stress
 @pytest.mark.asyncio
-async def test_13_stress_multiple_concurrent_searches():
-    """Test 13: Stress test - Multiple concurrent searches"""
+async def test_13_stress_multiple_concurrent_searches() -> None:
+    """Test 13: Stress test - Multiple concurrent searches."""
     print("\n[TEST 13] Stress Test - 5 Concurrent Recall Searches")
 
     agent = RecallDataAgentLogic(agent_id="stress-test")
@@ -276,8 +276,8 @@ async def test_13_stress_multiple_concurrent_searches():
 
 @pytest.mark.stress
 @pytest.mark.asyncio
-async def test_14_stress_connector_resilience():
-    """Test 14: Stress test - Connector resilience"""
+async def test_14_stress_connector_resilience() -> None:
+    """Test 14: Stress test - Connector resilience."""
     print("\n[TEST 14] Stress Test - Connector Resilience")
 
     connector = CPSCConnector()
@@ -304,8 +304,8 @@ async def test_14_stress_connector_resilience():
 
 
 @pytest.mark.integration
-def test_15_api_endpoints_exist():
-    """Test 15: Verify API endpoints exist"""
+def test_15_api_endpoints_exist() -> None:
+    """Test 15: Verify API endpoints exist."""
     print("\n[TEST 15] API Endpoints - Verification")
 
     import os
@@ -330,8 +330,8 @@ def test_15_api_endpoints_exist():
 # ============================================================================
 
 
-def test_16_final_summary():
-    """Test 16: Print final summary"""
+def test_16_final_summary() -> None:
+    """Test 16: Print final summary."""
     print("\n" + "=" * 80)
     print("TEST SUMMARY - CORE AGENTS")
     print("=" * 80)

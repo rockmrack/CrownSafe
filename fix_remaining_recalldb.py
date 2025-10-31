@@ -1,8 +1,8 @@
-"""Fix remaining RecallDB references in main_crownsafe.py"""
+"""Fix remaining RecallDB references in main_crownsafe.py."""
 
 
-def fix_fix_upc_data():
-    """Replace the fix_upc_data function body"""
+def fix_fix_upc_data() -> bool:
+    """Replace the fix_upc_data function body."""
     file_path = "api/main_crownsafe.py"
 
     # Read file

@@ -11,8 +11,8 @@ client = TestClient(app)
 @pytest.mark.skip(
     reason="Erase history endpoint not yet implemented in api.routers.chat. This test suite is for a planned feature.",
 )
-def test_erase_history_without_auth():
-    """Test erase history endpoint without authentication"""
+def test_erase_history_without_auth() -> None:
+    """Test erase history endpoint without authentication."""
     response = client.post("/api/v1/chat/erase-history")
     assert response.status_code == 401
     assert "auth_required" in response.json()["detail"]
@@ -24,8 +24,8 @@ def test_erase_history_without_auth():
 @patch("api.routers.chat.get_db")
 @patch("api.routers.chat.mark_erase_requested")
 @patch("api.routers.chat.purge_conversations_for_user")
-def test_erase_history_sync_mode(mock_purge, mock_mark_erase, mock_get_db):
-    """Test erase history endpoint in synchronous mode"""
+def test_erase_history_sync_mode(mock_purge, mock_mark_erase, mock_get_db) -> None:
+    """Test erase history endpoint in synchronous mode."""
     # Mock database session
     mock_db = Mock()
     mock_get_db.return_value = mock_db
@@ -59,8 +59,8 @@ def test_erase_history_sync_mode(mock_purge, mock_mark_erase, mock_get_db):
 @patch("api.routers.chat.get_db")
 @patch("api.routers.chat.mark_erase_requested")
 @patch("workers.tasks.chat_cleanup.purge_user_history_task")
-def test_erase_history_with_celery_task(mock_task, mock_mark_erase, mock_get_db):
-    """Test erase history endpoint with Celery task (async mode)"""
+def test_erase_history_with_celery_task(mock_task, mock_mark_erase, mock_get_db) -> None:
+    """Test erase history endpoint with Celery task (async mode)."""
     # Mock database session
     mock_db = Mock()
     mock_get_db.return_value = mock_db
@@ -93,8 +93,8 @@ def test_erase_history_with_celery_task(mock_task, mock_mark_erase, mock_get_db)
 @patch("api.routers.chat.get_db")
 @patch("api.routers.chat.mark_erase_requested")
 @patch("api.routers.chat.purge_conversations_for_user")
-def test_erase_history_fallback_to_sync(mock_purge, mock_mark_erase, mock_get_db):
-    """Test erase history endpoint falls back to sync when Celery fails"""
+def test_erase_history_fallback_to_sync(mock_purge, mock_mark_erase, mock_get_db) -> None:
+    """Test erase history endpoint falls back to sync when Celery fails."""
     # Mock database session
     mock_db = Mock()
     mock_get_db.return_value = mock_db
@@ -129,8 +129,8 @@ def test_erase_history_fallback_to_sync(mock_purge, mock_mark_erase, mock_get_db
 )
 @patch("api.routers.chat.get_db")
 @patch("api.routers.chat.mark_erase_requested")
-def test_erase_history_no_conversations(mock_mark_erase, mock_get_db):
-    """Test erase history when user has no conversations"""
+def test_erase_history_no_conversations(mock_mark_erase, mock_get_db) -> None:
+    """Test erase history when user has no conversations."""
     # Mock database session
     mock_db = Mock()
     mock_get_db.return_value = mock_db
@@ -156,8 +156,8 @@ def test_erase_history_no_conversations(mock_mark_erase, mock_get_db):
 @pytest.mark.skip(
     reason="Erase history endpoint not yet implemented in api.routers.chat. This test suite is for a planned feature.",
 )
-def test_erase_history_trace_id_header():
-    """Test that erase history endpoint returns trace ID in header"""
+def test_erase_history_trace_id_header() -> None:
+    """Test that erase history endpoint returns trace ID in header."""
     with (
         patch("api.routers.chat.get_db"),
         patch("api.routers.chat.mark_erase_requested"),

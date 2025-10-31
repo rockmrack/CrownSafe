@@ -1,7 +1,7 @@
 # scripts/setup_and_test.py
 
 #!/usr/bin/env python3
-"""Complete setup and test script for BabyShield recall API"""
+"""Complete setup and test script for BabyShield recall API."""
 
 import os
 import subprocess
@@ -10,7 +10,7 @@ import time
 
 
 def run_command(cmd, description):
-    """Run a command and report status"""
+    """Run a command and report status."""
     print(f"\n{'=' * 60}")
     print(f"🔧 {description}")
     print(f"Command: {cmd}")
@@ -32,7 +32,7 @@ def run_command(cmd, description):
     return result.returncode == 0
 
 
-def main():
+def main() -> int:
     print("🚀 BabyShield Live Test Setup")
     print("=" * 60)
 

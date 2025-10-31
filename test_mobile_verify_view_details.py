@@ -1,5 +1,5 @@
 """Test Mobile App Buttons: "Verify Now" and "View Details"
-Tests the endpoints shown in the mobile app screenshot
+Tests the endpoints shown in the mobile app screenshot.
 """
 
 import json

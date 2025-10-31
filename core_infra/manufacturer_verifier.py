@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from datetime import date, datetime, timezone, UTC
+from datetime import date, datetime, UTC
 from typing import Any
 
 
@@ -43,7 +43,7 @@ class MockManufacturerVerifier(ManufacturerVerifier):
     - If serial present and endswith an even digit: verified
     - If serial present and endswith an odd digit: invalid
     - If no serial but lot present: unknown (needs OEM)
-    - Else: unknown
+    - Else: unknown.
     """
 
     def __init__(self, manufacturer_name: str = "MockOEM") -> None:
@@ -65,15 +65,14 @@ class MockManufacturerVerifier(ManufacturerVerifier):
                         message="Serial validated by mock rule",
                         payload={"rule": "even-last-digit"},
                     )
-                else:
-                    return VerificationResult(
-                        verified=False,
-                        status="invalid",
-                        manufacturer=self.manufacturer_name,
-                        source="mock",
-                        message="Serial failed mock rule",
-                        payload={"rule": "odd-last-digit"},
-                    )
+                return VerificationResult(
+                    verified=False,
+                    status="invalid",
+                    manufacturer=self.manufacturer_name,
+                    source="mock",
+                    message="Serial failed mock rule",
+                    payload={"rule": "odd-last-digit"},
+                )
             # Non-digit ending → unknown
             return VerificationResult(
                 verified=False,

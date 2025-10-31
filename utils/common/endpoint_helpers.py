@@ -1,9 +1,9 @@
 """Common Endpoint Helpers
-Reduces code duplication across endpoint files
+Reduces code duplication across endpoint files.
 """
 
 import logging
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any, Callable
 
 from fastapi import HTTPException, status
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class StandardResponse(BaseModel):
-    """Standard API response format"""
+    """Standard API response format."""
 
     success: bool
     data: Any | None = None
@@ -27,7 +27,7 @@ class StandardResponse(BaseModel):
 
 
 class PaginatedResponse(BaseModel):
-    """Paginated API response format"""
+    """Paginated API response format."""
 
     success: bool
     data: list[Any]
@@ -40,7 +40,7 @@ class PaginatedResponse(BaseModel):
 
 
 def success_response(data: Any = None, message: str | None = None, trace_id: str | None = None) -> dict[str, Any]:
-    """Create a standardized success response
+    """Create a standardized success response.
 
     Args:
         data: Response data
@@ -61,7 +61,7 @@ def success_response(data: Any = None, message: str | None = None, trace_id: str
 
 
 def error_response(error: str, status_code: int = 500, trace_id: str | None = None) -> dict[str, Any]:
-    """Create a standardized error response
+    """Create a standardized error response.
 
     Args:
         error: Error message
@@ -88,7 +88,7 @@ def paginated_response(
     offset: int,
     next_cursor: str | None = None,
 ) -> dict[str, Any]:
-    """Create a standardized paginated response
+    """Create a standardized paginated response.
 
     Args:
         items: List of items for current page
@@ -118,7 +118,7 @@ def paginated_response(
 
 
 def get_user_or_404(user_id: int, db: Session) -> User:
-    """Get user by ID or raise 404 error
+    """Get user by ID or raise 404 error.
 
     Args:
         user_id: User ID
@@ -138,7 +138,7 @@ def get_user_or_404(user_id: int, db: Session) -> User:
 
 
 def require_subscription(user: User) -> None:
-    """Check if user has active subscription
+    """Check if user has active subscription.
 
     Args:
         user: User object
@@ -155,7 +155,7 @@ def require_subscription(user: User) -> None:
 
 
 def require_admin(user: User) -> None:
-    """Check if user is admin
+    """Check if user is admin.
 
     Args:
         user: User object
@@ -169,7 +169,7 @@ def require_admin(user: User) -> None:
 
 
 def validate_pagination(limit: int, offset: int, max_limit: int = 100) -> tuple[int, int]:
-    """Validate and normalize pagination parameters
+    """Validate and normalize pagination parameters.
 
     Args:
         limit: Requested limit
@@ -197,7 +197,7 @@ def validate_pagination(limit: int, offset: int, max_limit: int = 100) -> tuple[
 
 
 def generate_trace_id(prefix: str = "") -> str:
-    """Generate a unique trace ID for request tracking
+    """Generate a unique trace ID for request tracking.
 
     Args:
         prefix: Optional prefix for trace ID
@@ -218,7 +218,7 @@ def log_endpoint_call(
     params: dict[str, Any] | None = None,
     trace_id: str | None = None,
 ) -> None:
-    """Log endpoint call with context
+    """Log endpoint call with context.
 
     Args:
         endpoint: Endpoint name
@@ -238,7 +238,7 @@ def log_endpoint_call(
 
 
 def handle_db_error(e: Exception, operation: str = "database operation") -> HTTPException:
-    """Convert database error to HTTP exception
+    """Convert database error to HTTP exception.
 
     Args:
         e: Exception that occurred
@@ -255,22 +255,21 @@ def handle_db_error(e: Exception, operation: str = "database operation") -> HTTP
 
     if "unique constraint" in error_msg or "duplicate" in error_msg:
         return HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Resource already exists")
-    elif "foreign key" in error_msg:
+    if "foreign key" in error_msg:
         return HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid reference to related resource",
         )
-    elif "not found" in error_msg:
+    if "not found" in error_msg:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found")
-    else:
-        return HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Database error: {operation} failed",
-        )
+    return HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail=f"Database error: {operation} failed",
+    )
 
 
 def require_feature_flag(flag_name: str, user: User = None) -> None:
-    """Check if feature flag is enabled
+    """Check if feature flag is enabled.
 
     Args:
         flag_name: Name of feature flag
@@ -292,7 +291,7 @@ def require_feature_flag(flag_name: str, user: User = None) -> None:
 
 
 class EndpointWrapper:
-    """Wrapper class for common endpoint patterns
+    """Wrapper class for common endpoint patterns.
 
     Provides standard error handling, logging, and response formatting
     """
@@ -305,7 +304,7 @@ class EndpointWrapper:
         require_sub: bool = False,
         log_params: bool = True,
     ) -> Callable:
-        """Wrap an endpoint function with common functionality
+        """Wrap an endpoint function with common functionality.
 
         Args:
             func: Endpoint function to wrap
@@ -333,8 +332,7 @@ class EndpointWrapper:
                 # Return standardized response
                 if isinstance(result, dict) and "success" in result:
                     return result  # Already formatted
-                else:
-                    return success_response(data=result, trace_id=trace_id)
+                return success_response(data=result, trace_id=trace_id)
 
             except HTTPException:
                 raise  # Re-raise HTTP exceptions

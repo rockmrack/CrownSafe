@@ -4,13 +4,13 @@ import asyncio
 import json
 import time
 import uuid
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 
 import redis
 
 
-async def test_router_directly():
-    """Test sending a message directly to the Router"""
+async def test_router_directly() -> bool:
+    """Test sending a message directly to the Router."""
     r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
     workflow_id = str(uuid.uuid4())
@@ -60,15 +60,14 @@ async def test_router_directly():
             print(f"   Status: {data.get('status')}")
             print(f"   workflow_id field: {data.get('workflow_id', 'MISSING')}")
             return True
-        else:
-            print(f"   Attempt {i + 1}: Not found yet...")
+        print(f"   Attempt {i + 1}: Not found yet...")
 
     print("❌ Workflow was not created by Router")
     return False
 
 
-async def check_router_logs():
-    """Check if router is processing messages"""
+async def check_router_logs() -> None:
+    """Check if router is processing messages."""
     print("\n📋 Recent Router activity:")
     print("Check the Router Agent console for these message types:")
     print("- TASK_ASSIGN received")
@@ -77,7 +76,7 @@ async def check_router_logs():
 
 
 def verify_router_is_running():
-    """Check if Router Agent is actually running"""
+    """Check if Router Agent is actually running."""
     import subprocess
 
     try:
@@ -110,7 +109,7 @@ def verify_router_is_running():
             return True
 
 
-async def main():
+async def main() -> None:
     print("=" * 60)
     print("🔧 Direct Router Testing")
     print("=" * 60)

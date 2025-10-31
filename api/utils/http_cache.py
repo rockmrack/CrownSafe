@@ -1,10 +1,10 @@
 """HTTP cache utilities for ETag, Last-Modified, and Cache-Control headers
-Implements RFC 7232 for conditional requests
+Implements RFC 7232 for conditional requests.
 """
 
 import email.utils as email_utils
 import hashlib
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 from fastapi import Request, Response
@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 
 
 def http_date(dt: datetime) -> str:
-    """Format datetime as HTTP date (RFC 7231)
+    """Format datetime as HTTP date (RFC 7231).
 
     Args:
         dt: Datetime object (will be converted to UTC if needed)
@@ -31,7 +31,7 @@ def http_date(dt: datetime) -> str:
 
 
 def parse_http_date(date_str: str) -> datetime | None:
-    """Parse HTTP date string to datetime
+    """Parse HTTP date string to datetime.
 
     Args:
         date_str: HTTP date string
@@ -52,7 +52,7 @@ def parse_http_date(date_str: str) -> datetime | None:
 
 
 def make_etag(content: str, weak: bool = False) -> str:
-    """Generate ETag from content
+    """Generate ETag from content.
 
     Args:
         content: String content to hash
@@ -68,12 +68,11 @@ def make_etag(content: str, weak: bool = False) -> str:
     # Format as ETag
     if weak:
         return f'W/"{hash_value}"'
-    else:
-        return f'"{hash_value}"'
+    return f'"{hash_value}"'
 
 
 def make_search_etag(filters_hash: str, as_of: str, result_ids: list[str]) -> str:
-    """Generate ETag for search results
+    """Generate ETag for search results.
 
     Args:
         filters_hash: Hash of search filters
@@ -90,7 +89,7 @@ def make_search_etag(filters_hash: str, as_of: str, result_ids: list[str]) -> st
 
 
 def make_detail_etag(item_id: str, last_updated: datetime) -> str:
-    """Generate ETag for detail endpoint
+    """Generate ETag for detail endpoint.
 
     Args:
         item_id: Item identifier
@@ -107,7 +106,7 @@ def make_detail_etag(item_id: str, last_updated: datetime) -> str:
 
 
 def check_if_none_match(request: Request, etag: str) -> bool:
-    """Check if ETag matches If-None-Match header
+    """Check if ETag matches If-None-Match header.
 
     Args:
         request: FastAPI request
@@ -129,7 +128,7 @@ def check_if_none_match(request: Request, etag: str) -> bool:
 
 
 def check_if_modified_since(request: Request, last_modified: datetime) -> bool:
-    """Check if resource was modified since If-Modified-Since header
+    """Check if resource was modified since If-Modified-Since header.
 
     Args:
         request: FastAPI request
@@ -166,7 +165,7 @@ def add_cache_headers(
     no_cache: bool = False,
     no_store: bool = False,
 ) -> None:
-    """Add cache-related headers to response
+    """Add cache-related headers to response.
 
     Args:
         response: FastAPI response object
@@ -218,7 +217,7 @@ def add_cache_headers(
 
 
 def create_not_modified_response(etag: str | None = None, cache_control: str | None = None) -> Response:
-    """Create a 304 Not Modified response
+    """Create a 304 Not Modified response.
 
     Args:
         etag: ETag to include
@@ -240,7 +239,7 @@ def create_not_modified_response(etag: str | None = None, cache_control: str | N
 
 
 class CacheableResponse:
-    """Helper class for creating cacheable responses"""
+    """Helper class for creating cacheable responses."""
 
     @staticmethod
     def search_response(
@@ -251,7 +250,7 @@ class CacheableResponse:
         request: Request,
         max_age: int = 60,
     ) -> Response:
-        """Create cacheable search response with conditional request support"""
+        """Create cacheable search response with conditional request support."""
         # Generate ETag
         etag = make_search_etag(filters_hash, as_of, result_ids)
 
@@ -273,7 +272,7 @@ class CacheableResponse:
         request: Request,
         max_age: int = 300,
     ) -> Response:
-        """Create cacheable detail response with conditional request support"""
+        """Create cacheable detail response with conditional request support."""
         # Generate ETag
         etag = make_detail_etag(item_id, last_updated)
 

@@ -1,5 +1,5 @@
 """Unit tests for authentication service
-Tests JWT token generation, validation, and user authentication
+Tests JWT token generation, validation, and user authentication.
 """
 
 
@@ -8,9 +8,9 @@ Tests JWT token generation, validation, and user authentication
 
 
 class TestAuthService:
-    """Test suite for authentication service"""
+    """Test suite for authentication service."""
 
-    def test_create_access_token_with_valid_data_returns_token(self):
+    def test_create_access_token_with_valid_data_returns_token(self) -> None:
         """Test that create_access_token generates a valid JWT token.
 
         Given: Valid user ID and email
@@ -20,7 +20,7 @@ class TestAuthService:
         # This will be implemented with your actual auth service
         pass
 
-    def test_create_access_token_with_expiration_sets_correct_exp(self):
+    def test_create_access_token_with_expiration_sets_correct_exp(self) -> None:
         """Test that token expiration is set correctly.
 
         Given: User data and custom expiration time
@@ -29,7 +29,7 @@ class TestAuthService:
         """
         pass
 
-    def test_decode_token_with_valid_token_returns_payload(self):
+    def test_decode_token_with_valid_token_returns_payload(self) -> None:
         """Test that valid tokens are decoded correctly.
 
         Given: Valid JWT token
@@ -38,7 +38,7 @@ class TestAuthService:
         """
         pass
 
-    def test_decode_token_with_expired_token_raises_exception(self):
+    def test_decode_token_with_expired_token_raises_exception(self) -> None:
         """Test that expired tokens are rejected.
 
         Given: Expired JWT token
@@ -47,7 +47,7 @@ class TestAuthService:
         """
         pass
 
-    def test_decode_token_with_invalid_token_raises_exception(self):
+    def test_decode_token_with_invalid_token_raises_exception(self) -> None:
         """Test that invalid tokens are rejected.
 
         Given: Malformed JWT token
@@ -56,7 +56,7 @@ class TestAuthService:
         """
         pass
 
-    def test_hash_password_returns_bcrypt_hash(self):
+    def test_hash_password_returns_bcrypt_hash(self) -> None:
         """Test that passwords are properly hashed.
 
         Given: Plain text password
@@ -65,7 +65,7 @@ class TestAuthService:
         """
         pass
 
-    def test_verify_password_with_correct_password_returns_true(self):
+    def test_verify_password_with_correct_password_returns_true(self) -> None:
         """Test password verification with correct password.
 
         Given: Plain password and matching hash
@@ -74,7 +74,7 @@ class TestAuthService:
         """
         pass
 
-    def test_verify_password_with_incorrect_password_returns_false(self):
+    def test_verify_password_with_incorrect_password_returns_false(self) -> None:
         """Test password verification with incorrect password.
 
         Given: Plain password and non-matching hash
@@ -83,7 +83,7 @@ class TestAuthService:
         """
         pass
 
-    def test_create_refresh_token_with_valid_data_returns_token(self):
+    def test_create_refresh_token_with_valid_data_returns_token(self) -> None:
         """Test refresh token generation.
 
         Given: Valid user data
@@ -92,7 +92,7 @@ class TestAuthService:
         """
         pass
 
-    def test_validate_token_permissions_with_valid_permissions_returns_true(self):
+    def test_validate_token_permissions_with_valid_permissions_returns_true(self) -> None:
         """Test that token permissions are validated correctly.
 
         Given: Token with specific permissions
@@ -103,9 +103,9 @@ class TestAuthService:
 
 
 class TestAuthenticationEndpoints:
-    """Test suite for authentication API endpoints"""
+    """Test suite for authentication API endpoints."""
 
-    def test_register_with_valid_data_creates_user(self):
+    def test_register_with_valid_data_creates_user(self) -> None:
         """Test user registration with valid data.
 
         Given: Valid registration data
@@ -114,7 +114,7 @@ class TestAuthenticationEndpoints:
         """
         pass
 
-    def test_register_with_duplicate_email_returns_409(self):
+    def test_register_with_duplicate_email_returns_409(self) -> None:
         """Test registration with existing email.
 
         Given: Email already registered
@@ -123,7 +123,7 @@ class TestAuthenticationEndpoints:
         """
         pass
 
-    def test_register_with_weak_password_returns_400(self):
+    def test_register_with_weak_password_returns_400(self) -> None:
         """Test registration with weak password.
 
         Given: Password not meeting requirements
@@ -132,7 +132,7 @@ class TestAuthenticationEndpoints:
         """
         pass
 
-    def test_login_with_valid_credentials_returns_tokens(self):
+    def test_login_with_valid_credentials_returns_tokens(self) -> None:
         """Test login with correct credentials.
 
         Given: Valid email and password
@@ -141,7 +141,7 @@ class TestAuthenticationEndpoints:
         """
         pass
 
-    def test_login_with_invalid_credentials_returns_401(self):
+    def test_login_with_invalid_credentials_returns_401(self) -> None:
         """Test login with incorrect password.
 
         Given: Valid email but wrong password
@@ -150,7 +150,7 @@ class TestAuthenticationEndpoints:
         """
         pass
 
-    def test_refresh_token_with_valid_token_returns_new_access_token(self):
+    def test_refresh_token_with_valid_token_returns_new_access_token(self) -> None:
         """Test token refresh endpoint.
 
         Given: Valid refresh token
@@ -159,7 +159,7 @@ class TestAuthenticationEndpoints:
         """
         pass
 
-    def test_protected_endpoint_without_token_returns_401(self):
+    def test_protected_endpoint_without_token_returns_401(self) -> None:
         """Test protected endpoint access without authentication.
 
         Given: No authentication token
@@ -168,7 +168,7 @@ class TestAuthenticationEndpoints:
         """
         pass
 
-    def test_protected_endpoint_with_valid_token_returns_data(self):
+    def test_protected_endpoint_with_valid_token_returns_data(self) -> None:
         """Test protected endpoint access with valid token.
 
         Given: Valid authentication token

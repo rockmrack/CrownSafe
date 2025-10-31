@@ -28,13 +28,13 @@ STATS = {
 
 
 class InstrumentedMockClient:
-    """Mock that counts all operations"""
+    """Mock that counts all operations."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.discoveries = {}
 
-    async def send_message(self, payload, message_type, target_agent_id, correlation_id):
-        """Count messages by type"""
+    async def send_message(self, payload, message_type, target_agent_id, correlation_id) -> None:
+        """Count messages by type."""
         if message_type == "TASK_ASSIGN":
             STATS["task_assigns"] += 1
         elif message_type == "TASK_COMPLETE":
@@ -45,7 +45,7 @@ class InstrumentedMockClient:
         print(f"📤 {message_type} → {target_agent_id}")
 
     async def query_discovery(self, capabilities_list):
-        """Count discoveries"""
+        """Count discoveries."""
         STATS["discoveries"] += 1
         corr_id = f"disc_{uuid.uuid4().hex[:8]}"
         self.discoveries[corr_id] = capabilities_list
@@ -53,7 +53,7 @@ class InstrumentedMockClient:
         return corr_id
 
 
-async def test_router_success():
+async def test_router_success() -> int | None:
     print("\n" + "=" * 60)
     print("🎉 ROUTER v1.5.2 VALIDATION TEST")
     print("=" * 60 + "\n")

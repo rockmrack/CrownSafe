@@ -62,7 +62,7 @@ class EmptyConnector:
         return []
 
 
-async def main():
+async def main() -> None:
     logger.info("--- Starting RecallDataAgent Live Database Test ---")
 
     # 1. Setup in-memory DB

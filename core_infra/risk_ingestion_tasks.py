@@ -1,11 +1,11 @@
 """Celery tasks for Risk Assessment data ingestion and processing
-Orchestrates data collection from multiple sources
+Orchestrates data collection from multiple sources.
 """
 
 import asyncio
 import logging
 import os
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 
 from celery import Celery
 from celery.schedules import crontab
@@ -74,7 +74,7 @@ celery_app.conf.beat_schedule = {
 
 @celery_app.task(name="risk_ingestion_tasks.sync_all_agencies")
 def sync_all_agencies(days_back: int = 3):
-    """Sync recalls from ALL supported agencies (every 3 days)
+    """Sync recalls from ALL supported agencies (every 3 days).
 
     This is the main scheduled task that refreshes the entire recalls database.
     - Fetches new recalls from all 39 international regulatory agencies
@@ -164,7 +164,7 @@ def sync_all_agencies(days_back: int = 3):
 
 @celery_app.task(name="risk_ingestion_tasks.sync_cpsc_data")
 def sync_cpsc_data(days_back: int = 7, job_id: str | None = None):
-    """Sync data from CPSC sources"""
+    """Sync data from CPSC sources."""
     logger.info(f"Starting CPSC sync for last {days_back} days")
 
     db = SessionLocal()
@@ -260,7 +260,7 @@ def sync_cpsc_data(days_back: int = 7, job_id: str | None = None):
 
 @celery_app.task(name="risk_ingestion_tasks.sync_eu_safety_gate")
 def sync_eu_safety_gate(days_back: int = 30):
-    """Sync data from EU Safety Gate"""
+    """Sync data from EU Safety Gate."""
     logger.info(f"Starting EU Safety Gate sync for last {days_back} days")
 
     db = SessionLocal()
@@ -317,7 +317,7 @@ def sync_eu_safety_gate(days_back: int = 30):
 
 @celery_app.task(name="risk_ingestion_tasks.recalculate_affected_products")
 def recalculate_affected_products(days_back: int = 7):
-    """Recalculate risk scores for recently updated products"""
+    """Recalculate risk scores for recently updated products."""
     logger.info(f"Recalculating risk scores for products updated in last {days_back} days")
 
     db = SessionLocal()
@@ -425,7 +425,7 @@ def recalculate_affected_products(days_back: int = 7):
 
 @celery_app.task(name="risk_ingestion_tasks.recalculate_high_risk_scores")
 def recalculate_high_risk_scores():
-    """Hourly recalculation of high-risk products"""
+    """Hourly recalculation of high-risk products."""
     logger.info("Recalculating high-risk product scores")
 
     db = SessionLocal()
@@ -498,7 +498,7 @@ def recalculate_high_risk_scores():
 
 @celery_app.task(name="risk_ingestion_tasks.update_company_compliance")
 def update_company_compliance():
-    """Update company compliance profiles daily"""
+    """Update company compliance profiles daily."""
     logger.info("Updating company compliance profiles")
 
     db = SessionLocal()
@@ -583,7 +583,7 @@ def update_company_compliance():
 
 @celery_app.task(name="risk_ingestion_tasks.send_risk_alerts")
 def send_risk_alerts(alerts: list[dict]):
-    """Send alerts for significant risk changes"""
+    """Send alerts for significant risk changes."""
     logger.info(f"Sending {len(alerts)} risk alerts")
 
     # In production, this would send emails/notifications
@@ -600,7 +600,7 @@ def send_risk_alerts(alerts: list[dict]):
 
 @celery_app.task(name="risk_ingestion_tasks.enrich_product_from_barcode")
 def enrich_product_from_barcode(product_id: str, barcode: str):
-    """Enrich product data using barcode (integrates with Phase 1)"""
+    """Enrich product data using barcode (integrates with Phase 1)."""
     logger.info(f"Enriching product {product_id} with barcode {barcode}")
 
     db = SessionLocal()
@@ -646,7 +646,7 @@ def enrich_product_from_barcode(product_id: str, barcode: str):
 
 # Helper functions
 def _find_or_create_product_from_record(record: SafetyDataRecord, db: Session) -> ProductGoldenRecord | None:
-    """Find or create product from safety data record"""
+    """Find or create product from safety data record."""
     # Try to find by identifiers
     product = None
 
@@ -682,7 +682,7 @@ def _find_or_create_product_from_record(record: SafetyDataRecord, db: Session) -
 
 
 def _create_incident_from_record(record: SafetyDataRecord, product_id: str, db: Session) -> SafetyIncident | None:
-    """Create safety incident from record"""
+    """Create safety incident from record."""
     # Check if incident already exists
     existing = (
         db.query(SafetyIncident)
@@ -712,7 +712,7 @@ def _create_incident_from_record(record: SafetyDataRecord, product_id: str, db: 
 
 
 def _update_product_data_source(product_id: str, record: SafetyDataRecord, db: Session) -> None:
-    """Update product data source record"""
+    """Update product data source record."""
     # Check if source exists
     existing = (
         db.query(ProductDataSource)

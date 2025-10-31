@@ -91,8 +91,7 @@ async def create_redis_pool(force_new=False) -> ConnectionPool:
                         logger.info("Redis connection pool created and ping successful")
                         _pool_creation_time = time.time()
                         return _redis_pool
-                    else:
-                        logger.warning("Redis ping returned false, retrying...")
+                    logger.warning("Redis ping returned false, retrying...")
 
             except (
                 redis.ConnectionError,

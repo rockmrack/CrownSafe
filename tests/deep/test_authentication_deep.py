@@ -1,5 +1,5 @@
 """Deep Authentication Tests
-Comprehensive testing of auth flows, token validation, and security
+Comprehensive testing of auth flows, token validation, and security.
 """
 
 from fastapi.testclient import TestClient
@@ -8,16 +8,16 @@ from api.main_crownsafe import app
 
 
 class TestAuthenticationDeep:
-    """Deep authentication and authorization tests"""
+    """Deep authentication and authorization tests."""
 
-    def test_health_endpoint_no_auth_required(self):
-        """Test that health endpoint doesn't require authentication"""
+    def test_health_endpoint_no_auth_required(self) -> None:
+        """Test that health endpoint doesn't require authentication."""
         client = TestClient(app)
         r = client.get("/healthz")
         assert r.status_code == 200
 
-    def test_health_endpoint_structure(self):
-        """Test health endpoint returns proper structure"""
+    def test_health_endpoint_structure(self) -> None:
+        """Test health endpoint returns proper structure."""
         client = TestClient(app)
         r = client.get("/healthz")
         assert r.status_code == 200
@@ -25,22 +25,22 @@ class TestAuthenticationDeep:
         assert "status" in body
         assert body["status"] in ["ok", "healthy", "up"]
 
-    def test_readiness_endpoint(self):
-        """Test readiness endpoint for k8s/ECS"""
+    def test_readiness_endpoint(self) -> None:
+        """Test readiness endpoint for k8s/ECS."""
         client = TestClient(app)
         r = client.get("/readyz")
         # Should either exist (200) or not found (404), but not error
         assert r.status_code in [200, 404]
 
-    def test_liveness_endpoint(self):
-        """Test liveness endpoint for k8s/ECS"""
+    def test_liveness_endpoint(self) -> None:
+        """Test liveness endpoint for k8s/ECS."""
         client = TestClient(app)
         r = client.get("/livez")
         # Should either exist (200) or not found (404), but not error
         assert r.status_code in [200, 404]
 
-    def test_cors_headers_present(self):
-        """Test that CORS headers are configured"""
+    def test_cors_headers_present(self) -> None:
+        """Test that CORS headers are configured."""
         client = TestClient(app)
         r = client.options(
             "/healthz",
@@ -52,8 +52,8 @@ class TestAuthenticationDeep:
         # Should handle OPTIONS request
         assert r.status_code in [200, 204, 405]
 
-    def test_api_version_endpoint(self):
-        """Test API version endpoint if it exists"""
+    def test_api_version_endpoint(self) -> None:
+        """Test API version endpoint if it exists."""
         client = TestClient(app)
         r = client.get("/api/v1/version")
         # May or may not exist
@@ -62,8 +62,8 @@ class TestAuthenticationDeep:
             # If exists, should have version info
             assert "version" in body or "api_version" in body
 
-    def test_invalid_json_body(self):
-        """Test handling of malformed JSON"""
+    def test_invalid_json_body(self) -> None:
+        """Test handling of malformed JSON."""
         client = TestClient(app)
         r = client.post(
             "/api/v1/chat/conversation",
@@ -73,15 +73,15 @@ class TestAuthenticationDeep:
         # Should return 422 (validation error) or 400 (bad request)
         assert r.status_code in [400, 422]
 
-    def test_missing_content_type(self):
-        """Test request without Content-Type header"""
+    def test_missing_content_type(self) -> None:
+        """Test request without Content-Type header."""
         client = TestClient(app)
         r = client.post("/api/v1/chat/conversation", data='{"test": "data"}')
         # Should handle gracefully - 403 if auth required, 400/415/422 for validation
         assert r.status_code in [400, 403, 415, 422]
 
-    def test_options_preflight_request(self):
-        """Test CORS preflight OPTIONS request"""
+    def test_options_preflight_request(self) -> None:
+        """Test CORS preflight OPTIONS request."""
         client = TestClient(app)
         r = client.options(
             "/api/v1/chat/conversation",
@@ -93,8 +93,8 @@ class TestAuthenticationDeep:
         # Should return 200 or 204 for preflight
         assert r.status_code in [200, 204, 405]
 
-    def test_security_headers_on_all_endpoints(self):
-        """Test that security headers are present on all responses (production only)"""
+    def test_security_headers_on_all_endpoints(self) -> None:
+        """Test that security headers are present on all responses (production only)."""
         client = TestClient(app)
         endpoints = ["/healthz", "/api/v1/chat/conversation"]
 
@@ -109,8 +109,8 @@ class TestAuthenticationDeep:
             # At least verify requests don't crash
             assert r.status_code in [200, 400, 403, 422]
 
-    def test_trace_id_on_error_responses(self):
-        """Test that X-Trace-Id is present even on error responses"""
+    def test_trace_id_on_error_responses(self) -> None:
+        """Test that X-Trace-Id is present even on error responses."""
         client = TestClient(app)
         r = client.post(
             "/api/v1/chat/conversation",
@@ -124,8 +124,8 @@ class TestAuthenticationDeep:
         # Should have trace ID even on error
         assert "X-Trace-Id" in r.headers
 
-    def test_rate_limiting_headers(self):
-        """Test for rate limiting headers if implemented"""
+    def test_rate_limiting_headers(self) -> None:
+        """Test for rate limiting headers if implemented."""
         client = TestClient(app)
         r = client.get("/healthz")
 
@@ -137,8 +137,8 @@ class TestAuthenticationDeep:
         if "X-RateLimit-Remaining" in headers:
             assert int(headers["X-RateLimit-Remaining"]) >= 0
 
-    def test_sql_injection_attempt(self):
-        """Test protection against SQL injection"""
+    def test_sql_injection_attempt(self) -> None:
+        """Test protection against SQL injection."""
         client = TestClient(app)
         malicious_input = "'; DROP TABLE users; --"
 
@@ -154,8 +154,8 @@ class TestAuthenticationDeep:
         # Should not crash, should handle gracefully
         assert r.status_code in [200, 400, 403, 422]
 
-    def test_xss_attempt(self):
-        """Test protection against XSS attacks"""
+    def test_xss_attempt(self) -> None:
+        """Test protection against XSS attacks."""
         client = TestClient(app)
         xss_input = "<script>alert('XSS')</script>"
 
@@ -167,16 +167,16 @@ class TestAuthenticationDeep:
         # Should handle without executing script
         assert r.status_code in [200, 400, 403]
 
-    def test_path_traversal_attempt(self):
-        """Test protection against path traversal"""
+    def test_path_traversal_attempt(self) -> None:
+        """Test protection against path traversal."""
         client = TestClient(app)
         r = client.get("/../../etc/passwd")
 
         # Should return 404, not expose file system
         assert r.status_code in [404, 400]
 
-    def test_method_not_allowed(self):
-        """Test that wrong HTTP methods are handled gracefully"""
+    def test_method_not_allowed(self) -> None:
+        """Test that wrong HTTP methods are handled gracefully."""
         client = TestClient(app)
 
         # Try DELETE on health endpoint
@@ -185,8 +185,8 @@ class TestAuthenticationDeep:
         # Both are valid design choices
         assert r.status_code in [200, 405]  # OK or Method Not Allowed
 
-    def test_large_payload_handling(self):
-        """Test handling of very large request payloads"""
+    def test_large_payload_handling(self) -> None:
+        """Test handling of very large request payloads."""
         client = TestClient(app)
 
         # Create a large but valid payload
@@ -203,8 +203,8 @@ class TestAuthenticationDeep:
         # Should either accept or reject, but not crash
         assert r.status_code in [200, 400, 413, 422]
 
-    def test_concurrent_requests_handling(self):
-        """Test that server handles concurrent requests"""
+    def test_concurrent_requests_handling(self) -> None:
+        """Test that server handles concurrent requests."""
         client = TestClient(app)
 
         # Make multiple requests
@@ -217,8 +217,8 @@ class TestAuthenticationDeep:
         for r in responses:
             assert r.status_code == 200
 
-    def test_user_agent_validation(self):
-        """Test that User-Agent header is handled"""
+    def test_user_agent_validation(self) -> None:
+        """Test that User-Agent header is handled."""
         client = TestClient(app)
 
         # Test with various user agents

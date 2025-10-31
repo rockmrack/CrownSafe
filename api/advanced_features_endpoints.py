@@ -1,5 +1,5 @@
 """Advanced BabyShield Features API Endpoints
-Provides endpoints for web research, guidelines, and visual recognition
+Provides endpoints for web research, guidelines, and visual recognition.
 """
 
 import hashlib
@@ -45,7 +45,7 @@ router = APIRouter(prefix="/api/v1/advanced", tags=["Advanced Features"])
 
 
 class WebResearchRequest(BaseModel):
-    """Request model for web research"""
+    """Request model for web research."""
 
     product_name: str = Field(..., description="Product name to research")
     barcode: str | None = Field(None, description="Product barcode if available")
@@ -57,7 +57,7 @@ class WebResearchRequest(BaseModel):
 
 
 class WebResearchResult(BaseModel):
-    """Single research finding"""
+    """Single research finding."""
 
     source: str
     source_type: str  # "forum", "social_media", "news", "blog", "official"
@@ -72,7 +72,7 @@ class WebResearchResult(BaseModel):
 
 
 class WebResearchResponse(BaseModel):
-    """Response model for web research"""
+    """Response model for web research."""
 
     status: str
     product_researched: str
@@ -86,7 +86,7 @@ class WebResearchResponse(BaseModel):
 
 
 class GuidelinesRequest(BaseModel):
-    """Request model for product guidelines"""
+    """Request model for product guidelines."""
 
     product_name: str | None = Field(None, description="Product name")
     product_category: str | None = Field(None, description="Product category")
@@ -99,7 +99,7 @@ class GuidelinesRequest(BaseModel):
 
 
 class SafetyGuideline(BaseModel):
-    """Single safety guideline"""
+    """Single safety guideline."""
 
     guideline_type: str  # "age", "weight", "usage", "warning", "best_practice"
     title: str
@@ -111,7 +111,7 @@ class SafetyGuideline(BaseModel):
 
 
 class GuidelinesResponse(BaseModel):
-    """Response model for guidelines"""
+    """Response model for guidelines."""
 
     status: str
     product: str
@@ -126,7 +126,7 @@ class GuidelinesResponse(BaseModel):
 
 
 class VisualRecognitionRequest(BaseModel):
-    """Request model for visual product recognition"""
+    """Request model for visual product recognition."""
 
     user_id: int = Field(..., description="User ID")
     include_similar: bool = Field(True, description="Include similar products if no exact match")
@@ -135,7 +135,7 @@ class VisualRecognitionRequest(BaseModel):
 
 
 class VisualRecognitionResponse(BaseModel):
-    """Response model for visual recognition"""
+    """Response model for visual recognition."""
 
     status: str
     image_id: str
@@ -148,7 +148,7 @@ class VisualRecognitionResponse(BaseModel):
 
 
 class MonitoringRequest(BaseModel):
-    """Request model for continuous monitoring"""
+    """Request model for continuous monitoring."""
 
     product_name: str = Field(..., description="Product to monitor")
     barcode: str | None = Field(None, description="Product barcode")
@@ -159,7 +159,7 @@ class MonitoringRequest(BaseModel):
 
 
 class MonitoringResponse(BaseModel):
-    """Response model for monitoring setup"""
+    """Response model for monitoring setup."""
 
     status: str
     monitoring_id: str

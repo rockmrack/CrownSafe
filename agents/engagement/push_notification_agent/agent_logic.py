@@ -97,5 +97,4 @@ class PushNotificationAgentLogic:
 
         if result.get("status") == "success":
             return {"status": "COMPLETED", "message_id": result.get("message_id")}
-        else:
-            return {"status": "FAILED", "error": result.get("message")}
+        return {"status": "FAILED", "error": result.get("message")}

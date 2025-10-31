@@ -1,5 +1,5 @@
 """Base Schema Classes for BabyShield API
-Provides consistent Pydantic configuration across all models
+Provides consistent Pydantic configuration across all models.
 """
 
 from typing import Any

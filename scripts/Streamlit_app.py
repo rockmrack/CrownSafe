@@ -210,7 +210,7 @@ class Message:
 
 # Fixed Memory Manager with Proper Redis Key Structure
 class UnifiedMemoryManager:
-    def __init__(self, redis_client: redis.Redis = None, chroma_client: chromadb.Client = None):
+    def __init__(self, redis_client: redis.Redis = None, chroma_client: chromadb.Client = None) -> None:
         self.redis_client = redis_client
         self.chroma_client = chroma_client
         self.collection = None
@@ -230,7 +230,7 @@ class UnifiedMemoryManager:
         }
 
     def _get_or_create_session_id(self):
-        """Get persistent session ID - FIXED"""
+        """Get persistent session ID - FIXED."""
         # First check if we have a session ID in query params
         query_params = st.query_params
         session_from_url = (
@@ -287,8 +287,8 @@ class UnifiedMemoryManager:
 
         return st.session_state.persistent_session_id
 
-    def initialize_chromadb_collection(self):
-        """Initialize ChromaDB collection"""
+    def initialize_chromadb_collection(self) -> bool | None:
+        """Initialize ChromaDB collection."""
         if not self.chroma_client:
             return False
 
@@ -301,8 +301,8 @@ class UnifiedMemoryManager:
             st.error(f"ChromaDB init error: {e}")
             return False
 
-    def store_message(self, message: Message):
-        """Store message in both Redis and ChromaDB"""
+    def store_message(self, message: Message) -> None:
+        """Store message in both Redis and ChromaDB."""
         if not message.id:
             message.id = str(uuid.uuid4())
 
@@ -394,7 +394,7 @@ class UnifiedMemoryManager:
                 st.error(f"ChromaDB storage error: {e}")
 
     def get_full_conversation_context(self, current_query: str, model_type: str = "claude") -> str:
-        """Get comprehensive context with proper token management"""
+        """Get comprehensive context with proper token management."""
         max_tokens = self.token_limits.get(model_type, 30000)
         # Reserve tokens for response
         response_reserve = {"claude": 4000, "gemini": 8000, "gpt": 4000}
@@ -514,7 +514,7 @@ class UnifiedMemoryManager:
         return "\n".join(context_parts)
 
     def _get_recent_messages(self, limit: int = 50) -> list[dict]:
-        """Get recent messages from Redis"""
+        """Get recent messages from Redis."""
         messages = []
 
         if not self.redis_client:
@@ -545,7 +545,7 @@ class UnifiedMemoryManager:
             return []
 
     def _get_conversation_summary(self) -> str:
-        """Get or generate conversation summary"""
+        """Get or generate conversation summary."""
         if not self.redis_client:
             return "Building CureViaX: An advanced healthcare AI platform with multi-agent architecture."
 
@@ -553,31 +553,30 @@ class UnifiedMemoryManager:
             summary = self.redis_client.get(f"summary:{self.session_id}")
             if summary:
                 return summary
-            else:
-                session_info = self.redis_client.hgetall(f"session:{self.session_id}")
-                message_count = session_info.get("message_count", "0")
+            session_info = self.redis_client.hgetall(f"session:{self.session_id}")
+            message_count = session_info.get("message_count", "0")
 
-                recent_messages = self._get_recent_messages(10)
-                topics = set()
+            recent_messages = self._get_recent_messages(10)
+            topics = set()
 
-                for msg in recent_messages:
-                    content = msg.get("content", "").lower()
-                    if "cureviax" in content:
-                        topics.add("CureViaX platform")
-                    if "agent" in content:
-                        topics.add("multi-agent architecture")
-                    if "memory" in content:
-                        topics.add("memory systems")
-                    if "api" in content:
-                        topics.add("API integration")
+            for msg in recent_messages:
+                content = msg.get("content", "").lower()
+                if "cureviax" in content:
+                    topics.add("CureViaX platform")
+                if "agent" in content:
+                    topics.add("multi-agent architecture")
+                if "memory" in content:
+                    topics.add("memory systems")
+                if "api" in content:
+                    topics.add("API integration")
 
-                topic_str = ", ".join(topics) if topics else "general development"
-                return f"CureViaX Development Session: {message_count} messages. Topics: {topic_str}. Building an advanced healthcare AI platform with persistent memory and multi-model support."  # noqa: E501
+            topic_str = ", ".join(topics) if topics else "general development"
+            return f"CureViaX Development Session: {message_count} messages. Topics: {topic_str}. Building an advanced healthcare AI platform with persistent memory and multi-model support."  # noqa: E501
         except Exception:
             return "Building CureViaX: An advanced healthcare AI platform."
 
-    def _update_conversation_summary(self):
-        """Update conversation summary based on recent messages"""
+    def _update_conversation_summary(self) -> None:
+        """Update conversation summary based on recent messages."""
         if not self.redis_client:
             return
 
@@ -660,7 +659,7 @@ class UnifiedMemoryManager:
             pass
 
     def load_conversation_history(self) -> list[Message]:
-        """Load all messages from the current session"""
+        """Load all messages from the current session."""
         messages = []
 
         if not self.redis_client:
@@ -701,7 +700,7 @@ class UnifiedMemoryManager:
 
 # Fixed Connection Manager
 class ConnectionManager:
-    def __init__(self):
+    def __init__(self) -> None:
         self.redis_client = None
         self.chroma_client = None
         self.anthropic_client = None
@@ -748,15 +747,15 @@ class ConnectionManager:
             self.status["chromadb"] = False
             return False
 
-    def _init_memory(self):
-        """Initialize memory manager when storage is available"""
+    def _init_memory(self) -> None:
+        """Initialize memory manager when storage is available."""
         if self.redis_client or self.chroma_client:
             self.memory_manager = UnifiedMemoryManager(self.redis_client, self.chroma_client)
             if self.chroma_client:
                 self.memory_manager.initialize_chromadb_collection()
 
     def connect_anthropic(self, api_key: str) -> bool:
-        """Connect to Anthropic with ONLY the specified model"""
+        """Connect to Anthropic with ONLY the specified model."""
         try:
             if not api_key:
                 return False
@@ -775,7 +774,7 @@ class ConnectionManager:
             return False
 
     def connect_gemini(self, api_key: str) -> bool:
-        """Connect to Gemini"""
+        """Connect to Gemini."""
         try:
             if not api_key or api_key.strip() == "":
                 return False
@@ -802,7 +801,7 @@ class ConnectionManager:
                 return False
 
     def connect_openai(self, api_key: str) -> bool:
-        """Connect to OpenAI"""
+        """Connect to OpenAI."""
         try:
             if not api_key:
                 return False
@@ -846,11 +845,11 @@ class ConnectionManager:
 
 # Model Executor with FIXED Claude Implementation
 class MemoryAwareModelExecutor:
-    def __init__(self, connection_manager: ConnectionManager):
+    def __init__(self, connection_manager: ConnectionManager) -> None:
         self.cm = connection_manager
 
     def _is_response_complete(self, response: str) -> bool:
-        """Check if response appears complete"""
+        """Check if response appears complete."""
         code_blocks = re.findall(r"```", response)
         if len(code_blocks) % 2 != 0:
             return False
@@ -865,7 +864,7 @@ class MemoryAwareModelExecutor:
         return not any(truncation_indicators)
 
     def _request_completion(self, incomplete_response: str, model_name: str) -> str:
-        """Request completion of an incomplete response"""
+        """Request completion of an incomplete response."""
         return f"""The previous response was incomplete. Please continue from where you left off:
 
 {incomplete_response}
@@ -873,7 +872,7 @@ class MemoryAwareModelExecutor:
 Continue the response, completing any unfinished thoughts or code blocks."""
 
     async def execute_claude(self, prompt: str, attachments: list[dict] = None) -> str:
-        """Execute Claude with REQUIRED max_tokens parameter"""
+        """Execute Claude with REQUIRED max_tokens parameter."""
         if not self.cm.anthropic_client:
             return "Claude not connected. Please add your API key in the sidebar."
 
@@ -940,7 +939,7 @@ Reference our previous discussions and maintain continuity.""",
             return f"Claude error: {e!s}"
 
     async def execute_gemini(self, prompt: str, attachments: list[dict] = None) -> str:
-        """Execute Gemini"""
+        """Execute Gemini."""
         if not self.cm.gemini_client:
             return "Gemini not connected. Please add your API key in the sidebar."
 
@@ -998,7 +997,7 @@ Context about our project:
             return f"Gemini error: {e!s}"
 
     async def execute_gpt(self, prompt: str, attachments: list[dict] = None) -> str:
-        """Execute GPT"""
+        """Execute GPT."""
         if not self.cm.openai_client:
             return "GPT not connected. Please add your API key in the sidebar."
 
@@ -1087,8 +1086,8 @@ Project context:
 
 
 # Helper functions
-def display_message_with_code(content: str, container):
-    """Display message with enhanced code blocks"""
+def display_message_with_code(content: str, container) -> None:
+    """Display message with enhanced code blocks."""
     code_pattern = r"```(\w*)\n(.*?)```"
     parts = re.split(code_pattern, content, flags=re.DOTALL)
 
@@ -1127,7 +1126,7 @@ def display_message_with_code(content: str, container):
 
 
 def process_uploaded_file(uploaded_file) -> dict[str, Any]:
-    """Process uploaded file and return metadata"""
+    """Process uploaded file and return metadata."""
     file_details = {
         "name": uploaded_file.name,
         "type": uploaded_file.type,
@@ -1174,7 +1173,7 @@ def process_uploaded_file(uploaded_file) -> dict[str, Any]:
 
 
 def export_conversation_to_pdf(messages: list[Message]) -> bytes:
-    """Export conversation to PDF format"""
+    """Export conversation to PDF format."""
     if not PDF_EXPORT_SUPPORT:
         return None
 

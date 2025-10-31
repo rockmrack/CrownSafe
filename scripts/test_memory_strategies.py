@@ -52,16 +52,16 @@ TEST_SCENARIOS = [
 
 
 class MemoryStrategyTester:
-    """Tests memory-augmented planner strategies systematically"""
+    """Tests memory-augmented planner strategies systematically."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.results = []
         self.logs_dir = os.path.join(project_root, "logs")
         self.test_results_dir = os.path.join(project_root, "test_results")
         os.makedirs(self.test_results_dir, exist_ok=True)
 
     async def run_test_scenario(self, scenario: dict[str, Any]) -> dict[str, Any]:
-        """Run a single test scenario"""
+        """Run a single test scenario."""
         print(f"\n{'=' * 60}")
         print(f"TEST: {scenario['name']}")
         print(f"Query: {scenario['query'][:100]}...")
@@ -111,7 +111,7 @@ class MemoryStrategyTester:
         return result
 
     def _extract_strategy_from_logs(self) -> str | None:
-        """Extract strategy from latest planner log"""
+        """Extract strategy from latest planner log."""
         try:
             # Find latest planner log
             planner_logs = [
@@ -158,7 +158,7 @@ class MemoryStrategyTester:
         return None
 
     def _extract_workflow_id(self) -> str | None:
-        """Extract workflow ID from commander logs"""
+        """Extract workflow ID from commander logs."""
         try:
             commander_logs = [
                 f for f in os.listdir(self.logs_dir) if f.startswith("commander_agent_") and f.endswith(".log")
@@ -186,8 +186,8 @@ class MemoryStrategyTester:
 
         return None
 
-    async def run_all_tests(self, scenarios: list[dict[str, Any]] = None):
-        """Run all test scenarios"""
+    async def run_all_tests(self, scenarios: list[dict[str, Any]] = None) -> None:
+        """Run all test scenarios."""
         if scenarios is None:
             scenarios = TEST_SCENARIOS
 
@@ -207,8 +207,8 @@ class MemoryStrategyTester:
         # Generate summary report
         self.generate_summary_report()
 
-    def generate_summary_report(self):
-        """Generate summary report of all tests"""
+    def generate_summary_report(self) -> None:
+        """Generate summary report of all tests."""
         print("\n" + "=" * 60)
         print("TEST SUMMARY REPORT")
         print("=" * 60)
@@ -279,8 +279,8 @@ class MemoryStrategyTester:
             print("  Consider: Lowering threshold for existing evidence")
 
 
-async def main():
-    """Main test function"""
+async def main() -> None:
+    """Main test function."""
     tester = MemoryStrategyTester()
 
     # You can run all tests or specific ones

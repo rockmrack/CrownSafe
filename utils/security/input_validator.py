@@ -1,5 +1,5 @@
 """Comprehensive Input Validation Middleware
-Prevents SQL injection, XSS, and other injection attacks
+Prevents SQL injection, XSS, and other injection attacks.
 """
 
 import logging
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class BarcodeFormat(str, Enum):
-    """Supported barcode formats"""
+    """Supported barcode formats."""
 
     UPC = "upc"
     EAN = "ean"
@@ -25,7 +25,7 @@ class BarcodeFormat(str, Enum):
 
 
 class InputValidator:
-    """Centralized input validation for BabyShield API"""
+    """Centralized input validation for BabyShield API."""
 
     # Regex patterns for validation
     PATTERNS = {
@@ -62,7 +62,7 @@ class InputValidator:
 
     @classmethod
     def validate_barcode(cls, barcode: str) -> str:
-        """Validate barcode format
+        """Validate barcode format.
 
         Args:
             barcode: Barcode string to validate
@@ -96,7 +96,7 @@ class InputValidator:
 
     @classmethod
     def validate_email(cls, email: str) -> str:
-        """Validate email address"""
+        """Validate email address."""
         if not email:
             raise ValueError("Email cannot be empty")
 
@@ -112,7 +112,7 @@ class InputValidator:
 
     @classmethod
     def validate_user_id(cls, user_id: Any) -> int:
-        """Validate user ID"""
+        """Validate user ID."""
         try:
             user_id = int(user_id)
             if user_id <= 0:
@@ -123,7 +123,7 @@ class InputValidator:
 
     @classmethod
     def validate_product_name(cls, name: str) -> str:
-        """Validate product name"""
+        """Validate product name."""
         if not name:
             raise ValueError("Product name cannot be empty")
 
@@ -142,7 +142,7 @@ class InputValidator:
 
     @classmethod
     def validate_search_query(cls, query: str) -> str:
-        """Validate search query"""
+        """Validate search query."""
         if not query:
             raise ValueError("Search query cannot be empty")
 
@@ -158,7 +158,7 @@ class InputValidator:
 
     @classmethod
     def sanitize_html(cls, text: str) -> str:
-        """Remove HTML tags and dangerous content from text
+        """Remove HTML tags and dangerous content from text.
 
         Args:
             text: Text to sanitize
@@ -183,7 +183,7 @@ class InputValidator:
 
     @classmethod
     def _contains_dangerous_pattern(cls, text: str) -> bool:
-        """Check if text contains dangerous patterns"""
+        """Check if text contains dangerous patterns."""
         text_lower = text.lower()
         for pattern in cls.DANGEROUS_PATTERNS:
             if re.search(pattern, text_lower, re.IGNORECASE):
@@ -193,7 +193,7 @@ class InputValidator:
 
     @classmethod
     def validate_pagination(cls, limit: int, offset: int) -> tuple[int, int]:
-        """Validate and normalize pagination parameters
+        """Validate and normalize pagination parameters.
 
         Args:
             limit: Maximum number of results
@@ -219,7 +219,7 @@ class InputValidator:
     def validate_date_range(
         cls, date_from: str | None, date_to: str | None,
     ) -> tuple[str | None, str | None]:
-        """Validate date range"""
+        """Validate date range."""
         if date_from and not re.match(cls.PATTERNS["date"], date_from):
             raise ValueError("Invalid date_from format (use YYYY-MM-DD)")
 
@@ -233,14 +233,14 @@ class InputValidator:
 
 
 class SecureRequestValidator:
-    """Middleware for validating all incoming requests"""
+    """Middleware for validating all incoming requests."""
 
     MAX_BODY_SIZE = 10 * 1024 * 1024  # 10MB
     MAX_URL_LENGTH = 2000
 
     @classmethod
-    async def validate_request(cls, request: Request):
-        """Validate incoming request
+    async def validate_request(cls, request: Request) -> None:
+        """Validate incoming request.
 
         Raises:
             HTTPException: If request is invalid or dangerous
@@ -277,28 +277,28 @@ class SecureRequestValidator:
 
 # Pydantic validators for common fields
 def validate_barcode_field(v: str) -> str:
-    """Pydantic validator for barcode fields"""
+    """Pydantic validator for barcode fields."""
     return InputValidator.validate_barcode(v)
 
 
 def validate_email_field(v: str) -> str:
-    """Pydantic validator for email fields"""
+    """Pydantic validator for email fields."""
     return InputValidator.validate_email(v)
 
 
 def validate_user_id_field(v: Any) -> int:
-    """Pydantic validator for user_id fields"""
+    """Pydantic validator for user_id fields."""
     return InputValidator.validate_user_id(v)
 
 
 def validate_product_name_field(v: str) -> str:
-    """Pydantic validator for product name fields"""
+    """Pydantic validator for product name fields."""
     return InputValidator.validate_product_name(v)
 
 
 # Example Pydantic models with validation
 class SafeBarcodeScanRequest(BaseModel):
-    """Validated barcode scan request"""
+    """Validated barcode scan request."""
 
     barcode: str = Field(..., description="Barcode to scan")
     user_id: int = Field(..., gt=0, description="User ID")
@@ -314,7 +314,7 @@ class SafeBarcodeScanRequest(BaseModel):
 
 
 class SafeSearchRequest(BaseModel):
-    """Validated search request"""
+    """Validated search request."""
 
     query: str = Field(..., min_length=1, max_length=200, description="Search query")
     limit: int = Field(20, ge=1, le=100, description="Results per page")

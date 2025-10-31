@@ -1,5 +1,5 @@
 """Security integration module for Task 6
-Wires all security features into the FastAPI app
+Wires all security features into the FastAPI app.
 """
 
 import logging
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 def setup_security(app: FastAPI) -> None:
-    """Configure all security features for the FastAPI app
+    """Configure all security features for the FastAPI app.
 
     This function adds all security middleware in the correct order.
     Middleware order matters - they execute in reverse order of addition.
@@ -63,7 +63,7 @@ def setup_security(app: FastAPI) -> None:
 
 
 def get_security_config() -> dict:
-    """Get current security configuration
+    """Get current security configuration.
 
     Returns:
         Dictionary with security settings
@@ -84,7 +84,7 @@ def get_security_config() -> dict:
 
 
 def validate_security_config() -> None:
-    """Validate security configuration and warn about issues"""
+    """Validate security configuration and warn about issues."""
     config = get_security_config()
 
     # Check CORS origins
@@ -141,7 +141,7 @@ async def search_advanced(request: SecureAdvancedSearchRequest):
 
 
 class SecurityDefaults:
-    """Default security settings"""
+    """Default security settings."""
 
     # Request limits
     MAX_REQUEST_SIZE = 100_000  # 100KB
@@ -171,7 +171,7 @@ class SecurityDefaults:
 
     @classmethod
     def apply_to_env(cls) -> None:
-        """Apply defaults to environment if not set"""
+        """Apply defaults to environment if not set."""
         defaults = {
             "MAX_REQUEST_BYTES": str(cls.MAX_REQUEST_SIZE),
             "GZIP_MINIMUM_SIZE": str(cls.GZIP_MIN_SIZE),

@@ -1,5 +1,5 @@
 """Unit tests for core_infra/retry_handler.py
-Tests retry logic, strategies, circuit breaker, and bulk operations
+Tests retry logic, strategies, circuit breaker, and bulk operations.
 """
 
 import asyncio
@@ -18,13 +18,14 @@ from core_infra.retry_handler import (
     RetryStrategy,
     retry,
 )
+from typing import Never
 
 
 class TestRetryStrategy:
-    """Test RetryStrategy enum"""
+    """Test RetryStrategy enum."""
 
-    def test_retry_strategy_values(self):
-        """Test RetryStrategy enum values"""
+    def test_retry_strategy_values(self) -> None:
+        """Test RetryStrategy enum values."""
         assert RetryStrategy.EXPONENTIAL_BACKOFF.value == "exponential"
         assert RetryStrategy.LINEAR_BACKOFF.value == "linear"
         assert RetryStrategy.FIXED_DELAY.value == "fixed"
@@ -33,10 +34,10 @@ class TestRetryStrategy:
 
 
 class TestRetryConfig:
-    """Test RetryConfig functionality"""
+    """Test RetryConfig functionality."""
 
-    def test_init_defaults(self):
-        """Test RetryConfig initialization with defaults"""
+    def test_init_defaults(self) -> None:
+        """Test RetryConfig initialization with defaults."""
         config = RetryConfig()
 
         assert config.max_attempts == 3
@@ -48,8 +49,8 @@ class TestRetryConfig:
         assert Exception in config.retryable_exceptions
         assert NonRetryableError in config.non_retryable_exceptions
 
-    def test_init_custom(self):
-        """Test RetryConfig initialization with custom values"""
+    def test_init_custom(self) -> None:
+        """Test RetryConfig initialization with custom values."""
         config = RetryConfig(
             max_attempts=5,
             strategy=RetryStrategy.LINEAR_BACKOFF,
@@ -70,8 +71,8 @@ class TestRetryConfig:
         assert ValueError in config.retryable_exceptions
         assert TypeError in config.non_retryable_exceptions
 
-    def test_calculate_delay_exponential(self):
-        """Test exponential backoff delay calculation"""
+    def test_calculate_delay_exponential(self) -> None:
+        """Test exponential backoff delay calculation."""
         config = RetryConfig(
             strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
             initial_delay=1.0,
@@ -83,8 +84,8 @@ class TestRetryConfig:
         assert config.calculate_delay(3) == 4.0
         assert config.calculate_delay(4) == 8.0
 
-    def test_calculate_delay_linear(self):
-        """Test linear backoff delay calculation"""
+    def test_calculate_delay_linear(self) -> None:
+        """Test linear backoff delay calculation."""
         config = RetryConfig(strategy=RetryStrategy.LINEAR_BACKOFF, initial_delay=1.0)
 
         assert config.calculate_delay(1) == 1.0
@@ -92,16 +93,16 @@ class TestRetryConfig:
         assert config.calculate_delay(3) == 3.0
         assert config.calculate_delay(4) == 4.0
 
-    def test_calculate_delay_fixed(self):
-        """Test fixed delay calculation"""
+    def test_calculate_delay_fixed(self) -> None:
+        """Test fixed delay calculation."""
         config = RetryConfig(strategy=RetryStrategy.FIXED_DELAY, initial_delay=2.0)
 
         assert config.calculate_delay(1) == 2.0
         assert config.calculate_delay(2) == 2.0
         assert config.calculate_delay(3) == 2.0
 
-    def test_calculate_delay_fibonacci(self):
-        """Test fibonacci backoff delay calculation"""
+    def test_calculate_delay_fibonacci(self) -> None:
+        """Test fibonacci backoff delay calculation."""
         config = RetryConfig(strategy=RetryStrategy.FIBONACCI_BACKOFF, initial_delay=1.0)
 
         assert config.calculate_delay(1) == 1.0
@@ -110,8 +111,8 @@ class TestRetryConfig:
         assert config.calculate_delay(4) == 3.0
         assert config.calculate_delay(5) == 5.0
 
-    def test_calculate_delay_max_delay(self):
-        """Test max delay cap"""
+    def test_calculate_delay_max_delay(self) -> None:
+        """Test max delay cap."""
         config = RetryConfig(
             strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
             initial_delay=1.0,
@@ -123,8 +124,8 @@ class TestRetryConfig:
         delay = config.calculate_delay(10)
         assert delay <= 5.0
 
-    def test_calculate_delay_jitter(self):
-        """Test jitter application"""
+    def test_calculate_delay_jitter(self) -> None:
+        """Test jitter application."""
         config = RetryConfig(strategy=RetryStrategy.FIXED_DELAY, initial_delay=10.0, jitter=True)
 
         delays = [config.calculate_delay(1) for _ in range(20)]
@@ -134,8 +135,8 @@ class TestRetryConfig:
         assert max(delays) > 10.0
         assert all(5.0 <= delay <= 15.0 for delay in delays)
 
-    def test_calculate_delay_no_jitter(self):
-        """Test no jitter"""
+    def test_calculate_delay_no_jitter(self) -> None:
+        """Test no jitter."""
         config = RetryConfig(strategy=RetryStrategy.FIXED_DELAY, initial_delay=10.0, jitter=False)
 
         delays = [config.calculate_delay(1) for _ in range(10)]
@@ -143,8 +144,8 @@ class TestRetryConfig:
         # Without jitter, all delays should be the same
         assert all(delay == 10.0 for delay in delays)
 
-    def test_fibonacci_method(self):
-        """Test fibonacci calculation method"""
+    def test_fibonacci_method(self) -> None:
+        """Test fibonacci calculation method."""
         config = RetryConfig()
 
         assert config._fibonacci(0) == 0
@@ -155,78 +156,78 @@ class TestRetryConfig:
         assert config._fibonacci(5) == 5
         assert config._fibonacci(6) == 8
 
-    def test_should_retry_retryable_exception(self):
-        """Test should_retry with retryable exception"""
+    def test_should_retry_retryable_exception(self) -> None:
+        """Test should_retry with retryable exception."""
         config = RetryConfig(retryable_exceptions=[ValueError])
 
         assert config.should_retry(ValueError("test")) is True
 
-    def test_should_retry_non_retryable_exception(self):
-        """Test should_retry with non-retryable exception"""
+    def test_should_retry_non_retryable_exception(self) -> None:
+        """Test should_retry with non-retryable exception."""
         config = RetryConfig(non_retryable_exceptions=[TypeError])
 
         assert config.should_retry(TypeError("test")) is False
 
-    def test_should_retry_non_retryable_takes_precedence(self):
-        """Test that non-retryable exceptions take precedence"""
+    def test_should_retry_non_retryable_takes_precedence(self) -> None:
+        """Test that non-retryable exceptions take precedence."""
         config = RetryConfig(retryable_exceptions=[Exception], non_retryable_exceptions=[ValueError])
 
         assert config.should_retry(ValueError("test")) is False
 
-    def test_should_retry_unknown_exception(self):
-        """Test should_retry with unknown exception"""
+    def test_should_retry_unknown_exception(self) -> None:
+        """Test should_retry with unknown exception."""
         config = RetryConfig(retryable_exceptions=[ValueError], non_retryable_exceptions=[TypeError])
 
         assert config.should_retry(RuntimeError("test")) is False
 
 
 class TestRetryHandler:
-    """Test RetryHandler functionality"""
+    """Test RetryHandler functionality."""
 
-    def test_init_default_config(self):
-        """Test RetryHandler initialization with default config"""
+    def test_init_default_config(self) -> None:
+        """Test RetryHandler initialization with default config."""
         handler = RetryHandler()
 
         assert isinstance(handler.config, RetryConfig)
         assert handler.attempts == 0
         assert handler.last_exception is None
 
-    def test_init_custom_config(self):
-        """Test RetryHandler initialization with custom config"""
+    def test_init_custom_config(self) -> None:
+        """Test RetryHandler initialization with custom config."""
         config = RetryConfig(max_attempts=5)
         handler = RetryHandler(config)
 
         assert handler.config == config
 
-    def test_retry_decorator_sync(self):
-        """Test retry decorator for sync functions"""
+    def test_retry_decorator_sync(self) -> None:
+        """Test retry decorator for sync functions."""
         handler = RetryHandler(RetryConfig(max_attempts=2))
 
         @handler.retry
-        def test_func():
+        def test_func() -> str:
             return "success"
 
         result = test_func()
         assert result == "success"
         assert handler.attempts == 1
 
-    def test_async_retry_decorator(self):
-        """Test async_retry decorator for async functions"""
+    def test_async_retry_decorator(self) -> None:
+        """Test async_retry decorator for async functions."""
         handler = RetryHandler(RetryConfig(max_attempts=2))
 
         @handler.async_retry
-        async def test_func():
+        async def test_func() -> str:
             return "success"
 
         result = asyncio.run(test_func())
         assert result == "success"
         assert handler.attempts == 1
 
-    def test_execute_with_retry_success(self):
-        """Test successful execution with retry"""
+    def test_execute_with_retry_success(self) -> None:
+        """Test successful execution with retry."""
         handler = RetryHandler(RetryConfig(max_attempts=3))
 
-        def test_func():
+        def test_func() -> str:
             return "success"
 
         result = handler._execute_with_retry(test_func, (), {})
@@ -235,12 +236,12 @@ class TestRetryHandler:
         assert handler.attempts == 1
         assert handler.last_exception is None
 
-    def test_execute_with_retry_failure_then_success(self):
-        """Test retry with failure then success"""
+    def test_execute_with_retry_failure_then_success(self) -> None:
+        """Test retry with failure then success."""
         handler = RetryHandler(RetryConfig(max_attempts=3))
         call_count = 0
 
-        def test_func():
+        def test_func() -> str:
             nonlocal call_count
             call_count += 1
             if call_count == 1:
@@ -255,11 +256,11 @@ class TestRetryHandler:
             assert call_count == 2
             mock_sleep.assert_called_once()
 
-    def test_execute_with_retry_max_attempts(self):
-        """Test retry with max attempts exceeded"""
+    def test_execute_with_retry_max_attempts(self) -> None:
+        """Test retry with max attempts exceeded."""
         handler = RetryHandler(RetryConfig(max_attempts=2))
 
-        def test_func():
+        def test_func() -> Never:
             raise ValueError("Always fails")
 
         with patch("time.sleep") as mock_sleep:
@@ -270,11 +271,11 @@ class TestRetryHandler:
             assert handler.last_exception is not None
             mock_sleep.assert_called_once()
 
-    def test_execute_with_retry_non_retryable_exception(self):
-        """Test retry with non-retryable exception"""
+    def test_execute_with_retry_non_retryable_exception(self) -> None:
+        """Test retry with non-retryable exception."""
         handler = RetryHandler(RetryConfig(max_attempts=3, non_retryable_exceptions=[TypeError]))
 
-        def test_func():
+        def test_func() -> Never:
             raise TypeError("Non-retryable error")
 
         with pytest.raises(TypeError):
@@ -283,11 +284,11 @@ class TestRetryHandler:
         assert handler.attempts == 1
         assert handler.last_exception is not None
 
-    def test_async_execute_with_retry_success(self):
-        """Test successful async execution with retry"""
+    def test_async_execute_with_retry_success(self) -> None:
+        """Test successful async execution with retry."""
         handler = RetryHandler(RetryConfig(max_attempts=3))
 
-        async def test_func():
+        async def test_func() -> str:
             return "success"
 
         result = asyncio.run(handler._async_execute_with_retry(test_func, (), {}))
@@ -295,12 +296,12 @@ class TestRetryHandler:
         assert result == "success"
         assert handler.attempts == 1
 
-    def test_async_execute_with_retry_failure_then_success(self):
-        """Test async retry with failure then success"""
+    def test_async_execute_with_retry_failure_then_success(self) -> None:
+        """Test async retry with failure then success."""
         handler = RetryHandler(RetryConfig(max_attempts=3))
         call_count = 0
 
-        async def test_func():
+        async def test_func() -> str:
             nonlocal call_count
             call_count += 1
             if call_count == 1:
@@ -315,8 +316,8 @@ class TestRetryHandler:
             assert call_count == 2
             mock_sleep.assert_called_once()
 
-    def test_execute_with_callbacks(self):
-        """Test execution with callbacks"""
+    def test_execute_with_callbacks(self) -> None:
+        """Test execution with callbacks."""
         on_retry = Mock()
         on_failure = Mock()
         on_success = Mock()
@@ -330,7 +331,7 @@ class TestRetryHandler:
             ),
         )
 
-        def test_func():
+        def test_func() -> Never:
             raise ValueError("Test error")
 
         with patch("time.sleep"):
@@ -344,14 +345,14 @@ class TestRetryHandler:
 
 
 class TestRetryDecorator:
-    """Test retry decorator function"""
+    """Test retry decorator function."""
 
-    def test_retry_decorator_sync(self):
-        """Test retry decorator with sync function"""
+    def test_retry_decorator_sync(self) -> None:
+        """Test retry decorator with sync function."""
         call_count = 0
 
         @retry(max_attempts=3, delay=0.1, backoff=2.0)
-        def test_func():
+        def test_func() -> str:
             nonlocal call_count
             call_count += 1
             if call_count < 3:
@@ -364,12 +365,12 @@ class TestRetryDecorator:
             assert result == "success"
             assert call_count == 3
 
-    def test_retry_decorator_async(self):
-        """Test retry decorator with async function"""
+    def test_retry_decorator_async(self) -> None:
+        """Test retry decorator with async function."""
         call_count = 0
 
         @retry(max_attempts=3, delay=0.1, backoff=2.0)
-        async def test_func():
+        async def test_func() -> str:
             nonlocal call_count
             call_count += 1
             if call_count < 3:
@@ -382,12 +383,12 @@ class TestRetryDecorator:
             assert result == "success"
             assert call_count == 3
 
-    def test_retry_decorator_specific_exceptions(self):
-        """Test retry decorator with specific exceptions"""
+    def test_retry_decorator_specific_exceptions(self) -> None:
+        """Test retry decorator with specific exceptions."""
         call_count = 0
 
         @retry(max_attempts=2, exceptions=(ValueError,))
-        def test_func():
+        def test_func() -> str:
             nonlocal call_count
             call_count += 1
             if call_count == 1:
@@ -402,10 +403,10 @@ class TestRetryDecorator:
 
 
 class TestCircuitBreakerRetry:
-    """Test CircuitBreakerRetry functionality"""
+    """Test CircuitBreakerRetry functionality."""
 
-    def test_init(self):
-        """Test CircuitBreakerRetry initialization"""
+    def test_init(self) -> None:
+        """Test CircuitBreakerRetry initialization."""
         breaker = CircuitBreakerRetry(failure_threshold=3, recovery_timeout=60)
 
         assert breaker.failure_threshold == 3
@@ -414,29 +415,29 @@ class TestCircuitBreakerRetry:
         assert breaker.last_failure_time is None
         assert breaker.state == "closed"
 
-    def test_is_open_closed_state(self):
-        """Test is_open with closed state"""
+    def test_is_open_closed_state(self) -> None:
+        """Test is_open with closed state."""
         breaker = CircuitBreakerRetry()
 
         assert breaker.is_open() is False
 
-    def test_is_open_open_state(self):
-        """Test is_open with open state"""
+    def test_is_open_open_state(self) -> None:
+        """Test is_open with open state."""
         breaker = CircuitBreakerRetry(failure_threshold=1, recovery_timeout=60)
         breaker.state = "open"
         breaker.last_failure_time = time.time() - 30  # 30 seconds ago
 
         assert breaker.is_open() is True
 
-    def test_is_open_half_open_state(self):
-        """Test is_open with half-open state"""
+    def test_is_open_half_open_state(self) -> None:
+        """Test is_open with half-open state."""
         breaker = CircuitBreakerRetry(failure_threshold=1, recovery_timeout=60)
         breaker.state = "half-open"
 
         assert breaker.is_open() is False
 
-    def test_record_success_closed_state(self):
-        """Test record_success with closed state"""
+    def test_record_success_closed_state(self) -> None:
+        """Test record_success with closed state."""
         breaker = CircuitBreakerRetry()
         breaker.failure_count = 5
 
@@ -445,8 +446,8 @@ class TestCircuitBreakerRetry:
         assert breaker.failure_count == 0
         assert breaker.state == "closed"
 
-    def test_record_success_half_open_state(self):
-        """Test record_success with half-open state"""
+    def test_record_success_half_open_state(self) -> None:
+        """Test record_success with half-open state."""
         breaker = CircuitBreakerRetry()
         breaker.state = "half-open"
         breaker.failure_count = 5
@@ -456,8 +457,8 @@ class TestCircuitBreakerRetry:
         assert breaker.failure_count == 0
         assert breaker.state == "closed"
 
-    def test_record_failure(self):
-        """Test record_failure"""
+    def test_record_failure(self) -> None:
+        """Test record_failure."""
         breaker = CircuitBreakerRetry(failure_threshold=2)
 
         breaker.record_failure()
@@ -471,11 +472,11 @@ class TestCircuitBreakerRetry:
         assert breaker.failure_count == 2
         assert breaker.state == "open"
 
-    def test_execute_with_circuit_breaker_success(self):
-        """Test execute_with_circuit_breaker with success"""
+    def test_execute_with_circuit_breaker_success(self) -> None:
+        """Test execute_with_circuit_breaker with success."""
         breaker = CircuitBreakerRetry()
 
-        def test_func():
+        def test_func() -> str:
             return "success"
 
         result = breaker.execute_with_circuit_breaker(test_func)
@@ -483,11 +484,11 @@ class TestCircuitBreakerRetry:
         assert result == "success"
         assert breaker.failure_count == 0
 
-    def test_execute_with_circuit_breaker_failure(self):
-        """Test execute_with_circuit_breaker with failure"""
+    def test_execute_with_circuit_breaker_failure(self) -> None:
+        """Test execute_with_circuit_breaker with failure."""
         breaker = CircuitBreakerRetry(failure_threshold=1)
 
-        def test_func():
+        def test_func() -> Never:
             raise ValueError("Test error")
 
         with pytest.raises(ValueError):
@@ -496,12 +497,12 @@ class TestCircuitBreakerRetry:
         assert breaker.failure_count == 1
         assert breaker.state == "open"
 
-    def test_execute_with_circuit_breaker_open(self):
-        """Test execute_with_circuit_breaker with open circuit"""
+    def test_execute_with_circuit_breaker_open(self) -> None:
+        """Test execute_with_circuit_breaker with open circuit."""
         breaker = CircuitBreakerRetry(failure_threshold=1)
         breaker.state = "open"
 
-        def test_func():
+        def test_func() -> str:
             return "success"
 
         with pytest.raises(Exception, match="Circuit breaker is open"):
@@ -509,24 +510,24 @@ class TestCircuitBreakerRetry:
 
 
 class TestBulkRetry:
-    """Test BulkRetry functionality"""
+    """Test BulkRetry functionality."""
 
-    def test_init(self):
-        """Test BulkRetry initialization"""
+    def test_init(self) -> None:
+        """Test BulkRetry initialization."""
         bulk_retry = BulkRetry()
 
         assert isinstance(bulk_retry.config, RetryConfig)
 
-    def test_init_custom_config(self):
-        """Test BulkRetry initialization with custom config"""
+    def test_init_custom_config(self) -> None:
+        """Test BulkRetry initialization with custom config."""
         config = RetryConfig(max_attempts=5)
         bulk_retry = BulkRetry(config)
 
         assert bulk_retry.config == config
 
     @pytest.mark.asyncio
-    async def test_process_batch_with_retry_success(self):
-        """Test process_batch_with_retry with success"""
+    async def test_process_batch_with_retry_success(self) -> None:
+        """Test process_batch_with_retry with success."""
         bulk_retry = BulkRetry()
 
         async def process_func(item):
@@ -543,8 +544,8 @@ class TestBulkRetry:
         assert result["success"][2] == (3, 6)
 
     @pytest.mark.asyncio
-    async def test_process_batch_with_retry_failure(self):
-        """Test process_batch_with_retry with failure"""
+    async def test_process_batch_with_retry_failure(self) -> None:
+        """Test process_batch_with_retry with failure."""
         bulk_retry = BulkRetry()
 
         async def process_func(item):
@@ -564,8 +565,8 @@ class TestBulkRetry:
         assert "Item 2 fails" in result["failed"][0][1]
 
     @pytest.mark.asyncio
-    async def test_process_batch_with_retry_sync_func(self):
-        """Test process_batch_with_retry with sync function"""
+    async def test_process_batch_with_retry_sync_func(self) -> None:
+        """Test process_batch_with_retry with sync function."""
         bulk_retry = BulkRetry()
 
         def process_func(item):
@@ -582,10 +583,10 @@ class TestBulkRetry:
 
 
 class TestFallbackRetry:
-    """Test FallbackRetry functionality"""
+    """Test FallbackRetry functionality."""
 
-    def test_init(self):
-        """Test FallbackRetry initialization"""
+    def test_init(self) -> None:
+        """Test FallbackRetry initialization."""
         primary_func = Mock()
         fallback_funcs = [Mock(), Mock()]
 
@@ -595,8 +596,8 @@ class TestFallbackRetry:
         assert fallback_retry.fallback_funcs == fallback_funcs
 
     @pytest.mark.asyncio
-    async def test_execute_primary_success(self):
-        """Test execute with primary function success"""
+    async def test_execute_primary_success(self) -> None:
+        """Test execute with primary function success."""
         primary_func = Mock(return_value="primary_success")
         fallback_funcs = [Mock(return_value="fallback_success")]
 
@@ -609,8 +610,8 @@ class TestFallbackRetry:
         fallback_funcs[0].assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_execute_primary_failure_fallback_success(self):
-        """Test execute with primary failure and fallback success"""
+    async def test_execute_primary_failure_fallback_success(self) -> None:
+        """Test execute with primary failure and fallback success."""
         primary_func = Mock(side_effect=ValueError("Primary failed"))
         fallback_funcs = [Mock(return_value="fallback_success")]
 
@@ -623,8 +624,8 @@ class TestFallbackRetry:
         fallback_funcs[0].assert_called_once_with("test_arg")
 
     @pytest.mark.asyncio
-    async def test_execute_all_failures(self):
-        """Test execute with all functions failing"""
+    async def test_execute_all_failures(self) -> None:
+        """Test execute with all functions failing."""
         primary_func = Mock(side_effect=ValueError("Primary failed"))
         fallback_funcs = [
             Mock(side_effect=RuntimeError("Fallback 1 failed")),
@@ -641,13 +642,13 @@ class TestFallbackRetry:
         fallback_funcs[1].assert_called_once_with("test_arg")
 
     @pytest.mark.asyncio
-    async def test_execute_async_functions(self):
-        """Test execute with async functions"""
+    async def test_execute_async_functions(self) -> None:
+        """Test execute with async functions."""
 
-        async def async_primary_func(arg):
+        async def async_primary_func(arg) -> Never:
             raise ValueError("Async primary failed")
 
-        async def async_fallback_func(arg):
+        async def async_fallback_func(arg) -> str:
             return "async_fallback_success"
 
         fallback_retry = FallbackRetry(async_primary_func, [async_fallback_func])

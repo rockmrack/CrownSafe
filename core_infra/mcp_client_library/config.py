@@ -7,7 +7,7 @@ logger = logging.getLogger("MCPClientLibrary")
 
 
 class Settings:
-    """Configuration settings for the MCP Client Library"""
+    """Configuration settings for the MCP Client Library."""
 
     # Connection settings
     DEFAULT_ROUTER_URL = "ws://127.0.0.1:8001/ws/{agent_id}"

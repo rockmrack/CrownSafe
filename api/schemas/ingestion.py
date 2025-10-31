@@ -1,10 +1,10 @@
-"""Ingestion schemas for data ingestion runner"""
+"""Ingestion schemas for data ingestion runner."""
 
 from enum import Enum
 
 
 class IngestionSource(str, Enum):
-    """Data ingestion source types"""
+    """Data ingestion source types."""
 
     CPSC_RECALL = "cpsc_recall"
     CPSC_NEISS = "cpsc_neiss"
@@ -17,7 +17,7 @@ class IngestionSource(str, Enum):
 
 
 class IngestionStatus(str, Enum):
-    """Ingestion run status"""
+    """Ingestion run status."""
 
     QUEUED = "queued"
     IN_PROGRESS = "in_progress"

@@ -1,5 +1,5 @@
 """Azure Blob Storage Client
-Abstraction layer for Azure Blob Storage operations (replaces AWS S3)
+Abstraction layer for Azure Blob Storage operations (replaces AWS S3).
 
 Features:
 - Upload files to Azure Blob Storage
@@ -16,7 +16,7 @@ Features:
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from urllib.parse import urlparse
 
 from azure.core.exceptions import ResourceNotFoundError
@@ -37,7 +37,7 @@ _upload_executor = ThreadPoolExecutor(max_workers=10, thread_name_prefix="azure_
 
 class AzureBlobStorageClient:
     """Azure Blob Storage client for Crown Safe
-    Replaces boto3 S3 client with Azure Blob Storage
+    Replaces boto3 S3 client with Azure Blob Storage.
     """
 
     def __init__(
@@ -47,7 +47,7 @@ class AzureBlobStorageClient:
         account_key: str | None = None,
         container_name: str | None = None,
     ) -> None:
-        """Initialize Azure Blob Storage client
+        """Initialize Azure Blob Storage client.
 
         Args:
             connection_string: Azure Storage connection string (preferred)
@@ -80,12 +80,12 @@ class AzureBlobStorageClient:
         logger.info(f"Azure Blob Storage client initialized for container: {self.container_name}")
 
     def _get_container_client(self, container_name: str | None = None):
-        """Get container client for specified container"""
+        """Get container client for specified container."""
         container = container_name or self.container_name
         return self.blob_service_client.get_container_client(container)
 
     def _get_blob_client(self, blob_name: str, container_name: str | None = None):
-        """Get blob client for specified blob"""
+        """Get blob client for specified blob."""
         container = container_name or self.container_name
         return self.blob_service_client.get_blob_client(container=container, blob=blob_name)
 
@@ -100,7 +100,7 @@ class AzureBlobStorageClient:
         content_type: str | None = None,
         metadata: dict | None = None,
     ) -> str:
-        """Upload file to Azure Blob Storage
+        """Upload file to Azure Blob Storage.
 
         Args:
             file_data: File data as bytes
@@ -139,7 +139,7 @@ class AzureBlobStorageClient:
         container_name: str | None = None,
         content_type: str | None = None,
     ) -> str:
-        """Upload file from local path to Azure Blob Storage
+        """Upload file from local path to Azure Blob Storage.
 
         Args:
             file_path: Path to local file
@@ -167,7 +167,7 @@ class AzureBlobStorageClient:
         metadata: dict | None = None,
     ) -> str:
         """Asynchronously upload file to Azure Blob Storage (non-blocking)
-        Uses thread pool executor for I/O operations
+        Uses thread pool executor for I/O operations.
 
         Args:
             file_data: File data as bytes
@@ -211,7 +211,7 @@ class AzureBlobStorageClient:
         use_cache: bool = True,
     ) -> str:
         """Generate SAS (Shared Access Signature) URL for secure blob access
-        Supports Redis caching for improved performance (23h cache TTL)
+        Supports Redis caching for improved performance (23h cache TTL).
 
         Args:
             blob_name: Name of the blob
@@ -271,7 +271,7 @@ class AzureBlobStorageClient:
     @retry_with_exponential_backoff(max_retries=3, base_delay=1.0)
     @log_azure_error
     def blob_exists(self, blob_name: str, container_name: str | None = None) -> bool:
-        """Check if blob exists in container
+        """Check if blob exists in container.
 
         Args:
             blob_name: Name of the blob
@@ -291,7 +291,7 @@ class AzureBlobStorageClient:
     @retry_with_exponential_backoff(max_retries=3, base_delay=1.0)
     @log_azure_error
     def head_object(self, blob_name: str, container_name: str | None = None) -> dict:
-        """Get blob properties (equivalent to S3 head_object)
+        """Get blob properties (equivalent to S3 head_object).
 
         Args:
             blob_name: Name of the blob
@@ -318,7 +318,7 @@ class AzureBlobStorageClient:
     @log_azure_error
     @with_correlation_id
     def download_blob(self, blob_name: str, container_name: str | None = None) -> bytes:
-        """Download blob content as bytes
+        """Download blob content as bytes.
 
         Args:
             blob_name: Name of the blob
@@ -341,7 +341,7 @@ class AzureBlobStorageClient:
     @log_azure_error
     def delete_blob(self, blob_name: str, container_name: str | None = None) -> bool:
         """Delete blob from container
-        Automatically invalidates cached SAS URLs
+        Automatically invalidates cached SAS URLs.
 
         Args:
             blob_name: Name of the blob
@@ -375,7 +375,7 @@ class AzureBlobStorageClient:
         prefix: str | None = None,
         max_results: int | None = None,
     ) -> list:
-        """List blobs in container
+        """List blobs in container.
 
         Args:
             container_name: Container name
@@ -397,7 +397,7 @@ class AzureBlobStorageClient:
         return blob_names
 
     def get_blob_url(self, blob_name: str, container_name: str | None = None) -> str:
-        """Get public blob URL (without SAS token)
+        """Get public blob URL (without SAS token).
 
         Args:
             blob_name: Name of the blob
@@ -412,7 +412,7 @@ class AzureBlobStorageClient:
 
     @staticmethod
     def is_azure_blob_url(url: str) -> bool:
-        """Check if URL is an Azure Blob Storage URL
+        """Check if URL is an Azure Blob Storage URL.
 
         Args:
             url: URL to check
@@ -429,7 +429,7 @@ class AzureBlobStorageClient:
 def get_azure_storage_client(
     container_name: str | None = None,
 ) -> AzureBlobStorageClient:
-    """Get configured Azure Blob Storage client
+    """Get configured Azure Blob Storage client.
 
     Args:
         container_name: Override default container name

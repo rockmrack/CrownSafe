@@ -1,6 +1,6 @@
 """Crown Safe Visual Recognition API Endpoints
 Image upload, hair product analysis, ingredient extraction, and label recognition
-Adapted from BabyShield's visual recognition system for hair product safety
+Adapted from BabyShield's visual recognition system for hair product safety.
 """
 
 import base64
@@ -8,7 +8,7 @@ import io
 import logging
 import os
 import uuid
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from typing import Any
 
 from fastapi import (
@@ -58,7 +58,7 @@ except Exception as e:
 
 
 class ImageUploadResponse(BaseModel):
-    """Response for image upload"""
+    """Response for image upload."""
 
     scan_id: str
     upload_url: str | None = None
@@ -68,7 +68,7 @@ class ImageUploadResponse(BaseModel):
 
 
 class HairProductImageAnalysisRequest(BaseModel):
-    """Request for hair product image analysis"""
+    """Request for hair product image analysis."""
 
     scan_id: str | None = Field(None, description="Scan ID from upload")
     image_url: str | None = Field(None, description="Direct image URL")
@@ -85,7 +85,7 @@ class HairProductImageAnalysisRequest(BaseModel):
 
 
 class ExtractedIngredient(BaseModel):
-    """Single extracted ingredient from label"""
+    """Single extracted ingredient from label."""
 
     name: str
     confidence: float = Field(..., ge=0, le=1)
@@ -95,7 +95,7 @@ class ExtractedIngredient(BaseModel):
 
 
 class LabelExtractionResult(BaseModel):
-    """Results from label OCR and parsing"""
+    """Results from label OCR and parsing."""
 
     product_name: str | None = None
     brand: str | None = None
@@ -108,7 +108,7 @@ class LabelExtractionResult(BaseModel):
 
 
 class SafetyAnalysis(BaseModel):
-    """Safety analysis of detected hair product"""
+    """Safety analysis of detected hair product."""
 
     overall_safety_score: float = Field(..., ge=0, le=100)
     risk_level: str = Field(..., description="low, moderate, high, critical")
@@ -121,7 +121,7 @@ class SafetyAnalysis(BaseModel):
 
 
 class HairProductImageAnalysisResponse(BaseModel):
-    """Response for hair product image analysis"""
+    """Response for hair product image analysis."""
 
     scan_id: str
     status: str
@@ -145,7 +145,7 @@ class HairProductImageAnalysisResponse(BaseModel):
 
 
 class ProductVerificationRequest(BaseModel):
-    """Request to verify extracted product data"""
+    """Request to verify extracted product data."""
 
     scan_id: str
     confirmed_product_name: str | None = None
@@ -155,7 +155,7 @@ class ProductVerificationRequest(BaseModel):
 
 
 class ScanHistoryItem(BaseModel):
-    """Single scan history item"""
+    """Single scan history item."""
 
     scan_id: str
     timestamp: datetime
@@ -167,7 +167,7 @@ class ScanHistoryItem(BaseModel):
 
 
 class ScanHistoryResponse(BaseModel):
-    """Response for scan history"""
+    """Response for scan history."""
 
     scans: list[ScanHistoryItem]
     total: int
@@ -179,12 +179,12 @@ class ScanHistoryResponse(BaseModel):
 
 
 def generate_scan_id() -> str:
-    """Generate unique scan ID"""
+    """Generate unique scan ID."""
     return f"scan_{uuid.uuid4().hex[:16]}"
 
 
 def validate_image_file(file: UploadFile) -> tuple[bool, str | None]:
-    """Validate uploaded image file"""
+    """Validate uploaded image file."""
     # Check content type (max 10MB size check removed as unused)
     allowed_types = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
     if file.content_type not in allowed_types:
@@ -194,7 +194,7 @@ def validate_image_file(file: UploadFile) -> tuple[bool, str | None]:
 
 
 def extract_image_from_base64(base64_data: str) -> Image.Image:
-    """Extract PIL Image from base64 data URL"""
+    """Extract PIL Image from base64 data URL."""
     try:
         # Remove data URL prefix if present
         if base64_data.startswith("data:image/"):
@@ -209,22 +209,21 @@ def extract_image_from_base64(base64_data: str) -> Image.Image:
 
 
 def analyze_image_quality(image: Image.Image) -> float:
-    """Analyze image quality for label readability"""
+    """Analyze image quality for label readability."""
     # Simple quality metrics
     width, height = image.size
 
     # Check resolution (minimum 800x600 recommended)
     if width < 400 or height < 300:
         return 0.3
-    elif width < 800 or height < 600:
+    if width < 800 or height < 600:
         return 0.6
-    else:
-        return 0.9
+    return 0.9
 
 
 async def perform_ocr(image: Image.Image) -> str:
     """Perform OCR on product label image
-    TODO: Integrate with Google Cloud Vision or AWS Textract
+    TODO: Integrate with Google Cloud Vision or AWS Textract.
     """
     # Placeholder - integrate with actual OCR service
     logger.info("OCR requested - returning placeholder")
@@ -232,7 +231,7 @@ async def perform_ocr(image: Image.Image) -> str:
 
 
 async def extract_ingredients_from_text(ocr_text: str) -> list[ExtractedIngredient]:
-    """Parse ingredients from OCR text"""
+    """Parse ingredients from OCR text."""
     # Placeholder - implement ingredient parsing logic
     # Look for common patterns like "Ingredients:", "Contains:", etc.
     logger.info("Ingredient extraction requested - returning placeholder")
@@ -257,7 +256,7 @@ async def extract_ingredients_from_text(ocr_text: str) -> list[ExtractedIngredie
 async def match_product_in_database(
     db: Session, product_name: str | None, brand: str | None,
 ) -> HairProductModel | None:
-    """Match extracted product to database"""
+    """Match extracted product to database."""
     if not product_name:
         return None
 
@@ -275,7 +274,7 @@ async def match_product_in_database(
 
 
 async def analyze_product_safety(ingredients: list[ExtractedIngredient], db: Session) -> SafetyAnalysis:
-    """Analyze safety based on ingredients"""
+    """Analyze safety based on ingredients."""
     flagged = []
     risk_score = 100.0
 
@@ -342,7 +341,7 @@ async def upload_product_image(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db_session),
 ):
-    """Upload hair product image for analysis
+    """Upload hair product image for analysis.
 
     Steps:
     1. Validate image format and size
@@ -415,7 +414,7 @@ async def analyze_product_image(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db_session),
 ):
-    """Analyze hair product image using visual recognition
+    """Analyze hair product image using visual recognition.
 
     Process:
     1. Load image (from scan_id, URL, or base64)
@@ -516,7 +515,7 @@ async def verify_product_extraction(
     db: Session = Depends(get_db_session),
 ):
     """User verification/correction of extracted product data
-    Helps improve OCR accuracy over time
+    Helps improve OCR accuracy over time.
     """
     # TODO: Store verification data for ML training
     return JSONResponse(
@@ -534,7 +533,7 @@ async def get_scan_history(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db_session),
 ):
-    """Get user's scan history"""
+    """Get user's scan history."""
     offset = (page - 1) * page_size
 
     scans = (
@@ -570,7 +569,7 @@ async def get_scan_details(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db_session),
 ):
-    """Get detailed scan results"""
+    """Get detailed scan results."""
     scan = (
         db.query(ProductScanModel)
         .filter(
@@ -598,7 +597,7 @@ async def get_scan_details(
 
 
 def update_scan_record(db: Session, scan_id: str, analysis: HairProductImageAnalysisResponse) -> None:
-    """Background task to update scan record with analysis results"""
+    """Background task to update scan record with analysis results."""
     try:
         scan = db.query(ProductScanModel).filter(ProductScanModel.image_url.contains(scan_id)).first()
         if scan:

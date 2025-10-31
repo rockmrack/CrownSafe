@@ -9,7 +9,7 @@ from uuid import UUID
 class User:
     """Simple user model for authentication context."""
 
-    def __init__(self, id: UUID, email: str | None = None):
+    def __init__(self, id: UUID, email: str | None = None) -> None:
         self.id = id
         self.email = email
 

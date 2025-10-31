@@ -1,4 +1,4 @@
-"""Comprehensive Celery Task Testing Suite
+"""Comprehensive Celery Task Testing Suite.
 
 Tests background workers, async processing, and task queue behavior.
 Covers task execution, retries, timeouts, and error handling.
@@ -8,7 +8,7 @@ Date: October 10, 2025
 """
 
 import time
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from unittest.mock import patch
 
 import pytest
@@ -19,17 +19,17 @@ import pytest
 @pytest.mark.workers
 @pytest.mark.asyncio
 class TestCeleryTaskExecution:
-    """Test suite for Celery task execution and lifecycle"""
+    """Test suite for Celery task execution and lifecycle."""
 
     @pytest.fixture
     def mock_celery_app(self):
-        """Mock Celery application for testing"""
+        """Mock Celery application for testing."""
         with patch("workers.celery_app") as mock_app:
             yield mock_app
 
     @pytest.fixture
     def sample_recall_data(self):
-        """Sample recall data for testing"""
+        """Sample recall data for testing."""
         return {
             "recall_id": "CPSC-2025-001",
             "title": "Baby Crib Recall - Safety Hazard",
@@ -40,8 +40,8 @@ class TestCeleryTaskExecution:
             "hazard": "Entrapment risk",
         }
 
-    def test_recall_ingestion_task_success(self, sample_recall_data):
-        """Test successful recall data ingestion via Celery task
+    def test_recall_ingestion_task_success(self, sample_recall_data) -> None:
+        """Test successful recall data ingestion via Celery task.
 
         Verifies:
         - Task executes without errors
@@ -65,8 +65,8 @@ class TestCeleryTaskExecution:
             # assert result.result["recall_id"] == "CPSC-2025-001"
             pass
 
-    def test_recall_ingestion_task_retry_on_network_failure(self, sample_recall_data):
-        """Verify task retries when network fails (exponential backoff)
+    def test_recall_ingestion_task_retry_on_network_failure(self, sample_recall_data) -> None:
+        """Verify task retries when network fails (exponential backoff).
 
         Tests:
         - Network timeout triggers retry
@@ -88,8 +88,8 @@ class TestCeleryTaskExecution:
             # assert mock_agent.return_value.process_recall.call_count == 1
             pass
 
-    def test_recall_ingestion_task_max_retries_exceeded(self, sample_recall_data):
-        """Test task failure after max retries exceeded
+    def test_recall_ingestion_task_max_retries_exceeded(self, sample_recall_data) -> None:
+        """Test task failure after max retries exceeded.
 
         Verifies:
         - Task fails after 3 retry attempts
@@ -111,8 +111,8 @@ class TestCeleryTaskExecution:
             # assert mock_agent.return_value.process_recall.call_count == 4
             pass
 
-    def test_recall_ingestion_task_timeout_handling(self):
-        """Verify task timeout and cleanup after configured duration
+    def test_recall_ingestion_task_timeout_handling(self) -> None:
+        """Verify task timeout and cleanup after configured duration.
 
         Tests:
         - Task timeout after 300 seconds (5 minutes)
@@ -123,7 +123,7 @@ class TestCeleryTaskExecution:
         # Arrange
         with patch("workers.recall_tasks.RecallAgent") as mock_agent:
             # Simulate long-running task
-            def slow_process(*args, **kwargs):
+            def slow_process(*args, **kwargs) -> None:
                 time.sleep(301)  # Exceeds timeout
 
             mock_agent.return_value.process_recall.side_effect = slow_process
@@ -136,8 +136,8 @@ class TestCeleryTaskExecution:
             #     )
             pass
 
-    def test_notification_send_task_batch_processing(self):
-        """Test batch notification sending with rate limiting
+    def test_notification_send_task_batch_processing(self) -> None:
+        """Test batch notification sending with rate limiting.
 
         Verifies:
         - Processes 100 notifications in batches of 10
@@ -160,8 +160,8 @@ class TestCeleryTaskExecution:
             # assert result.result["success_rate"] >= 0.95
             pass
 
-    def test_notification_send_task_partial_failure(self):
-        """Verify graceful handling of partial batch failures
+    def test_notification_send_task_partial_failure(self) -> None:
+        """Verify graceful handling of partial batch failures.
 
         Tests:
         - Some notifications succeed, some fail
@@ -190,8 +190,8 @@ class TestCeleryTaskExecution:
             # assert len(result.result["failed_ids"]) == 3
             pass
 
-    def test_report_generation_task_large_dataset(self):
-        """Test PDF report generation with 10,000+ recall records
+    def test_report_generation_task_large_dataset(self) -> None:
+        """Test PDF report generation with 10,000+ recall records.
 
         Verifies:
         - Task handles large dataset without memory issues
@@ -224,8 +224,8 @@ class TestCeleryTaskExecution:
             # assert result.result["size_mb"] < 100  # Reasonable file size
             pass
 
-    def test_report_generation_task_concurrent_requests(self):
-        """Verify concurrent report generation doesn't cause conflicts
+    def test_report_generation_task_concurrent_requests(self) -> None:
+        """Verify concurrent report generation doesn't cause conflicts.
 
         Tests:
         - 5 concurrent report generation tasks
@@ -255,8 +255,8 @@ class TestCeleryTaskExecution:
             # assert len(set(file_paths)) == num_concurrent  # All unique
             pass
 
-    def test_cache_warming_task_scheduled_execution(self):
-        """Test automatic cache warming on schedule
+    def test_cache_warming_task_scheduled_execution(self) -> None:
+        """Test automatic cache warming on schedule.
 
         Verifies:
         - Task runs on schedule (every 6 hours)
@@ -278,8 +278,8 @@ class TestCeleryTaskExecution:
             # assert len(cached_items) >= 100
             pass
 
-    def test_data_export_task_gdpr_compliance(self):
-        """Verify GDPR export task includes all user data
+    def test_data_export_task_gdpr_compliance(self) -> None:
+        """Verify GDPR export task includes all user data.
 
         Tests:
         - All tables with user data are included
@@ -307,8 +307,8 @@ class TestCeleryTaskExecution:
             # assert result.result["file_path"].endswith(".enc")  # Encrypted
             pass
 
-    def test_data_deletion_task_cascade_relationships(self):
-        """Test complete user data deletion across all tables
+    def test_data_deletion_task_cascade_relationships(self) -> None:
+        """Test complete user data deletion across all tables.
 
         Verifies:
         - Cascade delete removes all related records
@@ -336,8 +336,8 @@ class TestCeleryTaskExecution:
             # assert result.result["audit_log_id"] is not None
             pass
 
-    def test_task_result_cleanup_old_entries(self):
-        """Verify automatic cleanup of old task results (>30 days)
+    def test_task_result_cleanup_old_entries(self) -> None:
+        """Verify automatic cleanup of old task results (>30 days).
 
         Tests:
         - Task results older than 30 days are deleted
@@ -361,10 +361,10 @@ class TestCeleryTaskExecution:
 
 @pytest.mark.workers
 class TestCeleryTaskConfiguration:
-    """Test Celery task configuration and settings"""
+    """Test Celery task configuration and settings."""
 
-    def test_task_retry_configuration(self):
-        """Verify retry configuration for critical tasks"""
+    def test_task_retry_configuration(self) -> None:
+        """Verify retry configuration for critical tasks."""
         # from workers.recall_tasks import ingest_recall_data_task
 
         # Assert
@@ -372,8 +372,8 @@ class TestCeleryTaskConfiguration:
         # assert ingest_recall_data_task.default_retry_delay == 60
         pass
 
-    def test_task_time_limits(self):
-        """Verify time limits are properly configured"""
+    def test_task_time_limits(self) -> None:
+        """Verify time limits are properly configured."""
         # from workers.report_tasks import generate_report_task
 
         # Assert
@@ -381,8 +381,8 @@ class TestCeleryTaskConfiguration:
         # assert generate_report_task.soft_time_limit == 540  # 9 minutes
         pass
 
-    def test_task_priority_levels(self):
-        """Verify task priorities are correctly set"""
+    def test_task_priority_levels(self) -> None:
+        """Verify task priorities are correctly set."""
         # High priority: notifications, alerts
         # Medium priority: report generation
         # Low priority: cache warming, cleanup

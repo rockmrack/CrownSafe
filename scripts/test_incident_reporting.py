@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Test script for the Incident Reporting System
-Tests the "Report Unsafe Product" feature
+Tests the "Report Unsafe Product" feature.
 """
 
 import asyncio
@@ -61,7 +61,7 @@ TEST_INCIDENTS = [
 
 
 async def test_submit_incident(incident_data):
-    """Test submitting an incident report"""
+    """Test submitting an incident report."""
     async with httpx.AsyncClient() as client:
         # Prepare form data
         form_data = {
@@ -81,10 +81,9 @@ async def test_submit_incident(incident_data):
                 result = response.json()
                 print(f"✅ Incident submitted: {result['data']['report_id']}")
                 return result["data"]["report_id"]
-            else:
-                print(f"❌ Failed to submit incident: {response.status_code}")
-                print(response.text)
-                return None
+            print(f"❌ Failed to submit incident: {response.status_code}")
+            print(response.text)
+            return None
 
         except Exception as e:
             print(f"❌ Error submitting incident: {e}")
@@ -92,7 +91,7 @@ async def test_submit_incident(incident_data):
 
 
 async def test_check_clusters():
-    """Test checking for incident clusters"""
+    """Test checking for incident clusters."""
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(f"{BASE_URL}/api/v1/incidents/clusters", params={"min_incidents": 2})
@@ -114,9 +113,8 @@ async def test_check_clusters():
                     print("\n📊 No clusters found yet")
 
                 return clusters
-            else:
-                print(f"❌ Failed to get clusters: {response.status_code}")
-                return []
+            print(f"❌ Failed to get clusters: {response.status_code}")
+            return []
 
         except Exception as e:
             print(f"❌ Error getting clusters: {e}")
@@ -124,7 +122,7 @@ async def test_check_clusters():
 
 
 async def test_get_statistics():
-    """Test getting incident statistics"""
+    """Test getting incident statistics."""
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(f"{BASE_URL}/api/v1/incidents/stats", params={"days": 7})
@@ -150,17 +148,16 @@ async def test_get_statistics():
                 print(f"  Agencies Notified: {stats['agencies_notified']}")
 
                 return stats
-            else:
-                print(f"❌ Failed to get statistics: {response.status_code}")
-                return None
+            print(f"❌ Failed to get statistics: {response.status_code}")
+            return None
 
         except Exception as e:
             print(f"❌ Error getting statistics: {e}")
             return None
 
 
-async def test_report_page():
-    """Test accessing the report page"""
+async def test_report_page() -> None:
+    """Test accessing the report page."""
     async with httpx.AsyncClient() as client:
         try:
             # Test main report page
@@ -184,8 +181,8 @@ async def test_report_page():
             print(f"❌ Error accessing report page: {e}")
 
 
-async def main():
-    """Run all tests"""
+async def main() -> None:
+    """Run all tests."""
     print("=" * 60)
     print("🚨 TESTING INCIDENT REPORTING SYSTEM")
     print("=" * 60)

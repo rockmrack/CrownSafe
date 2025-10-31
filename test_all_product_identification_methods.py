@@ -1,4 +1,4 @@
-"""COMPREHENSIVE TEST: All Product Identification Methods
+"""COMPREHENSIVE TEST: All Product Identification Methods.
 ========================================================
 
 Tests ALL 5 product identification methods from the mobile app:

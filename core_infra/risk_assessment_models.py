@@ -1,5 +1,5 @@
 """Database models for Proactive Consumer Product Safety Risk Assessment Framework
-Implements golden records, risk profiles, and data source tracking
+Implements golden records, risk profiles, and data source tracking.
 """
 
 import uuid
@@ -26,7 +26,7 @@ from core_infra.database import Base
 
 
 class DataSource(Enum):
-    """Data source types"""
+    """Data source types."""
 
     CPSC_RECALL = "cpsc_recall"
     CPSC_NEISS = "cpsc_neiss"
@@ -40,7 +40,7 @@ class DataSource(Enum):
 
 
 class RiskSeverity(Enum):
-    """Risk severity levels aligned with FDA/CPSC classifications"""
+    """Risk severity levels aligned with FDA/CPSC classifications."""
 
     CLASS_I = "class_i"  # Serious health hazard or death
     CLASS_II = "class_ii"  # Temporary health problem or slight threat
@@ -53,7 +53,7 @@ class RiskSeverity(Enum):
 
 class ProductGoldenRecord(Base):
     """Unified product record - the single source of truth
-    Consolidates data from all sources through entity resolution
+    Consolidates data from all sources through entity resolution.
     """
 
     __tablename__ = "product_golden_records"
@@ -118,7 +118,7 @@ class ProductGoldenRecord(Base):
 
 class ProductRiskProfile(Base):
     """Dynamic risk assessment profile for each product
-    Continuously updated based on new data
+    Continuously updated based on new data.
     """
 
     __tablename__ = "product_risk_profiles"
@@ -174,7 +174,7 @@ class ProductRiskProfile(Base):
 
 class ProductDataSource(Base):
     """Tracks all data sources for a product
-    Maintains provenance and update history
+    Maintains provenance and update history.
     """
 
     __tablename__ = "product_data_sources"
@@ -266,7 +266,7 @@ class SafetyIncident(Base):
 
 class CompanyComplianceProfile(Base):
     """Company/manufacturer compliance history
-    Used for risk scoring based on company track record
+    Used for risk scoring based on company track record.
     """
 
     __tablename__ = "company_compliance_profiles"
@@ -306,7 +306,7 @@ class CompanyComplianceProfile(Base):
 
 class RiskAssessmentReport(Base):
     """Generated risk assessment reports
-    Includes all analysis, scores, and disclaimers
+    Includes all analysis, scores, and disclaimers.
     """
 
     __tablename__ = "risk_assessment_reports"
@@ -356,7 +356,7 @@ class RiskAssessmentReport(Base):
 
 
 class DataIngestionJob(Base):
-    """Tracks data ingestion jobs from various sources"""
+    """Tracks data ingestion jobs from various sources."""
 
     __tablename__ = "data_ingestion_jobs"
 

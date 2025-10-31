@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Test suite for admin tools (Task 7)
-Tests ingestion management, reindexing, and data freshness endpoints
+Tests ingestion management, reindexing, and data freshness endpoints.
 """
 
 import os
@@ -15,16 +15,16 @@ ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "test-admin-key-for-testing")
 
 
 class AdminToolsTester:
-    """Test suite for admin tools"""
+    """Test suite for admin tools."""
 
-    def __init__(self, base_url: str = BASE_URL):
+    def __init__(self, base_url: str = BASE_URL) -> None:
         self.base_url = base_url
         self.session = requests.Session()
         self.admin_headers = {"X-Admin-Key": ADMIN_API_KEY}
         self.test_results = []
 
     def test(self, condition: bool, message: str) -> bool:
-        """Record test result"""
+        """Record test result."""
         if condition:
             print(f"✅ {message}")
             self.test_results.append(True)
@@ -34,7 +34,7 @@ class AdminToolsTester:
         return condition
 
     def test_admin_unauthorized(self) -> bool:
-        """Test 1: Admin endpoints require authentication"""
+        """Test 1: Admin endpoints require authentication."""
         print("\n📝 Test 1: Admin Authentication")
 
         # Test without key
@@ -62,7 +62,7 @@ class AdminToolsTester:
         return True
 
     def test_admin_freshness(self) -> bool:
-        """Test 2: Data freshness endpoint"""
+        """Test 2: Data freshness endpoint."""
         print("\n📝 Test 2: Data Freshness")
 
         response = self.session.get(f"{self.base_url}/api/v1/admin/freshness", headers=self.admin_headers)
@@ -94,7 +94,7 @@ class AdminToolsTester:
         return response.status_code == 200
 
     def test_admin_runs_list(self) -> bool:
-        """Test 3: List ingestion runs"""
+        """Test 3: List ingestion runs."""
         print("\n📝 Test 3: List Ingestion Runs")
 
         response = self.session.get(f"{self.base_url}/api/v1/admin/runs", headers=self.admin_headers)
@@ -120,7 +120,7 @@ class AdminToolsTester:
         return response.status_code == 200
 
     def test_admin_ingest_validation(self) -> bool:
-        """Test 4: Ingestion request validation"""
+        """Test 4: Ingestion request validation."""
         print("\n📝 Test 4: Ingestion Validation")
 
         # Test invalid agency
@@ -170,7 +170,7 @@ class AdminToolsTester:
         return True
 
     def test_admin_run_details(self) -> bool:
-        """Test 5: Get specific run details"""
+        """Test 5: Get specific run details."""
         print("\n📝 Test 5: Run Details")
 
         # Test with invalid UUID
@@ -198,7 +198,7 @@ class AdminToolsTester:
         return True
 
     def test_admin_stats(self) -> bool:
-        """Test 6: Admin statistics endpoint"""
+        """Test 6: Admin statistics endpoint."""
         print("\n📝 Test 6: Admin Statistics")
 
         response = self.session.get(f"{self.base_url}/api/v1/admin/stats", headers=self.admin_headers)
@@ -229,7 +229,7 @@ class AdminToolsTester:
         return response.status_code == 200
 
     def test_admin_dashboard_html(self) -> bool:
-        """Test 7: Admin dashboard HTML is served"""
+        """Test 7: Admin dashboard HTML is served."""
         print("\n📝 Test 7: Admin Dashboard HTML")
 
         response = self.session.get(f"{self.base_url}/admin/")
@@ -248,7 +248,7 @@ class AdminToolsTester:
         return response.status_code == 200
 
     def test_trace_id_present(self) -> bool:
-        """Test 8: Trace ID in admin responses"""
+        """Test 8: Trace ID in admin responses."""
         print("\n📝 Test 8: Trace ID Presence")
 
         response = self.session.get(f"{self.base_url}/api/v1/admin/freshness", headers=self.admin_headers)
@@ -260,7 +260,7 @@ class AdminToolsTester:
         return True
 
     def test_rate_limiting(self) -> bool:
-        """Test 9: Admin endpoints have rate limiting"""
+        """Test 9: Admin endpoints have rate limiting."""
         print("\n📝 Test 9: Rate Limiting")
 
         # Try to trigger rate limit on reindex (low limit)
@@ -270,7 +270,7 @@ class AdminToolsTester:
         return True
 
     def test_mock_ingestion(self) -> bool:
-        """Test 10: Mock ingestion flow"""
+        """Test 10: Mock ingestion flow."""
         print("\n📝 Test 10: Ingestion Flow (Mocked)")
 
         # This would require mocking the subprocess execution
@@ -280,7 +280,7 @@ class AdminToolsTester:
         return True
 
     def run_all_tests(self) -> bool:
-        """Run all admin tools tests"""
+        """Run all admin tools tests."""
         print("=" * 60)
         print("🛠️ ADMIN TOOLS TEST SUITE")
         print("=" * 60)
@@ -327,8 +327,8 @@ class AdminToolsTester:
         return all_passed
 
 
-def main():
-    """Main test runner"""
+def main() -> int:
+    """Main test runner."""
     tester = AdminToolsTester()
     success = tester.run_all_tests()
     return 0 if success else 1

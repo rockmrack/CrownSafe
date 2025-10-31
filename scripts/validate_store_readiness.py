@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Validate store readiness against production API
-Tests critical endpoints and features required for app store submission
+Tests critical endpoints and features required for app store submission.
 """
 
 import os
@@ -36,7 +36,7 @@ CRITICAL_ENDPOINTS = [
 
 
 def test_endpoint(method: str, path: str, data: dict, name: str) -> tuple[bool, str, int]:
-    """Test a single endpoint and return status"""
+    """Test a single endpoint and return status."""
     url = f"{BASE_URL}{path}"
     headers = {
         "Content-Type": "application/json",
@@ -65,7 +65,7 @@ def test_endpoint(method: str, path: str, data: dict, name: str) -> tuple[bool, 
 
 
 def check_headers(url: str) -> dict[str, bool]:
-    """Check security and operational headers"""
+    """Check security and operational headers."""
     try:
         response = requests.get(url, timeout=10)
         headers = response.headers
@@ -83,8 +83,8 @@ def check_headers(url: str) -> dict[str, bool]:
         return {}
 
 
-def main():
-    """Run store readiness validation"""
+def main() -> int:
+    """Run store readiness validation."""
     print("🚀 BabyShield Store Readiness Validation")
     print(f"🌐 Testing: {BASE_URL}")
     print(f"📅 Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
@@ -152,15 +152,14 @@ def main():
         print("✅ API is READY for app store submission")
         print("   All critical endpoints are working")
         return 0
-    else:
-        print("❌ API is NOT READY for app store submission")
-        print(f"   {critical_failed} critical endpoint(s) are failing")
-        print("\nRequired actions:")
-        print("1. Deploy the latest code to production")
-        print("2. Run database migrations")
-        print("3. Ensure all environment variables are set")
-        print("4. Restart the API service")
-        return 1
+    print("❌ API is NOT READY for app store submission")
+    print(f"   {critical_failed} critical endpoint(s) are failing")
+    print("\nRequired actions:")
+    print("1. Deploy the latest code to production")
+    print("2. Run database migrations")
+    print("3. Ensure all environment variables are set")
+    print("4. Restart the API service")
+    return 1
 
 
 if __name__ == "__main__":

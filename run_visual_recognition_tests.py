@@ -1,5 +1,5 @@
 """COMPREHENSIVE VISUAL RECOGNITION SYSTEM TEST SUITE
-Tests all aspects of the Visual Search Agent and image analysis
+Tests all aspects of the Visual Search Agent and image analysis.
 """
 
 import asyncio
@@ -8,9 +8,9 @@ from datetime import datetime
 
 
 class MockAsyncOpenAI:
-    """Mock OpenAI client for testing without API calls"""
+    """Mock OpenAI client for testing without API calls."""
 
-    def __init__(self, api_key=None):
+    def __init__(self, api_key=None) -> None:
         self.chat = self
 
     @property
@@ -18,18 +18,18 @@ class MockAsyncOpenAI:
         return self
 
     async def create(self, **kwargs):
-        """Mock create method that returns appropriate responses based on prompt"""
+        """Mock create method that returns appropriate responses based on prompt."""
 
         class MockChoice:
-            def __init__(self, content):
+            def __init__(self, content) -> None:
                 self.message = MockMessage(content)
 
         class MockMessage:
-            def __init__(self, content):
+            def __init__(self, content) -> None:
                 self.content = content
 
         class MockResponse:
-            def __init__(self, content):
+            def __init__(self, content) -> None:
                 self.choices = [MockChoice(content)]
 
         # Check if this is a suggestions call or identification call
@@ -64,7 +64,7 @@ class MockAsyncOpenAI:
                 return MockResponse(response_json)
 
             # Identification mode (Phase 3)
-            elif "single best guess" in content:
+            if "single best guess" in content:
                 response_json = """{
                     "product_name": "Graco SnugRide 35",
                     "brand": "Graco",
@@ -78,10 +78,10 @@ class MockAsyncOpenAI:
 
 
 class MockHttpx:
-    """Mock httpx module for testing image fetching"""
+    """Mock httpx module for testing image fetching."""
 
     class AsyncClient:
-        def __init__(self, **kwargs):
+        def __init__(self, **kwargs) -> None:
             pass
 
         async def __aenter__(self):
@@ -91,7 +91,7 @@ class MockHttpx:
             pass
 
         async def get(self, url):
-            """Mock GET request"""
+            """Mock GET request."""
 
             # Simulate successful image fetch
             class MockResponse:
@@ -105,8 +105,8 @@ class MockHttpx:
 # Don't patch httpx - let the agent use real httpx or handle mock internally
 
 
-def run_tests():
-    """Execute all visual recognition tests"""
+def run_tests() -> int | None:
+    """Execute all visual recognition tests."""
     print("=" * 70)
     print("VISUAL RECOGNITION SYSTEM COMPREHENSIVE TEST SUITE")
     print("=" * 70)
@@ -482,11 +482,10 @@ def run_tests():
         print("ALL VISUAL RECOGNITION TESTS PASSED!")
         print("=" * 70)
         return 0
-    else:
-        print("\n" + "=" * 70)
-        print(f"SOME TESTS FAILED ({tests_failed}/{total_tests})")
-        print("=" * 70)
-        return 1
+    print("\n" + "=" * 70)
+    print(f"SOME TESTS FAILED ({tests_failed}/{total_tests})")
+    print("=" * 70)
+    return 1
 
 
 if __name__ == "__main__":

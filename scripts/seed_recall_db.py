@@ -35,7 +35,7 @@ YOTO_MINI_RECALL = {
 # ----------------------------------------------------
 
 
-def seed_database():
+def seed_database() -> None:
     """Connects to the database and inserts the test recall."""
     # Ensure tables exist
     Base.metadata.create_all(bind=engine)
@@ -65,7 +65,7 @@ def seed_database():
         db.close()
 
 
-def clean_database():
+def clean_database() -> None:
     """Connects to the database and removes the test recall."""
     db = SessionLocal()
     try:

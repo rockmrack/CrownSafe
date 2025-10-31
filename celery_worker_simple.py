@@ -1,5 +1,5 @@
 """Simple Celery worker for testing
-Handles missing dependencies gracefully
+Handles missing dependencies gracefully.
 """
 
 import os
@@ -27,8 +27,8 @@ app.conf.update(
 
 
 @app.task(name="test_task")
-def test_task(message):
-    """Simple test task"""
+def test_task(message) -> str:
+    """Simple test task."""
     print(f"Processing: {message}")
     time.sleep(2)
     return f"Completed: {message}"
@@ -36,7 +36,7 @@ def test_task(message):
 
 @app.task(name="process_safety_check")
 def process_safety_check(product_name):
-    """Process safety check asynchronously"""
+    """Process safety check asynchronously."""
     print(f"Checking safety for: {product_name}")
     # Simulate processing
     time.sleep(3)
@@ -50,7 +50,7 @@ def process_safety_check(product_name):
 
 @app.task(name="process_barcode")
 def process_barcode(barcode):
-    """Process barcode asynchronously"""
+    """Process barcode asynchronously."""
     print(f"Processing barcode: {barcode}")
     time.sleep(1)
     return {"barcode": barcode, "type": "UPC", "decoded": True}

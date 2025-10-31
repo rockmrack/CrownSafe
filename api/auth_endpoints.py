@@ -1,5 +1,5 @@
 """Authentication Endpoints for BabyShield API
-JWT-based authentication system
+JWT-based authentication system.
 """
 
 import logging
@@ -59,7 +59,7 @@ async def register(
     db: Session = Depends(get_db),  # noqa: B008
 ):
     """Register a new user
-    Limited to 5 registrations per hour per IP
+    Limited to 5 registrations per hour per IP.
     """
     # Validate passwords match
     if user_data.password != user_data.confirm_password:
@@ -111,7 +111,7 @@ async def login(
 ):
     """Login endpoint - returns JWT tokens
     Accepts form-urlencoded data (application/x-www-form-urlencoded)
-    Username field should contain email
+    Username field should contain email.
 
     Examples:
     - Content-Type: application/x-www-form-urlencoded
@@ -175,7 +175,7 @@ async def login(
 
 @router.post("/refresh", response_model=Token)
 async def refresh_token(request: Request, db: Session = Depends(get_db)):  # noqa: B008
-    """Refresh access token using refresh token"""
+    """Refresh access token using refresh token."""
     try:
         # Extract refresh_token from JSON body
         body = await request.json()
@@ -223,7 +223,7 @@ async def get_current_user_profile(
     current_user: User = Depends(get_current_active_user),  # noqa: B008
 ):
     """Get current user profile
-    Requires authentication
+    Requires authentication.
     """
     return UserResponse(
         id=current_user.id,
@@ -240,7 +240,7 @@ async def update_profile(
     db: Session = Depends(get_db),  # noqa: B008
 ):
     """Update current user profile
-    Requires authentication
+    Requires authentication.
     """
     # Only allow certain fields to be updated
     allowed_fields = ["is_subscribed", "is_pregnant"]
@@ -274,7 +274,7 @@ async def update_profile(
 @router.post("/logout")
 async def logout(current_user: User = Depends(get_current_active_user)):  # noqa: B008
     """Logout endpoint
-    In a production system, you might want to blacklist the token
+    In a production system, you might want to blacklist the token.
     """
     # In a real implementation, you might want to:
     # 1. Add the token to a blacklist in Redis
@@ -302,7 +302,7 @@ async def verify_token(
 ):
     """Verify email or token
     - If code provided: verify email verification code
-    - If no code: verify current token (requires auth)
+    - If no code: verify current token (requires auth).
     """
     if code:
         # Email verification flow (public)

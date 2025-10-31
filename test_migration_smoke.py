@@ -1,5 +1,5 @@
 """Quick smoke test to verify PostgreSQL migration didn't break core functionality
-Run this after migration changes to ensure everything still works
+Run this after migration changes to ensure everything still works.
 """
 
 import os

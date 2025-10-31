@@ -4,15 +4,15 @@ from __future__ import annotations
 
 # No-op class for when Prometheus is not available
 class _N:
-    """No-op metric class that does nothing but returns self for chaining"""
+    """No-op metric class that does nothing but returns self for chaining."""
 
     def labels(self, *_a, **_k):
         return self
 
-    def observe(self, *_a, **_k):
+    def observe(self, *_a, **_k) -> None:
         pass
 
-    def inc(self, *_a, **_k):
+    def inc(self, *_a, **_k) -> None:
         pass
 
 
@@ -68,50 +68,50 @@ else:
     CHAT_EMERG = _N()
 
 
-def inc_req(endpoint: str, intent: str, ok: bool, circuit: bool):
+def inc_req(endpoint: str, intent: str, ok: bool, circuit: bool) -> None:
     CHAT_REQ.labels(endpoint, intent, "1" if ok else "0", "1" if circuit else "0").inc()
 
 
-def obs_total(ms: int):
+def obs_total(ms: int) -> None:
     CHAT_LAT.observe(float(ms))
 
 
-def obs_tool(intent: str, ms: int):
+def obs_tool(intent: str, ms: int) -> None:
     TOOL_LAT.labels(intent).observe(float(ms))
 
 
-def obs_synth(ms: int):
+def obs_synth(ms: int) -> None:
     SYN_LAT.observe(float(ms))
 
 
-def inc_fallback(endpoint: str, reason: str):
+def inc_fallback(endpoint: str, reason: str) -> None:
     CHAT_FALLBACK.labels(endpoint, reason).inc()
 
 
-def inc_blocked(endpoint: str):
+def inc_blocked(endpoint: str) -> None:
     CHAT_BLOCKED.labels(endpoint).inc()
 
 
-def inc_explain_feedback(helpful: bool, reason: str | None):
+def inc_explain_feedback(helpful: bool, reason: str | None) -> None:
     EXPLAIN_FB.labels("1" if helpful else "0", reason or "none").inc()
 
 
-def inc_alternatives_shown(count: int):
-    """Record how many alternatives were shown (0, 1, 2, 3+)"""
+def inc_alternatives_shown(count: int) -> None:
+    """Record how many alternatives were shown (0, 1, 2, 3+)."""
     count_bucket = "3+" if count >= 3 else str(count)
     ALT_SHOWN.labels(count_bucket).inc()
 
 
-def inc_alternative_clicked(alt_id: str):
-    """Record when a specific alternative is clicked"""
+def inc_alternative_clicked(alt_id: str) -> None:
+    """Record when a specific alternative is clicked."""
     ALT_CLICKED.labels(alt_id).inc()
 
 
-def inc_unclear():
-    """Record unclear intent response"""
+def inc_unclear() -> None:
+    """Record unclear intent response."""
     CHAT_UNCLEAR.inc()
 
 
-def inc_emergency():
-    """Record emergency path response"""
+def inc_emergency() -> None:
+    """Record emergency path response."""
     CHAT_EMERG.inc()

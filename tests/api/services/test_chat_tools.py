@@ -1,11 +1,11 @@
-"""Tests for api/services/chat_tools.py"""
+"""Tests for api/services/chat_tools.py."""
 
 import unittest
 
 
 class TestChatTools(unittest.TestCase):
-    def test_chat_tools_module_import(self):
-        """Test that chat_tools module can be imported"""
+    def test_chat_tools_module_import(self) -> None:
+        """Test that chat_tools module can be imported."""
         try:
             from api.services import chat_tools
 
@@ -13,8 +13,8 @@ class TestChatTools(unittest.TestCase):
         except ImportError:
             self.skipTest("chat_tools module not found")
 
-    def test_module_has_functions(self):
-        """Test that module has callable functions"""
+    def test_module_has_functions(self) -> None:
+        """Test that module has callable functions."""
         try:
             from api.services import chat_tools
 

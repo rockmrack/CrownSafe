@@ -1,5 +1,5 @@
 """Test Download Report Functionality
-Tests the complete report generation and download workflow
+Tests the complete report generation and download workflow.
 """
 
 import json
@@ -10,11 +10,11 @@ BASE_URL = "http://localhost:8001"  # Change to production URL if testing produc
 # BASE_URL = "https://babyshield.cureviax.ai"
 
 
-def test_download_report_workflow():
+def test_download_report_workflow() -> None:
     """Test complete report download workflow:
     1. Generate a report
     2. Get the download URL
-    3. Download the PDF
+    3. Download the PDF.
     """
     print("=" * 80)
     print("🧪 Testing Download Report Functionality")

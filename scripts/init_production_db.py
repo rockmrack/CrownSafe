@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Production Database Initialization Script
-Creates necessary tables in the production SQLite database via API
+Creates necessary tables in the production SQLite database via API.
 """
 
 import sys
@@ -9,8 +9,8 @@ import time
 import requests
 
 
-def init_production_database():
-    """Initialize production database by calling the API to create tables"""
+def init_production_database() -> bool | None:
+    """Initialize production database by calling the API to create tables."""
     base_url = "https://babyshield.cureviax.ai"
 
     print(f"Initializing production database at {base_url}")
@@ -48,17 +48,15 @@ def init_production_database():
         if response.status_code == 200:
             print("✅ Database initialization successful")
             return True
-        else:
-            print(f"⚠️ Search endpoint returned {response.status_code}: {response.text}")
+        print(f"⚠️ Search endpoint returned {response.status_code}: {response.text}")
 
-            # Try agencies endpoint as fallback
-            response = requests.get(f"{base_url}/api/v1/agencies", timeout=10)
-            if response.status_code == 200:
-                print("✅ Database initialization successful (via agencies endpoint)")
-                return True
-            else:
-                print(f"⚠️ Agencies endpoint returned {response.status_code}: {response.text}")
-                return False
+        # Try agencies endpoint as fallback
+        response = requests.get(f"{base_url}/api/v1/agencies", timeout=10)
+        if response.status_code == 200:
+            print("✅ Database initialization successful (via agencies endpoint)")
+            return True
+        print(f"⚠️ Agencies endpoint returned {response.status_code}: {response.text}")
+        return False
 
     except requests.RequestException as e:
         print(f"❌ Error initializing database: {e}")

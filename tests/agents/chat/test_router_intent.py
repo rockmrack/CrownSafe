@@ -7,7 +7,7 @@ class DummyLLM:
 
 
 class ConfidentLLM:
-    def __init__(self, intent: str, confidence: float = 0.8):
+    def __init__(self, intent: str, confidence: float = 0.8) -> None:
         self.intent = intent
         self.confidence = confidence
 
@@ -24,32 +24,32 @@ def _agent():
     return ChatAgentLogic(llm=DummyLLM())
 
 
-def test_pregnancy():
+def test_pregnancy() -> None:
     assert _agent().classify_intent("Is this safe in second trimester?") == "pregnancy_risk"
 
 
-def test_allergy():
+def test_allergy() -> None:
     assert _agent().classify_intent("My son has a peanut allergy, is this ok?") == "allergy_question"
 
 
-def test_ingredients():
+def test_ingredients() -> None:
     assert _agent().classify_intent("What ingredients does it contain?") == "ingredient_info"
 
 
-def test_age():
+def test_age() -> None:
     assert _agent().classify_intent("Is it suitable for a 3-month-old?") == "age_appropriateness"
 
 
-def test_alternatives():
+def test_alternatives() -> None:
     assert _agent().classify_intent("Any safer alternatives you recommend?") == "alternative_products"
 
 
-def test_recall():
+def test_recall() -> None:
     assert _agent().classify_intent("Show recall details for this batch") == "recall_details"
 
 
-def test_heuristic_variants():
-    """Test various keyword variations for heuristic matching"""
+def test_heuristic_variants() -> None:
+    """Test various keyword variations for heuristic matching."""
     agent = _agent()
 
     # Pregnancy variants
@@ -65,36 +65,36 @@ def test_heuristic_variants():
     assert agent.classify_intent("2 years old safe?") == "age_appropriateness"
 
 
-def test_llm_fallback_confident():
-    """Test LLM fallback with confident response"""
+def test_llm_fallback_confident() -> None:
+    """Test LLM fallback with confident response."""
     agent = ChatAgentLogic(llm=ConfidentLLM("pregnancy_risk", 0.9))
     result = agent.classify_intent("Some unclear question about safety")
     assert result == "pregnancy_risk"
 
 
-def test_llm_fallback_low_confidence():
-    """Test LLM fallback with low confidence returns unclear_intent"""
+def test_llm_fallback_low_confidence() -> None:
+    """Test LLM fallback with low confidence returns unclear_intent."""
     agent = ChatAgentLogic(llm=ConfidentLLM("pregnancy_risk", 0.3))
     result = agent.classify_intent("Some unclear question about safety")
     assert result == "unclear_intent"
 
 
-def test_llm_fallback_invalid_intent():
-    """Test LLM fallback with invalid intent returns unclear_intent"""
+def test_llm_fallback_invalid_intent() -> None:
+    """Test LLM fallback with invalid intent returns unclear_intent."""
     agent = ChatAgentLogic(llm=ConfidentLLM("invalid_intent", 0.9))
     result = agent.classify_intent("Some unclear question about safety")
     assert result == "unclear_intent"
 
 
-def test_llm_fallback_failure():
-    """Test LLM fallback gracefully handles exceptions"""
+def test_llm_fallback_failure() -> None:
+    """Test LLM fallback gracefully handles exceptions."""
     agent = ChatAgentLogic(llm=FailingLLM())
     result = agent.classify_intent("Some unclear question about safety")
     assert result == "unclear_intent"
 
 
-def test_empty_query():
-    """Test empty or None query handling"""
+def test_empty_query() -> None:
+    """Test empty or None query handling."""
     agent = _agent()
     assert agent.classify_intent("") == "unclear_intent"
     assert agent.classify_intent(None) == "unclear_intent"

@@ -1,10 +1,10 @@
 """App Settings Endpoints for BabyShield
-Includes Crashlytics toggle and other app preferences
+Includes Crashlytics toggle and other app preferences.
 """
 
 import logging
 import uuid
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException, Request, status
@@ -19,7 +19,7 @@ router = APIRouter(prefix="/api/v1/settings", tags=["Settings"])
 
 
 class AppSettings(BaseModel):
-    """User app settings"""
+    """User app settings."""
 
     crashlytics_enabled: bool = Field(False, description="Enable crash reporting (default: false)")
     notifications_enabled: bool = Field(True, description="Enable push notifications")
@@ -30,7 +30,7 @@ class AppSettings(BaseModel):
 
 
 class UpdateSettingsRequest(BaseModel):
-    """Request to update specific settings"""
+    """Request to update specific settings."""
 
     crashlytics_enabled: bool | None = None
     notifications_enabled: bool | None = None
@@ -41,7 +41,7 @@ class UpdateSettingsRequest(BaseModel):
 
 
 class SettingsResponse(BaseModel):
-    """Settings response"""
+    """Settings response."""
 
     ok: bool = True
     settings: AppSettings
@@ -49,7 +49,7 @@ class SettingsResponse(BaseModel):
 
 
 class CrashlyticsToggleRequest(BaseModel):
-    """Specific request for Crashlytics toggle"""
+    """Specific request for Crashlytics toggle."""
 
     enabled: bool = Field(..., description="Enable or disable Crashlytics")
     user_id: str | None = Field(None, description="User ID (optional)")
@@ -64,14 +64,14 @@ settings_store: dict[str, AppSettings] = {}
 
 
 def get_user_settings(user_id: str) -> AppSettings:
-    """Get user settings or return defaults"""
+    """Get user settings or return defaults."""
     if user_id not in settings_store:
         settings_store[user_id] = AppSettings()
     return settings_store[user_id]
 
 
 def update_user_settings(user_id: str, updates: dict) -> AppSettings:
-    """Update user settings"""
+    """Update user settings."""
     settings = get_user_settings(user_id)
 
     for key, value in updates.items():
@@ -91,7 +91,7 @@ async def get_settings(
     user_id: str | None = Header(None, alias="X-User-ID"),
     device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
-    """Get current app settings
+    """Get current app settings.
 
     Returns all app settings for the user/device.
     If no user_id is provided, uses device_id or returns defaults.
@@ -119,7 +119,7 @@ async def update_settings(
     user_id: str | None = Header(None, alias="X-User-ID"),
     device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
-    """Update app settings
+    """Update app settings.
 
     Allows partial updates to app settings.
     Only provided fields will be updated.
@@ -154,7 +154,7 @@ async def toggle_crashlytics(
     toggle_request: CrashlyticsToggleRequest,
     user_agent: str | None = Header(None),
 ):
-    """Toggle Crashlytics crash reporting
+    """Toggle Crashlytics crash reporting.
 
     This endpoint specifically handles enabling/disabling Crashlytics.
     Default is OFF to respect user privacy.
@@ -212,7 +212,7 @@ async def get_crashlytics_status(
     user_id: str | None = Header(None, alias="X-User-ID"),
     device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
-    """Get current Crashlytics status
+    """Get current Crashlytics status.
 
     Returns whether Crashlytics is enabled for this user/device.
     """
@@ -244,7 +244,7 @@ async def reset_settings(
     user_id: str | None = Header(None, alias="X-User-ID"),
     device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
-    """Reset all settings to defaults
+    """Reset all settings to defaults.
 
     This will reset all app settings to their default values.
     Crashlytics will be disabled by default.
@@ -271,7 +271,7 @@ async def reset_settings(
 
 @router.get("/retry-policy")
 async def get_retry_policy():
-    """Get recommended retry policy for failed requests
+    """Get recommended retry policy for failed requests.
 
     This helps the app implement proper retry logic with exponential backoff.
     """

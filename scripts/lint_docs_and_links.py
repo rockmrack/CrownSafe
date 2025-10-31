@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lint JSON/YAML files and validate links in documentation"""
+"""Lint JSON/YAML files and validate links in documentation."""
 
 import json
 import os
@@ -35,33 +35,33 @@ REQUIRED_200 = [
 ]
 
 
-def ok(cond, msg):
-    """Print status and exit if condition is false"""
+def ok(cond, msg) -> None:
+    """Print status and exit if condition is false."""
     print(("✅ " if cond else "❌ ") + msg)
     if not cond:
         sys.exit(1)
 
 
 def load_json(path):
-    """Load and parse JSON file"""
+    """Load and parse JSON file."""
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
 def load_yaml(path):
-    """Load and parse YAML file"""
+    """Load and parse YAML file."""
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
 def find_links(text):
-    """Find all HTTP(S) links in text"""
+    """Find all HTTP(S) links in text."""
     # crude but effective: http(s) links
     return re.findall(r"https?://[^\s)>\]]+", text)
 
 
 def http_ok(url, expect=200, timeout=15):
-    """Check if URL returns expected status code"""
+    """Check if URL returns expected status code."""
     try:
         r = requests.get(url, timeout=timeout, allow_redirects=True)
         return r.status_code == expect
@@ -69,8 +69,8 @@ def http_ok(url, expect=200, timeout=15):
         return False
 
 
-def main():
-    """Main validation function"""
+def main() -> int:
+    """Main validation function."""
     print("🔍 Starting docs and links validation...")
     print("=" * 60)
 

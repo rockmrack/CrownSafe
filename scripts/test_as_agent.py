@@ -9,8 +9,8 @@ sys.path.insert(0, os.path.abspath("."))
 from core_infra.mcp_client_library.client import MCPClient
 
 
-async def test_agent_connection():
-    """Test connecting as an agent using the MCP Client"""
+async def test_agent_connection() -> None:
+    """Test connecting as an agent using the MCP Client."""
     print("\n🔍 Testing connection using MCP Client...\n")
 
     # Create a test agent

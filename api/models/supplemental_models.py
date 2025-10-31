@@ -1,13 +1,13 @@
-"""Pydantic models for supplemental data and enhanced safety reports"""
+"""Pydantic models for supplemental data and enhanced safety reports."""
 
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
 class NutritionalInfo(BaseModel):
-    """Nutritional information model"""
+    """Nutritional information model."""
 
     calories: float | None = None
     protein: float | None = None
@@ -22,7 +22,7 @@ class NutritionalInfo(BaseModel):
 
 
 class FoodDataResponse(BaseModel):
-    """Food data response model"""
+    """Food data response model."""
 
     fdc_id: str | None = None
     name: str | None = None
@@ -35,7 +35,7 @@ class FoodDataResponse(BaseModel):
 
 
 class CosmeticIngredient(BaseModel):
-    """Cosmetic ingredient model"""
+    """Cosmetic ingredient model."""
 
     name: str
     cas_number: str | None = None
@@ -45,7 +45,7 @@ class CosmeticIngredient(BaseModel):
 
 
 class CosmeticDataResponse(BaseModel):
-    """Cosmetic data response model"""
+    """Cosmetic data response model."""
 
     product_name: str | None = None
     ingredients: list[CosmeticIngredient] = Field(default_factory=list)
@@ -57,7 +57,7 @@ class CosmeticDataResponse(BaseModel):
 
 
 class ChemicalSafetyLimits(BaseModel):
-    """Chemical safety limits model"""
+    """Chemical safety limits model."""
 
     osha_pel: str | None = None  # Permissible Exposure Limit
     acgih_tlv: str | None = None  # Threshold Limit Value
@@ -66,7 +66,7 @@ class ChemicalSafetyLimits(BaseModel):
 
 
 class ChemicalDataResponse(BaseModel):
-    """Chemical data response model"""
+    """Chemical data response model."""
 
     chemical_name: str | None = None
     cas_number: str | None = None
@@ -79,7 +79,7 @@ class ChemicalDataResponse(BaseModel):
 
 
 class EnhancedSafetyReport(BaseModel):
-    """Enhanced safety report combining recall and supplemental data"""
+    """Enhanced safety report combining recall and supplemental data."""
 
     product_identifier: str
     product_name: str | None = None
@@ -107,7 +107,7 @@ class EnhancedSafetyReport(BaseModel):
 
 
 class SupplementalDataRequest(BaseModel):
-    """Request model for supplemental data"""
+    """Request model for supplemental data."""
 
     product_identifier: str
     product_name: str | None = None
@@ -118,7 +118,7 @@ class SupplementalDataRequest(BaseModel):
 
 
 class SupplementalDataResponse(BaseModel):
-    """Response model for supplemental data"""
+    """Response model for supplemental data."""
 
     success: bool
     data: EnhancedSafetyReport | None = None

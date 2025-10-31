@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Test script for Phase 3: Full Visual Workflow Integration
-Tests the complete confidence-based visual safety check system
+Tests the complete confidence-based visual safety check system.
 """
 
 import asyncio
@@ -17,8 +17,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
-async def test_high_confidence_visual_workflow():
-    """Test visual workflow with high confidence (>0.95) - should complete successfully"""
+async def test_high_confidence_visual_workflow() -> bool:
+    """Test visual workflow with high confidence (>0.95) - should complete successfully."""
     logger.info("=" * 60)
     logger.info("TEST 1: HIGH CONFIDENCE VISUAL WORKFLOW")
     logger.info("=" * 60)
@@ -80,8 +80,8 @@ async def test_high_confidence_visual_workflow():
     return True
 
 
-async def test_medium_confidence_visual_workflow():
-    """Test visual workflow with medium confidence (0.7-0.95) - should add warning"""
+async def test_medium_confidence_visual_workflow() -> bool:
+    """Test visual workflow with medium confidence (0.7-0.95) - should add warning."""
     logger.info("=" * 60)
     logger.info("TEST 2: MEDIUM CONFIDENCE VISUAL WORKFLOW")
     logger.info("=" * 60)
@@ -107,7 +107,7 @@ async def test_medium_confidence_visual_workflow():
 
         # Mock hazard analysis to check for warning
         class MockHazardAnalysis:
-            def __init__(self, *args, **kwargs):
+            def __init__(self, *args, **kwargs) -> None:
                 self.logger = logging.getLogger(__name__)
 
             async def process_task(self, inputs):
@@ -155,8 +155,8 @@ async def test_medium_confidence_visual_workflow():
     return True
 
 
-async def test_low_confidence_visual_workflow():
-    """Test visual workflow with low confidence (<0.7) - should halt workflow"""
+async def test_low_confidence_visual_workflow() -> bool:
+    """Test visual workflow with low confidence (<0.7) - should halt workflow."""
     logger.info("=" * 60)
     logger.info("TEST 3: LOW CONFIDENCE VISUAL WORKFLOW")
     logger.info("=" * 60)
@@ -226,8 +226,8 @@ async def test_low_confidence_visual_workflow():
     return True
 
 
-async def test_visual_agent_modes():
-    """Test that visual agent supports both suggestion and identify modes"""
+async def test_visual_agent_modes() -> bool:
+    """Test that visual agent supports both suggestion and identify modes."""
     logger.info("=" * 60)
     logger.info("TEST 4: VISUAL AGENT DUAL MODE SUPPORT")
     logger.info("=" * 60)
@@ -275,25 +275,24 @@ async def test_visual_agent_modes():
                                 choices = [Choice()]
 
                             return Response()
-                        else:
-                            # Identify mode
-                            class Response:
-                                class Choice:
-                                    class Message:
-                                        content = json.dumps(
-                                            {
-                                                "product_name": "Product X",
-                                                "brand": "Brand X",
-                                                "model_number": "X1",
-                                                "confidence": 0.85,
-                                            },
-                                        )
+                        # Identify mode
+                        class Response:
+                            class Choice:
+                                class Message:
+                                    content = json.dumps(
+                                        {
+                                            "product_name": "Product X",
+                                            "brand": "Brand X",
+                                            "model_number": "X1",
+                                            "confidence": 0.85,
+                                        },
+                                    )
 
-                                    message = Message()
+                                message = Message()
 
-                                choices = [Choice()]
+                            choices = [Choice()]
 
-                            return Response()
+                        return Response()
 
                 completions = Completions()
 
@@ -328,7 +327,7 @@ async def test_visual_agent_modes():
 
 
 async def main():
-    """Run all Phase 3 tests"""
+    """Run all Phase 3 tests."""
     logger.info("Starting Phase 3 Visual Workflow Tests")
     logger.info("=" * 60)
 

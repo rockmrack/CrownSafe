@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Test script for BabyShield Core Features API
-Tests alternatives, notifications, reports, and other baby-specific features
+Tests alternatives, notifications, reports, and other baby-specific features.
 """
 
 import asyncio
@@ -13,8 +13,8 @@ BASE_URL = "http://localhost:8001"  # Local testing
 # BASE_URL = "https://babyshield.cureviax.ai"  # Production
 
 
-async def test_alternatives_endpoint():
-    """Test the safe alternatives endpoint"""
+async def test_alternatives_endpoint() -> None:
+    """Test the safe alternatives endpoint."""
     print("\n" + "=" * 60)
     print("Testing Safe Alternatives Endpoint")
     print("=" * 60)
@@ -53,8 +53,8 @@ async def test_alternatives_endpoint():
             print(f"❌ Connection error: {e}")
 
 
-async def test_notification_endpoint():
-    """Test push notification sending"""
+async def test_notification_endpoint() -> None:
+    """Test push notification sending."""
     print("\n" + "=" * 60)
     print("Testing Push Notifications")
     print("=" * 60)
@@ -90,8 +90,8 @@ async def test_notification_endpoint():
             print(f"❌ Connection error: {e}")
 
 
-async def test_bulk_notification():
-    """Test bulk notification sending"""
+async def test_bulk_notification() -> None:
+    """Test bulk notification sending."""
     print("\n" + "=" * 60)
     print("Testing Bulk Notifications")
     print("=" * 60)
@@ -121,8 +121,8 @@ async def test_bulk_notification():
             print(f"❌ Connection error: {e}")
 
 
-async def test_report_generation():
-    """Test safety report generation"""
+async def test_report_generation() -> None:
+    """Test safety report generation."""
     print("\n" + "=" * 60)
     print("Testing Report Generation")
     print("=" * 60)
@@ -172,8 +172,8 @@ async def test_report_generation():
             print(f"❌ Connection error: {e}")
 
 
-async def test_onboarding():
-    """Test user onboarding/profile setup"""
+async def test_onboarding() -> None:
+    """Test user onboarding/profile setup."""
     print("\n" + "=" * 60)
     print("Testing User Onboarding")
     print("=" * 60)
@@ -216,8 +216,8 @@ async def test_onboarding():
             print(f"❌ Connection error: {e}")
 
 
-async def test_hazard_analysis():
-    """Test product hazard analysis"""
+async def test_hazard_analysis() -> None:
+    """Test product hazard analysis."""
     print("\n" + "=" * 60)
     print("Testing Hazard Analysis")
     print("=" * 60)
@@ -265,8 +265,8 @@ async def test_hazard_analysis():
             print(f"❌ Connection error: {e}")
 
 
-async def test_community_alerts():
-    """Test community alerts endpoint"""
+async def test_community_alerts() -> None:
+    """Test community alerts endpoint."""
     print("\n" + "=" * 60)
     print("Testing Community Alerts")
     print("=" * 60)
@@ -301,8 +301,8 @@ async def test_community_alerts():
             print(f"❌ Connection error: {e}")
 
 
-async def test_integrated_safety_check():
-    """Test safety check with alternatives integration"""
+async def test_integrated_safety_check() -> None:
+    """Test safety check with alternatives integration."""
     print("\n" + "=" * 60)
     print("Testing Integrated Safety Check (with Alternatives)")
     print("=" * 60)
@@ -348,8 +348,8 @@ async def test_integrated_safety_check():
             print(f"❌ Connection error: {e}")
 
 
-async def main():
-    """Run all tests"""
+async def main() -> None:
+    """Run all tests."""
     print("\n" + "🍼 BABYSHIELD CORE FEATURES API TEST SUITE 🍼".center(60, "="))
     print(f"Testing against: {BASE_URL}")
     print(f"Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")

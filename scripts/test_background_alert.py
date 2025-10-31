@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger(__name__)
 
 
-def main():
+def main() -> None:
     logger.info("--- Starting Test Scenario 4: Emergency Recall Notification ---")
 
     # --- Patch the async process_task methods that the task actually invokes ---

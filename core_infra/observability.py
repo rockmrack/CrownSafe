@@ -1,5 +1,5 @@
 """Observability and Tracing Configuration
-Distributed tracing with OpenTelemetry and Azure Application Insights
+Distributed tracing with OpenTelemetry and Azure Application Insights.
 
 Features:
 - OpenTelemetry instrumentation
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class ObservabilityManager:
-    """Manages observability, tracing, and instrumentation"""
+    """Manages observability, tracing, and instrumentation."""
 
     def __init__(self, service_name: str = "crownsafe-api") -> None:
         self.service_name = service_name
@@ -32,7 +32,7 @@ class ObservabilityManager:
         self.tracer = None
 
     def initialize(self, endpoint: str = None) -> None:
-        """Initialize OpenTelemetry tracing
+        """Initialize OpenTelemetry tracing.
 
         Args:
             endpoint: OTLP collector endpoint
@@ -59,7 +59,7 @@ class ObservabilityManager:
             logger.exception(f"Failed to initialize observability: {e}")
 
     def instrument_fastapi(self, app) -> None:
-        """Instrument FastAPI application
+        """Instrument FastAPI application.
 
         Args:
             app: FastAPI application instance
@@ -72,7 +72,7 @@ class ObservabilityManager:
             logger.exception(f"FastAPI instrumentation failed: {e}")
 
     def instrument_sqlalchemy(self, engine) -> None:
-        """Instrument SQLAlchemy database engine
+        """Instrument SQLAlchemy database engine.
 
         Args:
             engine: SQLAlchemy engine
@@ -85,7 +85,7 @@ class ObservabilityManager:
             logger.exception(f"SQLAlchemy instrumentation failed: {e}")
 
     def instrument_redis(self) -> None:
-        """Instrument Redis client"""
+        """Instrument Redis client."""
         try:
             RedisInstrumentor().instrument()
             logger.info("Redis instrumentation enabled")
@@ -93,7 +93,7 @@ class ObservabilityManager:
             logger.exception(f"Redis instrumentation failed: {e}")
 
     def instrument_requests(self) -> None:
-        """Instrument HTTP requests library"""
+        """Instrument HTTP requests library."""
         try:
             RequestsInstrumentor().instrument()
             logger.info("Requests instrumentation enabled")
@@ -101,7 +101,7 @@ class ObservabilityManager:
             logger.exception(f"Requests instrumentation failed: {e}")
 
     def create_span(self, name: str, attributes: dict[str, str] = None):
-        """Create a custom span for tracing
+        """Create a custom span for tracing.
 
         Args:
             name: Span name
@@ -126,14 +126,14 @@ class ObservabilityManager:
 
 
 class AzureMonitorIntegration:
-    """Integration with Azure Application Insights"""
+    """Integration with Azure Application Insights."""
 
     def __init__(self, connection_string: str = None) -> None:
         self.connection_string = connection_string
         self.client = None
 
     def initialize(self) -> None:
-        """Initialize Azure Application Insights"""
+        """Initialize Azure Application Insights."""
         if not self.connection_string:
             logger.warning("Azure Monitor connection string not configured")
             return
@@ -155,7 +155,7 @@ class AzureMonitorIntegration:
             logger.exception(f"Azure Monitor initialization failed: {e}")
 
     def log_custom_event(self, event_name: str, properties: dict = None) -> None:
-        """Log custom event to Application Insights
+        """Log custom event to Application Insights.
 
         Args:
             event_name: Event name
@@ -169,7 +169,7 @@ class AzureMonitorIntegration:
             logger.exception(f"Failed to log custom event: {e}")
 
     def log_custom_metric(self, metric_name: str, value: float, properties: dict = None) -> None:
-        """Log custom metric to Application Insights
+        """Log custom metric to Application Insights.
 
         Args:
             metric_name: Metric name
@@ -192,7 +192,7 @@ _observability_manager = None
 
 
 def get_observability_manager() -> ObservabilityManager:
-    """Get global observability manager instance"""
+    """Get global observability manager instance."""
     global _observability_manager
     if _observability_manager is None:
         _observability_manager = ObservabilityManager()

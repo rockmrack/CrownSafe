@@ -1,5 +1,5 @@
 """Strict CORS configuration for production security
-Only allows specific origins, no wildcards
+Only allows specific origins, no wildcards.
 """
 
 import logging
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_allowed_origins() -> list[str]:
-    """Get allowed CORS origins from environment
+    """Get allowed CORS origins from environment.
 
     Returns:
         List of allowed origin URLs
@@ -67,7 +67,7 @@ def add_strict_cors(
     allow_credentials: bool = False,
     max_age: int = 600,
 ) -> None:
-    """Add strict CORS configuration to FastAPI app
+    """Add strict CORS configuration to FastAPI app.
 
     Args:
         app: FastAPI application
@@ -117,7 +117,7 @@ def add_strict_cors(
 
 
 class CORSConfig:
-    """CORS configuration settings"""
+    """CORS configuration settings."""
 
     # Production origins
     PRODUCTION_ORIGINS = [
@@ -149,7 +149,7 @@ class CORSConfig:
 
     @classmethod
     def get_origins_for_environment(cls, environment: str) -> list[str]:
-        """Get appropriate origins based on environment
+        """Get appropriate origins based on environment.
 
         Args:
             environment: Environment name (production, staging, development)
@@ -162,18 +162,17 @@ class CORSConfig:
 
         if env == "production":
             return cls.PRODUCTION_ORIGINS
-        elif env == "staging":
+        if env == "staging":
             return cls.PRODUCTION_ORIGINS + cls.STAGING_ORIGINS
-        elif env in ("development", "dev", "local"):
+        if env in ("development", "dev", "local"):
             return cls.PRODUCTION_ORIGINS + cls.STAGING_ORIGINS + cls.DEVELOPMENT_ORIGINS
-        else:
-            # Unknown environment - be restrictive
-            logger.warning(f"Unknown environment: {environment}")
-            return cls.PRODUCTION_ORIGINS
+        # Unknown environment - be restrictive
+        logger.warning(f"Unknown environment: {environment}")
+        return cls.PRODUCTION_ORIGINS
 
     @classmethod
     def validate_origin(cls, origin: str) -> bool:
-        """Validate if an origin is allowed
+        """Validate if an origin is allowed.
 
         Args:
             origin: Origin URL to validate
@@ -193,7 +192,7 @@ class CORSConfig:
 
 def create_cors_middleware(app: FastAPI) -> None:
     """Factory function to create CORS middleware
-    Alternative to add_strict_cors for more control
+    Alternative to add_strict_cors for more control.
     """
     environment = os.getenv("ENVIRONMENT", "production")
 

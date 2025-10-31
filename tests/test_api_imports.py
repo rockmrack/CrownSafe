@@ -1,11 +1,11 @@
-"""Tests for API module imports"""
+"""Tests for API module imports."""
 
 import unittest
 
 
 class TestAPIModules(unittest.TestCase):
-    def test_health_endpoints_import(self):
-        """Test health endpoints can be imported"""
+    def test_health_endpoints_import(self) -> None:
+        """Test health endpoints can be imported."""
         try:
             from api import health_endpoints
 
@@ -13,8 +13,8 @@ class TestAPIModules(unittest.TestCase):
         except ImportError:
             self.skipTest("Module not available")
 
-    def test_auth_endpoints_import(self):
-        """Test auth endpoints can be imported"""
+    def test_auth_endpoints_import(self) -> None:
+        """Test auth endpoints can be imported."""
         try:
             from api import auth_endpoints
 
@@ -22,8 +22,8 @@ class TestAPIModules(unittest.TestCase):
         except ImportError:
             self.skipTest("Module not available")
 
-    def test_barcode_endpoints_import(self):
-        """Test barcode endpoints can be imported"""
+    def test_barcode_endpoints_import(self) -> None:
+        """Test barcode endpoints can be imported."""
         try:
             from api import barcode_endpoints
 
@@ -31,8 +31,8 @@ class TestAPIModules(unittest.TestCase):
         except ImportError:
             self.skipTest("Module not available")
 
-    def test_main_crownsafe_import(self):
-        """Test main babyshield module can be imported"""
+    def test_main_crownsafe_import(self) -> None:
+        """Test main babyshield module can be imported."""
         try:
             from api import main_crownsafe
 

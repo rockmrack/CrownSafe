@@ -1,5 +1,5 @@
 """Pagination utilities for BabyShield
-Prevents memory issues with large datasets
+Prevents memory issues with large datasets.
 """
 
 import logging
@@ -15,7 +15,7 @@ T = TypeVar("T")
 
 
 class PaginationParams(BaseModel):
-    """Pagination parameters"""
+    """Pagination parameters."""
 
     skip: int = Query(0, ge=0, le=10000, description="Number of items to skip")
     limit: int = Query(100, ge=1, le=1000, description="Number of items to return")
@@ -26,15 +26,15 @@ class PaginationParams(BaseModel):
 
     @property
     def page(self) -> int:
-        """Calculate page number (1-based)"""
+        """Calculate page number (1-based)."""
         return (self.skip // self.limit) + 1
 
     def next_params(self) -> dict[str, int]:
-        """Get params for next page"""
+        """Get params for next page."""
         return {"skip": self.skip + self.limit, "limit": self.limit}
 
     def prev_params(self) -> dict[str, int] | None:
-        """Get params for previous page"""
+        """Get params for previous page."""
         if self.skip == 0:
             return None
         prev_skip = max(0, self.skip - self.limit)
@@ -42,7 +42,7 @@ class PaginationParams(BaseModel):
 
 
 class PaginatedResponse(BaseModel, Generic[T]):
-    """Generic paginated response"""
+    """Generic paginated response."""
 
     items: list[T]
     total: int
@@ -58,7 +58,7 @@ class PaginatedResponse(BaseModel, Generic[T]):
 
     @classmethod
     def create(cls, items: list[T], total: int, params: PaginationParams):
-        """Create paginated response"""
+        """Create paginated response."""
         pages = (total + params.limit - 1) // params.limit  # Ceiling division
 
         return cls(
@@ -75,7 +75,7 @@ class PaginatedResponse(BaseModel, Generic[T]):
 
 def paginate_query(query: SQLQuery, params: PaginationParams) -> tuple[list, int]:
     """Paginate a SQLAlchemy query
-    Returns (items, total_count)
+    Returns (items, total_count).
     """
     # Get total count before pagination
     total = query.count()
@@ -87,19 +87,19 @@ def paginate_query(query: SQLQuery, params: PaginationParams) -> tuple[list, int
 
 
 async def paginate_async(query: SQLQuery, params: PaginationParams) -> PaginatedResponse:
-    """Async pagination helper"""
+    """Async pagination helper."""
     items, total = paginate_query(query, params)
     return PaginatedResponse.create(items, total, params)
 
 
 class CursorPaginationParams(BaseModel):
-    """Cursor-based pagination for better performance"""
+    """Cursor-based pagination for better performance."""
 
     cursor: str | None = Query(None, description="Cursor for next page")
     limit: int = Query(100, ge=1, le=1000, description="Number of items")
 
     def decode_cursor(self) -> int | None:
-        """Decode cursor to get last ID"""
+        """Decode cursor to get last ID."""
         if not self.cursor:
             return None
         try:
@@ -113,14 +113,14 @@ class CursorPaginationParams(BaseModel):
 
     @staticmethod
     def encode_cursor(last_id: int) -> str:
-        """Encode last ID as cursor"""
+        """Encode last ID as cursor."""
         import base64
 
         return base64.b64encode(str(last_id).encode()).decode()
 
 
 class CursorPaginatedResponse(BaseModel, Generic[T]):
-    """Cursor-based paginated response"""
+    """Cursor-based paginated response."""
 
     items: list[T]
     next_cursor: str | None
@@ -135,7 +135,7 @@ def paginate_with_cursor(
     query: SQLQuery, params: CursorPaginationParams, id_field: str = "id",
 ) -> tuple[list, str | None]:
     """Cursor-based pagination for large datasets
-    More efficient than offset/limit for deep pagination
+    More efficient than offset/limit for deep pagination.
     """
     # Decode cursor to get starting point
     last_id = params.decode_cursor()
@@ -166,7 +166,7 @@ def paginate_with_cursor(
 
 
 def paginate_list(items: list[T], params: PaginationParams) -> PaginatedResponse[T]:
-    """Paginate a Python list"""
+    """Paginate a Python list."""
     total = len(items)
     start = params.skip
     end = params.skip + params.limit
@@ -176,7 +176,7 @@ def paginate_list(items: list[T], params: PaginationParams) -> PaginatedResponse
 
 
 def create_pagination_links(base_url: str, params: PaginationParams, total: int) -> dict[str, str | None]:
-    """Create HATEOAS links for pagination"""
+    """Create HATEOAS links for pagination."""
     links = {
         "self": f"{base_url}?skip={params.skip}&limit={params.limit}",
         "first": f"{base_url}?skip=0&limit={params.limit}",
@@ -209,7 +209,7 @@ from fastapi import Depends  # noqa: E402
 
 
 def paginated(model_class):
-    """Decorator to automatically paginate endpoint responses"""
+    """Decorator to automatically paginate endpoint responses."""
 
     def decorator(func):
         @wraps(func)

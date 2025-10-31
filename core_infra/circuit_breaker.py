@@ -1,5 +1,5 @@
 """Circuit Breaker Pattern for BabyShield API
-Prevents cascade failures and provides graceful degradation
+Prevents cascade failures and provides graceful degradation.
 """
 
 import asyncio
@@ -71,12 +71,12 @@ for service, config in BREAKER_CONFIGS.items():
 
 # Listener functions for circuit breaker events
 def breaker_opened(breaker) -> None:
-    """Called when circuit breaker opens"""
+    """Called when circuit breaker opens."""
     logger.error(f"Circuit breaker {breaker.name} opened! Service is failing.")
 
 
 def breaker_closed(breaker) -> None:
-    """Called when circuit breaker closes"""
+    """Called when circuit breaker closes."""
     logger.info(f"Circuit breaker {breaker.name} closed. Service recovered.")
 
 
@@ -87,7 +87,7 @@ for breaker in breakers.values():
 
 # Decorator for applying circuit breaker to functions
 def with_circuit_breaker(service_name: str, fallback=None):
-    """Decorator to apply circuit breaker to a function
+    """Decorator to apply circuit breaker to a function.
 
     Args:
         service_name: Name of the service (must be in BREAKER_CONFIGS)
@@ -107,15 +107,13 @@ def with_circuit_breaker(service_name: str, fallback=None):
             try:
                 if asyncio.iscoroutinefunction(func):
                     return await breaker(func)(*args, **kwargs)
-                else:
-                    return breaker(func)(*args, **kwargs)
+                return breaker(func)(*args, **kwargs)
             except CircuitBreakerError:
                 logger.warning(f"Circuit breaker {service_name} is open")
                 if fallback:
                     if asyncio.iscoroutinefunction(fallback):
                         return await fallback(*args, **kwargs)
-                    else:
-                        return fallback(*args, **kwargs)
+                    return fallback(*args, **kwargs)
                 raise
 
         @wraps(func)
@@ -130,8 +128,7 @@ def with_circuit_breaker(service_name: str, fallback=None):
 
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
-        else:
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 
@@ -139,23 +136,22 @@ def with_circuit_breaker(service_name: str, fallback=None):
 # Specific circuit breakers for common operations
 @with_circuit_breaker("database")
 def database_query(query_func: Callable, *args, **kwargs):
-    """Execute a database query with circuit breaker protection"""
+    """Execute a database query with circuit breaker protection."""
     return query_func(*args, **kwargs)
 
 
 @with_circuit_breaker("redis")
 def redis_operation(operation_func: Callable, *args, **kwargs):
-    """Execute a Redis operation with circuit breaker protection"""
+    """Execute a Redis operation with circuit breaker protection."""
     return operation_func(*args, **kwargs)
 
 
 @with_circuit_breaker("external_api")
 async def external_api_call(api_func: Callable, *args, **kwargs):
-    """Make an external API call with circuit breaker protection"""
+    """Make an external API call with circuit breaker protection."""
     if asyncio.iscoroutinefunction(api_func):
         return await api_func(*args, **kwargs)
-    else:
-        return api_func(*args, **kwargs)
+    return api_func(*args, **kwargs)
 
 
 # Retry decorator with exponential backoff
@@ -165,7 +161,7 @@ def with_retry(
     wait_exponential_max: int = 10,
     retry_on: tuple = (Exception,),
 ):
-    """Decorator for retrying operations with exponential backoff
+    """Decorator for retrying operations with exponential backoff.
 
     Args:
         max_attempts: Maximum number of retry attempts
@@ -183,7 +179,7 @@ def with_retry(
 
 # Combined decorator for circuit breaker + retry
 def resilient_operation(service_name: str, max_attempts: int = 3, fallback=None):
-    """Combine circuit breaker with retry logic
+    """Combine circuit breaker with retry logic.
 
     Args:
         service_name: Name of the service
@@ -204,7 +200,7 @@ def resilient_operation(service_name: str, max_attempts: int = 3, fallback=None)
 
 # Status checking functions
 def get_circuit_status(service_name: str) -> dict[str, Any]:
-    """Get the current status of a circuit breaker"""
+    """Get the current status of a circuit breaker."""
     if service_name not in breakers:
         return {"error": f"Unknown service: {service_name}"}
 
@@ -221,12 +217,12 @@ def get_circuit_status(service_name: str) -> dict[str, Any]:
 
 
 def get_all_circuit_status() -> dict[str, dict[str, Any]]:
-    """Get status of all circuit breakers"""
+    """Get status of all circuit breakers."""
     return {service: get_circuit_status(service) for service in breakers.keys()}
 
 
 def reset_circuit(service_name: str) -> bool:
-    """Manually reset a circuit breaker"""
+    """Manually reset a circuit breaker."""
     if service_name not in breakers:
         return False
 
@@ -237,7 +233,7 @@ def reset_circuit(service_name: str) -> bool:
 
 # Fallback functions for common operations
 async def database_fallback(*args, **kwargs):
-    """Fallback when database is unavailable"""
+    """Fallback when database is unavailable."""
     logger.warning("Database circuit open, using fallback")
     return {
         "error": "Database temporarily unavailable",
@@ -247,14 +243,14 @@ async def database_fallback(*args, **kwargs):
 
 
 async def redis_fallback(*args, **kwargs) -> None:
-    """Fallback when Redis is unavailable"""
+    """Fallback when Redis is unavailable."""
     logger.warning("Redis circuit open, using fallback")
     # Could return cached data or proceed without cache
     return None
 
 
 async def external_api_fallback(*args, **kwargs):
-    """Fallback when external API is unavailable"""
+    """Fallback when external API is unavailable."""
     logger.warning("External API circuit open, using fallback")
     return {
         "error": "External service temporarily unavailable",
@@ -266,21 +262,21 @@ async def external_api_fallback(*args, **kwargs):
 # Example usage functions
 @resilient_operation("database", max_attempts=3, fallback=database_fallback)
 async def safe_database_query(query: str) -> None:
-    """Example of a protected database query"""
+    """Example of a protected database query."""
     # Your database query logic here
     pass
 
 
 @resilient_operation("external_api", max_attempts=2, fallback=external_api_fallback)
 async def safe_api_call(url: str) -> None:
-    """Example of a protected API call"""
+    """Example of a protected API call."""
     # Your API call logic here
     pass
 
 
 # Health check for circuit breakers
 def check_circuits_health() -> dict[str, Any]:
-    """Check health of all circuit breakers"""
+    """Check health of all circuit breakers."""
     all_status = get_all_circuit_status()
 
     open_circuits = [service for service, status in all_status.items() if status.get("state") == "open"]

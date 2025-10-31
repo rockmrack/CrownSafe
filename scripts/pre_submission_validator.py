@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """BabyShield Pre-Submission Validator
-Comprehensive validation before app store submission
+Comprehensive validation before app store submission.
 """
 
 import json
@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 class SubmissionValidator:
-    def __init__(self, base_path: str = "."):
+    def __init__(self, base_path: str = ".") -> None:
         self.base_path = Path(base_path)
         self.errors = []
         self.warnings = []
@@ -20,25 +20,25 @@ class SubmissionValidator:
         self.checks_passed = 0
         self.checks_failed = 0
 
-    def log_success(self, message: str):
-        """Log a success message"""
+    def log_success(self, message: str) -> None:
+        """Log a success message."""
         self.successes.append(message)
         self.checks_passed += 1
         print(f"  ✅ {message}")
 
-    def log_error(self, message: str):
-        """Log an error message"""
+    def log_error(self, message: str) -> None:
+        """Log an error message."""
         self.errors.append(message)
         self.checks_failed += 1
         print(f"  ❌ {message}")
 
-    def log_warning(self, message: str):
-        """Log a warning message"""
+    def log_warning(self, message: str) -> None:
+        """Log a warning message."""
         self.warnings.append(message)
         print(f"  ⚠️  {message}")
 
     def validate_json_file(self, path: Path, required_fields: list[str] = None) -> bool:
-        """Validate a JSON file"""
+        """Validate a JSON file."""
         if not path.exists():
             self.log_error(f"Missing file: {path}")
             return False
@@ -63,7 +63,7 @@ class SubmissionValidator:
             return False
 
     def validate_text_file(self, path: Path, max_length: int = None, required_content: list[str] = None) -> bool:
-        """Validate a text file"""
+        """Validate a text file."""
         if not path.exists():
             self.log_error(f"Missing file: {path}")
             return False
@@ -88,16 +88,15 @@ class SubmissionValidator:
             return False
 
     def validate_url(self, url: str, name: str) -> bool:
-        """Validate that a URL is accessible"""
+        """Validate that a URL is accessible."""
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "BabyShield/1.0"})
             with urllib.request.urlopen(req, timeout=10) as response:
                 if response.status == 200:
                     self.log_success(f"{name} accessible: {url}")
                     return True
-                else:
-                    self.log_warning(f"{name} returned status {response.status}: {url}")
-                    return False
+                self.log_warning(f"{name} returned status {response.status}: {url}")
+                return False
         except urllib.error.URLError as e:
             self.log_error(f"{name} not accessible: {url} - {e}")
             return False
@@ -105,8 +104,8 @@ class SubmissionValidator:
             self.log_warning(f"Could not verify {name}: {url} - {e}")
             return False
 
-    def check_metadata_files(self):
-        """Check all metadata files"""
+    def check_metadata_files(self) -> None:
+        """Check all metadata files."""
         print("\n📋 Checking Metadata Files...")
 
         # Apple metadata
@@ -143,8 +142,8 @@ class SubmissionValidator:
         google_privacy = self.base_path / "docs/app_review/google_data_safety.json"
         self.validate_json_file(google_privacy)
 
-    def check_descriptions(self):
-        """Check description files"""
+    def check_descriptions(self) -> None:
+        """Check description files."""
         print("\n📝 Checking Descriptions...")
 
         # Short tagline
@@ -159,8 +158,8 @@ class SubmissionValidator:
             required_content=["not medical advice", "privacy", "FDA", "CPSC"],
         )
 
-    def check_assets(self):
-        """Check asset files"""
+    def check_assets(self) -> None:
+        """Check asset files."""
         print("\n🎨 Checking Assets...")
 
         assets_path = self.base_path / "assets/store"
@@ -209,8 +208,8 @@ class SubmissionValidator:
         else:
             self.log_error(f"Android phone screenshots: {phone_count} (need minimum 2)")
 
-    def check_urls(self):
-        """Check all URLs are accessible"""
+    def check_urls(self) -> None:
+        """Check all URLs are accessible."""
         print("\n🌐 Checking URLs...")
 
         urls_to_check = [
@@ -224,8 +223,8 @@ class SubmissionValidator:
         for name, url in urls_to_check:
             self.validate_url(url, name)
 
-    def check_api_endpoints(self):
-        """Check API endpoints"""
+    def check_api_endpoints(self) -> None:
+        """Check API endpoints."""
         print("\n🔌 Checking API Endpoints...")
 
         base_url = "https://babyshield.cureviax.ai/api/v1"
@@ -239,8 +238,8 @@ class SubmissionValidator:
         for name, url in endpoints:
             self.validate_url(url, name)
 
-    def check_compliance(self):
-        """Check compliance requirements"""
+    def check_compliance(self) -> None:
+        """Check compliance requirements."""
         print("\n⚖️ Checking Compliance...")
 
         # Check for required disclaimers
@@ -270,8 +269,8 @@ class SubmissionValidator:
             else:
                 self.log_warning("Age rating should be 4+")
 
-    def check_review_notes(self):
-        """Check review notes completeness"""
+    def check_review_notes(self) -> None:
+        """Check review notes completeness."""
         print("\n📄 Checking Review Notes...")
 
         # Apple review notes
@@ -291,8 +290,8 @@ class SubmissionValidator:
         google_notes = self.base_path / "docs/store/google/review_notes.md"
         self.validate_text_file(google_notes, required_content=["OAuth", "test", "privacy"])
 
-    def check_bundle_identifiers(self):
-        """Check bundle identifiers consistency"""
+    def check_bundle_identifiers(self) -> None:
+        """Check bundle identifiers consistency."""
         print("\n🔤 Checking Bundle Identifiers...")
 
         bundle_id = "ai.cureviax.babyshield"
@@ -320,7 +319,7 @@ class SubmissionValidator:
                 self.log_error(f"Google package name mismatch: {google_data.get('packageName')} != {bundle_id}")
 
     def generate_submission_report(self):
-        """Generate a submission readiness report"""
+        """Generate a submission readiness report."""
         report_path = self.base_path / "SUBMISSION_READINESS_REPORT.md"
 
         report = f"""# 📊 BabyShield Submission Readiness Report
@@ -415,8 +414,8 @@ python scripts/pre_submission_validator.py
 
         return report_path
 
-    def run_all_checks(self):
-        """Run all validation checks"""
+    def run_all_checks(self) -> int:
+        """Run all validation checks."""
         print("=" * 60)
         print("🔍 BabyShield Pre-Submission Validator")
         print("=" * 60)
@@ -465,7 +464,7 @@ python scripts/pre_submission_validator.py
 
 
 def main():
-    """Main entry point"""
+    """Main entry point."""
     validator = SubmissionValidator()
     return validator.run_all_checks()
 

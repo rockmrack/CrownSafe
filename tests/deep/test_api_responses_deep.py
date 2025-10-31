@@ -1,5 +1,5 @@
 """Deep API Response Tests
-Comprehensive testing of API response formats, headers, and error handling
+Comprehensive testing of API response formats, headers, and error handling.
 """
 
 import json
@@ -11,10 +11,10 @@ from api.main_crownsafe import app
 
 
 class TestAPIResponsesDeep:
-    """Deep tests for API response formats and consistency"""
+    """Deep tests for API response formats and consistency."""
 
-    def test_json_response_format(self):
-        """Test that all JSON responses are valid"""
+    def test_json_response_format(self) -> None:
+        """Test that all JSON responses are valid."""
         client = TestClient(app)
         r = client.get("/healthz")
 
@@ -25,8 +25,8 @@ class TestAPIResponsesDeep:
         except json.JSONDecodeError:
             pytest.fail("Response is not valid JSON")
 
-    def test_response_content_encoding(self):
-        """Test response content encoding"""
+    def test_response_content_encoding(self) -> None:
+        """Test response content encoding."""
         client = TestClient(app)
         r = client.get("/healthz")
 
@@ -34,8 +34,8 @@ class TestAPIResponsesDeep:
         encoding = r.encoding or "utf-8"
         assert encoding.lower() in ["utf-8", "utf8"]
 
-    def test_response_status_codes(self):
-        """Test various HTTP status codes"""
+    def test_response_status_codes(self) -> None:
+        """Test various HTTP status codes."""
         client = TestClient(app)
 
         # 200 OK
@@ -50,8 +50,8 @@ class TestAPIResponsesDeep:
         r = client.post("/healthz")
         assert r.status_code in [405, 200]  # Some health endpoints allow POST
 
-    def test_error_response_structure(self):
-        """Test that error responses have consistent structure"""
+    def test_error_response_structure(self) -> None:
+        """Test that error responses have consistent structure."""
         client = TestClient(app)
         r = client.get("/api/v1/nonexistent")
 
@@ -60,8 +60,8 @@ class TestAPIResponsesDeep:
             # Error response should have error field or detail field
             assert "error" in body or "detail" in body or "message" in body
 
-    def test_response_headers_consistency(self):
-        """Test that response headers are consistent"""
+    def test_response_headers_consistency(self) -> None:
+        """Test that response headers are consistent."""
         client = TestClient(app)
 
         endpoints = ["/healthz", "/api/v1/chat/conversation"]
@@ -75,8 +75,8 @@ class TestAPIResponsesDeep:
             # All responses should have content-type
             assert "content-type" in r.headers or "Content-Type" in r.headers
 
-    def test_response_time_header(self):
-        """Test if response time header exists"""
+    def test_response_time_header(self) -> None:
+        """Test if response time header exists."""
         client = TestClient(app)
         r = client.get("/healthz")
 
@@ -86,8 +86,8 @@ class TestAPIResponsesDeep:
         if "x-response-time" in headers:
             assert float(headers["x-response-time"]) >= 0
 
-    def test_cache_control_headers(self):
-        """Test cache control headers are set appropriately"""
+    def test_cache_control_headers(self) -> None:
+        """Test cache control headers are set appropriately."""
         client = TestClient(app)
         r = client.get("/healthz")
 
@@ -101,8 +101,8 @@ class TestAPIResponsesDeep:
                 "private",
             ]
 
-    def test_compression_support(self):
-        """Test if response compression is supported"""
+    def test_compression_support(self) -> None:
+        """Test if response compression is supported."""
         client = TestClient(app)
         r = client.get("/healthz", headers={"Accept-Encoding": "gzip, deflate"})
 
@@ -112,8 +112,8 @@ class TestAPIResponsesDeep:
         if "content-encoding" in headers:
             assert headers["content-encoding"] in ["gzip", "deflate", "br"]
 
-    def test_vary_header(self):
-        """Test Vary header for caching"""
+    def test_vary_header(self) -> None:
+        """Test Vary header for caching."""
         client = TestClient(app)
         r = client.options(
             "/api/v1/chat/conversation",
@@ -128,8 +128,8 @@ class TestAPIResponsesDeep:
         if "vary" in headers:
             assert "origin" in headers["vary"].lower()
 
-    def test_strict_transport_security(self):
-        """Test HSTS header is present (production only - TestClient limitation)"""
+    def test_strict_transport_security(self) -> None:
+        """Test HSTS header is present (production only - TestClient limitation)."""
         client = TestClient(app)
         r = client.get("/healthz")
 
@@ -140,8 +140,8 @@ class TestAPIResponsesDeep:
             assert "max-age" in headers["strict-transport-security"]
         # If not present in test, that's ok - middleware adds it in production
 
-    def test_x_content_type_options(self):
-        """Test X-Content-Type-Options header (production only - TestClient limitation)"""
+    def test_x_content_type_options(self) -> None:
+        """Test X-Content-Type-Options header (production only - TestClient limitation)."""
         client = TestClient(app)
         r = client.get("/healthz")
 
@@ -151,8 +151,8 @@ class TestAPIResponsesDeep:
             assert headers["x-content-type-options"] == "nosniff"
         # If not present in test, that's ok - middleware adds it in production
 
-    def test_x_frame_options(self):
-        """Test X-Frame-Options header for clickjacking protection (production only)"""
+    def test_x_frame_options(self) -> None:
+        """Test X-Frame-Options header for clickjacking protection (production only)."""
         client = TestClient(app)
         r = client.get("/healthz")
 
@@ -162,8 +162,8 @@ class TestAPIResponsesDeep:
             assert headers["x-frame-options"] in ["DENY", "SAMEORIGIN"]
         # If not present in test, that's ok - middleware adds it in production
 
-    def test_content_security_policy(self):
-        """Test Content-Security-Policy header (production only - TestClient limitation)"""
+    def test_content_security_policy(self) -> None:
+        """Test Content-Security-Policy header (production only - TestClient limitation)."""
         client = TestClient(app)
         r = client.get("/healthz")
 
@@ -176,8 +176,8 @@ class TestAPIResponsesDeep:
             assert len(csp) > 0
         # If not present in test, that's ok - middleware adds it in production
 
-    def test_referrer_policy(self):
-        """Test Referrer-Policy header"""
+    def test_referrer_policy(self) -> None:
+        """Test Referrer-Policy header."""
         client = TestClient(app)
         r = client.get("/healthz")
 
@@ -191,8 +191,8 @@ class TestAPIResponsesDeep:
                 "strict-origin-when-cross-origin",
             ]
 
-    def test_permissions_policy(self):
-        """Test Permissions-Policy header"""
+    def test_permissions_policy(self) -> None:
+        """Test Permissions-Policy header."""
         client = TestClient(app)
         r = client.get("/healthz")
 
@@ -202,8 +202,8 @@ class TestAPIResponsesDeep:
             # Good practice to have
             assert True
 
-    def test_response_body_size(self):
-        """Test that response body sizes are reasonable"""
+    def test_response_body_size(self) -> None:
+        """Test that response body sizes are reasonable."""
         client = TestClient(app)
         r = client.get("/healthz")
 
@@ -211,8 +211,8 @@ class TestAPIResponsesDeep:
         # Health endpoint should be small
         assert body_size < 10000  # Less than 10KB
 
-    def test_json_response_encoding(self):
-        """Test that JSON responses are properly encoded"""
+    def test_json_response_encoding(self) -> None:
+        """Test that JSON responses are properly encoded."""
         client = TestClient(app)
         r = client.get("/healthz")
 
@@ -221,8 +221,8 @@ class TestAPIResponsesDeep:
         json_str = json.dumps(body)
         assert len(json_str) > 0
 
-    def test_empty_response_handling(self):
-        """Test handling of endpoints with no body"""
+    def test_empty_response_handling(self) -> None:
+        """Test handling of endpoints with no body."""
         client = TestClient(app)
         r = client.options("/api/v1/chat/conversation")
 
@@ -235,8 +235,8 @@ class TestAPIResponsesDeep:
                 # Empty body is ok for OPTIONS
                 assert True
 
-    def test_response_consistency_multiple_requests(self):
-        """Test that repeated requests give consistent response structure"""
+    def test_response_consistency_multiple_requests(self) -> None:
+        """Test that repeated requests give consistent response structure."""
         client = TestClient(app)
 
         responses = []
@@ -254,8 +254,8 @@ class TestAPIResponsesDeep:
         for body in bodies[1:]:
             assert set(body.keys()) == first_keys
 
-    def test_request_id_propagation(self):
-        """Test that request IDs are propagated through responses"""
+    def test_request_id_propagation(self) -> None:
+        """Test that request IDs are propagated through responses."""
         client = TestClient(app)
 
         # Send custom request ID

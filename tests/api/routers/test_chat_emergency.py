@@ -9,9 +9,9 @@ from api.routers.chat import EMERGENCY_TERMS, build_suggested_questions, looks_e
 
 
 class TestEmergencyDetection:
-    """Tests for emergency keyword detection"""
+    """Tests for emergency keyword detection."""
 
-    def test_emergency_terms_detection(self):
+    def test_emergency_terms_detection(self) -> None:
         # Test positive cases
         emergency_phrases = [
             "My baby is choking",
@@ -33,7 +33,7 @@ class TestEmergencyDetection:
             assert looks_emergency(phrase), f"Should detect emergency in: {phrase}"
             assert looks_emergency(phrase.upper()), f"Should detect emergency (uppercase) in: {phrase}"
 
-    def test_non_emergency_phrases(self):
+    def test_non_emergency_phrases(self) -> None:
         # Test negative cases
         normal_phrases = [
             "Is this safe in pregnancy?",
@@ -48,7 +48,7 @@ class TestEmergencyDetection:
         for phrase in normal_phrases:
             assert not looks_emergency(phrase), f"Should NOT detect emergency in: {phrase}"
 
-    def test_emergency_terms_completeness(self):
+    def test_emergency_terms_completeness(self) -> None:
         # Ensure we have comprehensive coverage
         expected_terms = {
             "choking",
@@ -74,47 +74,47 @@ class TestEmergencyDetection:
         for term in expected_terms:
             assert any(term in emergency_term for emergency_term in EMERGENCY_TERMS), f"Missing emergency term: {term}"
 
-    def test_empty_or_none_input(self):
+    def test_empty_or_none_input(self) -> None:
         assert not looks_emergency("")
         assert not looks_emergency(None)
         assert not looks_emergency("   ")
 
 
 class TestSuggestedQuestions:
-    """Tests for suggested questions builder"""
+    """Tests for suggested questions builder."""
 
-    def test_cheese_category_suggestions(self):
+    def test_cheese_category_suggestions(self) -> None:
         questions = build_suggested_questions("cheese", {})
         assert "Is this safe in pregnancy?" in questions
         assert "Check pasteurisation?" in questions
         assert len(questions) <= 4
 
-    def test_toy_category_suggestions(self):
+    def test_toy_category_suggestions(self) -> None:
         questions = build_suggested_questions("toy", {})
         assert "What age is this for?" in questions
         assert "Any small parts?" in questions
         assert len(questions) <= 4
 
-    def test_cosmetic_category_suggestions(self):
+    def test_cosmetic_category_suggestions(self) -> None:
         questions = build_suggested_questions("cosmetic", {})
         assert "Safe during pregnancy?" in questions
         assert "Any harsh ingredients?" in questions
         assert len(questions) <= 4
 
-    def test_food_category_suggestions(self):
+    def test_food_category_suggestions(self) -> None:
         questions = build_suggested_questions("food", {})
         assert "Any allergen concerns?" in questions
         assert "Safe for kids?" in questions
         assert len(questions) <= 4
 
-    def test_generic_category_suggestions(self):
+    def test_generic_category_suggestions(self) -> None:
         questions = build_suggested_questions("unknown", {})
         assert "Is this safe in pregnancy?" in questions
         assert "Any allergy concerns?" in questions
         assert "What age is this for?" in questions
         assert len(questions) <= 4
 
-    def test_profile_based_suggestions(self):
+    def test_profile_based_suggestions(self) -> None:
         # Test pregnant user
         profile_pregnant = {"is_pregnant": True}
         questions = build_suggested_questions("general", profile_pregnant)
@@ -125,12 +125,12 @@ class TestSuggestedQuestions:
         questions = build_suggested_questions("general", profile_allergies)
         assert "Safe for my allergies?" == questions[0]  # Should be first
 
-    def test_unique_questions_only(self):
+    def test_unique_questions_only(self) -> None:
         # Test that duplicate questions are removed
         questions = build_suggested_questions("cheese", {"is_pregnant": True})
         assert len(questions) == len(set(questions)), "Should not have duplicate questions"
 
-    def test_max_four_questions(self):
+    def test_max_four_questions(self) -> None:
         # Even with profile additions, should not exceed 4
         profile = {"is_pregnant": True, "allergies": ["peanut", "dairy", "soy"]}
         questions = build_suggested_questions("cheese", profile)
@@ -138,12 +138,12 @@ class TestSuggestedQuestions:
 
 
 class TestEmergencyEndToEnd:
-    """End-to-end tests for emergency detection in conversation endpoint"""
+    """End-to-end tests for emergency detection in conversation endpoint."""
 
     @patch("api.routers.chat.get_llm_client")
     @patch("api.routers.chat.fetch_scan_data")
     @patch("core.auth.current_user")
-    def test_emergency_phrase_triggers_red_strip(self, mock_user, mock_fetch, mock_llm):
+    def test_emergency_phrase_triggers_red_strip(self, mock_user, mock_fetch, mock_llm) -> None:
         # Setup mocks
         mock_user.id = uuid4()
         mock_fetch.return_value = {
@@ -191,7 +191,7 @@ class TestEmergencyEndToEnd:
     @patch("api.routers.chat.get_llm_client")
     @patch("api.routers.chat.fetch_scan_data")
     @patch("core.auth.current_user")
-    def test_unclear_intent_provides_suggestions(self, mock_user, mock_fetch, mock_llm):
+    def test_unclear_intent_provides_suggestions(self, mock_user, mock_fetch, mock_llm) -> None:
         # Setup mocks
         mock_user.id = uuid4()
         mock_fetch.return_value = {
@@ -241,7 +241,7 @@ class TestEmergencyEndToEnd:
     @patch("api.routers.chat.get_llm_client")
     @patch("api.routers.chat.fetch_scan_data")
     @patch("core.auth.current_user")
-    def test_empty_state_adds_helpful_checks(self, mock_user, mock_fetch, mock_llm):
+    def test_empty_state_adds_helpful_checks(self, mock_user, mock_fetch, mock_llm) -> None:
         # Setup mocks for empty state (no recalls, minimal flags)
         mock_user.id = uuid4()
         mock_fetch.return_value = {
@@ -288,7 +288,7 @@ class TestEmergencyEndToEnd:
     @patch("api.routers.chat.get_llm_client")
     @patch("api.routers.chat.fetch_scan_data")
     @patch("core.auth.current_user")
-    def test_unclear_loop_prevention(self, mock_user, mock_fetch, mock_llm):
+    def test_unclear_loop_prevention(self, mock_user, mock_fetch, mock_llm) -> None:
         # Setup mocks
         mock_user.id = uuid4()
         mock_fetch.return_value = {

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Security Scanner for BabyShield
-Performs comprehensive security analysis of the codebase
+Performs comprehensive security analysis of the codebase.
 """
 
 import json
@@ -11,9 +11,9 @@ from pathlib import Path
 
 
 class SecurityScanner:
-    """Comprehensive security scanner"""
+    """Comprehensive security scanner."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.base_path = Path.cwd()
         self.findings = {
             "secrets": [],
@@ -62,14 +62,14 @@ class SecurityScanner:
             "ip_address": r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b",
         }
 
-    def print_header(self, title: str):
-        """Print formatted header"""
+    def print_header(self, title: str) -> None:
+        """Print formatted header."""
         print("\n" + "=" * 70)
         print(f" {title}")
         print("=" * 70)
 
     def scan_for_secrets(self) -> list[dict]:
-        """Scan codebase for exposed secrets"""
+        """Scan codebase for exposed secrets."""
         self.print_header("🔍 SECRET SCANNING")
 
         secrets_found = []
@@ -126,7 +126,7 @@ class SecurityScanner:
         return secrets_found
 
     def scan_dependencies(self) -> list[dict]:
-        """Scan Python dependencies for vulnerabilities"""
+        """Scan Python dependencies for vulnerabilities."""
         self.print_header("📦 DEPENDENCY SCANNING")
 
         vulnerabilities = []
@@ -202,7 +202,7 @@ class SecurityScanner:
         return vulnerabilities
 
     def verify_data_handling(self) -> dict:
-        """Verify data handling practices"""
+        """Verify data handling practices."""
         self.print_header("🔐 DATA HANDLING VERIFICATION")
 
         data_checks = {
@@ -276,7 +276,7 @@ class SecurityScanner:
         return data_checks
 
     def check_security_configurations(self) -> dict:
-        """Check security configurations"""
+        """Check security configurations."""
         self.print_header("⚙️ SECURITY CONFIGURATION")
 
         configs = {
@@ -354,7 +354,7 @@ class SecurityScanner:
         return configs
 
     def check_read_only_db_roles(self) -> bool:
-        """Check for read-only database roles"""
+        """Check for read-only database roles."""
         self.print_header("👤 DATABASE ROLE VERIFICATION")
 
         # Check for read-only role SQL
@@ -378,16 +378,15 @@ class SecurityScanner:
                     print("  - SELECT permission: ✓")
                     print("  - Write protection: ✓")
                     return True
-                else:
-                    print("⚠️ Read-only role configuration incomplete")
-                    return False
+                print("⚠️ Read-only role configuration incomplete")
+                return False
         else:
             print("❌ Read-only database role not configured")
             print("  Create sql/create_readonly_user.sql")
             return False
 
     def check_secret_rotation(self) -> dict:
-        """Check secret rotation procedures"""
+        """Check secret rotation procedures."""
         self.print_header("🔄 SECRET ROTATION VERIFICATION")
 
         rotation_checks = {
@@ -433,7 +432,7 @@ class SecurityScanner:
         return rotation_checks
 
     def generate_recommendations(self) -> list[str]:
-        """Generate security recommendations"""
+        """Generate security recommendations."""
         recommendations = []
 
         # Based on findings, generate recommendations
@@ -464,7 +463,7 @@ class SecurityScanner:
         return recommendations
 
     def generate_report(self) -> dict:
-        """Generate security scan report"""
+        """Generate security scan report."""
         self.print_header("📋 SECURITY SCAN SUMMARY")
 
         report = {
@@ -512,7 +511,7 @@ class SecurityScanner:
         return report
 
     def run_full_scan(self) -> dict:
-        """Run complete security scan"""
+        """Run complete security scan."""
         print("=" * 70)
         print(" 🔒 BABYSHIELD SECURITY SCAN")
         print(f" Time: {datetime.now().isoformat()}")
@@ -533,8 +532,8 @@ class SecurityScanner:
         return report
 
 
-def main():
-    """Run security scan"""
+def main() -> int:
+    """Run security scan."""
     scanner = SecurityScanner()
     report = scanner.run_full_scan()
 
@@ -542,12 +541,11 @@ def main():
     if report["statistics"]["secrets_found"] > 0:
         print("\n⚠️ Security issues detected - review report")
         return 1
-    elif report["statistics"]["security_score"] < 70:
+    if report["statistics"]["security_score"] < 70:
         print("\n⚠️ Security configuration needs improvement")
         return 1
-    else:
-        print("\n✅ Security scan completed successfully")
-        return 0
+    print("\n✅ Security scan completed successfully")
+    return 0
 
 
 if __name__ == "__main__":

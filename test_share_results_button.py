@@ -1,5 +1,5 @@
 """Test "Share Results" Button from Mobile App Screenshot
-Tests the share functionality for recall results
+Tests the share functionality for recall results.
 """
 
 import json

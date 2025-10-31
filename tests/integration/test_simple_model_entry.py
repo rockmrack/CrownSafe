@@ -1,4 +1,4 @@
-"""SIMPLE TEST: Model Number Entry Workflow
+"""SIMPLE TEST: Model Number Entry Workflow.
 
 This test validates the /api/v1/safety-check endpoint responds to model number queries.
 No database setup needed - just tests the API endpoint directly!
@@ -15,7 +15,7 @@ from api.main_crownsafe import app
 client = TestClient(app)
 
 
-def test_safety_check_endpoint_exists():
+def test_safety_check_endpoint_exists() -> None:
     """Test that the safety-check endpoint exists and responds."""
     print("\n" + "=" * 80)
     print("TEST: Safety Check Endpoint - Basic Connectivity")
@@ -66,7 +66,7 @@ def test_safety_check_endpoint_exists():
         print(f"   Response: {response.text[:200]}")
 
 
-def test_model_number_parameter():
+def test_model_number_parameter() -> None:
     """Test that model_number parameter is accepted."""
     print("\n" + "=" * 80)
     print("TEST: Model Number Parameter Handling")
@@ -98,7 +98,7 @@ def test_model_number_parameter():
             print(f"   ℹ️  Response: {response.status_code}")
 
 
-def test_empty_model_number():
+def test_empty_model_number() -> None:
     """Test handling of empty model number."""
     print("\n" + "=" * 80)
     print("TEST: Empty Model Number Handling")

@@ -1,4 +1,4 @@
-"""SQLAlchemy model for user_reports table"""
+"""SQLAlchemy model for user_reports table."""
 
 from sqlalchemy import JSON, Column, Date, DateTime, Integer, String, Text
 from sqlalchemy.sql import func
@@ -7,7 +7,7 @@ from core_infra.database import Base
 
 
 class UserReport(Base):
-    """Model for community-reported unsafe products
+    """Model for community-reported unsafe products.
 
     Allows users to report dangerous products that may not yet be in
     the official recall database, helping to keep the community safe.
@@ -64,7 +64,7 @@ class UserReport(Base):
         )
 
     def to_dict(self):
-        """Convert to dictionary for API responses"""
+        """Convert to dictionary for API responses."""
         return {
             "report_id": self.report_id,
             "user_id": self.user_id,

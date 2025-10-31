@@ -1,4 +1,4 @@
-"""Simple RecallDataAgent Test - Tests core functionality"""
+"""Simple RecallDataAgent Test - Tests core functionality."""
 
 import asyncio
 import sys

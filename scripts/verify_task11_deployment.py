@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify Task 11 deployment is successful"""
+"""Verify Task 11 deployment is successful."""
 
 from datetime import datetime
 
@@ -9,7 +9,7 @@ BASE_URL = "https://babyshield.cureviax.ai"
 
 
 def test_endpoint(name, method, path, data=None):
-    """Test a single endpoint"""
+    """Test a single endpoint."""
     url = f"{BASE_URL}{path}"
     headers = {"Content-Type": "application/json"}
 

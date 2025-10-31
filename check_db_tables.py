@@ -1,4 +1,4 @@
-"""Check database tables"""
+"""Check database tables."""
 
 import sqlite3
 

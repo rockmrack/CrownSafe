@@ -1,10 +1,10 @@
 """Comprehensive Pytest Configuration
-Provides fixtures and test utilities for all test suites
+Provides fixtures and test utilities for all test suites.
 """
 
 import os
 import tempfile
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from typing import Generator
 
 import pytest
@@ -22,7 +22,7 @@ os.environ["JWT_SECRET_KEY"] = "test-jwt-secret"
 
 @pytest.fixture(scope="session")
 def test_database_engine():
-    """Create a test database engine
+    """Create a test database engine.
 
     Uses SQLite in-memory database for fast testing
     """
@@ -46,7 +46,7 @@ def test_database_engine():
 
 @pytest.fixture(scope="function")
 def db_session(test_database_engine) -> Generator[Session, None, None]:
-    """Create a new database session for each test
+    """Create a new database session for each test.
 
     Automatically rolls back after each test to ensure isolation
     """
@@ -65,7 +65,7 @@ def db_session(test_database_engine) -> Generator[Session, None, None]:
 
 @pytest.fixture(scope="module")
 def test_app():
-    """Create FastAPI test application
+    """Create FastAPI test application.
 
     Returns a TestClient for making API requests
     """
@@ -75,7 +75,7 @@ def test_app():
 
     # Override database dependency
 
-    def override_get_db():
+    def override_get_db() -> None:
         # Use test database
         pass
 
@@ -88,7 +88,7 @@ def test_app():
 
 @pytest.fixture
 def test_user(db_session) -> dict:
-    """Create a test user
+    """Create a test user.
 
     Returns user data dictionary
     """
@@ -117,7 +117,7 @@ def test_user(db_session) -> dict:
 
 @pytest.fixture
 def test_subscriber(db_session) -> dict:
-    """Create a test user with active subscription"""
+    """Create a test user with active subscription."""
     from core_infra.auth import pwd_context
     from core_infra.database import User
 
@@ -146,7 +146,7 @@ def test_subscriber(db_session) -> dict:
 
 @pytest.fixture
 def test_admin(db_session) -> dict:
-    """Create a test admin user"""
+    """Create a test admin user."""
     from core_infra.auth import pwd_context
     from core_infra.database import User
 
@@ -173,7 +173,7 @@ def test_admin(db_session) -> dict:
 
 @pytest.fixture
 def auth_token(test_user) -> str:
-    """Generate authentication token for test user"""
+    """Generate authentication token for test user."""
     from core_infra.auth import create_access_token
 
     token = create_access_token(data={"sub": str(test_user["id"]), "email": test_user["email"]})
@@ -182,13 +182,13 @@ def auth_token(test_user) -> str:
 
 @pytest.fixture
 def auth_headers(auth_token) -> dict:
-    """Get authentication headers with Bearer token"""
+    """Get authentication headers with Bearer token."""
     return {"Authorization": f"Bearer {auth_token}"}
 
 
 @pytest.fixture
 def test_recall(db_session) -> dict:
-    """Create a test recall record"""
+    """Create a test recall record."""
     from core_infra.database import RecallDB
 
     recall = RecallDB(
@@ -216,7 +216,7 @@ def test_recall(db_session) -> dict:
 
 @pytest.fixture
 def test_barcode_data() -> dict:
-    """Generate test barcode data"""
+    """Generate test barcode data."""
     return {
         "valid_upc": "012345678905",
         "valid_ean": "4006381333931",
@@ -226,18 +226,18 @@ def test_barcode_data() -> dict:
 
 
 @pytest.fixture
-def mock_external_api(monkeypatch):
-    """Mock external API calls for testing"""
+def mock_external_api(monkeypatch) -> None:
+    """Mock external API calls for testing."""
 
     class MockResponse:
-        def __init__(self, json_data, status_code=200):
+        def __init__(self, json_data, status_code=200) -> None:
             self.json_data = json_data
             self.status_code = status_code
 
         def json(self):
             return self.json_data
 
-        def raise_for_status(self):
+        def raise_for_status(self) -> None:
             if self.status_code >= 400:
                 raise Exception(f"HTTP {self.status_code}")
 
@@ -255,7 +255,7 @@ def mock_external_api(monkeypatch):
 
 @pytest.fixture
 def temp_file():
-    """Create a temporary file for upload testing"""
+    """Create a temporary file for upload testing."""
     with tempfile.NamedTemporaryFile(mode="w+b", delete=False, suffix=".jpg") as f:
         # Write some dummy image data
         f.write(b"\xff\xd8\xff\xe0\x00\x10JFIF")  # JPEG header
@@ -272,8 +272,8 @@ def temp_file():
 # Pytest configuration
 
 
-def pytest_configure(config):
-    """Configure pytest"""
+def pytest_configure(config) -> None:
+    """Configure pytest."""
     config.addinivalue_line("markers", "slow: marks tests as slow (deselect with '-m \"not slow\"')")
     config.addinivalue_line("markers", "integration: marks tests as integration tests")
     config.addinivalue_line("markers", "unit: marks tests as unit tests")
@@ -285,11 +285,11 @@ def pytest_configure(config):
 
 
 class TestHelper:
-    """Helper methods for testing"""
+    """Helper methods for testing."""
 
     @staticmethod
     def assert_success_response(response):
-        """Assert that response is a successful API response"""
+        """Assert that response is a successful API response."""
         assert response.status_code == 200
         data = response.json()
         assert data.get("success") is True
@@ -297,7 +297,7 @@ class TestHelper:
 
     @staticmethod
     def assert_error_response(response, expected_status: int = 400):
-        """Assert that response is an error response"""
+        """Assert that response is an error response."""
         assert response.status_code == expected_status
         data = response.json()
         assert data.get("success") is False
@@ -305,29 +305,29 @@ class TestHelper:
         return data
 
     @staticmethod
-    def assert_unauthorized(response):
-        """Assert that response is 401 Unauthorized"""
+    def assert_unauthorized(response) -> None:
+        """Assert that response is 401 Unauthorized."""
         assert response.status_code == 401
 
     @staticmethod
-    def assert_forbidden(response):
-        """Assert that response is 403 Forbidden"""
+    def assert_forbidden(response) -> None:
+        """Assert that response is 403 Forbidden."""
         assert response.status_code == 403
 
     @staticmethod
-    def assert_not_found(response):
-        """Assert that response is 404 Not Found"""
+    def assert_not_found(response) -> None:
+        """Assert that response is 404 Not Found."""
         assert response.status_code == 404
 
     @staticmethod
-    def assert_validation_error(response):
-        """Assert that response is 422 Validation Error"""
+    def assert_validation_error(response) -> None:
+        """Assert that response is 422 Validation Error."""
         assert response.status_code == 422
 
 
 @pytest.fixture
 def test_helper():
-    """Provide TestHelper instance"""
+    """Provide TestHelper instance."""
     return TestHelper()
 
 
@@ -336,18 +336,18 @@ def test_helper():
 
 @pytest.fixture
 def performance_tracker():
-    """Track test performance metrics"""
+    """Track test performance metrics."""
     import time
 
     class PerformanceTracker:
-        def __init__(self):
+        def __init__(self) -> None:
             self.start_time = None
             self.end_time = None
 
-        def start(self):
+        def start(self) -> None:
             self.start_time = time.time()
 
-        def stop(self):
+        def stop(self) -> None:
             self.end_time = time.time()
 
         def duration(self) -> float:
@@ -355,7 +355,7 @@ def performance_tracker():
                 return self.end_time - self.start_time
             return 0.0
 
-        def assert_faster_than(self, threshold: float):
+        def assert_faster_than(self, threshold: float) -> None:
             duration = self.duration()
             assert duration < threshold, f"Test took {duration}s (max {threshold}s)"
 

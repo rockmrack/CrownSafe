@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Production startup script for BabyShield API
-Handles environment setup and graceful degradation
+Handles environment setup and graceful degradation.
 """
 
 import logging
@@ -12,8 +12,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 
-def log_feature_status():
-    """Log the status of all major features"""
+def log_feature_status() -> None:
+    """Log the status of all major features."""
     logger.info("🔍 BabyShield Feature Status:")
 
     # OCR Features
@@ -44,8 +44,8 @@ def log_feature_status():
     logger.info("🚀 BabyShield startup configuration complete!")
 
 
-def check_environment():
-    """Check and set required environment variables"""
+def check_environment() -> None:
+    """Check and set required environment variables."""
     # Set defaults for critical environment variables
     defaults = {
         "API_HOST": "0.0.0.0",
@@ -93,8 +93,8 @@ def check_environment():
         logger.warning("SECRET_KEY not set - using default (UNSAFE for production)")
 
 
-def create_database_tables():
-    """Create database tables if they don't exist"""
+def create_database_tables() -> None:
+    """Create database tables if they don't exist."""
     try:
         from core_infra.database import create_tables
 
@@ -106,8 +106,8 @@ def create_database_tables():
         # Continue anyway - tables might already exist
 
 
-def start_api():
-    """Start the FastAPI application"""
+def start_api() -> None:
+    """Start the FastAPI application."""
     import uvicorn
 
     host = os.environ.get("API_HOST", "0.0.0.0")

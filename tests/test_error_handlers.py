@@ -1,11 +1,11 @@
-"""Tests for core_infra/error_handlers.py"""
+"""Tests for core_infra/error_handlers.py."""
 
 import unittest
 
 
 class TestErrorHandlers(unittest.TestCase):
-    def test_error_handlers_module_import(self):
-        """Test that error_handlers module can be imported"""
+    def test_error_handlers_module_import(self) -> None:
+        """Test that error_handlers module can be imported."""
         try:
             import core_infra.error_handlers as eh
 
@@ -13,8 +13,8 @@ class TestErrorHandlers(unittest.TestCase):
         except ImportError:
             self.skipTest("Module not found")
 
-    def test_handle_error_function_exists(self):
-        """Test that handle_error function exists"""
+    def test_handle_error_function_exists(self) -> None:
+        """Test that handle_error function exists."""
         try:
             from core_infra.error_handlers import handle_error
 

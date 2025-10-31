@@ -1,4 +1,4 @@
-"""Add missing tables: incident_reports, image_jobs, and related tables
+"""Add missing tables: incident_reports, image_jobs, and related tables.
 
 Revision ID: 20251014_missing_tables
 Revises: 4eebd8426dad
@@ -18,7 +18,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     # ========================================================================
     # INCIDENT REPORTING TABLES
     # ========================================================================
@@ -404,7 +404,7 @@ def upgrade():
     print("✅ Created all missing tables: incident_reports, image_jobs, scan_history, and related tables")
 
 
-def downgrade():
+def downgrade() -> None:
     # Drop tables in reverse order (respecting foreign key constraints)
     op.drop_table("ingestion_runs")
     op.drop_table("privacy_requests")

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """🚀 BabyShield Database Migration Script
-Migrates from basic RecallDB to Enhanced 39-Agency Schema
+Migrates from basic RecallDB to Enhanced 39-Agency Schema.
 
 This migration adds CRITICAL fields for complete international coverage:
 - Food agencies: lot_number, expiry_date, production_date
@@ -33,15 +33,15 @@ logger = logging.getLogger(__name__)
 
 
 class BabyShieldMigration:
-    """Enhanced Database Migration for 39-Agency Coverage"""
+    """Enhanced Database Migration for 39-Agency Coverage."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.engine = engine
         self.session = SessionLocal()
         self.inspector = inspect(self.engine)
 
-    def check_current_schema(self):
-        """Analyze current database schema"""
+    def check_current_schema(self) -> bool:
+        """Analyze current database schema."""
         logger.info("🔍 Analyzing current database schema...")
 
         tables = self.inspector.get_table_names()
@@ -56,12 +56,11 @@ class BabyShieldMigration:
             logger.info(f"📈 Current records: {result}")
 
             return True
-        else:
-            logger.warning("⚠️ No existing recalls table found")
-            return False
+        logger.warning("⚠️ No existing recalls table found")
+        return False
 
-    def create_enhanced_schema(self):
-        """Create the enhanced schema with all 39-agency fields"""
+    def create_enhanced_schema(self) -> bool | None:
+        """Create the enhanced schema with all 39-agency fields."""
         logger.info("🏗️ Creating enhanced database schema...")
 
         try:
@@ -79,8 +78,8 @@ class BabyShieldMigration:
             logger.exception(f"❌ Failed to create enhanced schema: {e}")
             return False
 
-    def migrate_existing_data(self):
-        """Migrate data from old schema to enhanced schema"""
+    def migrate_existing_data(self) -> bool | None:
+        """Migrate data from old schema to enhanced schema."""
         logger.info("📦 Migrating existing data to enhanced schema...")
 
         try:
@@ -151,8 +150,8 @@ class BabyShieldMigration:
             logger.exception(f"❌ Migration failed: {e}")
             return False
 
-    def create_performance_indexes(self):
-        """Create performance indexes for the enhanced schema"""
+    def create_performance_indexes(self) -> None:
+        """Create performance indexes for the enhanced schema."""
         logger.info("⚡ Creating performance indexes for enhanced schema...")
 
         index_statements = [
@@ -195,8 +194,8 @@ class BabyShieldMigration:
         except Exception as e:
             logger.exception(f"❌ Failed to create indexes: {e}")
 
-    def backup_current_schema(self):
-        """Create backup of current schema before migration"""
+    def backup_current_schema(self) -> bool | None:
+        """Create backup of current schema before migration."""
         logger.info("💾 Creating backup of current schema...")
 
         try:
@@ -218,8 +217,8 @@ class BabyShieldMigration:
             logger.exception(f"❌ Backup failed: {e}")
             return False
 
-    def run_migration(self):
-        """Execute the complete migration process"""
+    def run_migration(self) -> bool:
+        """Execute the complete migration process."""
         logger.info("🚀 Starting BabyShield Enhanced Schema Migration...")
         logger.info("=" * 60)
 
@@ -256,8 +255,8 @@ class BabyShieldMigration:
 
         return True
 
-    def __del__(self):
-        """Cleanup session"""
+    def __del__(self) -> None:
+        """Cleanup session."""
         if hasattr(self, "session"):
             self.session.close()
 

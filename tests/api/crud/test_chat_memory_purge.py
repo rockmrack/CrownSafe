@@ -90,8 +90,8 @@ def mark_erase_requested(db_session, user_id):
     return chat_memory.mark_erase_requested(db_session, user_id)
 
 
-def test_purge_conversations_for_user_no_conversations(db_session):
-    """Test purging when user has no conversations"""
+def test_purge_conversations_for_user_no_conversations(db_session) -> None:
+    """Test purging when user has no conversations."""
     user_id = str(uuid4())
 
     # Should return 0 when no conversations exist
@@ -99,8 +99,8 @@ def test_purge_conversations_for_user_no_conversations(db_session):
     assert deleted_count == 0
 
 
-def test_purge_conversations_for_user_with_conversations(db_session):
-    """Test purging when user has conversations"""
+def test_purge_conversations_for_user_with_conversations(db_session) -> None:
+    """Test purging when user has conversations."""
     user_id = str(uuid4())
     other_user_id = str(uuid4())
 
@@ -152,8 +152,8 @@ def test_purge_conversations_for_user_with_conversations(db_session):
     assert remaining_msgs[0].conversation_id == conv3.id
 
 
-def test_mark_erase_requested_new_profile(db_session):
-    """Test marking erase requested for user without existing profile"""
+def test_mark_erase_requested_new_profile(db_session) -> None:
+    """Test marking erase requested for user without existing profile."""
     user_id = str(uuid4())
 
     # Should create new profile with erase timestamp
@@ -166,8 +166,8 @@ def test_mark_erase_requested_new_profile(db_session):
     assert isinstance(profile.erase_requested_at, datetime)
 
 
-def test_mark_erase_requested_existing_profile(db_session):
-    """Test marking erase requested for user with existing profile"""
+def test_mark_erase_requested_existing_profile(db_session) -> None:
+    """Test marking erase requested for user with existing profile."""
     user_id = str(uuid4())
 
     # Create existing profile
@@ -187,8 +187,8 @@ def test_mark_erase_requested_existing_profile(db_session):
     assert json.loads(existing_profile.allergies) == ["peanuts"]
 
 
-def test_purge_conversations_cascade_delete(db_session):
-    """Test that messages are properly cascade-deleted when conversations are purged"""
+def test_purge_conversations_cascade_delete(db_session) -> None:
+    """Test that messages are properly cascade-deleted when conversations are purged."""
     user_id = str(uuid4())
 
     # Create conversation with multiple messages
@@ -223,8 +223,8 @@ def test_purge_conversations_cascade_delete(db_session):
     assert db_session.query(ConversationMessageModel).count() == 0
 
 
-def test_purge_conversations_multiple_users(db_session):
-    """Test that purging only affects the specified user"""
+def test_purge_conversations_multiple_users(db_session) -> None:
+    """Test that purging only affects the specified user."""
     user1_id = str(uuid4())
     user2_id = str(uuid4())
     user3_id = str(uuid4())

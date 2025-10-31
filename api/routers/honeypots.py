@@ -1,5 +1,5 @@
 """Honeypot Endpoints for BabyShield Security
-Trap attackers and gather intelligence on attack patterns
+Trap attackers and gather intelligence on attack patterns.
 """
 
 import logging
@@ -17,7 +17,7 @@ attack_intelligence: dict[str, list] = {"ips": [], "patterns": [], "user_agents"
 
 
 def record_honeypot_hit(request: Request, honeypot_type: str) -> None:
-    """Record honeypot access for security intelligence"""
+    """Record honeypot access for security intelligence."""
     client_ip = request.headers.get("X-Forwarded-For", request.client.host).split(",")[0].strip()
     user_agent = request.headers.get("User-Agent", "Unknown")
 
@@ -43,7 +43,7 @@ def record_honeypot_hit(request: Request, honeypot_type: str) -> None:
 
 
 def create_convincing_response(honeypot_type: str) -> JSONResponse:
-    """Create convincing responses to waste attacker time"""
+    """Create convincing responses to waste attacker time."""
     responses = {
         "admin_login": {
             "status": "success",
@@ -108,7 +108,7 @@ def create_convincing_response(honeypot_type: str) -> JSONResponse:
     include_in_schema=False,
 )
 async def admin_login_honeypot(request: Request):
-    """Fake admin login panel to trap attackers"""
+    """Fake admin login panel to trap attackers."""
     record_honeypot_hit(request, "admin_login")
 
     # Return convincing fake admin panel
@@ -139,7 +139,7 @@ async def admin_login_honeypot(request: Request):
 
 @router.get("/.env", include_in_schema=False)
 async def env_file_honeypot(request: Request):
-    """Fake environment file to trap config seekers"""
+    """Fake environment file to trap config seekers."""
     record_honeypot_hit(request, "config_file")
 
     fake_env = """# BabyShield Environment Configuration
@@ -157,7 +157,7 @@ SECRET_KEY=fake_jwt_secret_key_honeypot_trap
 @router.get("/backup.sql", include_in_schema=False)
 @router.get("/backup/database.sql", include_in_schema=False)
 async def backup_file_honeypot(request: Request):
-    """Fake database backup to trap data seekers"""
+    """Fake database backup to trap data seekers."""
     record_honeypot_hit(request, "backup_file")
     return create_convincing_response("backup_file")
 
@@ -165,7 +165,7 @@ async def backup_file_honeypot(request: Request):
 @router.get("/.git/config", include_in_schema=False)
 @router.get("/.git/HEAD", include_in_schema=False)
 async def git_config_honeypot(request: Request):
-    """Fake git config to trap repository scanners"""
+    """Fake git config to trap repository scanners."""
     record_honeypot_hit(request, "git_config")
     return create_convincing_response("git_config")
 
@@ -173,7 +173,7 @@ async def git_config_honeypot(request: Request):
 @router.get("/wp-admin/admin.php", include_in_schema=False)
 @router.get("/phpmyadmin/index.php", include_in_schema=False)
 async def cms_honeypot(request: Request):
-    """Fake CMS admin panels"""
+    """Fake CMS admin panels."""
     record_honeypot_hit(request, "cms_admin")
     return create_convincing_response("admin_login")
 
@@ -181,7 +181,7 @@ async def cms_honeypot(request: Request):
 @router.get("/api/admin/users", include_in_schema=False)
 @router.get("/api/v1/admin/config", include_in_schema=False)
 async def api_admin_honeypot(request: Request):
-    """Fake admin API endpoints"""
+    """Fake admin API endpoints."""
     record_honeypot_hit(request, "api_admin")
 
     return JSONResponse(
@@ -200,7 +200,7 @@ async def api_admin_honeypot(request: Request):
 # Security Intelligence Endpoint (for monitoring)
 @router.get("/security/intelligence", include_in_schema=False)
 async def get_attack_intelligence():
-    """Get attack intelligence data (admin only)"""
+    """Get attack intelligence data (admin only)."""
     return {
         "honeypot_hits": len(honeypot_hits),
         "unique_attackers": len(attack_intelligence["ips"]),

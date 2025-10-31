@@ -20,7 +20,7 @@ except ImportError:
 class OpenAILLMClient:
     """OpenAI client that implements the LLMClient protocol for chat functionality."""
 
-    def __init__(self, api_key: str | None = None):
+    def __init__(self, api_key: str | None = None) -> None:
         """Initialize the OpenAI client with optimized HTTP settings.
 
         Args:

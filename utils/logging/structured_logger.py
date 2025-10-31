@@ -1,5 +1,5 @@
 """Structured Logging Module for BabyShield Backend
-Issue #32 - Phase 2 Implementation
+Issue #32 - Phase 2 Implementation.
 """
 
 import sys
@@ -12,7 +12,7 @@ from loguru import logger
 
 # Configure structured logging
 def setup_logging(config):
-    """Setup structured logging with JSON format"""
+    """Setup structured logging with JSON format."""
     # config should be passed in by the caller
 
     # Remove default loguru handler
@@ -46,8 +46,8 @@ def setup_logging(config):
 
 
 # Request logging middleware
-def log_request(request: Request, response_time: float = None, status_code: int = None):
-    """Log HTTP request with context"""
+def log_request(request: Request, response_time: float = None, status_code: int = None) -> None:
+    """Log HTTP request with context."""
     logger.info(
         "HTTP Request",
         extra={
@@ -63,8 +63,8 @@ def log_request(request: Request, response_time: float = None, status_code: int 
 
 
 # Performance logging
-def log_performance(operation: str, duration_ms: float, **kwargs):
-    """Log performance metrics"""
+def log_performance(operation: str, duration_ms: float, **kwargs) -> None:
+    """Log performance metrics."""
     logger.info(
         f"Performance: {operation}",
         extra={"operation": operation, "duration_ms": duration_ms, **kwargs},
@@ -72,8 +72,8 @@ def log_performance(operation: str, duration_ms: float, **kwargs):
 
 
 # Error logging with context
-def log_error(error: Exception, context: dict[str, Any] = None):
-    """Log error with full context"""
+def log_error(error: Exception, context: dict[str, Any] = None) -> None:
+    """Log error with full context."""
     logger.error(
         f"Error: {type(error).__name__}",
         extra={

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate OpenAPI specification file locally"""
+"""Validate OpenAPI specification file locally."""
 
 import json
 import os
@@ -15,8 +15,8 @@ PATHS = [
 ]
 
 
-def main():
-    """Validate OpenAPI spec if it exists"""
+def main() -> int | None:
+    """Validate OpenAPI spec if it exists."""
     path = next((p for p in PATHS if os.path.exists(p)), None)
     if not path:
         print("ℹ️ OpenAPI file not found locally; skipping.")

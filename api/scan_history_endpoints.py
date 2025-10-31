@@ -1,7 +1,7 @@
-"""Scan History Endpoints - Shows users their past scans"""
+"""Scan History Endpoints - Shows users their past scans."""
 
 import logging
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import and_, desc
@@ -19,7 +19,7 @@ router = APIRouter(prefix="/api/v1/user", tags=["User"])
 
 
 class ScanHistoryItem(AppModel):
-    """Single scan history item"""
+    """Single scan history item."""
 
     model_config = {"protected_namespaces": ()}  # Allow model_number field
 
@@ -39,7 +39,7 @@ class ScanHistoryItem(AppModel):
 
 
 class ScanHistoryResponse(AppModel):
-    """Scan history response"""
+    """Scan history response."""
 
     total_scans: int
     scans: list[ScanHistoryItem]
@@ -57,7 +57,7 @@ async def get_scan_history(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Get user's scan history with pagination and filters
+    """Get user's scan history with pagination and filters.
 
     Returns:
     - List of past scans with product info and recall status
@@ -148,7 +148,7 @@ async def get_scan_details(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Get detailed information about a specific scan
+    """Get detailed information about a specific scan.
 
     Returns:
     - Full scan details including extraction results
@@ -218,7 +218,7 @@ async def delete_scan(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Delete a scan from history
+    """Delete a scan from history.
 
     Note: This soft-deletes by marking status, actual data retained for compliance
     """
@@ -243,7 +243,7 @@ async def delete_scan(
 
 @router.get("/scan-statistics", response_model=ApiResponse)
 async def get_scan_statistics(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
-    """Get user's scanning statistics
+    """Get user's scanning statistics.
 
     Returns:
     - Total scans
@@ -318,7 +318,7 @@ async def get_scan_statistics(current_user=Depends(get_current_active_user), db:
 
 
 class UserProfileResponse(AppModel):
-    """User profile information"""
+    """User profile information."""
 
     id: int
     email: str
@@ -333,7 +333,7 @@ class UserProfileResponse(AppModel):
 
 
 class UserProfileUpdateRequest(AppModel):
-    """User profile update request"""
+    """User profile update request."""
 
     username: str | None = None
     full_name: str | None = None

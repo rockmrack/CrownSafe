@@ -7,7 +7,7 @@ import uuid
 import redis
 
 
-def check_commander():
+def check_commander() -> bool:
     r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
     print("🏥 Commander Agent Health Check\n")

@@ -1,4 +1,4 @@
-"""Add user_reports table for community unsafe product reporting
+"""Add user_reports table for community unsafe product reporting.
 
 Revision ID: 20251012_user_reports
 Revises: 20251012_create_pg_trgm

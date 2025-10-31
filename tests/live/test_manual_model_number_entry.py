@@ -102,8 +102,8 @@ def get_real_model_number_from_db():
 
 @pytest.mark.live
 @pytest.mark.integration
-def test_manual_model_number_entry_with_recall():
-    """TEST 1: Manual model number entry - Product WITH recall
+def test_manual_model_number_entry_with_recall() -> None:
+    """TEST 1: Manual model number entry - Product WITH recall.
 
     User enters a model number that HAS an active recall in the database.
     Expected: System finds the recall and returns HIGH risk level with details.
@@ -210,8 +210,8 @@ def test_manual_model_number_entry_with_recall():
 
 @pytest.mark.live
 @pytest.mark.integration
-def test_manual_model_number_entry_no_recall():
-    """TEST 2: Manual model number entry - Product WITHOUT recall
+def test_manual_model_number_entry_no_recall() -> None:
+    """TEST 2: Manual model number entry - Product WITHOUT recall.
 
     User enters a model number that DOES NOT have a recall.
     Expected: System returns SAFE status with no recalls found.
@@ -288,8 +288,8 @@ def test_manual_model_number_entry_no_recall():
 
 @pytest.mark.live
 @pytest.mark.integration
-def test_manual_model_number_with_additional_context():
-    """TEST 3: Manual model number with product name context
+def test_manual_model_number_with_additional_context() -> None:
+    """TEST 3: Manual model number with product name context.
 
     User enters both model number AND product name for better matching.
     Expected: System uses both fields for more accurate recall matching.

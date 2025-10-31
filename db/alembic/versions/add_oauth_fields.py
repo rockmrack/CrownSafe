@@ -1,4 +1,4 @@
-"""Add OAuth fields to users table
+"""Add OAuth fields to users table.
 
 Revision ID: add_oauth_fields
 Revises: fix_missing_columns
@@ -19,8 +19,8 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
-    """Add OAuth provider fields to users table"""
+def upgrade() -> None:
+    """Add OAuth provider fields to users table."""
     # Add provider_id column (hashed provider + subject)
     op.add_column(
         "users",
@@ -46,8 +46,8 @@ def upgrade():
     op.create_index("ix_users_provider_id", "users", ["provider_id"])
 
 
-def downgrade():
-    """Remove OAuth fields from users table"""
+def downgrade() -> None:
+    """Remove OAuth fields from users table."""
     # Drop index
     op.drop_index("ix_users_provider_id", "users")
 

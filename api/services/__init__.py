@@ -1,4 +1,4 @@
-"""Services package for business logic"""
+"""Services package for business logic."""
 
 from .ingestion_runner import IngestionRunner
 

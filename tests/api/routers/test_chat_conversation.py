@@ -1,11 +1,11 @@
-"""Tests for api/routers/chat.py"""
+"""Tests for api/routers/chat.py."""
 
 import unittest
 
 
 class TestChatConversation(unittest.TestCase):
-    def test_chat_router_module_import(self):
-        """Test that chat router can be imported"""
+    def test_chat_router_module_import(self) -> None:
+        """Test that chat router can be imported."""
         try:
             from api.routers import chat
 
@@ -13,8 +13,8 @@ class TestChatConversation(unittest.TestCase):
         except ImportError:
             self.skipTest("chat router not found")
 
-    def test_router_has_routes(self):
-        """Test that router module is valid"""
+    def test_router_has_routes(self) -> None:
+        """Test that router module is valid."""
         try:
             from api.routers import chat
 

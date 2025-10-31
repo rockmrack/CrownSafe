@@ -1,11 +1,11 @@
-"""Tests for core_infra/auth.py"""
+"""Tests for core_infra/auth.py."""
 
 import unittest
 
 
 class TestAuth(unittest.TestCase):
-    def test_auth_module_import(self):
-        """Test that auth module can be imported"""
+    def test_auth_module_import(self) -> None:
+        """Test that auth module can be imported."""
         try:
             import core_infra.auth as auth
 
@@ -13,8 +13,8 @@ class TestAuth(unittest.TestCase):
         except ImportError:
             self.skipTest("Module not found")
 
-    def test_create_access_token_exists(self):
-        """Test that create_access_token function exists"""
+    def test_create_access_token_exists(self) -> None:
+        """Test that create_access_token function exists."""
         try:
             from core_infra.auth import create_access_token
 
@@ -22,8 +22,8 @@ class TestAuth(unittest.TestCase):
         except (ImportError, AttributeError):
             self.skipTest("create_access_token not found")
 
-    def test_verify_password_exists(self):
-        """Test that verify_password function exists"""
+    def test_verify_password_exists(self) -> None:
+        """Test that verify_password function exists."""
         try:
             from core_infra.auth import verify_password
 
@@ -31,8 +31,8 @@ class TestAuth(unittest.TestCase):
         except (ImportError, AttributeError):
             self.skipTest("verify_password not found")
 
-    def test_get_password_hash_exists(self):
-        """Test that get_password_hash function exists"""
+    def test_get_password_hash_exists(self) -> None:
+        """Test that get_password_hash function exists."""
         try:
             from core_infra.auth import get_password_hash
 

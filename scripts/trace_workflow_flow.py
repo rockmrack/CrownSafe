@@ -6,8 +6,8 @@ import json
 import redis
 
 
-async def trace_workflow(workflow_id: str):
-    """Trace where a workflow ID appears in the system"""
+async def trace_workflow(workflow_id: str) -> None:
+    """Trace where a workflow ID appears in the system."""
     r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
     print(f"🔍 Tracing workflow: {workflow_id}\n")

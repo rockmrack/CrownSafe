@@ -1,5 +1,5 @@
 """Crown Score Engine - Enterprise-Grade Hair Product Analysis
-Scientifically-backed scoring system for Black hair care products (3C-4C)
+Scientifically-backed scoring system for Black hair care products (3C-4C).
 
 Version: 1.0.0
 Last Updated: October 24, 2025
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class HairType(str, Enum):
-    """Curl pattern classification"""
+    """Curl pattern classification."""
 
     TYPE_3C = "3C"
     TYPE_4A = "4A"
@@ -28,7 +28,7 @@ class HairType(str, Enum):
 
 
 class Porosity(str, Enum):
-    """Hair porosity level"""
+    """Hair porosity level."""
 
     LOW = "Low"
     MEDIUM = "Medium"
@@ -36,7 +36,7 @@ class Porosity(str, Enum):
 
 
 class HairState(str, Enum):
-    """Current hair condition"""
+    """Current hair condition."""
 
     NATURAL = "Natural"
     RELAXED = "Relaxed"
@@ -46,7 +46,7 @@ class HairState(str, Enum):
 
 
 class HairGoal(str, Enum):
-    """User's hair goals"""
+    """User's hair goals."""
 
     GROWTH = "Growth"
     MOISTURE = "Moisture retention"
@@ -56,7 +56,7 @@ class HairGoal(str, Enum):
 
 
 class ProductType(str, Enum):
-    """Product category"""
+    """Product category."""
 
     SHAMPOO = "Shampoo"
     CONDITIONER = "Conditioner"
@@ -69,7 +69,7 @@ class ProductType(str, Enum):
 
 
 class VerdictLevel(str, Enum):
-    """Crown Score verdict levels"""
+    """Crown Score verdict levels."""
 
     CROWN_APPROVED = "CROWN APPROVED"
     GOOD_CHOICE = "GOOD CHOICE"
@@ -80,7 +80,7 @@ class VerdictLevel(str, Enum):
 
 @dataclass
 class HairProfile:
-    """User's complete hair profile"""
+    """User's complete hair profile."""
 
     hair_type: HairType
     porosity: Porosity
@@ -91,7 +91,7 @@ class HairProfile:
 
 @dataclass
 class Ingredient:
-    """Individual ingredient data"""
+    """Individual ingredient data."""
 
     name: str
     common_names: list[str]
@@ -105,7 +105,7 @@ class Ingredient:
 
 @dataclass
 class ScoreBreakdown:
-    """Detailed scoring breakdown for transparency"""
+    """Detailed scoring breakdown for transparency."""
 
     base_score: int = 100
     harmful_deductions: int = 0
@@ -137,7 +137,7 @@ class ScoreBreakdown:
 
 class IngredientDatabase:
     """Enterprise ingredient database with safety ratings and compatibility data
-    MVP: 200 most common ingredients
+    MVP: 200 most common ingredients.
     """
 
     # Tier 1: Severe Health Hazards
@@ -436,7 +436,7 @@ class IngredientDatabase:
 
     @classmethod
     def get_all_ingredients(cls) -> dict[str, Ingredient]:
-        """Combine all ingredient databases"""
+        """Combine all ingredient databases."""
         all_ingredients = {}
         all_ingredients.update(cls.SEVERE_HAZARDS)
         all_ingredients.update(cls.HARMFUL_INGREDIENTS)
@@ -448,7 +448,7 @@ class IngredientDatabase:
 
     @classmethod
     def find_ingredient(cls, ingredient_name: str) -> Ingredient | None:
-        """Find ingredient by name or common name (case-insensitive)"""
+        """Find ingredient by name or common name (case-insensitive)."""
         ingredient_name_lower = ingredient_name.lower().strip()
         all_ingredients = cls.get_all_ingredients()
 
@@ -473,10 +473,10 @@ class IngredientDatabase:
 
 class CrownScoreEngine:
     """Enterprise-grade hair product scoring engine
-    Analyzes products based on ingredients and user's hair profile
+    Analyzes products based on ingredients and user's hair profile.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.ingredient_db = IngredientDatabase()
 
     def calculate_crown_score(
@@ -486,7 +486,7 @@ class CrownScoreEngine:
         product_type: ProductType,
         ph_level: float | None = None,
     ) -> tuple[int, ScoreBreakdown, VerdictLevel]:
-        """Calculate Crown Score for a product
+        """Calculate Crown Score for a product.
 
         Args:
             ingredients: List of ingredient names
@@ -588,7 +588,7 @@ class CrownScoreEngine:
         return breakdown.final_score, breakdown, verdict
 
     def _calculate_goal_bonuses(self, ingredient: Ingredient, goals: list[HairGoal]) -> int:
-        """Calculate bonuses based on user's hair goals"""
+        """Calculate bonuses based on user's hair goals."""
         bonus = 0
 
         for goal in goals:
@@ -629,20 +629,19 @@ class CrownScoreEngine:
         return bonus
 
     def _calculate_ph_score(self, ph_level: float) -> int:
-        """Calculate pH balance score (ideal: 4.5-5.5)"""
+        """Calculate pH balance score (ideal: 4.5-5.5)."""
         if 4.5 <= ph_level <= 5.5:
             return 10  # Perfect!
-        elif (4.0 <= ph_level < 4.5) or (5.5 < ph_level <= 6.0):
+        if (4.0 <= ph_level < 4.5) or (5.5 < ph_level <= 6.0):
             return 0  # Acceptable
-        elif (3.5 <= ph_level < 4.0) or (6.0 < ph_level <= 7.0):
+        if (3.5 <= ph_level < 4.0) or (6.0 < ph_level <= 7.0):
             return -5  # Caution
-        else:
-            return -15  # Damaging
+        return -15  # Damaging
 
     def _calculate_product_type_modifiers(
         self, ingredients: list[str], product_type: ProductType, hair_profile: HairProfile,
     ) -> int:
-        """Product-type specific score adjustments"""
+        """Product-type specific score adjustments."""
         modifier = 0
         ingredient_names_lower = [i.lower() for i in ingredients]
 
@@ -681,7 +680,7 @@ class CrownScoreEngine:
         return modifier
 
     def _detect_dangerous_combinations(self, ingredients: list[str]) -> int:
-        """Detect dangerous ingredient combinations"""
+        """Detect dangerous ingredient combinations."""
         penalty = 0
         ingredient_names_lower = [i.lower() for i in ingredients]
 
@@ -700,17 +699,16 @@ class CrownScoreEngine:
         return penalty
 
     def _get_verdict(self, score: int) -> VerdictLevel:
-        """Determine verdict level based on score"""
+        """Determine verdict level based on score."""
         if score >= 90:
             return VerdictLevel.CROWN_APPROVED
-        elif score >= 75:
+        if score >= 75:
             return VerdictLevel.GOOD_CHOICE
-        elif score >= 50:
+        if score >= 50:
             return VerdictLevel.USE_CAUTION
-        elif score >= 25:
+        if score >= 25:
             return VerdictLevel.NOT_RECOMMENDED
-        else:
-            return VerdictLevel.AVOID
+        return VerdictLevel.AVOID
 
 
 # ============================================================================

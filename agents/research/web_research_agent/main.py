@@ -31,7 +31,7 @@ from .agent_logic import WebResearchLogic  # noqa: E402
 
 # Environment setup
 def setup_environment():
-    """Setup environment variables with proper fallback"""
+    """Setup environment variables with proper fallback."""
     dotenv_paths = [os.path.join(project_root_main, ".env"), ".env"]
 
     for dotenv_path in dotenv_paths:
@@ -70,7 +70,7 @@ agent_logic_instance: WebResearchLogic | None = None
 
 
 class WebResearchAgentManager:
-    """Main agent manager for WebResearchAgent"""
+    """Main agent manager for WebResearchAgent."""
 
     def __init__(self) -> None:
         self.mcp_client: MCPClient | None = None
@@ -79,7 +79,7 @@ class WebResearchAgentManager:
         self.shutdown_complete = False
 
     async def handle_incoming_message(self, message: MCPMessage) -> None:
-        """Handle incoming messages with proper response processing"""
+        """Handle incoming messages with proper response processing."""
         if not self.web_research_logic or not self.mcp_client:
             logger.error("Logic/MCPClient instance missing in WebResearchAgent handler")
             return
@@ -112,7 +112,7 @@ class WebResearchAgentManager:
             await self._handle_message_error(message, e)
 
     async def _handle_logic_response(self, response: dict[str, Any], original_header: MCPHeader) -> None:
-        """Handle response from logic with proper validation"""
+        """Handle response from logic with proper validation."""
         try:
             # Validate response structure
             if not isinstance(response, dict):
@@ -155,7 +155,7 @@ class WebResearchAgentManager:
             logger.error(f"Error handling logic response: {e}", exc_info=True)
 
     async def _handle_message_error(self, message: MCPMessage, error: Exception) -> None:
-        """Handle errors during message processing"""
+        """Handle errors during message processing."""
         try:
             if not message or not message.mcp_header:
                 logger.error("Cannot send error response: message/header missing")
@@ -200,7 +200,7 @@ class WebResearchAgentManager:
             logger.error(f"Failed to send error response: {send_error}", exc_info=True)
 
     async def initialize_components(self) -> bool | None:
-        """Initialize WebResearchLogic and MCPClient"""
+        """Initialize WebResearchLogic and MCPClient."""
         try:
             # Initialize WebResearchLogic
             self.web_research_logic = WebResearchLogic(
@@ -234,7 +234,7 @@ class WebResearchAgentManager:
             return False
 
     def setup_signal_handlers(self) -> None:
-        """Setup signal handlers for graceful shutdown"""
+        """Setup signal handlers for graceful shutdown."""
         try:
             loop = asyncio.get_running_loop()
 
@@ -254,7 +254,7 @@ class WebResearchAgentManager:
             logger.warning(f"Could not setup signal handlers: {e}")
 
     async def connect_and_register(self) -> bool | None:
-        """Connect to MCP server and register agent"""
+        """Connect to MCP server and register agent."""
         try:
             await self.mcp_client.connect()
 
@@ -274,7 +274,7 @@ class WebResearchAgentManager:
             return False
 
     async def run_main_loop(self) -> None:
-        """Main agent event loop"""
+        """Main agent event loop."""
         logger.info(f"{AGENT_ID} entering main event loop...")
 
         try:
@@ -286,7 +286,7 @@ class WebResearchAgentManager:
             logger.error(f"Error in main event loop: {e}", exc_info=True)
 
     async def shutdown(self) -> None:
-        """Graceful shutdown of all components"""
+        """Graceful shutdown of all components."""
         if self.shutdown_complete:
             return
 
@@ -311,7 +311,7 @@ class WebResearchAgentManager:
 
 
 async def main() -> int | None:
-    """Main entry point"""
+    """Main entry point."""
     agent_manager = WebResearchAgentManager()
 
     # Update global instances for backward compatibility

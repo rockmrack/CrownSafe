@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Comprehensive Test Suite Runner for BabyShield Backend
-Runs all possible tests with detailed reporting and coverage analysis
+Runs all possible tests with detailed reporting and coverage analysis.
 """
 
 import json
@@ -11,7 +11,7 @@ from datetime import datetime
 
 
 class ComprehensiveTestRunner:
-    def __init__(self):
+    def __init__(self) -> None:
         self.results = {
             "timestamp": datetime.now().isoformat(),
             "tests_run": 0,
@@ -23,7 +23,7 @@ class ComprehensiveTestRunner:
         }
 
     def run_command(self, cmd, category):
-        """Run a test command and capture results"""
+        """Run a test command and capture results."""
         print(f"\n{'=' * 80}")
         print(f"Running: {category}")
         print(f"Command: {' '.join(cmd)}")
@@ -65,8 +65,8 @@ class ComprehensiveTestRunner:
             }
             return False
 
-    def run_all_tests(self):
-        """Run comprehensive test suite"""
+    def run_all_tests(self) -> None:
+        """Run comprehensive test suite."""
         test_suites = [
             # 1. Unit Tests (All test files)
             {
@@ -242,8 +242,8 @@ class ComprehensiveTestRunner:
         # Generate final report
         self.generate_report(passed, failed, len(test_suites))
 
-    def generate_report(self, passed, failed, total):
-        """Generate comprehensive test report"""
+    def generate_report(self, passed, failed, total) -> None:
+        """Generate comprehensive test report."""
         print("\n" + "=" * 80)
         print("COMPREHENSIVE TEST REPORT")
         print("=" * 80 + "\n")

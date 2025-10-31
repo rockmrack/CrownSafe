@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Test script for Advanced BabyShield Features API
-Tests web research, guidelines, visual recognition, and monitoring
+Tests web research, guidelines, visual recognition, and monitoring.
 """
 
 import asyncio
@@ -14,8 +14,8 @@ BASE_URL = "http://localhost:8001"  # Local testing
 # BASE_URL = "https://babyshield.cureviax.ai"  # Production
 
 
-async def test_web_research():
-    """Test web research for product safety"""
+async def test_web_research() -> None:
+    """Test web research for product safety."""
     print("\n" + "=" * 60)
     print("Testing Web Research Agent")
     print("=" * 60)
@@ -70,8 +70,8 @@ async def test_web_research():
             print(f"❌ Connection error: {e}")
 
 
-async def test_guidelines():
-    """Test age-appropriate guidelines"""
+async def test_guidelines() -> None:
+    """Test age-appropriate guidelines."""
     print("\n" + "=" * 60)
     print("Testing Guidelines Agent")
     print("=" * 60)
@@ -134,8 +134,8 @@ async def test_guidelines():
                 print(f"  ❌ Error: {e}")
 
 
-async def test_visual_recognition():
-    """Test visual product recognition"""
+async def test_visual_recognition() -> None:
+    """Test visual product recognition."""
     print("\n" + "=" * 60)
     print("Testing Visual Recognition")
     print("=" * 60)
@@ -241,8 +241,8 @@ async def test_visual_recognition():
                 print("\n  🧹 Cleaned up test image")
 
 
-async def test_monitoring():
-    """Test continuous monitoring setup"""
+async def test_monitoring() -> None:
+    """Test continuous monitoring setup."""
     print("\n" + "=" * 60)
     print("Testing Continuous Monitoring")
     print("=" * 60)
@@ -309,8 +309,8 @@ async def test_monitoring():
             print(f"❌ Connection error: {e}")
 
 
-async def test_integration():
-    """Test how these features work together"""
+async def test_integration() -> None:
+    """Test how these features work together."""
     print("\n" + "=" * 60)
     print("Testing Feature Integration")
     print("=" * 60)
@@ -368,8 +368,8 @@ async def test_integration():
         print("   • Continuous monitoring alerts")
 
 
-async def main():
-    """Run all tests"""
+async def main() -> None:
+    """Run all tests."""
     print("\n" + "🚀 ADVANCED BABYSHIELD FEATURES TEST SUITE 🚀".center(60, "="))
     print(f"Testing against: {BASE_URL}")
     print(f"Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")

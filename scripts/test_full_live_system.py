@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("test_live_direct")
 
 
-async def run_live_test(barcode: str):
+async def run_live_test(barcode: str) -> None:
     logger.info(f"Starting 100% live test for barcode: {barcode}")
 
     # 1. Live recall ingestion

@@ -6,12 +6,12 @@ from core_infra.mcp_client_library.client import MCPClient
 from core_infra.mcp_client_library.models import MCPMessage
 
 
-async def message_handler(message: MCPMessage):
+async def message_handler(message: MCPMessage) -> None:
     print(f"Received: {message.mcp_header.message_type}")
 
 
-async def test_commander_direct():
-    """Test sending directly to commander"""
+async def test_commander_direct() -> None:
+    """Test sending directly to commander."""
     client = MCPClient(
         agent_id="test_direct_client",
         agent_name="Test Direct Client",

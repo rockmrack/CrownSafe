@@ -1,5 +1,5 @@
 """Admin authentication for secure admin endpoints
-Uses API key authentication with rate limiting
+Uses API key authentication with rate limiting.
 """
 
 import hashlib
@@ -34,7 +34,7 @@ api_key_header = APIKeyHeader(name="X-Admin-Key", auto_error=False)
 
 
 async def require_admin(request: Request, x_admin_key: str | None = Depends(api_key_header)) -> str:
-    """Require admin authentication via API key
+    """Require admin authentication via API key.
 
     Args:
         request: FastAPI request object
@@ -112,7 +112,7 @@ async def require_admin(request: Request, x_admin_key: str | None = Depends(api_
 
 async def optional_admin(request: Request, x_admin_key: str | None = Depends(api_key_header)) -> str | None:
     """Optional admin authentication
-    Returns admin identifier if authenticated, None otherwise
+    Returns admin identifier if authenticated, None otherwise.
 
     Args:
         request: FastAPI request object
@@ -134,7 +134,7 @@ async def optional_admin(request: Request, x_admin_key: str | None = Depends(api
 
 
 class AdminRateLimit:
-    """Special rate limits for admin endpoints"""
+    """Special rate limits for admin endpoints."""
 
     # Admin endpoints have lower rate limits for security
     INGEST_LIMIT = 5  # 5 ingestions per hour
@@ -143,28 +143,28 @@ class AdminRateLimit:
 
     @classmethod
     def get_ingest_limiter(cls):
-        """Rate limiter for ingestion endpoints"""
+        """Rate limiter for ingestion endpoints."""
         from api.rate_limiting import RateLimiter
 
         return RateLimiter(times=cls.INGEST_LIMIT, seconds=3600)
 
     @classmethod
     def get_reindex_limiter(cls):
-        """Rate limiter for reindex endpoints"""
+        """Rate limiter for reindex endpoints."""
         from api.rate_limiting import RateLimiter
 
         return RateLimiter(times=cls.REINDEX_LIMIT, seconds=3600)
 
     @classmethod
     def get_query_limiter(cls):
-        """Rate limiter for query endpoints"""
+        """Rate limiter for query endpoints."""
         from api.rate_limiting import RateLimiter
 
         return RateLimiter(times=cls.QUERY_LIMIT, seconds=60)
 
 
 def validate_admin_key(key: str) -> bool:
-    """Validate an admin key format
+    """Validate an admin key format.
 
     Args:
         key: API key to validate
@@ -185,7 +185,7 @@ def validate_admin_key(key: str) -> bool:
 
 
 def generate_admin_key() -> str:
-    """Generate a secure admin API key
+    """Generate a secure admin API key.
 
     Returns:
         Random 64-character API key

@@ -1,4 +1,4 @@
-"""create pg_trgm extension
+"""create pg_trgm extension.
 
 Revision ID: 20251012_create_pg_trgm
 Revises: bcef138c88a2

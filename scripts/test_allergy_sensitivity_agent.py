@@ -54,7 +54,7 @@ def setup_test_family():
         return test_user.id
 
 
-def test_allergy_logic():
+def test_allergy_logic() -> None:
     print("--- Testing AllergySensitivityAgent Logic ---")
     create_tables()
     user_id = setup_test_family()

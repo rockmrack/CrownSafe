@@ -1,11 +1,11 @@
-"""Comprehensive API endpoint tests"""
+"""Comprehensive API endpoint tests."""
 
 import unittest
 
 
 class TestEndpointsComprehensive(unittest.TestCase):
-    def test_api_module_exists(self):
-        """Test that API module can be imported"""
+    def test_api_module_exists(self) -> None:
+        """Test that API module can be imported."""
         try:
             import api
 
@@ -13,8 +13,8 @@ class TestEndpointsComprehensive(unittest.TestCase):
         except ImportError:
             self.skipTest("API module not found")
 
-    def test_api_has_main(self):
-        """Test that API has main module"""
+    def test_api_has_main(self) -> None:
+        """Test that API has main module."""
         try:
             from api import main
 

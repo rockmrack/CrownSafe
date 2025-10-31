@@ -1,5 +1,5 @@
 """Crown Safe System Health Dashboard
-Unified monitoring endpoint for all enterprise health metrics
+Unified monitoring endpoint for all enterprise health metrics.
 
 Features:
 - Aggregates health from all subsystems
@@ -12,7 +12,7 @@ Features:
 """
 
 import logging
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -20,16 +20,16 @@ logger = logging.getLogger(__name__)
 
 class SystemHealthDashboard:
     """Unified health dashboard for Crown Safe
-    Aggregates metrics from all monitoring subsystems
+    Aggregates metrics from all monitoring subsystems.
     """
 
     def __init__(self) -> None:
-        """Initialize health dashboard"""
+        """Initialize health dashboard."""
         self.startup_time = datetime.now(UTC)
 
     def get_comprehensive_health(self) -> dict[str, Any]:
         """Get comprehensive system health status
-        Aggregates metrics from all subsystems
+        Aggregates metrics from all subsystems.
 
         Returns:
             Dictionary with complete health information
@@ -153,7 +153,7 @@ class SystemHealthDashboard:
         return health_data
 
     def _get_security_status(self) -> dict[str, Any]:
-        """Get security audit status"""
+        """Get security audit status."""
         try:
             from core_infra.security_validator import security_validator
 
@@ -170,7 +170,7 @@ class SystemHealthDashboard:
             return {"status": "error", "error": str(e)}
 
     def _get_azure_storage_health(self) -> dict[str, Any]:
-        """Get Azure Storage health status"""
+        """Get Azure Storage health status."""
         try:
             from core_infra.azure_storage import AzureBlobStorageClient
             from core_infra.azure_storage_health import (
@@ -201,7 +201,7 @@ class SystemHealthDashboard:
             return {"status": "error", "error": str(e)}
 
     def _get_cache_stats(self) -> dict[str, Any]:
-        """Get cache performance statistics"""
+        """Get cache performance statistics."""
         try:
             from core_infra.azure_storage_cache import get_cache_manager
 
@@ -220,7 +220,7 @@ class SystemHealthDashboard:
             return {"cache_enabled": False, "error": str(e)}
 
     def _get_connection_pool_stats(self) -> dict[str, Any]:
-        """Get connection pool statistics"""
+        """Get connection pool statistics."""
         try:
             from core_infra.azure_connection_pool import get_connection_pool
 
@@ -238,7 +238,7 @@ class SystemHealthDashboard:
             return {"error": str(e)}
 
     def _get_database_health(self) -> dict[str, Any]:
-        """Get database connectivity health"""
+        """Get database connectivity health."""
         try:
             from sqlalchemy import text
 

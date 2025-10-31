@@ -1,34 +1,35 @@
 """Example unit tests demonstrating proper test structure
-This file shows best practices for unit testing in the BabyShield backend
+This file shows best practices for unit testing in the BabyShield backend.
 """
 
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
+from typing import Never
 
 
 @pytest.mark.unit
 class TestBasicFunctionality:
-    """Basic unit tests for core functionality"""
+    """Basic unit tests for core functionality."""
 
-    def test_string_manipulation(self):
-        """Test basic string operations"""
+    def test_string_manipulation(self) -> None:
+        """Test basic string operations."""
         test_string = "BabyShield"
         assert test_string.lower() == "babyshield"
         assert test_string.upper() == "BABYSHIELD"
         assert len(test_string) == 10
 
-    def test_list_operations(self):
-        """Test list operations"""
+    def test_list_operations(self) -> None:
+        """Test list operations."""
         items = [1, 2, 3, 4, 5]
         assert sum(items) == 15
         assert max(items) == 5
         assert min(items) == 1
         assert len(items) == 5
 
-    def test_dictionary_operations(self):
-        """Test dictionary operations"""
+    def test_dictionary_operations(self) -> None:
+        """Test dictionary operations."""
         data = {"name": "BabyShield", "version": "1.0.0", "active": True}
         assert data["name"] == "BabyShield"
         assert data.get("missing", "default") == "default"
@@ -38,10 +39,10 @@ class TestBasicFunctionality:
 
 @pytest.mark.unit
 class TestDateTimeOperations:
-    """Test date and time related operations"""
+    """Test date and time related operations."""
 
-    def test_date_calculations(self):
-        """Test date arithmetic"""
+    def test_date_calculations(self) -> None:
+        """Test date arithmetic."""
         now = datetime.now()
         tomorrow = now + timedelta(days=1)
         yesterday = now - timedelta(days=1)
@@ -50,8 +51,8 @@ class TestDateTimeOperations:
         assert yesterday < now
         assert (tomorrow - yesterday).days == 2
 
-    def test_date_formatting(self):
-        """Test date formatting"""
+    def test_date_formatting(self) -> None:
+        """Test date formatting."""
         test_date = datetime(2024, 1, 15, 10, 30, 0)
 
         assert test_date.year == 2024
@@ -62,11 +63,11 @@ class TestDateTimeOperations:
 
 @pytest.mark.unit
 class TestMockingExamples:
-    """Demonstrate mocking patterns"""
+    """Demonstrate mocking patterns."""
 
     @patch("requests.get")
-    def test_api_call_mocking(self, mock_get):
-        """Test mocking external API calls"""
+    def test_api_call_mocking(self, mock_get) -> None:
+        """Test mocking external API calls."""
         # Setup mock response
         mock_response = Mock()
         mock_response.status_code = 200
@@ -84,8 +85,8 @@ class TestMockingExamples:
         assert len(response.json()["data"]) == 3
         mock_get.assert_called_once_with("https://api.example.com/data")
 
-    def test_function_mocking(self):
-        """Test mocking internal functions"""
+    def test_function_mocking(self) -> None:
+        """Test mocking internal functions."""
         mock_func = MagicMock(return_value=42)
 
         result = mock_func(10, 20)
@@ -96,17 +97,17 @@ class TestMockingExamples:
 
 @pytest.mark.unit
 class TestExceptionHandling:
-    """Test exception handling patterns"""
+    """Test exception handling patterns."""
 
-    def test_exception_raised(self):
-        """Test that exceptions are raised correctly"""
+    def test_exception_raised(self) -> Never:
+        """Test that exceptions are raised correctly."""
         with pytest.raises(ValueError) as exc_info:
             raise ValueError("Invalid value")
 
         assert str(exc_info.value) == "Invalid value"
 
-    def test_exception_not_raised(self):
-        """Test that valid operations don't raise exceptions"""
+    def test_exception_not_raised(self) -> None:
+        """Test that valid operations don't raise exceptions."""
         try:
             result = 10 / 2
             assert result == 5
@@ -124,8 +125,8 @@ class TestExceptionHandling:
         (10, 3628800),  # 10! = 3628800
     ],
 )
-def test_factorial_parametrized(input_val, expected):
-    """Test factorial calculation with multiple inputs"""
+def test_factorial_parametrized(input_val, expected) -> None:
+    """Test factorial calculation with multiple inputs."""
     import math
 
     assert math.factorial(input_val) == expected
@@ -133,19 +134,19 @@ def test_factorial_parametrized(input_val, expected):
 
 @pytest.mark.unit
 class TestFixtureUsage:
-    """Demonstrate fixture usage"""
+    """Demonstrate fixture usage."""
 
     @pytest.fixture
     def sample_data(self):
-        """Provide sample data for tests"""
+        """Provide sample data for tests."""
         return {
             "users": ["alice", "bob", "charlie"],
             "scores": [95, 87, 92],
             "active": True,
         }
 
-    def test_with_fixture(self, sample_data):
-        """Test using a fixture"""
+    def test_with_fixture(self, sample_data) -> None:
+        """Test using a fixture."""
         assert len(sample_data["users"]) == 3
         assert sample_data["active"] is True
         assert sum(sample_data["scores"]) == 274
@@ -155,8 +156,8 @@ class TestFixtureUsage:
 # Performance test example (usually in tests/performance/)
 @pytest.mark.performance
 @pytest.mark.benchmark
-def test_performance_example(benchmark):
-    """Example performance benchmark"""
+def test_performance_example(benchmark) -> None:
+    """Example performance benchmark."""
 
     def compute_sum():
         return sum(range(1000))
@@ -167,8 +168,8 @@ def test_performance_example(benchmark):
 
 # Skip example for incomplete tests
 @pytest.mark.skip(reason="Feature not yet implemented")
-def test_future_feature():
-    """Test for a feature that's not yet implemented"""
+def test_future_feature() -> None:
+    """Test for a feature that's not yet implemented."""
     # This test will be skipped
     assert False, "This should not run"
 
@@ -178,8 +179,8 @@ def test_future_feature():
     not pytest.importorskip("pandas", reason="pandas not installed"),
     reason="Requires pandas",
 )
-def test_pandas_operations():
-    """Test that requires pandas (skipped if not installed)"""
+def test_pandas_operations() -> None:
+    """Test that requires pandas (skipped if not installed)."""
     import pandas as pd
 
     df = pd.DataFrame({"a": [1, 2, 3]})

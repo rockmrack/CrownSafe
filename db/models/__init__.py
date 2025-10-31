@@ -1,4 +1,4 @@
-"""Models package for database ORM"""
+"""Models package for database ORM."""
 
 from .incident_report import AgencyNotification, IncidentCluster, IncidentReport
 from .ingestion_run import IngestionRun

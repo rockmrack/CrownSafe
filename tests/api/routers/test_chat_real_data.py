@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
@@ -10,13 +10,13 @@ from db.models.scan_history import ScanHistory
 
 
 class TestChatWithRealData:
-    """Test chat endpoints using real database data without monkeypatching fetch_scan_data"""
+    """Test chat endpoints using real database data without monkeypatching fetch_scan_data."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         self.client = TestClient(app)
 
     def _create_test_scan(self, db: Session, scan_id: str = None) -> ScanHistory:
-        """Helper to create a test scan record in the database"""
+        """Helper to create a test scan record in the database."""
         if scan_id is None:
             scan_id = f"test_scan_{uuid4().hex[:8]}"
 
@@ -49,8 +49,8 @@ class TestChatWithRealData:
         return scan
 
     @patch("api.routers.chat.ChatAgentLogic")
-    def test_explain_result_with_real_scan_data(self, mock_chat_agent_class):
-        """Test /explain-result endpoint with real scan data from database"""
+    def test_explain_result_with_real_scan_data(self, mock_chat_agent_class) -> None:
+        """Test /explain-result endpoint with real scan data from database."""
         # Setup mock database session
         mock_db = MagicMock(spec=Session)
 
@@ -143,8 +143,8 @@ class TestChatWithRealData:
         mock_conv,
         mock_chat_agent_class,
         mock_get_db,
-    ):
-        """Test /conversation endpoint with real scan data from database"""
+    ) -> None:
+        """Test /conversation endpoint with real scan data from database."""
         # Setup mock database session
         mock_db = MagicMock(spec=Session)
         mock_get_db.return_value = mock_db
@@ -215,8 +215,8 @@ class TestChatWithRealData:
         # Since we mocked chat_enabled_for and the endpoint succeeded,
         # the conversation was processed successfully
 
-    def test_explain_result_scan_not_found(self):
-        """Test /explain-result returns 404 for non-existent scan_id"""
+    def test_explain_result_scan_not_found(self) -> None:
+        """Test /explain-result returns 404 for non-existent scan_id."""
         # Setup mock database session
         mock_db = MagicMock(spec=Session)
 
@@ -247,8 +247,8 @@ class TestChatWithRealData:
         finally:
             app.dependency_overrides.clear()
 
-    def test_conversation_scan_not_found(self):
-        """Test /conversation returns proper error for non-existent scan_id"""
+    def test_conversation_scan_not_found(self) -> None:
+        """Test /conversation returns proper error for non-existent scan_id."""
         # Setup mock database session
         mock_db = MagicMock(spec=Session)
 

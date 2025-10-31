@@ -1,5 +1,5 @@
 """Unit tests for input validators
-Tests email, barcode, user ID, and other input validation
+Tests email, barcode, user ID, and other input validation.
 
 ⚠️ WARNING: These tests are currently STUBS and need implementation.
 They are marked as skipped to prevent false coverage metrics.
@@ -16,9 +16,9 @@ pytestmark = pytest.mark.skip(reason="⚠️ Test stubs - awaiting implementatio
 
 
 class TestInputValidators:
-    """Test suite for input validation functions"""
+    """Test suite for input validation functions."""
 
-    def test_validate_email_with_valid_email_returns_email(self):
+    def test_validate_email_with_valid_email_returns_email(self) -> None:
         """Test email validation with valid email.
 
         Given: Valid email address
@@ -29,7 +29,7 @@ class TestInputValidators:
         """
         pass
 
-    def test_validate_email_with_invalid_format_raises_error(self):
+    def test_validate_email_with_invalid_format_raises_error(self) -> None:
         """Test email validation with invalid format.
 
         Given: Invalid email format
@@ -40,7 +40,7 @@ class TestInputValidators:
         """
         pass
 
-    def test_validate_email_with_dangerous_characters_raises_error(self):
+    def test_validate_email_with_dangerous_characters_raises_error(self) -> None:
         """Test email validation rejects injection attempts.
 
         Given: Email with SQL/XSS characters
@@ -51,7 +51,7 @@ class TestInputValidators:
         """
         pass
 
-    def test_validate_barcode_with_valid_upc_returns_barcode(self):
+    def test_validate_barcode_with_valid_upc_returns_barcode(self) -> None:
         """Test barcode validation with valid UPC.
 
         Given: Valid UPC barcode
@@ -62,7 +62,7 @@ class TestInputValidators:
         """
         pass
 
-    def test_validate_barcode_with_invalid_characters_raises_error(self):
+    def test_validate_barcode_with_invalid_characters_raises_error(self) -> None:
         """Test barcode validation rejects invalid characters.
 
         Given: Barcode with letters or special chars
@@ -73,7 +73,7 @@ class TestInputValidators:
         """
         pass
 
-    def test_validate_user_id_with_positive_integer_returns_id(self):
+    def test_validate_user_id_with_positive_integer_returns_id(self) -> None:
         """Test user ID validation with valid ID.
 
         Given: Positive integer user ID
@@ -84,7 +84,7 @@ class TestInputValidators:
         """
         pass
 
-    def test_validate_user_id_with_zero_raises_error(self):
+    def test_validate_user_id_with_zero_raises_error(self) -> None:
         """Test user ID validation rejects zero.
 
         Given: User ID of 0
@@ -95,7 +95,7 @@ class TestInputValidators:
         """
         pass
 
-    def test_validate_user_id_with_negative_raises_error(self):
+    def test_validate_user_id_with_negative_raises_error(self) -> None:
         """Test user ID validation rejects negative numbers.
 
         Given: Negative user ID
@@ -106,7 +106,7 @@ class TestInputValidators:
         """
         pass
 
-    def test_sanitize_input_removes_html_tags(self):
+    def test_sanitize_input_removes_html_tags(self) -> None:
         """Test input sanitization removes HTML.
 
         Given: Input with HTML tags
@@ -117,7 +117,7 @@ class TestInputValidators:
         """
         pass
 
-    def test_sanitize_input_removes_script_tags(self):
+    def test_sanitize_input_removes_script_tags(self) -> None:
         """Test input sanitization removes script tags.
 
         Given: Input with <script> tags
@@ -128,7 +128,7 @@ class TestInputValidators:
         """
         pass
 
-    def test_validate_search_query_with_valid_query_returns_query(self):
+    def test_validate_search_query_with_valid_query_returns_query(self) -> None:
         """Test search query validation.
 
         Given: Valid search query
@@ -139,7 +139,7 @@ class TestInputValidators:
         """
         pass
 
-    def test_validate_search_query_with_sql_injection_raises_error(self):
+    def test_validate_search_query_with_sql_injection_raises_error(self) -> None:
         """Test search query validation blocks SQL injection.
 
         Given: Query with SQL injection attempt
@@ -150,7 +150,7 @@ class TestInputValidators:
         """
         pass
 
-    def test_validate_product_name_with_valid_name_returns_name(self):
+    def test_validate_product_name_with_valid_name_returns_name(self) -> None:
         """Test product name validation.
 
         Given: Valid product name
@@ -161,7 +161,7 @@ class TestInputValidators:
         """
         pass
 
-    def test_validate_product_name_with_excessive_length_raises_error(self):
+    def test_validate_product_name_with_excessive_length_raises_error(self) -> None:
         """Test product name validation length limit.
 
         Given: Product name > 200 characters
@@ -174,9 +174,9 @@ class TestInputValidators:
 
 
 class TestPydanticModels:
-    """Test suite for Pydantic model validation"""
+    """Test suite for Pydantic model validation."""
 
-    def test_barcode_scan_request_with_valid_data_creates_model(self):
+    def test_barcode_scan_request_with_valid_data_creates_model(self) -> None:
         """Test BarcodeScanRequest model validation.
 
         Given: Valid barcode scan request data
@@ -187,7 +187,7 @@ class TestPydanticModels:
         """
         pass
 
-    def test_barcode_scan_request_with_missing_required_field_raises_error(self):
+    def test_barcode_scan_request_with_missing_required_field_raises_error(self) -> None:
         """Test BarcodeScanRequest requires all fields.
 
         Given: Request data missing required field
@@ -198,7 +198,7 @@ class TestPydanticModels:
         """
         pass
 
-    def test_product_search_request_with_valid_data_creates_model(self):
+    def test_product_search_request_with_valid_data_creates_model(self) -> None:
         """Test ProductSearchRequest model validation.
 
         Given: Valid search request data
@@ -209,7 +209,7 @@ class TestPydanticModels:
         """
         pass
 
-    def test_api_response_model_includes_all_fields(self):
+    def test_api_response_model_includes_all_fields(self) -> None:
         """Test ApiResponse model structure.
 
         Given: Response data

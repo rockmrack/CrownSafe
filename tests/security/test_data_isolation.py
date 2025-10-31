@@ -1,4 +1,4 @@
-"""Multi-Tenancy Data Isolation Testing Suite
+"""Multi-Tenancy Data Isolation Testing Suite.
 
 Tests data isolation between users, organizations, and tenant boundaries.
 Ensures no cross-tenant data leakage and proper access controls.
@@ -8,7 +8,7 @@ Date: October 10, 2025
 """
 
 import uuid
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from unittest.mock import patch
 
 import pytest
@@ -21,11 +21,11 @@ from core_infra.database import SessionLocal, engine
 @pytest.mark.security
 @pytest.mark.integration
 class TestMultiTenancyDataIsolation:
-    """Test suite for multi-tenancy data isolation"""
+    """Test suite for multi-tenancy data isolation."""
 
     @pytest.fixture
     def db_session(self):
-        """Create a fresh database session for testing"""
+        """Create a fresh database session for testing."""
         # Import models to register them with Base
         from api.models.chat_memory import (
             Conversation,
@@ -44,7 +44,7 @@ class TestMultiTenancyDataIsolation:
 
     @pytest.fixture
     def user_a(self, db_session):
-        """Create user A for testing"""
+        """Create user A for testing."""
         user = UserProfile(
             user_id=str(uuid.uuid4()),
             consent_personalization=True,
@@ -58,7 +58,7 @@ class TestMultiTenancyDataIsolation:
 
     @pytest.fixture
     def user_b(self, db_session):
-        """Create user B for testing"""
+        """Create user B for testing."""
         user = UserProfile(
             user_id=str(uuid.uuid4()),
             consent_personalization=True,
@@ -72,7 +72,7 @@ class TestMultiTenancyDataIsolation:
 
     @pytest.fixture
     def user_a_conversation(self, db_session, user_a):
-        """Create conversation for user A"""
+        """Create conversation for user A."""
         conversation = Conversation(
             id=str(uuid.uuid4()),
             user_id=user_a.user_id,
@@ -85,8 +85,8 @@ class TestMultiTenancyDataIsolation:
         db_session.refresh(conversation)
         return conversation
 
-    def test_user_cannot_access_another_user_conversations(self, db_session, user_a, user_b, user_a_conversation):
-        """Test User B cannot access User A's conversations
+    def test_user_cannot_access_another_user_conversations(self, db_session, user_a, user_b, user_a_conversation) -> None:
+        """Test User B cannot access User A's conversations.
 
         Acceptance Criteria:
         - Query for conversations returns only user's own data
@@ -110,8 +110,8 @@ class TestMultiTenancyDataIsolation:
 
         assert attempted_access is None, "User B should not access User A's data"
 
-    def test_api_endpoint_enforces_user_id_filtering(self, db_session, user_a, user_b, user_a_conversation):
-        """Test API endpoints enforce user_id filtering
+    def test_api_endpoint_enforces_user_id_filtering(self, db_session, user_a, user_b, user_a_conversation) -> None:
+        """Test API endpoints enforce user_id filtering.
 
         Acceptance Criteria:
         - GET /conversations returns only authenticated user's data
@@ -136,8 +136,8 @@ class TestMultiTenancyDataIsolation:
                 403,
             ], "Should not allow access to other user's data"
 
-    def test_database_query_row_level_security(self, db_session, user_a, user_b, user_a_conversation):
-        """Test database row-level security policies
+    def test_database_query_row_level_security(self, db_session, user_a, user_b, user_a_conversation) -> None:
+        """Test database row-level security policies.
 
         Acceptance Criteria:
         - Queries automatically filtered by user_id
@@ -164,8 +164,8 @@ class TestMultiTenancyDataIsolation:
         assert len(user_a_data) == 1
         assert user_a_data[0].id == user_a_conversation.id
 
-    def test_shared_resources_proper_access_control(self, db_session, user_a, user_b):
-        """Test shared resources have proper access control
+    def test_shared_resources_proper_access_control(self, db_session, user_a, user_b) -> None:
+        """Test shared resources have proper access control.
 
         Acceptance Criteria:
         - Shared articles visible to all users
@@ -190,8 +190,8 @@ class TestMultiTenancyDataIsolation:
         assert len(user_b_convs) == 1
         assert user_b_convs[0].user_id == user_b.user_id
 
-    def test_bulk_operations_respect_tenant_boundaries(self, db_session, user_a, user_b, user_a_conversation):
-        """Test bulk operations respect tenant boundaries
+    def test_bulk_operations_respect_tenant_boundaries(self, db_session, user_a, user_b, user_a_conversation) -> None:
+        """Test bulk operations respect tenant boundaries.
 
         Acceptance Criteria:
         - Bulk delete only affects user's own data
@@ -222,8 +222,8 @@ class TestMultiTenancyDataIsolation:
         user_b_conversations = db_session.query(Conversation).filter_by(user_id=user_b.user_id).count()
         assert user_b_conversations == 0  # User B had no conversations
 
-    def test_cross_tenant_foreign_key_prevention(self, db_session, user_a, user_b, user_a_conversation):
-        """Test prevention of cross-tenant foreign key references
+    def test_cross_tenant_foreign_key_prevention(self, db_session, user_a, user_b, user_a_conversation) -> None:
+        """Test prevention of cross-tenant foreign key references.
 
         Acceptance Criteria:
         - Cannot create message in another user's conversation
@@ -251,8 +251,8 @@ class TestMultiTenancyDataIsolation:
                     detail="Cannot add message to another user's conversation",
                 )
 
-    def test_cascade_delete_respects_tenant_isolation(self, db_session, user_a, user_a_conversation):
-        """Test cascade delete respects tenant isolation
+    def test_cascade_delete_respects_tenant_isolation(self, db_session, user_a, user_a_conversation) -> None:
+        """Test cascade delete respects tenant isolation.
 
         Acceptance Criteria:
         - Deleting conversation removes it from database
@@ -283,10 +283,10 @@ class TestMultiTenancyDataIsolation:
 
 @pytest.mark.security
 class TestOrganizationIsolation:
-    """Test multi-organization tenant isolation"""
+    """Test multi-organization tenant isolation."""
 
-    def test_organization_level_data_isolation(self):
-        """Test organization-level data isolation
+    def test_organization_level_data_isolation(self) -> None:
+        """Test organization-level data isolation.
 
         Acceptance Criteria:
         - Users in Org A cannot see Org B's data
@@ -298,8 +298,8 @@ class TestOrganizationIsolation:
         # BabyShield may not have organizations yet
         pass
 
-    def test_shared_data_across_organizations(self):
-        """Test shared data visibility across organizations
+    def test_shared_data_across_organizations(self) -> None:
+        """Test shared data visibility across organizations.
 
         Acceptance Criteria:
         - Global recalls visible to all orgs

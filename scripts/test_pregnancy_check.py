@@ -26,7 +26,7 @@ TEST_USER_ID = 1
 
 # --- Mock Agent Logic ---
 class MockProductIdentifierLogic:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.agent_id = "identify_product"
         self.process_task = AsyncMock(
             return_value={
@@ -41,7 +41,7 @@ class MockProductIdentifierLogic:
 
 
 class MockRecallDataAgentLogic:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.agent_id = "query_recalls_by_product"
         self.process_task = AsyncMock(
             return_value={
@@ -52,7 +52,7 @@ class MockRecallDataAgentLogic:
 
 
 class MockHazardAnalysisLogic:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.agent_id = "analyze_hazards"
         self.process_task = AsyncMock(
             return_value={
@@ -63,7 +63,7 @@ class MockHazardAnalysisLogic:
 
 
 class MockPregnancyCheckLogic:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.agent_id = "analyze_pregnancy_risks"
         self.process_task = AsyncMock(
             return_value={
@@ -170,7 +170,7 @@ async def run_pregnancy_test():
             return {"status": "FAILED", "error": str(e)}
 
 
-def setup_test_user():
+def setup_test_user() -> None:
     """Create or update test user."""
     with get_db_session() as db:
         user = db.query(User).filter_by(id=TEST_USER_ID).first()
@@ -194,7 +194,7 @@ def setup_test_user():
         db.commit()
 
 
-async def main():
+async def main() -> None:
     """Main test function."""
     # Set TEST_MODE
     os.environ["TEST_MODE"] = "true"

@@ -1,4 +1,4 @@
-"""add subscription unique constraint
+"""add subscription unique constraint.
 
 Revision ID: add_subscription_unique_constraint
 Revises: add_subscription_tables
@@ -18,7 +18,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    """Add unique constraint for subscription UPSERT operations"""
+    """Add unique constraint for subscription UPSERT operations."""
     # Add unique constraint for subscription UPSERT
     # This allows us to use ON CONFLICT (user_id, original_transaction_id)
     op.create_unique_constraint(
@@ -45,7 +45,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    """Remove unique constraint"""
+    """Remove unique constraint."""
     op.drop_constraint("uq_subscription_user_transaction", "subscriptions", type_="unique")
 
     # Optionally remove updated_at columns

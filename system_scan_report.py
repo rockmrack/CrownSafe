@@ -1,5 +1,5 @@
 """Crown Safe System Scan Report
-Generated: October 24, 2025
+Generated: October 24, 2025.
 """
 
 print("=" * 80)

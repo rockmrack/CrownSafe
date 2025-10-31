@@ -3,13 +3,13 @@
 import json
 import time
 import uuid
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 
 import redis
 
 
-def check_router_health():
-    """Comprehensive Router Agent health check"""
+def check_router_health() -> bool:
+    """Comprehensive Router Agent health check."""
     r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
     print("🏥 Router Agent Health Check\n")

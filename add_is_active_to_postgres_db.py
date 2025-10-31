@@ -26,7 +26,7 @@ DB_CONFIG = {
 }
 
 
-def main():
+def main() -> None:
     print("🔗 Connecting to POSTGRES database...")
     print(f"   Host: {DB_CONFIG['host']}")
     print(f"   Database: {DB_CONFIG['database']}")

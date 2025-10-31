@@ -1,4 +1,4 @@
-"""Add missing columns to users table
+"""Add missing columns to users table.
 
 Revision ID: 202410_04_002
 Revises: 202410_04_001
@@ -20,8 +20,8 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
-    """Add missing columns to users table"""
+def upgrade() -> None:
+    """Add missing columns to users table."""
     # Check if table exists
     conn = op.get_bind()
     inspector = sa.inspect(conn)
@@ -88,8 +88,8 @@ def upgrade():
                 )
 
 
-def downgrade():
-    """Remove added columns from users table"""
+def downgrade() -> None:
+    """Remove added columns from users table."""
     # Note: This doesn't remove is_premium if it existed before
     op.drop_column("users", "is_active")
     op.drop_column("users", "is_pregnant")

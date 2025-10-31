@@ -11,7 +11,7 @@ import socket
 import sys
 import traceback
 import uuid
-from datetime import date, datetime, timedelta, timezone, UTC
+from datetime import date, datetime, timedelta, UTC
 from pathlib import Path
 from typing import Any, Literal, cast
 
@@ -982,7 +982,7 @@ try:
     # Add direct route for report page at /report-incident
     @app.get("/report-incident", include_in_schema=False)
     async def report_incident_page():
-        """Serve the incident report page directly at /report-incident"""
+        """Serve the incident report page directly at /report-incident."""
         return FileResponse(str(STATIC_DIR / "report_incident.html"))
 
     logger.info("Incident Reporting System registered")
@@ -1428,7 +1428,7 @@ except Exception as e:
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
-    """Handle validation errors with our standard error envelope"""
+    """Handle validation errors with our standard error envelope."""
     trace_id = f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
 
     # Extract the first error message
@@ -1473,7 +1473,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 @app.exception_handler(json.JSONDecodeError)
 async def json_decode_exception_handler(request: Request, exc: json.JSONDecodeError) -> JSONResponse:
-    """Handle JSON decode errors with our standard error envelope"""
+    """Handle JSON decode errors with our standard error envelope."""
     trace_id = f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
 
     logger.warning(f"[{trace_id}] JSON decode error: {exc!s}")
@@ -1493,7 +1493,7 @@ async def json_decode_exception_handler(request: Request, exc: json.JSONDecodeEr
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
-    """Handle HTTP exceptions with our standard error envelope"""
+    """Handle HTTP exceptions with our standard error envelope."""
     trace_id = f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
 
     # Map status codes to error codes
@@ -1541,7 +1541,7 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException) 
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    """Handle all unhandled exceptions with our standard error envelope"""
+    """Handle all unhandled exceptions with our standard error envelope."""
     trace_id = f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
 
     logger.error(f"[{trace_id}] Unhandled exception: {exc}", exc_info=True)
@@ -1762,7 +1762,7 @@ def on_startup() -> None:
 
 @app.on_event("shutdown")
 async def shutdown_event() -> None:
-    """Clean shutdown of database connections"""
+    """Clean shutdown of database connections."""
     try:
         # Dispose of the engine connection pool
         engine.dispose()
@@ -1774,7 +1774,7 @@ async def shutdown_event() -> None:
 # Homepage and health check endpoints
 @app.get("/", tags=["system"], include_in_schema=False)
 async def root() -> FileResponse:
-    """Serve Crown Safe homepage"""
+    """Serve Crown Safe homepage."""
     homepage_path = STATIC_DIR / "index.html"
     if homepage_path.exists():
         return FileResponse(str(homepage_path), media_type="text/html")
@@ -1784,14 +1784,14 @@ async def root() -> FileResponse:
 
 @app.get("/health", tags=["system"], operation_id="health_check")
 def health_check():
-    """Basic health check (backwards compatibility)"""
+    """Basic health check (backwards compatibility)."""
     return ok({"status": "ok"})
 
 
 @app.get("/api/healthz", tags=["system"], include_in_schema=False)
 @app.get("/api/v1/healthz", tags=["system"], include_in_schema=False)
 async def healthz_api_alias() -> dict[str, str]:
-    """API-prefixed health aliases for load balancers and clients"""
+    """API-prefixed health aliases for load balancers and clients."""
     return {"status": "ok"}
 
 
@@ -1810,7 +1810,7 @@ async def public_test_endpoint() -> dict[str, str]:
 @app.get("/api/health", tags=["system"], include_in_schema=False)
 @app.get("/api/v1/health", tags=["system"], include_in_schema=False)
 async def health_api_alias() -> dict[str, str]:
-    """API-prefixed health aliases returning minimal payload"""
+    """API-prefixed health aliases returning minimal payload."""
     return {"status": "ok"}
 
 
@@ -1822,7 +1822,7 @@ async def health_api_alias() -> dict[str, str]:
 @app.get("/readyz", tags=["system"], operation_id="readyz_readiness")
 @app.head("/readyz", tags=["system"], operation_id="readyz_readiness_head")
 def readyz():
-    """Kubernetes/ALB readiness probe - checks if service can handle requests"""
+    """Kubernetes/ALB readiness probe - checks if service can handle requests."""
     try:
         # Check database connection
         with get_db_session() as db:
@@ -1858,7 +1858,7 @@ def readyz():
 
 @app.get("/debug/db-info", tags=["system"], operation_id="debug_db_info")
 def debug_db_info():
-    """Debug endpoint to check database connection and schema"""
+    """Debug endpoint to check database connection and schema."""
     try:
         with get_db_session() as db:
             # Get current database info
@@ -1904,7 +1904,7 @@ def debug_db_info():
 
 @app.get("/test", tags=["system"])
 def test_endpoint():
-    """Simple test endpoint to verify deployment"""
+    """Simple test endpoint to verify deployment."""
     import datetime
     import os
 
@@ -1925,7 +1925,7 @@ def test_endpoint():
 
 @app.get("/openapi.json", tags=["system"])
 async def get_openapi():
-    """Get OpenAPI specification"""
+    """Get OpenAPI specification."""
     return _original_app.openapi()
 
 
@@ -1934,7 +1934,7 @@ async def get_openapi():
 
 @app.get("/cache/stats", tags=["system"])
 async def cache_stats():
-    """Get Redis cache performance statistics for 39-agency system"""
+    """Get Redis cache performance statistics for 39-agency system."""
     try:
         stats = get_cache_stats()
         return {
@@ -1953,7 +1953,7 @@ async def cache_stats():
 
 @app.post("/cache/warm", tags=["system"])
 async def warm_cache():
-    """Manually trigger intelligent cache warming for 39-agency system"""
+    """Manually trigger intelligent cache warming for 39-agency system."""
     try:
         result = await warm_cache_now()
         return {
@@ -2060,8 +2060,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                             },
                         },
                     )
-                else:
-                    logger.warning(f"Visual agent returned non-completed status: {visual_result}")
+                logger.warning(f"Visual agent returned non-completed status: {visual_result}")
             except Exception as visual_error:
                 logger.error(f"Visual search routing failed: {visual_error}", exc_info=True)
                 # Continue to normal workflow
@@ -2159,67 +2158,66 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                     },
                 },
             )
-        else:
-            # Production: Return honest "no recalls found" response with performance metrics
-            response_time = int((datetime.now() - start_time).total_seconds() * 1000)
-            return JSONResponse(
-                status_code=200,
-                content={
-                    "status": "COMPLETED",
-                    "data": {
-                        "summary": "No recalls found for this product.",
-                        "risk_level": "None",
-                        "barcode": req.barcode,
-                        "model_number": req.model_number,
-                        "recalls_found": False,
-                        "checked_sources": [
-                            "CPSC",
-                            "FDA",
-                            "NHTSA",
-                            "USDA FSIS",
-                            "EU RAPEX",
-                            "UK OPSS",
-                            "SG CPSO",
-                            "France RappelConso",
-                            "Germany Food Alerts",
-                            "UK FSA",
-                            "Netherlands NVWA",
-                            "Health Canada",
-                            "CFIA",
-                            "Transport Canada",
-                            "ACCC Australia",
-                            "FSANZ",
-                            "TGA Australia",
-                            "NZ Trading Standards",
-                            "MPI New Zealand",
-                            "Medsafe New Zealand",
-                            "AESAN Spain",
-                            "Italy Ministry of Health",
-                            "Swiss FCAB",
-                            "Swiss FSVO",
-                            "Swissmedic",
-                            "Swedish Consumer Agency",
-                            "Swedish Food Agency",
-                            "Norwegian DSB",
-                            "Mattilsynet Norway",
-                            "Danish Safety Authority",
-                            "Danish Food Administration",
-                            "Finnish Tukes",
-                            "Finnish Food Authority",
-                            "PROFECO Mexico",
-                            "COFEPRIS Mexico",
-                            "ANVISA Brazil",
-                            "SENACON Brazil",
-                            "INMETRO Brazil",
-                            "ANMAT Argentina",
-                        ],
-                        "message": ("Checked major recall databases; no safety issues found."),
-                        "response_time_ms": response_time,
-                        "agencies_checked": AGENCY_COUNT,
-                        "performance": classify_performance(response_time),
-                    },
+        # Production: Return honest "no recalls found" response with performance metrics
+        response_time = int((datetime.now() - start_time).total_seconds() * 1000)
+        return JSONResponse(
+            status_code=200,
+            content={
+                "status": "COMPLETED",
+                "data": {
+                    "summary": "No recalls found for this product.",
+                    "risk_level": "None",
+                    "barcode": req.barcode,
+                    "model_number": req.model_number,
+                    "recalls_found": False,
+                    "checked_sources": [
+                        "CPSC",
+                        "FDA",
+                        "NHTSA",
+                        "USDA FSIS",
+                        "EU RAPEX",
+                        "UK OPSS",
+                        "SG CPSO",
+                        "France RappelConso",
+                        "Germany Food Alerts",
+                        "UK FSA",
+                        "Netherlands NVWA",
+                        "Health Canada",
+                        "CFIA",
+                        "Transport Canada",
+                        "ACCC Australia",
+                        "FSANZ",
+                        "TGA Australia",
+                        "NZ Trading Standards",
+                        "MPI New Zealand",
+                        "Medsafe New Zealand",
+                        "AESAN Spain",
+                        "Italy Ministry of Health",
+                        "Swiss FCAB",
+                        "Swiss FSVO",
+                        "Swissmedic",
+                        "Swedish Consumer Agency",
+                        "Swedish Food Agency",
+                        "Norwegian DSB",
+                        "Mattilsynet Norway",
+                        "Danish Safety Authority",
+                        "Danish Food Administration",
+                        "Finnish Tukes",
+                        "Finnish Food Authority",
+                        "PROFECO Mexico",
+                        "COFEPRIS Mexico",
+                        "ANVISA Brazil",
+                        "SENACON Brazil",
+                        "INMETRO Brazil",
+                        "ANMAT Argentina",
+                    ],
+                    "message": ("Checked major recall databases; no safety issues found."),
+                    "response_time_ms": response_time,
+                    "agencies_checked": AGENCY_COUNT,
+                    "performance": classify_performance(response_time),
                 },
-            )
+            },
+        )
 
     except Exception as e:
         logger.error(f"Workflow failed: {e}", exc_info=True)
@@ -2243,12 +2241,11 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                     },
                 },
             )
-        else:
-            # Production: Return proper error
-            raise HTTPException(
-                status_code=503,
-                detail=("Unable to check product safety at this time. Please try again later."),
-            ) from e
+        # Production: Return proper error
+        raise HTTPException(
+            status_code=503,
+            detail=("Unable to check product safety at this time. Please try again later."),
+        ) from e
 
 
 # Visual Product Suggestion Endpoint (Phase 2 - Safe suggestion mode)
@@ -2314,16 +2311,15 @@ async def suggest_product_from_image(request: dict[str, Any]):
                     ),
                 },
             )
-        else:
-            # Return empty suggestions instead of error for better UX
-            return JSONResponse(
-                status_code=200,
-                content={
-                    "success": True,
-                    "data": {"suggestions": []},
-                    "message": "No product suggestions found for this image.",
-                },
-            )
+        # Return empty suggestions instead of error for better UX
+        return JSONResponse(
+            status_code=200,
+            content={
+                "success": True,
+                "data": {"suggestions": []},
+                "message": "No product suggestions found for this image.",
+            },
+        )
     except Exception as e:
         logger.error(f"Error in visual product suggestion: {e}", exc_info=True)
         # Return empty suggestions instead of 500 error for better UX
@@ -2369,7 +2365,7 @@ async def autocomplete_products(
     domain: str | None = Query(None, description="Filter by domain (e.g., 'haircare')"),
 ):
     """Lightning-fast auto-complete for product names across 3,218+ recalls from 39 agencies
-    Optimized for real-time typing with intelligent matching and domain filtering
+    Optimized for real-time typing with intelligent matching and domain filtering.
     """
     try:
         # REMOVED FOR CROWN SAFE: RecallDB model no longer exists (replaced with HairProductModel)
@@ -2433,7 +2429,7 @@ async def autocomplete_brands(
     limit: int = Query(8, ge=1, le=15, description="Max brand suggestions"),
 ):
     """Brand auto-complete across 39 international agencies with 3,218+ real recalls
-    Includes canonicalization and UTF-8 encoding fixes
+    Includes canonicalization and UTF-8 encoding fixes.
     """
     try:
         # REMOVED FOR CROWN SAFE: RecallDB model no longer exists (replaced with HairProductModel)
@@ -2495,7 +2491,7 @@ async def advanced_search(request: Request):
     - pg_trgm fuzzy text search
     - Exact ID lookup
     - Keyword AND logic
-    - Deterministic sorting (score -> date -> id)
+    - Deterministic sorting (score -> date -> id).
     """
     trace_id = f"trace_{uuid.uuid4().hex[:16]}_{int(datetime.now().timestamp())}"
 
@@ -2747,7 +2743,7 @@ async def advanced_search(request: Request):
 
 @app.post("/api/v1/search/bulk", tags=["search"])
 async def bulk_search(req: BulkSearchRequest):
-    """Bulk barcode safety check - check multiple products at once"""
+    """Bulk barcode safety check - check multiple products at once."""
     logger.info(
         "Bulk search request for %s barcodes by user %s",
         len(req.barcodes),
@@ -2797,7 +2793,7 @@ async def bulk_search(req: BulkSearchRequest):
     tags=["analytics"],
 )
 async def recall_analytics():
-    """Get comprehensive analytics across all 39 international agencies"""
+    """Get comprehensive analytics across all 39 international agencies."""
     try:
         # REMOVED FOR CROWN SAFE: RecallDB model no longer exists (replaced with HairProductModel)
         # from core_infra.database import RecallDB
@@ -2854,7 +2850,7 @@ async def analytics_counts():
 
 @app.get("/api/v1/monitoring/agencies", tags=["monitoring"])
 async def agency_health_check():
-    """Monitor health status of all 39 international recall agencies"""
+    """Monitor health status of all 39 international recall agencies."""
     try:
         # REMOVED FOR CROWN SAFE: Baby product recall agency monitoring replaced
         # This function previously monitored 39 international baby product recall agencies
@@ -2879,7 +2875,7 @@ async def agency_health_check():
 
 @app.get("/api/v1/monitoring/system", tags=["monitoring"])
 async def system_health():
-    """Comprehensive system health check for Crown Safe"""
+    """Comprehensive system health check for Crown Safe."""
     try:
         # Check database health
         db_healthy = True
@@ -2943,7 +2939,7 @@ async def system_health():
 @app.get("/api/v1/monitoring/azure-storage", tags=["monitoring"])
 async def azure_storage_health():
     """Check Azure Blob Storage health and performance
-    Enterprise-grade monitoring for cloud storage
+    Enterprise-grade monitoring for cloud storage.
     """
     try:
         from core_infra.azure_storage_health import AzureStorageHealthCheck
@@ -2971,7 +2967,7 @@ async def azure_storage_health():
 
 @app.get("/api/v1/monitoring/azure-storage/metrics", tags=["monitoring"])
 async def azure_storage_metrics():
-    """Get Azure Blob Storage performance metrics"""
+    """Get Azure Blob Storage performance metrics."""
     try:
         from core_infra.azure_storage_health import azure_storage_metrics
 
@@ -2993,7 +2989,7 @@ async def azure_storage_metrics():
 @app.get("/api/v1/monitoring/security-audit", tags=["monitoring"])
 async def security_audit():
     """Comprehensive security configuration audit
-    Enterprise-grade security validation
+    Enterprise-grade security validation.
     """
     try:
         from core_infra.security_validator import security_validator
@@ -3019,7 +3015,7 @@ async def security_audit():
 @app.get("/api/v1/monitoring/azure-cache-stats", tags=["monitoring"])
 async def azure_cache_stats():
     """Azure Storage cache performance statistics
-    Redis-based SAS URL caching metrics
+    Redis-based SAS URL caching metrics.
     """
     try:
         from core_infra.azure_storage_cache import get_cache_manager
@@ -3050,7 +3046,7 @@ async def azure_cache_stats():
 @app.get("/api/v1/monitoring/system-health-dashboard", tags=["monitoring"])
 async def system_health_dashboard_endpoint():
     """Comprehensive system health dashboard
-    Aggregates all subsystem health metrics and provides overall health score
+    Aggregates all subsystem health metrics and provides overall health score.
     """
     try:
         from core_infra.system_health_dashboard import system_health_dashboard
@@ -3110,7 +3106,7 @@ class NotificationResponse(BaseModel):
     tags=["notifications"],
 )
 async def setup_notifications(req: NotificationRequest):
-    """Set up real-time notifications for specific products across 39 agencies"""
+    """Set up real-time notifications for specific products across 39 agencies."""
     logger.info(
         "Setting up notifications for user %s, %s products",
         req.user_id,
@@ -3153,7 +3149,7 @@ async def setup_notifications(req: NotificationRequest):
 
 @app.get("/api/v1/notifications/{notification_id}", tags=["notifications"])
 async def get_notification_status(notification_id: str):
-    """Get status of notification setup"""
+    """Get status of notification setup."""
     try:
         from core_infra.cache_manager import get_cached
 
@@ -3202,7 +3198,7 @@ class MobileScanResponse(BaseModel):
 @app.post("/api/v1/mobile/scan", response_model=MobileScanResponse, tags=["mobile"])
 async def mobile_scan(req: MobileScanRequest):
     """Mobile-optimized barcode scanning with ultra-fast response across 39 agencies
-    Designed for real-time scanning in stores
+    Designed for real-time scanning in stores.
     """
     start_time = datetime.now()
 
@@ -3309,12 +3305,12 @@ async def mobile_scan(req: MobileScanRequest):
 
 
 def to_gtin14(code: str) -> str:
-    """Convert barcode to GTIN-14 format"""
+    """Convert barcode to GTIN-14 format."""
     return code if len(code) == 14 else ("0" + code if len(code) == 13 else code)
 
 
 async def ultra_fast_check(barcode: str, user_id: int) -> dict:
-    """Ultra-fast barcode check with validation and mock recall data"""
+    """Ultra-fast barcode check with validation and mock recall data."""
     import time
 
     start_time = time.time()
@@ -3355,7 +3351,7 @@ async def mobile_instant_check(
     x_user_id: int | None = Header(None, alias="X-User-Id", description="User ID (header)"),
 ):
     """ULTRA-FAST mobile endpoint using hot path optimization
-    Target: <100ms responses for real-time scanning across 39 agencies
+    Target: <100ms responses for real-time scanning across 39 agencies.
     """
     # Resolve user_id from multiple sources (robust to redirect issues)
     uid = user_id or user_id_alt or x_user_id
@@ -3405,7 +3401,7 @@ async def mobile_quick_check(
     x_user_id: int | None = Header(None, alias="X-User-Id", description="User ID (header)"),
 ):
     """OPTIMIZED mobile endpoint with enhanced caching
-    Backward compatible but now much faster with optimizations
+    Backward compatible but now much faster with optimizations.
     """
     start_time = datetime.now()
 
@@ -3448,7 +3444,7 @@ async def mobile_quick_check(
 
 @app.get("/mobile/stats", tags=["mobile"])
 async def mobile_performance_stats():
-    """Get mobile hot path performance statistics"""
+    """Get mobile hot path performance statistics."""
     try:
         mobile_stats = get_mobile_stats()
         cache_stats = get_cache_stats()
@@ -3476,7 +3472,7 @@ async def mobile_performance_stats():
 
 @app.post("/api/v1/report-unsafe-product", tags=["safety-reports"], status_code=201)
 async def report_unsafe_product(request: Request):
-    """Community Safety Reporting: Report Unsafe Products
+    """Community Safety Reporting: Report Unsafe Products.
 
     Allows users to report dangerous products that may not yet be in the official
     recall database. This helps protect the community by identifying potential hazards early.
@@ -3614,7 +3610,7 @@ async def get_user_reports(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
 ):
-    """Get all safety reports submitted by a specific user
+    """Get all safety reports submitted by a specific user.
 
     **Parameters:**
     - user_id: User ID
@@ -3659,7 +3655,7 @@ async def get_user_reports(
 
 @app.post("/system/fix-upc-data", tags=["system"])
 async def fix_upc_data():
-    """CRITICAL FIX: Enhance existing recalls with UPC data for proper barcode scanning"""
+    """CRITICAL FIX: Enhance existing recalls with UPC data for proper barcode scanning."""
     logger.info("Starting critical UPC data enhancement...")
 
     # Crown Safe no longer maintains the legacy RecallDB table, so this endpoint
@@ -3796,7 +3792,7 @@ if __name__ == "__main__":
 # Metrics endpoint (Issue #32)
 @app.get("/metrics")
 async def get_metrics():
-    """Prometheus metrics endpoint"""
+    """Prometheus metrics endpoint."""
     from fastapi.responses import Response
 
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)

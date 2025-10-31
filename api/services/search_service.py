@@ -1,4 +1,4 @@
-"""Enhanced Search Service with pg_trgm fuzzy matching, keyword AND logic, and deterministic sorting"""
+"""Enhanced Search Service with pg_trgm fuzzy matching, keyword AND logic, and deterministic sorting."""
 
 import logging
 from datetime import date
@@ -11,13 +11,13 @@ logger = logging.getLogger(__name__)
 
 
 class SearchService:
-    """Advanced search service using PostgreSQL pg_trgm for fuzzy matching"""
+    """Advanced search service using PostgreSQL pg_trgm for fuzzy matching."""
 
     def __init__(self, db_session: Session) -> None:
         self.db = db_session
 
     def _normalize_text(self, s: str) -> str:
-        """Normalize text for search"""
+        """Normalize text for search."""
         return (s or "").strip().lower()
 
     def build_search_query(
@@ -38,7 +38,7 @@ class SearchService:
         offset: int = 0,
         cursor_data: dict[str, Any] | None = None,
     ) -> tuple[str, dict[str, Any], bool]:
-        """Build optimized SQL query using pg_trgm for fuzzy search
+        """Build optimized SQL query using pg_trgm for fuzzy search.
 
         Returns:
             (sql_query, params, use_scoring)
@@ -279,7 +279,7 @@ class SearchService:
         offset: int | None = None,
         cursor: str | None = None,
     ) -> dict[str, Any]:
-        """Execute search with fuzzy matching and return results"""
+        """Execute search with fuzzy matching and return results."""
         try:
             # Handle cursor-based pagination
             cursor_data = None
@@ -419,11 +419,11 @@ class SearchService:
             }
 
     def get_similarity_threshold(self) -> float:
-        """Get current similarity threshold for fuzzy matching"""
+        """Get current similarity threshold for fuzzy matching."""
         return 0.08  # 8% similarity minimum
 
     def check_pg_trgm_enabled(self) -> bool:
-        """Check if pg_trgm extension is enabled (Postgres only)"""
+        """Check if pg_trgm extension is enabled (Postgres only)."""
         try:
             # Only check on PostgreSQL
             if self.db.bind.dialect.name != "postgresql":

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""scripts/test_model_number_scan.py
+"""scripts/test_model_number_scan.py.
 
 End-to-end test script for the Model Number Scanning feature.
 Tests the new model_number parameter in the safety-check API endpoint
@@ -66,14 +66,13 @@ def test_api_endpoint_with_model_number(
                 "status_code": response.status_code,
                 "response": result,
             }
-        else:
-            logger.error(f"API returned non-200 status: {response.status_code}")
-            logger.error(f"Response text: {response.text}")
-            return {
-                "success": False,
-                "status_code": response.status_code,
-                "error": response.text,
-            }
+        logger.error(f"API returned non-200 status: {response.status_code}")
+        logger.error(f"Response text: {response.text}")
+        return {
+            "success": False,
+            "status_code": response.status_code,
+            "error": response.text,
+        }
 
     except requests.exceptions.RequestException as e:
         logger.exception(f"Request failed: {e}")
@@ -119,18 +118,17 @@ async def test_direct_database_search(model_number: str) -> dict[str, Any]:
                     "recalls_found": len(recalls),
                     "recalls": recall_data,
                 }
-            else:
-                # Check if we have any model numbers in the database at all
-                sample_models = (
-                    db.query(RecallDB.model_number).filter(RecallDB.model_number.isnot(None)).limit(10).all()
-                )
-                logger.info(f"No exact matches. Sample model numbers in database: {[m[0] for m in sample_models]}")
+            # Check if we have any model numbers in the database at all
+            sample_models = (
+                db.query(RecallDB.model_number).filter(RecallDB.model_number.isnot(None)).limit(10).all()
+            )
+            logger.info(f"No exact matches. Sample model numbers in database: {[m[0] for m in sample_models]}")
 
-                return {
-                    "success": True,
-                    "recalls_found": 0,
-                    "sample_models": [m[0] for m in sample_models],
-                }
+            return {
+                "success": True,
+                "recalls_found": 0,
+                "sample_models": [m[0] for m in sample_models],
+            }
 
     except Exception as e:
         logger.exception(f"Database search failed: {e}")
@@ -172,7 +170,7 @@ async def test_recall_data_agent_directly(model_number: str) -> dict[str, Any]:
         return {"success": False, "error": str(e)}
 
 
-def run_comprehensive_test_suite(user_id: int, barcode: str, model_number: str | None = None):
+def run_comprehensive_test_suite(user_id: int, barcode: str, model_number: str | None = None) -> None:
     """Run comprehensive test suite for model number scanning feature.
 
     Args:
@@ -245,7 +243,7 @@ def run_comprehensive_test_suite(user_id: int, barcode: str, model_number: str |
         sys.exit(2)
 
 
-def main():
+def main() -> None:
     """Main entry point for the test script."""
     parser = argparse.ArgumentParser(description="Test Model Number Scanning Feature")
     parser.add_argument("--user-id", type=int, default=1, help="User ID for API tests")

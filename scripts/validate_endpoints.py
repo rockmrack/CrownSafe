@@ -1,5 +1,5 @@
 """Comprehensive Endpoint Validation Tool
-Validates all API endpoints, checks status, and reports issues
+Validates all API endpoints, checks status, and reports issues.
 
 Features:
 - Automatic endpoint discovery from FastAPI app
@@ -27,14 +27,14 @@ logger = logging.getLogger(__name__)
 
 
 class EndpointValidator:
-    """Validates API endpoints and reports issues"""
+    """Validates API endpoints and reports issues."""
 
-    def __init__(self, base_url: str = "http://localhost:8001"):
+    def __init__(self, base_url: str = "http://localhost:8001") -> None:
         self.base_url = base_url
         self.results = []
 
     async def validate_endpoint(self, method: str, path: str, expected_status: int = 200) -> dict:
-        """Validate single endpoint
+        """Validate single endpoint.
 
         Args:
             method: HTTP method (GET, POST, etc.)
@@ -87,8 +87,8 @@ class EndpointValidator:
                 "error": str(e),
             }
 
-    async def validate_all_endpoints(self):
-        """Validate all known endpoints"""
+    async def validate_all_endpoints(self) -> None:
+        """Validate all known endpoints."""
         logger.info(f"Validating endpoints at {self.base_url}")
 
         # Core health endpoints
@@ -117,7 +117,7 @@ class EndpointValidator:
         self.results = await asyncio.gather(*tasks)
 
     def generate_report(self) -> str:
-        """Generate validation report"""
+        """Generate validation report."""
         if not self.results:
             return "No results available"
 
@@ -192,16 +192,16 @@ class EndpointValidator:
 
         return "\n".join(report)
 
-    def save_report(self, filename: str):
-        """Save report to file"""
+    def save_report(self, filename: str) -> None:
+        """Save report to file."""
         report = self.generate_report()
         with open(filename, "w", encoding="utf-8") as f:
             f.write(report)
         logger.info(f"Report saved to {filename}")
 
 
-async def main():
-    """Main validation function"""
+async def main() -> None:
+    """Main validation function."""
     import argparse
 
     parser = argparse.ArgumentParser(description="Validate API endpoints")

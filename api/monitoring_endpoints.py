@@ -1,7 +1,7 @@
-"""Product Monitoring Management Endpoints"""
+"""Product Monitoring Management Endpoints."""
 
 import logging
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlalchemy import desc
@@ -23,7 +23,7 @@ router = APIRouter(prefix="/api/v1/monitoring", tags=["Monitoring"])
 
 
 class AddProductRequest(AppModel):
-    """Request to add product to monitoring"""
+    """Request to add product to monitoring."""
 
     model_config = {"protected_namespaces": ()}  # Allow model_number field
 
@@ -35,7 +35,7 @@ class AddProductRequest(AppModel):
 
 
 class MonitoredProductResponse(AppModel):
-    """Monitored product details"""
+    """Monitored product details."""
 
     model_config = {"protected_namespaces": ()}  # Allow model_number field
 
@@ -60,7 +60,7 @@ async def add_product_to_monitoring(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Add a product to 24/7 monitoring"""
+    """Add a product to 24/7 monitoring."""
     try:
         # Add to monitoring
         product = await ProductMonitoringScheduler.add_product_to_monitoring(
@@ -105,7 +105,7 @@ async def get_monitored_products(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Get list of monitored products"""
+    """Get list of monitored products."""
     try:
         query = db.query(MonitoredProduct).filter(MonitoredProduct.user_id == current_user.id)
 
@@ -171,7 +171,7 @@ async def remove_product_from_monitoring(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Remove a product from monitoring"""
+    """Remove a product from monitoring."""
     try:
         product = (
             db.query(MonitoredProduct)
@@ -204,7 +204,7 @@ async def update_check_frequency(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Update monitoring frequency for a product"""
+    """Update monitoring frequency for a product."""
     try:
         product = (
             db.query(MonitoredProduct)
@@ -242,7 +242,7 @@ async def check_product_now(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Trigger immediate check for a product"""
+    """Trigger immediate check for a product."""
     try:
         product = (
             db.query(MonitoredProduct)
@@ -300,7 +300,7 @@ async def auto_add_from_scans(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Automatically add products from recent scans to monitoring"""
+    """Automatically add products from recent scans to monitoring."""
     try:
         from core_infra.visual_agent_models import ImageExtraction, ImageJob, JobStatus
 
@@ -361,7 +361,7 @@ async def auto_add_from_scans(
 
 @router.get("/status", response_model=ApiResponse)
 async def get_monitoring_status(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
-    """Get overall monitoring status and statistics"""
+    """Get overall monitoring status and statistics."""
     try:
         # Get user's monitoring stats
         total_products = (

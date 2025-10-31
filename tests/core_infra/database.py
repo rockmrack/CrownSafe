@@ -110,7 +110,7 @@ class RecallDB(Base):
             result[c.name] = v.isoformat() if isinstance(v, date) else v
         return result
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<RecallDB(id={self.id}, recall_id={self.recall_id!r})>"
 
 
@@ -130,7 +130,7 @@ class User(Base):
     def to_dict(self) -> dict:
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"<User(id={self.id}, email={self.email!r}, "
             f"is_subscribed={self.is_subscribed}, is_pregnant={self.is_pregnant})>"
@@ -156,7 +156,7 @@ class FamilyMember(Base):
             "allergies": [allergy.allergen for allergy in self.allergies],
         }
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<FamilyMember(id={self.id}, name={self.name!r}, user_id={self.user_id})>"
 
 
@@ -173,14 +173,14 @@ class Allergy(Base):
     def to_dict(self) -> dict:
         return {"id": self.id, "allergen": self.allergen, "member_id": self.member_id}
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Allergy(id={self.id}, allergen={self.allergen!r}, member_id={self.member_id})>"
 
 
 # -------------------------------------------------------------------
 # Migration: add missing columns and handle existing ones
 # -------------------------------------------------------------------
-def ensure_user_columns():
+def ensure_user_columns() -> None:
     """Add missing columns and handle deprecated columns from users table."""
     insp = inspect(engine)
     if "users" not in insp.get_table_names():
@@ -220,7 +220,7 @@ def ensure_user_columns():
     cleanup_deprecated_columns()
 
 
-def cleanup_deprecated_columns():
+def cleanup_deprecated_columns() -> None:
     """Remove deprecated columns if they exist."""
     insp = inspect(engine)
     if "users" not in insp.get_table_names():
@@ -241,7 +241,7 @@ def cleanup_deprecated_columns():
 # -------------------------------------------------------------------
 # Helper functions
 # -------------------------------------------------------------------
-def drop_all_tables_forcefully():
+def drop_all_tables_forcefully() -> None:
     """Drop ALL tables in the database, handling foreign key constraints."""
     with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
         inspector = inspect(engine)
@@ -295,17 +295,17 @@ def get_test_session():
     return SessionLocal()
 
 
-def create_tables():
+def create_tables() -> None:
     Base.metadata.create_all(bind=engine)
     ensure_user_columns()
 
 
-def drop_tables():
+def drop_tables() -> None:
     """Drop all tables handling foreign key constraints."""
     drop_all_tables_forcefully()
 
 
-def init_test_db():
+def init_test_db() -> None:
     """Initialize test database - drops ALL tables and recreates."""
     if not TEST_MODE:
         raise RuntimeError("init_test_db only allowed in TEST_MODE")
@@ -315,7 +315,7 @@ def init_test_db():
     print("Test database initialized.")
 
 
-def reset_database():
+def reset_database() -> None:
     """Reset database for tests."""
     if TEST_MODE:
         drop_all_tables_forcefully()
@@ -327,7 +327,7 @@ def reset_database():
 # -------------------------------------------------------------------
 # Test user creation/update
 # -------------------------------------------------------------------
-def ensure_test_users():
+def ensure_test_users() -> None:
     """Create or update test users for testing."""
     if TEST_MODE:
         try:
@@ -373,7 +373,7 @@ def ensure_test_users():
             print(f"Error creating test users: {e}")
 
 
-def create_or_update_test_user(user_id: int, email: str, is_subscribed: bool = False, is_pregnant: bool = False):
+def create_or_update_test_user(user_id: int, email: str, is_subscribed: bool = False, is_pregnant: bool = False) -> None:
     """Helper to create or update a single test user."""
     with get_db_session() as db:
         try:
@@ -403,7 +403,7 @@ def create_or_update_test_user(user_id: int, email: str, is_subscribed: bool = F
             print(f"Error creating/updating user {user_id}: {e}")
 
 
-def setup_test_environment():
+def setup_test_environment() -> None:
     """Set up test environment with sample users."""
     if not TEST_MODE:
         print("Not in TEST_MODE, skipping test setup")
@@ -466,20 +466,20 @@ def get_family_allergies(user_id: int):
 # -------------------------------------------------------------------
 class DatabaseTestCase:
     @classmethod
-    def setup_class(cls):
+    def setup_class(cls) -> None:
         os.environ["TEST_MODE"] = "true"
         cls.session = get_test_session()
 
     @classmethod
-    def teardown_class(cls):
+    def teardown_class(cls) -> None:
         if hasattr(cls, "session"):
             cls.session.close()
 
-    def setup_method(self, method):
+    def setup_method(self, method) -> None:
         if hasattr(self, "session"):
             self.session.rollback()
 
-    def teardown_method(self, method):
+    def teardown_method(self, method) -> None:
         if hasattr(self, "session"):
             self.session.rollback()
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Test script for the Visual Safety Framework implementation
-Tests both Phase 1 (liability mitigation) and Phase 2 (visual suggestions)
+Tests both Phase 1 (liability mitigation) and Phase 2 (visual suggestions).
 """
 
 import asyncio
@@ -17,8 +17,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
-async def test_phase1_liability_mitigation():
-    """Test Phase 1: INCONCLUSIVE status for unidentified products"""
+async def test_phase1_liability_mitigation() -> bool:
+    """Test Phase 1: INCONCLUSIVE status for unidentified products."""
     logger.info("=" * 60)
     logger.info("TESTING PHASE 1: LIABILITY MITIGATION")
     logger.info("=" * 60)
@@ -68,8 +68,8 @@ async def test_phase1_liability_mitigation():
     return True
 
 
-async def test_phase2_visual_suggestions():
-    """Test Phase 2: Visual product suggestions (mock mode)"""
+async def test_phase2_visual_suggestions() -> bool:
+    """Test Phase 2: Visual product suggestions (mock mode)."""
     logger.info("=" * 60)
     logger.info("TESTING PHASE 2: VISUAL PRODUCT SUGGESTIONS")
     logger.info("=" * 60)
@@ -148,8 +148,8 @@ async def test_phase2_visual_suggestions():
     return True
 
 
-async def test_api_endpoint_integration():
-    """Test the API endpoint integration (requires running server)"""
+async def test_api_endpoint_integration() -> bool:
+    """Test the API endpoint integration (requires running server)."""
     logger.info("=" * 60)
     logger.info("TESTING API ENDPOINT INTEGRATION")
     logger.info("=" * 60)
@@ -190,7 +190,7 @@ async def test_api_endpoint_integration():
 
 
 async def main():
-    """Run all tests"""
+    """Run all tests."""
     logger.info("Starting Visual Safety Framework Tests")
     logger.info("=" * 60)
 

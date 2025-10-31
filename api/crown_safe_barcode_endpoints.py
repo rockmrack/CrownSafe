@@ -1,9 +1,9 @@
 """Crown Safe Barcode Scanning API Endpoints
-Scan hair product barcodes and analyze ingredients for 3C-4C hair safety
+Scan hair product barcodes and analyze ingredients for 3C-4C hair safety.
 """
 
 import logging
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
@@ -27,7 +27,7 @@ crown_barcode_router = APIRouter(prefix="/api/v1/crown-safe/barcode", tags=["cro
 
 # Request/Response Models
 class BarcodeScanRequest(BaseModel):
-    """Request model for hair product barcode scanning"""
+    """Request model for hair product barcode scanning."""
 
     user_id: int = Field(..., description="User ID for personalized analysis")
     barcode: str = Field(..., description="UPC/EAN barcode from product")
@@ -35,7 +35,7 @@ class BarcodeScanRequest(BaseModel):
 
 
 class IngredientInfo(BaseModel):
-    """Individual ingredient information"""
+    """Individual ingredient information."""
 
     name: str
     category: str
@@ -45,7 +45,7 @@ class IngredientInfo(BaseModel):
 
 
 class CrownScoreBreakdown(BaseModel):
-    """Detailed Crown Score breakdown"""
+    """Detailed Crown Score breakdown."""
 
     total_score: int = Field(..., ge=0, le=100, description="Total Crown Score (0-100)")
     verdict: str = Field(..., description="UNSAFE, USE_WITH_CAUTION, SAFE, EXCELLENT_MATCH")
@@ -59,7 +59,7 @@ class CrownScoreBreakdown(BaseModel):
 
 
 class ProductInfo(BaseModel):
-    """Product identification information"""
+    """Product identification information."""
 
     product_name: str
     brand: str
@@ -71,7 +71,7 @@ class ProductInfo(BaseModel):
 
 
 class BarcodeScanResponse(BaseModel):
-    """Response model for barcode scan with Crown Score"""
+    """Response model for barcode scan with Crown Score."""
 
     success: bool
     scan_id: str = Field(..., description="Unique scan identifier")
@@ -85,7 +85,7 @@ class BarcodeScanResponse(BaseModel):
 
 
 class ApiResponse(BaseModel):
-    """Standard API response wrapper"""
+    """Standard API response wrapper."""
 
     success: bool
     data: Any | None = None
@@ -95,7 +95,7 @@ class ApiResponse(BaseModel):
 
 # Helper Functions
 def lookup_product_in_database(barcode: str, db: Session) -> HairProductModel | None:
-    """Look up hair product by UPC barcode in database
+    """Look up hair product by UPC barcode in database.
 
     Args:
         barcode: UPC/EAN barcode
@@ -123,7 +123,7 @@ def lookup_product_in_database(barcode: str, db: Session) -> HairProductModel | 
 
 
 async def extract_ingredients_from_image(image_data: bytes, product_name: str | None = None) -> list[str]:
-    """Extract ingredient list from product image using OCR
+    """Extract ingredient list from product image using OCR.
 
     Args:
         image_data: Raw image bytes
@@ -146,7 +146,7 @@ async def extract_ingredients_from_image(image_data: bytes, product_name: str | 
 def calculate_crown_score_from_product(
     product: HairProductModel, hair_profile: HairProfileModel | None,
 ) -> dict[str, Any]:
-    """Calculate Crown Score for a product using user's hair profile
+    """Calculate Crown Score for a product using user's hair profile.
 
     Args:
         product: Hair product model
@@ -189,7 +189,7 @@ def calculate_crown_score_from_product(
 
 
 def generate_recommendations(crown_score: int, verdict: str, product: HairProductModel) -> list[str]:
-    """Generate personalized recommendations based on Crown Score
+    """Generate personalized recommendations based on Crown Score.
 
     Args:
         crown_score: Total Crown Score (0-100)
@@ -224,7 +224,7 @@ def generate_recommendations(crown_score: int, verdict: str, product: HairProduc
 
 
 def find_similar_products(product: HairProductModel, crown_score: int, db: Session) -> list[dict[str, Any]]:
-    """Find similar products with better Crown Scores
+    """Find similar products with better Crown Scores.
 
     Args:
         product: Current product
@@ -271,7 +271,7 @@ def find_similar_products(product: HairProductModel, crown_score: int, db: Sessi
 # API Endpoints
 @crown_barcode_router.post("/scan", response_model=ApiResponse)
 async def scan_hair_product_barcode(request: BarcodeScanRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """Scan hair product barcode and analyze ingredients with Crown Score
+    """Scan hair product barcode and analyze ingredients with Crown Score.
 
     Workflow:
     1. Look up product in Crown Safe database by UPC barcode
@@ -420,7 +420,7 @@ async def scan_hair_product_image(
     file: UploadFile = File(..., description="Product image with barcode"),
     db: Session = Depends(get_db_session),
 ) -> ApiResponse:
-    """Scan hair product image to extract barcode and analyze
+    """Scan hair product image to extract barcode and analyze.
 
     Workflow:
     1. Validate image file
@@ -506,7 +506,7 @@ async def scan_hair_product_image(
 
 @crown_barcode_router.get("/product/{barcode}", response_model=ApiResponse)
 async def get_product_by_barcode(barcode: str, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """Look up product information by UPC barcode (no analysis)
+    """Look up product information by UPC barcode (no analysis).
 
     Use this endpoint to check if a product exists in the Crown Safe database
     before performing a full scan and analysis.

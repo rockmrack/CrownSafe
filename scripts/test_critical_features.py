@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Test script for critical backend features implementation
-Tests all the newly added features to ensure they work correctly
+Tests all the newly added features to ensure they work correctly.
 """
 
 import os
@@ -22,8 +22,8 @@ TEST_EMAIL = f"test_critical_{int(time.time())}@example.com"
 TEST_PASSWORD = "TestPass123!"
 
 
-def print_test(name: str, passed: bool, details: str = ""):
-    """Print test result"""
+def print_test(name: str, passed: bool, details: str = "") -> None:
+    """Print test result."""
     status = "✅ PASS" if passed else "❌ FAIL"
     print(f"{status} - {name}")
     if details:
@@ -31,7 +31,7 @@ def print_test(name: str, passed: bool, details: str = ""):
 
 
 def register_user() -> dict[str, Any]:
-    """Register a test user"""
+    """Register a test user."""
     response = client.post(
         "/api/v1/auth/register",
         json={"email": TEST_EMAIL, "password": TEST_PASSWORD, "name": "Test User"},
@@ -40,19 +40,19 @@ def register_user() -> dict[str, Any]:
 
 
 def login_user() -> str:
-    """Login and get access token"""
+    """Login and get access token."""
     response = client.post("/api/v1/auth/token", data={"username": TEST_EMAIL, "password": TEST_PASSWORD})
     data = response.json()
     return data.get("access_token", "")
 
 
 def get_headers(token: str) -> dict[str, str]:
-    """Get authorization headers"""
+    """Get authorization headers."""
     return {"Authorization": f"Bearer {token}"}
 
 
-def test_scan_history(token: str):
-    """Test scan history endpoints"""
+def test_scan_history(token: str) -> None:
+    """Test scan history endpoints."""
     print("\n=== Testing Scan History ===")
     headers = get_headers(token)
 
@@ -73,8 +73,8 @@ def test_scan_history(token: str):
     )
 
 
-def test_password_reset():
-    """Test password reset flow"""
+def test_password_reset() -> None:
+    """Test password reset flow."""
     print("\n=== Testing Password Reset ===")
 
     # Request password reset
@@ -96,8 +96,8 @@ def test_password_reset():
     )
 
 
-def test_notifications(token: str):
-    """Test notification endpoints"""
+def test_notifications(token: str) -> None:
+    """Test notification endpoints."""
     print("\n=== Testing Notifications ===")
     headers = get_headers(token)
 
@@ -143,8 +143,8 @@ def test_notifications(token: str):
     )
 
 
-def test_monitoring(token: str):
-    """Test product monitoring endpoints"""
+def test_monitoring(token: str) -> None:
+    """Test product monitoring endpoints."""
     print("\n=== Testing Product Monitoring ===")
     headers = get_headers(token)
 
@@ -182,8 +182,8 @@ def test_monitoring(token: str):
     )
 
 
-def test_dashboard(token: str):
-    """Test dashboard endpoints"""
+def test_dashboard(token: str) -> None:
+    """Test dashboard endpoints."""
     print("\n=== Testing Dashboard ===")
     headers = get_headers(token)
 
@@ -228,8 +228,8 @@ def test_dashboard(token: str):
     )
 
 
-def test_analytics():
-    """Test analytics endpoint"""
+def test_analytics() -> None:
+    """Test analytics endpoint."""
     print("\n=== Testing Analytics ===")
 
     response = client.get("/api/v1/analytics/counts")
@@ -245,8 +245,8 @@ def test_analytics():
         print(f"    Total agencies: {data.get('agencies_total', 0)}")
 
 
-def main():
-    """Run all tests"""
+def main() -> None:
+    """Run all tests."""
     print("=" * 50)
     print("CRITICAL FEATURES TEST SUITE")
     print("=" * 50)

@@ -1,4 +1,4 @@
-"""Incident Report Model for Crowdsourced Safety Reporting"""
+"""Incident Report Model for Crowdsourced Safety Reporting."""
 
 import enum
 from datetime import datetime
@@ -21,7 +21,7 @@ from core_infra.database import Base
 
 
 class IncidentType(enum.Enum):
-    """Types of safety incidents"""
+    """Types of safety incidents."""
 
     INJURY = "injury"
     CHOKING_HAZARD = "choking_hazard"
@@ -36,7 +36,7 @@ class IncidentType(enum.Enum):
 
 
 class SeverityLevel(enum.Enum):
-    """Severity levels for incidents"""
+    """Severity levels for incidents."""
 
     MINOR = "minor"  # No medical attention needed
     MODERATE = "moderate"  # First aid or doctor visit
@@ -45,7 +45,7 @@ class SeverityLevel(enum.Enum):
 
 
 class IncidentStatus(enum.Enum):
-    """Status of incident report"""
+    """Status of incident report."""
 
     SUBMITTED = "submitted"
     UNDER_REVIEW = "under_review"
@@ -56,7 +56,7 @@ class IncidentStatus(enum.Enum):
 
 
 class IncidentReport(Base):
-    """User-submitted incident reports for unsafe products"""
+    """User-submitted incident reports for unsafe products."""
 
     __tablename__ = "incident_reports"
 
@@ -131,7 +131,7 @@ class IncidentReport(Base):
 
 
 class IncidentCluster(Base):
-    """Groups of similar incidents for pattern detection"""
+    """Groups of similar incidents for pattern detection."""
 
     __tablename__ = "incident_clusters"
 
@@ -161,7 +161,7 @@ class IncidentCluster(Base):
 
 
 class AgencyNotification(Base):
-    """Track notifications sent to regulatory agencies"""
+    """Track notifications sent to regulatory agencies."""
 
     __tablename__ = "agency_notifications"
 

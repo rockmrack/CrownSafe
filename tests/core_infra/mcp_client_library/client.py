@@ -11,7 +11,7 @@ import asyncio  # noqa: E402
 import copy  # noqa: E402
 import json  # noqa: E402
 import uuid  # noqa: E402
-from datetime import datetime, timezone, UTC  # noqa: E402
+from datetime import datetime, UTC  # noqa: E402
 from typing import TYPE_CHECKING, Any, Callable  # noqa: E402
 
 import websockets  # noqa: E402
@@ -44,7 +44,7 @@ DEFAULT_MAX_CONNECT_ATTEMPTS: int = 5  # Tenacity will use this for @retry if no
 DEFAULT_HEARTBEAT_INTERVAL: int = 30
 
 
-def before_sleep_log(retry_state: RetryCallState):
+def before_sleep_log(retry_state: RetryCallState) -> None:
     instance_self = retry_state.args[0] if retry_state.args and isinstance(retry_state.args[0], MCPClient) else None
     agent_id_str = instance_self.agent_id if instance_self else "UnknownAgent"
 
@@ -84,7 +84,7 @@ class MCPClient:
         reconnect_delay: int = DEFAULT_RECONNECT_DELAY,
         max_connect_attempts: int = DEFAULT_MAX_CONNECT_ATTEMPTS,
         heartbeat_interval: int = DEFAULT_HEARTBEAT_INTERVAL,
-    ):
+    ) -> None:
         if not all([agent_id, agent_name, agent_type, mcp_server_url, message_handler]):
             raise ValueError("agent_id, agent_name, agent_type, mcp_server_url, and message_handler are required.")
 
@@ -158,7 +158,7 @@ class MCPClient:
         ),
         before_sleep=before_sleep_log,
     )
-    async def connect(self):
+    async def connect(self) -> None:
         if self.is_connected:
             self.logger.info(f"Already connected ({self.agent_id}).")
             return
@@ -234,7 +234,7 @@ class MCPClient:
             )
             raise MCPConnectionError(f"Critical unexpected connection error: {e}") from e
 
-    async def disconnect(self):
+    async def disconnect(self) -> None:
         if not self._is_connected and self.websocket is None:
             self.logger.info(f"Already disconnected ({self.agent_id}).")
             return
@@ -266,7 +266,7 @@ class MCPClient:
         target_agent_id: str | None = None,
         target_service: str | None = None,
         correlation_id: str | None = None,
-    ):
+    ) -> None:
         if not self.is_connected:
             raise MCPConnectionError(f"Cannot send message ({self.agent_id}), not connected.")
         if not message_type:
@@ -319,7 +319,7 @@ class MCPClient:
             )
             raise MCPError(f"Failed to send message ({self.agent_id}): {e}") from e
 
-    async def register_self(self):
+    async def register_self(self) -> None:
         self.logger.info(
             f"Registering {self.agent_id} (Type: {self.agent_type}) with capabilities: {self.capabilities}",
         )
@@ -373,7 +373,7 @@ class MCPClient:
             )
             return None
 
-    async def _receive_loop(self):
+    async def _receive_loop(self) -> None:
         self.logger.info(f"Receive loop started for {self.agent_id}.")
         while not self._stop_requested.is_set() and self._is_connected:
             if not self.is_websocket_open():
@@ -467,7 +467,7 @@ class MCPClient:
             # Here, one might trigger a reconnect attempt if desired for auto-reconnection.
             # For now, it just logs and the client remains disconnected.
 
-    async def _send_heartbeat(self):
+    async def _send_heartbeat(self) -> None:
         self.logger.info(f"Heartbeat task started for {self.agent_id} (Interval: {self.heartbeat_interval}s).")
         while not self._stop_requested.is_set():
             try:

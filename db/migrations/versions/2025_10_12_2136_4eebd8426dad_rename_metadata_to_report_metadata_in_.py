@@ -1,4 +1,4 @@
-"""rename_metadata_to_report_metadata_in_user_reports
+"""rename_metadata_to_report_metadata_in_user_reports.
 
 Revision ID: 4eebd8426dad
 Revises: 20251012_create_pg_trgm

@@ -1,8 +1,8 @@
 """Unit tests for api/models/chat_memory.py
-Tests chat memory models for user profiles, conversations, and messages
+Tests chat memory models for user profiles, conversations, and messages.
 """
 
-from datetime import date, datetime, timezone, UTC
+from datetime import date, datetime, UTC
 
 import pytest
 from sqlalchemy import (
@@ -19,11 +19,11 @@ from api.models.chat_memory import (
 
 
 class TestChatMemoryModels:
-    """Test chat memory models functionality"""
+    """Test chat memory models functionality."""
 
     @classmethod
-    def setup_class(cls):
-        """Set up in-memory SQLite database and create tables once per class"""
+    def setup_class(cls) -> None:
+        """Set up in-memory SQLite database and create tables once per class."""
         cls.engine = create_engine("sqlite:///:memory:")
         from core_infra.database import Base
 
@@ -32,14 +32,14 @@ class TestChatMemoryModels:
 
     @pytest.fixture
     def db_session(self):
-        """Provide a new session for each test method"""
+        """Provide a new session for each test method."""
         session = self.Session()
         yield session
         session.close()
 
     @pytest.mark.integration
-    def test_user_profile_creation(self, db_session):
-        """Test UserProfile model creation"""
+    def test_user_profile_creation(self, db_session) -> None:
+        """Test UserProfile model creation."""
         user_profile = UserProfile(
             user_id="test-user-123",
             consent_personalization=True,
@@ -67,8 +67,8 @@ class TestChatMemoryModels:
         assert retrieved.created_at is not None
         assert retrieved.updated_at is not None
 
-    def test_user_profile_defaults(self, db_session):
-        """Test UserProfile model with default values"""
+    def test_user_profile_defaults(self, db_session) -> None:
+        """Test UserProfile model with default values."""
         user_profile = UserProfile(user_id="test-user-456")
 
         db_session.add(user_profile)
@@ -84,8 +84,8 @@ class TestChatMemoryModels:
         assert retrieved.child_birthdate is None
         assert retrieved.erase_requested_at is None
 
-    def test_user_profile_json_fields(self, db_session):
-        """Test UserProfile JSON fields handling"""
+    def test_user_profile_json_fields(self, db_session) -> None:
+        """Test UserProfile JSON fields handling."""
         complex_allergies = [
             {"type": "peanuts", "severity": "severe"},
             {"type": "shellfish", "severity": "moderate"},
@@ -100,8 +100,8 @@ class TestChatMemoryModels:
 
         assert retrieved.allergies == complex_allergies
 
-    def test_conversation_creation(self, db_session):
-        """Test Conversation model creation"""
+    def test_conversation_creation(self, db_session) -> None:
+        """Test Conversation model creation."""
         conversation = Conversation(id="conv-123", user_id="user-123", scan_id="scan-456")
 
         db_session.add(conversation)
@@ -116,8 +116,8 @@ class TestChatMemoryModels:
         assert retrieved.started_at is not None
         assert retrieved.last_activity_at is not None
 
-    def test_conversation_defaults(self, db_session):
-        """Test Conversation model with default values"""
+    def test_conversation_defaults(self, db_session) -> None:
+        """Test Conversation model with default values."""
         conversation = Conversation(id="conv-456")
 
         db_session.add(conversation)
@@ -130,8 +130,8 @@ class TestChatMemoryModels:
         assert retrieved.started_at is not None
         assert retrieved.last_activity_at is not None
 
-    def test_conversation_message_creation(self, db_session):
-        """Test ConversationMessage model creation"""
+    def test_conversation_message_creation(self, db_session) -> None:
+        """Test ConversationMessage model creation."""
         # First create a conversation
         conversation = Conversation(id="conv-123")
         db_session.add(conversation)
@@ -162,8 +162,8 @@ class TestChatMemoryModels:
         }
         assert retrieved.created_at is not None
 
-    def test_conversation_message_defaults(self, db_session):
-        """Test ConversationMessage model with default values"""
+    def test_conversation_message_defaults(self, db_session) -> None:
+        """Test ConversationMessage model with default values."""
         # First create a conversation
         conversation = Conversation(id="conv-456")
         db_session.add(conversation)
@@ -181,8 +181,8 @@ class TestChatMemoryModels:
         assert retrieved.trace_id is None
         assert retrieved.created_at is not None
 
-    def test_conversation_message_json_content(self, db_session):
-        """Test ConversationMessage JSON content handling"""
+    def test_conversation_message_json_content(self, db_session) -> None:
+        """Test ConversationMessage JSON content handling."""
         # First create a conversation
         conversation = Conversation(id="conv-789")
         db_session.add(conversation)
@@ -212,8 +212,8 @@ class TestChatMemoryModels:
         assert retrieved.content["data"]["product_name"] == "Baby Bottle"
         assert retrieved.content["metadata"]["confidence"] == 0.95
 
-    def test_conversation_relationship(self, db_session):
-        """Test Conversation-Message relationship"""
+    def test_conversation_relationship(self, db_session) -> None:
+        """Test Conversation-Message relationship."""
         # Create conversation
         conversation = Conversation(id="conv-relationship")
         db_session.add(conversation)
@@ -247,8 +247,8 @@ class TestChatMemoryModels:
 
         assert retrieved_msg.conversation.id == "conv-relationship"
 
-    def test_conversation_cascade_delete(self, db_session):
-        """Test cascade delete behavior"""
+    def test_conversation_cascade_delete(self, db_session) -> None:
+        """Test cascade delete behavior."""
         # Create conversation with messages
         conversation = Conversation(id="conv-cascade")
         db_session.add(conversation)
@@ -281,8 +281,8 @@ class TestChatMemoryModels:
         )
         assert message_count == 0
 
-    def test_user_profile_erase_request(self, db_session):
-        """Test UserProfile erase request functionality"""
+    def test_user_profile_erase_request(self, db_session) -> None:
+        """Test UserProfile erase request functionality."""
         user_profile = UserProfile(
             user_id="test-erase-user",
             consent_personalization=True,
@@ -300,8 +300,8 @@ class TestChatMemoryModels:
 
         assert retrieved.erase_requested_at is not None
 
-    def test_conversation_last_activity_update(self, db_session):
-        """Test Conversation last_activity_at update"""
+    def test_conversation_last_activity_update(self, db_session) -> None:
+        """Test Conversation last_activity_at update."""
         conversation = Conversation(id="conv-activity")
         db_session.add(conversation)
         db_session.commit()
@@ -316,8 +316,8 @@ class TestChatMemoryModels:
 
         assert retrieved.last_activity_at > original_activity
 
-    def test_message_role_validation(self, db_session):
-        """Test ConversationMessage role field"""
+    def test_message_role_validation(self, db_session) -> None:
+        """Test ConversationMessage role field."""
         conversation = Conversation(id="conv-roles")
         db_session.add(conversation)
         db_session.commit()
@@ -343,8 +343,8 @@ class TestChatMemoryModels:
         roles = [msg.role for msg in messages]
         assert set(roles) == set(valid_roles)
 
-    def test_message_intent_field(self, db_session):
-        """Test ConversationMessage intent field"""
+    def test_message_intent_field(self, db_session) -> None:
+        """Test ConversationMessage intent field."""
         conversation = Conversation(id="conv-intent")
         db_session.add(conversation)
         db_session.commit()
@@ -375,8 +375,8 @@ class TestChatMemoryModels:
         message_intents = [msg.intent for msg in messages]
         assert set(message_intents) == set(intents)
 
-    def test_message_trace_id_field(self, db_session):
-        """Test ConversationMessage trace_id field"""
+    def test_message_trace_id_field(self, db_session) -> None:
+        """Test ConversationMessage trace_id field."""
         conversation = Conversation(id="conv-trace")
         db_session.add(conversation)
         db_session.commit()
@@ -402,8 +402,8 @@ class TestChatMemoryModels:
         message_traces = [msg.trace_id for msg in messages]
         assert set(message_traces) == set(trace_ids)
 
-    def test_user_profile_pregnancy_fields(self, db_session):
-        """Test UserProfile pregnancy-related fields"""
+    def test_user_profile_pregnancy_fields(self, db_session) -> None:
+        """Test UserProfile pregnancy-related fields."""
         user_profile = UserProfile(
             user_id="test-pregnancy",
             pregnancy_trimester=3,
@@ -420,8 +420,8 @@ class TestChatMemoryModels:
         assert retrieved.pregnancy_due_date == date(2024, 8, 15)
         assert retrieved.child_birthdate == date(2021, 5, 20)
 
-    def test_user_profile_allergies_edge_cases(self, db_session):
-        """Test UserProfile allergies field edge cases"""
+    def test_user_profile_allergies_edge_cases(self, db_session) -> None:
+        """Test UserProfile allergies field edge cases."""
         # Test empty allergies
         user1 = UserProfile(user_id="user-empty-allergies")
         db_session.add(user1)
@@ -438,8 +438,8 @@ class TestChatMemoryModels:
         retrieved2 = db_session.query(UserProfile).filter(UserProfile.user_id == "user-none-allergies").first()
         assert retrieved2.allergies == []
 
-    def test_conversation_scan_id_field(self, db_session):
-        """Test Conversation scan_id field"""
+    def test_conversation_scan_id_field(self, db_session) -> None:
+        """Test Conversation scan_id field."""
         conversation = Conversation(id="conv-scan", scan_id="scan-abc123")
 
         db_session.add(conversation)
@@ -449,8 +449,8 @@ class TestChatMemoryModels:
 
         assert retrieved.scan_id == "scan-abc123"
 
-    def test_message_auto_increment_id(self, db_session):
-        """Test ConversationMessage auto-increment ID"""
+    def test_message_auto_increment_id(self, db_session) -> None:
+        """Test ConversationMessage auto-increment ID."""
         conversation = Conversation(id="conv-auto-id")
         db_session.add(conversation)
         db_session.commit()
@@ -476,10 +476,10 @@ class TestChatMemoryModels:
 
 
 class TestDatabaseCompatibility:
-    """Test database compatibility features"""
+    """Test database compatibility features."""
 
-    def test_json_type_selection(self):
-        """Test JsonType selection based on database URL"""
+    def test_json_type_selection(self) -> None:
+        """Test JsonType selection based on database URL."""
         from api.models.chat_memory import get_json_type
 
         # Test PostgreSQL
@@ -492,8 +492,8 @@ class TestDatabaseCompatibility:
         json_type_sqlite = get_json_type(db_url_sqlite)
         assert json_type_sqlite.__name__ == "JSON"
 
-    def test_uuid_type_selection(self):
-        """Test UuidType selection based on database URL"""
+    def test_uuid_type_selection(self) -> None:
+        """Test UuidType selection based on database URL."""
         from api.models.chat_memory import get_uuid_type
 
         # Test PostgreSQL

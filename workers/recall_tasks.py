@@ -12,7 +12,7 @@ from celery import Task
 class RecallAgent:
     """Mock RecallAgent for testing purposes."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     def fetch_recalls(self, agency: str, date_range: dict[str, str]) -> list[dict[str, Any]]:

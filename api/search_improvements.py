@@ -1,5 +1,5 @@
 """Improved search functionality for better recall matching
-Handles compound searches, partial matches, and brand-product combinations
+Handles compound searches, partial matches, and brand-product combinations.
 """
 
 import logging
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 def tokenize_search_query(query: str) -> list[str]:
     """Tokenize search query into meaningful parts
-    Handles brand-product combinations and special characters
+    Handles brand-product combinations and special characters.
     """
     # Remove extra spaces and normalize
     query = re.sub(r"\s+", " ", query.strip())
@@ -40,7 +40,7 @@ def tokenize_search_query(query: str) -> list[str]:
 
 
 def build_smart_search_conditions(RecallDB, search_term: str):
-    """Build intelligent search conditions that handle various search patterns"""
+    """Build intelligent search conditions that handle various search patterns."""
     conditions = []
 
     # Always search for the full term
@@ -97,7 +97,7 @@ def build_smart_search_conditions(RecallDB, search_term: str):
 
 def score_search_result(result, search_term: str) -> float:
     """Score a search result based on relevance to the search term
-    Higher score = more relevant
+    Higher score = more relevant.
     """
     score = 0.0
     search_lower = search_term.lower()
@@ -147,7 +147,7 @@ def score_search_result(result, search_term: str) -> float:
 
 
 def deduplicate_results(results, key_fields=["recall_id", "product_name"]):
-    """Remove duplicate results based on key fields"""
+    """Remove duplicate results based on key fields."""
     seen = set()
     unique_results = []
 
@@ -170,7 +170,7 @@ def deduplicate_results(results, key_fields=["recall_id", "product_name"]):
 
 def format_search_response(result):
     """Format a search result for API response
-    Ensures consistent structure
+    Ensures consistent structure.
     """
     # Convert to dict first
     if hasattr(result, "to_dict"):

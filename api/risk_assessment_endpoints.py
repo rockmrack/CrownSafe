@@ -53,7 +53,7 @@ risk_router = APIRouter(prefix="/api/v1/risk-assessment", tags=["Risk Assessment
 
 # Request/Response Models
 class RiskAssessmentRequest(AppModel):
-    """Request model for risk assessment"""
+    """Request model for risk assessment."""
 
     model_config = {"protected_namespaces": ()}  # Allow model_number field
 
@@ -67,7 +67,7 @@ class RiskAssessmentRequest(AppModel):
 
 
 class RiskAssessmentResponse(BaseModel):
-    """Response model for risk assessment"""
+    """Response model for risk assessment."""
 
     product_id: str
     product_name: str
@@ -83,7 +83,7 @@ class RiskAssessmentResponse(BaseModel):
 
 
 class DataIngestionRequest(BaseModel):
-    """Request model for data ingestion"""
+    """Request model for data ingestion."""
 
     sources: list[str] = Field(default=["CPSC", "EU_SAFETY_GATE"], description="Data sources to ingest")
     start_date: datetime | None = Field(None, description="Start date for data range")
@@ -93,7 +93,7 @@ class DataIngestionRequest(BaseModel):
 
 
 class ProductSearchRequest(AppModel):
-    """Request model for product search"""
+    """Request model for product search."""
 
     query: str = Field(..., description="Search query")
     search_type: str = Field("name", description="Search type: name, upc, gtin, manufacturer")
@@ -110,7 +110,7 @@ data_unification = DataUnificationEngine()
 
 @risk_router.get("", response_model=dict)
 async def get_risk_assessment_info():
-    """Get risk assessment service information and available endpoints"""
+    """Get risk assessment service information and available endpoints."""
     return {
         "success": True,
         "data": {
@@ -133,7 +133,7 @@ async def get_risk_assessment_info():
 
 @risk_router.post("", response_model=dict)
 async def risk_assessment_root_post():
-    """POST endpoint for root risk assessment path - redirects to proper endpoint"""
+    """POST endpoint for root risk assessment path - redirects to proper endpoint."""
     return {
         "success": False,
         "error": {
@@ -154,7 +154,7 @@ async def assess_product_risk(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """Perform comprehensive risk assessment for a product
+    """Perform comprehensive risk assessment for a product.
 
     This endpoint:
     1. Searches for or creates a product golden record
@@ -319,7 +319,7 @@ async def assess_by_barcode(
     db: Session = Depends(get_db),
 ):
     """Quick risk assessment by barcode scan
-    Integrates with Phase 1 barcode scanner
+    Integrates with Phase 1 barcode scanner.
     """
     try:
         # Use barcode scanner from Phase 1
@@ -346,7 +346,7 @@ async def assess_by_image(
     db: Session = Depends(get_db),
 ):
     """Risk assessment from product image
-    Integrates with Phase 2 visual agent
+    Integrates with Phase 2 visual agent.
     """
     try:
         # Read image file
@@ -391,7 +391,7 @@ async def get_risk_profile(
     include_history: bool = Query(False, description="Include historical risk scores"),
     db: Session = Depends(get_db),
 ):
-    """Get detailed risk profile for a product"""
+    """Get detailed risk profile for a product."""
     try:
         # Get product
         product = db.query(ProductGoldenRecord).filter(ProductGoldenRecord.id == product_id).first()
@@ -453,7 +453,7 @@ async def get_report(
     format: str = Query("pdf", description="Report format: pdf, html, json"),
     db: Session = Depends(get_db),
 ):
-    """Download risk assessment report"""
+    """Download risk assessment report."""
     try:
         # Get report record
         report = db.query(RiskAssessmentReport).filter(RiskAssessmentReport.id == report_id).first()
@@ -469,13 +469,12 @@ async def get_report(
                 "generated_at": report.generated_at,
                 "expires_at": report.generated_at + timedelta(days=1),
             }
-        else:
-            # Regenerate report (reserved for regeneration logic)
-            _ = db.query(ProductGoldenRecord).filter(ProductGoldenRecord.id == report.product_id).first()
+        # Regenerate report (reserved for regeneration logic)
+        _ = db.query(ProductGoldenRecord).filter(ProductGoldenRecord.id == report.product_id).first()
 
-            # ... regeneration logic ...
+        # ... regeneration logic ...
 
-            return {"message": "Report regeneration in progress"}
+        return {"message": "Report regeneration in progress"}
 
     except HTTPException:
         # Re-raise HTTP exceptions (404, 400) as-is
@@ -491,7 +490,7 @@ async def trigger_data_ingestion(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """Trigger data ingestion from safety sources"""
+    """Trigger data ingestion from safety sources."""
     try:
         # Create ingestion job
         job = DataIngestionJob(
@@ -531,7 +530,7 @@ async def search_products(
     include_risk: bool = Query(True, description="Include risk scores"),
     db: Session = Depends(get_db),
 ):
-    """Search products with risk information"""
+    """Search products with risk information."""
     try:
         # Search products
         query = db.query(ProductGoldenRecord)
@@ -578,7 +577,7 @@ async def search_products(
 
 @risk_router.get("/stats")
 async def get_risk_statistics(db: Session = Depends(get_db)):
-    """Get system-wide risk statistics"""
+    """Get system-wide risk statistics."""
     try:
         stats = {
             "total_products": db.query(func.count(ProductGoldenRecord.id)).scalar(),
@@ -634,7 +633,7 @@ async def get_risk_statistics(db: Session = Depends(get_db)):
 
 # Helper functions
 async def _find_or_create_product(request: RiskAssessmentRequest, db: Session) -> ProductGoldenRecord | None:
-    """Find existing product or create new golden record"""
+    """Find existing product or create new golden record."""
     # Try to find by identifiers
     if request.gtin:
         product = db.query(ProductGoldenRecord).filter(ProductGoldenRecord.gtin == request.gtin).first()
@@ -685,7 +684,7 @@ async def _find_or_create_product(request: RiskAssessmentRequest, db: Session) -
 
 
 async def enrich_product_data(product: ProductGoldenRecord, db: Session) -> None:
-    """Enrich product data from commercial sources"""
+    """Enrich product data from commercial sources."""
     try:
         commercial_connector = CommercialDatabaseConnector()
 
@@ -722,7 +721,7 @@ async def enrich_product_data(product: ProductGoldenRecord, db: Session) -> None
 
 
 async def refresh_product_data(product_id: str, barcode: str | None = None) -> None:
-    """Background task to refresh product data from all sources"""
+    """Background task to refresh product data from all sources."""
     logger.info(f"Refreshing data for product {product_id}")
 
     # This would typically:
@@ -741,7 +740,7 @@ async def ingest_from_source(
     start_date: datetime | None,
     end_date: datetime | None,
 ) -> None:
-    """Background task to ingest data from a specific source"""
+    """Background task to ingest data from a specific source."""
     logger.info(f"Starting ingestion from {source} for job {job_id}")
 
     try:

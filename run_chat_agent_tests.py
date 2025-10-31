@@ -1,13 +1,13 @@
 """Quick Chat Agent Test Runner
-Runs essential tests for ChatAgent without Unicode issues
+Runs essential tests for ChatAgent without Unicode issues.
 """
 
 import sys
 from datetime import datetime
 
 
-def test_chat_agent():
-    """Run comprehensive ChatAgent tests"""
+def test_chat_agent() -> int:
+    """Run comprehensive ChatAgent tests."""
     print("\n" + "=" * 80)
     print("CHAT AGENT COMPREHENSIVE TEST SUITE")
     print("=" * 80)
@@ -335,9 +335,8 @@ def test_chat_agent():
     if passed == total:
         print("\nALL TESTS PASSED!")
         return 0
-    else:
-        print(f"\n{total - passed} test(s) failed")
-        return 1
+    print(f"\n{total - passed} test(s) failed")
+    return 1
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 """Enhanced Safety Service for comprehensive safety reports
-Combines recall data with supplemental data sources
+Combines recall data with supplemental data sources.
 """
 
 import logging
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 class EnhancedSafetyService:
-    """Service for generating comprehensive safety reports"""
+    """Service for generating comprehensive safety reports."""
 
     def __init__(self) -> None:
         self.supplemental_service = supplemental_data_service
@@ -36,7 +36,7 @@ class EnhancedSafetyService:
         include_cosmetic_data: bool = True,
         include_chemical_data: bool = True,
     ) -> EnhancedSafetyReport:
-        """Generate comprehensive safety report with supplemental data"""
+        """Generate comprehensive safety report with supplemental data."""
         start_time = time.time()
         logger.info(f"Generating enhanced safety report for: {product_identifier}")
 
@@ -80,7 +80,7 @@ class EnhancedSafetyService:
         return report
 
     async def _get_recall_data(self, product_identifier: str) -> dict[str, Any]:
-        """Get recall data for the product"""
+        """Get recall data for the product."""
         try:
             # This would integrate with your existing recall database
             # For now, returning mock data structure
@@ -90,7 +90,7 @@ class EnhancedSafetyService:
             return {"status": "error", "count": 0, "recalls": []}
 
     async def _get_food_data(self, product_identifier: str, product_name: str | None) -> FoodDataResponse | None:
-        """Get food data from supplemental sources"""
+        """Get food data from supplemental sources."""
         try:
             search_term = product_name or product_identifier
             food_data = await self.supplemental_service.get_food_data(search_term, product_identifier)
@@ -128,7 +128,7 @@ class EnhancedSafetyService:
     async def _get_cosmetic_data(
         self, product_identifier: str, product_name: str | None,
     ) -> CosmeticDataResponse | None:
-        """Get cosmetic data from supplemental sources"""
+        """Get cosmetic data from supplemental sources."""
         try:
             search_term = product_name or product_identifier
             logger.info(f"Getting cosmetic data for search term: {search_term}")
@@ -183,7 +183,7 @@ class EnhancedSafetyService:
     async def _get_chemical_data(
         self, product_identifier: str, product_name: str | None,
     ) -> ChemicalDataResponse | None:
-        """Get chemical data from supplemental sources"""
+        """Get chemical data from supplemental sources."""
         try:
             search_term = product_name or product_identifier
             chemical_data = await self.supplemental_service.get_chemical_data(search_term)
@@ -215,7 +215,7 @@ class EnhancedSafetyService:
             return None
 
     def _calculate_overall_safety_score(self, report: EnhancedSafetyReport) -> float:
-        """Calculate overall safety score based on all available data"""
+        """Calculate overall safety score based on all available data."""
         scores = []
         weights = []
 
@@ -249,7 +249,7 @@ class EnhancedSafetyService:
         return 0.5  # Default neutral score
 
     def _generate_safety_recommendations(self, report: EnhancedSafetyReport) -> list[str]:
-        """Generate safety recommendations based on the report data"""
+        """Generate safety recommendations based on the report data."""
         recommendations = []
 
         # Recall-based recommendations
@@ -299,7 +299,7 @@ class EnhancedSafetyService:
         return recommendations
 
     def _identify_risk_factors(self, report: EnhancedSafetyReport) -> list[str]:
-        """Identify risk factors from the report data"""
+        """Identify risk factors from the report data."""
         risk_factors = []
 
         # Recall risks
@@ -331,7 +331,7 @@ class EnhancedSafetyService:
         return list(set(risk_factors))  # Remove duplicates
 
     def _get_data_sources(self, report: EnhancedSafetyReport) -> list[str]:
-        """Get list of data sources used in the report"""
+        """Get list of data sources used in the report."""
         sources = ["recall_database"]
 
         if report.food_data:
@@ -346,7 +346,7 @@ class EnhancedSafetyService:
         return list(set(sources))  # Remove duplicates
 
     def _calculate_confidence_level(self, report: EnhancedSafetyReport) -> float:
-        """Calculate confidence level based on data availability"""
+        """Calculate confidence level based on data availability."""
         confidence = 0.0
 
         # Base confidence from recall data

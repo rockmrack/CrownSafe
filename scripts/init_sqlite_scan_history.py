@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS scan_history (
 """
 
 
-def main():
+def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--scan-id", required=True)
     ap.add_argument("--barcode", required=True)

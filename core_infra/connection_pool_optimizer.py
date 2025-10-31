@@ -31,7 +31,7 @@ class ConnectionPoolOptimizer:
 
     @asynccontextmanager
     async def get_optimized_db_session(self):
-        """Get an optimized database session with connection pooling"""
+        """Get an optimized database session with connection pooling."""
         from core_infra.database import SessionLocal
 
         thread_id = threading.get_ident()
@@ -55,7 +55,7 @@ class ConnectionPoolOptimizer:
             pass
 
     async def batch_database_operations(self, operations: list[Callable]) -> list[Any]:
-        """Execute multiple database operations in a single optimized batch"""
+        """Execute multiple database operations in a single optimized batch."""
         start_time = time.time()
 
         try:
@@ -91,7 +91,7 @@ class ConnectionPoolOptimizer:
         model_number: str | None = None,
         product_name: str | None = None,
     ) -> list[dict[str, Any]]:
-        """Ultra-optimized recall search with intelligent query strategy"""
+        """Ultra-optimized recall search with intelligent query strategy."""
         # REMOVED FOR CROWN SAFE: Recall search no longer applicable
         # Return empty list for backward compatibility
         start_time = time.time()
@@ -111,7 +111,7 @@ class ConnectionPoolOptimizer:
             return []
 
     def get_pooled_agent_instance(self, agent_class, agent_id: str):
-        """Get a pooled agent instance to avoid re-instantiation overhead"""
+        """Get a pooled agent instance to avoid re-instantiation overhead."""
         pool_key = f"{agent_class.__name__}_{agent_id}"
 
         with self.pool_lock:
@@ -122,7 +122,7 @@ class ConnectionPoolOptimizer:
         return self.agent_instance_pool[pool_key]
 
     async def parallel_agent_execution(self, agent_tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """Execute multiple agent tasks in parallel for massive speedup"""
+        """Execute multiple agent tasks in parallel for massive speedup."""
         start_time = time.time()
 
         try:
@@ -181,7 +181,7 @@ class ConnectionPoolOptimizer:
             return []
 
     def cleanup_connections(self) -> None:
-        """Clean up connection pools and agent instances"""
+        """Clean up connection pools and agent instances."""
         try:
             with self.pool_lock:
                 # Close database sessions
@@ -209,15 +209,15 @@ connection_optimizer = ConnectionPoolOptimizer()
 
 # Convenience functions
 async def optimized_recall_search(upc=None, model_number=None, product_name=None):
-    """Optimized recall search with connection pooling"""
+    """Optimized recall search with connection pooling."""
     return await connection_optimizer.optimized_recall_search(upc, model_number, product_name)
 
 
 async def batch_db_operations(operations):
-    """Execute database operations in optimized batch"""
+    """Execute database operations in optimized batch."""
     return await connection_optimizer.batch_database_operations(operations)
 
 
 async def parallel_agents(agent_tasks):
-    """Execute agent tasks in parallel"""
+    """Execute agent tasks in parallel."""
     return await connection_optimizer.parallel_agent_execution(agent_tasks)

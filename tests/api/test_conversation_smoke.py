@@ -39,7 +39,7 @@ def _fake_scan(product="Brie", extra=None):
     return base
 
 
-def test_conversation_pregnancy(monkeypatch):
+def test_conversation_pregnancy(monkeypatch) -> None:
     # Wire LLM + fetch_scan_data
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan("Brie Président"))
@@ -61,7 +61,7 @@ def test_conversation_pregnancy(monkeypatch):
     assert "conversation_id" in body["data"]
 
 
-def test_conversation_allergy(monkeypatch):
+def test_conversation_allergy(monkeypatch) -> None:
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(
         chat_router,
@@ -88,7 +88,7 @@ def test_conversation_allergy(monkeypatch):
     assert "data" in body
 
 
-def test_conversation_recall_details(monkeypatch):
+def test_conversation_recall_details(monkeypatch) -> None:
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(
         chat_router,
@@ -115,7 +115,7 @@ def test_conversation_recall_details(monkeypatch):
     assert "data" in body
 
 
-def test_conversation_age_appropriateness(monkeypatch):
+def test_conversation_age_appropriateness(monkeypatch) -> None:
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(
         chat_router,
@@ -137,7 +137,7 @@ def test_conversation_age_appropriateness(monkeypatch):
     assert "data" in body
 
 
-def test_conversation_ingredient_info(monkeypatch):
+def test_conversation_ingredient_info(monkeypatch) -> None:
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(
         chat_router,
@@ -164,7 +164,7 @@ def test_conversation_ingredient_info(monkeypatch):
     assert "data" in body
 
 
-def test_conversation_alternatives(monkeypatch):
+def test_conversation_alternatives(monkeypatch) -> None:
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
     client = TestClient(app)
@@ -182,7 +182,7 @@ def test_conversation_alternatives(monkeypatch):
     assert "data" in body
 
 
-def test_conversation_unclear_intent(monkeypatch):
+def test_conversation_unclear_intent(monkeypatch) -> None:
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
     client = TestClient(app)
@@ -200,7 +200,7 @@ def test_conversation_unclear_intent(monkeypatch):
     assert "data" in body
 
 
-def test_conversation_diagnostic_headers(monkeypatch):
+def test_conversation_diagnostic_headers(monkeypatch) -> None:
     monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
     monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
     client = TestClient(app)

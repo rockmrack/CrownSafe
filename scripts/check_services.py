@@ -6,8 +6,8 @@ import redis
 import requests
 
 
-def check_port(host, port, service_name):
-    """Check if a port is open"""
+def check_port(host, port, service_name) -> bool:
+    """Check if a port is open."""
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(1)
     result = sock.connect_ex((host, port))
@@ -16,12 +16,11 @@ def check_port(host, port, service_name):
     if result == 0:
         print(f"✅ {service_name} is running on port {port}")
         return True
-    else:
-        print(f"❌ {service_name} is NOT running on port {port}")
-        return False
+    print(f"❌ {service_name} is NOT running on port {port}")
+    return False
 
 
-def check_services():
+def check_services() -> None:
     print("🔍 Checking RossNet Services...\n")
 
     all_good = True

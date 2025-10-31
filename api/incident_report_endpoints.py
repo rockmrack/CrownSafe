@@ -1,11 +1,11 @@
 """Incident Report API Endpoints
-Handles crowdsourced safety incident reporting
+Handles crowdsourced safety incident reporting.
 """
 
 import asyncio
 import logging
 import uuid
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from typing import Any
 
 from fastapi import (
@@ -46,7 +46,7 @@ incident_router = APIRouter(prefix="/api/v1/incidents", tags=["incidents"])
 
 # JSON-based request models
 class IncidentSubmitRequest(BaseModel):
-    """JSON request model for incident submission"""
+    """JSON request model for incident submission."""
 
     model_config = {"protected_namespaces": ()}  # Allow model_number field
 
@@ -62,7 +62,7 @@ class IncidentSubmitRequest(BaseModel):
 
 
 class IncidentAnalyzer:
-    """Analyzes incidents for patterns and triggers alerts"""
+    """Analyzes incidents for patterns and triggers alerts."""
 
     # Thresholds for triggering alerts
     ALERT_THRESHOLDS = {
@@ -74,7 +74,7 @@ class IncidentAnalyzer:
 
     @classmethod
     async def analyze_incident(cls, incident: IncidentReport, db: Session) -> dict[str, Any]:
-        """Analyze a new incident for patterns and clusters"""
+        """Analyze a new incident for patterns and clusters."""
         analysis_result = {
             "cluster_id": None,
             "similar_count": 0,
@@ -126,7 +126,7 @@ class IncidentAnalyzer:
     def _find_similar_incidents(
         cls, incident: IncidentReport, db: Session, days_back: int = 30,
     ) -> list[IncidentReport]:
-        """Find incidents similar to the given one"""
+        """Find incidents similar to the given one."""
         cutoff_date = datetime.now(UTC) - timedelta(days=days_back)
 
         # Search for similar product and incident type
@@ -157,7 +157,7 @@ class IncidentAnalyzer:
         similar_incidents: list[IncidentReport],
         db: Session,
     ) -> IncidentCluster | None:
-        """Find existing cluster or create new one"""
+        """Find existing cluster or create new one."""
         # Check if similar incidents already have a cluster
         for similar in similar_incidents:
             if similar.cluster_id:
@@ -190,7 +190,7 @@ class IncidentAnalyzer:
 
     @classmethod
     def _update_cluster_stats(cls, cluster: IncidentCluster, incident: IncidentReport, db: Session) -> None:
-        """Update cluster statistics with new incident"""
+        """Update cluster statistics with new incident."""
         cluster.incident_count += 1
         cluster.last_incident_date = incident.incident_date
 
@@ -220,19 +220,18 @@ class IncidentAnalyzer:
 
     @classmethod
     def _calculate_risk_level(cls, cluster: IncidentCluster) -> str:
-        """Calculate risk level based on cluster data"""
+        """Calculate risk level based on cluster data."""
         if cluster.risk_score >= 8.0:
             return "critical"
-        elif cluster.risk_score >= 6.0:
+        if cluster.risk_score >= 6.0:
             return "high"
-        elif cluster.risk_score >= 4.0:
+        if cluster.risk_score >= 4.0:
             return "medium"
-        else:
-            return "low"
+        return "low"
 
     @classmethod
     def _calculate_cluster_risk_score(cls, cluster: IncidentCluster) -> float:
-        """Calculate risk score for a cluster (0-10)"""
+        """Calculate risk score for a cluster (0-10)."""
         score = 0.0
 
         # Factor 1: Incident count (max 3 points)
@@ -264,7 +263,7 @@ class IncidentAnalyzer:
 
     @classmethod
     async def _trigger_alert(cls, cluster: IncidentCluster, db: Session) -> None:
-        """Trigger internal alert for cluster"""
+        """Trigger internal alert for cluster."""
         logger.warning(f"ALERT: Cluster {cluster.id} has {cluster.incident_count} incidents")
 
         # Mark cluster as alerted
@@ -277,7 +276,7 @@ class IncidentAnalyzer:
 
     @classmethod
     async def _trigger_critical_alert(cls, incident: IncidentReport, db: Session) -> None:
-        """Trigger immediate alert for critical incident"""
+        """Trigger immediate alert for critical incident."""
         logger.critical(f"CRITICAL INCIDENT: {incident.product_name} - {incident.incident_type.value}")
 
         # In production, this would page on-call safety team
@@ -286,7 +285,7 @@ class IncidentAnalyzer:
 
     @classmethod
     async def _notify_agency(cls, cluster: IncidentCluster, db: Session) -> None:
-        """Notify regulatory agency about cluster"""
+        """Notify regulatory agency about cluster."""
         logger.info(f"Notifying CPSC about cluster {cluster.id}")
 
         # Create agency notification record
@@ -367,7 +366,7 @@ async def submit_incident_report(
     incident_photos: list[UploadFile] = File(None),
 ):
     """Submit a new incident report
-    Accepts multipart/form-data with photos
+    Accepts multipart/form-data with photos.
     """
     try:
         # Generate report ID
@@ -456,7 +455,7 @@ async def submit_incident_json(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """Submit a new incident report via JSON (tolerant of unknown barcodes)
+    """Submit a new incident report via JSON (tolerant of unknown barcodes).
 
     This endpoint accepts JSON data and creates incidents even when the product
     barcode is not found in our catalog. It marks the product as not found.
@@ -541,13 +540,13 @@ async def submit_incident_json_alias(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """Alias for /submit-json endpoint using singular "incident" path"""
+    """Alias for /submit-json endpoint using singular "incident" path."""
     return await submit_incident_json(request, background_tasks, db)
 
 
 @incident_router.get("/clusters", response_model=ApiResponse)
 async def get_incident_clusters(trending_only: bool = False, min_incidents: int = 3, db: Session = Depends(get_db)):
-    """Get current incident clusters for monitoring"""
+    """Get current incident clusters for monitoring."""
     query = db.query(IncidentCluster)
 
     if trending_only:
@@ -583,7 +582,7 @@ async def get_incident_clusters(trending_only: bool = False, min_incidents: int 
 
 @incident_router.get("/stats", response_model=ApiResponse)
 async def get_incident_statistics(days: int = 30, db: Session = Depends(get_db)):
-    """Get incident reporting statistics"""
+    """Get incident reporting statistics."""
     cutoff_date = datetime.now(UTC) - timedelta(days=days)
 
     # Total incidents
@@ -628,7 +627,7 @@ async def get_incident_statistics(days: int = 30, db: Session = Depends(get_db))
 
 @incident_router.post("/submit-dev", response_model=ApiResponse)
 async def submit_incident_dev(request: IncidentSubmitRequest):
-    """DEV OVERRIDE: Submit incident report without database dependencies"""
+    """DEV OVERRIDE: Submit incident report without database dependencies."""
     try:
         # Generate report ID
         report_id = f"INC-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
@@ -664,7 +663,7 @@ async def submit_incident_dev(request: IncidentSubmitRequest):
 
 @incident_router.get("/clusters-dev", response_model=ApiResponse)
 async def get_incident_clusters_dev(trending_only: bool = False, min_incidents: int = 3):
-    """DEV OVERRIDE: Get incident clusters without database dependencies"""
+    """DEV OVERRIDE: Get incident clusters without database dependencies."""
     try:
         # Mock cluster data
         mock_clusters = [
@@ -714,7 +713,7 @@ async def get_incident_clusters_dev(trending_only: bool = False, min_incidents: 
 
 @incident_router.get("/stats-dev", response_model=ApiResponse)
 async def get_incident_statistics_dev(days: int = 30):
-    """DEV OVERRIDE: Get incident statistics without database dependencies"""
+    """DEV OVERRIDE: Get incident statistics without database dependencies."""
     try:
         # Mock statistics data
         mock_stats = {
@@ -741,7 +740,7 @@ async def get_incident_statistics_dev(days: int = 30):
 # Serve the HTML page
 @incident_router.get("/report-page", response_class=HTMLResponse)
 async def serve_report_page(request: Request):
-    """Serve the incident report HTML page"""
+    """Serve the incident report HTML page."""
     try:
         # Return the static HTML file
         return FileResponse("static/report_incident.html")

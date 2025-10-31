@@ -1,4 +1,4 @@
-"""add serial_verifications table
+"""add serial_verifications table.
 
 Revision ID: 20250905_add_serial_verifications
 Revises: 20250904_add_report_records

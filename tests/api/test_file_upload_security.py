@@ -1,4 +1,4 @@
-"""File Upload Security Testing Suite
+"""File Upload Security Testing Suite.
 
 Tests file upload operations including size limits, timeouts, and security.
 Covers large file handling, malicious file detection, and resource management.
@@ -18,11 +18,11 @@ from fastapi import UploadFile
 @pytest.mark.api
 @pytest.mark.security
 class TestFileUploadSecurity:
-    """Test suite for file upload security and handling"""
+    """Test suite for file upload security and handling."""
 
     @pytest.fixture
     def mock_upload_file(self):
-        """Create a mock upload file for testing"""
+        """Create a mock upload file for testing."""
 
         def create_file(filename, size_mb=1, content_type="image/jpeg"):
             # Create mock file with specified size
@@ -38,8 +38,8 @@ class TestFileUploadSecurity:
 
         return create_file
 
-    def test_large_file_upload_timeout(self, mock_upload_file):
-        """Test large file upload timeout handling
+    def test_large_file_upload_timeout(self, mock_upload_file) -> None:
+        """Test large file upload timeout handling.
 
         Acceptance Criteria:
         - Files > 10MB trigger timeout after 60 seconds
@@ -67,8 +67,8 @@ class TestFileUploadSecurity:
             # In real implementation, would raise HTTPException
             # raise HTTPException(status_code=408, detail="Upload timeout")
 
-    def test_file_size_limit_enforcement(self, mock_upload_file):
-        """Test file size limits are enforced
+    def test_file_size_limit_enforcement(self, mock_upload_file) -> None:
+        """Test file size limits are enforced.
 
         Acceptance Criteria:
         - Files > 10MB rejected
@@ -92,8 +92,8 @@ class TestFileUploadSecurity:
         # if file_size_mb > max_size_mb:
         #     raise HTTPException(status_code=413, detail="File too large")
 
-    def test_malicious_file_type_detection(self, mock_upload_file):
-        """Test detection of potentially malicious file types
+    def test_malicious_file_type_detection(self, mock_upload_file) -> None:
+        """Test detection of potentially malicious file types.
 
         Acceptance Criteria:
         - Executable files rejected (.exe, .sh, .bat)
@@ -123,8 +123,8 @@ class TestFileUploadSecurity:
             # Verify file type is not allowed
             assert content_type not in allowed_types, f"{content_type} should not be in allowed types"
 
-    def test_concurrent_file_uploads(self, mock_upload_file):
-        """Test handling of concurrent file uploads
+    def test_concurrent_file_uploads(self, mock_upload_file) -> None:
+        """Test handling of concurrent file uploads.
 
         Acceptance Criteria:
         - System handles 10 concurrent uploads
@@ -150,8 +150,8 @@ class TestFileUploadSecurity:
         assert len(upload_results) == num_uploads
         assert all(r["status"] == "success" for r in upload_results)
 
-    def test_file_upload_virus_scan(self, mock_upload_file):
-        """Test virus scanning of uploaded files
+    def test_file_upload_virus_scan(self, mock_upload_file) -> None:
+        """Test virus scanning of uploaded files.
 
         Acceptance Criteria:
         - All uploads scanned before storage
@@ -177,8 +177,8 @@ class TestFileUploadSecurity:
         assert scan_result["clean"] is True
         assert scan_result["threats_found"] == 0
 
-    def test_file_upload_storage_path_traversal_prevention(self, mock_upload_file):
-        """Test prevention of path traversal attacks
+    def test_file_upload_storage_path_traversal_prevention(self, mock_upload_file) -> None:
+        """Test prevention of path traversal attacks.
 
         Acceptance Criteria:
         - Filenames with ../ rejected
@@ -204,8 +204,8 @@ class TestFileUploadSecurity:
             # safe_filename = secure_filename(filename)
             # assert ".." not in safe_filename
 
-    def test_file_upload_memory_efficient_processing(self, mock_upload_file):
-        """Test memory-efficient streaming for large files
+    def test_file_upload_memory_efficient_processing(self, mock_upload_file) -> None:
+        """Test memory-efficient streaming for large files.
 
         Acceptance Criteria:
         - Large files processed in chunks
@@ -232,8 +232,8 @@ class TestFileUploadSecurity:
         assert memory_used_mb < 1, "Memory usage should stay under 1MB during streaming"
         assert chunks_processed > 0, "File should be processed in chunks"
 
-    def test_file_upload_cleanup_on_error(self, mock_upload_file):
-        """Test cleanup of partial uploads on error
+    def test_file_upload_cleanup_on_error(self, mock_upload_file) -> None:
+        """Test cleanup of partial uploads on error.
 
         Acceptance Criteria:
         - Failed uploads cleaned up
@@ -261,10 +261,10 @@ class TestFileUploadSecurity:
 
 @pytest.mark.api
 class TestFileUploadValidation:
-    """Test file upload validation and sanitization"""
+    """Test file upload validation and sanitization."""
 
-    def test_filename_sanitization(self):
-        """Test filename sanitization
+    def test_filename_sanitization(self) -> None:
+        """Test filename sanitization.
 
         Acceptance Criteria:
         - Special characters removed
@@ -286,8 +286,8 @@ class TestFileUploadValidation:
             # assert ".." not in sanitized
             pass
 
-    def test_content_type_validation(self):
-        """Test content-type validation
+    def test_content_type_validation(self) -> None:
+        """Test content-type validation.
 
         Acceptance Criteria:
         - Content-type matches file extension

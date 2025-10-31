@@ -1,4 +1,4 @@
-"""Add composite indexes for performance optimization
+"""Add composite indexes for performance optimization.
 
 Revision ID: 20251009_composite_indexes
 Revises: fix_missing_columns
@@ -15,7 +15,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     """Add composite indexes to improve query performance.
 
     These indexes optimize common query patterns:
@@ -63,8 +63,8 @@ def upgrade():
     print("✅ Composite indexes created successfully")
 
 
-def downgrade():
-    """Remove composite indexes"""
+def downgrade() -> None:
+    """Remove composite indexes."""
     op.drop_index("idx_recalls_severity", table_name="recalls_enhanced")
     op.drop_index("idx_recalls_date_agency", table_name="recalls_enhanced")
     op.drop_index("idx_recalls_identifiers", table_name="recalls_enhanced")

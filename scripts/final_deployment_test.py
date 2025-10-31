@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """FINAL DEPLOYMENT READINESS TEST - BABYSHIELD API
-Verifies 100% functionality before deployment
+Verifies 100% functionality before deployment.
 """
 
 import random
@@ -21,8 +21,8 @@ passed = []
 failed = []
 
 
-def test(name, method, url, json_data=None, params=None):
-    """Test an endpoint and track results"""
+def test(name, method, url, json_data=None, params=None) -> bool | None:
+    """Test an endpoint and track results."""
     try:
         if method == "GET":
             r = requests.get(f"{BASE_URL}{url}", params=params, timeout=5)
@@ -33,10 +33,9 @@ def test(name, method, url, json_data=None, params=None):
             print(f"✅ {name}")
             passed.append(name)
             return True
-        else:
-            print(f"❌ {name} (Status: {r.status_code})")
-            failed.append(name)
-            return False
+        print(f"❌ {name} (Status: {r.status_code})")
+        failed.append(name)
+        return False
     except Exception as e:
         print(f"❌ {name} - Error: {str(e)[:50]}")
         failed.append(name)

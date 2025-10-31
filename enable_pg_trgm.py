@@ -34,7 +34,7 @@ if DB_PASSWORD is None:
 DB_PORT = 5432
 
 
-def enable_pg_trgm():
+def enable_pg_trgm() -> None:
     """Enable pg_trgm extension and create indexes."""
     try:
         print(f"🔌 Connecting to {DB_HOST}...")

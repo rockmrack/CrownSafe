@@ -1,5 +1,5 @@
 """Supplemental Data Service for BabyShield
-Integrates authoritative data sources beyond recalls for comprehensive safety reports
+Integrates authoritative data sources beyond recalls for comprehensive safety reports.
 """
 
 import logging
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class FoodData:
-    """Food product data from USDA and Edamam"""
+    """Food product data from USDA and Edamam."""
 
     fdc_id: str | None = None
     name: str | None = None
@@ -27,7 +27,7 @@ class FoodData:
 
 @dataclass
 class CosmeticData:
-    """Cosmetic product data from EU CosIng and Open Beauty Facts"""
+    """Cosmetic product data from EU CosIng and Open Beauty Facts."""
 
     product_name: str | None = None
     ingredients: list[str] | None = None
@@ -39,7 +39,7 @@ class CosmeticData:
 
 @dataclass
 class ChemicalData:
-    """Chemical safety data from OSHA and ATSDR"""
+    """Chemical safety data from OSHA and ATSDR."""
 
     chemical_name: str | None = None
     cas_number: str | None = None
@@ -51,7 +51,7 @@ class ChemicalData:
 
 
 class USDAClient:
-    """USDA FoodData Central API client"""
+    """USDA FoodData Central API client."""
 
     def __init__(self) -> None:
         self.base_url = "https://api.nal.usda.gov/fdc/v1"
@@ -62,7 +62,7 @@ class USDAClient:
             logger.info("USDA FoodData Central disabled - no API key provided")
 
     async def search_food(self, query: str, limit: int = 10) -> list[dict[str, Any]]:
-        """Search for food products in USDA database"""
+        """Search for food products in USDA database."""
         if not self.enabled:
             return []
 
@@ -86,7 +86,7 @@ class USDAClient:
             return []
 
     async def get_food_details(self, fdc_id: str) -> dict[str, Any] | None:
-        """Get detailed food information by FDC ID"""
+        """Get detailed food information by FDC ID."""
         if not self.enabled:
             return None
 
@@ -105,7 +105,7 @@ class USDAClient:
 
 
 class EdamamClient:
-    """Edamam Food Database API client"""
+    """Edamam Food Database API client."""
 
     def __init__(self) -> None:
         self.app_id = os.getenv("EDAMAM_APP_ID")
@@ -117,7 +117,7 @@ class EdamamClient:
             logger.info("Edamam API disabled - no credentials provided")
 
     async def search_food(self, query: str, limit: int = 10) -> list[dict[str, Any]]:
-        """Search for food products in Edamam database"""
+        """Search for food products in Edamam database."""
         if not self.enabled:
             return []
 
@@ -141,7 +141,7 @@ class EdamamClient:
             return []
 
     async def get_nutrition_info(self, food_id: str) -> dict[str, Any] | None:
-        """Get nutritional information for a food item"""
+        """Get nutritional information for a food item."""
         if not self.enabled:
             return None
 
@@ -169,7 +169,7 @@ class EdamamClient:
 
 
 class CosIngClient:
-    """EU CosIng Database client"""
+    """EU CosIng Database client."""
 
     def __init__(self) -> None:
         self.base_url = "https://ec.europa.eu/growth/tools-databases/cosing/"
@@ -177,7 +177,7 @@ class CosIngClient:
         logger.info("EU CosIng database client initialized")
 
     async def search_ingredient(self, ingredient_name: str) -> list[dict[str, Any]]:
-        """Search for cosmetic ingredients in EU CosIng database"""
+        """Search for cosmetic ingredients in EU CosIng database."""
         if not self.enabled:
             return []
 
@@ -204,7 +204,7 @@ class CosIngClient:
 
 
 class SupplementalDataService:
-    """Main service for integrating supplemental data sources"""
+    """Main service for integrating supplemental data sources."""
 
     def __init__(self) -> None:
         self.usda_client = USDAClient()
@@ -214,7 +214,7 @@ class SupplementalDataService:
         logger.info("SupplementalDataService initialized")
 
     async def get_food_data(self, product_name: str, barcode: str | None = None) -> FoodData:
-        """Get comprehensive food data from multiple sources"""
+        """Get comprehensive food data from multiple sources."""
         logger.info(f"Getting food data for: {product_name}")
 
         food_data = FoodData()
@@ -261,7 +261,7 @@ class SupplementalDataService:
         return food_data
 
     async def get_cosmetic_data(self, product_name: str) -> CosmeticData:
-        """Get cosmetic data from EU CosIng and other sources"""
+        """Get cosmetic data from EU CosIng and other sources."""
         logger.info(f"Getting cosmetic data for: {product_name}")
 
         try:
@@ -296,7 +296,7 @@ class SupplementalDataService:
             )
 
     async def get_chemical_data(self, chemical_name: str) -> ChemicalData:
-        """Get chemical safety data from OSHA and ATSDR"""
+        """Get chemical safety data from OSHA and ATSDR."""
         logger.info(f"Getting chemical data for: {chemical_name}")
 
         chemical_data = ChemicalData(chemical_name=chemical_name)
@@ -315,7 +315,7 @@ class SupplementalDataService:
         return chemical_data
 
     def _extract_nutritional_info(self, usda_data: dict[str, Any]) -> dict[str, Any]:
-        """Extract nutritional information from USDA data"""
+        """Extract nutritional information from USDA data."""
         nutrients = {}
 
         for nutrient in usda_data.get("foodNutrients", []):
@@ -330,7 +330,7 @@ class SupplementalDataService:
         return nutrients
 
     def _extract_edamam_nutrition(self, edamam_data: dict[str, Any]) -> dict[str, Any]:
-        """Extract nutritional information from Edamam data"""
+        """Extract nutritional information from Edamam data."""
         nutrients = {}
 
         for nutrient in edamam_data.get("totalNutrients", {}):
@@ -345,7 +345,7 @@ class SupplementalDataService:
         return nutrients
 
     def _calculate_food_safety_score(self, food_data: FoodData) -> float:
-        """Calculate safety score for food data"""
+        """Calculate safety score for food data."""
         score = 0.5  # Base score
 
         # Add points for having nutritional data

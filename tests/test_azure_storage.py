@@ -1,5 +1,5 @@
 """Comprehensive tests for Azure Blob Storage client
-Tests upload, download, deletion, and SAS URL generation
+Tests upload, download, deletion, and SAS URL generation.
 """
 
 import os
@@ -20,14 +20,14 @@ from core_infra.azure_storage import AzureBlobStorageClient
 
 @pytest.fixture
 def mock_blob_service_client():
-    """Mock BlobServiceClient for testing"""
+    """Mock BlobServiceClient for testing."""
     with patch("core_infra.azure_storage.BlobServiceClient") as mock:
         yield mock
 
 
 @pytest.fixture
 def azure_client(mock_blob_service_client):
-    """Create AzureBlobStorageClient with mocked dependencies"""
+    """Create AzureBlobStorageClient with mocked dependencies."""
     with patch.dict(
         os.environ,
         {
@@ -40,10 +40,10 @@ def azure_client(mock_blob_service_client):
 
 
 class TestAzureBlobStorageClient:
-    """Test suite for AzureBlobStorageClient"""
+    """Test suite for AzureBlobStorageClient."""
 
-    def test_init_with_connection_string(self, mock_blob_service_client):
-        """Test client initialization with connection string"""
+    def test_init_with_connection_string(self, mock_blob_service_client) -> None:
+        """Test client initialization with connection string."""
         connection_string = "DefaultEndpointsProtocol=https;AccountName=test;AccountKey=testkey;"
 
         with patch.dict(
@@ -59,8 +59,8 @@ class TestAzureBlobStorageClient:
             assert client.container_name == "test-container"
             mock_blob_service_client.from_connection_string.assert_called_once()
 
-    def test_init_with_account_key(self, mock_blob_service_client):
-        """Test client initialization with account name and key"""
+    def test_init_with_account_key(self, mock_blob_service_client) -> None:
+        """Test client initialization with account name and key."""
         with patch.dict(
             os.environ,
             {
@@ -78,8 +78,8 @@ class TestAzureBlobStorageClient:
             assert client.account_key == "testkey"
             mock_blob_service_client.assert_called_once()
 
-    def test_upload_file_success(self, azure_client):
-        """Test successful file upload"""
+    def test_upload_file_success(self, azure_client) -> None:
+        """Test successful file upload."""
         # Mock blob client
         mock_blob_client = Mock()
         mock_blob_client.url = "https://test.blob.core.windows.net/container/test.txt"
@@ -100,8 +100,8 @@ class TestAzureBlobStorageClient:
         assert call_args[0][0] == file_data
         assert call_args[1]["overwrite"] is True
 
-    def test_upload_file_with_metadata(self, azure_client):
-        """Test file upload with custom metadata"""
+    def test_upload_file_with_metadata(self, azure_client) -> None:
+        """Test file upload with custom metadata."""
         mock_blob_client = Mock()
         mock_blob_client.url = "https://test.blob.core.windows.net/container/test.txt"
         azure_client._get_blob_client = Mock(return_value=mock_blob_client)
@@ -115,8 +115,8 @@ class TestAzureBlobStorageClient:
         call_args = mock_blob_client.upload_blob.call_args
         assert call_args[1]["metadata"] == metadata
 
-    def test_download_blob_success(self, azure_client):
-        """Test successful blob download"""
+    def test_download_blob_success(self, azure_client) -> None:
+        """Test successful blob download."""
         mock_blob_client = Mock()
         mock_download_stream = Mock()
         mock_download_stream.readall.return_value = b"Downloaded content"
@@ -129,8 +129,8 @@ class TestAzureBlobStorageClient:
         assert result == b"Downloaded content"
         mock_blob_client.download_blob.assert_called_once()
 
-    def test_download_blob_not_found(self, azure_client):
-        """Test blob download when blob doesn't exist"""
+    def test_download_blob_not_found(self, azure_client) -> None:
+        """Test blob download when blob doesn't exist."""
         mock_blob_client = Mock()
         mock_blob_client.download_blob.side_effect = ResourceNotFoundError("Blob not found")
 
@@ -139,8 +139,8 @@ class TestAzureBlobStorageClient:
         with pytest.raises(ResourceNotFoundError):
             azure_client.download_blob("nonexistent.txt")
 
-    def test_blob_exists_true(self, azure_client):
-        """Test blob_exists returns True for existing blob"""
+    def test_blob_exists_true(self, azure_client) -> None:
+        """Test blob_exists returns True for existing blob."""
         mock_blob_client = Mock()
         mock_properties = Mock()
         mock_blob_client.get_blob_properties.return_value = mock_properties
@@ -152,8 +152,8 @@ class TestAzureBlobStorageClient:
         assert result is True
         mock_blob_client.get_blob_properties.assert_called_once()
 
-    def test_blob_exists_false(self, azure_client):
-        """Test blob_exists returns False for non-existent blob"""
+    def test_blob_exists_false(self, azure_client) -> None:
+        """Test blob_exists returns False for non-existent blob."""
         mock_blob_client = Mock()
         mock_blob_client.get_blob_properties.side_effect = ResourceNotFoundError("Not found")
 
@@ -163,8 +163,8 @@ class TestAzureBlobStorageClient:
 
         assert result is False
 
-    def test_delete_blob_success(self, azure_client):
-        """Test successful blob deletion"""
+    def test_delete_blob_success(self, azure_client) -> None:
+        """Test successful blob deletion."""
         mock_blob_client = Mock()
         azure_client._get_blob_client = Mock(return_value=mock_blob_client)
 
@@ -173,8 +173,8 @@ class TestAzureBlobStorageClient:
         assert result is True
         mock_blob_client.delete_blob.assert_called_once()
 
-    def test_head_object_success(self, azure_client):
-        """Test getting blob properties"""
+    def test_head_object_success(self, azure_client) -> None:
+        """Test getting blob properties."""
         mock_blob_client = Mock()
 
         # Mock blob properties
@@ -194,8 +194,8 @@ class TestAzureBlobStorageClient:
         assert result["Metadata"] == {"user_id": "123"}
         assert isinstance(result["LastModified"], datetime)
 
-    def test_list_blobs_success(self, azure_client):
-        """Test listing blobs in container"""
+    def test_list_blobs_success(self, azure_client) -> None:
+        """Test listing blobs in container."""
         mock_container_client = Mock()
 
         # Mock blob items
@@ -221,8 +221,8 @@ class TestAzureBlobStorageClient:
         assert "test2.txt" in result
         assert "test3.txt" in result
 
-    def test_list_blobs_with_prefix(self, azure_client):
-        """Test listing blobs with prefix filter"""
+    def test_list_blobs_with_prefix(self, azure_client) -> None:
+        """Test listing blobs with prefix filter."""
         mock_container_client = Mock()
 
         mock_blob1 = Mock()
@@ -239,8 +239,8 @@ class TestAzureBlobStorageClient:
         assert len(result) == 2
         mock_container_client.list_blobs.assert_called_once_with(name_starts_with="images/")
 
-    def test_list_blobs_with_max_results(self, azure_client):
-        """Test listing blobs with max_results limit"""
+    def test_list_blobs_with_max_results(self, azure_client) -> None:
+        """Test listing blobs with max_results limit."""
         mock_container_client = Mock()
 
         mock_blobs = [Mock(name=f"test{i}.txt") for i in range(10)]
@@ -253,8 +253,8 @@ class TestAzureBlobStorageClient:
         assert len(result) == 5
 
     @patch("core_infra.azure_storage.generate_blob_sas")
-    def test_generate_sas_url_success(self, mock_generate_sas, azure_client):
-        """Test SAS URL generation"""
+    def test_generate_sas_url_success(self, mock_generate_sas, azure_client) -> None:
+        """Test SAS URL generation."""
         mock_generate_sas.return_value = "sig=testsignature&expiry=2025-11-01"
 
         # Set account name for URL construction
@@ -273,8 +273,8 @@ class TestAzureBlobStorageClient:
         assert call_args["blob_name"] == "test.txt"
         assert call_args["container_name"] == "test-container"
 
-    def test_get_blob_url(self, azure_client):
-        """Test getting public blob URL"""
+    def test_get_blob_url(self, azure_client) -> None:
+        """Test getting public blob URL."""
         azure_client.account_name = "testaccount"
 
         result = azure_client.get_blob_url("test.txt")
@@ -282,8 +282,8 @@ class TestAzureBlobStorageClient:
         expected_url = "https://testaccount.blob.core.windows.net/test-container/test.txt"
         assert result == expected_url
 
-    def test_get_blob_url_custom_container(self, azure_client):
-        """Test getting blob URL with custom container"""
+    def test_get_blob_url_custom_container(self, azure_client) -> None:
+        """Test getting blob URL with custom container."""
         azure_client.account_name = "testaccount"
 
         result = azure_client.get_blob_url("test.txt", container_name="custom-container")
@@ -293,10 +293,10 @@ class TestAzureBlobStorageClient:
 
 
 class TestAzureStorageErrorHandling:
-    """Test error handling scenarios"""
+    """Test error handling scenarios."""
 
-    def test_http_response_error_handling(self, azure_client):
-        """Test handling of Azure HttpResponseError"""
+    def test_http_response_error_handling(self, azure_client) -> None:
+        """Test handling of Azure HttpResponseError."""
         mock_blob_client = Mock()
         error = HttpResponseError(message="Service error")
         error.status_code = 503
@@ -307,8 +307,8 @@ class TestAzureStorageErrorHandling:
         with pytest.raises(HttpResponseError):
             azure_client.upload_file(b"test", "test.txt")
 
-    def test_resource_exists_error(self, azure_client):
-        """Test handling when resource already exists"""
+    def test_resource_exists_error(self, azure_client) -> None:
+        """Test handling when resource already exists."""
         mock_blob_client = Mock()
         mock_blob_client.upload_blob.side_effect = ResourceExistsError("Blob already exists")
 
@@ -321,13 +321,13 @@ class TestAzureStorageErrorHandling:
 
 class TestAzureStorageIntegration:
     """Integration tests (requires Azurite or actual Azure Storage)
-    Skip by default, run with: pytest -m integration
+    Skip by default, run with: pytest -m integration.
     """
 
     @pytest.mark.integration
     @pytest.mark.skip(reason="Requires Azurite or Azure Storage")
-    def test_upload_download_cycle(self):
-        """Test full upload/download cycle"""
+    def test_upload_download_cycle(self) -> None:
+        """Test full upload/download cycle."""
         client = AzureBlobStorageClient()
 
         # Upload
@@ -346,8 +346,8 @@ class TestAzureStorageIntegration:
 
     @pytest.mark.integration
     @pytest.mark.skip(reason="Requires Azurite or Azure Storage")
-    def test_sas_url_access(self):
-        """Test SAS URL generation and access"""
+    def test_sas_url_access(self) -> None:
+        """Test SAS URL generation and access."""
         client = AzureBlobStorageClient()
 
         # Upload test file

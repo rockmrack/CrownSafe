@@ -1,5 +1,5 @@
 """Rate Limiting for BabyShield API
-Prevents API abuse and ensures fair usage
+Prevents API abuse and ensures fair usage.
 """
 
 import os
@@ -18,7 +18,7 @@ REDIS_URL = os.getenv("RATE_LIMIT_REDIS_URL") or os.getenv("REDIS_URL")
 
 def get_identifier(request: Request) -> str:
     """Get identifier for rate limiting
-    Uses IP address or authenticated user ID
+    Uses IP address or authenticated user ID.
     """
     # Try to get authenticated user first
     if hasattr(request.state, "user") and request.state.user:
@@ -53,7 +53,7 @@ limiter = _build_limiter()
 
 # Custom rate limit exceeded handler
 async def custom_rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded) -> Response:
-    """Custom handler for rate limit exceeded"""
+    """Custom handler for rate limit exceeded."""
     response = JSONResponse(
         status_code=429,
         content={
@@ -78,35 +78,35 @@ async def custom_rate_limit_exceeded_handler(request: Request, exc: RateLimitExc
 
 # Rate limit decorators for different tiers
 def standard_limit():
-    """Standard rate limit for general endpoints"""
+    """Standard rate limit for general endpoints."""
     return limiter.limit("100 per minute")
 
 
 def strict_limit():
-    """Strict rate limit for expensive operations"""
+    """Strict rate limit for expensive operations."""
     return limiter.limit("20 per minute")
 
 
 def relaxed_limit():
-    """Relaxed rate limit for lightweight operations"""
+    """Relaxed rate limit for lightweight operations."""
     return limiter.limit("300 per minute")
 
 
 def auth_limit():
-    """Rate limit for authentication endpoints"""
+    """Rate limit for authentication endpoints."""
     return limiter.limit("5 per minute")
 
 
 # IP-based rate limiting for unauthenticated requests
 def ip_limit():
-    """IP-based rate limiting"""
+    """IP-based rate limiting."""
     return limiter.limit("50 per minute", key_func=get_remote_address)
 
 
 # Dynamic rate limiting based on user tier (optional)
 def get_user_rate_limit(request: Request) -> str:
     """Get rate limit based on user tier
-    Can be extended to support different user tiers
+    Can be extended to support different user tiers.
     """
     if hasattr(request.state, "user") and request.state.user:
         # Premium users could get higher limits
@@ -117,13 +117,13 @@ def get_user_rate_limit(request: Request) -> str:
 
 
 def dynamic_limit():
-    """Dynamic rate limit based on user tier"""
+    """Dynamic rate limit based on user tier."""
     return limiter.limit(get_user_rate_limit)
 
 
 # Utility function to check remaining rate limit
 async def get_rate_limit_status(request: Request) -> dict:
-    """Get current rate limit status for the requester"""
+    """Get current rate limit status for the requester."""
     identifier = get_identifier(request)
 
     try:
@@ -158,7 +158,7 @@ async def get_rate_limit_status(request: Request) -> dict:
 
 # Middleware to add user to request state
 async def add_user_to_request(request: Request, call_next):
-    """Middleware to add authenticated user to request state"""
+    """Middleware to add authenticated user to request state."""
     # This will be populated by the authentication middleware
     if not hasattr(request.state, "user"):
         request.state.user = None

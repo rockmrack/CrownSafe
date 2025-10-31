@@ -44,7 +44,7 @@ MOCK_NHTSA_RESPONSE = {
 # --------------------------
 
 
-async def main():
+async def main() -> None:
     """Main function to test the NHTSAConnector with a mocked API call."""
     logger = logging.getLogger(__name__)
     logger.info("--- Starting NHTSA Connector Test ---")

@@ -1,4 +1,4 @@
-"""Test Download Report Functionality on Production API"""
+"""Test Download Report Functionality on Production API."""
 
 import json
 
@@ -8,9 +8,9 @@ import requests
 BASE_URL = "https://babyshield.cureviax.ai"
 
 
-def test_download_report_production():
+def test_download_report_production() -> None:
     """Test report download on production API
-    Note: This requires authentication which we don't have in this test
+    Note: This requires authentication which we don't have in this test.
     """
     print("=" * 80)
     print("🧪 Testing Download Report on Production API")

@@ -1,6 +1,6 @@
-"""SQLAlchemy model for ingestion run tracking"""
+"""SQLAlchemy model for ingestion run tracking."""
 
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 from sqlalchemy import CheckConstraint, Column, DateTime, Integer, String, Text
@@ -11,7 +11,7 @@ from core_infra.database import Base  # Use existing Base from project
 
 
 class IngestionRun(Base):
-    """Model for tracking data ingestion runs"""
+    """Model for tracking data ingestion runs."""
 
     __tablename__ = "ingestion_runs"
 
@@ -58,11 +58,11 @@ class IngestionRun(Base):
         ),
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<IngestionRun(id={self.id}, agency={self.agency}, status={self.status})>"
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert to dictionary for JSON serialization"""
+        """Convert to dictionary for JSON serialization."""
         return {
             "id": str(self.id) if self.id else None,
             "agency": self.agency,
@@ -86,36 +86,36 @@ class IngestionRun(Base):
 
     @property
     def duration_seconds(self) -> float | None:
-        """Calculate run duration in seconds"""
+        """Calculate run duration in seconds."""
         if self.started_at and self.finished_at:
             return (self.finished_at - self.started_at).total_seconds()
-        elif self.started_at:
+        if self.started_at:
             # Still running
             return (datetime.now(UTC).replace(tzinfo=self.started_at.tzinfo) - self.started_at).total_seconds()
         return None
 
     @property
     def is_running(self) -> bool:
-        """Check if ingestion is currently running"""
+        """Check if ingestion is currently running."""
         return self.status == "running"
 
     @property
     def is_success(self) -> bool:
-        """Check if ingestion completed successfully"""
+        """Check if ingestion completed successfully."""
         return self.status in ("success", "partial")
 
     @property
     def is_failed(self) -> bool:
-        """Check if ingestion failed"""
+        """Check if ingestion failed."""
         return self.status in ("failed", "cancelled")
 
     @property
     def total_items_processed(self) -> int:
-        """Total number of items processed"""
+        """Total number of items processed."""
         return self.items_inserted + self.items_updated + self.items_skipped
 
-    def set_running(self, trace_id: str | None = None):
-        """Mark ingestion as running"""
+    def set_running(self, trace_id: str | None = None) -> None:
+        """Mark ingestion as running."""
         self.status = "running"
         self.started_at = datetime.now(UTC).replace(tzinfo=UTC)
         if trace_id:
@@ -127,8 +127,8 @@ class IngestionRun(Base):
         items_updated: int = 0,
         items_skipped: int = 0,
         items_failed: int = 0,
-    ):
-        """Mark ingestion as successful"""
+    ) -> None:
+        """Mark ingestion as successful."""
         self.status = "success" if items_failed == 0 else "partial"
         self.finished_at = datetime.now(UTC).replace(tzinfo=UTC)
         self.items_inserted = items_inserted
@@ -136,14 +136,14 @@ class IngestionRun(Base):
         self.items_skipped = items_skipped
         self.items_failed = items_failed
 
-    def set_failed(self, error: str):
-        """Mark ingestion as failed"""
+    def set_failed(self, error: str) -> None:
+        """Mark ingestion as failed."""
         self.status = "failed"
         self.finished_at = datetime.now(UTC).replace(tzinfo=UTC)
         self.error_text = error[:5000] if error else None  # Truncate to 5000 chars
 
-    def set_cancelled(self):
-        """Mark ingestion as cancelled"""
+    def set_cancelled(self) -> None:
+        """Mark ingestion as cancelled."""
         self.status = "cancelled"
         self.finished_at = datetime.now(UTC).replace(tzinfo=UTC)
         self.error_text = "Ingestion cancelled by user"

@@ -12,7 +12,7 @@ from agents.value_add.alternatives_agent.agent_logic import AlternativesAgentLog
 logging.basicConfig(level=logging.INFO)
 
 
-def test_business_agents():
+def test_business_agents() -> None:
     print("--- Testing MetricsAgent Logic ---")
     metrics_logic = MetricsAgentLogic(agent_id="test_metrics_agent_01")
 

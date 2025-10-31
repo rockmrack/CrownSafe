@@ -1,5 +1,5 @@
 """Premium Features API Endpoints
-Provides endpoints for pregnancy safety and allergy checking features
+Provides endpoints for pregnancy safety and allergy checking features.
 """
 
 import logging
@@ -32,7 +32,7 @@ router = APIRouter(prefix="/api/v1/premium", tags=["Premium Features"])
 
 
 class PregnancyCheckRequest(BaseModel):
-    """Request model for pregnancy safety check"""
+    """Request model for pregnancy safety check."""
 
     barcode: str | None = Field(None, description="Product barcode/UPC")
     product_name: str | None = Field(None, description="Product name if barcode not available")
@@ -41,7 +41,7 @@ class PregnancyCheckRequest(BaseModel):
 
 
 class PregnancyCheckResponse(BaseModel):
-    """Response model for pregnancy safety check"""
+    """Response model for pregnancy safety check."""
 
     status: str
     product_name: str
@@ -53,7 +53,7 @@ class PregnancyCheckResponse(BaseModel):
 
 
 class AllergyCheckRequest(BaseModel):
-    """Request model for allergy check"""
+    """Request model for allergy check."""
 
     barcode: str | None = Field(None, description="Product barcode/UPC")
     product_name: str | None = Field(None, description="Product name if barcode not available")
@@ -62,7 +62,7 @@ class AllergyCheckRequest(BaseModel):
 
 
 class AllergyCheckResponse(BaseModel):
-    """Response model for allergy check"""
+    """Response model for allergy check."""
 
     status: str
     product_name: str
@@ -74,7 +74,7 @@ class AllergyCheckResponse(BaseModel):
 
 
 class FamilyMemberRequest(BaseModel):
-    """Request model for adding/updating family member"""
+    """Request model for adding/updating family member."""
 
     name: str = Field(..., min_length=1, max_length=100, description="Family member name")
     relationship: str | None = Field(None, description="Relationship to user")
@@ -84,7 +84,7 @@ class FamilyMemberRequest(BaseModel):
 
 
 class FamilyMemberResponse(BaseModel):
-    """Response model for family member"""
+    """Response model for family member."""
 
     id: int
     name: str
@@ -96,7 +96,7 @@ class FamilyMemberResponse(BaseModel):
 
 
 class CombinedSafetyCheckRequest(BaseModel):
-    """Request for combined safety check including pregnancy and allergies"""
+    """Request for combined safety check including pregnancy and allergies."""
 
     barcode: str | None = Field(None, description="Product barcode/UPC")
     product_name: str | None = Field(None, description="Product name")
@@ -472,7 +472,7 @@ async def delete_family_member(
 
 @router.post("/pregnancy/check-dev")
 async def check_pregnancy_safety_dev(payload: PregnancyCheckRequest, db: Session = Depends(get_db)):
-    """Dev override version of pregnancy safety check - no authentication required"""
+    """Dev override version of pregnancy safety check - no authentication required."""
     try:
         # Check dev override for premium features
         from api.services.dev_override import dev_entitled
@@ -514,7 +514,7 @@ async def check_pregnancy_safety_dev(payload: PregnancyCheckRequest, db: Session
 
 @router.post("/allergy/check-dev")
 async def check_allergy_safety_dev(payload: AllergyCheckRequest, db: Session = Depends(get_db)):
-    """Dev override version of allergy safety check - no authentication required"""
+    """Dev override version of allergy safety check - no authentication required."""
     try:
         # Check dev override for premium features
         from api.services.dev_override import dev_entitled

@@ -16,7 +16,7 @@ from core_infra.database import Base, engine  # noqa: E402
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 
-async def main():
+async def main() -> None:
     """Runs the live data ingestion cycle to populate the database with fresh recalls."""
     logger = logging.getLogger(__name__)
     logger.info("--- Starting Live Data Ingestion from All Connectors ---")

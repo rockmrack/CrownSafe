@@ -1,5 +1,5 @@
 """Deep Conversation Endpoint Tests
-Tests all edge cases, error conditions, and response variations
+Tests all edge cases, error conditions, and response variations.
 """
 
 import os
@@ -15,9 +15,9 @@ os.environ["BS_FEATURE_CHAT_ROLLOUT_PCT"] = "1.0"
 
 
 class DummyLLM:
-    """Mock LLM for testing various response scenarios"""
+    """Mock LLM for testing various response scenarios."""
 
-    def __init__(self, response_override=None):
+    def __init__(self, response_override=None) -> None:
         self.response_override = response_override
 
     def chat_json(self, **kwargs):
@@ -38,7 +38,7 @@ class DummyLLM:
 
 
 def _fake_scan(product="Test Product", **kwargs):
-    """Create a fake scan result with flexible data"""
+    """Create a fake scan result with flexible data."""
     base = {
         "product_name": product,
         "category": "baby_food",
@@ -51,10 +51,10 @@ def _fake_scan(product="Test Product", **kwargs):
 
 
 class TestConversationDeep:
-    """Deep tests for conversation endpoint"""
+    """Deep tests for conversation endpoint."""
 
-    def test_conversation_with_empty_message(self, monkeypatch):
-        """Test that empty message is rejected"""
+    def test_conversation_with_empty_message(self, monkeypatch) -> None:
+        """Test that empty message is rejected."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
 
@@ -66,8 +66,8 @@ class TestConversationDeep:
         assert r.status_code == 400
         assert "message is required" in r.json().get("error", "").lower()
 
-    def test_conversation_with_missing_message_field(self, monkeypatch):
-        """Test that missing message field is rejected"""
+    def test_conversation_with_missing_message_field(self, monkeypatch) -> None:
+        """Test that missing message field is rejected."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
 
@@ -79,8 +79,8 @@ class TestConversationDeep:
         # Should return validation error (400 or 422 both acceptable)
         assert r.status_code in [400, 422]
 
-    def test_conversation_with_very_long_message(self, monkeypatch):
-        """Test handling of extremely long messages"""
+    def test_conversation_with_very_long_message(self, monkeypatch) -> None:
+        """Test handling of extremely long messages."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
 
@@ -97,8 +97,8 @@ class TestConversationDeep:
         # Should either accept or reject gracefully, not crash
         assert r.status_code in [200, 400, 413]
 
-    def test_conversation_with_special_characters(self, monkeypatch):
-        """Test handling of special characters in message"""
+    def test_conversation_with_special_characters(self, monkeypatch) -> None:
+        """Test handling of special characters in message."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
 
@@ -116,8 +116,8 @@ class TestConversationDeep:
         body = r.json()
         assert body.get("success") is True
 
-    def test_conversation_with_unicode_message(self, monkeypatch):
-        """Test handling of Unicode characters"""
+    def test_conversation_with_unicode_message(self, monkeypatch) -> None:
+        """Test handling of Unicode characters."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
 
@@ -135,8 +135,8 @@ class TestConversationDeep:
         body = r.json()
         assert body.get("success") is True
 
-    def test_conversation_response_structure(self, monkeypatch):
-        """Test that response has all required fields"""
+    def test_conversation_response_structure(self, monkeypatch) -> None:
+        """Test that response has all required fields."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
 
@@ -162,8 +162,8 @@ class TestConversationDeep:
         assert "answer" in data
         assert "conversation_id" in data
 
-    def test_conversation_with_recall_present(self, monkeypatch):
-        """Test conversation when product has active recalls"""
+    def test_conversation_with_recall_present(self, monkeypatch) -> None:
+        """Test conversation when product has active recalls."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(
             chat_router,
@@ -200,8 +200,8 @@ class TestConversationDeep:
         body = r.json()
         assert body.get("success") is True
 
-    def test_conversation_with_allergen_flags(self, monkeypatch):
-        """Test conversation when product has allergen flags"""
+    def test_conversation_with_allergen_flags(self, monkeypatch) -> None:
+        """Test conversation when product has allergen flags."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(
             chat_router,
@@ -225,8 +225,8 @@ class TestConversationDeep:
         body = r.json()
         assert body.get("success") is True
 
-    def test_conversation_with_age_restrictions(self, monkeypatch):
-        """Test conversation when product has age restrictions"""
+    def test_conversation_with_age_restrictions(self, monkeypatch) -> None:
+        """Test conversation when product has age restrictions."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(
             chat_router,
@@ -247,8 +247,8 @@ class TestConversationDeep:
         body = r.json()
         assert body.get("success") is True
 
-    def test_conversation_headers_presence(self, monkeypatch):
-        """Test that all required headers are present"""
+    def test_conversation_headers_presence(self, monkeypatch) -> None:
+        """Test that all required headers are present."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
 
@@ -269,8 +269,8 @@ class TestConversationDeep:
         assert "X-Content-Type-Options" in r.headers
         assert "X-Frame-Options" in r.headers
 
-    def test_conversation_trace_id_format(self, monkeypatch):
-        """Test that X-Trace-Id has valid UUID format"""
+    def test_conversation_trace_id_format(self, monkeypatch) -> None:
+        """Test that X-Trace-Id has valid UUID format."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
 
@@ -289,8 +289,8 @@ class TestConversationDeep:
         # Should be UUID format (36 chars with hyphens)
         assert len(trace_id) >= 32
 
-    def test_conversation_with_profile_data(self, monkeypatch):
-        """Test conversation with user profile data"""
+    def test_conversation_with_profile_data(self, monkeypatch) -> None:
+        """Test conversation with user profile data."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(
             chat_router,
@@ -317,8 +317,8 @@ class TestConversationDeep:
         body = r.json()
         assert body.get("success") is True
 
-    def test_conversation_multiple_flags(self, monkeypatch):
-        """Test conversation with multiple warning flags"""
+    def test_conversation_multiple_flags(self, monkeypatch) -> None:
+        """Test conversation with multiple warning flags."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(
             chat_router,
@@ -339,8 +339,8 @@ class TestConversationDeep:
         body = r.json()
         assert body.get("success") is True
 
-    def test_conversation_content_type(self, monkeypatch):
-        """Test response content type is correct"""
+    def test_conversation_content_type(self, monkeypatch) -> None:
+        """Test response content type is correct."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
 
@@ -356,8 +356,8 @@ class TestConversationDeep:
 
         assert "application/json" in r.headers.get("content-type", "")
 
-    def test_conversation_idempotency(self, monkeypatch):
-        """Test that multiple identical requests produce consistent results"""
+    def test_conversation_idempotency(self, monkeypatch) -> None:
+        """Test that multiple identical requests produce consistent results."""
         monkeypatch.setattr(chat_router, "get_llm_client", lambda: DummyLLM())
         monkeypatch.setattr(chat_router, "fetch_scan_data", lambda db, sid: _fake_scan())
 

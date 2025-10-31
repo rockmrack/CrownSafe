@@ -18,7 +18,7 @@ from agents.planning.planner_agent.agent_logic import BabyShieldPlannerLogic  # 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
-async def main():
+async def main() -> None:
     """Main function to run the test."""
     logger = logging.getLogger(__name__)
     logger.info("--- Starting BabyShield Planner Agent Test (v3.1) ---")

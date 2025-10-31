@@ -1,4 +1,4 @@
-"""Stub worker task module for maintenance operations
+"""Stub worker task module for maintenance operations.
 
 This is a stub implementation for Phase 1 testing.
 Real implementation to be added later.
@@ -11,7 +11,7 @@ from core_infra.celery_tasks import app
 class TaskResult:
     """Mock Celery TaskResult model."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @staticmethod
@@ -22,7 +22,7 @@ class TaskResult:
 
 @app.task(name="cleanup_old_task_results")
 def cleanup_old_task_results_task(days_old=30):
-    """Clean up old task results from database
+    """Clean up old task results from database.
 
     Args:
         days_old: Delete results older than this many days
@@ -44,7 +44,7 @@ def cleanup_old_task_results_task(days_old=30):
 
 @app.task(name="cleanup_expired_sessions")
 def cleanup_expired_sessions_task():
-    """Clean up expired user sessions
+    """Clean up expired user sessions.
 
     Returns:
         dict: Cleanup result
@@ -56,7 +56,7 @@ def cleanup_expired_sessions_task():
 
 @app.task(name="vacuum_database")
 def vacuum_database_task():
-    """Run database vacuum/optimization
+    """Run database vacuum/optimization.
 
     Returns:
         dict: Vacuum result
@@ -68,7 +68,7 @@ def vacuum_database_task():
 
 @app.task(name="archive_old_data")
 def archive_old_data_task(table_name, days_old=90):
-    """Archive old data to cold storage
+    """Archive old data to cold storage.
 
     Args:
         table_name: Table to archive from

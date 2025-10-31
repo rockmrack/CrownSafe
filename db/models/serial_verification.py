@@ -1,4 +1,4 @@
-"""SQLAlchemy model for unit-level serial/lot verification records"""
+"""SQLAlchemy model for unit-level serial/lot verification records."""
 
 from datetime import datetime
 

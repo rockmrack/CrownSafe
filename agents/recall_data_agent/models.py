@@ -11,7 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class Recall(BaseModel):
     """Pydantic model for validating and structuring recall data.
-    Matches EnhancedRecallDB schema from core_infra/enhanced_database_schema.py
+    Matches EnhancedRecallDB schema from core_infra/enhanced_database_schema.py.
     """
 
     # Primary identifiers
@@ -79,7 +79,7 @@ class Recall(BaseModel):
     model_config = ConfigDict(from_attributes=True, protected_namespaces=())
 
     def to_db_dict(self) -> dict:
-        """Convert to dictionary for database insertion"""
+        """Convert to dictionary for database insertion."""
         data = self.model_dump()
         # Ensure date fields are properly formatted
         if isinstance(data.get("recall_date"), date):
@@ -91,7 +91,7 @@ class Recall(BaseModel):
 
 
 class RecallQueryRequest(BaseModel):
-    """Request model for recall queries"""
+    """Request model for recall queries."""
 
     product_name: str | None = None
     model_number: str | None = None
@@ -103,7 +103,7 @@ class RecallQueryRequest(BaseModel):
 
 
 class RecallQueryResponse(BaseModel):
-    """Response model for recall queries"""
+    """Response model for recall queries."""
 
     status: str
     recalls_found: int

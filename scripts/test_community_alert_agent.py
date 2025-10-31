@@ -16,7 +16,7 @@ from agents.engagement.community_alert_agent.agent_logic import CommunityAlertAg
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 
-async def main():
+async def main() -> None:
     """Main function to run the CommunityAlertAgent test."""
     logger = logging.getLogger(__name__)
     logger.info("--- Starting CommunityAlertAgent Test ---")

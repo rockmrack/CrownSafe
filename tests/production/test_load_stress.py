@@ -1,4 +1,4 @@
-"""Load and stress testing for production deployment"""
+"""Load and stress testing for production deployment."""
 
 import concurrent.futures
 import time
@@ -13,10 +13,10 @@ BASE_URL = "https://babyshield.cureviax.ai"
 @pytest.mark.stress
 @pytest.mark.slow
 class TestLoadStress:
-    """Load and stress tests for production"""
+    """Load and stress tests for production."""
 
-    def test_concurrent_reads(self):
-        """Test handling of 20 concurrent read requests"""
+    def test_concurrent_reads(self) -> None:
+        """Test handling of 20 concurrent read requests."""
 
         def fetch_healthz():
             try:
@@ -37,8 +37,8 @@ class TestLoadStress:
         print(f"  Total time: {duration:.2f}s")
         assert success_rate >= 0.90
 
-    def test_sustained_load(self):
-        """Test sustained load over 10 seconds"""
+    def test_sustained_load(self) -> None:
+        """Test sustained load over 10 seconds."""
         start_time = time.time()
         success_count = 0
         total_count = 0
@@ -63,8 +63,8 @@ class TestLoadStress:
         assert success_count >= 8, f"Expected at least 8 successful requests, got {success_count}"
         assert success_rate >= 0.80, f"Expected 80% success rate, got {success_rate * 100:.1f}%"
 
-    def test_large_result_set_handling(self):
-        """Test handling of large result sets"""
+    def test_large_result_set_handling(self) -> None:
+        """Test handling of large result sets."""
         try:
             start = time.time()
             response = requests.get(
@@ -82,8 +82,8 @@ class TestLoadStress:
         except requests.exceptions.RequestException as e:
             pytest.skip(f"Request failed: {e}")
 
-    def test_response_time_consistency(self):
-        """Test that repeated requests have consistent response times"""
+    def test_response_time_consistency(self) -> None:
+        """Test that repeated requests have consistent response times."""
         response_times = []
 
         # Test large result sets

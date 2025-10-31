@@ -1,5 +1,5 @@
 """Global error handlers for BabyShield API
-Provides consistent error responses and logging
+Provides consistent error responses and logging.
 """
 
 import logging
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class BabyShieldException(Exception):
-    """Base exception for BabyShield application"""
+    """Base exception for BabyShield application."""
 
     def __init__(self, message: str, status_code: int = 500, details: dict[str, Any] = None) -> None:
         self.message = message
@@ -25,7 +25,7 @@ class BabyShieldException(Exception):
 
 
 class ValidationError(BabyShieldException):
-    """Validation error"""
+    """Validation error."""
 
     def __init__(self, message: str, field: str = None) -> None:
         details = {"field": field} if field else {}
@@ -33,7 +33,7 @@ class ValidationError(BabyShieldException):
 
 
 class NotFoundError(BabyShieldException):
-    """Resource not found error"""
+    """Resource not found error."""
 
     def __init__(self, resource: str, identifier: Any) -> None:
         message = f"{resource} not found: {identifier}"
@@ -41,28 +41,28 @@ class NotFoundError(BabyShieldException):
 
 
 class AuthenticationError(BabyShieldException):
-    """Authentication error"""
+    """Authentication error."""
 
     def __init__(self, message: str = "Authentication required") -> None:
         super().__init__(message, status_code=401)
 
 
 class AuthorizationError(BabyShieldException):
-    """Authorization error"""
+    """Authorization error."""
 
     def __init__(self, message: str = "Insufficient permissions") -> None:
         super().__init__(message, status_code=403)
 
 
 class RateLimitError(BabyShieldException):
-    """Rate limit exceeded error"""
+    """Rate limit exceeded error."""
 
     def __init__(self, message: str = "Rate limit exceeded") -> None:
         super().__init__(message, status_code=429)
 
 
 async def babyshield_exception_handler(request: Request, exc: BabyShieldException):
-    """Handle BabyShield custom exceptions"""
+    """Handle BabyShield custom exceptions."""
     logger.warning(
         f"BabyShield exception: {exc.message}",
         extra={
@@ -85,7 +85,7 @@ async def babyshield_exception_handler(request: Request, exc: BabyShieldExceptio
 
 
 async def http_exception_handler(request: Request, exc: HTTPException):
-    """Handle FastAPI HTTP exceptions"""
+    """Handle FastAPI HTTP exceptions."""
     # Log 404/405 as INFO (normal not found), others as WARNING - DEPLOYMENT FIX
     if exc.status_code in (404, 405):
         logger.info(
@@ -118,7 +118,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 
 async def database_exception_handler(request: Request, exc: SQLAlchemyError):
-    """Handle database exceptions"""
+    """Handle database exceptions."""
     logger.error(
         f"Database error: {exc!s}",
         extra={
@@ -143,7 +143,7 @@ async def database_exception_handler(request: Request, exc: SQLAlchemyError):
 
 
 async def redis_exception_handler(request: Request, exc: redis.exceptions.RedisError):
-    """Handle Redis exceptions"""
+    """Handle Redis exceptions."""
     logger.error(
         f"Redis error: {exc!s}",
         extra={
@@ -166,7 +166,7 @@ async def redis_exception_handler(request: Request, exc: redis.exceptions.RedisE
 
 
 async def validation_exception_handler(request: Request, exc: ValueError):
-    """Handle validation exceptions"""
+    """Handle validation exceptions."""
     logger.warning(
         f"Validation error: {exc!s}",
         extra={"path": request.url.path, "method": request.method},
@@ -184,7 +184,7 @@ async def validation_exception_handler(request: Request, exc: ValueError):
 
 
 async def general_exception_handler(request: Request, exc: Exception):
-    """Handle all unhandled exceptions"""
+    """Handle all unhandled exceptions."""
     logger.error(
         f"Unhandled exception: {exc!s}",
         extra={
@@ -210,7 +210,7 @@ async def general_exception_handler(request: Request, exc: Exception):
 
 
 def register_error_handlers(app) -> None:
-    """Register all error handlers with the FastAPI app"""
+    """Register all error handlers with the FastAPI app."""
     import redis.exceptions
     from fastapi import HTTPException
     from sqlalchemy.exc import SQLAlchemyError

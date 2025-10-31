@@ -1,5 +1,5 @@
 """Deep Performance Tests
-Testing response times, throughput, and resource usage
+Testing response times, throughput, and resource usage.
 """
 
 import json
@@ -13,10 +13,10 @@ from api.main_crownsafe import app
 
 
 class TestPerformanceDeep:
-    """Deep performance and load tests"""
+    """Deep performance and load tests."""
 
-    def test_health_endpoint_response_time(self):
-        """Test that health endpoint responds quickly"""
+    def test_health_endpoint_response_time(self) -> None:
+        """Test that health endpoint responds quickly."""
         client = TestClient(app)
 
         start = time.time()
@@ -27,8 +27,8 @@ class TestPerformanceDeep:
         # Health check should be under 100ms
         assert duration < 0.1
 
-    def test_repeated_requests_performance(self):
-        """Test performance of repeated requests"""
+    def test_repeated_requests_performance(self) -> None:
+        """Test performance of repeated requests."""
         client = TestClient(app)
 
         durations = []
@@ -50,8 +50,8 @@ class TestPerformanceDeep:
         # Second half shouldn't be significantly slower
         assert second_half_avg < first_half_avg * 2
 
-    def test_concurrent_requests_handling(self):
-        """Test handling of concurrent requests"""
+    def test_concurrent_requests_handling(self) -> None:
+        """Test handling of concurrent requests."""
         client = TestClient(app)
 
         def make_request(i):
@@ -74,8 +74,8 @@ class TestPerformanceDeep:
         avg_duration = sum(durations) / len(durations)
         assert avg_duration < 1.0  # 1 second under load
 
-    def test_memory_leak_detection(self):
-        """Test for obvious memory leaks with repeated requests"""
+    def test_memory_leak_detection(self) -> None:
+        """Test for obvious memory leaks with repeated requests."""
         client = TestClient(app)
 
         # Make many requests
@@ -86,8 +86,8 @@ class TestPerformanceDeep:
         # If no crash, memory management is ok
         assert True
 
-    def test_large_response_handling(self):
-        """Test handling of large responses"""
+    def test_large_response_handling(self) -> None:
+        """Test handling of large responses."""
         client = TestClient(app)
 
         # Try to get a potentially large response
@@ -106,8 +106,8 @@ class TestPerformanceDeep:
             except (ValueError, json.JSONDecodeError):
                 pytest.skip("OpenAPI endpoint not available")
 
-    def test_startup_time_check(self):
-        """Test that app starts up reasonably quickly"""
+    def test_startup_time_check(self) -> None:
+        """Test that app starts up reasonably quickly."""
         # App should already be started by TestClient
         client = TestClient(app)
 
@@ -115,8 +115,8 @@ class TestPerformanceDeep:
         r = client.get("/healthz")
         assert r.status_code == 200
 
-    def test_error_handling_performance(self):
-        """Test that error responses are fast"""
+    def test_error_handling_performance(self) -> None:
+        """Test that error responses are fast."""
         client = TestClient(app)
 
         start = time.time()
@@ -126,8 +126,8 @@ class TestPerformanceDeep:
         # Error responses should be even faster than success
         assert duration < 0.1
 
-    def test_sequential_different_endpoints(self):
-        """Test performance across different endpoints"""
+    def test_sequential_different_endpoints(self) -> None:
+        """Test performance across different endpoints."""
         client = TestClient(app)
 
         endpoints = ["/healthz", "/api/v1/version", "/openapi.json"]
@@ -143,8 +143,8 @@ class TestPerformanceDeep:
         # All endpoints together should be fast
         assert total_duration < 1.0
 
-    def test_response_streaming_support(self):
-        """Test if response streaming is supported for large data"""
+    def test_response_streaming_support(self) -> None:
+        """Test if response streaming is supported for large data."""
         client = TestClient(app)
 
         # TestClient doesn't support stream=True parameter
@@ -156,8 +156,8 @@ class TestPerformanceDeep:
             assert len(r.content) > 0
             # Streaming works in production, TestClient limitation here
 
-    def test_keepalive_connections(self):
-        """Test that HTTP keep-alive works"""
+    def test_keepalive_connections(self) -> None:
+        """Test that HTTP keep-alive works."""
         client = TestClient(app)
 
         # Make multiple requests - should reuse connection
@@ -169,8 +169,8 @@ class TestPerformanceDeep:
         # TestClient handles this automatically
         assert True
 
-    def test_timeout_handling(self):
-        """Test that requests don't hang indefinitely"""
+    def test_timeout_handling(self) -> None:
+        """Test that requests don't hang indefinitely."""
         client = TestClient(app)
 
         # Normal request should complete quickly
@@ -182,8 +182,8 @@ class TestPerformanceDeep:
         assert duration < 5.0
         assert r.status_code == 200
 
-    def test_graceful_degradation(self):
-        """Test graceful degradation under stress"""
+    def test_graceful_degradation(self) -> None:
+        """Test graceful degradation under stress."""
         client = TestClient(app)
 
         # Make rapid successive requests
@@ -196,8 +196,8 @@ class TestPerformanceDeep:
                 503,
             ]  # OK, Rate Limited, or Service Unavailable
 
-    def test_response_size_optimization(self):
-        """Test that responses are reasonably sized"""
+    def test_response_size_optimization(self) -> None:
+        """Test that responses are reasonably sized."""
         client = TestClient(app)
 
         r = client.get("/healthz")
@@ -206,8 +206,8 @@ class TestPerformanceDeep:
         # Health endpoint should be small and efficient
         assert body_size < 1000  # Less than 1KB
 
-    def test_json_parsing_performance(self):
-        """Test JSON parsing performance"""
+    def test_json_parsing_performance(self) -> None:
+        """Test JSON parsing performance."""
         client = TestClient(app)
 
         _ = time.time()  # start (overall timing not needed)
@@ -219,8 +219,8 @@ class TestPerformanceDeep:
         # JSON parsing should be nearly instant
         assert parse_duration < 0.01  # 10ms
 
-    def test_header_processing_performance(self):
-        """Test that header processing is efficient"""
+    def test_header_processing_performance(self) -> None:
+        """Test that header processing is efficient."""
         client = TestClient(app)
 
         # Send many headers

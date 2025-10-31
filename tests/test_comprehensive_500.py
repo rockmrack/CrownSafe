@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Ultra-Comprehensive Test Suite - 500+ Test Coverage
-Includes unit, integration, security, performance, and edge case testing
+Includes unit, integration, security, performance, and edge case testing.
 """
 
 import os
@@ -13,39 +13,39 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 
 class TestComprehensiveSuite:
-    """Comprehensive test suite covering all aspects"""
+    """Comprehensive test suite covering all aspects."""
 
     # ========================
     # IMPORT TESTS (50 tests)
     # ========================
 
-    def test_import_core_infra_database(self):
-        """Test core_infra.database imports"""
+    def test_import_core_infra_database(self) -> None:
+        """Test core_infra.database imports."""
         from core_infra.database import User, engine
 
         assert User is not None
         assert engine is not None
 
-    def test_import_memory_optimizer(self):
-        """Test memory_optimizer imports (bug fix verification)"""
+    def test_import_memory_optimizer(self) -> None:
+        """Test memory_optimizer imports (bug fix verification)."""
         from core_infra.memory_optimizer import get_memory_stats
 
         assert get_memory_stats is not None
 
-    def test_import_query_optimizer(self):
-        """Test query_optimizer imports (bug fix verification)"""
+    def test_import_query_optimizer(self) -> None:
+        """Test query_optimizer imports (bug fix verification)."""
         from core_infra.query_optimizer import QueryOptimizer
 
         assert QueryOptimizer is not None
 
-    def test_import_api_main(self):
-        """Test main API module imports"""
+    def test_import_api_main(self) -> None:
+        """Test main API module imports."""
         from api.main_crownsafe import app
 
         assert app is not None
 
-    def test_import_all_routers(self):
-        """Test all API router imports"""
+    def test_import_all_routers(self) -> None:
+        """Test all API router imports."""
         routers = [
             "api.auth_endpoints",
             "api.barcode_endpoints",
@@ -58,20 +58,20 @@ class TestComprehensiveSuite:
             except ImportError as e:
                 pytest.fail(f"Failed to import {router}: {e}")
 
-    def test_import_agents(self):
-        """Test agent imports"""
+    def test_import_agents(self) -> None:
+        """Test agent imports."""
         from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
 
         assert BabyShieldCommanderLogic is not None
 
-    def test_asyncio_import_in_memory_optimizer(self):
-        """Verify asyncio is imported in memory_optimizer (BUG FIX)"""
+    def test_asyncio_import_in_memory_optimizer(self) -> None:
+        """Verify asyncio is imported in memory_optimizer (BUG FIX)."""
         import core_infra.memory_optimizer as mo
 
         assert hasattr(mo, "asyncio") or "asyncio" in dir(mo)
 
-    def test_user_model_import_in_query_optimizer(self):
-        """Verify User model is imported in query_optimizer (BUG FIX)"""
+    def test_user_model_import_in_query_optimizer(self) -> None:
+        """Verify User model is imported in query_optimizer (BUG FIX)."""
         import core_infra.query_optimizer as qo
 
         # Check if User is accessible in the module
@@ -81,8 +81,8 @@ class TestComprehensiveSuite:
     # DATABASE TESTS (100 tests)
     # ========================
 
-    def test_database_connection(self):
-        """Test database connection"""
+    def test_database_connection(self) -> None:
+        """Test database connection."""
         from sqlalchemy import text
 
         from core_infra.database import engine
@@ -91,23 +91,23 @@ class TestComprehensiveSuite:
             result = conn.execute(text("SELECT 1"))
             assert result.fetchone()[0] == 1
 
-    def test_user_model_structure(self):
-        """Test User model has required fields"""
+    def test_user_model_structure(self) -> None:
+        """Test User model has required fields."""
         from core_infra.database import User
 
         required_fields = ["id", "email"]  # Updated to actual fields
         for field in required_fields:
             assert hasattr(User, field), f"User model missing field: {field}"
 
-    def test_database_session_creation(self):
-        """Test database session creation"""
+    def test_database_session_creation(self) -> None:
+        """Test database session creation."""
         from core_infra.database import get_db_session
 
         with get_db_session() as session:
             assert session is not None
 
-    def test_database_transaction_rollback(self):
-        """Test database transaction rollback"""
+    def test_database_transaction_rollback(self) -> None:
+        """Test database transaction rollback."""
         from core_infra.database import User, get_db_session
 
         try:
@@ -130,8 +130,8 @@ class TestComprehensiveSuite:
     # API ENDPOINT TESTS (150 tests)
     # ========================
 
-    def test_health_endpoint(self):
-        """Test /healthz endpoint"""
+    def test_health_endpoint(self) -> None:
+        """Test /healthz endpoint."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app
@@ -141,8 +141,8 @@ class TestComprehensiveSuite:
         assert response.status_code == 200
         assert response.json()["status"] == "ok"
 
-    def test_root_endpoint(self):
-        """Test root / endpoint"""
+    def test_root_endpoint(self) -> None:
+        """Test root / endpoint."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app
@@ -151,8 +151,8 @@ class TestComprehensiveSuite:
         response = client.get("/")
         assert response.status_code == 200
 
-    def test_docs_endpoint(self):
-        """Test /docs endpoint availability"""
+    def test_docs_endpoint(self) -> None:
+        """Test /docs endpoint availability."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app
@@ -161,8 +161,8 @@ class TestComprehensiveSuite:
         response = client.get("/docs")
         assert response.status_code == 200
 
-    def test_openapi_schema(self):
-        """Test OpenAPI schema generation"""
+    def test_openapi_schema(self) -> None:
+        """Test OpenAPI schema generation."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app
@@ -174,8 +174,8 @@ class TestComprehensiveSuite:
         assert "openapi" in schema
         assert "paths" in schema
 
-    def test_cors_headers(self):
-        """Test CORS headers are present"""
+    def test_cors_headers(self) -> None:
+        """Test CORS headers are present."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app
@@ -187,8 +187,8 @@ class TestComprehensiveSuite:
             h.lower() for h in response.headers.keys()
         ] or response.status_code in [200, 404]
 
-    def test_security_headers(self):
-        """Test security headers are present"""
+    def test_security_headers(self) -> None:
+        """Test security headers are present."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app
@@ -210,8 +210,8 @@ class TestComprehensiveSuite:
     # AUTHENTICATION TESTS (50 tests)
     # ========================
 
-    def test_jwt_token_generation(self):
-        """Test JWT token generation"""
+    def test_jwt_token_generation(self) -> None:
+        """Test JWT token generation."""
         try:
             from api.auth_endpoints import create_access_token
 
@@ -221,8 +221,8 @@ class TestComprehensiveSuite:
         except ImportError:
             pytest.skip("JWT functions not available")
 
-    def test_password_hashing(self):
-        """Test password hashing"""
+    def test_password_hashing(self) -> None:
+        """Test password hashing."""
         try:
             from passlib.context import CryptContext
 
@@ -240,8 +240,8 @@ class TestComprehensiveSuite:
     # VALIDATION TESTS (50 tests)
     # ========================
 
-    def test_email_validation(self):
-        """Test email validation"""
+    def test_email_validation(self) -> None:
+        """Test email validation."""
         from pydantic import BaseModel, EmailStr, ValidationError
 
         class TestModel(BaseModel):
@@ -255,8 +255,8 @@ class TestComprehensiveSuite:
         with pytest.raises(ValidationError):
             TestModel(email="invalid-email")
 
-    def test_barcode_validation(self):
-        """Test barcode format validation"""
+    def test_barcode_validation(self) -> None:
+        """Test barcode format validation."""
         valid_barcodes = [
             "041220787346",  # UPC-A
             "0041220787346",  # EAN-13
@@ -270,8 +270,8 @@ class TestComprehensiveSuite:
     # ERROR HANDLING TESTS (30 tests)
     # ========================
 
-    def test_404_error_handling(self):
-        """Test 404 error handling"""
+    def test_404_error_handling(self) -> None:
+        """Test 404 error handling."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app
@@ -280,8 +280,8 @@ class TestComprehensiveSuite:
         response = client.get("/nonexistent-endpoint-12345")
         assert response.status_code == 404
 
-    def test_500_error_handling(self):
-        """Test 500 error handling structure"""
+    def test_500_error_handling(self) -> None:
+        """Test 500 error handling structure."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app
@@ -295,8 +295,8 @@ class TestComprehensiveSuite:
     # PERFORMANCE TESTS (20 tests)
     # ========================
 
-    def test_health_endpoint_performance(self):
-        """Test health endpoint response time"""
+    def test_health_endpoint_performance(self) -> None:
+        """Test health endpoint response time."""
         import time
 
         from fastapi.testclient import TestClient
@@ -316,8 +316,8 @@ class TestComprehensiveSuite:
     # SECURITY TESTS (50 tests)
     # ========================
 
-    def test_sql_injection_prevention(self):
-        """Test SQL injection prevention"""
+    def test_sql_injection_prevention(self) -> None:
+        """Test SQL injection prevention."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app
@@ -337,8 +337,8 @@ class TestComprehensiveSuite:
             # Should either return 400 (validation error) or safe results
             assert response.status_code in [200, 400, 404, 422]
 
-    def test_xss_prevention(self):
-        """Test XSS prevention"""
+    def test_xss_prevention(self) -> None:
+        """Test XSS prevention."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app
@@ -352,8 +352,8 @@ class TestComprehensiveSuite:
         if response.status_code == 200:
             assert "<script>" not in response.text or "alert" not in response.text
 
-    def test_rate_limiting_exists(self):
-        """Test rate limiting is configured"""
+    def test_rate_limiting_exists(self) -> None:
+        """Test rate limiting is configured."""
         try:
             from core_infra.rate_limiter import limiter
 
@@ -365,8 +365,8 @@ class TestComprehensiveSuite:
     # EDGE CASE TESTS (50 tests)
     # ========================
 
-    def test_empty_string_handling(self):
-        """Test empty string handling"""
+    def test_empty_string_handling(self) -> None:
+        """Test empty string handling."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app
@@ -378,8 +378,8 @@ class TestComprehensiveSuite:
 
         assert response.status_code in [200, 400, 422, 429, 500]
 
-    def test_very_long_input_handling(self):
-        """Test very long input handling"""
+    def test_very_long_input_handling(self) -> None:
+        """Test very long input handling."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app
@@ -390,8 +390,8 @@ class TestComprehensiveSuite:
         # Should reject or handle gracefully (500 is acceptable if database not set up)
         assert response.status_code in [200, 400, 413, 422, 500]
 
-    def test_special_characters_handling(self):
-        """Test special characters handling"""
+    def test_special_characters_handling(self) -> None:
+        """Test special characters handling."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app
@@ -403,8 +403,8 @@ class TestComprehensiveSuite:
 
         assert response.status_code in [200, 400, 422, 429, 500]
 
-    def test_unicode_handling(self):
-        """Test Unicode character handling"""
+    def test_unicode_handling(self) -> None:
+        """Test Unicode character handling."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app
@@ -415,8 +415,8 @@ class TestComprehensiveSuite:
         # Should handle gracefully (500 is acceptable if database not set up)
         assert response.status_code in [200, 400, 422, 429, 500]
 
-    def test_null_byte_handling(self):
-        """Test null byte handling"""
+    def test_null_byte_handling(self) -> None:
+        """Test null byte handling."""
         from fastapi.testclient import TestClient
 
         from api.main_crownsafe import app

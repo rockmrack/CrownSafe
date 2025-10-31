@@ -56,7 +56,7 @@ task_correlation_id: str | None = None  # Store the correlation ID of the sent t
 
 
 # --- Message Handling for Controller ---
-async def handle_controller_message(message: dict[str, Any]):
+async def handle_controller_message(message: dict[str, Any]) -> None:
     """Callback for the controller client to process responses.
     Looks for TASK_COMPLETE or TASK_FAIL related to our sent task
     by checking the correlation_id.
@@ -92,7 +92,7 @@ async def handle_controller_message(message: dict[str, Any]):
 
 
 # --- Main Test Function ---
-async def run_task_assignment():
+async def run_task_assignment() -> None:
     """Connects as a controller, sends a task, waits for completion or timeout."""
     global task_result, task_completion_event, task_correlation_id
     logger.info(f"Instantiating MCPClient for controller: {CONTROLLER_AGENT_ID}")

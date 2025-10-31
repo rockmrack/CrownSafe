@@ -13,10 +13,10 @@ from core_infra.upsert_handler import (
 
 
 class TestUpsertHandler:
-    """Test UpsertHandler functionality"""
+    """Test UpsertHandler functionality."""
 
-    def test_upsert_recall_success(self):
-        """Test successful recall upsert"""
+    def test_upsert_recall_success(self) -> None:
+        """Test successful recall upsert."""
         mock_session = Mock()
         mock_result = Mock()
         mock_row = Mock()
@@ -37,8 +37,8 @@ class TestUpsertHandler:
         assert result is True
         mock_session.execute.assert_called_once()
 
-    def test_upsert_recall_missing_recall_id(self):
-        """Test upsert_recall with missing recall_id"""
+    def test_upsert_recall_missing_recall_id(self) -> None:
+        """Test upsert_recall with missing recall_id."""
         mock_session = Mock()
         recall_data = {"product_name": "Test Product", "brand": "Test Brand"}
 
@@ -47,8 +47,8 @@ class TestUpsertHandler:
         assert result is False
         mock_session.execute.assert_not_called()
 
-    def test_upsert_recall_database_error(self):
-        """Test upsert_recall with database error"""
+    def test_upsert_recall_database_error(self) -> None:
+        """Test upsert_recall with database error."""
         mock_session = Mock()
         mock_session.execute.side_effect = Exception("Database error")
 
@@ -58,8 +58,8 @@ class TestUpsertHandler:
 
         assert result is False
 
-    def test_upsert_recall_update_existing(self):
-        """Test upsert_recall updating existing record"""
+    def test_upsert_recall_update_existing(self) -> None:
+        """Test upsert_recall updating existing record."""
         mock_session = Mock()
         mock_result = Mock()
         mock_row = Mock()
@@ -78,8 +78,8 @@ class TestUpsertHandler:
         assert result is True
         mock_session.execute.assert_called_once()
 
-    def test_bulk_upsert_recalls_success(self):
-        """Test successful bulk upsert of recalls"""
+    def test_bulk_upsert_recalls_success(self) -> None:
+        """Test successful bulk upsert of recalls."""
         mock_session = Mock()
         mock_result = Mock()
         mock_session.execute.return_value = mock_result
@@ -105,8 +105,8 @@ class TestUpsertHandler:
         mock_session.execute.assert_called()
         mock_session.commit.assert_called_once()
 
-    def test_bulk_upsert_recalls_with_failures(self):
-        """Test bulk upsert with some failures"""
+    def test_bulk_upsert_recalls_with_failures(self) -> None:
+        """Test bulk upsert with some failures."""
         mock_session = Mock()
 
         recalls = [
@@ -125,8 +125,8 @@ class TestUpsertHandler:
         mock_session.execute.assert_called()
         mock_session.commit.assert_called_once()
 
-    def test_bulk_upsert_recalls_database_error(self):
-        """Test bulk upsert with database error"""
+    def test_bulk_upsert_recalls_database_error(self) -> None:
+        """Test bulk upsert with database error."""
         mock_session = Mock()
         mock_session.execute.side_effect = Exception("Database error")
 
@@ -138,8 +138,8 @@ class TestUpsertHandler:
         assert result["failed"] == 1
         mock_session.rollback.assert_called()
 
-    def test_bulk_upsert_recalls_commit_error(self):
-        """Test bulk upsert with commit error"""
+    def test_bulk_upsert_recalls_commit_error(self) -> None:
+        """Test bulk upsert with commit error."""
         mock_session = Mock()
         mock_session.commit.side_effect = Exception("Commit error")
 
@@ -151,8 +151,8 @@ class TestUpsertHandler:
         assert result["failed"] == 0
         mock_session.rollback.assert_called()
 
-    def test_upsert_subscription_success(self):
-        """Test successful subscription upsert"""
+    def test_upsert_subscription_success(self) -> None:
+        """Test successful subscription upsert."""
         mock_session = Mock()
         mock_result = Mock()
         mock_row = Mock()
@@ -173,8 +173,8 @@ class TestUpsertHandler:
         assert result is True
         mock_session.execute.assert_called_once()
 
-    def test_upsert_subscription_database_error(self):
-        """Test upsert_subscription with database error"""
+    def test_upsert_subscription_database_error(self) -> None:
+        """Test upsert_subscription with database error."""
         mock_session = Mock()
         mock_session.execute.side_effect = Exception("Database error")
 
@@ -186,10 +186,10 @@ class TestUpsertHandler:
 
 
 class TestEnhancedUpsertHandler:
-    """Test EnhancedUpsertHandler functionality"""
+    """Test EnhancedUpsertHandler functionality."""
 
-    def test_upsert_with_history_success(self):
-        """Test successful upsert with history tracking"""
+    def test_upsert_with_history_success(self) -> None:
+        """Test successful upsert with history tracking."""
         mock_session = Mock()
         mock_result = Mock()
         mock_row = Mock()
@@ -205,8 +205,8 @@ class TestEnhancedUpsertHandler:
         # Should call execute twice: once for upsert, once for history
         assert mock_session.execute.call_count == 2
 
-    def test_upsert_with_history_no_tracking(self):
-        """Test upsert without history tracking"""
+    def test_upsert_with_history_no_tracking(self) -> None:
+        """Test upsert without history tracking."""
         mock_session = Mock()
         mock_result = Mock()
         mock_row = Mock()
@@ -222,8 +222,8 @@ class TestEnhancedUpsertHandler:
         # Should call execute only once for upsert
         assert mock_session.execute.call_count == 1
 
-    def test_upsert_with_history_database_error(self):
-        """Test upsert_with_history with database error"""
+    def test_upsert_with_history_database_error(self) -> None:
+        """Test upsert_with_history with database error."""
         mock_session = Mock()
         mock_session.execute.side_effect = Exception("Database error")
 
@@ -233,8 +233,8 @@ class TestEnhancedUpsertHandler:
 
         assert result is False
 
-    def test_upsert_with_history_update_existing(self):
-        """Test upsert_with_history updating existing record"""
+    def test_upsert_with_history_update_existing(self) -> None:
+        """Test upsert_with_history updating existing record."""
         mock_session = Mock()
         mock_result = Mock()
         mock_row = Mock()
@@ -256,24 +256,24 @@ class TestEnhancedUpsertHandler:
 
 
 class TestSingletonInstances:
-    """Test singleton instances"""
+    """Test singleton instances."""
 
-    def test_upsert_handler_singleton(self):
-        """Test upsert_handler singleton instance"""
+    def test_upsert_handler_singleton(self) -> None:
+        """Test upsert_handler singleton instance."""
         assert upsert_handler is not None
         assert isinstance(upsert_handler, UpsertHandler)
 
-    def test_enhanced_upsert_handler_singleton(self):
-        """Test enhanced_upsert_handler singleton instance"""
+    def test_enhanced_upsert_handler_singleton(self) -> None:
+        """Test enhanced_upsert_handler singleton instance."""
         assert enhanced_upsert_handler is not None
         assert isinstance(enhanced_upsert_handler, EnhancedUpsertHandler)
 
 
 class TestEdgeCases:
-    """Test edge cases and error conditions"""
+    """Test edge cases and error conditions."""
 
-    def test_upsert_recall_empty_data(self):
-        """Test upsert_recall with empty data"""
+    def test_upsert_recall_empty_data(self) -> None:
+        """Test upsert_recall with empty data."""
         mock_session = Mock()
         recall_data = {}
 
@@ -282,8 +282,8 @@ class TestEdgeCases:
         assert result is False
         mock_session.execute.assert_not_called()
 
-    def test_upsert_recall_none_data(self):
-        """Test upsert_recall with None data"""
+    def test_upsert_recall_none_data(self) -> None:
+        """Test upsert_recall with None data."""
         mock_session = Mock()
         recall_data = None
 
@@ -292,8 +292,8 @@ class TestEdgeCases:
         assert result is False
         mock_session.execute.assert_not_called()
 
-    def test_bulk_upsert_empty_list(self):
-        """Test bulk_upsert_recalls with empty list"""
+    def test_bulk_upsert_empty_list(self) -> None:
+        """Test bulk_upsert_recalls with empty list."""
         mock_session = Mock()
         recalls = []
 
@@ -304,8 +304,8 @@ class TestEdgeCases:
         assert result["failed"] == 0
         mock_session.execute.assert_not_called()
 
-    def test_bulk_upsert_none_list(self):
-        """Test bulk_upsert_recalls with None list"""
+    def test_bulk_upsert_none_list(self) -> None:
+        """Test bulk_upsert_recalls with None list."""
         mock_session = Mock()
         recalls = None
 
@@ -316,8 +316,8 @@ class TestEdgeCases:
         assert result["failed"] == 0
         mock_session.execute.assert_not_called()
 
-    def test_upsert_subscription_empty_data(self):
-        """Test upsert_subscription with empty data"""
+    def test_upsert_subscription_empty_data(self) -> None:
+        """Test upsert_subscription with empty data."""
         mock_session = Mock()
         subscription_data = {}
 
@@ -326,8 +326,8 @@ class TestEdgeCases:
         assert result is True  # Should still attempt to execute
         mock_session.execute.assert_called_once()
 
-    def test_enhanced_upsert_empty_data(self):
-        """Test enhanced upsert with empty data"""
+    def test_enhanced_upsert_empty_data(self) -> None:
+        """Test enhanced upsert with empty data."""
         mock_session = Mock()
         data = {}
 
@@ -338,10 +338,10 @@ class TestEdgeCases:
 
 
 class TestParameterHandling:
-    """Test parameter handling and defaults"""
+    """Test parameter handling and defaults."""
 
-    def test_upsert_recall_default_values(self):
-        """Test upsert_recall with default values"""
+    def test_upsert_recall_default_values(self) -> None:
+        """Test upsert_recall with default values."""
         mock_session = Mock()
         mock_result = Mock()
         mock_row = Mock()
@@ -365,8 +365,8 @@ class TestParameterHandling:
         assert params["source_agency"] == "Unknown"
         assert params["country"] == "Unknown"
 
-    def test_bulk_upsert_batch_size(self):
-        """Test bulk_upsert_recalls with different batch sizes"""
+    def test_bulk_upsert_batch_size(self) -> None:
+        """Test bulk_upsert_recalls with different batch sizes."""
         mock_session = Mock()
         mock_result = Mock()
         mock_session.execute.return_value = mock_result

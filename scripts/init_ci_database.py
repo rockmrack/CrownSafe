@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """CI Database Initialization Script
-Creates necessary tables for CI smoke tests
+Creates necessary tables for CI smoke tests.
 """
 
 import os
@@ -8,8 +8,8 @@ import sqlite3
 from datetime import datetime
 
 
-def init_ci_database():
-    """Initialize database with required tables for CI smoke tests"""
+def init_ci_database() -> None:
+    """Initialize database with required tables for CI smoke tests."""
     # Use the same database path as production
     db_path = os.environ.get("DATABASE_URL", "sqlite:///./babyshield.db")
     if db_path.startswith("sqlite:///"):

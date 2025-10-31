@@ -66,7 +66,7 @@ def head_check(h, url, label):
     return r.status_code
 
 
-def run_both():
+def run_both() -> None:
     h = auth_headers()
 
     # Level 1: product_safety

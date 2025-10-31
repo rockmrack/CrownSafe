@@ -51,7 +51,7 @@ task_correlation_id: str | None = None
 
 
 # --- Message Handling for Controller ---
-async def handle_controller_message(message: dict[str, Any]):
+async def handle_controller_message(message: dict[str, Any]) -> None:
     """Callback for the controller client to process responses.
     Looks for TASK_COMPLETE or TASK_FAIL from the PlannerAgent.
     """
@@ -85,7 +85,7 @@ async def handle_controller_message(message: dict[str, Any]):
 
 
 # --- Main Test Function ---
-async def run_planner_flow():
+async def run_planner_flow() -> None:
     """Connects as a controller, sends a high-level task to the Planner,
     waits for the Planner's completion (the plan itself).
     """

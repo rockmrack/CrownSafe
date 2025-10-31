@@ -1,5 +1,5 @@
 """Azure Storage SAS URL Caching with Redis
-Enterprise-grade performance optimization for Azure Blob Storage
+Enterprise-grade performance optimization for Azure Blob Storage.
 
 Features:
 - SAS URL caching with Redis (23-hour TTL)
@@ -12,7 +12,7 @@ Features:
 import hashlib
 import json
 import logging
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 
 import redis
 
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 class AzureStorageCacheManager:
     """Redis-based cache manager for Azure Storage SAS URLs
-    Reduces API calls and improves performance
+    Reduces API calls and improves performance.
     """
 
     def __init__(
@@ -30,7 +30,7 @@ class AzureStorageCacheManager:
         default_ttl_hours: int = 23,
         key_prefix: str = "azure_sas:",
     ) -> None:
-        """Initialize cache manager
+        """Initialize cache manager.
 
         Args:
             redis_url: Redis connection URL (e.g., 'redis://localhost:6379/0')
@@ -65,7 +65,7 @@ class AzureStorageCacheManager:
         self.cache_invalidations = 0
 
     def _generate_cache_key(self, blob_name: str, container_name: str, permissions: str = "r") -> str:
-        """Generate deterministic cache key for SAS URL
+        """Generate deterministic cache key for SAS URL.
 
         Args:
             blob_name: Blob name
@@ -87,7 +87,7 @@ class AzureStorageCacheManager:
         container_name: str,
         permissions: str = "r",
     ) -> str | None:
-        """Retrieve cached SAS URL from Redis
+        """Retrieve cached SAS URL from Redis.
 
         Args:
             blob_name: Blob name
@@ -116,10 +116,9 @@ class AzureStorageCacheManager:
                     self.cache_hits += 1
                     logger.debug(f"Cache HIT for {blob_name} (age: {age_hours:.1f}h)")
                     return sas_url
-                else:
-                    # Expired cache entry (shouldn't happen with TTL)
-                    self.redis_client.delete(cache_key)
-                    logger.warning(f"Expired cache entry deleted: {blob_name}")
+                # Expired cache entry (shouldn't happen with TTL)
+                self.redis_client.delete(cache_key)
+                logger.warning(f"Expired cache entry deleted: {blob_name}")
 
             self.cache_misses += 1
             logger.debug(f"Cache MISS for {blob_name}")
@@ -138,7 +137,7 @@ class AzureStorageCacheManager:
         permissions: str = "r",
         ttl_hours: int | None = None,
     ) -> bool:
-        """Cache SAS URL in Redis with TTL
+        """Cache SAS URL in Redis with TTL.
 
         Args:
             blob_name: Blob name
@@ -183,7 +182,7 @@ class AzureStorageCacheManager:
         container_name: str,
         permissions: str | None = None,
     ) -> bool:
-        """Invalidate cached SAS URL (on blob delete/update)
+        """Invalidate cached SAS URL (on blob delete/update).
 
         Args:
             blob_name: Blob name
@@ -206,27 +205,26 @@ class AzureStorageCacheManager:
                     self.cache_invalidations += 1
                     logger.info(f"Invalidated cache for {blob_name} (permissions: {permissions})")
                 return bool(deleted)
-            else:
-                # Invalidate all permissions (read, write, delete)
-                permissions_list = ["r", "w", "d", "rw", "rd", "wd", "rwd"]
-                deleted_count = 0
-                for perm in permissions_list:
-                    cache_key = self._generate_cache_key(blob_name, container_name, perm)
-                    deleted = self.redis_client.delete(cache_key)
-                    deleted_count += deleted
+            # Invalidate all permissions (read, write, delete)
+            permissions_list = ["r", "w", "d", "rw", "rd", "wd", "rwd"]
+            deleted_count = 0
+            for perm in permissions_list:
+                cache_key = self._generate_cache_key(blob_name, container_name, perm)
+                deleted = self.redis_client.delete(cache_key)
+                deleted_count += deleted
 
-                if deleted_count > 0:
-                    self.cache_invalidations += deleted_count
-                    logger.info(f"Invalidated {deleted_count} cache entries for {blob_name}")
+            if deleted_count > 0:
+                self.cache_invalidations += deleted_count
+                logger.info(f"Invalidated {deleted_count} cache entries for {blob_name}")
 
-                return deleted_count > 0
+            return deleted_count > 0
 
         except Exception as e:
             logger.exception(f"Cache invalidation error for {blob_name}: {e}")
             return False
 
     def clear_all_cache(self) -> int:
-        """Clear all cached SAS URLs (emergency use only)
+        """Clear all cached SAS URLs (emergency use only).
 
         Returns:
             Number of keys deleted
@@ -250,7 +248,7 @@ class AzureStorageCacheManager:
             return 0
 
     def get_cache_stats(self) -> dict:
-        """Get cache performance statistics
+        """Get cache performance statistics.
 
         Returns:
             Dictionary with cache statistics
@@ -270,7 +268,7 @@ class AzureStorageCacheManager:
         }
 
     def reset_stats(self) -> None:
-        """Reset performance statistics"""
+        """Reset performance statistics."""
         self.cache_hits = 0
         self.cache_misses = 0
         self.cache_invalidations = 0
@@ -282,7 +280,7 @@ azure_storage_cache = None
 
 
 def get_cache_manager(redis_url: str | None = None) -> AzureStorageCacheManager:
-    """Get or create global cache manager instance
+    """Get or create global cache manager instance.
 
     Args:
         redis_url: Redis connection URL (optional, uses env var if not provided)

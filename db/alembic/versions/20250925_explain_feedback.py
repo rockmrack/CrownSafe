@@ -1,4 +1,4 @@
-"""add explain feedback table
+"""add explain feedback table.
 
 Revision ID: 20250925_explain_feedback
 Revises: 20250924_chat_memory
@@ -17,7 +17,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     # Detect database dialect
     bind = op.get_bind()
     is_sqlite = bind.dialect.name == "sqlite"
@@ -54,7 +54,7 @@ def upgrade():
     op.create_index("ix_explain_feedback_created_at", "explain_feedback", ["created_at"])
 
 
-def downgrade():
+def downgrade() -> None:
     op.drop_index("ix_explain_feedback_created_at", table_name="explain_feedback")
     op.drop_index("ix_explain_feedback_scan_id", table_name="explain_feedback")
     op.drop_table("explain_feedback")

@@ -1,5 +1,5 @@
 """Configuration settings for Crown Safe Backend
-Handles environment-specific configuration with validation
+Handles environment-specific configuration with validation.
 """
 
 import logging
@@ -12,7 +12,7 @@ from pydantic import Field, root_validator, validator
 
 
 class Settings(BaseSettings):
-    """Application settings with validation"""
+    """Application settings with validation."""
 
     # Environment
     environment: str = Field(default="development", env="ENVIRONMENT")
@@ -43,7 +43,7 @@ class Settings(BaseSettings):
 
     @root_validator(pre=False, skip_on_failure=True)
     def construct_database_url(cls, values):
-        """Construct database URL from individual components and validate"""
+        """Construct database URL from individual components and validate."""
         environment = values.get("environment", "development")
         is_production = values.get("is_production", False)
         database_url = values.get("database_url")
@@ -101,7 +101,7 @@ class Settings(BaseSettings):
 
     @validator("environment")
     def validate_environment(cls, v):
-        """Validate environment value"""
+        """Validate environment value."""
         valid_envs = ["development", "dev", "production", "prod", "testing", "test"]
         if v.lower() not in valid_envs:
             raise ValueError(f"Invalid environment '{v}'. Must be one of: {valid_envs}")
@@ -109,7 +109,7 @@ class Settings(BaseSettings):
 
     @validator("secret_key")
     def validate_secret_key(cls, v, values):
-        """Validate secret key for production"""
+        """Validate secret key for production."""
         environment = values.get("environment", "development")
         is_production = values.get("is_production", False)
 
@@ -129,7 +129,7 @@ _settings: Settings | None = None
 
 
 def get_config() -> Settings:
-    """Get application configuration"""
+    """Get application configuration."""
     global _settings
     if _settings is None:
         _settings = Settings()
@@ -137,7 +137,7 @@ def get_config() -> Settings:
 
 
 def validate_production_config():
-    """Validate production configuration on startup"""
+    """Validate production configuration on startup."""
     config = get_config()
 
     if config.environment.lower() in ["production", "prod"] or config.is_production:

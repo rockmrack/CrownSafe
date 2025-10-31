@@ -1,8 +1,8 @@
-"""Product Monitoring Scheduler - 24/7 automated product monitoring"""
+"""Product Monitoring Scheduler - 24/7 automated product monitoring."""
 
 import asyncio
 import logging
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from typing import Any
 
 from sqlalchemy import (
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 
 class MonitoredProduct(Base):
-    """Products being monitored for users"""
+    """Products being monitored for users."""
 
     __tablename__ = "monitored_products"
 
@@ -69,7 +69,7 @@ class MonitoredProduct(Base):
 
 
 class MonitoringRun(Base):
-    """History of monitoring runs"""
+    """History of monitoring runs."""
 
     __tablename__ = "monitoring_runs"
 
@@ -92,7 +92,7 @@ class MonitoringRun(Base):
 
 
 class ProductMonitoringScheduler:
-    """Scheduler for 24/7 product monitoring"""
+    """Scheduler for 24/7 product monitoring."""
 
     @classmethod
     async def add_product_to_monitoring(
@@ -105,7 +105,7 @@ class ProductMonitoringScheduler:
         source_job_id: str | None = None,
         check_frequency_hours: int = 24,
     ) -> MonitoredProduct:
-        """Add a product to monitoring"""
+        """Add a product to monitoring."""
         with get_db_session() as db:
             # Check if already monitoring
             existing = (
@@ -151,7 +151,7 @@ class ProductMonitoringScheduler:
 
     @classmethod
     async def check_product_for_recalls(cls, product: MonitoredProduct, db: Session) -> dict[str, Any]:
-        """Check a single product for recalls"""
+        """Check a single product for recalls."""
         try:
             # REMOVED FOR CROWN SAFE: Recall checking logic gutted
             # Crown Safe focuses on hair product testing (HairProductModel), not baby recalls
@@ -172,7 +172,7 @@ class ProductMonitoringScheduler:
 
     @classmethod
     async def send_recall_notification(cls, user_id: int, product: MonitoredProduct, recalls: list[dict], db: Session) -> None:
-        """Send notification about new recalls"""
+        """Send notification about new recalls."""
         try:
             # Get user's devices
             devices = db.query(DeviceToken).filter(DeviceToken.user_id == user_id, DeviceToken.is_active).all()
@@ -239,7 +239,7 @@ class ProductMonitoringScheduler:
 
     @classmethod
     def _is_quiet_hours(cls, device: DeviceToken) -> bool:
-        """Check if current time is in quiet hours for device"""
+        """Check if current time is in quiet hours for device."""
         if not device.quiet_hours_start or not device.quiet_hours_end:
             return False
 
@@ -250,16 +250,15 @@ class ProductMonitoringScheduler:
 
             if start <= end:
                 return start <= now <= end
-            else:
-                # Overnight quiet hours
-                return now >= start or now <= end
+            # Overnight quiet hours
+            return now >= start or now <= end
 
         except Exception:
             return False
 
     @classmethod
     async def run_monitoring_cycle(cls) -> dict[str, Any]:
-        """Run a complete monitoring cycle"""
+        """Run a complete monitoring cycle."""
         run = None
 
         try:
@@ -368,7 +367,7 @@ class ProductMonitoringScheduler:
 
     @classmethod
     async def auto_add_from_scans(cls) -> None:
-        """Automatically add products from recent scans to monitoring"""
+        """Automatically add products from recent scans to monitoring."""
         try:
             with get_db_session() as db:
                 # Get recent completed scans not yet monitored
@@ -424,7 +423,7 @@ celery_app = Celery("monitoring", broker=REDIS_URL, backend=REDIS_URL)
 
 @celery_app.task(name="run_product_monitoring")
 def run_product_monitoring():
-    """Celery task to run product monitoring"""
+    """Celery task to run product monitoring."""
     loop = asyncio.get_event_loop()
     result = loop.run_until_complete(ProductMonitoringScheduler.run_monitoring_cycle())
     return result
@@ -432,7 +431,7 @@ def run_product_monitoring():
 
 @celery_app.task(name="auto_add_products")
 def auto_add_products():
-    """Celery task to auto-add products from scans"""
+    """Celery task to auto-add products from scans."""
     loop = asyncio.get_event_loop()
     loop.run_until_complete(ProductMonitoringScheduler.auto_add_from_scans())
     return {"status": "completed"}

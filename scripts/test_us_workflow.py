@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 API_BASE_URL = "http://localhost:8000"  # The API is now running inside Docker, but the port is mapped to our host
 
 
-def run_us_mvp_test():
+def run_us_mvp_test() -> None:
     """Tests the full US-focused MVP workflow by making a live API call
     to the containerized backend stack.
 

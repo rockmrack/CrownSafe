@@ -2,7 +2,7 @@
 """Simple script to comment out legacy router registrations."""
 
 
-def comment_routers():
+def comment_routers() -> None:
     # Read the file
     with open("api/main_crownsafe.py", "r", encoding="utf-8") as f:
         lines = f.readlines()

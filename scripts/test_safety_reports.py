@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Test the 90-Day Safety Summary Report Generation"""
+"""Test the 90-Day Safety Summary Report Generation."""
 
 import os
 import random
 import sys
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -16,7 +16,7 @@ from db.models.scan_history import SafetyReport, ScanHistory
 
 
 def create_test_scan_history(db_session, user_id=1):
-    """Create sample scan history for testing"""
+    """Create sample scan history for testing."""
     print(f"Creating test scan history for user {user_id}...")
 
     # Product samples with varying risk levels
@@ -141,8 +141,8 @@ def create_test_scan_history(db_session, user_id=1):
     return scans_created
 
 
-def test_90_day_report():
-    """Test the 90-day safety summary generation"""
+def test_90_day_report() -> None:
+    """Test the 90-day safety summary generation."""
     print("Testing 90-Day Safety Summary Report Generation...")
     print("=" * 60)
 

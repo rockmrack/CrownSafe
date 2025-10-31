@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Verify BabyShield API deployment
-Tests all critical endpoints after deployment
+Tests all critical endpoints after deployment.
 """
 
 import json
@@ -25,8 +25,8 @@ ENDPOINTS_TO_TEST = [
 ]
 
 
-def test_endpoint(method, path, data, name):
-    """Test a single endpoint"""
+def test_endpoint(method, path, data, name) -> str | None:
+    """Test a single endpoint."""
     url = f"{BASE_URL}{path}"
     headers = {"Content-Type": "application/json"}
 
@@ -44,10 +44,9 @@ def test_endpoint(method, path, data, name):
                 json_data = response.json()
                 if "ok" in json_data and json_data["ok"]:
                     return f"✅ {name}: Success"
-                elif "status" in json_data:  # for healthz
+                if "status" in json_data:  # for healthz
                     return f"✅ {name}: {json_data.get('status', 'ok')}"
-                else:
-                    return f"✅ {name}: {response.status_code}"
+                return f"✅ {name}: {response.status_code}"
             except (json.JSONDecodeError, ValueError):
                 # Not JSON, but still successful
                 if path == "/docs":
@@ -70,7 +69,7 @@ def test_endpoint(method, path, data, name):
         return f"❌ {name}: Error - {e!s}"
 
 
-def main():
+def main() -> int:
     print("=" * 60)
     print("🔍 BabyShield API Deployment Verification")
     print(f"🌐 Testing: {BASE_URL}")

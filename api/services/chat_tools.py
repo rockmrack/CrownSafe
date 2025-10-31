@@ -1,4 +1,4 @@
-"""Chat tools service - stub implementation for chat router"""
+"""Chat tools service - stub implementation for chat router."""
 
 from typing import Any
 
@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 
 def run_tool_for_intent(intent: str, db: Session, scan_data: dict[str, Any]) -> dict[str, Any]:
-    """Run appropriate tool based on intent"""
+    """Run appropriate tool based on intent."""
     # Simple stub responses based on intent
     if intent == "recall_check":
         return {
@@ -15,7 +15,7 @@ def run_tool_for_intent(intent: str, db: Session, scan_data: dict[str, Any]) -> 
             "message": "No recalls found for this product",
         }
 
-    elif intent == "alternatives":
+    if intent == "alternatives":
         return {
             "alternatives": {
                 "items": [
@@ -25,7 +25,7 @@ def run_tool_for_intent(intent: str, db: Session, scan_data: dict[str, Any]) -> 
             },
         }
 
-    elif intent == "safety_guidance":
+    if intent == "safety_guidance":
         return {
             "guidance": [
                 "Check product label for age recommendations",
@@ -34,8 +34,7 @@ def run_tool_for_intent(intent: str, db: Session, scan_data: dict[str, Any]) -> 
             ],
         }
 
-    else:
-        return {
-            "message": "General safety information available",
-            "status": "completed",
-        }
+    return {
+        "message": "General safety information available",
+        "status": "completed",
+    }

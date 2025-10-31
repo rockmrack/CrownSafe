@@ -24,7 +24,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname
 logger = logging.getLogger("test-live")
 
 
-async def main():
+async def main() -> None:
     logger.info("🔍 Starting LIVE Recall Connectors Test (US, Europe, UK)")
 
     # --- US FDA ---

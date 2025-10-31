@@ -1,5 +1,5 @@
 """Security Headers Middleware for App Store Readiness
-Adds security headers to all API responses
+Adds security headers to all API responses.
 """
 
 import logging
@@ -14,10 +14,10 @@ API_VERSION = "1.2.0"
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """Middleware to add security headers to all responses"""
+    """Middleware to add security headers to all responses."""
 
     async def dispatch(self, request: Request, call_next):
-        """Add security headers to response"""
+        """Add security headers to response."""
         response = await call_next(request)
 
         # Security headers
@@ -48,7 +48,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 class EnhancedCORSMiddleware(BaseHTTPMiddleware):
-    """Enhanced CORS middleware for mobile app support"""
+    """Enhanced CORS middleware for mobile app support."""
 
     def __init__(self, app, allowed_origins=None, allow_credentials=True) -> None:
         super().__init__(app)
@@ -56,7 +56,7 @@ class EnhancedCORSMiddleware(BaseHTTPMiddleware):
         self.allow_credentials = allow_credentials
 
     async def dispatch(self, request: Request, call_next):
-        """Handle CORS headers"""
+        """Handle CORS headers."""
         # Handle preflight requests
         if request.method == "OPTIONS":
             response = Response(status_code=204)

@@ -1,5 +1,5 @@
 """Structured JSON logging configuration for production
-Provides consistent JSON log format for all application logs
+Provides consistent JSON log format for all application logs.
 """
 
 import json
@@ -10,10 +10,10 @@ from typing import Any
 
 
 class JsonFormatter(logging.Formatter):
-    """Custom formatter to output logs as JSON"""
+    """Custom formatter to output logs as JSON."""
 
     def format(self, record: logging.LogRecord) -> str:
-        """Format log record as JSON"""
+        """Format log record as JSON."""
         # Base payload
         payload: dict[str, Any] = {
             "timestamp": int(time.time() * 1000),  # Unix timestamp in milliseconds
@@ -64,7 +64,7 @@ class JsonFormatter(logging.Formatter):
 
 
 def setup_json_logging(log_level: str = "INFO") -> None:
-    """Configure all loggers to use JSON formatting
+    """Configure all loggers to use JSON formatting.
 
     Args:
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR)

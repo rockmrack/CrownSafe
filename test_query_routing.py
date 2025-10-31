@@ -1,4 +1,4 @@
-"""Test End-to-End Query Flow - Verify Queries Hit Production Database
+"""Test End-to-End Query Flow - Verify Queries Hit Production Database.
 
 This script tests that user queries actually reach your 131,743 recalls
 """

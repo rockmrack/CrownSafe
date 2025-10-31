@@ -1,5 +1,5 @@
 """Performance monitoring system for BabyShield
-Tracks bottlenecks, metrics, and system performance
+Tracks bottlenecks, metrics, and system performance.
 """
 
 import asyncio
@@ -10,7 +10,7 @@ import tracemalloc
 from collections import defaultdict, deque
 from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 from functools import wraps
 from typing import Any
 
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class PerformanceMetric:
-    """Represents a performance metric"""
+    """Represents a performance metric."""
 
     name: str
     value: float
@@ -40,7 +40,7 @@ class PerformanceMetric:
 
 
 class PerformanceMonitor:
-    """Central performance monitoring system"""
+    """Central performance monitoring system."""
 
     def __init__(self, enable_memory_profiling: bool = False) -> None:
         self.metrics: dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
@@ -53,16 +53,16 @@ class PerformanceMonitor:
             tracemalloc.start()
 
     def record_metric(self, metric: PerformanceMetric) -> None:
-        """Record a performance metric"""
+        """Record a performance metric."""
         with self._lock:
             self.metrics[metric.name].append(metric)
 
     def start_timer(self, name: str) -> None:
-        """Start a timer"""
+        """Start a timer."""
         self.timers[name] = time.perf_counter()
 
     def stop_timer(self, name: str) -> float | None:
-        """Stop a timer and return elapsed time"""
+        """Stop a timer and return elapsed time."""
         if name not in self.timers:
             return None
 
@@ -81,12 +81,12 @@ class PerformanceMonitor:
         return elapsed
 
     def increment_counter(self, name: str, value: int = 1) -> None:
-        """Increment a counter"""
+        """Increment a counter."""
         with self._lock:
             self.counters[name] += value
 
     def get_system_metrics(self) -> dict[str, Any]:
-        """Get current system metrics"""
+        """Get current system metrics."""
         cpu_percent = psutil.cpu_percent(interval=0.1)
         memory = psutil.virtual_memory()
         disk = psutil.disk_usage("/")
@@ -120,7 +120,7 @@ class PerformanceMonitor:
         return metrics
 
     def get_memory_profile(self) -> dict | None:
-        """Get memory profiling data"""
+        """Get memory profiling data."""
         if not self.enable_memory_profiling:
             return None
 
@@ -144,7 +144,7 @@ class PerformanceMonitor:
         return profile
 
     def get_summary(self, time_window: int = 60) -> dict[str, Any]:
-        """Get performance summary for the last N seconds"""
+        """Get performance summary for the last N seconds."""
         cutoff = datetime.now(UTC) - timedelta(seconds=time_window)
         summary = {
             "metrics": {},
@@ -171,7 +171,7 @@ class PerformanceMonitor:
         return summary
 
     def reset(self) -> None:
-        """Reset all metrics"""
+        """Reset all metrics."""
         with self._lock:
             self.metrics.clear()
             self.counters.clear()
@@ -184,7 +184,7 @@ monitor = PerformanceMonitor()
 
 # Decorators for performance monitoring
 def monitor_performance(name: str = None):
-    """Decorator to monitor function performance
+    """Decorator to monitor function performance.
 
     Usage:
         @monitor_performance("api_call")
@@ -263,15 +263,14 @@ def monitor_performance(name: str = None):
 
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
-        else:
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 
 
 @contextmanager
 def monitor_block(name: str):
-    """Context manager to monitor a code block
+    """Context manager to monitor a code block.
 
     Usage:
         with monitor_block("database_query"):
@@ -309,7 +308,7 @@ def monitor_block(name: str):
 
 @asynccontextmanager
 async def async_monitor_block(name: str):
-    """Async version of monitor_block"""
+    """Async version of monitor_block."""
     start_time = time.perf_counter()
 
     try:
@@ -341,11 +340,11 @@ async def async_monitor_block(name: str):
 
 
 class DatabaseQueryMonitor:
-    """Monitor database query performance"""
+    """Monitor database query performance."""
 
     @staticmethod
     def monitor_query(query_name: str):
-        """Decorator to monitor database queries"""
+        """Decorator to monitor database queries."""
 
         def decorator(func):
             @wraps(func)
@@ -371,11 +370,11 @@ class DatabaseQueryMonitor:
 
 
 class APIEndpointMonitor:
-    """Monitor API endpoint performance"""
+    """Monitor API endpoint performance."""
 
     @staticmethod
     async def monitor_request(request, call_next):
-        """Middleware to monitor API requests"""
+        """Middleware to monitor API requests."""
         start_time = time.perf_counter()
 
         # Track request
@@ -429,14 +428,14 @@ class APIEndpointMonitor:
 
 
 class BottleneckDetector:
-    """Detect performance bottlenecks"""
+    """Detect performance bottlenecks."""
 
     def __init__(self, threshold_ms: float = 1000) -> None:
         self.threshold_ms = threshold_ms
         self.bottlenecks = []
 
     def analyze(self, monitor: PerformanceMonitor) -> list[dict]:
-        """Analyze metrics for bottlenecks"""
+        """Analyze metrics for bottlenecks."""
         bottlenecks = []
 
         for name, metrics in monitor.metrics.items():
@@ -460,11 +459,11 @@ class BottleneckDetector:
 
 # Performance reporting
 class PerformanceReporter:
-    """Generate performance reports"""
+    """Generate performance reports."""
 
     @staticmethod
     def generate_report(monitor: PerformanceMonitor) -> str:
-        """Generate a text performance report"""
+        """Generate a text performance report."""
         summary = monitor.get_summary()
         detector = BottleneckDetector()
         bottlenecks = detector.analyze(monitor)
@@ -509,7 +508,7 @@ class PerformanceReporter:
 
 # Auto-cleanup old metrics
 class MetricsGarbageCollector:
-    """Automatically clean old metrics"""
+    """Automatically clean old metrics."""
 
     def __init__(self, monitor: PerformanceMonitor, max_age_minutes: int = 60) -> None:
         self.monitor = monitor
@@ -518,19 +517,19 @@ class MetricsGarbageCollector:
         self._thread = None
 
     def start(self) -> None:
-        """Start garbage collection thread"""
+        """Start garbage collection thread."""
         self.running = True
         self._thread = threading.Thread(target=self._collect, daemon=True)
         self._thread.start()
 
     def stop(self) -> None:
-        """Stop garbage collection"""
+        """Stop garbage collection."""
         self.running = False
         if self._thread:
             self._thread.join(timeout=1)
 
     def _collect(self) -> None:
-        """Garbage collection loop"""
+        """Garbage collection loop."""
         while self.running:
             try:
                 cutoff = datetime.now(UTC) - self.max_age

@@ -1,4 +1,4 @@
-"""SAFETY REPORTS VERIFICATION
+"""SAFETY REPORTS VERIFICATION.
 ============================
 
 Tests the "My Safety Reports" features from mobile app:

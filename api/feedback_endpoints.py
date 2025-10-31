@@ -1,5 +1,5 @@
 """In-App Feedback API Endpoints
-Handles user feedback submission and routing to support mailbox
+Handles user feedback submission and routing to support mailbox.
 """
 
 import hashlib
@@ -7,7 +7,7 @@ import json
 import logging
 import os
 import uuid
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from email.message import EmailMessage
 from enum import Enum
 
@@ -48,7 +48,7 @@ SUPPORT_CONFIG = {
 
 
 class FeedbackType(str, Enum):
-    """Types of feedback"""
+    """Types of feedback."""
 
     BUG_REPORT = "bug_report"
     FEATURE_REQUEST = "feature_request"
@@ -63,7 +63,7 @@ class FeedbackType(str, Enum):
 
 
 class Priority(str, Enum):
-    """Ticket priority levels"""
+    """Ticket priority levels."""
 
     P0_CRITICAL = "P0"  # System down, security issue
     P1_HIGH = "P1"  # Major functionality broken
@@ -72,7 +72,7 @@ class Priority(str, Enum):
 
 
 class FeedbackRequest(BaseModel):
-    """User feedback submission"""
+    """User feedback submission."""
 
     type: FeedbackType = Field(..., description="Type of feedback")
     subject: str = Field(..., min_length=3, max_length=200, description="Brief subject")
@@ -98,7 +98,7 @@ class FeedbackRequest(BaseModel):
 
     @validator("message")
     def clean_message(cls, v):
-        """Clean and validate message"""
+        """Clean and validate message."""
         # Remove excessive whitespace
         v = " ".join(v.split())
         # Check for spam patterns (basic)
@@ -122,7 +122,7 @@ class FeedbackRequest(BaseModel):
 
 
 class FeedbackResponse(BaseModel):
-    """Response after feedback submission"""
+    """Response after feedback submission."""
 
     ticket_id: str = Field(..., description="Unique ticket identifier")
     ticket_number: int = Field(..., description="Human-readable ticket number")
@@ -134,7 +134,7 @@ class FeedbackResponse(BaseModel):
 
 
 class TicketStatus(BaseModel):
-    """Ticket status information"""
+    """Ticket status information."""
 
     ticket_id: str
     ticket_number: int
@@ -153,7 +153,7 @@ class TicketStatus(BaseModel):
 
 
 def determine_priority(feedback: FeedbackRequest) -> Priority:
-    """Determine ticket priority based on feedback content"""
+    """Determine ticket priority based on feedback content."""
     # P0 - Critical issues
     if feedback.type == FeedbackType.SECURITY_ISSUE:
         return Priority.P0_CRITICAL
@@ -188,7 +188,7 @@ def determine_priority(feedback: FeedbackRequest) -> Priority:
 
 
 def get_response_time(priority: Priority) -> str:
-    """Get expected response time based on priority"""
+    """Get expected response time based on priority."""
     response_times = {
         Priority.P0_CRITICAL: "within 1 hour",
         Priority.P1_HIGH: "within 2 hours",
@@ -200,7 +200,7 @@ def get_response_time(priority: Priority) -> str:
 
 
 def generate_ticket_id() -> tuple[str, int]:
-    """Generate unique ticket ID and number"""
+    """Generate unique ticket ID and number."""
     # Generate unique ID
     ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
 
@@ -215,7 +215,7 @@ def generate_ticket_id() -> tuple[str, int]:
 async def send_email_notification(
     feedback: FeedbackRequest, ticket_id: str, ticket_number: int, priority: Priority,
 ) -> bool:
-    """Send email notification to support mailbox"""
+    """Send email notification to support mailbox."""
     try:
         # Determine recipient based on priority/type
         if priority == Priority.P0_CRITICAL:
@@ -320,7 +320,7 @@ async def send_auto_reply(
     priority: Priority,
     subject: str,
 ) -> bool:
-    """Send automatic reply to user"""
+    """Send automatic reply to user."""
     if not user_email or not SUPPORT_CONFIG["auto_reply"]:
         return False
 
@@ -373,7 +373,7 @@ For urgent issues, call 1-800-BABY-SAFE.
 
 
 def track_feedback_metrics(feedback: FeedbackRequest, priority: Priority) -> None:
-    """Track feedback metrics for analytics"""
+    """Track feedback metrics for analytics."""
     if not SUPPORT_CONFIG["track_metrics"]:
         return
 
@@ -403,7 +403,7 @@ def track_feedback_metrics(feedback: FeedbackRequest, priority: Priority) -> Non
 
 @router.post("/submit", response_model=FeedbackResponse)
 async def submit_feedback(feedback: FeedbackRequest, background_tasks: BackgroundTasks, request: Request):
-    """Submit user feedback
+    """Submit user feedback.
 
     Creates a support ticket and sends notification to support team.
     """
@@ -468,7 +468,7 @@ async def submit_feedback(feedback: FeedbackRequest, background_tasks: Backgroun
 
 @router.get("/ticket/{ticket_number}", response_model=TicketStatus)
 async def get_ticket_status(ticket_number: int):
-    """Get ticket status
+    """Get ticket status.
 
     Check the status of a submitted feedback ticket.
     """
@@ -491,7 +491,7 @@ async def get_ticket_status(ticket_number: int):
 
 @router.post("/ticket/{ticket_number}/satisfy")
 async def mark_satisfaction(ticket_number: int, satisfied: bool = True, comments: str | None = None):
-    """Mark customer satisfaction
+    """Mark customer satisfaction.
 
     Allow customers to indicate if their issue was resolved satisfactorily.
     """
@@ -507,7 +507,7 @@ async def mark_satisfaction(ticket_number: int, satisfied: bool = True, comments
 
 @router.get("/categories")
 async def get_feedback_categories():
-    """Get available feedback categories
+    """Get available feedback categories.
 
     Returns list of feedback types and their descriptions.
     """
@@ -555,7 +555,7 @@ async def get_feedback_categories():
 
 @router.get("/health")
 async def health_check():
-    """Health check for feedback service"""
+    """Health check for feedback service."""
     # Check SMTP connection
     smtp_ok = bool(SMTP_CONFIG["password"])
 
@@ -574,7 +574,7 @@ async def health_check():
 
 @router.get("/admin/stats")
 async def get_support_stats():
-    """Get support statistics
+    """Get support statistics.
 
     Returns metrics about feedback submissions (admin only).
     """
@@ -605,7 +605,7 @@ async def bulk_update_tickets(
     assigned_to: str | None = None,
     priority: Priority | None = None,
 ):
-    """Bulk update tickets
+    """Bulk update tickets.
 
     Update multiple tickets at once (admin only).
     """
@@ -630,5 +630,5 @@ async def bulk_update_tickets(
 # Note: Exception handlers should be added at the app level, not router level
 # This function is kept for reference but not used as exception handler
 async def value_error_handler(request: Request, exc: ValueError):
-    """Handle validation errors - should be added at app level"""
+    """Handle validation errors - should be added at app level."""
     return {"error": "validation_error", "detail": str(exc)}

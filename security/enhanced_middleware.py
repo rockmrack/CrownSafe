@@ -1,5 +1,5 @@
 """Enhanced Security Middleware for BabyShield
-Bulletproof protection against all known attack vectors
+Bulletproof protection against all known attack vectors.
 """
 
 import logging
@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 class BulletproofSecurityMiddleware:
-    """Enterprise-grade security middleware with AI-powered threat detection"""
+    """Enterprise-grade security middleware with AI-powered threat detection."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.request_history: dict[str, deque] = defaultdict(lambda: deque(maxlen=100))
         self.blocked_ips: set[str] = set()
         self.suspicious_patterns: dict[str, int] = defaultdict(int)
@@ -27,7 +27,7 @@ class BulletproofSecurityMiddleware:
         self.allowed_countries = {"US", "EU", "GB", "CA", "AU", "ES", "FR", "DE", "IT"}
 
     def _load_attack_patterns(self) -> list[str]:
-        """Load comprehensive attack pattern database"""
+        """Load comprehensive attack pattern database."""
         return [
             # PHP vulnerabilities
             "vendor/phpunit/",
@@ -123,7 +123,7 @@ class BulletproofSecurityMiddleware:
         ]
 
     def _load_suspicious_agents(self) -> list[str]:
-        """Load suspicious User-Agent patterns"""
+        """Load suspicious User-Agent patterns."""
         return [
             "sqlmap",
             "nmap",
@@ -150,7 +150,7 @@ class BulletproofSecurityMiddleware:
         ]
 
     async def __call__(self, request: Request, call_next):
-        """Main security processing pipeline"""
+        """Main security processing pipeline."""
         _ = time.time()  # start_time (reserved for timing metrics)
         client_ip = self._get_client_ip(request)
 
@@ -187,7 +187,7 @@ class BulletproofSecurityMiddleware:
             return self._create_block_response(request, "middleware_error")
 
     def _get_client_ip(self, request: Request) -> str:
-        """Extract real client IP (handle proxies/load balancers)"""
+        """Extract real client IP (handle proxies/load balancers)."""
         # Check X-Forwarded-For (ALB)
         forwarded = request.headers.get("X-Forwarded-For")
         if forwarded:
@@ -202,7 +202,7 @@ class BulletproofSecurityMiddleware:
         return request.client.host if request.client else "unknown"
 
     async def _should_block_immediately(self, request: Request, client_ip: str) -> bool:
-        """Immediate blocking checks (fastest path)"""
+        """Immediate blocking checks (fastest path)."""
         # 1. IP blacklist
         if client_ip in self.blocked_ips:
             return True
@@ -228,7 +228,7 @@ class BulletproofSecurityMiddleware:
         return False
 
     def _is_rate_limited(self, client_ip: str) -> bool:
-        """Advanced rate limiting with burst detection"""
+        """Advanced rate limiting with burst detection."""
         now = time.time()
         history = self.request_history[client_ip]
 
@@ -255,7 +255,7 @@ class BulletproofSecurityMiddleware:
         return False
 
     async def _calculate_threat_score(self, request: Request, client_ip: str) -> int:
-        """AI-powered threat scoring (0-100)"""
+        """AI-powered threat scoring (0-100)."""
         score = 0
         path = request.url.path.lower()
         user_agent = request.headers.get("User-Agent", "").lower()
@@ -289,7 +289,7 @@ class BulletproofSecurityMiddleware:
         return min(score, 100)
 
     def _is_honeypot_path(self, path: str) -> bool:
-        """Honeypot paths to trap attackers"""
+        """Honeypot paths to trap attackers."""
         honeypots = [
             "/admin/login.php",
             "/wp-admin/admin.php",
@@ -301,8 +301,8 @@ class BulletproofSecurityMiddleware:
         ]
         return path.lower() in [h.lower() for h in honeypots]
 
-    def _record_honeypot_hit(self, client_ip: str):
-        """Record honeypot access and auto-block repeat offenders"""
+    def _record_honeypot_hit(self, client_ip: str) -> None:
+        """Record honeypot access and auto-block repeat offenders."""
         self.honeypot_hits[client_ip] += 1
         logger.warning(f"Honeypot hit #{self.honeypot_hits[client_ip]} from {client_ip}")
 
@@ -312,7 +312,7 @@ class BulletproofSecurityMiddleware:
             logger.error(f"Auto-blocked IP {client_ip} after {self.honeypot_hits[client_ip]} honeypot hits")
 
     def _create_honeypot_response(self):
-        """Return convincing honeypot response to waste attacker time"""
+        """Return convincing honeypot response to waste attacker time."""
         return JSONResponse(
             status_code=200,
             content={
@@ -327,7 +327,7 @@ class BulletproofSecurityMiddleware:
         )
 
     def _create_block_response(self, request: Request, reason: str) -> JSONResponse:
-        """Create standardized block response"""
+        """Create standardized block response."""
         trace_id = f"blocked_{int(time.time())}_{reason}"
 
         return JSONResponse(
@@ -340,8 +340,8 @@ class BulletproofSecurityMiddleware:
             },
         )
 
-    async def _analyze_response(self, request: Request, response, client_ip: str):
-        """Learn from response patterns for future detection"""
+    async def _analyze_response(self, request: Request, response, client_ip: str) -> None:
+        """Learn from response patterns for future detection."""
         # Track successful vs failed requests per IP
         status = getattr(response, "status_code", 200)
 
@@ -359,5 +359,5 @@ security_middleware = BulletproofSecurityMiddleware()
 
 
 async def enhanced_security_middleware(request: Request, call_next):
-    """Enhanced security middleware entry point"""
+    """Enhanced security middleware entry point."""
     return await security_middleware(request, call_next)

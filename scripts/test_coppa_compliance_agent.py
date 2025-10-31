@@ -13,7 +13,7 @@ from agents.governance.coppa_compliance_agent.agent_logic import (  # noqa: E402
 logging.basicConfig(level=logging.INFO)
 
 
-def test_coppa_compliance_logic():
+def test_coppa_compliance_logic() -> None:
     print("--- Testing COPPA_ComplianceAgent Logic ---")
 
     logic = COPPA_ComplianceAgentLogic(agent_id="test_coppa_agent_01")

@@ -1,12 +1,12 @@
-"""Tests for core_infra/risk_ingestion_tasks.py"""
+"""Tests for core_infra/risk_ingestion_tasks.py."""
 
 import unittest
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from unittest.mock import MagicMock, Mock, patch
 
 
 class MockSafetyDataRecord:
-    def __init__(self):
+    def __init__(self) -> None:
         self.gtin = "01234567890123"
         self.upc = "012345678905"
         self.product_name = "Test Product"
@@ -24,13 +24,13 @@ class MockSafetyDataRecord:
 
 
 class TestRiskIngestionTasks(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.mock_db = Mock()
         self.mock_record = MockSafetyDataRecord()
 
     @patch("core_infra.risk_ingestion_tasks.ProductGoldenRecord")
-    def test_find_or_create_product_from_record(self, mock_product_class):
-        """Test finding or creating product from record"""
+    def test_find_or_create_product_from_record(self, mock_product_class) -> None:
+        """Test finding or creating product from record."""
         from core_infra.risk_ingestion_tasks import _find_or_create_product_from_record
 
         mock_query = MagicMock()
@@ -41,8 +41,8 @@ class TestRiskIngestionTasks(unittest.TestCase):
         self.mock_db.add.assert_called()
 
     @patch("core_infra.risk_ingestion_tasks.SafetyIncident")
-    def test_create_incident_from_record(self, mock_incident_class):
-        """Test creating incident from record"""
+    def test_create_incident_from_record(self, mock_incident_class) -> None:
+        """Test creating incident from record."""
         from core_infra.risk_ingestion_tasks import _create_incident_from_record
 
         mock_query = MagicMock()
@@ -52,8 +52,8 @@ class TestRiskIngestionTasks(unittest.TestCase):
         self.mock_db.add.assert_called()
 
     @patch("core_infra.risk_ingestion_tasks.ProductDataSource")
-    def test_update_product_data_source(self, mock_source_class):
-        """Test updating product data source"""
+    def test_update_product_data_source(self, mock_source_class) -> None:
+        """Test updating product data source."""
         from core_infra.risk_ingestion_tasks import _update_product_data_source
 
         mock_query = MagicMock()

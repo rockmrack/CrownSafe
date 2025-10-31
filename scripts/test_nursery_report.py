@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Test the Quarterly Nursery Report Generation"""
+"""Test the Quarterly Nursery Report Generation."""
 
 import os
 import random
 import sys
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -16,7 +16,7 @@ from db.models.scan_history import SafetyReport, ScanHistory
 
 
 def create_nursery_scan_history(db_session, user_id=1):
-    """Create sample nursery product scan history for testing"""
+    """Create sample nursery product scan history for testing."""
     print(f"Creating nursery product scan history for user {user_id}...")
 
     # Nursery product samples with categories
@@ -261,8 +261,8 @@ def create_nursery_scan_history(db_session, user_id=1):
     return scans_created
 
 
-def test_quarterly_nursery_report():
-    """Test the quarterly nursery report generation"""
+def test_quarterly_nursery_report() -> None:
+    """Test the quarterly nursery report generation."""
     print("Testing Quarterly Nursery Report Generation...")
     print("=" * 60)
 

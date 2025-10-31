@@ -60,9 +60,8 @@ def remove_connection(agent_id: str) -> bool:
         del active_connections[agent_id]
         logger.debug(f"State: Connection for agent '{agent_id}' removed.")
         return True
-    else:
-        logger.warning(f"State: Attempted to remove non-existent connection for agent '{agent_id}'.")
-        return False
+    logger.warning(f"State: Attempted to remove non-existent connection for agent '{agent_id}'.")
+    return False
 
 
 def get_connection(agent_id: str) -> Any | None:

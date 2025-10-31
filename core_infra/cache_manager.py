@@ -62,7 +62,7 @@ class BabyShieldCacheManager:
         self.init_redis()
 
     def init_redis(self) -> None:
-        """Initialize Redis connection with error handling"""
+        """Initialize Redis connection with error handling."""
         if not REDIS_AVAILABLE:
             logger.debug("Redis library not installed. Cache disabled.")
             self.cache_enabled = False
@@ -92,14 +92,14 @@ class BabyShieldCacheManager:
             self.redis_client = None
 
     def _generate_cache_key(self, prefix: str, identifier: str, **kwargs) -> str:
-        """Generate deterministic cache key with additional parameters"""
+        """Generate deterministic cache key with additional parameters."""
         # Create a hash of the identifier and any additional params
         key_data = f"{identifier}:{json.dumps(sorted(kwargs.items()), separators=(',', ':'))}"
         key_hash = hashlib.md5(key_data.encode()).hexdigest()[:12]
         return f"{prefix}{key_hash}:{identifier}"
 
     def get(self, cache_type: str, identifier: str, **kwargs) -> dict[str, Any] | None:
-        """Get cached data with automatic JSON deserialization"""
+        """Get cached data with automatic JSON deserialization."""
         if not self.cache_enabled or not self.redis_client:
             return None
 
@@ -112,9 +112,8 @@ class BabyShieldCacheManager:
                 result = json.loads(cached_data)
                 logger.debug(f"🎯 Cache HIT: {cache_key[:50]}...")
                 return result
-            else:
-                logger.debug(f"❌ Cache MISS: {cache_key[:50]}...")
-                return None
+            logger.debug(f"❌ Cache MISS: {cache_key[:50]}...")
+            return None
 
         except Exception as e:
             logger.warning(f"Cache get error: {e}")
@@ -128,7 +127,7 @@ class BabyShieldCacheManager:
         custom_ttl: int | None = None,
         **kwargs,
     ) -> bool:
-        """Set cached data with automatic JSON serialization and TTL"""
+        """Set cached data with automatic JSON serialization and TTL."""
         if not self.cache_enabled or not self.redis_client:
             return False
 
@@ -159,7 +158,7 @@ class BabyShieldCacheManager:
             return False
 
     def delete(self, cache_type: str, identifier: str, **kwargs) -> bool:
-        """Delete specific cached item"""
+        """Delete specific cached item."""
         if not self.cache_enabled or not self.redis_client:
             return False
 
@@ -177,7 +176,7 @@ class BabyShieldCacheManager:
             return False
 
     def invalidate_pattern(self, pattern: str) -> int:
-        """Invalidate multiple cache keys matching a pattern"""
+        """Invalidate multiple cache keys matching a pattern."""
         if not self.cache_enabled or not self.redis_client:
             return 0
 
@@ -194,7 +193,7 @@ class BabyShieldCacheManager:
             return 0
 
     def get_cache_stats(self) -> dict[str, Any]:
-        """Get cache performance statistics"""
+        """Get cache performance statistics."""
         if not self.cache_enabled or not self.redis_client:
             return {"status": "disabled"}
 
@@ -221,7 +220,7 @@ class BabyShieldCacheManager:
             return {"status": "error", "error": str(e)}
 
     def health_check(self) -> bool:
-        """Check if Redis is healthy"""
+        """Check if Redis is healthy."""
         try:
             if not self.cache_enabled or not self.redis_client:
                 return False
@@ -237,18 +236,18 @@ cache_manager = BabyShieldCacheManager()
 
 # Convenience functions for easy usage
 def get_cached(cache_type: str, identifier: str, **kwargs) -> dict[str, Any] | None:
-    """Get cached data"""
+    """Get cached data."""
     result = cache_manager.get(cache_type, identifier, **kwargs)
     return result.get("data") if result else None
 
 
 def set_cached(cache_type: str, identifier: str, data: Any, ttl: int | None = None, **kwargs) -> bool:
-    """Set cached data"""
+    """Set cached data."""
     return cache_manager.set(cache_type, identifier, data, ttl, **kwargs)
 
 
 def delete_cached(cache_type: str, identifier: str, **kwargs) -> bool:
-    """Delete cached data"""
+    """Delete cached data."""
     return cache_manager.delete(cache_type, identifier, **kwargs)
 
 
@@ -274,13 +273,13 @@ def invalidate_pattern(pattern: str) -> int:
 
 
 def get_cache_stats() -> dict[str, Any]:
-    """Get cache statistics"""
+    """Get cache statistics."""
     return cache_manager.get_cache_stats()
 
 
 # Cache decorators for easy function caching
 def cache_result(cache_type: str, ttl: int | None = None, key_func=None):
-    """Decorator to cache function results"""
+    """Decorator to cache function results."""
 
     def decorator(func):
         async def wrapper(*args, **kwargs):

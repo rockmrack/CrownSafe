@@ -1,4 +1,4 @@
-"""Comprehensive Database Transaction Testing Suite
+"""Comprehensive Database Transaction Testing Suite.
 
 Tests transaction management, concurrency, deadlocks, and data integrity.
 Covers nested transactions, isolation levels, and rollback scenarios.
@@ -10,7 +10,7 @@ Date: October 10, 2025
 import threading
 import time
 import uuid
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from unittest.mock import patch
 
 import pytest
@@ -37,11 +37,11 @@ skip_on_sqlite = pytest.mark.skipif(
 @pytest.mark.database
 @pytest.mark.integration
 class TestDatabaseTransactions:
-    """Test suite for database transaction handling"""
+    """Test suite for database transaction handling."""
 
     @pytest.fixture
     def db_session(self):
-        """Create a fresh database session for testing"""
+        """Create a fresh database session for testing."""
         # Import models to register them with Base
         from api.models.chat_memory import (
             Conversation,
@@ -60,7 +60,7 @@ class TestDatabaseTransactions:
 
     @pytest.fixture
     def sample_user(self, db_session):
-        """Create a sample user for testing"""
+        """Create a sample user for testing."""
         user = UserProfile(
             user_id=str(uuid.uuid4()),
             consent_personalization=True,
@@ -73,8 +73,8 @@ class TestDatabaseTransactions:
         return user
 
     @skip_on_sqlite
-    def test_nested_transaction_rollback(self, db_session, sample_user):
-        """Test nested transaction rollback preserves outer transaction
+    def test_nested_transaction_rollback(self, db_session, sample_user) -> None:
+        """Test nested transaction rollback preserves outer transaction.
 
         Acceptance Criteria:
         - Outer transaction commits successfully
@@ -125,8 +125,8 @@ class TestDatabaseTransactions:
         finally:
             db_session.close()
 
-    def test_concurrent_update_optimistic_locking(self, db_session, sample_user):
-        """Test optimistic locking prevents lost updates
+    def test_concurrent_update_optimistic_locking(self, db_session, sample_user) -> None:
+        """Test optimistic locking prevents lost updates.
 
         Acceptance Criteria:
         - Two concurrent updates detected
@@ -137,8 +137,8 @@ class TestDatabaseTransactions:
         # This test requires a model with version column
         # For now, we'll simulate the behavior
 
-        def update_user_transaction(user_id, new_paused_state):
-            """Simulate concurrent update"""
+        def update_user_transaction(user_id, new_paused_state) -> bool | None:
+            """Simulate concurrent update."""
             session = SessionLocal()
             try:
                 user = session.query(UserProfile).filter_by(user_id=user_id).first()
@@ -165,8 +165,8 @@ class TestDatabaseTransactions:
         db_session.refresh(sample_user)
         assert sample_user.memory_paused in [True, False]
 
-    def test_deadlock_detection_and_retry(self, db_session):
-        """Test deadlock detection and automatic retry
+    def test_deadlock_detection_and_retry(self, db_session) -> None:
+        """Test deadlock detection and automatic retry.
 
         Acceptance Criteria:
         - Deadlock detected within 30 seconds
@@ -206,8 +206,8 @@ class TestDatabaseTransactions:
             assert mock_commit.call_count == 2
 
     @skip_on_sqlite
-    def test_transaction_isolation_read_committed(self, db_session, sample_user):
-        """Test READ COMMITTED isolation level
+    def test_transaction_isolation_read_committed(self, db_session, sample_user) -> None:
+        """Test READ COMMITTED isolation level.
 
         Acceptance Criteria:
         - Uncommitted changes not visible to other transactions
@@ -240,8 +240,8 @@ class TestDatabaseTransactions:
         session2.close()
 
     @skip_on_sqlite
-    def test_savepoint_partial_rollback(self, db_session, sample_user):
-        """Test savepoint creation and partial rollback
+    def test_savepoint_partial_rollback(self, db_session, sample_user) -> None:
+        """Test savepoint creation and partial rollback.
 
         Acceptance Criteria:
         - Savepoint created successfully
@@ -291,8 +291,8 @@ class TestDatabaseTransactions:
             db_session.rollback()
             raise
 
-    def test_constraint_violation_rollback(self, db_session, sample_user):
-        """Test automatic rollback on constraint violation
+    def test_constraint_violation_rollback(self, db_session, sample_user) -> None:
+        """Test automatic rollback on constraint violation.
 
         Acceptance Criteria:
         - IntegrityError raised on duplicate key
@@ -330,8 +330,8 @@ class TestDatabaseTransactions:
         assert len(users) == 1
 
     @skip_on_sqlite
-    def test_bulk_insert_transaction_atomicity(self, db_session, sample_user):
-        """Test atomicity of bulk insert operations
+    def test_bulk_insert_transaction_atomicity(self, db_session, sample_user) -> None:
+        """Test atomicity of bulk insert operations.
 
         Acceptance Criteria:
         - All 1000 records inserted or none
@@ -368,8 +368,8 @@ class TestDatabaseTransactions:
         count = db_session.query(ConversationMessage).filter_by(conversation_id=conversation.id).count()
         assert count == 1000, "All messages should be inserted atomically"
 
-    def test_long_running_transaction_timeout(self, db_session):
-        """Test long-running transaction timeout
+    def test_long_running_transaction_timeout(self, db_session) -> None:
+        """Test long-running transaction timeout.
 
         Acceptance Criteria:
         - Transaction exceeding 30 seconds times out
@@ -389,8 +389,8 @@ class TestDatabaseTransactions:
             assert "timeout" in str(exc_info.value).lower()
 
     @skip_on_sqlite
-    def test_cross_schema_transaction_consistency(self, db_session, sample_user):
-        """Test transaction consistency across multiple schemas
+    def test_cross_schema_transaction_consistency(self, db_session, sample_user) -> None:
+        """Test transaction consistency across multiple schemas.
 
         Acceptance Criteria:
         - Changes to multiple schemas atomic
@@ -438,10 +438,10 @@ class TestDatabaseTransactions:
 
 @pytest.mark.database
 class TestConnectionPooling:
-    """Test database connection pool management"""
+    """Test database connection pool management."""
 
-    def test_connection_pool_exhaustion_handling(self):
-        """Test graceful handling of connection pool exhaustion
+    def test_connection_pool_exhaustion_handling(self) -> None:
+        """Test graceful handling of connection pool exhaustion.
 
         Acceptance Criteria:
         - Pool size limit respected (default 10)
@@ -471,8 +471,8 @@ class TestConnectionPooling:
             for conn in connections:
                 conn.close()
 
-    def test_connection_leak_detection(self):
-        """Test detection of connection leaks
+    def test_connection_leak_detection(self) -> None:
+        """Test detection of connection leaks.
 
         Acceptance Criteria:
         - Unreleased connections detected

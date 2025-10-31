@@ -152,12 +152,11 @@ advised to stop using this product immediately.", "risk_level": "High"}}
                     "status": "COMPLETED",
                     "result": analysis,  # CHANGED FROM "data" to "result"
                 }
-            else:
-                self.logger.error("LLM response was invalid or malformed: %s", analysis)
-                return {
-                    "status": "FAILED",
-                    "error": "LLM response was invalid or malformed.",
-                }
+            self.logger.error("LLM response was invalid or malformed: %s", analysis)
+            return {
+                "status": "FAILED",
+                "error": "LLM response was invalid or malformed.",
+            }
 
         except Exception as e:
             self.logger.error(

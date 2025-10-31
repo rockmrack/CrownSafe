@@ -1,4 +1,4 @@
-"""Add account deletion audit table
+"""Add account deletion audit table.
 
 Revision ID: add_account_deletion_audit
 Revises:
@@ -17,7 +17,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     # Create account_deletion_audit table
     op.create_table(
         "account_deletion_audit",
@@ -44,7 +44,7 @@ def upgrade():
     )
 
 
-def downgrade():
+def downgrade() -> None:
     # Drop account_deletion_audit table
     op.drop_index(op.f("ix_account_deletion_audit_jti"), table_name="account_deletion_audit")
     op.drop_index(op.f("ix_account_deletion_audit_user_id"), table_name="account_deletion_audit")

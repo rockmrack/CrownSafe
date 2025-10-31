@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Automated Database Restore Testing
-Performs weekly restore drills and validates data integrity
+Performs weekly restore drills and validates data integrity.
 """
 
 import datetime
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class RestoreTestResult:
-    """Results from a restore test"""
+    """Results from a restore test."""
 
     success: bool
     duration_minutes: float
@@ -32,9 +32,9 @@ class RestoreTestResult:
 
 
 class RestoreTester:
-    """Automated RDS restore testing"""
+    """Automated RDS restore testing."""
 
-    def __init__(self, region: str = "eu-north-1"):
+    def __init__(self, region: str = "eu-north-1") -> None:
         self.region = region
         self.rds = boto3.client("rds", region_name=region)
         self.cloudwatch = boto3.client("cloudwatch", region_name=region)
@@ -43,7 +43,7 @@ class RestoreTester:
         self.test_prefix = "babyshield-test-restore"
 
     def get_latest_snapshot(self) -> str | None:
-        """Get the most recent automated snapshot"""
+        """Get the most recent automated snapshot."""
         try:
             response = self.rds.describe_db_snapshots(
                 DBInstanceIdentifier=self.source_db,
@@ -73,7 +73,7 @@ class RestoreTester:
             return None
 
     def create_test_restore(self, snapshot_id: str) -> str | None:
-        """Create a test instance from snapshot"""
+        """Create a test instance from snapshot."""
         test_instance_id = f"{self.test_prefix}-{int(time.time())}"
 
         try:
@@ -103,7 +103,7 @@ class RestoreTester:
             return None
 
     def wait_for_instance(self, instance_id: str, timeout_minutes: int = 30) -> bool:
-        """Wait for instance to be available"""
+        """Wait for instance to be available."""
         start_time = time.time()
         timeout_seconds = timeout_minutes * 60
 
@@ -117,7 +117,7 @@ class RestoreTester:
 
                     if status == "available":
                         return True
-                    elif status in ["failed", "deleted"]:
+                    if status in ["failed", "deleted"]:
                         logger.error(f"Instance entered failed state: {status}")
                         return False
 
@@ -131,7 +131,7 @@ class RestoreTester:
         return False
 
     def get_connection_info(self, instance_id: str) -> dict | None:
-        """Get connection details for test instance"""
+        """Get connection details for test instance."""
         try:
             response = self.rds.describe_db_instances(DBInstanceIdentifier=instance_id)
 
@@ -151,7 +151,7 @@ class RestoreTester:
             return None
 
     def validate_restored_data(self, connection_info: dict) -> dict:
-        """Validate the restored database"""
+        """Validate the restored database."""
         validation_results = {
             "tables_exist": False,
             "row_counts": {},
@@ -267,7 +267,7 @@ class RestoreTester:
             return validation_results
 
     def cleanup_test_instance(self, instance_id: str) -> bool:
-        """Delete the test instance"""
+        """Delete the test instance."""
         try:
             logger.info(f"Deleting test instance: {instance_id}")
 
@@ -283,8 +283,8 @@ class RestoreTester:
             logger.exception(f"Error deleting test instance: {e}")
             return False
 
-    def send_notification(self, result: RestoreTestResult):
-        """Send SNS notification with test results"""
+    def send_notification(self, result: RestoreTestResult) -> None:
+        """Send SNS notification with test results."""
         topic_arn = os.environ.get("SNS_TOPIC_ARN")
         if not topic_arn:
             logger.warning("No SNS topic configured")
@@ -330,8 +330,8 @@ Please investigate immediately.
         except Exception as e:
             logger.exception(f"Error sending notification: {e}")
 
-    def record_metrics(self, result: RestoreTestResult):
-        """Record metrics to CloudWatch"""
+    def record_metrics(self, result: RestoreTestResult) -> None:
+        """Record metrics to CloudWatch."""
         try:
             # Success metric
             self.cloudwatch.put_metric_data(
@@ -373,7 +373,7 @@ Please investigate immediately.
             logger.exception(f"Error recording metrics: {e}")
 
     def run_restore_test(self) -> RestoreTestResult:
-        """Run a complete restore test"""
+        """Run a complete restore test."""
         start_time = time.time()
         test_instance_id = None
 
@@ -443,8 +443,8 @@ Please investigate immediately.
                 self.cleanup_test_instance(test_instance_id)
 
 
-def main():
-    """Main entry point"""
+def main() -> None:
+    """Main entry point."""
     logger.info("=" * 60)
     logger.info(" AUTOMATED RESTORE TEST STARTING")
     logger.info(f" Time: {datetime.datetime.now(timezone.utc).isoformat()}")

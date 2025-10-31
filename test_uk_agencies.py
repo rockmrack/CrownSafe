@@ -1,5 +1,5 @@
 """Test script for UK government agency connectors and endpoints
-Tests all 5 UK agencies: OPSS, FSA, Trading Standards, DVSA, MHRA
+Tests all 5 UK agencies: OPSS, FSA, Trading Standards, DVSA, MHRA.
 """
 
 import asyncio
@@ -55,7 +55,7 @@ print("TEST 3: Testing fetch_recent_recalls() Methods")
 print("=" * 80)
 
 
-async def test_fetch_recalls():
+async def test_fetch_recalls() -> None:
     for name, connector in connectors.items():
         try:
             print(f"\n🔍 Testing {name}...")

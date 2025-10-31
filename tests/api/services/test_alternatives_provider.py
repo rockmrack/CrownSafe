@@ -7,9 +7,9 @@ from api.services.alternatives_provider import get_alternatives
 
 
 class TestAlternativesProvider:
-    """Tests for alternatives provider rules engine"""
+    """Tests for alternatives provider rules engine."""
 
-    def test_cheese_alternatives(self):
+    def test_cheese_alternatives(self) -> None:
         scan_data = {
             "category": "cheese",
             "flags": ["soft_cheese"],
@@ -39,7 +39,7 @@ class TestAlternativesProvider:
         assert len(hard_cheese["evidence"]) == 1
         assert hard_cheese["evidence"][0]["type"] == "regulatory"
 
-    def test_peanut_allergy_alternatives(self):
+    def test_peanut_allergy_alternatives(self) -> None:
         scan_data = {
             "category": "snack",
             "ingredients": ["peanuts", "salt", "oil"],
@@ -62,7 +62,7 @@ class TestAlternativesProvider:
         assert "peanut" in sunbutter["allergy_safe_for"]
         assert "spread" in sunbutter["tags"]
 
-    def test_tree_nut_allergy_alternatives(self):
+    def test_tree_nut_allergy_alternatives(self) -> None:
         scan_data = {
             "category": "granola",
             "ingredients": ["oats", "almonds", "honey"],
@@ -80,7 +80,7 @@ class TestAlternativesProvider:
         assert "walnut" in nut_free_granola["allergy_safe_for"]
         assert "nut-free" in nut_free_granola["tags"]
 
-    def test_sleep_surface_alternatives(self):
+    def test_sleep_surface_alternatives(self) -> None:
         scan_data = {
             "category": "infant_sleeper",
             "flags": ["sleep_surface", "inclined"],
@@ -104,7 +104,7 @@ class TestAlternativesProvider:
         assert bassinet["age_min_months"] == 0
         assert "cpsc-approved" in bassinet["tags"]
 
-    def test_small_parts_toy_alternatives(self):
+    def test_small_parts_toy_alternatives(self) -> None:
         scan_data = {
             "category": "toy",
             "flags": ["small_parts", "choking_hazard"],
@@ -127,7 +127,7 @@ class TestAlternativesProvider:
         assert "soft" in soft_toy["tags"]
         assert "no-small-parts" in soft_toy["tags"]
 
-    def test_cosmetic_pregnancy_alternatives(self):
+    def test_cosmetic_pregnancy_alternatives(self) -> None:
         scan_data = {
             "category": "cosmetic",
             "ingredients": ["water", "retinol", "glycerin"],
@@ -145,7 +145,7 @@ class TestAlternativesProvider:
         assert "pregnancy-safe" in safe_skincare["tags"]
         assert "skincare" in safe_skincare["tags"]
 
-    def test_high_mercury_fish_alternatives(self):
+    def test_high_mercury_fish_alternatives(self) -> None:
         scan_data = {"category": "fish", "flags": ["high_mercury"], "profile": {}}
 
         result = get_alternatives(scan_data)
@@ -159,7 +159,7 @@ class TestAlternativesProvider:
         assert "low-mercury" in low_mercury["tags"]
         assert "omega-3" in low_mercury["tags"]
 
-    def test_raw_dairy_alternatives(self):
+    def test_raw_dairy_alternatives(self) -> None:
         scan_data = {
             "category": "dairy",
             "ingredients": ["raw milk", "cultures"],
@@ -176,7 +176,7 @@ class TestAlternativesProvider:
         assert pasteurized["pregnancy_safe"] is True
         assert "pasteurized" in pasteurized["tags"]
 
-    def test_no_alternatives_when_no_rules_match(self):
+    def test_no_alternatives_when_no_rules_match(self) -> None:
         scan_data = {
             "category": "general",
             "ingredients": ["water", "salt"],
@@ -188,7 +188,7 @@ class TestAlternativesProvider:
         assert result["schema"] == "AlternativesOut@v1"
         assert len(result["items"]) == 0
 
-    def test_max_three_alternatives_limit(self):
+    def test_max_three_alternatives_limit(self) -> None:
         # Create a scan that would trigger multiple rules
         scan_data = {
             "category": "cheese",  # triggers cheese rules (2 items)
@@ -208,7 +208,7 @@ class TestAlternativesProvider:
         # Should be limited to 3 items max
         assert len(result["items"]) <= 3
 
-    def test_feature_flag_disabled(self):
+    def test_feature_flag_disabled(self) -> None:
         with patch.dict(os.environ, {"BS_ALTERNATIVES_ENABLED": "false"}):
             scan_data = {"category": "cheese", "flags": ["soft_cheese"], "profile": {}}
 
@@ -217,7 +217,7 @@ class TestAlternativesProvider:
             assert result["schema"] == "AlternativesOut@v1"
             assert len(result["items"]) == 0
 
-    def test_feature_flag_enabled_by_default(self):
+    def test_feature_flag_enabled_by_default(self) -> None:
         # Ensure feature is enabled by default
         with patch.dict(os.environ, {}, clear=True):
             scan_data = {"category": "cheese", "flags": ["soft_cheese"], "profile": {}}
@@ -226,7 +226,7 @@ class TestAlternativesProvider:
 
             assert len(result["items"]) > 0
 
-    def test_evidence_structure(self):
+    def test_evidence_structure(self) -> None:
         scan_data = {"category": "cheese", "flags": ["soft_cheese"], "profile": {}}
 
         result = get_alternatives(scan_data)
@@ -240,7 +240,7 @@ class TestAlternativesProvider:
         assert evidence["id"] == "pasteurisation"
         assert evidence["url"] is None
 
-    def test_complex_allergy_scenario(self):
+    def test_complex_allergy_scenario(self) -> None:
         # Test complex scenario with multiple allergens
         scan_data = {
             "category": "snack",

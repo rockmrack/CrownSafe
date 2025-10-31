@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test a single recall connector (CPSC) to verify basic functionality"""
+"""Test a single recall connector (CPSC) to verify basic functionality."""
 
 import asyncio
 import os
@@ -12,8 +12,8 @@ sys.path.insert(0, project_root)
 from agents.recall_data_agent.connectors import CPSCConnector  # noqa: E402
 
 
-async def test_cpsc():
-    """Test CPSC connector only"""
+async def test_cpsc() -> bool | None:
+    """Test CPSC connector only."""
     print("\n" + "=" * 80)
     print("TESTING CPSC CONNECTOR (US Consumer Product Safety Commission)")
     print("=" * 80 + "\n")

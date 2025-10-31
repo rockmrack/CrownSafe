@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Test script for the Safety Hub feature
-Tests article ingestion and API endpoint
+Tests article ingestion and API endpoint.
 """
 
 import asyncio
@@ -25,7 +25,7 @@ TEST_DB_URL = "sqlite:///test_safety_hub.db"
 
 
 async def test_fetch_articles_from_cpsc():
-    """Test fetching articles directly from CPSC connector"""
+    """Test fetching articles directly from CPSC connector."""
     print("\n1️⃣ Testing CPSC Connector...")
 
     connector = CPSCDataConnector()
@@ -49,7 +49,7 @@ async def test_fetch_articles_from_cpsc():
 
 
 def test_celery_task(articles):
-    """Test the Celery ingestion task"""
+    """Test the Celery ingestion task."""
     print("\n2️⃣ Testing Celery Task (Simulated)...")
 
     # Create test database
@@ -96,8 +96,8 @@ def test_celery_task(articles):
     return upserted_count > 0
 
 
-async def test_api_endpoint():
-    """Test the API endpoint"""
+async def test_api_endpoint() -> None:
+    """Test the API endpoint."""
     print("\n3️⃣ Testing API Endpoint...")
 
     async with httpx.AsyncClient() as client:
@@ -132,7 +132,7 @@ async def test_api_endpoint():
 
 
 def test_mock_articles():
-    """Create mock articles for testing when CPSC is unavailable"""
+    """Create mock articles for testing when CPSC is unavailable."""
     print("\n4️⃣ Creating Mock Articles for Testing...")
 
     mock_articles = [
@@ -172,8 +172,8 @@ def test_mock_articles():
     return mock_articles
 
 
-async def main():
-    """Run all tests"""
+async def main() -> None:
+    """Run all tests."""
     print("=" * 60)
     print("🏥 TESTING SAFETY HUB FEATURE")
     print("=" * 60)

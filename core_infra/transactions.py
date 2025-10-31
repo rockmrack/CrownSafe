@@ -1,5 +1,5 @@
 """Transaction management for BabyShield
-Ensures data integrity with atomic operations
+Ensures data integrity with atomic operations.
 """
 
 import asyncio
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 @contextmanager
 def transaction(db: Session, read_only: bool = False):
     """Context manager for database transactions
-    Ensures commit or rollback
+    Ensures commit or rollback.
 
     Usage:
         with transaction(db) as session:
@@ -46,7 +46,7 @@ def transaction(db: Session, read_only: bool = False):
 @contextmanager
 def nested_transaction(db: Session):
     """Nested transaction using savepoints
-    Allows partial rollback within a larger transaction
+    Allows partial rollback within a larger transaction.
     """
     savepoint = db.begin_nested()
     try:
@@ -58,14 +58,14 @@ def nested_transaction(db: Session):
 
 
 class TransactionManager:
-    """Advanced transaction management with retry logic"""
+    """Advanced transaction management with retry logic."""
 
     def __init__(self, db: Session, max_retries: int = 3) -> None:
         self.db = db
         self.max_retries = max_retries
 
     def execute(self, func: Callable, *args, **kwargs) -> Any:
-        """Execute function within transaction with retry logic"""
+        """Execute function within transaction with retry logic."""
         last_exception = None
 
         for attempt in range(self.max_retries):
@@ -91,7 +91,7 @@ class TransactionManager:
         raise last_exception
 
     def _is_retryable_error(self, error: SQLAlchemyError) -> bool:
-        """Check if error is retryable"""
+        """Check if error is retryable."""
         error_str = str(error).lower()
         retryable_errors = [
             "deadlock",
@@ -103,7 +103,7 @@ class TransactionManager:
 
 
 def transactional(read_only: bool = False, max_retries: int = 1):
-    """Decorator for transactional methods
+    """Decorator for transactional methods.
 
     Usage:
         @transactional()
@@ -131,11 +131,11 @@ def transactional(read_only: bool = False, max_retries: int = 1):
 
 
 class OptimisticLock:
-    """Optimistic locking for preventing lost updates"""
+    """Optimistic locking for preventing lost updates."""
 
     @staticmethod
     def check_version(entity, expected_version: int) -> None:
-        """Check if entity version matches expected"""
+        """Check if entity version matches expected."""
         if hasattr(entity, "version"):
             if entity.version != expected_version:
                 raise ValueError(
@@ -144,7 +144,7 @@ class OptimisticLock:
 
     @staticmethod
     def increment_version(entity) -> None:
-        """Increment entity version"""
+        """Increment entity version."""
         if hasattr(entity, "version"):
             entity.version += 1
         else:
@@ -152,7 +152,7 @@ class OptimisticLock:
 
 
 class DistributedLock:
-    """Distributed locking using Redis for preventing race conditions"""
+    """Distributed locking using Redis for preventing race conditions."""
 
     def __init__(self, redis_client, lock_name: str, timeout: int = 10) -> None:
         self.redis = redis_client
@@ -191,7 +191,7 @@ class DistributedLock:
 
 
 def bulk_operation(db: Session, items: list, operation: Callable, batch_size: int = 100):
-    """Perform bulk operations with batching and transactions"""
+    """Perform bulk operations with batching and transactions."""
     total = len(items)
     processed = 0
     errors = []
@@ -218,7 +218,7 @@ def bulk_operation(db: Session, items: list, operation: Callable, batch_size: in
 
 @asynccontextmanager
 async def async_transaction(db_session):
-    """Async transaction context manager"""
+    """Async transaction context manager."""
     async with db_session() as session:
         async with session.begin():
             try:
@@ -230,7 +230,7 @@ async def async_transaction(db_session):
 
 
 class Saga:
-    """Saga pattern for distributed transactions"""
+    """Saga pattern for distributed transactions."""
 
     def __init__(self) -> None:
         self.steps = []
@@ -238,12 +238,12 @@ class Saga:
         self.completed_steps = []
 
     def add_step(self, step_func: Callable, compensation_func: Callable) -> None:
-        """Add a step with its compensation"""
+        """Add a step with its compensation."""
         self.steps.append(step_func)
         self.compensations.append(compensation_func)
 
     async def execute(self) -> bool | None:
-        """Execute all steps, compensate on failure"""
+        """Execute all steps, compensate on failure."""
         try:
             for i, step in enumerate(self.steps):
                 result = await step()
@@ -257,7 +257,7 @@ class Saga:
             raise
 
     async def _compensate(self) -> None:
-        """Run compensations in reverse order"""
+        """Run compensations in reverse order."""
         for step_index, result in reversed(self.completed_steps):
             try:
                 compensation = self.compensations[step_index]
@@ -272,7 +272,7 @@ class Saga:
 
 @transactional()
 def create_user_with_profile(db: Session, email: str, name: str):
-    """Example: Create user and profile in single transaction"""
+    """Example: Create user and profile in single transaction."""
     from core_infra.database import User
 
     # Create user
@@ -288,7 +288,7 @@ def create_user_with_profile(db: Session, email: str, name: str):
 
 
 def safe_bulk_insert(db: Session, records: list):
-    """Example: Bulk insert with transaction management"""
+    """Example: Bulk insert with transaction management."""
 
     def insert_record(session, record) -> None:
         # Your insert logic here

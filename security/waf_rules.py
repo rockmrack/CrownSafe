@@ -1,5 +1,5 @@
 """AWS WAF Rules Configuration for BabyShield
-Enterprise-grade Web Application Firewall rules
+Enterprise-grade Web Application Firewall rules.
 """
 
 import json
@@ -7,11 +7,11 @@ from typing import Any
 
 
 class WAFRulesGenerator:
-    """Generate AWS WAF rules for bulletproof protection"""
+    """Generate AWS WAF rules for bulletproof protection."""
 
     @staticmethod
     def generate_rate_limiting_rules() -> list[dict[str, Any]]:
-        """Generate rate limiting rules"""
+        """Generate rate limiting rules."""
         return [
             {
                 "Name": "BabyShield-GlobalRateLimit",
@@ -57,7 +57,7 @@ class WAFRulesGenerator:
 
     @staticmethod
     def generate_attack_prevention_rules() -> list[dict[str, Any]]:
-        """Generate rules to prevent common attacks"""
+        """Generate rules to prevent common attacks."""
         return [
             # SQL Injection Prevention
             {
@@ -175,7 +175,7 @@ class WAFRulesGenerator:
 
     @staticmethod
     def generate_geographic_rules() -> list[dict[str, Any]]:
-        """Generate geographic blocking rules"""
+        """Generate geographic blocking rules."""
         return [
             {
                 "Name": "BabyShield-GeoBlock",
@@ -214,7 +214,7 @@ class WAFRulesGenerator:
 
     @staticmethod
     def generate_ip_reputation_rules() -> list[dict[str, Any]]:
-        """Generate IP reputation rules"""
+        """Generate IP reputation rules."""
         return [
             {
                 "Name": "BabyShield-IPReputation",
@@ -254,7 +254,7 @@ class WAFRulesGenerator:
 
 
 def generate_complete_waf_config() -> dict[str, Any]:
-    """Generate complete WAF configuration"""
+    """Generate complete WAF configuration."""
     generator = WAFRulesGenerator()
 
     all_rules = []

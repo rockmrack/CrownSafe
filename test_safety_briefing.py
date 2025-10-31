@@ -1,4 +1,4 @@
-"""SAFETY BRIEFING / SAFETY UPDATES VERIFICATION
+"""SAFETY BRIEFING / SAFETY UPDATES VERIFICATION.
 ==============================================
 
 Tests the "Today's Safety Briefing" feature shown in mobile app:

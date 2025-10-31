@@ -33,7 +33,7 @@ def auth():
     return h, uid
 
 
-def run():
+def run() -> None:
     h, uid = auth()
     # Generate
     r = client.post(

@@ -81,9 +81,8 @@ class ProductIdentifierLogic:
                         # Debug: full details
                         self.logger.debug(f"Product details dict:\n{json.dumps(product_details, indent=2)}")
                         return product_details
-                    else:
-                        self.logger.warning(f"UPCitemdb returned OK but no items for {barcode}: {data}")
-                        return None
+                    self.logger.warning(f"UPCitemdb returned OK but no items for {barcode}: {data}")
+                    return None
 
         except aiohttp.ClientError as e:
             self.logger.error(f"Network error during UPC lookup for {barcode}: {e}", exc_info=True)
@@ -178,18 +177,17 @@ class ProductIdentifierLogic:
                     }
                     self.logger.info(f"Enhanced RecallDB fallback for {barcode}: '{fallback['product_name']}'")
                     return {"status": "COMPLETED", "result": fallback}
-                else:
-                    # Create a basic mock product if no recalls exist
-                    fallback = {
-                        "product_name": f"Generic Product {barcode}",
-                        "upc": barcode,
-                        "manufacturer": "Unknown Manufacturer",
-                        "category": "Consumer Product",
-                        "description": "Mock product for testing purposes",
-                        "source": "mock-fallback",
-                    }
-                    self.logger.info(f"Using mock fallback for {barcode}: '{fallback['product_name']}'")
-                    return {"status": "COMPLETED", "result": fallback}
+                # Create a basic mock product if no recalls exist
+                fallback = {
+                    "product_name": f"Generic Product {barcode}",
+                    "upc": barcode,
+                    "manufacturer": "Unknown Manufacturer",
+                    "category": "Consumer Product",
+                    "description": "Mock product for testing purposes",
+                    "source": "mock-fallback",
+                }
+                self.logger.info(f"Using mock fallback for {barcode}: '{fallback['product_name']}'")
+                return {"status": "COMPLETED", "result": fallback}
         except Exception as e:
             self.logger.error(f"Enhanced RecallDB fallback error: {e}", exc_info=True)
 

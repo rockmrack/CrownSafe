@@ -1,11 +1,11 @@
-"""Tests for core_infra/retry_handler.py"""
+"""Tests for core_infra/retry_handler.py."""
 
 import unittest
 
 
 class TestRetryHandler(unittest.TestCase):
-    def test_retry_handler_import(self):
-        """Test that retry_handler module can be imported"""
+    def test_retry_handler_import(self) -> None:
+        """Test that retry_handler module can be imported."""
         try:
             import core_infra.retry_handler as rh
 
@@ -13,8 +13,8 @@ class TestRetryHandler(unittest.TestCase):
         except ImportError:
             self.skipTest("Module not found")
 
-    def test_retry_decorator_exists(self):
-        """Test that retry decorator exists"""
+    def test_retry_decorator_exists(self) -> None:
+        """Test that retry decorator exists."""
         try:
             from core_infra.retry_handler import retry
 
@@ -22,13 +22,13 @@ class TestRetryHandler(unittest.TestCase):
         except ImportError:
             self.skipTest("retry decorator not found")
 
-    def test_retry_decorator_usage(self):
-        """Test using retry decorator"""
+    def test_retry_decorator_usage(self) -> None:
+        """Test using retry decorator."""
         try:
             from core_infra.retry_handler import retry
 
             @retry(max_attempts=2, delay=0.1)
-            def test_func():
+            def test_func() -> str:
                 return "success"
 
             result = test_func()

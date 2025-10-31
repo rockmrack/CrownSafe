@@ -13,7 +13,7 @@ from agents.governance.childrenscode_compliance_agent.agent_logic import (  # no
 logging.basicConfig(level=logging.INFO)
 
 
-def test_childrenscode_compliance_logic():
+def test_childrenscode_compliance_logic() -> None:
     print("--- Testing ChildrensCode_ComplianceAgent Logic ---")
 
     logic = ChildrensCode_ComplianceAgentLogic(agent_id="test_cc_agent_01")

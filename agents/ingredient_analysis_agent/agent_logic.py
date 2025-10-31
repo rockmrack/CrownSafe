@@ -1,5 +1,5 @@
 """Crown Safe - Ingredient Analysis Agent
-Replaces: recall_data_agent (baby recalls) → ingredient safety analysis
+Replaces: recall_data_agent (baby recalls) → ingredient safety analysis.
 
 This agent analyzes hair product ingredients using the Crown Score engine
 to provide personalized safety and compatibility assessments.
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 class IngredientAnalysisAgent:
-    """Intelligent agent for analyzing hair product ingredients
+    """Intelligent agent for analyzing hair product ingredients.
 
     Capabilities:
     - Analyze ingredient safety for specific hair types
@@ -42,7 +42,7 @@ class IngredientAnalysisAgent:
         product_type: str,
         ph_level: float | None = None,
     ) -> dict:
-        """Analyze a hair product's ingredients
+        """Analyze a hair product's ingredients.
 
         Args:
             ingredients: List of ingredient names
@@ -105,7 +105,7 @@ class IngredientAnalysisAgent:
             return {"success": False, "error": str(e), "crown_score": 0, "verdict": "ERROR"}
 
     def _get_verdict_color(self, verdict: VerdictLevel) -> str:
-        """Get color code for verdict"""
+        """Get color code for verdict."""
         mapping = {
             VerdictLevel.CROWN_APPROVED: "green",
             VerdictLevel.GOOD_CHOICE: "yellow",
@@ -116,7 +116,7 @@ class IngredientAnalysisAgent:
         return mapping.get(verdict, "gray")
 
     def _get_verdict_icon(self, verdict: VerdictLevel) -> str:
-        """Get icon for verdict"""
+        """Get icon for verdict."""
         mapping = {
             VerdictLevel.CROWN_APPROVED: "👑",
             VerdictLevel.GOOD_CHOICE: "✓",
@@ -127,27 +127,27 @@ class IngredientAnalysisAgent:
         return mapping.get(verdict, "?")
 
     def _generate_recommendation(self, crown_score: int, verdict: VerdictLevel, breakdown) -> str:
-        """Generate human-readable recommendation"""
+        """Generate human-readable recommendation."""
         if verdict == VerdictLevel.CROWN_APPROVED:
             return (
                 f"Excellent choice for your hair! This product scored {crown_score}/100 "
                 "and is ideal for your hair type and goals."
             )
 
-        elif verdict == VerdictLevel.GOOD_CHOICE:
+        if verdict == VerdictLevel.GOOD_CHOICE:
             recommendation = f"Good product (scored {crown_score}/100) with minor concerns. "
             if breakdown.red_flags:
                 recommendation += f"Watch out for: {', '.join(breakdown.red_flags[:2])}."
             return recommendation
 
-        elif verdict == VerdictLevel.USE_CAUTION:
+        if verdict == VerdictLevel.USE_CAUTION:
             recommendation = f"Use with caution (scored {crown_score}/100). "
             if breakdown.red_flags:
                 recommendation += f"Contains: {', '.join(breakdown.red_flags[:3])}. "
             recommendation += "Consider patch testing before full use."
             return recommendation
 
-        elif verdict == VerdictLevel.NOT_RECOMMENDED:
+        if verdict == VerdictLevel.NOT_RECOMMENDED:
             recommendation = f"Not recommended (scored {crown_score}/100). "
             if breakdown.red_flags:
                 flags = ", ".join(breakdown.red_flags[:3])
@@ -155,16 +155,16 @@ class IngredientAnalysisAgent:
             recommendation += "Consider safer alternatives."
             return recommendation
 
-        else:  # AVOID
-            recommendation = f"AVOID this product (scored {crown_score}/100). "
-            if breakdown.red_flags:
-                flags = ", ".join(breakdown.red_flags)
-                recommendation += f"Dangerous ingredients detected: {flags}. "
-            recommendation += "This product could damage your hair."
-            return recommendation
+        # AVOID
+        recommendation = f"AVOID this product (scored {crown_score}/100). "
+        if breakdown.red_flags:
+            flags = ", ".join(breakdown.red_flags)
+            recommendation += f"Dangerous ingredients detected: {flags}. "
+        recommendation += "This product could damage your hair."
+        return recommendation
 
     async def find_alternatives(self, product_name: str, category: str, min_crown_score: int = 75) -> list[dict]:
-        """Find safer alternative products
+        """Find safer alternative products.
 
         Args:
             product_name: Name of the product to replace

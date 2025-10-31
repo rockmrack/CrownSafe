@@ -16,7 +16,7 @@ from agents.recall_data_agent.connectors import ConnectorRegistry  # noqa: E402
 
 
 async def quick_test():
-    """Quick test of live recall fetching"""
+    """Quick test of live recall fetching."""
     print("=" * 80)
     print("BABYSHIELD RECALL DATA AGENT - QUICK TEST")
     print("=" * 80)

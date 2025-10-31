@@ -1,5 +1,5 @@
 """Deep Database Tests
-Comprehensive testing of database operations, connections, and transactions
+Comprehensive testing of database operations, connections, and transactions.
 """
 
 import os
@@ -11,10 +11,10 @@ from core_infra.database import Base, get_db
 
 
 class TestDatabaseDeep:
-    """Deep database connectivity and operation tests"""
+    """Deep database connectivity and operation tests."""
 
-    def test_database_connection_pool(self):
-        """Test that database connection pool is configured"""
+    def test_database_connection_pool(self) -> None:
+        """Test that database connection pool is configured."""
         from core_infra.database import engine
 
         # Check pool settings
@@ -23,20 +23,20 @@ class TestDatabaseDeep:
         pool = engine.pool
         assert pool is not None
 
-    def test_database_url_format(self):
-        """Test that DATABASE_URL is properly formatted"""
+    def test_database_url_format(self) -> None:
+        """Test that DATABASE_URL is properly formatted."""
         db_url = os.getenv("DATABASE_URL")
         if db_url:
             # Should start with postgresql:// or sqlite://
             assert db_url.startswith(("postgresql://", "sqlite://", "postgres://"))
 
-    def test_get_db_generator(self):
-        """Test that get_db returns a generator"""
+    def test_get_db_generator(self) -> None:
+        """Test that get_db returns a generator."""
         db_gen = get_db()
         assert hasattr(db_gen, "__next__")
 
-    def test_database_session_creation(self):
-        """Test that database sessions can be created"""
+    def test_database_session_creation(self) -> None:
+        """Test that database sessions can be created."""
         db_gen = get_db()
         db = next(db_gen)
 
@@ -48,8 +48,8 @@ class TestDatabaseDeep:
         except Exception:
             pass  # Connection might be closed already
 
-    def test_database_query_execution(self):
-        """Test that simple queries can be executed"""
+    def test_database_query_execution(self) -> None:
+        """Test that simple queries can be executed."""
         db_gen = get_db()
         db = next(db_gen)
 
@@ -62,8 +62,8 @@ class TestDatabaseDeep:
         finally:
             db.close()
 
-    def test_database_transaction_rollback(self):
-        """Test that transactions can be rolled back"""
+    def test_database_transaction_rollback(self) -> None:
+        """Test that transactions can be rolled back."""
         db_gen = get_db()
         db = next(db_gen)
 
@@ -75,8 +75,8 @@ class TestDatabaseDeep:
         finally:
             db.close()
 
-    def test_database_transaction_commit(self):
-        """Test that transactions can be committed"""
+    def test_database_transaction_commit(self) -> None:
+        """Test that transactions can be committed."""
         db_gen = get_db()
         db = next(db_gen)
 
@@ -86,8 +86,8 @@ class TestDatabaseDeep:
         finally:
             db.close()
 
-    def test_database_connection_error_handling(self):
-        """Test handling of database connection errors"""
+    def test_database_connection_error_handling(self) -> None:
+        """Test handling of database connection errors."""
         # This test verifies the error handling doesn't crash
         try:
             invalid_engine = create_engine("postgresql://invalid:invalid@localhost:9999/invalid")
@@ -105,15 +105,15 @@ class TestDatabaseDeep:
             # Connection error is expected
             assert True
 
-    def test_database_metadata_exists(self):
-        """Test that database metadata is accessible"""
+    def test_database_metadata_exists(self) -> None:
+        """Test that database metadata is accessible."""
         assert Base.metadata is not None
         # Should have some tables defined
         tables = Base.metadata.tables
         assert isinstance(tables, dict)
 
-    def test_database_session_isolation(self):
-        """Test that database sessions are isolated"""
+    def test_database_session_isolation(self) -> None:
+        """Test that database sessions are isolated."""
         db_gen1 = get_db()
         db_gen2 = get_db()
 
@@ -126,8 +126,8 @@ class TestDatabaseDeep:
         db1.close()
         db2.close()
 
-    def test_database_connection_cleanup(self):
-        """Test that database connections are properly cleaned up"""
+    def test_database_connection_cleanup(self) -> None:
+        """Test that database connections are properly cleaned up."""
         db_gen = get_db()
         db = next(db_gen)
 
@@ -141,8 +141,8 @@ class TestDatabaseDeep:
             # Exception expected on closed session
             assert True
 
-    def test_database_multiple_operations(self):
-        """Test multiple database operations in sequence"""
+    def test_database_multiple_operations(self) -> None:
+        """Test multiple database operations in sequence."""
         db_gen = get_db()
         db = next(db_gen)
 
@@ -155,8 +155,8 @@ class TestDatabaseDeep:
         finally:
             db.close()
 
-    def test_database_parameterized_query(self):
-        """Test that parameterized queries work correctly"""
+    def test_database_parameterized_query(self) -> None:
+        """Test that parameterized queries work correctly."""
         db_gen = get_db()
         db = next(db_gen)
 
@@ -172,8 +172,8 @@ class TestDatabaseDeep:
         finally:
             db.close()
 
-    def test_database_null_handling(self):
-        """Test that NULL values are handled correctly"""
+    def test_database_null_handling(self) -> None:
+        """Test that NULL values are handled correctly."""
         db_gen = get_db()
         db = next(db_gen)
 
@@ -184,8 +184,8 @@ class TestDatabaseDeep:
         finally:
             db.close()
 
-    def test_database_unicode_support(self):
-        """Test that Unicode characters are supported"""
+    def test_database_unicode_support(self) -> None:
+        """Test that Unicode characters are supported."""
         db_gen = get_db()
         db = next(db_gen)
 
@@ -197,8 +197,8 @@ class TestDatabaseDeep:
         finally:
             db.close()
 
-    def test_database_concurrent_sessions(self):
-        """Test that multiple concurrent sessions work"""
+    def test_database_concurrent_sessions(self) -> None:
+        """Test that multiple concurrent sessions work."""
         sessions = []
 
         # Create multiple sessions
@@ -218,8 +218,8 @@ class TestDatabaseDeep:
             for db in sessions:
                 db.close()
 
-    def test_database_error_recovery(self):
-        """Test recovery from database errors"""
+    def test_database_error_recovery(self) -> None:
+        """Test recovery from database errors."""
         db_gen = get_db()
         db = next(db_gen)
 

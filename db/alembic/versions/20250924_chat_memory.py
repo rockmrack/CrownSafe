@@ -1,4 +1,4 @@
-"""add chat memory tables
+"""add chat memory tables.
 
 Revision ID: 20250924_chat_memory
 Revises: 20250905_add_serial_verifications
@@ -17,7 +17,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     # Detect database dialect
     bind = op.get_bind()
     is_sqlite = bind.dialect.name == "sqlite"
@@ -118,7 +118,7 @@ def upgrade():
     )
 
 
-def downgrade():
+def downgrade() -> None:
     op.drop_index("ix_message_content_gin", table_name="conversation_message")
     op.drop_index("ix_message_trace", table_name="conversation_message")
     op.drop_index("ix_message_role", table_name="conversation_message")

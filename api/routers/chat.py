@@ -102,7 +102,7 @@ AGE_TERMS = {
 
 
 class SuperSmartLLMClient:
-    """Advanced local LLM client with comprehensive baby safety intelligence"""
+    """Advanced local LLM client with comprehensive baby safety intelligence."""
 
     def __init__(self) -> None:
         self.conversation_memory = {}
@@ -113,7 +113,7 @@ class SuperSmartLLMClient:
         logger.info("SuperSmartLLMClient initialized with advanced features")
 
     def _initialize_patterns(self) -> dict[str, Any]:
-        """Initialize common response patterns and knowledge base"""
+        """Initialize common response patterns and knowledge base."""
         return {
             "safety_guidelines": {
                 "formula": {
@@ -162,7 +162,7 @@ class SuperSmartLLMClient:
         }
 
     def _analyze_context(self, query: str, conversation_id: str | None = None) -> dict[str, Any]:
-        """Deep context analysis with pattern recognition"""
+        """Deep context analysis with pattern recognition."""
         query_lower = query.lower()
 
         context = {
@@ -186,33 +186,33 @@ class SuperSmartLLMClient:
         return context
 
     def _detect_emergency(self, query: str) -> bool:
-        """Enhanced emergency detection"""
+        """Enhanced emergency detection."""
         return any(term in query for term in EMERGENCY_TERMS)
 
     def _detect_allergen_concern(self, query: str) -> bool:
-        """Detect allergen-related queries"""
+        """Detect allergen-related queries."""
         return any(term in query for term in ALLERGEN_TERMS)
 
     def _detect_preparation(self, query: str) -> bool:
-        """Detect preparation/mixing questions"""
+        """Detect preparation/mixing questions."""
         return any(term in query for term in PREP_TERMS)
 
     def _detect_age_concern(self, query: str) -> bool:
-        """Detect age-appropriateness questions"""
+        """Detect age-appropriateness questions."""
         return any(term in query for term in AGE_TERMS)
 
     def _detect_emotion(self, query: str) -> str:
-        """Detect emotional state from query"""
+        """Detect emotional state from query."""
         if any(word in query for word in ["worried", "scared", "anxious", "concerned", "afraid"]):
             return "anxious"
-        elif any(word in query for word in ["urgent", "immediately", "now", "asap", "quickly"]):
+        if any(word in query for word in ["urgent", "immediately", "now", "asap", "quickly"]):
             return "urgent"
-        elif any(word in query for word in ["confused", "don't understand", "help", "unsure"]):
+        if any(word in query for word in ["confused", "don't understand", "help", "unsure"]):
             return "confused"
         return "neutral"
 
     def _calculate_urgency(self, query: str) -> int:
-        """Calculate urgency level (1-10)"""
+        """Calculate urgency level (1-10)."""
         score = 5  # baseline
 
         if self._detect_emergency(query):
@@ -227,7 +227,7 @@ class SuperSmartLLMClient:
         return min(score, 10)
 
     def _detect_language(self, query: str) -> str:
-        """Simple language detection"""
+        """Simple language detection."""
         spanish_indicators = [
             "hola",
             "bebÃ©",
@@ -249,30 +249,30 @@ class SuperSmartLLMClient:
 
         if any(word in query.lower() for word in spanish_indicators):
             return "es"
-        elif any(word in query.lower() for word in french_indicators):
+        if any(word in query.lower() for word in french_indicators):
             return "fr"
         return "en"
 
     def _categorize_topic(self, query: str) -> str:
-        """Categorize the query topic"""
+        """Categorize the query topic."""
         if self._detect_emergency(query):
             return "emergency"
-        elif self._detect_allergen_concern(query):
+        if self._detect_allergen_concern(query):
             return "allergen"
-        elif self._detect_preparation(query):
+        if self._detect_preparation(query):
             return "preparation"
-        elif self._detect_age_concern(query):
+        if self._detect_age_concern(query):
             return "age_appropriateness"
-        elif any(word in query for word in ["safe", "safety", "danger", "risk"]):
+        if any(word in query for word in ["safe", "safety", "danger", "risk"]):
             return "safety"
-        elif any(word in query for word in ["nutrition", "vitamin", "nutrient", "healthy"]):
+        if any(word in query for word in ["nutrition", "vitamin", "nutrient", "healthy"]):
             return "nutrition"
-        elif any(word in query for word in ["sleep", "schedule", "routine", "feeding time"]):
+        if any(word in query for word in ["sleep", "schedule", "routine", "feeding time"]):
             return "schedule"
         return "general"
 
     def _assess_confidence_need(self, query: str) -> str:
-        """Assess how much confidence/reassurance is needed"""
+        """Assess how much confidence/reassurance is needed."""
         high_confidence_words = [
             "is it safe",
             "can i",
@@ -285,12 +285,12 @@ class SuperSmartLLMClient:
         return "normal"
 
     def _predict_follow_up(self, query: str) -> bool:
-        """Predict if user will have follow-up questions"""
+        """Predict if user will have follow-up questions."""
         complex_topics = ["allergen", "preparation", "schedule", "nutrition"]
         return self._categorize_topic(query) in complex_topics
 
     def _generate_smart_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
-        """Generate intelligent response based on context"""
+        """Generate intelligent response based on context."""
         # FIXED: Emergency response with proper structure
         if context["is_emergency"]:
             return self._emergency_response(query)
@@ -300,21 +300,20 @@ class SuperSmartLLMClient:
 
         if topic == "allergen":
             return self._allergen_response(query, context)
-        elif topic == "preparation":
+        if topic == "preparation":
             return self._preparation_response(query, context)
-        elif topic == "age_appropriateness":
+        if topic == "age_appropriateness":
             return self._age_response(query, context)
-        elif topic == "safety":
+        if topic == "safety":
             return self._safety_response(query, context)
-        elif topic == "nutrition":
+        if topic == "nutrition":
             return self._nutrition_response(query, context)
-        elif topic == "schedule":
+        if topic == "schedule":
             return self._schedule_response(query, context)
-        else:
-            return self._general_response(query, context)
+        return self._general_response(query, context)
 
     def _emergency_response(self, query: str) -> dict[str, Any]:
-        """Generate emergency response"""
+        """Generate emergency response."""
         self.emergency_count += 1
 
         response = {
@@ -359,7 +358,7 @@ class SuperSmartLLMClient:
         return response
 
     def _allergen_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
-        """Generate allergen-specific response"""
+        """Generate allergen-specific response."""
         return {
             "summary": "Allergen information is critical for baby safety. Always check product labels carefully.",
             "reasons": [
@@ -393,7 +392,7 @@ class SuperSmartLLMClient:
         }
 
     def _preparation_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
-        """Generate preparation/mixing response"""
+        """Generate preparation/mixing response."""
         return {
             "summary": "Proper formula preparation is essential for baby's health and safety.",
             "reasons": [
@@ -423,7 +422,7 @@ class SuperSmartLLMClient:
         }
 
     def _age_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
-        """Generate age-appropriate response"""
+        """Generate age-appropriate response."""
         return {
             "summary": "Age-appropriate feeding ensures your baby gets proper nutrition for their developmental stage.",
             "reasons": [
@@ -453,7 +452,7 @@ class SuperSmartLLMClient:
         }
 
     def _safety_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
-        """Generate general safety response"""
+        """Generate general safety response."""
         return {
             "summary": "Baby safety requires constant vigilance and proper knowledge of best practices.",
             "reasons": [
@@ -483,7 +482,7 @@ class SuperSmartLLMClient:
         }
 
     def _nutrition_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
-        """Generate nutrition response"""
+        """Generate nutrition response."""
         return {
             "summary": "Proper nutrition is crucial for your baby's growth and development.",
             "reasons": [
@@ -513,7 +512,7 @@ class SuperSmartLLMClient:
         }
 
     def _schedule_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
-        """Generate feeding schedule response"""
+        """Generate feeding schedule response."""
         return {
             "summary": "A consistent feeding schedule helps establish healthy patterns for your baby.",
             "reasons": [
@@ -551,7 +550,7 @@ class SuperSmartLLMClient:
         }
 
     def _general_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
-        """Generate general helpful response"""
+        """Generate general helpful response."""
         # Add personalization based on emotion
         emotion_prefix = {
             "anxious": "I understand your concern. Let me help you with clear information.",
@@ -583,7 +582,7 @@ class SuperSmartLLMClient:
         }
 
     def _get_contextual_suggestions(self, query: str, context: dict[str, Any]) -> list[str]:
-        """Generate smart follow-up suggestions based on context"""
+        """Generate smart follow-up suggestions based on context."""
         suggestions = []
 
         # Based on topic category
@@ -620,7 +619,7 @@ class SuperSmartLLMClient:
         response: dict[str, Any],
         context: dict[str, Any],
     ) -> None:
-        """Update conversation memory for better context"""
+        """Update conversation memory for better context."""
         if conversation_id not in self.conversation_memory:
             self.conversation_memory[conversation_id] = {
                 "topics": [],
@@ -652,7 +651,7 @@ class SuperSmartLLMClient:
         timeout: float = 30.0,
         conversation_id: str | None = None,
     ) -> dict[str, Any]:
-        """Main entry point for chat requests"""
+        """Main entry point for chat requests."""
         try:
             # Analyze context
             context = self._analyze_context(user, conversation_id)
@@ -679,7 +678,7 @@ class SuperSmartLLMClient:
             return self._fallback_response()
 
     def _translate_response(self, response: dict[str, Any], language: str) -> dict[str, Any]:
-        """Basic translation for common languages"""
+        """Basic translation for common languages."""
         if language == "es":
             # Spanish translations
             translations = {
@@ -710,7 +709,7 @@ class SuperSmartLLMClient:
         return response
 
     def _fallback_response(self) -> dict[str, Any]:
-        """Ultimate fallback response"""
+        """Ultimate fallback response."""
         return {
             "summary": "I'm here to help with baby safety questions. Please consult your pediatrician for specific medical advice.",  # noqa: E501
             "reasons": [
@@ -737,7 +736,7 @@ class SuperSmartLLMClient:
 
 
 def get_llm_client():
-    """Get singleton LLM client instance"""
+    """Get singleton LLM client instance."""
     global _llm_client_instance
 
     if _llm_client_instance is not None:
@@ -762,17 +761,17 @@ def get_llm_client():
 
 
 def get_chat_agent(llm_client=Depends(get_llm_client), db: Session = Depends(get_db)) -> ChatAgentLogic:
-    """Dependency to get chat agent"""
+    """Dependency to get chat agent."""
     return ChatAgentLogic(llm_client=llm_client, db=db)
 
 
 def looks_emergency(q: str) -> bool:
-    """Quick emergency check"""
+    """Quick emergency check."""
     return any(t in (q or "").lower() for t in EMERGENCY_TERMS)
 
 
 def build_suggested_questions(category: str, profile: dict) -> list[str]:
-    """Build contextual suggestions"""
+    """Build contextual suggestions."""
     questions = []
 
     # Normalize category names to handle variants
@@ -828,7 +827,7 @@ async def chat_explain_result(
     conversation_id: str | None = None,
     db: Session = Depends(get_db),
 ) -> JSONResponse:
-    """Explain scan results endpoint"""
+    """Explain scan results endpoint."""
     try:
         trace_id = getattr(request.state, "trace_id", str(uuid4()))
         logger.info(f"[{trace_id}] Explain request for scan {scan_id}")
@@ -901,7 +900,7 @@ async def chat_explain_result(
 
 @router.post("/conversation")
 async def chat_conversation(request: Request) -> JSONResponse:
-    """Main conversation endpoint"""
+    """Main conversation endpoint."""
     try:
         trace_id = getattr(request.state, "trace_id", str(uuid4()))
 
@@ -1017,7 +1016,7 @@ async def chat_conversation(request: Request) -> JSONResponse:
 
 @router.get("/flags")
 async def chat_flags(request: Request) -> JSONResponse:
-    """Get chat feature flags"""
+    """Get chat feature flags."""
     try:
         trace_id = getattr(request.state, "trace_id", str(uuid4()))
 

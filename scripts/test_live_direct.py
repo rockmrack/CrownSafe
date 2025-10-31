@@ -14,7 +14,7 @@ API_URL = "http://localhost:8001/api/v1/safety-check"
 # -------------------
 
 
-def main(barcode: str):
+def main(barcode: str) -> None:
     """Runs a live, direct API test against the running Docker container with a given barcode."""
     logger.info(f"--- Starting Live End-to-End Recall Test for barcode: {barcode} ---")
 

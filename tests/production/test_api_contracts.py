@@ -1,4 +1,4 @@
-"""Test API contracts and backward compatibility"""
+"""Test API contracts and backward compatibility."""
 
 import pytest
 import requests
@@ -7,10 +7,10 @@ BASE_URL = "https://babyshield.cureviax.ai"
 
 
 class TestAPIContracts:
-    """Test API contracts and schemas"""
+    """Test API contracts and schemas."""
 
-    def test_healthz_response_schema(self):
-        """Verify health endpoint schema"""
+    def test_healthz_response_schema(self) -> None:
+        """Verify health endpoint schema."""
         response = requests.get(f"{BASE_URL}/healthz", timeout=10)
         assert response.status_code == 200
         data = response.json()
@@ -20,8 +20,8 @@ class TestAPIContracts:
         assert data["status"] in ["healthy", "degraded", "unhealthy", "ok"]
         print(f"✅ Health endpoint schema valid: status={data['status']}")
 
-    def test_recall_list_response_schema(self):
-        """Verify recall list endpoint schema"""
+    def test_recall_list_response_schema(self) -> None:
+        """Verify recall list endpoint schema."""
         try:
             response = requests.get(f"{BASE_URL}/api/v1/recalls", params={"limit": 1}, timeout=30)
 
@@ -55,8 +55,8 @@ class TestAPIContracts:
         except requests.exceptions.RequestException as e:
             pytest.skip(f"Request failed: {e}")
 
-    def test_error_response_schema(self):
-        """Verify error responses have consistent schema"""
+    def test_error_response_schema(self) -> None:
+        """Verify error responses have consistent schema."""
         response = requests.get(f"{BASE_URL}/api/v1/nonexistent", timeout=10)
         assert response.status_code == 404
 
@@ -68,8 +68,8 @@ class TestAPIContracts:
 
         print(f"✅ Error response schema: {list(data.keys())}")
 
-    def test_api_versioning(self):
-        """Verify API version is accessible"""
+    def test_api_versioning(self) -> None:
+        """Verify API version is accessible."""
         response = requests.get(f"{BASE_URL}/healthz", timeout=10)
         data = response.json()
 
@@ -83,8 +83,8 @@ class TestAPIContracts:
         else:
             print("⚠️ No explicit version info in health check")
 
-    def test_pagination_schema(self):
-        """Verify pagination parameters are supported"""
+    def test_pagination_schema(self) -> None:
+        """Verify pagination parameters are supported."""
         try:
             response = requests.get(
                 f"{BASE_URL}/api/v1/recalls",

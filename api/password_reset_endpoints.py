@@ -1,9 +1,9 @@
-"""Password Reset Endpoints - Email-based password reset flow"""
+"""Password Reset Endpoints - Email-based password reset flow."""
 
 import hashlib
 import logging
 import secrets
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import datetime, timedelta, UTC
 
 from fastapi import APIRouter, BackgroundTasks, Body, Depends, Query
 from pydantic import EmailStr
@@ -22,7 +22,7 @@ router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
 
 # Password Reset Token Model
 class PasswordResetToken(Base):
-    """Password reset tokens table"""
+    """Password reset tokens table."""
 
     __tablename__ = "password_reset_tokens"
 
@@ -35,13 +35,13 @@ class PasswordResetToken(Base):
 
 # Request/Response Models
 class PasswordResetRequest(AppModel):
-    """Request password reset"""
+    """Request password reset."""
 
     email: EmailStr
 
 
 class PasswordResetConfirm(AppModel):
-    """Confirm password reset with token"""
+    """Confirm password reset with token."""
 
     token: str
     new_password: str
@@ -49,14 +49,14 @@ class PasswordResetConfirm(AppModel):
 
 
 class PasswordResetComplete(AppModel):
-    """Complete password reset with new password"""
+    """Complete password reset with new password."""
 
     new_password: str
     confirm_password: str
 
 
 class PasswordResetResponse(AppModel):
-    """Password reset response"""
+    """Password reset response."""
 
     message: str
     expires_in_minutes: int | None = None
@@ -64,7 +64,7 @@ class PasswordResetResponse(AppModel):
 
 async def send_reset_email(email: str, token: str, user_name: str | None = None) -> None:
     """Send password reset email
-    This is a placeholder - integrate with your email service
+    This is a placeholder - integrate with your email service.
     """
     try:
         import os
@@ -171,7 +171,7 @@ async def request_password_reset(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """Request a password reset email
+    """Request a password reset email.
 
     Always returns success to prevent email enumeration
     """
@@ -222,7 +222,7 @@ async def request_password_reset(
 
 @router.post("/password-reset/confirm", response_model=ApiResponse)
 async def confirm_password_reset(request: PasswordResetConfirm, db: Session = Depends(get_db)):
-    """Confirm password reset with token and new password"""
+    """Confirm password reset with token and new password."""
     try:
         from core_infra.database import User
 
@@ -276,7 +276,7 @@ async def confirm_password_reset(request: PasswordResetConfirm, db: Session = De
 
 @router.post("/password-reset/validate", response_model=ApiResponse)
 async def validate_reset_token(token: str, db: Session = Depends(get_db)):
-    """Validate if a reset token is still valid"""
+    """Validate if a reset token is still valid."""
     try:
         # Hash the provided token
         token_hash = hashlib.sha256(token.encode()).hexdigest()
@@ -298,8 +298,7 @@ async def validate_reset_token(token: str, db: Session = Depends(get_db)):
             remaining_minutes = int(remaining.total_seconds() / 60)
 
             return ok({"valid": True, "expires_in_minutes": remaining_minutes})
-        else:
-            return ok({"valid": False, "message": "Token is invalid or expired"})
+        return ok({"valid": False, "message": "Token is invalid or expired"})
 
     except Exception as e:
         logger.error(f"Error validating reset token: {e}", exc_info=True)
@@ -312,7 +311,7 @@ async def complete_password_reset(
     request: PasswordResetComplete = Body(...),
     db: Session = Depends(get_db),
 ):
-    """Complete password reset with token and new password"""
+    """Complete password reset with token and new password."""
     try:
         from core_infra.database import User
 

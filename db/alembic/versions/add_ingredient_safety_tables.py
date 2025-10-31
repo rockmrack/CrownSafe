@@ -1,4 +1,4 @@
-"""Add ingredient and safety tables for real data
+"""Add ingredient and safety tables for real data.
 
 Revision ID: add_ingredient_safety_tables
 Revises: add_account_deletion_audit
@@ -17,7 +17,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     # Create product_ingredients table
     op.create_table(
         "product_ingredients",
@@ -84,6 +84,6 @@ def upgrade():
     op.create_index("idx_ingredient_updated", "ingredient_safety", ["last_updated"])
 
 
-def downgrade():
+def downgrade() -> None:
     op.drop_table("ingredient_safety")
     op.drop_table("product_ingredients")

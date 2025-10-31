@@ -1,10 +1,10 @@
-"""Script to remove baby/recall router registrations from main_crownsafe.py"""
+"""Script to remove baby/recall router registrations from main_crownsafe.py."""
 
 import re
 
 
 def remove_router_blocks(content):
-    """Remove recall alert, recall search, recall detail, and baby feature router blocks"""
+    """Remove recall alert, recall search, recall detail, and baby feature router blocks."""
     # Pattern 1: Remove Recall Alert System block
     pattern1 = r'# Include Recall Alert System\ntry:.*?except Exception as e:\n    logging\.error\(f"Failed to register recall alert system: \{e\}"\)\n\n'  # noqa: E501
     content = re.sub(pattern1, "", content, flags=re.DOTALL)

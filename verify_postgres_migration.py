@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""PostgreSQL Migration Verification Script
+"""PostgreSQL Migration Verification Script.
 
 Tests database connectivity and validates migration success.
 Run this after setting DATABASE_URL to verify PostgreSQL setup.
@@ -17,7 +17,7 @@ from sqlalchemy.exc import OperationalError
 
 
 def check_database_url():
-    """Verify DATABASE_URL is set and formatted correctly"""
+    """Verify DATABASE_URL is set and formatted correctly."""
     print("=" * 70)
     print("Step 1: Check DATABASE_URL Configuration")
     print("=" * 70)
@@ -72,7 +72,7 @@ def check_database_url():
 
 
 def test_connection(db_url):
-    """Test database connection"""
+    """Test database connection."""
     print("=" * 70)
     print("Step 2: Test Database Connection")
     print("=" * 70)
@@ -114,8 +114,8 @@ def test_connection(db_url):
         print()
 
 
-def check_extensions(engine):
-    """Check PostgreSQL extensions"""
+def check_extensions(engine) -> None:
+    """Check PostgreSQL extensions."""
     print("=" * 70)
     print("Step 3: Check PostgreSQL Extensions")
     print("=" * 70)
@@ -149,8 +149,8 @@ def check_extensions(engine):
         print()
 
 
-def check_tables(engine):
-    """Check if tables exist"""
+def check_tables(engine) -> None:
+    """Check if tables exist."""
     print("=" * 70)
     print("Step 4: Check Database Tables")
     print("=" * 70)
@@ -193,8 +193,8 @@ def check_tables(engine):
         print()
 
 
-def check_alembic_version(engine):
-    """Check Alembic migration version"""
+def check_alembic_version(engine) -> None:
+    """Check Alembic migration version."""
     print("=" * 70)
     print("Step 5: Check Alembic Migration Status")
     print("=" * 70)
@@ -223,8 +223,8 @@ def check_alembic_version(engine):
         print()
 
 
-def check_psycopg_version():
-    """Check psycopg version"""
+def check_psycopg_version() -> None:
+    """Check psycopg version."""
     print("=" * 70)
     print("Step 6: Check psycopg Driver Version")
     print("=" * 70)
@@ -251,8 +251,8 @@ def check_psycopg_version():
         print()
 
 
-def main():
-    """Run all verification checks"""
+def main() -> None:
+    """Run all verification checks."""
     print("\n")
     print("╔" + "=" * 68 + "╗")
     print("║" + " " * 15 + "PostgreSQL Migration Verification" + " " * 20 + "║")

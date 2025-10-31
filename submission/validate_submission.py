@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Submission Validation Script
-Performs comprehensive checks before app store submission
+Performs comprehensive checks before app store submission.
 """
 
 import json
@@ -24,22 +24,22 @@ class Colors:
 
 
 class SubmissionValidator:
-    """Validates app submission readiness"""
+    """Validates app submission readiness."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.api_url = os.environ.get("API_URL", "https://babyshield.cureviax.ai")
         self.results = {}
         self.warnings = []
         self.errors = []
 
-    def print_header(self, title: str):
-        """Print section header"""
+    def print_header(self, title: str) -> None:
+        """Print section header."""
         print(f"\n{Colors.BOLD}{'=' * 70}{Colors.ENDC}")
         print(f"{Colors.BOLD}{title}{Colors.ENDC}")
         print(f"{Colors.BOLD}{'=' * 70}{Colors.ENDC}\n")
 
-    def print_result(self, test: str, passed: bool, details: str = ""):
-        """Print test result"""
+    def print_result(self, test: str, passed: bool, details: str = "") -> None:
+        """Print test result."""
         if passed:
             print(f"{Colors.GREEN}✅ {test}{Colors.ENDC}")
         else:
@@ -49,7 +49,7 @@ class SubmissionValidator:
             print(f"   {details}")
 
     def validate_api_endpoints(self) -> bool:
-        """Validate all API endpoints are functioning"""
+        """Validate all API endpoints are functioning."""
         self.print_header("API ENDPOINT VALIDATION")
 
         endpoints = [
@@ -136,7 +136,7 @@ class SubmissionValidator:
         return all_passed
 
     def validate_security_headers(self) -> bool:
-        """Check security headers"""
+        """Check security headers."""
         self.print_header("SECURITY HEADERS VALIDATION")
 
         try:
@@ -176,7 +176,7 @@ class SubmissionValidator:
             return False
 
     def validate_store_metadata(self) -> bool:
-        """Validate store metadata files"""
+        """Validate store metadata files."""
         self.print_header("STORE METADATA VALIDATION")
 
         metadata_files = {
@@ -228,7 +228,7 @@ class SubmissionValidator:
         return all_valid
 
     def validate_screenshots(self) -> bool:
-        """Validate screenshot assets"""
+        """Validate screenshot assets."""
         self.print_header("SCREENSHOT VALIDATION")
 
         screenshot_requirements = {
@@ -289,7 +289,7 @@ class SubmissionValidator:
         return all_valid
 
     def validate_app_icons(self) -> bool:
-        """Validate app icons"""
+        """Validate app icons."""
         self.print_header("APP ICON VALIDATION")
 
         icon_requirements = {
@@ -348,7 +348,7 @@ class SubmissionValidator:
         return all_valid
 
     def validate_text_content(self) -> bool:
-        """Validate text content for store listings"""
+        """Validate text content for store listings."""
         self.print_header("TEXT CONTENT VALIDATION")
 
         text_files = {
@@ -393,7 +393,7 @@ class SubmissionValidator:
         return all_valid
 
     def validate_legal_documents(self) -> bool:
-        """Validate legal documents are present and accessible"""
+        """Validate legal documents are present and accessible."""
         self.print_header("LEGAL DOCUMENTS VALIDATION")
 
         legal_urls = {
@@ -427,7 +427,7 @@ class SubmissionValidator:
         return all_valid
 
     def run_postman_tests(self) -> bool:
-        """Run Postman collection tests"""
+        """Run Postman collection tests."""
         self.print_header("POSTMAN COLLECTION TESTS")
 
         collection_path = Path("docs/api/postman/BabyShield_v1.postman_collection.json")
@@ -477,12 +477,10 @@ class SubmissionValidator:
                 if failed == 0:
                     self.print_result("Postman tests", True, f"All {total} tests passed")
                     return True
-                else:
-                    self.print_result("Postman tests", False, f"{failed}/{total} tests failed")
-                    return False
-            else:
-                print("   ℹ️ Could not parse test results")
-                return True
+                self.print_result("Postman tests", False, f"{failed}/{total} tests failed")
+                return False
+            print("   ℹ️ Could not parse test results")
+            return True
 
         except FileNotFoundError:
             self.print_result("Newman", False, "Not installed")
@@ -492,8 +490,8 @@ class SubmissionValidator:
             self.print_result("Postman tests", False, str(e))
             return True
 
-    def generate_validation_report(self):
-        """Generate validation report for submission"""
+    def generate_validation_report(self) -> None:
+        """Generate validation report for submission."""
         report_path = Path("submission/validation_report.json")
         report_path.parent.mkdir(exist_ok=True)
 
@@ -544,7 +542,7 @@ class SubmissionValidator:
         print(f"📄 Markdown report saved to: {md_path}")
 
     def run_all_validations(self) -> bool:
-        """Run all validation checks"""
+        """Run all validation checks."""
         print(f"{Colors.BOLD}{'=' * 70}{Colors.ENDC}")
         print(f"{Colors.BOLD}🚀 APP STORE SUBMISSION PREFLIGHT VALIDATION{Colors.ENDC}")
         print(f"{Colors.BOLD}{'=' * 70}{Colors.ENDC}")
@@ -600,18 +598,17 @@ class SubmissionValidator:
             print(f"{Colors.GREEN}{Colors.BOLD}✅ READY FOR SUBMISSION{Colors.ENDC}")
             print("All validation checks passed. You may proceed with app store submission.")
             return True
-        elif passed >= total * 0.8 and len(self.errors) <= 2:
+        if passed >= total * 0.8 and len(self.errors) <= 2:
             print(f"{Colors.YELLOW}{Colors.BOLD}⚠️ ALMOST READY{Colors.ENDC}")
             print("Minor issues detected. Review warnings before submission.")
             return True
-        else:
-            print(f"{Colors.RED}{Colors.BOLD}❌ NOT READY FOR SUBMISSION{Colors.ENDC}")
-            print("Critical issues detected. Address errors before proceeding.")
-            return False
+        print(f"{Colors.RED}{Colors.BOLD}❌ NOT READY FOR SUBMISSION{Colors.ENDC}")
+        print("Critical issues detected. Address errors before proceeding.")
+        return False
 
 
-def main():
-    """Main entry point"""
+def main() -> None:
+    """Main entry point."""
     validator = SubmissionValidator()
     success = validator.run_all_validations()
 

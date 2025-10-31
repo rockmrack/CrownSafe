@@ -1,6 +1,6 @@
 """COMPREHENSIVE AGENT TEST SUITE - ALL BABYSHIELD AGENTS
 Tests all major agents in the BabyShield system
-Date: October 10, 2025
+Date: October 10, 2025.
 
 This test suite verifies:
 1. RecallDataAgent - 39+ international recall agencies
@@ -54,8 +54,8 @@ if not _REPORT_BUILDER_AVAILABLE:
 
 
 @pytest.mark.unit
-def test_recall_agent_initialization():
-    """Test 1: RecallDataAgent initialization"""
+def test_recall_agent_initialization() -> None:
+    """Test 1: RecallDataAgent initialization."""
     print("\n[TEST 1] Testing RecallDataAgent initialization...")
     agent = RecallDataAgentLogic(agent_id="test-recall-agent")
     assert agent is not None
@@ -65,8 +65,8 @@ def test_recall_agent_initialization():
 
 
 @pytest.mark.integration
-def test_recall_agent_database_query():
-    """Test 2: RecallDataAgent with local database (deterministic test data)
+def test_recall_agent_database_query() -> None:
+    """Test 2: RecallDataAgent with local database (deterministic test data).
 
     This test validates database queries work correctly using test data.
     To test against production 130k+ recalls, set DATABASE_URL environment variable
@@ -158,8 +158,8 @@ def test_recall_agent_database_query():
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_recall_agent_all_connectors():
-    """Test 3: RecallDataAgent all connector initialization"""
+async def test_recall_agent_all_connectors() -> None:
+    """Test 3: RecallDataAgent all connector initialization."""
     print("\n[TEST 3] Testing all RecallDataAgent connectors...")
 
     connectors = [
@@ -178,8 +178,8 @@ async def test_recall_agent_all_connectors():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_recall_agent_process_task():
-    """Test 4: RecallDataAgent process_task method"""
+async def test_recall_agent_process_task() -> None:
+    """Test 4: RecallDataAgent process_task method."""
     print("\n[TEST 4] Testing RecallDataAgent process_task...")
 
     agent = RecallDataAgentLogic(agent_id="test-process-task")
@@ -193,8 +193,8 @@ async def test_recall_agent_process_task():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_recall_agent_statistics():
-    """Test 5: RecallDataAgent get_statistics"""
+async def test_recall_agent_statistics() -> None:
+    """Test 5: RecallDataAgent get_statistics."""
     print("\n[TEST 5] Testing RecallDataAgent statistics...")
 
     agent = RecallDataAgentLogic(agent_id="test-stats")
@@ -213,8 +213,8 @@ async def test_recall_agent_statistics():
 
 
 @pytest.mark.unit
-def test_report_builder_initialization():
-    """Test 6: ReportBuilderAgent initialization"""
+def test_report_builder_initialization() -> None:
+    """Test 6: ReportBuilderAgent initialization."""
     print("\n[TEST 6] Testing ReportBuilderAgent initialization...")
 
     assert ReportBuilderAgentLogic is not None  # nosec - ensured by test skip
@@ -233,8 +233,8 @@ def test_report_builder_initialization():
 
 
 @pytest.mark.unit
-def test_report_builder_capabilities():
-    """Test 7: ReportBuilderAgent capabilities"""
+def test_report_builder_capabilities() -> None:
+    """Test 7: ReportBuilderAgent capabilities."""
     print("\n[TEST 7] Testing ReportBuilderAgent capabilities...")
 
     assert ReportBuilderAgentLogic is not None  # nosec - ensured by test skip
@@ -257,8 +257,8 @@ def test_report_builder_capabilities():
 
 
 @pytest.mark.integration
-def test_report_builder_generate_report():
-    """Test 8: ReportBuilderAgent report generation"""
+def test_report_builder_generate_report() -> None:
+    """Test 8: ReportBuilderAgent report generation."""
     print("\n[TEST 8] Testing ReportBuilderAgent report generation...")
 
     assert ReportBuilderAgentLogic is not None  # nosec - ensured by test skip
@@ -297,8 +297,8 @@ def test_report_builder_generate_report():
 
 
 @pytest.mark.unit
-def test_visual_search_initialization():
-    """Test 9: VisualSearchAgent initialization"""
+def test_visual_search_initialization() -> None:
+    """Test 9: VisualSearchAgent initialization."""
     print("\n[TEST 9] Testing VisualSearchAgent initialization...")
 
     agent = VisualSearchAgentLogic(agent_id="test-visual-search")
@@ -312,8 +312,8 @@ def test_visual_search_initialization():
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_visual_search_capabilities():
-    """Test 10: VisualSearchAgent capabilities"""
+async def test_visual_search_capabilities() -> None:
+    """Test 10: VisualSearchAgent capabilities."""
     print("\n[TEST 10] Testing VisualSearchAgent capabilities...")
 
     agent = VisualSearchAgentLogic(agent_id="test-visual-caps")
@@ -332,8 +332,8 @@ async def test_visual_search_capabilities():
 
 
 @pytest.mark.unit
-def test_alternatives_agent_initialization():
-    """Test 11: AlternativesAgent initialization"""
+def test_alternatives_agent_initialization() -> None:
+    """Test 11: AlternativesAgent initialization."""
     print("\n[TEST 11] Testing AlternativesAgent initialization...")
 
     agent = AlternativesAgentLogic(agent_id="test-alternatives")
@@ -347,8 +347,8 @@ def test_alternatives_agent_initialization():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_alternatives_agent_process_task():
-    """Test 12: AlternativesAgent finding alternatives"""
+async def test_alternatives_agent_process_task() -> None:
+    """Test 12: AlternativesAgent finding alternatives."""
     print("\n[TEST 12] Testing AlternativesAgent finding alternatives...")
 
     agent = AlternativesAgentLogic(agent_id="test-find-alt")
@@ -374,8 +374,8 @@ async def test_alternatives_agent_process_task():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_workflow_scan_to_recall():
-    """Test 13: Complete workflow - Scan to Recall Check"""
+async def test_workflow_scan_to_recall() -> None:
+    """Test 13: Complete workflow - Scan to Recall Check."""
     print("\n[TEST 13] Testing complete workflow: Scan → Recall Check...")
 
     # Step 1: Initialize RecallDataAgent
@@ -391,8 +391,8 @@ async def test_workflow_scan_to_recall():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_workflow_recall_to_report():
-    """Test 14: Complete workflow - Recall to Report"""
+async def test_workflow_recall_to_report() -> None:
+    """Test 14: Complete workflow - Recall to Report."""
     print("\n[TEST 14] Testing complete workflow: Recall Check → Report...")
 
     # Step 1: Get recalls
@@ -424,8 +424,8 @@ async def test_workflow_recall_to_report():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_multiple_connectors_parallel():
-    """Test 15: Multiple recall connectors in parallel"""
+async def test_multiple_connectors_parallel() -> None:
+    """Test 15: Multiple recall connectors in parallel."""
     print("\n[TEST 15] Testing multiple connectors in parallel...")
 
     cpsc = CPSCConnector()
@@ -451,8 +451,8 @@ async def test_multiple_connectors_parallel():
 # ============================================================================
 
 
-def test_final_summary(capsys):
-    """Test 16: Print final test summary"""
+def test_final_summary(capsys) -> None:
+    """Test 16: Print final test summary."""
     print("\n" + "=" * 80)
     print("TEST SUMMARY")
     print("=" * 80)

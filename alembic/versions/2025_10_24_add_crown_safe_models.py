@@ -1,4 +1,4 @@
-"""Add Crown Safe models and remove baby-specific tables
+"""Add Crown Safe models and remove baby-specific tables.
 
 Revision ID: crown_safe_v1
 Revises:
@@ -22,8 +22,8 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
-    """Apply Crown Safe schema changes"""
+def upgrade() -> None:
+    """Apply Crown Safe schema changes."""
     # ============================================
     # CROWN SAFE: Create new tables
     # ============================================
@@ -209,8 +209,8 @@ def upgrade():
             print("Removed column: users.is_pregnant")
 
 
-def downgrade():
-    """Rollback Crown Safe schema changes"""
+def downgrade() -> None:
+    """Rollback Crown Safe schema changes."""
     # Reverse order: recreate baby tables, drop Crown Safe tables
 
     # Recreate is_pregnant column

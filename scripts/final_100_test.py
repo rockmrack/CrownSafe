@@ -16,7 +16,7 @@ passed = 0
 failed = 0
 
 
-def test(name, method, url, json_data=None, params=None):
+def test(name, method, url, json_data=None, params=None) -> None:
     global passed, failed
     try:
         if method == "GET":

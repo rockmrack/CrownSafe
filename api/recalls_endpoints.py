@@ -1,5 +1,5 @@
 """Recall Search API Endpoints
-Provides searchable, paginated access to recall data
+Provides searchable, paginated access to recall data.
 """
 
 import base64
@@ -18,7 +18,7 @@ router = APIRouter(prefix="/api/v1/recalls", tags=["recalls"])
 
 
 def clean_encoding(text: str | None) -> str | None:
-    """Clean up encoding issues in text data"""
+    """Clean up encoding issues in text data."""
     if not text:
         return text
 
@@ -49,7 +49,7 @@ def clean_encoding(text: str | None) -> str | None:
 
 
 def encode_cursor(recall_id: str, recall_date: date, id: int) -> str:
-    """Encode cursor for pagination"""
+    """Encode cursor for pagination."""
     cursor_data = {
         "recall_id": recall_id,
         "recall_date": recall_date.isoformat() if recall_date else None,
@@ -60,7 +60,7 @@ def encode_cursor(recall_id: str, recall_date: date, id: int) -> str:
 
 
 def decode_cursor(cursor: str) -> dict | None:
-    """Decode cursor for pagination"""
+    """Decode cursor for pagination."""
     try:
         cursor_json = base64.b64decode(cursor.encode()).decode()
         return json.loads(cursor_json)
@@ -142,7 +142,7 @@ def list_recalls(
     ),
     db: Session = Depends(get_db),
 ):
-    """Search and list recalls with filtering and pagination
+    """Search and list recalls with filtering and pagination.
 
     Supports free text search across product name, brand, description, hazard, and category.
     Also supports filtering by agency, country, category, hazard type, and date range.
@@ -204,7 +204,7 @@ def search_recalls_dev(
     offset: int | None = Query(None, ge=0, description="Number of results to skip (offset pagination)"),
     cursor: str | None = Query(None, description="Cursor for pagination (cursor-based pagination)"),
 ):
-    """DEV OVERRIDE: Search recalls without database dependencies"""
+    """DEV OVERRIDE: Search recalls without database dependencies."""
     try:
         # Mock recall data
         mock_recalls = [
@@ -346,7 +346,7 @@ def search_recalls_dev(
 
 @router.get("/stats-dev", response_model=dict)
 def get_recall_stats_dev():
-    """DEV OVERRIDE: Get recall statistics without database dependencies"""
+    """DEV OVERRIDE: Get recall statistics without database dependencies."""
     try:
         # Mock statistics
         mock_stats = {
@@ -377,7 +377,7 @@ def get_recall_stats_dev():
 @router.get("/stats", response_model=dict)
 def get_recall_stats(db: Session = Depends(get_db)):
     """Get recall statistics and counts
-    CROWN SAFE: Returns empty stats - baby product recalls not available
+    CROWN SAFE: Returns empty stats - baby product recalls not available.
     """
     return {
         "success": True,

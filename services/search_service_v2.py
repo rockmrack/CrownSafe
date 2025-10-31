@@ -1,10 +1,10 @@
 """Enhanced Search Service v2 with keyset pagination and snapshot isolation
-Implements cursor-based pagination without OFFSET for better performance
+Implements cursor-based pagination without OFFSET for better performance.
 """
 
 import logging
 import os
-from datetime import datetime, timezone, UTC
+from datetime import datetime, UTC
 from typing import Any
 
 from sqlalchemy import text
@@ -21,14 +21,14 @@ logger = logging.getLogger(__name__)
 
 
 class SearchServiceV2:
-    """Advanced search service with keyset pagination and snapshot isolation"""
+    """Advanced search service with keyset pagination and snapshot isolation."""
 
-    def __init__(self, db_session: Session):
+    def __init__(self, db_session: Session) -> None:
         self.db = db_session
         self.signing_key = os.getenv("CURSOR_SIGNING_KEY", "default-dev-key-change-in-production")
 
     def _normalize_text(self, s: str) -> str:
-        """Normalize text for search"""
+        """Normalize text for search."""
         return (s or "").strip().lower()
 
     def build_keyset_query(
@@ -48,7 +48,7 @@ class SearchServiceV2:
         limit: int = 20,
         cursor_token: str | None = None,
     ) -> tuple[str, dict[str, Any], datetime, dict | None]:
-        """Build optimized SQL query with keyset pagination
+        """Build optimized SQL query with keyset pagination.
 
         Returns:
             (sql_query, params, as_of_time, cursor_data)
@@ -305,7 +305,7 @@ class SearchServiceV2:
         limit: int = 20,
         next_cursor: str | None = None,
     ) -> dict[str, Any]:
-        """Execute search with cursor-based pagination"""
+        """Execute search with cursor-based pagination."""
         try:
             # Build query
             sql_query, params, as_of, cursor_data = self.build_keyset_query(
