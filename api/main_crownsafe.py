@@ -3637,7 +3637,7 @@ async def get_hair_profile(user_id: int, request: Request):
     summary="Get product scan history",
 )
 @limiter.limit("60 per minute")
-async def get_scan_history(user_id: int, limit: int = 50, request: Optional[Request] = None):
+async def get_scan_history(user_id: int, limit: int = 50):
     """
     Get user's product scan history.
 

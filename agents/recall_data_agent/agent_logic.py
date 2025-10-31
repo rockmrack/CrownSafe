@@ -11,13 +11,17 @@ from typing import Any, Dict, Optional
 
 from sqlalchemy import or_
 
+from core_infra.database import SessionLocal
+
 # Import Crown Safe database components
-from core_infra.database import RecallDB, SessionLocal
+from core_infra.enhanced_database_schema import EnhancedRecallDB
 
 # Import connectors
 from .connectors import ConnectorRegistry
 
 # Import Crown Safe filtering configuration
+from .crown_safe_config import is_crown_safe_recall
+
 # Import Pydantic model
 from .models import Recall
 
@@ -29,7 +33,7 @@ class RecallDataAgentLogic:
     Responsibilities:
     1. Query recalls database for product matches (called by RouterAgent)
     2. Run background ingestion cycles from 39+ agencies
-    3. Upsert recalls into EnhancedRecallDB with deduplication
+    3. Upsert recalls into EnhancedEnhancedRecallDB with deduplication
     """
 
     def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
@@ -98,37 +102,38 @@ class RecallDataAgentLogic:
 
             try:
                 # Build query with multiple identifier types
-                query = db.query(RecallDB)
+                query = db.query(EnhancedRecallDB)
                 filters = []
 
                 # Priority 1: Exact identifier matches (highest confidence)
                 if model_number:
-                    filters.append(RecallDB.model_number.ilike(f"%{model_number}%"))
+                    filters.append(EnhancedRecallDB.model_number.ilike(f"%{model_number}%"))
 
                 if upc:
-                    filters.append(RecallDB.upc == upc)
+                    filters.append(EnhancedRecallDB.upc == upc)
 
                 if ean_code:
-                    filters.append(RecallDB.ean_code == ean_code)
+                    filters.append(EnhancedRecallDB.ean_code == ean_code)
 
                 if gtin:
-                    filters.append(RecallDB.gtin == gtin)
+                    filters.append(EnhancedRecallDB.gtin == gtin)
 
                 if lot_number:
-                    filters.append(RecallDB.lot_number.ilike(f"%{lot_number}%"))
+                    filters.append(EnhancedRecallDB.lot_number.ilike(f"%{lot_number}%"))
 
                 # Priority 2: Brand + name matching (medium confidence)
                 if brand and product_name:
                     filters.append(
-                        (RecallDB.brand.ilike(f"%{brand}%")) & (RecallDB.product_name.ilike(f"%{product_name}%"))
+                        (EnhancedRecallDB.brand.ilike(f"%{brand}%"))
+                        & (EnhancedRecallDB.product_name.ilike(f"%{product_name}%"))
                     )
 
                 # Priority 3: Product name fuzzy matching (lower confidence)
                 if product_name and not filters:
-                    filters.append(RecallDB.product_name.ilike(f"%{product_name}%"))
+                    filters.append(EnhancedRecallDB.product_name.ilike(f"%{product_name}%"))
 
                 if brand and not filters:
-                    filters.append(RecallDB.brand.ilike(f"%{brand}%"))
+                    filters.append(EnhancedRecallDB.brand.ilike(f"%{brand}%"))
 
                 # Execute query with OR logic (any identifier match)
                 if filters:
@@ -136,9 +141,7 @@ class RecallDataAgentLogic:
                 else:
                     recalled_products = []
 
-                self.logger.info(
-                    f"[{self.agent_id}] Found {len(recalled_products)} matching recalls"
-                )
+                self.logger.info(f"[{self.agent_id}] Found {len(recalled_products)} matching recalls")
 
                 # Convert to dictionaries using Pydantic validation
                 found_recalls = []
@@ -160,9 +163,7 @@ class RecallDataAgentLogic:
                         self.logger.error(f"Error converting recall {db_recall.id}: {e}")
                         continue
 
-                self.logger.info(
-                    f"[{self.agent_id}] Filtered to {len(found_recalls)} Crown Safe relevant recalls"
-                )
+                self.logger.info(f"[{self.agent_id}] Filtered to {len(found_recalls)} Crown Safe relevant recalls")
 
                 return {
                     "status": "COMPLETED",
@@ -186,7 +187,7 @@ class RecallDataAgentLogic:
         This method:
         1. Fetches recalls from all 39+ agencies concurrently
         2. Deduplicates based on recall_id
-        3. Upserts into EnhancedRecallDB (insert or update)
+        3. Upserts into EnhancedEnhancedRecallDB (insert or update)
         4. Returns statistics
 
         Returns:
@@ -215,9 +216,7 @@ class RecallDataAgentLogic:
                     "duration_seconds": (datetime.now() - start_time).total_seconds(),
                 }
 
-            self.logger.info(
-                f"[{self.agent_id}] Fetched {len(all_recalls)} total recalls from all agencies"
-            )
+            self.logger.info(f"[{self.agent_id}] Fetched {len(all_recalls)} total recalls from all agencies")
 
             # Filter recalls for Crown Safe relevance (hair/cosmetic products only)
             crown_safe_recalls = []
@@ -237,9 +236,7 @@ class RecallDataAgentLogic:
             )
 
             if not crown_safe_recalls:
-                self.logger.warning(
-                    f"[{self.agent_id}] No Crown Safe relevant recalls found after filtering."
-                )
+                self.logger.warning(f"[{self.agent_id}] No Crown Safe relevant recalls found after filtering.")
                 return {
                     "status": "success",
                     "total_fetched": len(all_recalls),
@@ -259,7 +256,11 @@ class RecallDataAgentLogic:
                 for recall_data in crown_safe_recalls:
                     try:
                         # Check if recall already exists
-                        existing = db.query(RecallDB).filter(RecallDB.recall_id == recall_data.recall_id).first()
+                        existing = (
+                            db.query(EnhancedRecallDB)
+                            .filter(EnhancedRecallDB.recall_id == recall_data.recall_id)
+                            .first()
+                        )
 
                         if existing:
                             # Update existing record
@@ -269,7 +270,7 @@ class RecallDataAgentLogic:
                             skipped_count += 1
                         else:
                             # Insert new record
-                            db_recall = RecallDB(**recall_data.model_dump())
+                            db_recall = EnhancedRecallDB(**recall_data.model_dump())
                             db.add(db_recall)
                             upserted_count += 1
 
@@ -328,13 +329,15 @@ class RecallDataAgentLogic:
             db = SessionLocal()
 
             try:
-                total_recalls = db.query(RecallDB).count()
+                total_recalls = db.query(EnhancedRecallDB).count()
 
                 # Count by agency
                 from sqlalchemy import func
 
                 agency_counts = (
-                    db.query(RecallDB.source_agency, func.count(RecallDB.id)).group_by(RecallDB.source_agency).all()
+                    db.query(EnhancedRecallDB.source_agency, func.count(EnhancedRecallDB.id))
+                    .group_by(EnhancedRecallDB.source_agency)
+                    .all()
                 )
 
                 # List of available connectors (hardcoded for now)
