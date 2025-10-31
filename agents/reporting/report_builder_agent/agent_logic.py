@@ -7,7 +7,7 @@ import sys
 import uuid
 from collections import Counter
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -280,7 +280,7 @@ def format_methods() -> str:
     <li><b>PubMed:</b> AI-driven literature search for the specified drug/disease.</li>
     <li><b>ClinicalTrials.gov:</b> Filtered for condition/intervention.</li>
     <li><b>openFDA:</b> Top adverse event reports for the drug.</li>
-    <li>All data as of: <b>{datetime.now(timezone.utc).strftime("%Y-%m-%d")}</b></li>
+    <li>All data as of: <b>{datetime.now(UTC).strftime("%Y-%m-%d")}</b></li>
     </ul>
     """
 
@@ -496,7 +496,7 @@ class ReportBuilderAgentLogic:
                 try:
                     WEASY_HTML(string=html_content).write_pdf(pdf_filepath)
                 except Exception as we_err:
-                    self.logger.error(f"WeasyPrint render failed: {we_err}")
+                    self.logger.exception(f"WeasyPrint render failed: {we_err}")
                     # Fall through to other renderers
                 else:
                     # validate below
@@ -521,7 +521,7 @@ class ReportBuilderAgentLogic:
                     from reportlab.lib.pagesizes import A4
                     from reportlab.pdfgen import canvas
                 except Exception as imp_err:
-                    self.logger.error(f"PDF fallback unavailable (reportlab import failed): {imp_err}")
+                    self.logger.exception(f"PDF fallback unavailable (reportlab import failed): {imp_err}")
                     return False
                 tmp_path = pdf_filepath + ".tmp"
                 c = canvas.Canvas(tmp_path, pagesize=A4)
@@ -616,14 +616,14 @@ class ReportBuilderAgentLogic:
                 "status": "success",
                 "pdf_path": pdf_path,
                 "report_type": "prior_authorization_summary",
-                "generation_timestamp": datetime.now(timezone.utc).isoformat(),
+                "generation_timestamp": datetime.now(UTC).isoformat(),
             }
 
         except FileNotFoundError as e:
             error_msg = (
                 f"Template file not found: {e}. Please ensure pa_summary_template.html exists in {TEMPLATES_DIR}"
             )
-            self.logger.error(error_msg)
+            self.logger.exception(error_msg)
             return {"status": "error", "message": error_msg}
         except Exception as e:
             self.logger.error(f"Failed to build PA summary report: {e}", exc_info=True)
@@ -735,7 +735,7 @@ class ReportBuilderAgentLogic:
             # Build context
             context = {
                 "company_name": COMPANY_NAME,
-                "report_date": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+                "report_date": datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC"),
                 "workflow_id": workflow_id or f"WF_{uuid.uuid4().hex[:8]}",
                 "logo_path": f"file:///{LOGO_PATH.replace(chr(92), '/')}" if LOGO_PATH else None,
                 "data_sources_checked": data_sources_checked,
@@ -810,7 +810,7 @@ class ReportBuilderAgentLogic:
                 "status": "success",
                 "pdf_path": pdf_filepath,
                 "report_type": "product_safety",
-                "generation_timestamp": datetime.now(timezone.utc).isoformat(),
+                "generation_timestamp": datetime.now(UTC).isoformat(),
             }
         except Exception as e:
             self.logger.error(f"Failed to build product safety report: {e}", exc_info=True)
@@ -906,7 +906,7 @@ class ReportBuilderAgentLogic:
 
             context = {
                 "company_name": COMPANY_NAME,
-                "report_date": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+                "report_date": datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC"),
                 "workflow_id": workflow_id or f"WF_{uuid.uuid4().hex[:8]}",
                 "logo_path": f"file:///{LOGO_PATH.replace(chr(92), '/')}" if LOGO_PATH else None,
                 "data_sources_checked": data_sources_checked,
@@ -937,7 +937,7 @@ class ReportBuilderAgentLogic:
                 "status": "success",
                 "pdf_path": pdf_filepath,
                 "report_type": "nursery_quarterly",
-                "generation_timestamp": datetime.now(timezone.utc).isoformat(),
+                "generation_timestamp": datetime.now(UTC).isoformat(),
             }
         except Exception as e:
             self.logger.error(f"Failed to build nursery quarterly report: {e}", exc_info=True)
@@ -957,7 +957,7 @@ class ReportBuilderAgentLogic:
             "status": "success",
             "pdf_path": pdf_filepath,
             "report_type": filename_prefix,
-            "generation_timestamp": datetime.now(timezone.utc).isoformat(),
+            "generation_timestamp": datetime.now(UTC).isoformat(),
         }
 
     def build_safety_summary(self, db, user_id: int, window_days: int = 90) -> dict:
@@ -972,7 +972,7 @@ class ReportBuilderAgentLogic:
             try:
                 recalls = db.query(RecallModel).order_by(RecallModel.recall_date.desc()).limit(15).all()
             except Exception as e:
-                self.logger.error(f"Failed to fetch recalls for summary: {e}")
+                self.logger.exception(f"Failed to fetch recalls for summary: {e}")
                 recalls = []
 
         hazards = [(getattr(r, "hazard_category", None) or getattr(r, "hazard", None)) for r in recalls if r]
@@ -983,7 +983,7 @@ class ReportBuilderAgentLogic:
 
         ctx = {
             "title": "Nursery Safety Summary",
-            "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
             "window_days": window_days,
             "stats": {
                 "total_recalls": len(recalls),
@@ -1094,7 +1094,7 @@ class ReportBuilderAgentLogic:
             disease = context["extracted_disease_name"]
 
         workflow_id = context.get("workflow_id", "")
-        dt_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+        dt_str = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
 
         toc = """
         <div style="page-break-after:always;">
@@ -1219,7 +1219,7 @@ a {{ color: #2561b1; text-decoration: none; }}
                         report_data = json.loads(report_data)
                         self.logger.info("Successfully parsed report_data from string")
                     except json.JSONDecodeError:
-                        self.logger.error(f"Failed to parse report_data as JSON: {report_data[:100]}...")
+                        self.logger.exception(f"Failed to parse report_data as JSON: {report_data[:100]}...")
                         report_data = {"error": "Failed to parse prediction data"}
 
                 # Check dependency results for actual data from step6
@@ -1399,7 +1399,7 @@ a {{ color: #2561b1; text-decoration: none; }}
             except Exception as e:
                 self.logger.error(f"Error during report generation: {e}", exc_info=True)
                 pdf_creation_success = False
-                generation_status_msg_part = f"failed with error: {str(e)}"
+                generation_status_msg_part = f"failed with error: {e!s}"
 
             # Prepare response
             result_payload_content = {

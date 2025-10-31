@@ -50,7 +50,7 @@ def unregister_device(
                 logger.info(f"No push token found for user {user_id} with token {token[:8]}...")
 
         except Exception as e:
-            logger.error(f"Failed to unregister push token for user {user_id}: {e}")
+            logger.exception(f"Failed to unregister push token for user {user_id}: {e}")
             db.rollback()
             # Don't raise exception - this should be idempotent
     else:

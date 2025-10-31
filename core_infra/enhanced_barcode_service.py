@@ -4,7 +4,7 @@ Integrates comprehensive validation with exact product matching
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 # REMOVED FOR CROWN SAFE: RecallDB barcode scanning no longer applicable
@@ -54,7 +54,7 @@ class EnhancedBarcodeService:
             ExactScanResult with validation and product matching details
 
         """
-        scan_timestamp = datetime.now(timezone.utc)
+        scan_timestamp = datetime.now(UTC)
 
         try:
             # Step 1: Validate barcode format and type
@@ -100,7 +100,7 @@ class EnhancedBarcodeService:
             )
 
         except Exception as e:
-            self.logger.error(f"Exact scan failed for user {user_id}: {e}")
+            self.logger.exception(f"Exact scan failed for user {user_id}: {e}")
             return ExactScanResult(
                 is_valid=False,
                 barcode_validation=BarcodeValidationResult(
@@ -108,13 +108,13 @@ class EnhancedBarcodeService:
                     barcode_type=BarcodeType.UNKNOWN,
                     validation_result=None,
                     normalized_barcode=barcode,
-                    error_message=f"Scan failed: {str(e)}",
+                    error_message=f"Scan failed: {e!s}",
                 ),
                 product_found=False,
                 exact_matches=[],
                 confidence_score=0.0,
                 scan_timestamp=scan_timestamp,
-                error_message=f"Scan failed: {str(e)}",
+                error_message=f"Scan failed: {e!s}",
                 recommendations=["Try scanning again or contact support"],
             )
 

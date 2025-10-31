@@ -120,7 +120,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 async def database_exception_handler(request: Request, exc: SQLAlchemyError):
     """Handle database exceptions"""
     logger.error(
-        f"Database error: {str(exc)}",
+        f"Database error: {exc!s}",
         extra={
             "path": request.url.path,
             "method": request.method,
@@ -145,7 +145,7 @@ async def database_exception_handler(request: Request, exc: SQLAlchemyError):
 async def redis_exception_handler(request: Request, exc: redis.exceptions.RedisError):
     """Handle Redis exceptions"""
     logger.error(
-        f"Redis error: {str(exc)}",
+        f"Redis error: {exc!s}",
         extra={
             "path": request.url.path,
             "method": request.method,
@@ -168,7 +168,7 @@ async def redis_exception_handler(request: Request, exc: redis.exceptions.RedisE
 async def validation_exception_handler(request: Request, exc: ValueError):
     """Handle validation exceptions"""
     logger.warning(
-        f"Validation error: {str(exc)}",
+        f"Validation error: {exc!s}",
         extra={"path": request.url.path, "method": request.method},
     )
 
@@ -186,7 +186,7 @@ async def validation_exception_handler(request: Request, exc: ValueError):
 async def general_exception_handler(request: Request, exc: Exception):
     """Handle all unhandled exceptions"""
     logger.error(
-        f"Unhandled exception: {str(exc)}",
+        f"Unhandled exception: {exc!s}",
         extra={
             "path": request.url.path,
             "method": request.method,

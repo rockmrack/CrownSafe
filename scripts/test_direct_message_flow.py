@@ -4,7 +4,7 @@ import asyncio
 import json
 import time
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 import redis
 
@@ -23,7 +23,7 @@ async def test_router_directly():
             "sender_id": "test_commander",
             "target_id": "router_agent_01",
             "correlation_id": workflow_id,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         },
         "payload": {
             "plan": {

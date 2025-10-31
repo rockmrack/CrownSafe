@@ -90,8 +90,7 @@ ADMIN_POOL_SETTINGS = {
 
 
 def create_secure_engine(mode: str = "readonly") -> Engine:
-    """Create a secure SQLAlchemy engine with appropriate settings
-    """
+    """Create a secure SQLAlchemy engine with appropriate settings"""
     database_url = get_database_url(mode)
 
     if not database_url:
@@ -225,7 +224,7 @@ def get_readonly_session() -> Generator[Session, None, None]:
         session.execute("SET default_transaction_read_only = on")
         yield session
     except Exception as e:
-        logger.error(f"Readonly session error: {e}")
+        logger.exception(f"Readonly session error: {e}")
         raise
     finally:
         session.close()
@@ -242,7 +241,7 @@ def get_write_session() -> Generator[Session, None, None]:
         session.commit()
     except Exception as e:
         session.rollback()
-        logger.error(f"Write session error: {e}")
+        logger.exception(f"Write session error: {e}")
         raise
     finally:
         session.close()
@@ -259,7 +258,7 @@ def get_admin_session() -> Generator[Session, None, None]:
         session.commit()
     except Exception as e:
         session.rollback()
-        logger.error(f"Admin session error: {e}")
+        logger.exception(f"Admin session error: {e}")
         raise
     finally:
         session.close()
@@ -269,22 +268,19 @@ def get_admin_session() -> Generator[Session, None, None]:
 
 
 def get_db_readonly() -> Generator[Session, None, None]:
-    """FastAPI dependency for readonly database sessions
-    """
+    """FastAPI dependency for readonly database sessions"""
     with get_readonly_session() as session:
         yield session
 
 
 def get_db_write() -> Generator[Session, None, None]:
-    """FastAPI dependency for write database sessions
-    """
+    """FastAPI dependency for write database sessions"""
     with get_write_session() as session:
         yield session
 
 
 def get_db_admin() -> Generator[Session, None, None]:
-    """FastAPI dependency for admin database sessions
-    """
+    """FastAPI dependency for admin database sessions"""
     with get_admin_session() as session:
         yield session
 
@@ -328,8 +324,7 @@ class SecureQuery:
 
 
 def migrate_to_secure_database() -> None:
-    """Migrate existing code to use secure database connections
-    """
+    """Migrate existing code to use secure database connections"""
     print("Migrating to secure database configuration...")
 
     # Test connections

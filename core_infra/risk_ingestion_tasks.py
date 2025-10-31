@@ -5,7 +5,7 @@ Orchestrates data collection from multiple sources
 import asyncio
 import logging
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 
 from celery import Celery
 from celery.schedules import crontab
@@ -164,8 +164,7 @@ def sync_all_agencies(days_back: int = 3):
 
 @celery_app.task(name="risk_ingestion_tasks.sync_cpsc_data")
 def sync_cpsc_data(days_back: int = 7, job_id: str | None = None):
-    """Sync data from CPSC sources
-    """
+    """Sync data from CPSC sources"""
     logger.info(f"Starting CPSC sync for last {days_back} days")
 
     db = SessionLocal()
@@ -176,7 +175,7 @@ def sync_cpsc_data(days_back: int = 7, job_id: str | None = None):
                 source_type=DataSource.CPSC_RECALL.value,
                 job_type="incremental",
                 status="running",
-                started_at=datetime.now(timezone.utc),
+                started_at=datetime.now(UTC),
             )
             db.add(job)
             db.commit()
@@ -184,14 +183,14 @@ def sync_cpsc_data(days_back: int = 7, job_id: str | None = None):
         else:
             job = db.query(DataIngestionJob).filter_by(id=job_id).first()
             job.status = "running"
-            job.started_at = datetime.now(timezone.utc)
+            job.started_at = datetime.now(UTC)
             db.commit()
 
         # Initialize connector
         connector = CPSCDataConnector()
 
         # Fetch recalls
-        start_date = datetime.now(timezone.utc) - timedelta(days=days_back)
+        start_date = datetime.now(UTC) - timedelta(days=days_back)
 
         # Run async code in sync context
         loop = asyncio.new_event_loop()
@@ -229,7 +228,7 @@ def sync_cpsc_data(days_back: int = 7, job_id: str | None = None):
         job.records_created = created
         job.records_updated = updated
         job.status = "completed"
-        job.completed_at = datetime.now(timezone.utc)
+        job.completed_at = datetime.now(UTC)
 
         db.commit()
 
@@ -247,7 +246,7 @@ def sync_cpsc_data(days_back: int = 7, job_id: str | None = None):
         }
 
     except Exception as e:
-        logger.error(f"CPSC sync failed: {e}")
+        logger.exception(f"CPSC sync failed: {e}")
         if job_id:
             job = db.query(DataIngestionJob).filter_by(id=job_id).first()
             if job:
@@ -261,8 +260,7 @@ def sync_cpsc_data(days_back: int = 7, job_id: str | None = None):
 
 @celery_app.task(name="risk_ingestion_tasks.sync_eu_safety_gate")
 def sync_eu_safety_gate(days_back: int = 30):
-    """Sync data from EU Safety Gate
-    """
+    """Sync data from EU Safety Gate"""
     logger.info(f"Starting EU Safety Gate sync for last {days_back} days")
 
     db = SessionLocal()
@@ -272,7 +270,7 @@ def sync_eu_safety_gate(days_back: int = 30):
             source_type=DataSource.EU_SAFETY_GATE.value,
             job_type="incremental",
             status="running",
-            started_at=datetime.now(timezone.utc),
+            started_at=datetime.now(UTC),
         )
         db.add(job)
         db.commit()
@@ -281,7 +279,7 @@ def sync_eu_safety_gate(days_back: int = 30):
         connector = EUSafetyGateConnector()
 
         # Fetch alerts
-        start_date = datetime.now(timezone.utc) - timedelta(days=days_back)
+        start_date = datetime.now(UTC) - timedelta(days=days_back)
 
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -300,7 +298,7 @@ def sync_eu_safety_gate(days_back: int = 30):
 
         job.records_processed = processed
         job.status = "completed"
-        job.completed_at = datetime.now(timezone.utc)
+        job.completed_at = datetime.now(UTC)
         db.commit()
 
         logger.info(f"EU Safety Gate sync completed: {processed} records")
@@ -308,7 +306,7 @@ def sync_eu_safety_gate(days_back: int = 30):
         return {"status": "completed", "records_processed": processed}
 
     except Exception as e:
-        logger.error(f"EU sync failed: {e}")
+        logger.exception(f"EU sync failed: {e}")
         job.status = "failed"
         job.errors = [str(e)]
         db.commit()
@@ -319,8 +317,7 @@ def sync_eu_safety_gate(days_back: int = 30):
 
 @celery_app.task(name="risk_ingestion_tasks.recalculate_affected_products")
 def recalculate_affected_products(days_back: int = 7):
-    """Recalculate risk scores for recently updated products
-    """
+    """Recalculate risk scores for recently updated products"""
     logger.info(f"Recalculating risk scores for products updated in last {days_back} days")
 
     db = SessionLocal()
@@ -328,7 +325,7 @@ def recalculate_affected_products(days_back: int = 7):
 
     try:
         # Find products with recent incidents
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
+        cutoff_date = datetime.now(UTC) - timedelta(days=days_back)
 
         # First get distinct product IDs (avoids DISTINCT on json columns)
         product_ids_subquery = (
@@ -382,7 +379,7 @@ def recalculate_affected_products(days_back: int = 7):
             risk_profile.volume_score = risk_components.volume_score
             risk_profile.violation_score = risk_components.violation_score
             risk_profile.compliance_score = risk_components.compliance_score
-            risk_profile.last_calculated = datetime.now(timezone.utc)
+            risk_profile.last_calculated = datetime.now(UTC)
 
             # Update trend
             if risk_profile.trend_data:
@@ -392,13 +389,13 @@ def recalculate_affected_products(days_back: int = 7):
 
             historical.append(
                 {
-                    "date": datetime.now(timezone.utc).isoformat(),
+                    "date": datetime.now(UTC).isoformat(),
                     "score": risk_components.total_score,
                 },
             )
 
             # Keep last 90 days of history
-            cutoff = datetime.now(timezone.utc) - timedelta(days=90)
+            cutoff = datetime.now(UTC) - timedelta(days=90)
             historical = [h for h in historical if datetime.fromisoformat(h["date"]) > cutoff]
 
             risk_profile.trend_data = historical
@@ -420,7 +417,7 @@ def recalculate_affected_products(days_back: int = 7):
         return {"products_updated": updated_count}
 
     except Exception as e:
-        logger.error(f"Risk recalculation failed: {e}")
+        logger.exception(f"Risk recalculation failed: {e}")
         raise
     finally:
         db.close()
@@ -428,8 +425,7 @@ def recalculate_affected_products(days_back: int = 7):
 
 @celery_app.task(name="risk_ingestion_tasks.recalculate_high_risk_scores")
 def recalculate_high_risk_scores():
-    """Hourly recalculation of high-risk products
-    """
+    """Hourly recalculation of high-risk products"""
     logger.info("Recalculating high-risk product scores")
 
     db = SessionLocal()
@@ -479,7 +475,7 @@ def recalculate_high_risk_scores():
             # Update profile
             profile.risk_score = new_score
             profile.risk_level = risk_components.risk_level
-            profile.last_calculated = datetime.now(timezone.utc)
+            profile.last_calculated = datetime.now(UTC)
 
             updated += 1
 
@@ -494,7 +490,7 @@ def recalculate_high_risk_scores():
         return {"updated": updated, "alerts": len(alerts)}
 
     except Exception as e:
-        logger.error(f"High-risk recalculation failed: {e}")
+        logger.exception(f"High-risk recalculation failed: {e}")
         raise
     finally:
         db.close()
@@ -502,8 +498,7 @@ def recalculate_high_risk_scores():
 
 @celery_app.task(name="risk_ingestion_tasks.update_company_compliance")
 def update_company_compliance():
-    """Update company compliance profiles daily
-    """
+    """Update company compliance profiles daily"""
     logger.info("Updating company compliance profiles")
 
     db = SessionLocal()
@@ -540,7 +535,7 @@ def update_company_compliance():
             profile.total_recalls = recall_count
 
             # Recent recalls (last 12 months)
-            cutoff = datetime.now(timezone.utc) - timedelta(days=365)
+            cutoff = datetime.now(UTC) - timedelta(days=365)
             recent_recalls = (
                 db.query(ProductGoldenRecord)
                 .filter(ProductGoldenRecord.manufacturer == manufacturer)
@@ -569,7 +564,7 @@ def update_company_compliance():
             else:
                 profile.compliance_trend = "stable"
 
-            profile.last_updated = datetime.now(timezone.utc)
+            profile.last_updated = datetime.now(UTC)
 
             updated += 1
 
@@ -580,7 +575,7 @@ def update_company_compliance():
         return {"companies_updated": updated}
 
     except Exception as e:
-        logger.error(f"Company compliance update failed: {e}")
+        logger.exception(f"Company compliance update failed: {e}")
         raise
     finally:
         db.close()
@@ -588,8 +583,7 @@ def update_company_compliance():
 
 @celery_app.task(name="risk_ingestion_tasks.send_risk_alerts")
 def send_risk_alerts(alerts: list[dict]):
-    """Send alerts for significant risk changes
-    """
+    """Send alerts for significant risk changes"""
     logger.info(f"Sending {len(alerts)} risk alerts")
 
     # In production, this would send emails/notifications
@@ -606,8 +600,7 @@ def send_risk_alerts(alerts: list[dict]):
 
 @celery_app.task(name="risk_ingestion_tasks.enrich_product_from_barcode")
 def enrich_product_from_barcode(product_id: str, barcode: str):
-    """Enrich product data using barcode (integrates with Phase 1)
-    """
+    """Enrich product data using barcode (integrates with Phase 1)"""
     logger.info(f"Enriching product {product_id} with barcode {barcode}")
 
     db = SessionLocal()
@@ -645,7 +638,7 @@ def enrich_product_from_barcode(product_id: str, barcode: str):
         return {"status": "no_data_found"}
 
     except Exception as e:
-        logger.error(f"Barcode enrichment failed: {e}")
+        logger.exception(f"Barcode enrichment failed: {e}")
         raise
     finally:
         db.close()
@@ -653,8 +646,7 @@ def enrich_product_from_barcode(product_id: str, barcode: str):
 
 # Helper functions
 def _find_or_create_product_from_record(record: SafetyDataRecord, db: Session) -> ProductGoldenRecord | None:
-    """Find or create product from safety data record
-    """
+    """Find or create product from safety data record"""
     # Try to find by identifiers
     product = None
 
@@ -690,8 +682,7 @@ def _find_or_create_product_from_record(record: SafetyDataRecord, db: Session) -
 
 
 def _create_incident_from_record(record: SafetyDataRecord, product_id: str, db: Session) -> SafetyIncident | None:
-    """Create safety incident from record
-    """
+    """Create safety incident from record"""
     # Check if incident already exists
     existing = (
         db.query(SafetyIncident)
@@ -711,7 +702,7 @@ def _create_incident_from_record(record: SafetyDataRecord, product_id: str, db: 
         hazard_type=record.hazard_type,
         severity=record.severity,
         narrative=record.hazard_description,
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
     )
 
     db.add(incident)
@@ -721,8 +712,7 @@ def _create_incident_from_record(record: SafetyDataRecord, product_id: str, db: 
 
 
 def _update_product_data_source(product_id: str, record: SafetyDataRecord, db: Session) -> None:
-    """Update product data source record
-    """
+    """Update product data source record"""
     # Check if source exists
     existing = (
         db.query(ProductDataSource)
@@ -738,7 +728,7 @@ def _update_product_data_source(product_id: str, record: SafetyDataRecord, db: S
             source_id=record.source_id,
             source_url=record.url,
             raw_data=record.raw_data,
-            fetched_at=datetime.now(timezone.utc),
+            fetched_at=datetime.now(UTC),
         )
         db.add(source)
         db.commit()

@@ -3,7 +3,7 @@ Scan hair product barcodes and analyze ingredients for 3C-4C hair safety
 """
 
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
@@ -118,7 +118,7 @@ def lookup_product_in_database(barcode: str, db: Session) -> HairProductModel | 
 
         return product
     except Exception as e:
-        logger.error(f"Error looking up product in database: {e}")
+        logger.exception(f"Error looking up product in database: {e}")
         return None
 
 
@@ -139,7 +139,7 @@ async def extract_ingredients_from_image(image_data: bytes, product_name: str | 
         logger.warning("OCR ingredient extraction not yet implemented")
         return []
     except Exception as e:
-        logger.error(f"Error extracting ingredients from image: {e}")
+        logger.exception(f"Error extracting ingredients from image: {e}")
         return []
 
 
@@ -184,7 +184,7 @@ def calculate_crown_score_from_product(
 
         return result
     except Exception as e:
-        logger.error(f"Error calculating Crown Score: {e}")
+        logger.exception(f"Error calculating Crown Score: {e}")
         raise
 
 
@@ -264,7 +264,7 @@ def find_similar_products(product: HairProductModel, crown_score: int, db: Sessi
             for p in similar
         ]
     except Exception as e:
-        logger.error(f"Error finding similar products: {e}")
+        logger.exception(f"Error finding similar products: {e}")
         return []
 
 
@@ -295,7 +295,7 @@ async def scan_hair_product_barcode(request: BarcodeScanRequest, db: Session = D
 
     """
     try:
-        scan_id = f"scan_{request.user_id}_{int(datetime.now(timezone.utc).timestamp())}"
+        scan_id = f"scan_{request.user_id}_{int(datetime.now(UTC).timestamp())}"
         logger.info(f"Crown Safe barcode scan: user={request.user_id}, barcode={request.barcode}, scan_id={scan_id}")
 
         # 1. Look up product in database
@@ -332,7 +332,7 @@ async def scan_hair_product_barcode(request: BarcodeScanRequest, db: Session = D
             scan_record = ProductScanModel(
                 user_id=request.user_id,
                 product_id=product.id,
-                scan_date=datetime.now(timezone.utc),
+                scan_date=datetime.now(UTC),
                 crown_score=score_result["total_score"],
                 verdict=score_result["verdict"],
                 scan_method=request.scan_method,
@@ -345,7 +345,7 @@ async def scan_hair_product_barcode(request: BarcodeScanRequest, db: Session = D
                 f"Saved scan record: scan_id={scan_id}, product_id={product.id}, score={score_result['total_score']}",
             )
         except Exception as save_error:
-            logger.error(f"Failed to save scan record: {save_error}")
+            logger.exception(f"Failed to save scan record: {save_error}")
             db.rollback()
             # Continue - don't fail the request if save fails
 
@@ -397,7 +397,7 @@ async def scan_hair_product_barcode(request: BarcodeScanRequest, db: Session = D
             crown_score=crown_score_breakdown,
             recommendations=recommendations,
             similar_products=similar_products,
-            scan_timestamp=datetime.now(timezone.utc).isoformat(),
+            scan_timestamp=datetime.now(UTC).isoformat(),
         )
 
         return ApiResponse(
@@ -410,8 +410,8 @@ async def scan_hair_product_barcode(request: BarcodeScanRequest, db: Session = D
         # Re-raise HTTP exceptions (404, etc.)
         raise
     except Exception as e:
-        logger.error(f"Barcode scan error: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to analyze product: {str(e)}")
+        logger.exception(f"Barcode scan error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to analyze product: {e!s}")
 
 
 @crown_barcode_router.post("/scan-image", response_model=ApiResponse)
@@ -500,8 +500,8 @@ async def scan_hair_product_image(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Image scan error: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to scan image: {str(e)}")
+        logger.exception(f"Image scan error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to scan image: {e!s}")
 
 
 @crown_barcode_router.get("/product/{barcode}", response_model=ApiResponse)
@@ -554,5 +554,5 @@ async def get_product_by_barcode(barcode: str, db: Session = Depends(get_db_sess
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Product lookup error: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to lookup product: {str(e)}")
+        logger.exception(f"Product lookup error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to lookup product: {e!s}")

@@ -163,7 +163,7 @@ async def run_pregnancy_test():
             result = await commander.start_safety_check_workflow(user_request)
             return result
         except Exception as e:
-            logger.error(f"Workflow execution failed: {e}")
+            logger.exception(f"Workflow execution failed: {e}")
             import traceback
 
             traceback.print_exc()

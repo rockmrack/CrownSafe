@@ -1,5 +1,4 @@
-"""Verify user_reports table was created and test the endpoints
-"""
+"""Verify user_reports table was created and test the endpoints"""
 
 import os
 

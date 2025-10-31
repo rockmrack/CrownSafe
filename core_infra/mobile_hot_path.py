@@ -29,8 +29,7 @@ class MobileHotPath:
         }
 
     async def ultra_fast_barcode_check(self, barcode: str, user_id: int) -> dict[str, Any]:
-        """Ultra-fast barcode check optimized for <100ms mobile responses
-        """
+        """Ultra-fast barcode check optimized for <100ms mobile responses"""
         start_time = time.time()
 
         try:
@@ -133,7 +132,7 @@ class MobileHotPath:
 
         except Exception as e:
             elapsed_ms = int((time.time() - start_time) * 1000)
-            self.logger.error(f"Ultra-fast barcode check failed after {elapsed_ms}ms: {e}")
+            self.logger.exception(f"Ultra-fast barcode check failed after {elapsed_ms}ms: {e}")
 
             # Return safe default on error
             return {
@@ -148,8 +147,7 @@ class MobileHotPath:
             }
 
     async def precompute_popular_products(self, limit: int = 1000) -> int:
-        """Pre-compute safety responses for popular products
-        """
+        """Pre-compute safety responses for popular products"""
         try:
             # REMOVED FOR CROWN SAFE: Recall warmup no longer applicable
             # from core_infra.database import get_db_session, RecallDB
@@ -166,12 +164,11 @@ class MobileHotPath:
             #         pass
 
         except Exception as e:
-            self.logger.error(f"Popular product pre-computation failed (deprecated): {e}")
+            self.logger.exception(f"Popular product pre-computation failed (deprecated): {e}")
             return 0
 
     def get_hot_cache_stats(self) -> dict[str, Any]:
-        """Get hot cache performance statistics
-        """
+        """Get hot cache performance statistics"""
         return {
             "hot_cache_size": len(self.hot_cache),
             "max_hot_cache_size": self.config["hot_cache_size"],
@@ -181,8 +178,7 @@ class MobileHotPath:
         }
 
     def clear_hot_cache(self) -> None:
-        """Clear hot cache for memory management
-        """
+        """Clear hot cache for memory management"""
         cache_size = len(self.hot_cache)
         self.hot_cache.clear()
         self.logger.info(f"🧹 Cleared hot cache: {cache_size} entries removed")

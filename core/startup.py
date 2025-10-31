@@ -102,7 +102,7 @@ def create_database_tables():
         create_tables()
         logger.info("Database tables ready")
     except Exception as e:
-        logger.error(f"Failed to create database tables: {e}")
+        logger.exception(f"Failed to create database tables: {e}")
         # Continue anyway - tables might already exist
 
 
@@ -121,12 +121,12 @@ def start_api():
 
         logger.info("Successfully loaded main_crownsafe app")
     except ImportError as e:
-        logger.error(f"Failed to import main_crownsafe: {e}")
+        logger.exception(f"Failed to import main_crownsafe: {e}")
         logger.info("Falling back to simplified API")
         try:
             from api.main_crownsafe_simplified import app
         except ImportError:
-            logger.error("No API module available!")
+            logger.exception("No API module available!")
             sys.exit(1)
 
     # Run the server

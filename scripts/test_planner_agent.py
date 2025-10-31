@@ -496,7 +496,7 @@ def run_all_tests():
             test_func(logic)
             passed_tests += 1
         except Exception as e:
-            print_error(f"{test_name} failed: {str(e)}")
+            print_error(f"{test_name} failed: {e!s}")
             logger.error("Test failure details:", exc_info=True)
             failed_tests += 1
 

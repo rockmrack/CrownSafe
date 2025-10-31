@@ -512,7 +512,7 @@ class DrugClassPatternTester:
                         }
 
                 except Exception as e:
-                    self.print_error(f"Enhanced recommendations failed: {str(e)}")
+                    self.print_error(f"Enhanced recommendations failed: {e!s}")
                     self.print_debug("Exception details:")
                     import traceback
 

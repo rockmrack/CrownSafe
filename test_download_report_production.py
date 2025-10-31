@@ -1,5 +1,4 @@
-"""Test Download Report Functionality on Production API
-"""
+"""Test Download Report Functionality on Production API"""
 
 import json
 

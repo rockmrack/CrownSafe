@@ -356,8 +356,7 @@ class RiskAssessmentReport(Base):
 
 
 class DataIngestionJob(Base):
-    """Tracks data ingestion jobs from various sources
-    """
+    """Tracks data ingestion jobs from various sources"""
 
     __tablename__ = "data_ingestion_jobs"
 

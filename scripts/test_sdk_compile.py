@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Test SDK compilation and validity
-"""
+"""Test SDK compilation and validity"""
 
 import json
 import sys

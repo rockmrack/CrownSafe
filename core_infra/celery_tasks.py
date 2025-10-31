@@ -4,7 +4,7 @@ Handles async job queue with Azure Blob Storage integration and multi-step proce
 
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 from celery import Celery, Task
@@ -95,7 +95,7 @@ def process_image(self, job_id: str) -> dict[str, Any]:
 
             # Update status
             job.status = JobStatus.PROCESSING
-            job.started_at = datetime.now(timezone.utc)
+            job.started_at = datetime.now(UTC)
             db.commit()
 
         # Download image from Azure Blob Storage
@@ -173,7 +173,7 @@ def process_image(self, job_id: str) -> dict[str, Any]:
             j = db2.query(ImageJob).filter_by(id=job_id).first()
             if j:
                 j.status = JobStatus.COMPLETED
-                j.completed_at = datetime.now(timezone.utc)
+                j.completed_at = datetime.now(UTC)
                 db2.commit()
 
         logger.info(f"Image processing completed for job {job_id}")
@@ -181,7 +181,7 @@ def process_image(self, job_id: str) -> dict[str, Any]:
         return {"success": True, "job_id": job_id, "needs_review": needs_review}
 
     except SoftTimeLimitExceeded:
-        logger.error(f"Task timeout for job {job_id}")
+        logger.exception(f"Task timeout for job {job_id}")
         try:
             with get_db_session() as db2:
                 j = db2.query(ImageJob).filter_by(id=job_id).first()
@@ -194,7 +194,7 @@ def process_image(self, job_id: str) -> dict[str, Any]:
         raise
 
     except Exception as e:
-        logger.error(f"Processing error for job {job_id}: {e}")
+        logger.exception(f"Processing error for job {job_id}: {e}")
         try:
             with get_db_session() as db2:
                 j = db2.query(ImageJob).filter_by(id=job_id).first()
@@ -247,8 +247,7 @@ def virus_scan(job_id: str, image_data: bytes) -> bool:
 
 @app.task(name="normalize_image")
 def normalize_image(job_id: str, image_data: bytes) -> bytes:
-    """Normalize image (resize, strip EXIF, convert format)
-    """
+    """Normalize image (resize, strip EXIF, convert format)"""
     logger.info(f"Normalizing image for job {job_id}")
 
     import io
@@ -538,8 +537,7 @@ def generate_sas_url(container: str, blob_name: str, expiry_hours: int = 1) -> s
 # Safety Hub Tasks
 @app.task(name="tasks.ingest_safety_articles")
 def ingest_safety_articles():
-    """A Celery task that runs daily to fetch and store the latest safety articles.
-    """
+    """A Celery task that runs daily to fetch and store the latest safety articles."""
     import asyncio
 
     from core_infra.safety_data_connectors import CPSCDataConnector
@@ -581,7 +579,7 @@ def ingest_safety_articles():
                     logger.debug(f"Updated existing article: {article_data['title']}")
 
             except Exception as e:
-                logger.error(f"Error processing article {article_data.get('article_id')}: {e}")
+                logger.exception(f"Error processing article {article_data.get('article_id')}: {e}")
                 continue
 
         db.commit()

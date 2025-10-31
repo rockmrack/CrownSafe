@@ -485,7 +485,7 @@ async def cabinet_audit(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"❌ Error in cabinet audit: {e}")
+        logger.exception(f"❌ Error in cabinet audit: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to complete cabinet audit",
@@ -578,7 +578,7 @@ async def routine_check(request: RoutineCheckRequest):
         )
 
     except Exception as e:
-        logger.error(f"❌ Error in routine check: {e}")
+        logger.exception(f"❌ Error in routine check: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to complete routine check",

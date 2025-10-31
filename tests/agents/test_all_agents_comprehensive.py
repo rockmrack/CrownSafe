@@ -155,7 +155,7 @@ def test_recall_agent_initialization():
         assert agent.agent_id == "test-recall-agent"
         test_results.add_result(agent_name, test_name, "PASSED", "Agent initialized successfully")
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -190,7 +190,7 @@ async def test_recall_agent_cpsc_live_api():
             f"Fetched {len(recalls)} real recalls from CPSC",
         )
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -217,7 +217,7 @@ async def test_recall_agent_connectors():
             f"Initialized {len(connectors)} connectors successfully",
         )
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -239,7 +239,7 @@ async def test_recall_agent_process_task():
 
         test_results.add_result(agent_name, test_name, "PASSED", "Successfully processed recall search task")
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -283,7 +283,7 @@ def test_chat_agent_initialization():
         assert agent.llm is mock_llm
         test_results.add_result(agent_name, test_name, "PASSED", "Agent initialized successfully")
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -317,7 +317,7 @@ async def test_chat_agent_process_simple_query():
             "Successfully processed simple query",
         )
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -346,7 +346,7 @@ async def test_chat_agent_emergency_detection():
 
         test_results.add_result(agent_name, test_name, "PASSED", "Emergency detection working")
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -367,7 +367,7 @@ def test_report_builder_initialization():
         assert agent.agent_id == "test-report-builder"
         test_results.add_result(agent_name, test_name, "PASSED", "Agent initialized successfully")
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -401,7 +401,7 @@ def test_report_builder_generate_report():
 
         test_results.add_result(agent_name, test_name, "PASSED", "Successfully generated report")
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -422,7 +422,7 @@ def test_visual_search_initialization():
         assert agent.agent_id == "test-visual-search"
         test_results.add_result(agent_name, test_name, "PASSED", "Agent initialized successfully")
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -441,7 +441,7 @@ async def test_visual_search_capabilities():
 
         test_results.add_result(agent_name, test_name, "PASSED", "Agent has required capabilities")
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -462,7 +462,7 @@ def test_alternatives_agent_initialization():
         assert agent.agent_id == "test-alternatives"
         test_results.add_result(agent_name, test_name, "PASSED", "Agent initialized successfully")
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -488,7 +488,7 @@ async def test_alternatives_agent_find_alternatives():
 
         test_results.add_result(agent_name, test_name, "PASSED", "Successfully found alternatives")
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -513,7 +513,7 @@ def test_product_identifier_initialization():
         assert agent.agent_id == "test-product-id"
         test_results.add_result(agent_name, test_name, "PASSED", "Agent initialized successfully")
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -537,7 +537,7 @@ async def test_product_identifier_process():
 
         test_results.add_result(agent_name, test_name, "PASSED", "Successfully identified product")
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -559,7 +559,7 @@ def test_router_agent_initialization():
         assert agent.agent_id == "test-router"
         test_results.add_result(agent_name, test_name, "PASSED", "Agent initialized successfully")
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 
@@ -578,7 +578,7 @@ def test_router_agent_capabilities():
 
         test_results.add_result(agent_name, test_name, "PASSED", "Router has capability mappings")
     except Exception as e:
-        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {str(e)}")
+        test_results.add_result(agent_name, test_name, "FAILED", f"Error: {e!s}")
         raise
 
 

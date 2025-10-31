@@ -4,7 +4,7 @@ Real-time threat intelligence and attack visualization
 
 import logging
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -217,6 +217,6 @@ async def manual_ip_block(request: Request, ip_address: str):
         content={
             "status": "success",
             "message": f"IP {ip_address} added to block list",
-            "blocked_at": datetime.now(timezone.utc).isoformat(),
+            "blocked_at": datetime.now(UTC).isoformat(),
         },
     )

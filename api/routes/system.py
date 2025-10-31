@@ -10,6 +10,7 @@ from fastapi import APIRouter, Response
 from fastapi.responses import JSONResponse
 from redis.asyncio import Redis
 from sqlalchemy import text
+from datetime import UTC
 
 logger = logging.getLogger("app")
 
@@ -65,7 +66,7 @@ async def readyz(response: Response) -> JSONResponse:
         checks["db"] = True
         logger.debug("Database check passed")
     except Exception as e:
-        logger.error(f"Database check failed: {e}")
+        logger.exception(f"Database check failed: {e}")
         checks["db"] = False
 
     # Check Redis connection (for rate limiting)
@@ -122,7 +123,7 @@ async def status(response: Response) -> dict[str, Any]:
         "service": "babyshield-api",
         "version": os.getenv("API_VERSION", "v1.2.0"),
         "environment": os.getenv("ENVIRONMENT", "production"),
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "system": {
             "platform": platform.system(),
             "python_version": platform.python_version(),

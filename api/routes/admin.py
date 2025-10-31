@@ -1,8 +1,7 @@
-"""Admin API routes for ingestion management and monitoring
-"""
+"""Admin API routes for ingestion management and monitoring"""
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import Any
 from uuid import UUID
 
@@ -110,7 +109,7 @@ async def trigger_ingestion(
     except ValueError as e:
         raise APIError(status_code=400, code="INVALID_REQUEST", message=str(e))
     except Exception as e:
-        logger.error(f"Failed to start ingestion: {e}")
+        logger.exception(f"Failed to start ingestion: {e}")
         raise APIError(
             status_code=500,
             code="INGESTION_START_FAILED",
@@ -127,8 +126,7 @@ async def list_ingestion_runs(
     status: str | None = Query(None, description="Filter by status"),
     db: Session = Depends(get_db),
 ):
-    """List recent ingestion runs with optional filtering
-    """
+    """List recent ingestion runs with optional filtering"""
     try:
         # Build query
         query = db.query(IngestionRun)
@@ -164,7 +162,7 @@ async def list_ingestion_runs(
         )
 
     except Exception as e:
-        logger.error(f"Failed to list runs: {e}")
+        logger.exception(f"Failed to list runs: {e}")
         raise APIError(
             status_code=500,
             code="LIST_RUNS_FAILED",
@@ -174,8 +172,7 @@ async def list_ingestion_runs(
 
 @router.get("/runs/{run_id}")
 async def get_ingestion_run(run_id: str, request: Request, db: Session = Depends(get_db)):
-    """Get details of a specific ingestion run
-    """
+    """Get details of a specific ingestion run"""
     try:
         # Validate UUID
         try:
@@ -194,7 +191,7 @@ async def get_ingestion_run(run_id: str, request: Request, db: Session = Depends
     except APIError:
         raise
     except Exception as e:
-        logger.error(f"Failed to get run {run_id}: {e}")
+        logger.exception(f"Failed to get run {run_id}: {e}")
         raise APIError(
             status_code=500,
             code="GET_RUN_FAILED",
@@ -209,8 +206,7 @@ async def cancel_ingestion_run(
     admin: str = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    """Cancel a running ingestion job
-    """
+    """Cancel a running ingestion job"""
     try:
         # Validate UUID
         try:
@@ -247,14 +243,13 @@ async def cancel_ingestion_run(
     except APIError:
         raise
     except Exception as e:
-        logger.error(f"Failed to cancel run {run_id}: {e}")
+        logger.exception(f"Failed to cancel run {run_id}: {e}")
         raise APIError(status_code=500, code="CANCEL_FAILED", message="Failed to cancel ingestion")
 
 
 @router.post("/reindex", dependencies=[Depends(AdminRateLimit.get_reindex_limiter)])
 async def reindex_database(request: Request, admin: str = Depends(require_admin), db: Session = Depends(get_db)):
-    """Reindex database and run VACUUM ANALYZE
-    """
+    """Reindex database and run VACUUM ANALYZE"""
     try:
         logger.info(f"Database reindex initiated by {admin}")
 
@@ -303,14 +298,13 @@ async def reindex_database(request: Request, admin: str = Depends(require_admin)
         )
 
     except Exception as e:
-        logger.error(f"Reindex failed: {e}")
+        logger.exception(f"Reindex failed: {e}")
         raise APIError(status_code=500, code="REINDEX_FAILED", message="Failed to reindex database")
 
 
 @router.get("/freshness")
 async def data_freshness(request: Request, db: Session = Depends(get_db)):
-    """Get data freshness statistics - DEPRECATED FOR CROWN SAFE
-    """
+    """Get data freshness statistics - DEPRECATED FOR CROWN SAFE"""
     # REMOVED FOR CROWN SAFE: EnhancedRecallDB statistics gutted
     # Crown Safe focuses on hair product testing (HairProductModel), not baby recalls
     try:
@@ -327,7 +321,7 @@ async def data_freshness(request: Request, db: Session = Depends(get_db)):
         # Get recent ingestion runs
         recent_runs = (
             db.query(IngestionRun)
-            .filter(IngestionRun.finished_at >= datetime.now(timezone.utc) - timedelta(hours=24))
+            .filter(IngestionRun.finished_at >= datetime.now(UTC) - timedelta(hours=24))
             .order_by(IngestionRun.finished_at.desc())
             .limit(5)
             .all()
@@ -363,7 +357,7 @@ async def data_freshness(request: Request, db: Session = Depends(get_db)):
         )
 
     except Exception as e:
-        logger.error(f"Freshness check failed: {e}")
+        logger.exception(f"Freshness check failed: {e}")
         raise APIError(
             status_code=500,
             code="FRESHNESS_CHECK_FAILED",
@@ -373,8 +367,7 @@ async def data_freshness(request: Request, db: Session = Depends(get_db)):
 
 @router.get("/stats")
 async def admin_statistics(request: Request, db: Session = Depends(get_db)):
-    """Get comprehensive admin statistics
-    """
+    """Get comprehensive admin statistics"""
     try:
         # Database stats
         db_stats = {
@@ -383,7 +376,7 @@ async def admin_statistics(request: Request, db: Session = Depends(get_db)):
         }
 
         # Ingestion stats (last 7 days)
-        week_ago = datetime.now(timezone.utc) - timedelta(days=7)
+        week_ago = datetime.now(UTC) - timedelta(days=7)
 
         ingestion_stats = (
             db.query(
@@ -412,7 +405,7 @@ async def admin_statistics(request: Request, db: Session = Depends(get_db)):
         )
 
     except Exception as e:
-        logger.error(f"Stats retrieval failed: {e}")
+        logger.exception(f"Stats retrieval failed: {e}")
         raise APIError(
             status_code=500,
             code="STATS_FAILED",

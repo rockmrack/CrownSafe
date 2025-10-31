@@ -4,15 +4,14 @@ Validates security configuration and best practices across the application
 
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 logger = logging.getLogger(__name__)
 
 
 class SecurityConfigValidator:
-    """Validates security configuration against enterprise best practices
-    """
+    """Validates security configuration against enterprise best practices"""
 
     def __init__(self) -> None:
         self.findings: list[dict[str, Any]] = []
@@ -292,7 +291,7 @@ class SecurityConfigValidator:
 
         """
         audit_results = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "overall_status": "pass",
             "categories": {},
             "summary": {

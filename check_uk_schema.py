@@ -1,5 +1,4 @@
-"""Check UK recalls schema and data in Azure PostgreSQL
-"""
+"""Check UK recalls schema and data in Azure PostgreSQL"""
 
 import os
 from urllib.parse import unquote

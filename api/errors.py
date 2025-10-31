@@ -71,8 +71,7 @@ async def json_error_response(status_code: int, code: str, message: str, request
 
 
 async def handle_request_validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
-    """Handle Pydantic validation errors (422)
-    """
+    """Handle Pydantic validation errors (422)"""
     # Extract field errors
     errors = exc.errors()
 
@@ -114,8 +113,7 @@ async def handle_request_validation_error(request: Request, exc: RequestValidati
 
 
 async def handle_http_exception(request: Request, exc: StarletteHTTPException) -> JSONResponse:
-    """Handle HTTP exceptions (4xx, 5xx)
-    """
+    """Handle HTTP exceptions (4xx, 5xx)"""
     # Map status codes to error codes
     status_code_mapping = {
         400: "BAD_REQUEST",
@@ -169,8 +167,7 @@ async def handle_http_exception(request: Request, exc: StarletteHTTPException) -
 
 
 async def handle_generic_exception(request: Request, exc: Exception) -> JSONResponse:
-    """Handle unhandled exceptions (500)
-    """
+    """Handle unhandled exceptions (500)"""
     trace_id = getattr(request.state, "trace_id", None)
 
     # Log the full exception with traceback

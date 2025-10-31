@@ -81,7 +81,7 @@ def explain_feedback(payload: ExplainFeedbackPayload, request: Request, db: Sess
         # Log error but don't expose internal details
         import logging
 
-        logging.error(f"Failed to record explain feedback: {e}")
+        logging.exception(f"Failed to record explain feedback: {e}")
         raise HTTPException(status_code=500, detail="failed_to_record_feedback")
 
 

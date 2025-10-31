@@ -7,19 +7,17 @@ import hashlib
 import hmac
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 
 def _b64u_encode(data: bytes) -> str:
-    """URL-safe base64 encode without padding
-    """
+    """URL-safe base64 encode without padding"""
     return base64.urlsafe_b64encode(data).decode("utf-8").rstrip("=")
 
 
 def _b64u_decode(s: str) -> bytes:
-    """URL-safe base64 decode with padding restoration
-    """
+    """URL-safe base64 decode with padding restoration"""
     # Add padding if needed
     padding = "=" * (-len(s) % 4)
     return base64.urlsafe_b64decode(s + padding)
@@ -106,7 +104,7 @@ def verify_cursor(token: str, key: str | None = None) -> dict[str, Any]:
         # Check expiry if present
         if "exp" in payload:
             exp_time = datetime.fromisoformat(payload["exp"].replace("Z", "+00:00"))
-            if datetime.now(timezone.utc) > exp_time:
+            if datetime.now(UTC) > exp_time:
                 raise ValueError("Cursor has expired")
 
         return payload
@@ -141,10 +139,10 @@ def create_search_cursor(
     """
     # Ensure as_of is timezone-aware
     if as_of.tzinfo is None:
-        as_of = as_of.replace(tzinfo=timezone.utc)
+        as_of = as_of.replace(tzinfo=UTC)
 
     # Calculate expiry
-    exp = datetime.now(timezone.utc)
+    exp = datetime.now(UTC)
     exp = exp.replace(hour=exp.hour + ttl_hours)
 
     payload = {

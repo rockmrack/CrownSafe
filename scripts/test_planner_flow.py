@@ -151,14 +151,14 @@ async def run_planner_flow():
                 logger.error("Completion event received, but no result was stored for planner task.")
 
         except asyncio.TimeoutError:
-            logger.error(
+            logger.exception(
                 f"Timeout: Did not receive planner task completion message within {TASK_TIMEOUT_SECONDS} seconds.",
             )
 
     except ConnectionError as e:
-        logger.error(f"Connection error during planner flow test: {e}")
+        logger.exception(f"Connection error during planner flow test: {e}")
     except MCPClientError as e:
-        logger.error(f"MCP Client Error during planner flow test: {e}")
+        logger.exception(f"MCP Client Error during planner flow test: {e}")
     except Exception as e:
         logger.error(f"An unexpected error occurred in the planner flow test: {e}", exc_info=True)
     finally:

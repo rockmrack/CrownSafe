@@ -31,8 +31,7 @@ class ConnectionPoolOptimizer:
 
     @asynccontextmanager
     async def get_optimized_db_session(self):
-        """Get an optimized database session with connection pooling
-        """
+        """Get an optimized database session with connection pooling"""
         from core_infra.database import SessionLocal
 
         thread_id = threading.get_ident()
@@ -49,15 +48,14 @@ class ConnectionPoolOptimizer:
             session.commit()
         except Exception as e:
             session.rollback()
-            self.logger.error(f"Database session error: {e}")
+            self.logger.exception(f"Database session error: {e}")
             raise
         finally:
             # Keep session open for reuse instead of closing
             pass
 
     async def batch_database_operations(self, operations: list[Callable]) -> list[Any]:
-        """Execute multiple database operations in a single optimized batch
-        """
+        """Execute multiple database operations in a single optimized batch"""
         start_time = time.time()
 
         try:
@@ -84,7 +82,7 @@ class ConnectionPoolOptimizer:
             return results
 
         except Exception as e:
-            self.logger.error(f"Batch database operations failed: {e}")
+            self.logger.exception(f"Batch database operations failed: {e}")
             return []
 
     async def optimized_recall_search(
@@ -93,8 +91,7 @@ class ConnectionPoolOptimizer:
         model_number: str | None = None,
         product_name: str | None = None,
     ) -> list[dict[str, Any]]:
-        """Ultra-optimized recall search with intelligent query strategy
-        """
+        """Ultra-optimized recall search with intelligent query strategy"""
         # REMOVED FOR CROWN SAFE: Recall search no longer applicable
         # Return empty list for backward compatibility
         start_time = time.time()
@@ -110,12 +107,11 @@ class ConnectionPoolOptimizer:
 
         except Exception as e:
             elapsed = time.time() - start_time
-            self.logger.error(f"Recall search (deprecated) failed after {elapsed:.3f}s: {e}")
+            self.logger.exception(f"Recall search (deprecated) failed after {elapsed:.3f}s: {e}")
             return []
 
     def get_pooled_agent_instance(self, agent_class, agent_id: str):
-        """Get a pooled agent instance to avoid re-instantiation overhead
-        """
+        """Get a pooled agent instance to avoid re-instantiation overhead"""
         pool_key = f"{agent_class.__name__}_{agent_id}"
 
         with self.pool_lock:
@@ -126,8 +122,7 @@ class ConnectionPoolOptimizer:
         return self.agent_instance_pool[pool_key]
 
     async def parallel_agent_execution(self, agent_tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """Execute multiple agent tasks in parallel for massive speedup
-        """
+        """Execute multiple agent tasks in parallel for massive speedup"""
         start_time = time.time()
 
         try:
@@ -182,12 +177,11 @@ class ConnectionPoolOptimizer:
 
         except Exception as e:
             elapsed = time.time() - start_time
-            self.logger.error(f"Parallel agent execution failed after {elapsed:.3f}s: {e}")
+            self.logger.exception(f"Parallel agent execution failed after {elapsed:.3f}s: {e}")
             return []
 
     def cleanup_connections(self) -> None:
-        """Clean up connection pools and agent instances
-        """
+        """Clean up connection pools and agent instances"""
         try:
             with self.pool_lock:
                 # Close database sessions
@@ -206,7 +200,7 @@ class ConnectionPoolOptimizer:
             self.logger.info("🧹 Connection pools cleaned up successfully")
 
         except Exception as e:
-            self.logger.error(f"Connection cleanup failed: {e}")
+            self.logger.exception(f"Connection cleanup failed: {e}")
 
 
 # Global connection pool optimizer

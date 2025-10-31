@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Verify Task 11 deployment is successful
-"""
+"""Verify Task 11 deployment is successful"""
 
 from datetime import datetime
 

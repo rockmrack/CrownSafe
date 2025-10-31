@@ -110,8 +110,7 @@ def sanitize_html(text: str) -> str:
 
 
 def validate_email(email: str) -> str:
-    """Validate email format
-    """
+    """Validate email format"""
     # Basic email regex
     email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
@@ -126,8 +125,7 @@ def validate_email(email: str) -> str:
 
 
 def validate_pagination(skip: int, limit: int) -> tuple[int, int]:
-    """Validate pagination parameters
-    """
+    """Validate pagination parameters"""
     # Ensure non-negative
     if skip < 0:
         skip = 0
@@ -146,8 +144,7 @@ def validate_pagination(skip: int, limit: int) -> tuple[int, int]:
 
 
 def validate_id(id_value: Any) -> int:
-    """Validate database ID
-    """
+    """Validate database ID"""
     try:
         id_int = int(id_value)
         if id_int < 1:
@@ -215,8 +212,7 @@ def validate_search_query(query: str) -> str:
 
 
 def validate_file_upload(filename: str, content_type: str, size: int) -> bool:
-    """Validate file upload
-    """
+    """Validate file upload"""
     # Allowed file extensions
     ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".pdf"}
     ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/gif", "application/pdf"}
@@ -241,8 +237,7 @@ def validate_file_upload(filename: str, content_type: str, size: int) -> bool:
 
 
 def sanitize_filename(filename: str) -> str:
-    """Sanitize filename to prevent path traversal
-    """
+    """Sanitize filename to prevent path traversal"""
     import os
 
     # Remove path components
@@ -327,8 +322,7 @@ class ValidatedSearchRequest(BaseModel):
 
 # SQL injection prevention helper
 def safe_sql_identifier(identifier: str) -> str:
-    """Validate SQL identifier (table/column name)
-    """
+    """Validate SQL identifier (table/column name)"""
     if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", identifier):
         raise ValueError(f"Invalid SQL identifier: {identifier}")
 
@@ -354,8 +348,7 @@ def safe_sql_identifier(identifier: str) -> str:
 
 # XSS prevention for JSON responses
 def sanitize_dict(data: dict) -> dict:
-    """Recursively sanitize dictionary values
-    """
+    """Recursively sanitize dictionary values"""
     cleaned = {}
     for key, value in data.items():
         if isinstance(value, str):

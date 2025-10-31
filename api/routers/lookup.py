@@ -39,8 +39,8 @@ def barcode_lookup(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Barcode lookup failed for {code}: {e}")
-        raise HTTPException(status_code=500, detail=f"Lookup failed: {str(e)}")
+        logger.exception(f"Barcode lookup failed for {code}: {e}")
+        raise HTTPException(status_code=500, detail=f"Lookup failed: {e!s}")
 
 
 @router.get("/barcode/{code}")

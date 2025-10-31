@@ -1,5 +1,4 @@
-"""Enhanced Search Service with pg_trgm fuzzy matching, keyword AND logic, and deterministic sorting
-"""
+"""Enhanced Search Service with pg_trgm fuzzy matching, keyword AND logic, and deterministic sorting"""
 
 import logging
 from datetime import date
@@ -12,8 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class SearchService:
-    """Advanced search service using PostgreSQL pg_trgm for fuzzy matching
-    """
+    """Advanced search service using PostgreSQL pg_trgm for fuzzy matching"""
 
     def __init__(self, db_session: Session) -> None:
         self.db = db_session
@@ -281,8 +279,7 @@ class SearchService:
         offset: int | None = None,
         cursor: str | None = None,
     ) -> dict[str, Any]:
-        """Execute search with fuzzy matching and return results
-        """
+        """Execute search with fuzzy matching and return results"""
         try:
             # Handle cursor-based pagination
             cursor_data = None
@@ -414,7 +411,7 @@ class SearchService:
             }
 
         except Exception as e:
-            logger.error(f"Search error: {e}")
+            logger.exception(f"Search error: {e}")
             return {
                 "ok": False,
                 "error": {"code": "SEARCH_ERROR", "message": str(e)},

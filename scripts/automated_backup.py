@@ -12,7 +12,7 @@ Features:
 import logging
 import os
 import subprocess
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class BackupManager:
             Dictionary with backup information
 
         """
-        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
         backup_filename = f"crownsafe_backup_{backup_type}_{timestamp}"
 
         if compression:
@@ -147,7 +147,7 @@ class BackupManager:
             }
 
         except Exception as e:
-            logger.error(f"Backup creation failed: {e}")
+            logger.exception(f"Backup creation failed: {e}")
             return {
                 "success": False,
                 "error": str(e),
@@ -180,7 +180,7 @@ class BackupManager:
                 container_name=self.backup_container,
                 content_type="application/octet-stream",
                 metadata={
-                    "backup_timestamp": datetime.now(timezone.utc).isoformat(),
+                    "backup_timestamp": datetime.now(UTC).isoformat(),
                     "backup_type": "database",
                     "application": "crownsafe",
                 },
@@ -191,7 +191,7 @@ class BackupManager:
             return {"success": True, "blob_url": blob_url, "blob_name": blob_name}
 
         except Exception as e:
-            logger.error(f"Azure upload failed: {e}")
+            logger.exception(f"Azure upload failed: {e}")
             return {"success": False, "error": str(e)}
 
     def list_backups(self, limit: int = 50) -> list:
@@ -225,7 +225,7 @@ class BackupManager:
             return sorted(backups, key=lambda x: x["last_modified"], reverse=True)
 
         except Exception as e:
-            logger.error(f"Failed to list backups: {e}")
+            logger.exception(f"Failed to list backups: {e}")
             return []
 
     def cleanup_old_backups(self, retention_days: int = 30) -> dict:
@@ -245,7 +245,7 @@ class BackupManager:
 
             blobs = client.list_blobs(container_name=self.backup_container)
 
-            cutoff_date = datetime.now(timezone.utc) - timedelta(days=retention_days)
+            cutoff_date = datetime.now(UTC) - timedelta(days=retention_days)
             deleted_count = 0
             deleted_size = 0
 
@@ -268,7 +268,7 @@ class BackupManager:
             }
 
         except Exception as e:
-            logger.error(f"Cleanup failed: {e}")
+            logger.exception(f"Cleanup failed: {e}")
             return {"success": False, "error": str(e)}
 
 

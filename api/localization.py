@@ -276,8 +276,7 @@ def parse_accept_language(accept_language: str) -> list[str]:
 
 
 def get_best_locale(requested_locales: list[str]) -> str:
-    """Find the best matching locale from requested list
-    """
+    """Find the best matching locale from requested list"""
     for locale in requested_locales:
         # Exact match
         if locale in SUPPORTED_LOCALES:
@@ -294,8 +293,7 @@ def get_best_locale(requested_locales: list[str]) -> str:
 
 
 def translate(key: str, locale: str = "en-US") -> str:
-    """Get translation for a key in specified locale
-    """
+    """Get translation for a key in specified locale"""
     if key not in TRANSLATIONS:
         logger.warning(f"Translation key not found: {key}")
         return key
@@ -321,15 +319,13 @@ def translate(key: str, locale: str = "en-US") -> str:
 
 @router.get("/locales", response_model=list[SupportedLocale])
 async def get_supported_locales():
-    """Get list of supported locales with their configuration
-    """
+    """Get list of supported locales with their configuration"""
     return list(SUPPORTED_LOCALES.values())
 
 
 @router.get("/locale/{locale_code}")
 async def get_locale_info(locale_code: str):
-    """Get detailed information about a specific locale
-    """
+    """Get detailed information about a specific locale"""
     if locale_code not in SUPPORTED_LOCALES:
         # Try to find a close match
         locale_code = get_best_locale([locale_code])
@@ -379,8 +375,7 @@ async def translate_key(
     locale: str | None = Query("en-US"),
     accept_language: str | None = Header(None, alias="Accept-Language"),
 ):
-    """Translate a single key
-    """
+    """Translate a single key"""
     # Determine locale
     if accept_language and not locale:
         requested_locales = parse_accept_language(accept_language)
@@ -397,8 +392,7 @@ async def translate_batch(
     locale: str | None = Query("en-US"),
     accept_language: str | None = Header(None, alias="Accept-Language"),
 ):
-    """Translate multiple keys at once
-    """
+    """Translate multiple keys at once"""
     # Determine locale
     if accept_language and not locale:
         requested_locales = parse_accept_language(accept_language)
@@ -419,8 +413,7 @@ async def get_accessibility_labels(
     locale: str | None = Query("en-US"),
     accept_language: str | None = Header(None, alias="Accept-Language"),
 ):
-    """Get all accessibility labels for screen readers
-    """
+    """Get all accessibility labels for screen readers"""
     # Determine locale
     if accept_language and not locale:
         requested_locales = parse_accept_language(accept_language)
@@ -437,8 +430,7 @@ async def get_accessibility_labels(
 
 @router.get("/a11y/config")
 async def get_accessibility_config():
-    """Get accessibility configuration for the app
-    """
+    """Get accessibility configuration for the app"""
     return {
         "ok": True,
         "wcag_level": "AA",

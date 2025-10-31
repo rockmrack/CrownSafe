@@ -113,7 +113,7 @@ class S3BackupExporter:
             return task_id
 
         except Exception as e:
-            logger.error(f"Failed to start export: {e}")
+            logger.exception(f"Failed to start export: {e}")
             self._record_export_failed()
             return None
 
@@ -139,7 +139,7 @@ class S3BackupExporter:
             return snapshots[0]
 
         except Exception as e:
-            logger.error(f"Error getting snapshots: {e}")
+            logger.exception(f"Error getting snapshots: {e}")
             return None
 
     def monitor_export(self, task_id: str) -> ExportTask:
@@ -169,7 +169,7 @@ class S3BackupExporter:
             return export_task
 
         except Exception as e:
-            logger.error(f"Error monitoring export: {e}")
+            logger.exception(f"Error monitoring export: {e}")
             return None
 
     def wait_for_export(
@@ -256,7 +256,7 @@ class S3BackupExporter:
             return all(found_patterns.values())
 
         except Exception as e:
-            logger.error(f"Error verifying export: {e}")
+            logger.exception(f"Error verifying export: {e}")
             return False
 
     def cleanup_old_exports(self, days_to_keep: int = 30) -> int:
@@ -293,7 +293,7 @@ class S3BackupExporter:
             return total_deleted
 
         except Exception as e:
-            logger.error(f"Error cleaning up exports: {e}")
+            logger.exception(f"Error cleaning up exports: {e}")
             return 0
 
     def _delete_objects(self, objects: list[dict]):
@@ -309,7 +309,7 @@ class S3BackupExporter:
                     logger.error(f"Failed to delete {error['Key']}: {error['Message']}")
 
         except Exception as e:
-            logger.error(f"Error deleting objects: {e}")
+            logger.exception(f"Error deleting objects: {e}")
 
     def get_export_statistics(self) -> dict:
         """Get export statistics"""
@@ -365,7 +365,7 @@ class S3BackupExporter:
             return stats
 
         except Exception as e:
-            logger.error(f"Error getting statistics: {e}")
+            logger.exception(f"Error getting statistics: {e}")
             return {}
 
     def _record_export_started(self):
@@ -383,7 +383,7 @@ class S3BackupExporter:
                 ],
             )
         except Exception as e:
-            logger.error(f"Error recording metric: {e}")
+            logger.exception(f"Error recording metric: {e}")
 
     def _record_export_success(self, task: ExportTask):
         """Record successful export metrics"""
@@ -417,7 +417,7 @@ class S3BackupExporter:
                 ],
             )
         except Exception as e:
-            logger.error(f"Error recording metrics: {e}")
+            logger.exception(f"Error recording metrics: {e}")
 
     def _record_export_failed(self):
         """Record failed export metric"""
@@ -434,7 +434,7 @@ class S3BackupExporter:
                 ],
             )
         except Exception as e:
-            logger.error(f"Error recording metric: {e}")
+            logger.exception(f"Error recording metric: {e}")
 
 
 def main():

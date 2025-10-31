@@ -134,8 +134,7 @@ async def optional_admin(request: Request, x_admin_key: str | None = Depends(api
 
 
 class AdminRateLimit:
-    """Special rate limits for admin endpoints
-    """
+    """Special rate limits for admin endpoints"""
 
     # Admin endpoints have lower rate limits for security
     INGEST_LIMIT = 5  # 5 ingestions per hour

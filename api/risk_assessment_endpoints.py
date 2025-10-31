@@ -110,8 +110,7 @@ data_unification = DataUnificationEngine()
 
 @risk_router.get("", response_model=dict)
 async def get_risk_assessment_info():
-    """Get risk assessment service information and available endpoints
-    """
+    """Get risk assessment service information and available endpoints"""
     return {
         "success": True,
         "data": {
@@ -134,8 +133,7 @@ async def get_risk_assessment_info():
 
 @risk_router.post("", response_model=dict)
 async def risk_assessment_root_post():
-    """POST endpoint for root risk assessment path - redirects to proper endpoint
-    """
+    """POST endpoint for root risk assessment path - redirects to proper endpoint"""
     return {
         "success": False,
         "error": {
@@ -337,7 +335,7 @@ async def assess_by_barcode(
         return await assess_product_risk(request, background_tasks, db)
 
     except Exception as e:
-        logger.error(f"Barcode assessment failed: {e}")
+        logger.exception(f"Barcode assessment failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -383,7 +381,7 @@ async def assess_by_image(
         return await assess_product_risk(request, background_tasks, db)
 
     except Exception as e:
-        logger.error(f"Image assessment failed: {e}")
+        logger.exception(f"Image assessment failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -393,8 +391,7 @@ async def get_risk_profile(
     include_history: bool = Query(False, description="Include historical risk scores"),
     db: Session = Depends(get_db),
 ):
-    """Get detailed risk profile for a product
-    """
+    """Get detailed risk profile for a product"""
     try:
         # Get product
         product = db.query(ProductGoldenRecord).filter(ProductGoldenRecord.id == product_id).first()
@@ -456,8 +453,7 @@ async def get_report(
     format: str = Query("pdf", description="Report format: pdf, html, json"),
     db: Session = Depends(get_db),
 ):
-    """Download risk assessment report
-    """
+    """Download risk assessment report"""
     try:
         # Get report record
         report = db.query(RiskAssessmentReport).filter(RiskAssessmentReport.id == report_id).first()
@@ -495,8 +491,7 @@ async def trigger_data_ingestion(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """Trigger data ingestion from safety sources
-    """
+    """Trigger data ingestion from safety sources"""
     try:
         # Create ingestion job
         job = DataIngestionJob(
@@ -525,7 +520,7 @@ async def trigger_data_ingestion(
         }
 
     except Exception as e:
-        logger.error(f"Failed to trigger ingestion: {e}")
+        logger.exception(f"Failed to trigger ingestion: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -536,8 +531,7 @@ async def search_products(
     include_risk: bool = Query(True, description="Include risk scores"),
     db: Session = Depends(get_db),
 ):
-    """Search products with risk information
-    """
+    """Search products with risk information"""
     try:
         # Search products
         query = db.query(ProductGoldenRecord)
@@ -578,14 +572,13 @@ async def search_products(
         return {"query": q, "count": len(results), "results": results}
 
     except Exception as e:
-        logger.error(f"Search failed: {e}")
+        logger.exception(f"Search failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @risk_router.get("/stats")
 async def get_risk_statistics(db: Session = Depends(get_db)):
-    """Get system-wide risk statistics
-    """
+    """Get system-wide risk statistics"""
     try:
         stats = {
             "total_products": db.query(func.count(ProductGoldenRecord.id)).scalar(),
@@ -635,14 +628,13 @@ async def get_risk_statistics(db: Session = Depends(get_db)):
         return stats
 
     except Exception as e:
-        logger.error(f"Failed to get statistics: {e}")
+        logger.exception(f"Failed to get statistics: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
 # Helper functions
 async def _find_or_create_product(request: RiskAssessmentRequest, db: Session) -> ProductGoldenRecord | None:
-    """Find existing product or create new golden record
-    """
+    """Find existing product or create new golden record"""
     # Try to find by identifiers
     if request.gtin:
         product = db.query(ProductGoldenRecord).filter(ProductGoldenRecord.gtin == request.gtin).first()
@@ -693,8 +685,7 @@ async def _find_or_create_product(request: RiskAssessmentRequest, db: Session) -
 
 
 async def enrich_product_data(product: ProductGoldenRecord, db: Session) -> None:
-    """Enrich product data from commercial sources
-    """
+    """Enrich product data from commercial sources"""
     try:
         commercial_connector = CommercialDatabaseConnector()
 
@@ -727,12 +718,11 @@ async def enrich_product_data(product: ProductGoldenRecord, db: Session) -> None
                 db.commit()
 
     except Exception as e:
-        logger.error(f"Failed to enrich product data: {e}")
+        logger.exception(f"Failed to enrich product data: {e}")
 
 
 async def refresh_product_data(product_id: str, barcode: str | None = None) -> None:
-    """Background task to refresh product data from all sources
-    """
+    """Background task to refresh product data from all sources"""
     logger.info(f"Refreshing data for product {product_id}")
 
     # This would typically:
@@ -751,8 +741,7 @@ async def ingest_from_source(
     start_date: datetime | None,
     end_date: datetime | None,
 ) -> None:
-    """Background task to ingest data from a specific source
-    """
+    """Background task to ingest data from a specific source"""
     logger.info(f"Starting ingestion from {source} for job {job_id}")
 
     try:
@@ -767,4 +756,4 @@ async def ingest_from_source(
             # Process records...
 
     except Exception as e:
-        logger.error(f"Ingestion failed for {source}: {e}")
+        logger.exception(f"Ingestion failed for {source}: {e}")

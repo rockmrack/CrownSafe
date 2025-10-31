@@ -198,7 +198,7 @@ class ReportBuilderAgentManager:
                     "workflow_id": workflow_id,
                     "task_id": task_id,
                     "agent_id": AGENT_ID,
-                    "error_message": f"ReportBuilderAgent failed to process {message_type}: {str(error)}",
+                    "error_message": f"ReportBuilderAgent failed to process {message_type}: {error!s}",
                 }
 
                 await self.mcp_client.send_message(

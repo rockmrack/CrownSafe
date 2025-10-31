@@ -2,7 +2,7 @@
 Tests chat memory models for user profiles, conversations, and messages
 """
 
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timezone, UTC
 
 import pytest
 from sqlalchemy import (
@@ -293,7 +293,7 @@ class TestChatMemoryModels:
         db_session.commit()
 
         # Set erase request
-        user_profile.erase_requested_at = datetime.now(timezone.utc)
+        user_profile.erase_requested_at = datetime.now(UTC)
         db_session.commit()
 
         retrieved = db_session.query(UserProfile).filter(UserProfile.user_id == "test-erase-user").first()
@@ -309,7 +309,7 @@ class TestChatMemoryModels:
         original_activity = conversation.last_activity_at
 
         # Simulate activity update
-        conversation.last_activity_at = datetime.now(timezone.utc)
+        conversation.last_activity_at = datetime.now(UTC)
         db_session.commit()
 
         retrieved = db_session.query(Conversation).filter(Conversation.id == "conv-activity").first()

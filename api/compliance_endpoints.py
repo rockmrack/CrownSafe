@@ -310,7 +310,7 @@ async def verify_user_age(request: AgeVerificationRequest, db: Session = Depends
 
     except Exception as e:
         logger.error(f"Age verification failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Age verification failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Age verification failed: {e!s}")
 
 
 @router.post("/coppa/parental-consent", response_model=ParentalConsentResponse)
@@ -369,13 +369,12 @@ async def submit_parental_consent(
 
     except Exception as e:
         logger.error(f"Parental consent failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Parental consent failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Parental consent failed: {e!s}")
 
 
 @router.get("/coppa/consent-status/{user_id}")
 async def get_consent_status(user_id: int, db: Session = Depends(get_db)):
-    """Check COPPA consent status for a user.
-    """
+    """Check COPPA consent status for a user."""
     try:
         # In production, fetch from database
         # Mock response for now
@@ -400,7 +399,7 @@ async def get_consent_status(user_id: int, db: Session = Depends(get_db)):
 
     except Exception as e:
         logger.error(f"Consent status check failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Consent status check failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Consent status check failed: {e!s}")
 
 
 # ==================== Children's Code Compliance Endpoints ====================
@@ -515,7 +514,7 @@ async def assess_childrens_code_compliance(request: ChildrenCodeAssessmentReques
 
     except Exception as e:
         logger.error(f"Children's Code assessment failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Assessment failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Assessment failed: {e!s}")
 
 
 # ==================== Data Governance Endpoints ====================
@@ -586,7 +585,7 @@ async def submit_data_request(
         raise
     except Exception as e:
         logger.error(f"Data request failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Data request failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Data request failed: {e!s}")
 
 
 @router.get("/gdpr/request-status/{request_id}")
@@ -595,8 +594,7 @@ async def get_request_status(
     user_id: int = Query(..., description="User ID"),
     db: Session = Depends(get_db),
 ):
-    """Check status of a GDPR data request.
-    """
+    """Check status of a GDPR data request."""
     try:
         # In production, fetch from database
         # Mock response
@@ -613,7 +611,7 @@ async def get_request_status(
 
     except Exception as e:
         logger.error(f"Status check failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Status check failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Status check failed: {e!s}")
 
 
 @router.post("/gdpr/retention-policy", response_model=DataRetentionPolicyResponse)
@@ -679,7 +677,7 @@ async def set_retention_policy(request: DataRetentionPolicyRequest, db: Session 
 
     except Exception as e:
         logger.error(f"Retention policy update failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Policy update failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Policy update failed: {e!s}")
 
 
 # ==================== Legal Content Management Endpoints ====================
@@ -687,8 +685,7 @@ async def set_retention_policy(request: DataRetentionPolicyRequest, db: Session 
 
 @router.post("/legal/document", response_model=LegalDocumentResponse)
 async def get_legal_document(request: LegalDocumentRequest, db: Session = Depends(get_db)):
-    """Get legal documents (ToS, Privacy Policy, etc.) with age-appropriate versions.
-    """
+    """Get legal documents (ToS, Privacy Policy, etc.) with age-appropriate versions."""
     try:
         logger.info(f"Fetching {request.document_type} document")
 
@@ -769,13 +766,12 @@ async def get_legal_document(request: LegalDocumentRequest, db: Session = Depend
 
     except Exception as e:
         logger.error(f"Document fetch failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Document fetch failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Document fetch failed: {e!s}")
 
 
 @router.post("/legal/consent/update", response_model=ConsentUpdateResponse)
 async def update_user_consent(request: ConsentUpdateRequest, db: Session = Depends(get_db)):
-    """Update user consent preferences.
-    """
+    """Update user consent preferences."""
     try:
         logger.info(f"Updating consent for user {request.user_id}")
 
@@ -805,7 +801,7 @@ async def update_user_consent(request: ConsentUpdateRequest, db: Session = Depen
         raise
     except Exception as e:
         logger.error(f"Consent update failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Consent update failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Consent update failed: {e!s}")
 
 
 # ==================== Privacy Dashboard Endpoint ====================
@@ -890,4 +886,4 @@ async def get_privacy_dashboard(
         raise
     except Exception as e:
         logger.error(f"Privacy dashboard failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Dashboard failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Dashboard failed: {e!s}")

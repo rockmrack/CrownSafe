@@ -6,7 +6,7 @@ import json
 import logging
 import os
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 import boto3
@@ -146,7 +146,7 @@ async def request_image_upload(
         job_id = str(uuid.uuid4())
 
         # Generate S3 key
-        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
         s3_key = f"uploads/{user_id}/{timestamp}_{job_id}.jpg"
 
         # Generate presigned POST URL with region-correct host
@@ -177,7 +177,7 @@ async def request_image_upload(
         return ApiResponse(success=True, data=response_dict)
 
     except Exception as e:
-        logger.error(f"Upload request error: {e}")
+        logger.exception(f"Upload request error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -205,7 +205,7 @@ async def analyze_image(request: ImageAnalysisRequest, db: Session = Depends(get
                 image_url=request.image_url,
                 image_base64=request.image_base64,
                 status=JobStatus.PENDING,
-                created_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
             )
             db.add(job)
             db.commit()
@@ -312,7 +312,7 @@ async def analyze_image(request: ImageAnalysisRequest, db: Session = Depends(get
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Analysis error: {e}")
+        logger.exception(f"Analysis error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -358,7 +358,7 @@ async def get_job_status(job_id: str, db: Session = Depends(get_db_session)) -> 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Status error: {e}")
+        logger.exception(f"Status error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -402,7 +402,7 @@ async def confirm_mfv(request: MFVConfirmationRequest, db: Session = Depends(get
                 extraction.brand_name = request.confirmed_brand
                 extraction.model_number = request.confirmed_model
 
-        mfv.completed_at = datetime.now(timezone.utc)
+        mfv.completed_at = datetime.now(UTC)
         db.commit()
 
         # Generate safety message
@@ -421,7 +421,7 @@ async def confirm_mfv(request: MFVConfirmationRequest, db: Session = Depends(get
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"MFV error: {e}")
+        logger.exception(f"MFV error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -469,7 +469,7 @@ async def get_review_queue(
         return ApiResponse(success=True, data=data)
 
     except Exception as e:
-        logger.error(f"Review queue error: {e}")
+        logger.exception(f"Review queue error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -504,7 +504,7 @@ async def claim_review(review_id: int, request: Request, db: Session = Depends(g
 
         review.status = ReviewStatus.CLAIMED
         review.claimed_by = reviewer_email
-        review.claimed_at = datetime.now(timezone.utc)
+        review.claimed_at = datetime.now(UTC)
 
         # Add to audit log
         if not review.audit_log:
@@ -513,7 +513,7 @@ async def claim_review(review_id: int, request: Request, db: Session = Depends(g
             {
                 "action": "claimed",
                 "by": reviewer_email,
-                "at": datetime.now(timezone.utc).isoformat(),
+                "at": datetime.now(UTC).isoformat(),
             },
         )
 
@@ -544,7 +544,7 @@ async def claim_review(review_id: int, request: Request, db: Session = Depends(g
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Claim error: {e}")
+        logger.exception(f"Claim error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -566,7 +566,7 @@ async def resolve_review(review_id: int, action: ReviewAction, db: Session = Dep
             review.status = ReviewStatus.REJECTED
 
         review.review_notes = action.notes
-        review.reviewed_at = datetime.now(timezone.utc)
+        review.reviewed_at = datetime.now(UTC)
         review.reviewed_by = review.claimed_by
 
         # Apply corrections if provided
@@ -601,7 +601,7 @@ async def resolve_review(review_id: int, action: ReviewAction, db: Session = Dep
             {
                 "action": action.action,
                 "by": review.reviewed_by,
-                "at": datetime.now(timezone.utc).isoformat(),
+                "at": datetime.now(UTC).isoformat(),
                 "notes": action.notes,
             },
         )
@@ -620,7 +620,7 @@ async def resolve_review(review_id: int, action: ReviewAction, db: Session = Dep
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Resolve error: {e}")
+        logger.exception(f"Resolve error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -652,7 +652,7 @@ def _generate_safety_message(
         return f"⚠️ Warnings detected: {warnings}. Please verify product model and check official sources."
 
     # Standard message - always qualified, never absolute
-    date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    date_str = datetime.now(UTC).strftime("%Y-%m-%d")
     message = f"No recalls found for {product_desc} as of {date_str}. "
     message += "Please verify the model number and check official sources. "
     message += "Keep packaging and register your product with the manufacturer for future alerts."
@@ -683,8 +683,7 @@ def _fuzzy_match(str1: str | None, str2: str | None) -> bool:
 
 @visual_router.post("/search", response_model=ApiResponse)
 async def visual_search(request: ImageAnalysisRequest, db: Session = Depends(get_db_session)):
-    """Visual search endpoint for product recognition and safety checking
-    """
+    """Visual search endpoint for product recognition and safety checking"""
     try:
         # Validate input
         if not request.image_url and not request.image_base64:
@@ -770,4 +769,4 @@ async def visual_search(request: ImageAnalysisRequest, db: Session = Depends(get
 
     except Exception as e:
         logger.error(f"Visual search error: {e}", exc_info=True)
-        return ApiResponse(success=False, error=f"Visual search failed: {str(e)}")
+        return ApiResponse(success=False, error=f"Visual search failed: {e!s}")

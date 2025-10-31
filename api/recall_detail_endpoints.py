@@ -1,5 +1,4 @@
-"""Recall Detail Endpoints for Individual Recall Lookup
-"""
+"""Recall Detail Endpoints for Individual Recall Lookup"""
 
 import logging
 import re
@@ -160,7 +159,7 @@ async def get_recall_detail(recall_id: str, request: Request, response: Response
                 "ok": False,
                 "error": {
                     "code": "INTERNAL_ERROR",
-                    "message": f"Failed to fetch recall details: {str(e)}",
+                    "message": f"Failed to fetch recall details: {e!s}",
                 },
             },
         )

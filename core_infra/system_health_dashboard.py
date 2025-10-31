@@ -12,7 +12,7 @@ Features:
 """
 
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ class SystemHealthDashboard:
 
     def __init__(self) -> None:
         """Initialize health dashboard"""
-        self.startup_time = datetime.now(timezone.utc)
+        self.startup_time = datetime.now(UTC)
 
     def get_comprehensive_health(self) -> dict[str, Any]:
         """Get comprehensive system health status
@@ -37,8 +37,8 @@ class SystemHealthDashboard:
         """
         health_data = {
             "status": "healthy",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "uptime_seconds": (datetime.now(timezone.utc) - self.startup_time).total_seconds(),
+            "timestamp": datetime.now(UTC).isoformat(),
+            "uptime_seconds": (datetime.now(UTC) - self.startup_time).total_seconds(),
             "subsystems": {},
             "overall_health_score": 100.0,
         }
@@ -61,7 +61,7 @@ class SystemHealthDashboard:
                     health_data["overall_health_score"] -= 5
 
         except Exception as e:
-            logger.error(f"Failed to get security status: {e}")
+            logger.exception(f"Failed to get security status: {e}")
             health_data["subsystems"]["security"] = {
                 "status": "error",
                 "error": str(e),
@@ -77,7 +77,7 @@ class SystemHealthDashboard:
                 health_data["overall_health_score"] -= 20
 
         except Exception as e:
-            logger.error(f"Failed to get Azure Storage health: {e}")
+            logger.exception(f"Failed to get Azure Storage health: {e}")
             health_data["subsystems"]["azure_storage"] = {
                 "status": "error",
                 "error": str(e),
@@ -97,7 +97,7 @@ class SystemHealthDashboard:
                 health_data["overall_health_score"] -= 5
 
         except Exception as e:
-            logger.error(f"Failed to get cache stats: {e}")
+            logger.exception(f"Failed to get cache stats: {e}")
             health_data["subsystems"]["cache"] = {"status": "error", "error": str(e)}
 
         # Connection pool statistics
@@ -115,7 +115,7 @@ class SystemHealthDashboard:
                 health_data["overall_health_score"] -= 5
 
         except Exception as e:
-            logger.error(f"Failed to get connection pool stats: {e}")
+            logger.exception(f"Failed to get connection pool stats: {e}")
             health_data["subsystems"]["connection_pool"] = {
                 "status": "error",
                 "error": str(e),
@@ -130,7 +130,7 @@ class SystemHealthDashboard:
                 health_data["overall_health_score"] -= 25
 
         except Exception as e:
-            logger.error(f"Failed to get database health: {e}")
+            logger.exception(f"Failed to get database health: {e}")
             health_data["subsystems"]["database"] = {
                 "status": "error",
                 "error": str(e),
@@ -166,7 +166,7 @@ class SystemHealthDashboard:
                 "warnings": audit_results.get("total_warnings", 0),
             }
         except Exception as e:
-            logger.error(f"Security status check failed: {e}")
+            logger.exception(f"Security status check failed: {e}")
             return {"status": "error", "error": str(e)}
 
     def _get_azure_storage_health(self) -> dict[str, Any]:
@@ -197,7 +197,7 @@ class SystemHealthDashboard:
                 },
             }
         except Exception as e:
-            logger.error(f"Azure Storage health check failed: {e}")
+            logger.exception(f"Azure Storage health check failed: {e}")
             return {"status": "error", "error": str(e)}
 
     def _get_cache_stats(self) -> dict[str, Any]:
@@ -216,7 +216,7 @@ class SystemHealthDashboard:
                 "cache_misses": stats["cache_misses"],
             }
         except Exception as e:
-            logger.error(f"Cache stats retrieval failed: {e}")
+            logger.exception(f"Cache stats retrieval failed: {e}")
             return {"cache_enabled": False, "error": str(e)}
 
     def _get_connection_pool_stats(self) -> dict[str, Any]:
@@ -234,7 +234,7 @@ class SystemHealthDashboard:
                 "pool_exhaustion_count": stats["pool_exhaustion_count"],
             }
         except Exception as e:
-            logger.error(f"Connection pool stats retrieval failed: {e}")
+            logger.exception(f"Connection pool stats retrieval failed: {e}")
             return {"error": str(e)}
 
     def _get_database_health(self) -> dict[str, Any]:
@@ -255,7 +255,7 @@ class SystemHealthDashboard:
                 return {"status": "unhealthy", "error": str(e)}
 
         except Exception as e:
-            logger.error(f"Database health check failed: {e}")
+            logger.exception(f"Database health check failed: {e}")
             return {"status": "error", "error": str(e)}
 
 

@@ -16,8 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class GracefulShutdownHandler:
-    """Manages graceful shutdown of the application
-    """
+    """Manages graceful shutdown of the application"""
 
     def __init__(self, timeout: int = 30) -> None:
         self.timeout = timeout
@@ -29,8 +28,7 @@ class GracefulShutdownHandler:
         self._original_sigterm = None
 
     def register_cleanup(self, task: Callable) -> None:
-        """Register a cleanup task to run on shutdown
-        """
+        """Register a cleanup task to run on shutdown"""
         self.cleanup_tasks.append(task)
         logger.info(f"Registered cleanup task: {task.__name__}")
 
@@ -54,8 +52,7 @@ class GracefulShutdownHandler:
             self.decrement_active_requests()
 
     def signal_handler(self, signum, frame) -> None:
-        """Handle shutdown signals
-        """
+        """Handle shutdown signals"""
         signal_name = signal.Signals(signum).name
         logger.info(f"Received signal {signal_name}, initiating graceful shutdown...")
 
@@ -66,8 +63,7 @@ class GracefulShutdownHandler:
         threading.Thread(target=self._shutdown, daemon=False).start()
 
     def _shutdown(self) -> None:
-        """Perform graceful shutdown
-        """
+        """Perform graceful shutdown"""
         start_time = time.time()
 
         # Step 1: Stop accepting new requests
@@ -92,7 +88,7 @@ class GracefulShutdownHandler:
                 else:
                     task()
             except Exception as e:
-                logger.error(f"  Error in cleanup task {task.__name__}: {e}")
+                logger.exception(f"  Error in cleanup task {task.__name__}: {e}")
 
         # Step 4: Close resources
         logger.info("Step 4: Closing resources...")
@@ -105,8 +101,7 @@ class GracefulShutdownHandler:
         sys.exit(0)
 
     def _close_resources(self) -> None:
-        """Close all resources
-        """
+        """Close all resources"""
         try:
             # Close database connections
             from core_infra.database import engine
@@ -114,7 +109,7 @@ class GracefulShutdownHandler:
             logger.info("  Closing database connections...")
             engine.dispose()
         except Exception as e:
-            logger.error(f"  Error closing database: {e}")
+            logger.exception(f"  Error closing database: {e}")
 
         try:
             # Close Redis connections
@@ -124,18 +119,17 @@ class GracefulShutdownHandler:
             r = redis.Redis(host="localhost", port=6379)
             r.close()
         except Exception as e:
-            logger.error(f"  Error closing Redis: {e}")
+            logger.exception(f"  Error closing Redis: {e}")
 
         try:
             # Stop Celery workers
             logger.info("  Stopping Celery workers...")
             # This would need actual Celery app reference
         except Exception as e:
-            logger.error(f"  Error stopping Celery: {e}")
+            logger.exception(f"  Error stopping Celery: {e}")
 
     def install(self) -> None:
-        """Install signal handlers
-        """
+        """Install signal handlers"""
         # Store original handlers
         self._original_sigint = signal.signal(signal.SIGINT, self.signal_handler)
         self._original_sigterm = signal.signal(signal.SIGTERM, self.signal_handler)
@@ -143,8 +137,7 @@ class GracefulShutdownHandler:
         logger.info("✅ Graceful shutdown handler installed")
 
     def uninstall(self) -> None:
-        """Restore original signal handlers
-        """
+        """Restore original signal handlers"""
         if self._original_sigint:
             signal.signal(signal.SIGINT, self._original_sigint)
         if self._original_sigterm:
@@ -157,8 +150,7 @@ shutdown_handler = GracefulShutdownHandler()
 
 # Middleware for tracking requests
 async def request_tracking_middleware(request, call_next):
-    """Track active requests for graceful shutdown
-    """
+    """Track active requests for graceful shutdown"""
     with shutdown_handler.track_request():
         # Check if shutting down
         if shutdown_handler.shutdown_event.is_set():
@@ -189,7 +181,7 @@ def cleanup_temp_files() -> None:
             elif os.path.isdir(temp_file):
                 shutil.rmtree(temp_file)
         except Exception as e:
-            logger.error(f"  Error deleting {temp_file}: {e}")
+            logger.exception(f"  Error deleting {temp_file}: {e}")
 
 
 def flush_logs() -> None:
@@ -218,7 +210,7 @@ def save_application_state() -> None:
             json.dump(state, f)
         logger.info("  Application state saved")
     except Exception as e:
-        logger.error(f"  Error saving state: {e}")
+        logger.exception(f"  Error saving state: {e}")
 
 
 # Register default cleanup tasks
@@ -229,8 +221,7 @@ shutdown_handler.register_cleanup(save_application_state)
 
 # FastAPI integration
 def setup_graceful_shutdown(app) -> None:
-    """Setup graceful shutdown for FastAPI app
-    """
+    """Setup graceful shutdown for FastAPI app"""
 
     @app.on_event("startup")
     async def startup_event() -> None:
@@ -255,8 +246,7 @@ def setup_graceful_shutdown(app) -> None:
 
 # Celery integration
 def setup_celery_graceful_shutdown(celery_app) -> None:
-    """Setup graceful shutdown for Celery workers
-    """
+    """Setup graceful shutdown for Celery workers"""
     from celery.signals import worker_shutdown, worker_shutting_down
 
     @worker_shutting_down.connect
@@ -292,8 +282,7 @@ def setup_celery_graceful_shutdown(celery_app) -> None:
 # Context manager for graceful operations
 @contextmanager
 def graceful_operation(name: str, timeout: int = 10):
-    """Context manager for operations that need graceful handling
-    """
+    """Context manager for operations that need graceful handling"""
     if shutdown_handler.shutdown_event.is_set():
         raise RuntimeError(f"Cannot start {name}: shutdown in progress")
 
@@ -312,8 +301,7 @@ def graceful_operation(name: str, timeout: int = 10):
 
 # Recovery on startup
 def check_previous_shutdown() -> None:
-    """Check if previous shutdown was clean
-    """
+    """Check if previous shutdown was clean"""
     import json
     import os
 
@@ -331,4 +319,4 @@ def check_previous_shutdown() -> None:
             os.unlink("shutdown_state.json")
 
         except Exception as e:
-            logger.error(f"Error reading shutdown state: {e}")
+            logger.exception(f"Error reading shutdown state: {e}")

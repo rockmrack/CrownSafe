@@ -4,7 +4,7 @@ Part of the Proactive Consumer Product Safety Framework
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 import aiohttp
 
@@ -52,8 +52,7 @@ class CPSCDataConnector:
         end_date: datetime | None = None,
         limit: int = 1000,
     ) -> list[SafetyDataRecord]:
-        """Fetch recall data from CPSC Recall API
-        """
+        """Fetch recall data from CPSC Recall API"""
         logger.info("Fetching CPSC recall data...")
         records = []
 
@@ -107,7 +106,7 @@ class CPSCDataConnector:
                         logger.error(f"CPSC API error: {response.status}")
 
         except Exception as e:
-            logger.error(f"Error fetching CPSC recalls: {e}")
+            logger.exception(f"Error fetching CPSC recalls: {e}")
 
         logger.info(f"Fetched {len(records)} CPSC recall records")
         return records
@@ -140,8 +139,7 @@ class CPSCDataConnector:
         return records
 
     async def fetch_violations(self, company_name: str | None = None, limit: int = 1000) -> list[SafetyDataRecord]:
-        """Fetch violation data from CPSC
-        """
+        """Fetch violation data from CPSC"""
         logger.info("Fetching CPSC violation data...")
         records = []
 
@@ -172,13 +170,12 @@ class CPSCDataConnector:
                             records.append(record)
 
         except Exception as e:
-            logger.error(f"Error fetching CPSC violations: {e}")
+            logger.exception(f"Error fetching CPSC violations: {e}")
 
         return records
 
     async def fetch_safety_articles(self) -> list[dict]:
-        """Fetches recent safety news and educational articles from the CPSC newsroom API.
-        """
+        """Fetches recent safety news and educational articles from the CPSC newsroom API."""
         logger.info("Fetching safety articles from CPSC Newsroom API...")
         news_api_url = "https://www.cpsc.gov/content/api/news"
         articles = []
@@ -223,7 +220,7 @@ class CPSCDataConnector:
                         logger.error(f"CPSC News API returned status {response.status}")
 
         except Exception as e:
-            logger.error(f"Failed to fetch safety articles from CPSC: {e}")
+            logger.exception(f"Failed to fetch safety articles from CPSC: {e}")
 
         return articles
 
@@ -258,8 +255,7 @@ class CPSCDataConnector:
 
 
 class EUSafetyGateConnector:
-    """EU Safety Gate (RAPEX) data connector
-    """
+    """EU Safety Gate (RAPEX) data connector"""
 
     def __init__(self) -> None:
         self.base_url = "https://ec.europa.eu/safety-gate-api"
@@ -272,8 +268,7 @@ class EUSafetyGateConnector:
         risk_types: list[str] | None = None,
         limit: int = 1000,
     ) -> list[SafetyDataRecord]:
-        """Fetch alerts from EU Safety Gate
-        """
+        """Fetch alerts from EU Safety Gate"""
         logger.info("Fetching EU Safety Gate alerts...")
         records = []
 
@@ -310,7 +305,7 @@ class EUSafetyGateConnector:
                 records.append(record)
 
         except Exception as e:
-            logger.error(f"Error fetching EU Safety Gate alerts: {e}")
+            logger.exception(f"Error fetching EU Safety Gate alerts: {e}")
 
         logger.info(f"Fetched {len(records)} EU Safety Gate records")
         return records
@@ -407,8 +402,7 @@ class DataUnificationEngine:
         self.matching_threshold = 0.8
 
     def create_golden_record(self, records: list[SafetyDataRecord]) -> dict:
-        """Create a unified golden record from multiple sources
-        """
+        """Create a unified golden record from multiple sources"""
         if not records:
             return None
 
@@ -425,7 +419,7 @@ class DataUnificationEngine:
         # Add metadata
         golden["source_records"] = [r.source_id for r in records]
         golden["sources"] = list(set(r.source for r in records))
-        golden["last_updated"] = datetime.now(timezone.utc)
+        golden["last_updated"] = datetime.now(UTC)
 
         return golden
 

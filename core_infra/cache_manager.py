@@ -217,7 +217,7 @@ class BabyShieldCacheManager:
                 ),
             }
         except Exception as e:
-            logger.error(f"Cache stats error: {e}")
+            logger.exception(f"Cache stats error: {e}")
             return {"status": "error", "error": str(e)}
 
     def health_check(self) -> bool:

@@ -42,8 +42,7 @@ class AppModel(BaseSchema):
 
 
 class APIResponse(BaseSchema):
-    """Standard API response wrapper.
-    """
+    """Standard API response wrapper."""
 
     ok: bool = True
     message: str | None = None
@@ -65,8 +64,7 @@ class APIResponse(BaseSchema):
 
 
 class ErrorResponse(BaseSchema):
-    """Standard error response format.
-    """
+    """Standard error response format."""
 
     ok: bool = False
     error: dict[str, Any]

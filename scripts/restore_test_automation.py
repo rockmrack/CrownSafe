@@ -69,7 +69,7 @@ class RestoreTester:
             return latest["DBSnapshotIdentifier"]
 
         except Exception as e:
-            logger.error(f"Error getting snapshots: {e}")
+            logger.exception(f"Error getting snapshots: {e}")
             return None
 
     def create_test_restore(self, snapshot_id: str) -> str | None:
@@ -99,7 +99,7 @@ class RestoreTester:
             return test_instance_id
 
         except Exception as e:
-            logger.error(f"Error creating restore: {e}")
+            logger.exception(f"Error creating restore: {e}")
             return None
 
     def wait_for_instance(self, instance_id: str, timeout_minutes: int = 30) -> bool:
@@ -124,7 +124,7 @@ class RestoreTester:
                 time.sleep(30)  # Check every 30 seconds
 
             except Exception as e:
-                logger.error(f"Error checking instance status: {e}")
+                logger.exception(f"Error checking instance status: {e}")
                 return False
 
         logger.error(f"Timeout waiting for instance after {timeout_minutes} minutes")
@@ -147,7 +147,7 @@ class RestoreTester:
             return None
 
         except Exception as e:
-            logger.error(f"Error getting connection info: {e}")
+            logger.exception(f"Error getting connection info: {e}")
             return None
 
     def validate_restored_data(self, connection_info: dict) -> dict:
@@ -262,7 +262,7 @@ class RestoreTester:
             return validation_results
 
         except Exception as e:
-            logger.error(f"Error validating data: {e}")
+            logger.exception(f"Error validating data: {e}")
             validation_results["error"] = str(e)
             return validation_results
 
@@ -280,7 +280,7 @@ class RestoreTester:
             return True
 
         except Exception as e:
-            logger.error(f"Error deleting test instance: {e}")
+            logger.exception(f"Error deleting test instance: {e}")
             return False
 
     def send_notification(self, result: RestoreTestResult):
@@ -328,7 +328,7 @@ Please investigate immediately.
             self.sns.publish(TopicArn=topic_arn, Subject=subject, Message=message)
             logger.info("Notification sent")
         except Exception as e:
-            logger.error(f"Error sending notification: {e}")
+            logger.exception(f"Error sending notification: {e}")
 
     def record_metrics(self, result: RestoreTestResult):
         """Record metrics to CloudWatch"""
@@ -370,7 +370,7 @@ Please investigate immediately.
             logger.info("Metrics recorded to CloudWatch")
 
         except Exception as e:
-            logger.error(f"Error recording metrics: {e}")
+            logger.exception(f"Error recording metrics: {e}")
 
     def run_restore_test(self) -> RestoreTestResult:
         """Run a complete restore test"""
@@ -424,7 +424,7 @@ Please investigate immediately.
             return result
 
         except Exception as e:
-            logger.error(f"Restore test failed: {e}")
+            logger.exception(f"Restore test failed: {e}")
 
             duration_minutes = (time.time() - start_time) / 60
 

@@ -25,8 +25,7 @@ from api.services.evidence import label_to_evidence, recalls_to_evidence
 
 
 def pregnancy_adapter(scan: dict[str, Any]) -> dict[str, Any]:
-    """Adapter for PregnancyProductSafetyAgent that converts between chat format and agent format.
-    """
+    """Adapter for PregnancyProductSafetyAgent that converts between chat format and agent format."""
     # Create typed input (reserved for future type validation)
     _ = PregnancyCheckIn(
         product_name=scan.get("product_name"),
@@ -80,8 +79,7 @@ def pregnancy_adapter(scan: dict[str, Any]) -> dict[str, Any]:
 
 
 def allergy_adapter(scan: dict[str, Any]) -> dict[str, Any]:
-    """Adapter for AllergySensitivityAgent that converts between chat format and agent format.
-    """
+    """Adapter for AllergySensitivityAgent that converts between chat format and agent format."""
     profile = scan.get("profile") or {}
 
     # Create typed input (reserved for future type validation)
@@ -287,8 +285,7 @@ def recall_details_adapter(scan: dict[str, Any]) -> dict[str, Any]:
 
 
 def ingredient_info_adapter(scan: dict[str, Any]) -> dict[str, Any]:
-    """Adapter for ingredient analysis. Uses simple highlighting rules for now.
-    """
+    """Adapter for ingredient analysis. Uses simple highlighting rules for now."""
     inp = IngredientInfoIn(
         ingredients=[str(x) for x in (scan.get("ingredients") or [])],
         product_name=scan.get("product_name"),
@@ -352,8 +349,7 @@ AGE_RULES = {
 
 
 def age_check_adapter(scan: dict[str, Any]) -> dict[str, Any]:
-    """Adapter for age appropriateness checks using safety rules.
-    """
+    """Adapter for age appropriateness checks using safety rules."""
     inp = AgeCheckIn(
         category=scan.get("category"),
         min_age_months=scan.get("age_min_months"),
@@ -395,6 +391,5 @@ def age_check_adapter(scan: dict[str, Any]) -> dict[str, Any]:
 
 
 def alternatives_adapter(scan: dict[str, Any]) -> dict[str, Any]:
-    """Adapter for alternatives provider that suggests safer product swaps.
-    """
+    """Adapter for alternatives provider that suggests safer product swaps."""
     return {"alternatives": get_alternatives(scan)}

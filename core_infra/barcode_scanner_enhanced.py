@@ -184,7 +184,7 @@ class EnhancedBarcodeScanner:
                 results.append(result)
 
         except Exception as e:
-            self.logger.error(f"PyZbar scanning error: {e}")
+            self.logger.exception(f"PyZbar scanning error: {e}")
 
         return results
 
@@ -303,7 +303,7 @@ class EnhancedBarcodeScanner:
             else:
                 return None
         except Exception as e:
-            self.logger.error(f"Image conversion failed: {e}")
+            self.logger.exception(f"Image conversion failed: {e}")
             return None
 
     def _pyzbar_type_to_enum(self, pyzbar_type: str) -> BarcodeType:

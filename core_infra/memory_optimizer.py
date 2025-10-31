@@ -28,8 +28,7 @@ class MemoryOptimizer:
         self.last_gc = time.time()
 
     def get_memory_usage(self) -> dict[str, Any]:
-        """Get current memory usage statistics
-        """
+        """Get current memory usage statistics"""
         try:
             process = psutil.Process(os.getpid())
             memory_info = process.memory_info()
@@ -50,8 +49,7 @@ class MemoryOptimizer:
             return {"error": str(e)}
 
     def optimize_memory_usage(self) -> dict[str, Any]:
-        """Perform memory optimization including garbage collection
-        """
+        """Perform memory optimization including garbage collection"""
         start_time = time.time()
         before_stats = self.get_memory_usage()
 
@@ -86,12 +84,11 @@ class MemoryOptimizer:
             return result
 
         except Exception as e:
-            self.logger.error(f"Memory optimization failed: {e}")
+            self.logger.exception(f"Memory optimization failed: {e}")
             return {"error": str(e)}
 
     def should_optimize_memory(self) -> bool:
-        """Determine if memory optimization should be triggered
-        """
+        """Determine if memory optimization should be triggered"""
         try:
             # Check if it's been more than 10 minutes since last GC
             if time.time() - self.last_gc > 600:
@@ -111,8 +108,7 @@ class MemoryOptimizer:
             return False
 
     async def background_memory_optimization(self) -> None:
-        """Background task for continuous memory optimization
-        """
+        """Background task for continuous memory optimization"""
         while True:
             try:
                 if self.should_optimize_memory():
@@ -123,7 +119,7 @@ class MemoryOptimizer:
                 await asyncio.sleep(300)
 
             except Exception as e:
-                self.logger.error(f"Background memory optimization failed: {e}")
+                self.logger.exception(f"Background memory optimization failed: {e}")
                 await asyncio.sleep(600)  # Wait longer on error
 
 

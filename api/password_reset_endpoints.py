@@ -1,10 +1,9 @@
-"""Password Reset Endpoints - Email-based password reset flow
-"""
+"""Password Reset Endpoints - Email-based password reset flow"""
 
 import hashlib
 import logging
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 
 from fastapi import APIRouter, BackgroundTasks, Body, Depends, Query
 from pydantic import EmailStr
@@ -161,7 +160,7 @@ async def send_reset_email(email: str, token: str, user_name: str | None = None)
         logger.info(f"Password reset email sent to {email}")
 
     except Exception as e:
-        logger.error(f"Failed to send reset email: {e}")
+        logger.exception(f"Failed to send reset email: {e}")
         # Don't fail the request if email fails - log the token for manual recovery
         logger.info(f"Password reset token for {email}: {token}")
 
@@ -194,7 +193,7 @@ async def request_password_reset(
             reset_token = PasswordResetToken(
                 id=token_hash,
                 user_id=user.id,  # Fixed: Use integer directly
-                expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+                expires_at=datetime.now(UTC) + timedelta(hours=1),
             )
             db.add(reset_token)
             db.commit()
@@ -223,8 +222,7 @@ async def request_password_reset(
 
 @router.post("/password-reset/confirm", response_model=ApiResponse)
 async def confirm_password_reset(request: PasswordResetConfirm, db: Session = Depends(get_db)):
-    """Confirm password reset with token and new password
-    """
+    """Confirm password reset with token and new password"""
     try:
         from core_infra.database import User
 
@@ -244,7 +242,7 @@ async def confirm_password_reset(request: PasswordResetConfirm, db: Session = De
             db.query(PasswordResetToken)
             .filter(
                 PasswordResetToken.id == token_hash,
-                PasswordResetToken.expires_at > datetime.now(timezone.utc),
+                PasswordResetToken.expires_at > datetime.now(UTC),
                 PasswordResetToken.used_at.is_(None),
             )
             .first()
@@ -263,7 +261,7 @@ async def confirm_password_reset(request: PasswordResetConfirm, db: Session = De
         user.hashed_password = get_password_hash(request.new_password)
 
         # Mark token as used
-        reset_token.used_at = datetime.now(timezone.utc)
+        reset_token.used_at = datetime.now(UTC)
 
         db.commit()
 
@@ -278,8 +276,7 @@ async def confirm_password_reset(request: PasswordResetConfirm, db: Session = De
 
 @router.post("/password-reset/validate", response_model=ApiResponse)
 async def validate_reset_token(token: str, db: Session = Depends(get_db)):
-    """Validate if a reset token is still valid
-    """
+    """Validate if a reset token is still valid"""
     try:
         # Hash the provided token
         token_hash = hashlib.sha256(token.encode()).hexdigest()
@@ -289,7 +286,7 @@ async def validate_reset_token(token: str, db: Session = Depends(get_db)):
             db.query(PasswordResetToken)
             .filter(
                 PasswordResetToken.id == token_hash,
-                PasswordResetToken.expires_at > datetime.now(timezone.utc),
+                PasswordResetToken.expires_at > datetime.now(UTC),
                 PasswordResetToken.used_at.is_(None),
             )
             .first()
@@ -297,7 +294,7 @@ async def validate_reset_token(token: str, db: Session = Depends(get_db)):
 
         if reset_token:
             # Calculate remaining time
-            remaining = reset_token.expires_at - datetime.now(timezone.utc)
+            remaining = reset_token.expires_at - datetime.now(UTC)
             remaining_minutes = int(remaining.total_seconds() / 60)
 
             return ok({"valid": True, "expires_in_minutes": remaining_minutes})
@@ -315,8 +312,7 @@ async def complete_password_reset(
     request: PasswordResetComplete = Body(...),
     db: Session = Depends(get_db),
 ):
-    """Complete password reset with token and new password
-    """
+    """Complete password reset with token and new password"""
     try:
         from core_infra.database import User
 
@@ -336,7 +332,7 @@ async def complete_password_reset(
             db.query(PasswordResetToken)
             .filter(
                 PasswordResetToken.id == token_hash,
-                PasswordResetToken.expires_at > datetime.now(timezone.utc),
+                PasswordResetToken.expires_at > datetime.now(UTC),
                 PasswordResetToken.used_at.is_(None),
             )
             .first()
@@ -355,7 +351,7 @@ async def complete_password_reset(
         user.hashed_password = get_password_hash(request.new_password)
 
         # Mark token as used (one-time use)
-        reset_token.used_at = datetime.now(timezone.utc)
+        reset_token.used_at = datetime.now(UTC)
 
         db.commit()
 

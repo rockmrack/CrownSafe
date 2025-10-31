@@ -5,7 +5,7 @@ Stores only internal user_id and provider subject ID
 import hashlib
 import logging
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import Any
 
 import httpx
@@ -94,13 +94,13 @@ class AppleOAuth(OAuthProvider):
             }
 
         except jwt.DecodeError as e:
-            logger.error(f"Failed to decode Apple token: {e}")
+            logger.exception(f"Failed to decode Apple token: {e}")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid Apple ID token",
             )
         except Exception as e:
-            logger.error(f"Apple token verification failed: {e}")
+            logger.exception(f"Apple token verification failed: {e}")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Apple authentication failed",
@@ -152,7 +152,7 @@ class GoogleOAuth(OAuthProvider):
                 }
 
         except httpx.RequestError as e:
-            logger.error(f"Failed to verify Google token: {e}")
+            logger.exception(f"Failed to verify Google token: {e}")
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="Could not verify with Google",
@@ -160,7 +160,7 @@ class GoogleOAuth(OAuthProvider):
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"Google token verification failed: {e}")
+            logger.exception(f"Google token verification failed: {e}")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Google authentication failed",
@@ -226,8 +226,8 @@ async def oauth_login(
                 provider_type=login_data.provider,
                 is_active=True,
                 is_subscribed=False,
-                created_at=datetime.now(timezone.utc),
-                last_login=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
+                last_login=datetime.now(UTC),
             )
             db.add(user)
             db.commit()
@@ -244,7 +244,7 @@ async def oauth_login(
             )
         else:
             # Update last login
-            user.last_login = datetime.now(timezone.utc)
+            user.last_login = datetime.now(UTC)
             db.commit()
 
             logger.info(
@@ -295,7 +295,7 @@ async def oauth_login(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
+        logger.exception(
             f"OAuth login failed: {e}",
             extra={"provider": login_data.provider, "trace_id": trace_id},
         )
@@ -361,7 +361,7 @@ async def revoke_token(request: Request, token: str, token_type: str = "access_t
         )
 
     except Exception as e:
-        logger.error(f"Token revocation failed: {e}")
+        logger.exception(f"Token revocation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to revoke token",
@@ -373,8 +373,7 @@ async def revoke_token(request: Request, token: str, token_type: str = "access_t
 
 @router.get("/providers")
 async def get_oauth_providers():
-    """Get list of supported OAuth providers
-    """
+    """Get list of supported OAuth providers"""
     return {
         "ok": True,
         "providers": [

@@ -1,9 +1,8 @@
-"""Product Monitoring Scheduler - 24/7 automated product monitoring
-"""
+"""Product Monitoring Scheduler - 24/7 automated product monitoring"""
 
 import asyncio
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import Any
 
 from sqlalchemy import (
@@ -126,7 +125,7 @@ class ProductMonitoringScheduler:
             if existing:
                 # Update existing
                 existing.check_frequency_hours = check_frequency_hours
-                existing.updated_at = datetime.now(timezone.utc)
+                existing.updated_at = datetime.now(UTC)
                 db.commit()
                 return existing
 
@@ -139,7 +138,7 @@ class ProductMonitoringScheduler:
                 upc_code=upc_code,
                 source_job_id=source_job_id,
                 check_frequency_hours=check_frequency_hours,
-                next_check=datetime.now(timezone.utc) + timedelta(hours=check_frequency_hours),
+                next_check=datetime.now(UTC) + timedelta(hours=check_frequency_hours),
                 added_via="scan" if source_job_id else "manual",
             )
 
@@ -168,7 +167,7 @@ class ProductMonitoringScheduler:
             }
 
         except Exception as e:
-            logger.error(f"Error checking product {product.id}: {e}")
+            logger.exception(f"Error checking product {product.id}: {e}")
             return {"product_id": product.id, "error": str(e), "recalls_found": 0}
 
     @classmethod
@@ -236,7 +235,7 @@ class ProductMonitoringScheduler:
             logger.info(f"Sent recall notification to user {user_id} for product {product.id}")
 
         except Exception as e:
-            logger.error(f"Error sending notification: {e}")
+            logger.exception(f"Error sending notification: {e}")
 
     @classmethod
     def _is_quiet_hours(cls, device: DeviceToken) -> bool:
@@ -285,7 +284,7 @@ class ProductMonitoringScheduler:
                     db.query(MonitoredProduct)
                     .filter(
                         MonitoredProduct.is_active,
-                        MonitoredProduct.next_check <= datetime.now(timezone.utc),
+                        MonitoredProduct.next_check <= datetime.now(UTC),
                     )
                     .limit(1000)
                     .all()
@@ -316,11 +315,11 @@ class ProductMonitoringScheduler:
                             product.recall_status = "safe"
 
                         # Update check time
-                        product.last_checked = datetime.now(timezone.utc)
-                        product.next_check = datetime.now(timezone.utc) + timedelta(hours=product.check_frequency_hours)
+                        product.last_checked = datetime.now(UTC)
+                        product.next_check = datetime.now(UTC) + timedelta(hours=product.check_frequency_hours)
 
                     except Exception as e:
-                        logger.error(f"Error checking product {product.id}: {e}")
+                        logger.exception(f"Error checking product {product.id}: {e}")
                         errors.append(str(e))
 
                 # Commit all updates
@@ -329,7 +328,7 @@ class ProductMonitoringScheduler:
                 # Update run record
                 run = db.query(MonitoringRun).filter_by(id=run_id).first()
                 if run:
-                    run.completed_at = datetime.now(timezone.utc)
+                    run.completed_at = datetime.now(UTC)
                     run.products_checked = products_checked
                     run.new_recalls_found = new_recalls_found
                     run.notifications_sent = notifications_sent
@@ -354,7 +353,7 @@ class ProductMonitoringScheduler:
             }
 
         except Exception as e:
-            logger.error(f"Monitoring cycle failed: {e}")
+            logger.exception(f"Monitoring cycle failed: {e}")
 
             if run:
                 with get_db_session() as db:
@@ -362,7 +361,7 @@ class ProductMonitoringScheduler:
                     if run:
                         run.status = "failed"
                         run.error_message = str(e)
-                        run.completed_at = datetime.now(timezone.utc)
+                        run.completed_at = datetime.now(UTC)
                         db.commit()
 
             raise
@@ -378,7 +377,7 @@ class ProductMonitoringScheduler:
                     .join(ImageExtraction)
                     .filter(
                         ImageJob.status == "completed",
-                        ImageJob.created_at >= datetime.now(timezone.utc) - timedelta(days=7),
+                        ImageJob.created_at >= datetime.now(UTC) - timedelta(days=7),
                     )
                     .all()
                 )
@@ -411,7 +410,7 @@ class ProductMonitoringScheduler:
                 logger.info(f"Auto-added {added_count} products to monitoring")
 
         except Exception as e:
-            logger.error(f"Error auto-adding products: {e}")
+            logger.exception(f"Error auto-adding products: {e}")
 
 
 # Celery task for scheduled monitoring

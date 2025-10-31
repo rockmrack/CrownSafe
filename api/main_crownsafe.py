@@ -11,7 +11,7 @@ import socket
 import sys
 import traceback
 import uuid
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone, UTC
 from pathlib import Path
 from typing import Any, Literal, cast
 
@@ -809,7 +809,7 @@ try:
     app.include_router(auth_router)
     logger.info("Authentication endpoints registered")
 except Exception as e:
-    logger.error(f"Failed to register auth endpoints: {e}")
+    logger.exception(f"Failed to register auth endpoints: {e}")
 
 # Import password reset endpoints
 try:
@@ -881,7 +881,7 @@ try:
     app.include_router(v1_router)
     logger.info("v1 endpoints registered")
 except Exception as e:
-    logger.error(f"Failed to register v1 endpoints: {e}")
+    logger.exception(f"Failed to register v1 endpoints: {e}")
 
 # Import and include hair profile management endpoints (Crown Safe MVP)
 try:
@@ -890,7 +890,7 @@ try:
     app.include_router(hair_profile_router)
     logger.info("Hair profile endpoints registered (/api/v1/profiles)")
 except Exception as e:
-    logger.error(f"Failed to register hair profile endpoints: {e}")
+    logger.exception(f"Failed to register hair profile endpoints: {e}")
 
 # Import and include ingredient explainer endpoints (Crown Safe MVP)
 try:
@@ -899,7 +899,7 @@ try:
     app.include_router(ingredient_explainer_router)
     logger.info("Ingredient explainer endpoints registered (/api/v1/ingredients)")
 except Exception as e:
-    logger.error(f"Failed to register ingredient explainer endpoints: {e}")
+    logger.exception(f"Failed to register ingredient explainer endpoints: {e}")
 
 # Import and include routine analysis endpoints (Crown Safe MVP)
 try:
@@ -908,7 +908,7 @@ try:
     app.include_router(routine_analysis_router)
     logger.info("Routine analysis endpoints registered (/api/v1/cabinet-audit, /routine-check)")
 except Exception as e:
-    logger.error(f"Failed to register routine analysis endpoints: {e}")
+    logger.exception(f"Failed to register routine analysis endpoints: {e}")
 
 # Import and include barcode scanning endpoints
 try:
@@ -924,7 +924,7 @@ try:
     logger.info("Barcode scanning endpoints registered")
     logger.info("Mobile scan results endpoints registered")
 except Exception as e:
-    logger.error(f"Failed to register barcode endpoints: {e}")
+    logger.exception(f"Failed to register barcode endpoints: {e}")
 
 # Include Enhanced Barcode Bridge for Task 12
 try:
@@ -933,7 +933,7 @@ try:
     app.include_router(barcode_bridge_router)
     logger.info("Enhanced Barcode Bridge (Task 12) registered")
 except Exception as e:
-    logger.error(f"Failed to register barcode bridge: {e}")
+    logger.exception(f"Failed to register barcode bridge: {e}")
 
 # Include Enhanced Barcode Scanning for A-5
 try:
@@ -942,7 +942,7 @@ try:
     app.include_router(enhanced_barcode_router)
     logger.info("Enhanced Barcode Scanning (A-5) registered")
 except Exception as e:
-    logger.error(f"Failed to register enhanced barcode scanning: {e}")
+    logger.exception(f"Failed to register enhanced barcode scanning: {e}")
 
 # Include Safety Reports endpoints
 try:
@@ -951,7 +951,7 @@ try:
     app.include_router(safety_reports_router)
     logger.info("Safety Reports endpoints registered")
 except Exception as e:
-    logger.error(f"Failed to register safety reports: {e}")
+    logger.exception(f"Failed to register safety reports: {e}")
 
 # Include Share Results endpoints
 try:
@@ -960,7 +960,7 @@ try:
     app.include_router(share_router)
     logger.info("Share Results endpoints registered")
 except Exception as e:
-    logger.error(f"Failed to register share results: {e}")
+    logger.exception(f"Failed to register share results: {e}")
 
 # REMOVED FOR CROWN SAFE: Recall Alert System was BabyShield-specific
 
@@ -971,7 +971,7 @@ try:
     app.include_router(recalls_router)
     logger.info("Recall Search System registered")
 except Exception as e:
-    logger.error(f"Failed to register recall search system: {e}")
+    logger.exception(f"Failed to register recall search system: {e}")
 
 # Include Incident Reporting System
 try:
@@ -987,7 +987,7 @@ try:
 
     logger.info("Incident Reporting System registered")
 except Exception as e:
-    logger.error(f"Failed to register incident reporting: {e}")
+    logger.exception(f"Failed to register incident reporting: {e}")
 
 
 # Safety Hub API Endpoint
@@ -1210,7 +1210,7 @@ try:
 except ImportError as e:
     logger.warning(f"Risk assessment endpoints not available: {e}")
 except Exception as e:
-    logger.error(f"Failed to register risk assessment endpoints: {e}")
+    logger.exception(f"Failed to register risk assessment endpoints: {e}")
 
 # Include subscription endpoints for mobile IAP
 try:
@@ -1219,7 +1219,7 @@ try:
     app.include_router(subscription_router)
     logger.info("Subscription endpoints registered")
 except Exception as e:
-    logger.error(f"Failed to register subscription endpoints: {e}")
+    logger.exception(f"Failed to register subscription endpoints: {e}")
 
 # Health endpoints already registered above
 
@@ -1230,7 +1230,7 @@ try:
     app.include_router(recall_detail_router)
     logger.info("Recall detail endpoints registered")
 except Exception as e:
-    logger.error(f"Failed to register recall detail endpoints: {e}")
+    logger.exception(f"Failed to register recall detail endpoints: {e}")
 
 # Include OAuth endpoints for Task 11
 try:
@@ -1244,7 +1244,7 @@ try:
         logger.info("OAuth router NOT mounted (OAUTH_ENABLED is false or missing)")
 
 except Exception as e:
-    logger.error(f"Failed to register OAuth endpoints: {e}")
+    logger.exception(f"Failed to register OAuth endpoints: {e}")
 
 # Include Settings endpoints for Task 11
 try:
@@ -1253,7 +1253,7 @@ try:
     app.include_router(settings_router)
     logger.info("Settings endpoints registered")
 except Exception as e:
-    logger.error(f"Failed to register settings endpoints: {e}")
+    logger.exception(f"Failed to register settings endpoints: {e}")
 
 # Include User Data Management endpoints for Task 11
 try:
@@ -1264,7 +1264,7 @@ try:
     app.include_router(privacy_router)
     logger.info("User data management and privacy endpoints registered")
 except Exception as e:
-    logger.error(f"Failed to register user data endpoints: {e}")
+    logger.exception(f"Failed to register user data endpoints: {e}")
 
 # Include Account Management endpoints (Apple compliance)
 try:
@@ -1273,7 +1273,7 @@ try:
     app.include_router(account_router)
     logger.info("Account management endpoints registered")
 except Exception as e:
-    logger.error(f"Failed to register account endpoints: {e}")
+    logger.exception(f"Failed to register account endpoints: {e}")
 
 # Include Device Management endpoints (push token cleanup)
 try:
@@ -1282,7 +1282,7 @@ try:
     app.include_router(devices_router)
     logger.info("Device management endpoints registered")
 except Exception as e:
-    logger.error(f"Failed to register device endpoints: {e}")
+    logger.exception(f"Failed to register device endpoints: {e}")
 
 # Include Legacy Account endpoints (410 Gone for old paths)
 try:
@@ -1291,7 +1291,7 @@ try:
     app.include_router(account_legacy_router.router)
     logger.info("Legacy account endpoints registered")
 except Exception as e:
-    logger.error(f"Failed to register legacy account endpoints: {e}")
+    logger.exception(f"Failed to register legacy account endpoints: {e}")
 
 # Include Localization & Accessibility endpoints for Task 13
 try:
@@ -1300,7 +1300,7 @@ try:
     app.include_router(i18n_router)
     logger.info("Localization & Accessibility (Task 13) registered")
 except Exception as e:
-    logger.error(f"Failed to register localization endpoints: {e}")
+    logger.exception(f"Failed to register localization endpoints: {e}")
 
 # Include Monitoring & Metrics endpoints for Task 14
 try:
@@ -1311,7 +1311,7 @@ try:
     app.include_router(metrics_router)
     logger.info("Monitoring & SLO endpoints (Task 14) registered")
 except Exception as e:
-    logger.error(f"Failed to register monitoring endpoints: {e}")
+    logger.exception(f"Failed to register monitoring endpoints: {e}")
 
 # Include Legal & Privacy endpoints for Task 15
 try:
@@ -1320,7 +1320,7 @@ try:
     app.include_router(legal_router)
     logger.info("Legal & Privacy endpoints (Task 15) registered")
 except Exception as e:
-    logger.error(f"Failed to register legal endpoints: {e}")
+    logger.exception(f"Failed to register legal endpoints: {e}")
 
 # Include Support & Feedback endpoints for Task 20
 try:
@@ -1329,7 +1329,7 @@ try:
     app.include_router(feedback_router)
     logger.info("Support & Feedback endpoints (Task 20) registered")
 except Exception as e:
-    logger.error(f"Failed to register feedback endpoints: {e}")
+    logger.exception(f"Failed to register feedback endpoints: {e}")
 
 # Include Advanced Features (Web Research, Guidelines, Visual Recognition) endpoints
 try:
@@ -1348,9 +1348,9 @@ try:
     app.include_router(compliance_router)
     logger.info("Legal Compliance endpoints (COPPA, GDPR, Children's Code) registered")
 except ImportError as e:
-    logger.error(f"Compliance endpoints not available: {e}")
+    logger.exception(f"Compliance endpoints not available: {e}")
 except Exception as e:
-    logger.error(f"Failed to register compliance endpoints: {e}")
+    logger.exception(f"Failed to register compliance endpoints: {e}")
 
 # Include Supplemental Data endpoints for enhanced safety reports
 try:
@@ -1359,10 +1359,10 @@ try:
     app.include_router(supplemental_router)
     logger.info("Supplemental data endpoints registered")
 except ImportError as e:
-    logger.error(f"Import error for supplemental data endpoints: {e}")
+    logger.exception(f"Import error for supplemental data endpoints: {e}")
 except Exception as e:
-    logger.error(f"Failed to register supplemental data endpoints: {e}")
-    logger.error("Full traceback: %s", traceback.format_exc())
+    logger.exception(f"Failed to register supplemental data endpoints: {e}")
+    logger.exception("Full traceback: %s", traceback.format_exc())
 
 # Include Clean Lookup endpoints for simple barcode queries (early registration for OpenAPI)
 try:
@@ -1371,9 +1371,9 @@ try:
     app.include_router(lookup_router)
     logger.info("Clean lookup endpoints registered")
 except ImportError as e:
-    logger.error(f"Import error for lookup endpoints: {e}")
+    logger.exception(f"Import error for lookup endpoints: {e}")
 except Exception as e:
-    logger.error(f"Failed to register lookup endpoints: {e}")
+    logger.exception(f"Failed to register lookup endpoints: {e}")
 
 # MOVED CHAT REGISTRATION LATER - SEE LINE ~1000
 
@@ -1384,9 +1384,9 @@ try:
     app.include_router(analytics_router, prefix="/api/v1/analytics", tags=["analytics"])
     logger.info("Analytics endpoints registered")
 except ImportError as e:
-    logger.error(f"Import error for analytics endpoints: {e}")
+    logger.exception(f"Import error for analytics endpoints: {e}")
 except Exception as e:
-    logger.error(f"Failed to register analytics endpoints: {e}")
+    logger.exception(f"Failed to register analytics endpoints: {e}")
 
 # Include Honeypot endpoints for security intelligence
 try:
@@ -1397,7 +1397,7 @@ try:
 except ImportError as e:
     logger.warning(f"Honeypot endpoints not available: {e}")
 except Exception as e:
-    logger.error(f"Failed to register honeypot endpoints: {e}")
+    logger.exception(f"Failed to register honeypot endpoints: {e}")
 
 # Include Security Monitoring Dashboard
 try:
@@ -1408,7 +1408,7 @@ try:
 except ImportError as e:
     logger.warning(f"Security dashboard not available: {e}")
 except Exception as e:
-    logger.error(f"Failed to register security dashboard: {e}")
+    logger.exception(f"Failed to register security dashboard: {e}")
 
 # Import and apply OpenAPI spec
 try:
@@ -1421,7 +1421,7 @@ try:
     app.openapi = _custom_openapi  # type: ignore[assignment]
     logger.info("OpenAPI spec loaded and applied")
 except Exception as e:
-    logger.error(f"Failed to load OpenAPI spec: {e}")
+    logger.exception(f"Failed to load OpenAPI spec: {e}")
 
 # Add custom exception handlers for our standard error envelope
 
@@ -1476,7 +1476,7 @@ async def json_decode_exception_handler(request: Request, exc: json.JSONDecodeEr
     """Handle JSON decode errors with our standard error envelope"""
     trace_id = f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
 
-    logger.warning(f"[{trace_id}] JSON decode error: {str(exc)}")
+    logger.warning(f"[{trace_id}] JSON decode error: {exc!s}")
 
     return JSONResponse(
         status_code=400,
@@ -1716,7 +1716,7 @@ def on_startup() -> None:
                 db.rollback()
                 logger.info("[INFO] User id=1 already exists (inserted by another worker).")
         except Exception as e:
-            logger.error("Failed to seed user: %s", e)
+            logger.exception("Failed to seed user: %s", e)
             db.rollback()
         finally:
             db.close()
@@ -1749,7 +1749,7 @@ def on_startup() -> None:
                 logger.info("✅ Security audit passed - all checks OK")
 
         except Exception as e:
-            logger.error(f"Security audit failed to run: {e}")
+            logger.exception(f"Security audit failed to run: {e}")
 
     # START BACKGROUND CACHE WARMING for 70%+ hit rate
     try:
@@ -1768,7 +1768,7 @@ async def shutdown_event() -> None:
         engine.dispose()
         logger.info("Database connections closed cleanly")
     except Exception as e:
-        logger.error(f"Error during shutdown: {e}")
+        logger.exception(f"Error during shutdown: {e}")
 
 
 # Homepage and health check endpoints
@@ -1803,7 +1803,7 @@ async def public_test_endpoint() -> dict[str, str]:
     return {
         "status": "ok",
         "message": "Public endpoint",
-        "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
+        "timestamp": datetime.now(UTC).isoformat() + "Z",
     }
 
 
@@ -1852,7 +1852,7 @@ def readyz():
                 },
             }
     except Exception as e:
-        logger.error(f"Readiness check failed: {e}")
+        logger.exception(f"Readiness check failed: {e}")
         raise HTTPException(status_code=503, detail="Service not ready") from e
 
 
@@ -2416,7 +2416,7 @@ async def autocomplete_products(
         )
 
     except Exception as e:
-        logger.error(f"Auto-complete failed: {e}")
+        logger.exception(f"Auto-complete failed: {e}")
         return JSONResponse(
             content={
                 "query": q,
@@ -2478,7 +2478,7 @@ async def autocomplete_brands(
         )
 
     except Exception as e:
-        logger.error(f"Brand auto-complete failed: {e}")
+        logger.exception(f"Brand auto-complete failed: {e}")
         return JSONResponse(
             content={"query": q, "brands": [], "error": str(e)},
             headers={"Content-Type": "application/json; charset=utf-8"},
@@ -2546,11 +2546,11 @@ async def advanced_search(request: Request):
             )
     except json.JSONDecodeError as e:
         malformed_body = repr(body_str) if "body_str" in locals() else "N/A"
-        logger.error("[%s] JSON decode error: %s", trace_id, e)
-        logger.error("[%s] Malformed JSON body: %s", trace_id, malformed_body)
+        logger.exception("[%s] JSON decode error: %s", trace_id, e)
+        logger.exception("[%s] Malformed JSON body: %s", trace_id, malformed_body)
 
         # Try to provide more helpful error messages
-        error_msg = f"Invalid JSON in request body: {str(e)}"
+        error_msg = f"Invalid JSON in request body: {e!s}"
         if "Expecting property name enclosed in double quotes" in str(e):
             error_msg += ". Ensure property names use double quotes like {'query': 'value'}."
         elif "Expecting value" in str(e):
@@ -2567,7 +2567,7 @@ async def advanced_search(request: Request):
             },
         )
     except Exception as e:
-        logger.error(f"[{trace_id}] Could not parse request body: {e}")
+        logger.exception(f"[{trace_id}] Could not parse request body: {e}")
         return JSONResponse(
             status_code=400,
             content={
@@ -2606,14 +2606,14 @@ async def advanced_search(request: Request):
         )
         logger.info("[%s] All fields in req: %s", trace_id, req.model_dump())
     except Exception as e:
-        logger.error(f"[{trace_id}] Invalid request data: {e}")
+        logger.exception(f"[{trace_id}] Invalid request data: {e}")
         return JSONResponse(
             status_code=400,
             content={
                 "ok": False,
                 "error": {
                     "code": "BAD_REQUEST",
-                    "message": f"Invalid request parameters: {str(e)}",
+                    "message": f"Invalid request parameters: {e!s}",
                 },
                 "traceId": trace_id,
             },
@@ -2780,7 +2780,7 @@ async def bulk_search(req: BulkSearchRequest):
             results.append(result)
 
         except Exception as e:
-            logger.error("Bulk search failed for barcode %s: %s", barcode, e)
+            logger.exception("Bulk search failed for barcode %s: %s", barcode, e)
             results.append({"barcode": barcode, "status": "error", "error": str(e)})
 
     return {
@@ -2822,7 +2822,7 @@ async def recall_analytics():
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Analytics failed: {str(e)}") from e
+        raise HTTPException(status_code=500, detail=f"Analytics failed: {e!s}") from e
 
 
 @app.get("/api/v1/analytics/counts", tags=["analytics"])
@@ -2846,7 +2846,7 @@ async def analytics_counts():
             "note": "Crown Safe analytics coming soon",
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Counts analytics failed: {str(e)}") from e
+        raise HTTPException(status_code=500, detail=f"Counts analytics failed: {e!s}") from e
 
 
 # --- MONITORING & ALERTING ENDPOINTS ---
@@ -2873,8 +2873,8 @@ async def agency_health_check():
         }
 
     except Exception as e:
-        logger.error("Agency monitoring failed: %s", e)
-        raise HTTPException(status_code=500, detail=f"Monitoring failed: {str(e)}") from e
+        logger.exception("Agency monitoring failed: %s", e)
+        raise HTTPException(status_code=500, detail=f"Monitoring failed: {e!s}") from e
 
 
 @app.get("/api/v1/monitoring/system", tags=["monitoring"])
@@ -2932,7 +2932,7 @@ async def system_health():
         }
 
     except Exception as e:
-        logger.error(f"System health check failed: {e}")
+        logger.exception(f"System health check failed: {e}")
         return {
             "status": "error",
             "timestamp": datetime.now().isoformat(),
@@ -2957,13 +2957,13 @@ async def azure_storage_health():
         )
 
     except Exception as e:
-        logger.error(f"Azure storage health check failed: {e}")
+        logger.exception(f"Azure storage health check failed: {e}")
         return JSONResponse(
             content={
                 "service": "azure_blob_storage",
                 "status": "error",
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             },
             status_code=503,
         )
@@ -2980,11 +2980,11 @@ async def azure_storage_metrics():
         return JSONResponse(content=metrics, status_code=200)
 
     except Exception as e:
-        logger.error(f"Failed to retrieve Azure storage metrics: {e}")
+        logger.exception(f"Failed to retrieve Azure storage metrics: {e}")
         return JSONResponse(
             content={
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             },
             status_code=500,
         )
@@ -3006,11 +3006,11 @@ async def security_audit():
         )
 
     except Exception as e:
-        logger.error(f"Security audit failed: {e}")
+        logger.exception(f"Security audit failed: {e}")
         return JSONResponse(
             content={
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             },
             status_code=500,
         )
@@ -3030,18 +3030,18 @@ async def azure_cache_stats():
         return JSONResponse(
             content={
                 "cache_stats": stats,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             },
             status_code=200,
         )
 
     except Exception as e:
-        logger.error(f"Cache stats retrieval failed: {e}")
+        logger.exception(f"Cache stats retrieval failed: {e}")
         return JSONResponse(
             content={
                 "error": str(e),
                 "cache_enabled": False,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             },
             status_code=500,
         )
@@ -3067,12 +3067,12 @@ async def system_health_dashboard_endpoint():
         return JSONResponse(content=health_data, status_code=status_code)
 
     except Exception as e:
-        logger.error(f"System health check failed: {e}")
+        logger.exception(f"System health check failed: {e}")
         return JSONResponse(
             content={
                 "status": "error",
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             },
             status_code=500,
         )
@@ -3147,8 +3147,8 @@ async def setup_notifications(req: NotificationRequest):
         )
 
     except Exception as e:
-        logger.error("Notification setup failed: %s", e)
-        raise HTTPException(status_code=500, detail=f"Notification setup failed: {str(e)}") from e
+        logger.exception("Notification setup failed: %s", e)
+        raise HTTPException(status_code=500, detail=f"Notification setup failed: {e!s}") from e
 
 
 @app.get("/api/v1/notifications/{notification_id}", tags=["notifications"])
@@ -3173,7 +3173,7 @@ async def get_notification_status(notification_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Status check failed: {str(e)}") from e
+        raise HTTPException(status_code=500, detail=f"Status check failed: {e!s}") from e
 
 
 # --- MOBILE-OPTIMIZED ENDPOINTS ---
@@ -3295,7 +3295,7 @@ async def mobile_scan(req: MobileScanRequest):
         )
 
     except Exception as e:
-        logger.error(f"Mobile scan failed: {e}")
+        logger.exception(f"Mobile scan failed: {e}")
         response_time = int((datetime.now() - start_time).total_seconds() * 1000)
 
         return MobileScanResponse(
@@ -3385,7 +3385,7 @@ async def mobile_instant_check(
         # Return 400 for validation errors
         raise HTTPException(status_code=400, detail=str(e)) from e
     except Exception as e:
-        logger.error(f"Mobile instant check failed: {e}")
+        logger.exception(f"Mobile instant check failed: {e}")
         return {
             "safe": True,
             "level": "SAFE",
@@ -3436,7 +3436,7 @@ async def mobile_quick_check(
         raise HTTPException(status_code=400, detail=str(e)) from e
     except Exception as e:
         response_time = int((datetime.now() - start_time).total_seconds() * 1000)
-        logger.error(f"Mobile quick check failed: {e}")
+        logger.exception(f"Mobile quick check failed: {e}")
         return {
             "safe": True,  # Default to safe on error
             "summary": "Unable to check - please try again",
@@ -3532,7 +3532,7 @@ async def report_unsafe_product(request: Request):
     try:
         # Rate limiting: Check submissions in last hour for this user
         with get_db_session() as db:
-            one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
+            one_hour_ago = datetime.now(UTC) - timedelta(hours=1)
             recent_reports = (
                 db.query(UserReport)
                 .filter(
@@ -3567,7 +3567,7 @@ async def report_unsafe_product(request: Request):
                 incident_date=req.incident_date,
                 incident_description=req.incident_description,
                 photos=req.photos,
-                created_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
             )
 
             db.add(new_report)
@@ -3600,7 +3600,7 @@ async def report_unsafe_product(request: Request):
     except HTTPException:
         raise
     except Exception as e:
-        logger_inst.error(f"Failed to create unsafe product report: {e}")
+        logger_inst.exception(f"Failed to create unsafe product report: {e}")
         raise HTTPException(
             status_code=500,
             detail="Failed to submit report. Please try again later.",
@@ -3650,7 +3650,7 @@ async def get_user_reports(
             }
 
     except Exception as e:
-        logger_inst.error(f"Failed to fetch user reports: {e}")
+        logger_inst.exception(f"Failed to fetch user reports: {e}")
         raise HTTPException(status_code=500, detail="Failed to retrieve reports") from e
 
 
@@ -3775,7 +3775,7 @@ try:
 except ImportError as e:
     logger.warning(f"Crown Safe Visual Recognition not available: {e}")
 except Exception as e:
-    logger.error(f"Failed to register Crown Safe Visual Recognition: {e}")
+    logger.exception(f"Failed to register Crown Safe Visual Recognition: {e}")
 
 
 # CRITICAL: Apply health check wrapper to bypass ALL middleware

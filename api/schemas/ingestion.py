@@ -1,5 +1,4 @@
-"""Ingestion schemas for data ingestion runner
-"""
+"""Ingestion schemas for data ingestion runner"""
 
 from enum import Enum
 

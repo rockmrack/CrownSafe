@@ -30,8 +30,7 @@ class SizeLimitMiddleware(BaseHTTPMiddleware):
         logger.info(f"Request size limit configured: {self.max_bytes} bytes ({self.max_bytes / 1024:.1f} KB)")
 
     async def dispatch(self, request: Request, call_next):
-        """Process request with size validation
-        """
+        """Process request with size validation"""
         # Get trace ID for error responses
         trace_id = getattr(request.state, "trace_id", None)
 
@@ -123,7 +122,7 @@ class SizeLimitMiddleware(BaseHTTPMiddleware):
                 )
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Error reading request body: {e}",
                 extra={"traceId": trace_id, "path": request.url.path, "error": str(e)},
             )
@@ -146,8 +145,7 @@ class SizeLimitMiddleware(BaseHTTPMiddleware):
 
 
 class ConfigurableSizeLimits:
-    """Configuration for different endpoint size limits
-    """
+    """Configuration for different endpoint size limits"""
 
     # Default limits
     DEFAULT_LIMIT = 100_000  # 100KB

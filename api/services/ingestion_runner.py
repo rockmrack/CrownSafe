@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 from sqlalchemy.orm import Session
 
@@ -13,22 +13,20 @@ logger = logging.getLogger(__name__)
 
 
 class IngestionRunner:
-    """Manages the lifecycle of data ingestion runs, recording their status in the database.
-    """
+    """Manages the lifecycle of data ingestion runs, recording their status in the database."""
 
     def __init__(self, db_session: Session, config: Config = None) -> None:
         self.db_session = db_session
         self.config = config or Config()
 
     def start_run(self, source: IngestionSource, run_name: str | None = None) -> IngestionRun:
-        """Records the start of an ingestion run.
-        """
+        """Records the start of an ingestion run."""
         logger.info(f"Starting new ingestion run for source: {source.value}")
         ingestion_run = IngestionRun(
             agency=source.value,
             mode="manual",
             status=IngestionStatus.IN_PROGRESS.value,
-            started_at=datetime.now(timezone.utc),
+            started_at=datetime.now(UTC),
         )
         self.db_session.add(ingestion_run)
         self.db_session.commit()
@@ -44,10 +42,9 @@ class IngestionRunner:
         errors: int = 0,
         details: str | None = None,
     ) -> IngestionRun:
-        """Records the completion or failure of an ingestion run.
-        """
+        """Records the completion or failure of an ingestion run."""
         logger.info(f"Ending ingestion run {run.id} with status: {status.value}")
-        run.finished_at = datetime.now(timezone.utc)
+        run.finished_at = datetime.now(UTC)
         run.status = status.value
         run.items_inserted = records_processed
         run.items_failed = errors
@@ -60,8 +57,7 @@ class IngestionRunner:
 
 
 def main() -> None:
-    """Example usage of the IngestionRunner.
-    """
+    """Example usage of the IngestionRunner."""
     config = Config()
     with get_db_session() as db_session:
         runner = IngestionRunner(db_session, config)

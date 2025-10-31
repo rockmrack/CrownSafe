@@ -4,7 +4,7 @@ Implements cursor-based pagination without OFFSET for better performance
 
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 from sqlalchemy import text
@@ -21,8 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 class SearchServiceV2:
-    """Advanced search service with keyset pagination and snapshot isolation
-    """
+    """Advanced search service with keyset pagination and snapshot isolation"""
 
     def __init__(self, db_session: Session):
         self.db = db_session
@@ -57,7 +56,7 @@ class SearchServiceV2:
         """
         # Parse cursor if provided
         cursor_data = None
-        as_of = datetime.now(timezone.utc)
+        as_of = datetime.now(UTC)
         after_tuple = None
 
         if cursor_token:
@@ -105,7 +104,7 @@ class SearchServiceV2:
             # No recall tables exist - return empty query tuple (4 elements expected)
             from core_infra.search_constants import EMPTY_PARAMS, EMPTY_QUERY
 
-            return EMPTY_QUERY, EMPTY_PARAMS, datetime.now(timezone.utc), None
+            return EMPTY_QUERY, EMPTY_PARAMS, datetime.now(UTC), None
 
         table = "recalls_enhanced" if has_enhanced else "recalls"
 
@@ -306,8 +305,7 @@ class SearchServiceV2:
         limit: int = 20,
         next_cursor: str | None = None,
     ) -> dict[str, Any]:
-        """Execute search with cursor-based pagination
-        """
+        """Execute search with cursor-based pagination"""
         try:
             # Build query
             sql_query, params, as_of, cursor_data = self.build_keyset_query(
@@ -412,7 +410,7 @@ class SearchServiceV2:
 
         except ValueError as e:
             # Cursor validation errors
-            logger.error(f"Cursor error: {e}")
+            logger.exception(f"Cursor error: {e}")
             error_code = "INVALID_CURSOR"
             if "don't match" in str(e):
                 error_code = "INVALID_CURSOR_FILTER_MISMATCH"

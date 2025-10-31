@@ -237,7 +237,7 @@ async def get_ingredient_explainer(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"❌ Error getting ingredient explainer: {e}")
+        logger.exception(f"❌ Error getting ingredient explainer: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve ingredient information",
@@ -305,7 +305,7 @@ async def search_ingredients(
                 pass
 
     except Exception as e:
-        logger.error(f"❌ Error searching ingredients: {e}")
+        logger.exception(f"❌ Error searching ingredients: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to search ingredients",

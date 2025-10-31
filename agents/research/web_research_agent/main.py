@@ -178,7 +178,7 @@ class WebResearchAgentManager:
                 error_payload = {
                     "correlation_id": correlation_id,
                     "agent_id": AGENT_ID,
-                    "error_message": f"WebResearchAgent failed to process {message_type}: {str(error)}",
+                    "error_message": f"WebResearchAgent failed to process {message_type}: {error!s}",
                     "workflow_id": workflow_id,
                     "task_id": task_id,
                     "status": "FAILED",

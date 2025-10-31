@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""OpenAPI specification generator for BabyShield API
-"""
+"""OpenAPI specification generator for BabyShield API"""
 
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi

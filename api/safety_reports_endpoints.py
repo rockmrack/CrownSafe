@@ -4,7 +4,7 @@ Generate comprehensive safety summaries for users
 
 import logging
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
@@ -137,14 +137,13 @@ async def generate_safety_report(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error generating safety report: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to generate safety report: {str(e)}")
+        logger.exception(f"Error generating safety report: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate safety report: {e!s}")
 
 
 @safety_reports_router.post("/generate-90-day-dev", response_model=ApiResponse)
 async def generate_90_day_report_dev(request: SafetyReportRequest) -> ApiResponse:
-    """Dev override version of 90-day report generation for testing
-    """
+    """Dev override version of 90-day report generation for testing"""
     try:
         # Check dev override for premium features
         from api.services.dev_override import dev_entitled
@@ -177,8 +176,8 @@ async def generate_90_day_report_dev(request: SafetyReportRequest) -> ApiRespons
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error generating 90-day report: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to generate 90-day report: {str(e)}")
+        logger.exception(f"Error generating 90-day report: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate 90-day report: {e!s}")
 
 
 @safety_reports_router.post("/generate-90-day", response_model=ApiResponse)
@@ -197,7 +196,7 @@ async def generate_90_day_report(
     """
     try:
         # Calculate date range
-        end_date = datetime.now(timezone.utc)
+        end_date = datetime.now(UTC)
         start_date = end_date - timedelta(days=90)
 
         # Get user's scan history for the period
@@ -381,7 +380,7 @@ async def generate_90_day_report(
                     db.commit()
 
             except Exception as e:
-                logger.error(f"Failed to generate PDF: {e}")
+                logger.exception(f"Failed to generate PDF: {e}")
                 # Continue without PDF
 
         # Return response
@@ -400,7 +399,7 @@ async def generate_90_day_report(
         return ApiResponse(success=True, data=response_data.dict())
 
     except Exception as e:
-        logger.error(f"Error generating 90-day report: {e}")
+        logger.exception(f"Error generating 90-day report: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -412,8 +411,7 @@ async def get_user_reports_dev(
     sort: str = "created_at",
     order: str = "desc",
 ) -> ApiResponse:
-    """Dev override version of my-reports endpoint for testing
-    """
+    """Dev override version of my-reports endpoint for testing"""
     try:
         # Mock report data for testing
         mock_reports = [
@@ -463,14 +461,13 @@ async def get_user_reports_dev(
         )
 
     except Exception as e:
-        logger.error(f"Error fetching user reports: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch reports: {str(e)}")
+        logger.exception(f"Error fetching user reports: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch reports: {e!s}")
 
 
 @safety_reports_router.get("/my-reports", response_model=ApiResponse)
 async def get_my_reports(user_id: int, limit: int = 10, db: Session = Depends(get_db)) -> ApiResponse:
-    """Get list of user's generated safety reports
-    """
+    """Get list of user's generated safety reports"""
     try:
         reports = (
             db.query(SafetyReport)
@@ -498,14 +495,13 @@ async def get_my_reports(user_id: int, limit: int = 10, db: Session = Depends(ge
         return ApiResponse(success=True, data={"reports": report_list, "total": len(report_list)})
 
     except Exception as e:
-        logger.error(f"Error fetching user reports: {e}")
+        logger.exception(f"Error fetching user reports: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @safety_reports_router.get("/report-dev/{report_id}", response_model=ApiResponse)
 async def get_report_details_dev(report_id: str, user_id: int) -> ApiResponse:
-    """Dev override version of report details endpoint for testing
-    """
+    """Dev override version of report details endpoint for testing"""
     try:
         # Mock report details
         mock_report = {
@@ -550,14 +546,13 @@ async def get_report_details_dev(report_id: str, user_id: int) -> ApiResponse:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error fetching report details: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch report details: {str(e)}")
+        logger.exception(f"Error fetching report details: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch report details: {e!s}")
 
 
 @safety_reports_router.get("/report/{report_id}", response_model=ApiResponse)
 async def get_report_details(report_id: str, db: Session = Depends(get_db)) -> ApiResponse:
-    """Get detailed information about a specific safety report
-    """
+    """Get detailed information about a specific safety report"""
     try:
         report = db.query(SafetyReport).filter(SafetyReport.report_id == report_id).first()
 
@@ -586,7 +581,7 @@ async def get_report_details(report_id: str, db: Session = Depends(get_db)) -> A
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error fetching report details: {e}")
+        logger.exception(f"Error fetching report details: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -645,8 +640,7 @@ async def track_scan(scan_data: dict[str, Any], db: Session = Depends(get_db)) -
 async def generate_quarterly_nursery_report_dev(
     request: SafetyReportRequest,
 ) -> ApiResponse:
-    """Dev override version of quarterly nursery report generation for testing
-    """
+    """Dev override version of quarterly nursery report generation for testing"""
     try:
         # Check dev override for premium features
         from api.services.dev_override import dev_entitled
@@ -679,10 +673,10 @@ async def generate_quarterly_nursery_report_dev(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error generating quarterly nursery report: {e}")
+        logger.exception(f"Error generating quarterly nursery report: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to generate quarterly nursery report: {str(e)}",
+            detail=f"Failed to generate quarterly nursery report: {e!s}",
         )
 
 
@@ -704,7 +698,7 @@ async def generate_quarterly_nursery_report(
     """
     try:
         # Calculate date range (last 3 months)
-        end_date = datetime.now(timezone.utc)
+        end_date = datetime.now(UTC)
         start_date = end_date - timedelta(days=90)
 
         # Get user's scan history for nursery products
@@ -1005,7 +999,7 @@ async def generate_quarterly_nursery_report(
                     db.commit()
 
             except Exception as e:
-                logger.error(f"Failed to generate PDF: {e}")
+                logger.exception(f"Failed to generate PDF: {e}")
 
         # Return response
         return ApiResponse(
@@ -1026,5 +1020,5 @@ async def generate_quarterly_nursery_report(
         )
 
     except Exception as e:
-        logger.error(f"Error generating quarterly nursery report: {e}")
+        logger.exception(f"Error generating quarterly nursery report: {e}")
         raise HTTPException(status_code=500, detail=str(e))

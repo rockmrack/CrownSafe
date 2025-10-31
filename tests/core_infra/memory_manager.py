@@ -7,7 +7,7 @@ import logging
 import os
 import statistics
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any, Union
 
 import chromadb
@@ -122,7 +122,7 @@ class MemoryManager:
             else:
                 self.logger.info("Using default ChromaDB embedding function.")
         except Exception as e_embed:
-            self.logger.error(f"Failed to initialize OpenAIEmbeddingFunction: {e_embed}")
+            self.logger.exception(f"Failed to initialize OpenAIEmbeddingFunction: {e_embed}")
             self.logger.warning("Falling back to default embedding function")
             self.embedding_function = None
 
@@ -137,7 +137,7 @@ class MemoryManager:
                 os.makedirs(self.db_path, exist_ok=True)
                 self.logger.info(f"Created ChromaDB directory: {self.db_path}")
             except Exception as e:
-                self.logger.error(f"Failed to create ChromaDB directory {self.db_path}: {e}")
+                self.logger.exception(f"Failed to create ChromaDB directory {self.db_path}: {e}")
                 return
 
         self.logger.info(f"Initializing MemoryManager with ChromaDB path: {self.db_path}")
@@ -166,7 +166,7 @@ class MemoryManager:
             self.logger.info(f"ChromaDB collection loaded successfully. Current document count: {current_count}")
 
         except Exception as e:
-            self.logger.error(f"Failed to initialize ChromaDB client/collection: {e}")
+            self.logger.exception(f"Failed to initialize ChromaDB client/collection: {e}")
             self.chroma_client = None
             self.collection = None
 
@@ -287,7 +287,7 @@ class MemoryManager:
             return found_metadatas
 
         except Exception as e:
-            self.logger.error(f"Error getting existing metadata: {e}")
+            self.logger.exception(f"Error getting existing metadata: {e}")
             return {}
 
     def _prepare_safe_metadata(
@@ -340,7 +340,7 @@ class MemoryManager:
             return {"status": "error", "message": "ChromaDB collection not available"}
 
         if completion_timestamp is None:
-            completion_timestamp = datetime.now(timezone.utc).isoformat()
+            completion_timestamp = datetime.now(UTC).isoformat()
 
         self.logger.info(f"Storing outputs for workflow_id: {workflow_id}")
 
@@ -348,7 +348,7 @@ class MemoryManager:
         metadatas_to_prepare: list[dict[str, Any]] = []
         ids_for_upsert: list[str] = []
 
-        current_utc_timestamp = datetime.now(timezone.utc).isoformat()
+        current_utc_timestamp = datetime.now(UTC).isoformat()
         drug_name = extracted_entities.get("drug_name")
         disease_name = extracted_entities.get("disease_name")
 
@@ -468,7 +468,7 @@ class MemoryManager:
             }
 
         except Exception as e:
-            self.logger.error(f"Failed to upsert documents for workflow {workflow_id}: {e}")
+            self.logger.exception(f"Failed to upsert documents for workflow {workflow_id}: {e}")
             return {"status": "error", "message": str(e)}
 
     def find_similar_documents(
@@ -512,7 +512,7 @@ class MemoryManager:
             return processed_results
 
         except Exception as e:
-            self.logger.error(f"Failed to find similar documents: {e}")
+            self.logger.exception(f"Failed to find similar documents: {e}")
             return []
 
     def get_document_usage_analytics(self) -> dict[str, Any]:
@@ -596,7 +596,7 @@ class MemoryManager:
             return analytics
 
         except Exception as e:
-            self.logger.error(f"Error generating analytics: {e}")
+            self.logger.exception(f"Error generating analytics: {e}")
             return {"error": str(e)}
 
     def dump_collection_sample(
@@ -649,7 +649,7 @@ class MemoryManager:
             print(f"\n--- End Dump (Total: {self.collection.count()}) ---")
 
         except Exception as e:
-            self.logger.error(f"Failed to dump sample: {e}")
+            self.logger.exception(f"Failed to dump sample: {e}")
             print(f"Error: {e}")
 
     def shutdown(self):

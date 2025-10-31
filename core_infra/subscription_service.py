@@ -1,9 +1,8 @@
-"""Subscription service for entitlement checks and management
-"""
+"""Subscription service for entitlement checks and management"""
 
 import logging
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
@@ -82,7 +81,7 @@ class SubscriptionService:
                 and_(
                     Subscription.user_id == user_id,
                     Subscription.status == SubscriptionStatus.ACTIVE,
-                    Subscription.expires_at > datetime.now(timezone.utc),
+                    Subscription.expires_at > datetime.now(UTC),
                 ),
             )
             .order_by(Subscription.expires_at.desc())
@@ -99,7 +98,7 @@ class SubscriptionService:
                 and_(
                     Subscription.user_id == user_id,
                     Subscription.status == SubscriptionStatus.ACTIVE,
-                    Subscription.expires_at <= datetime.now(timezone.utc),
+                    Subscription.expires_at <= datetime.now(UTC),
                 ),
             )
             .all()
@@ -137,7 +136,7 @@ class SubscriptionService:
                     and_(
                         Subscription.user_id == user_id,
                         Subscription.status == SubscriptionStatus.ACTIVE,
-                        Subscription.expires_at > datetime.now(timezone.utc),
+                        Subscription.expires_at > datetime.now(UTC),
                     ),
                 )
                 .order_by(Subscription.expires_at.desc())
@@ -168,7 +167,7 @@ class SubscriptionService:
                     and_(
                         Subscription.user_id == user_id,
                         Subscription.status == SubscriptionStatus.ACTIVE,
-                        Subscription.expires_at > datetime.now(timezone.utc),
+                        Subscription.expires_at > datetime.now(UTC),
                     ),
                 )
                 .order_by(Subscription.expires_at.desc())
@@ -176,7 +175,7 @@ class SubscriptionService:
             )
 
             if active:
-                days_remaining = (active.expires_at - datetime.now(timezone.utc)).days
+                days_remaining = (active.expires_at - datetime.now(UTC)).days
 
                 return {
                     "active": True,
@@ -198,7 +197,7 @@ class SubscriptionService:
                             Subscription.status == SubscriptionStatus.EXPIRED,
                             and_(
                                 Subscription.status == SubscriptionStatus.ACTIVE,
-                                Subscription.expires_at <= datetime.now(timezone.utc),
+                                Subscription.expires_at <= datetime.now(UTC),
                             ),
                         ),
                     ),
@@ -213,7 +212,7 @@ class SubscriptionService:
                     "plan": expired.plan.value,
                     "provider": expired.provider.value,
                     "expired_at": expired.expires_at.isoformat(),
-                    "days_since_expiry": (datetime.now(timezone.utc) - expired.expires_at).days,
+                    "days_since_expiry": (datetime.now(UTC) - expired.expires_at).days,
                 }
 
             # No subscription found
@@ -237,7 +236,7 @@ class SubscriptionService:
                     and_(
                         Subscription.user_id == user_id,
                         Subscription.status == SubscriptionStatus.ACTIVE,
-                        Subscription.expires_at > datetime.now(timezone.utc),
+                        Subscription.expires_at > datetime.now(UTC),
                     ),
                 )
                 .first()
@@ -248,7 +247,7 @@ class SubscriptionService:
 
             # Mark as cancelled but keep active until expiry
             subscription.auto_renew = False
-            subscription.cancelled_at = datetime.now(timezone.utc)
+            subscription.cancelled_at = datetime.now(UTC)
 
             db.commit()
 
@@ -293,14 +292,14 @@ class SubscriptionService:
 
         """
         with get_db_session() as db:
-            threshold_date = datetime.now(timezone.utc) + timedelta(days=days_threshold)
+            threshold_date = datetime.now(UTC) + timedelta(days=days_threshold)
 
             expiring = (
                 db.query(Subscription)
                 .filter(
                     and_(
                         Subscription.status == SubscriptionStatus.ACTIVE,
-                        Subscription.expires_at > datetime.now(timezone.utc),
+                        Subscription.expires_at > datetime.now(UTC),
                         Subscription.expires_at <= threshold_date,
                         not Subscription.auto_renew,  # Only non-auto-renewing
                     ),
@@ -314,7 +313,7 @@ class SubscriptionService:
                     "subscription_id": sub.id,
                     "plan": sub.plan.value,
                     "expires_at": sub.expires_at.isoformat(),
-                    "days_remaining": (sub.expires_at - datetime.now(timezone.utc)).days,
+                    "days_remaining": (sub.expires_at - datetime.now(UTC)).days,
                 }
                 for sub in expiring
             ]
@@ -334,7 +333,7 @@ class SubscriptionService:
                 .filter(
                     and_(
                         Subscription.status == SubscriptionStatus.ACTIVE,
-                        Subscription.expires_at <= datetime.now(timezone.utc),
+                        Subscription.expires_at <= datetime.now(UTC),
                     ),
                 )
                 .all()
@@ -359,7 +358,7 @@ class SubscriptionService:
                             and_(
                                 Subscription.user_id == user_id,
                                 Subscription.status == SubscriptionStatus.ACTIVE,
-                                Subscription.expires_at > datetime.now(timezone.utc),
+                                Subscription.expires_at > datetime.now(UTC),
                             ),
                         )
                         .first()
@@ -385,7 +384,7 @@ class SubscriptionService:
 
         """
         with get_db_session() as db:
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
 
             # Total active subscriptions
             active_count = (

@@ -4,7 +4,7 @@ Implements weighted scoring model based on CPSC penalty factors
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from enum import Enum
 
 from sqlalchemy.orm import Session
@@ -239,7 +239,7 @@ class RiskScoringEngine:
             "time_since_last_incident": None,
         }
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         # Find most recent incident
         if incidents:
@@ -331,8 +331,7 @@ class RiskScoringEngine:
     def _calculate_violation_score(
         self, product: ProductGoldenRecord, incidents: list[SafetyIncident], db: Session,
     ) -> tuple[float, dict]:
-        """Calculate violation score based on type and severity of violations
-        """
+        """Calculate violation score based on type and severity of violations"""
         score = 0.0
         details = {
             "violation_types": [],
@@ -425,8 +424,7 @@ class RiskScoringEngine:
         return score, details
 
     def _determine_risk_level(self, total_score: float) -> str:
-        """Determine risk level based on total score
-        """
+        """Determine risk level based on total score"""
         if total_score >= 75:
             return "critical"
         elif total_score >= 50:
@@ -442,8 +440,7 @@ class RiskScoringEngine:
         incidents: list[SafetyIncident],
         company_profile: CompanyComplianceProfile | None,
     ) -> float:
-        """Calculate confidence in the risk score based on data completeness
-        """
+        """Calculate confidence in the risk score based on data completeness"""
         confidence = 0.0
 
         # Product data completeness
@@ -505,8 +502,7 @@ class RiskScoringEngine:
             return "stable"
 
     def generate_risk_narrative(self, components: RiskScoreComponents) -> str:
-        """Generate human-readable risk narrative
-        """
+        """Generate human-readable risk narrative"""
         narrative = []
 
         # Overall assessment

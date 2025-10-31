@@ -1,9 +1,8 @@
-"""Health and System Endpoints for App Store Readiness
-"""
+"""Health and System Endpoints for App Store Readiness"""
 
 import os
 import platform
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 from fastapi import APIRouter, Request, Response
@@ -32,7 +31,7 @@ async def healthz(request: Request, response: Response) -> dict[str, Any]:
     return {
         "ok": True,
         "status": "healthy",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "version": API_VERSION,
         "service": "babyshield-api",
     }
@@ -40,8 +39,7 @@ async def healthz(request: Request, response: Response) -> dict[str, Any]:
 
 @router.get("/version")
 async def version_info(request: Request, response: Response) -> dict[str, Any]:
-    """Get API version information
-    """
+    """Get API version information"""
     # Get once per process, then reuse
     v = getattr(request.app.state, "_openapi_version", None)
     if not v:
@@ -58,14 +56,13 @@ async def version_info(request: Request, response: Response) -> dict[str, Any]:
         "api_version": API_VERSION,
         "python_version": platform.python_version(),
         "environment": os.getenv("ENVIRONMENT", "production"),
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
 
 @router.get("/docs")
 async def api_docs_redirect():
-    """Redirect to Swagger UI documentation
-    """
+    """Redirect to Swagger UI documentation"""
     from fastapi.responses import RedirectResponse
 
     return RedirectResponse(url="/docs", status_code=302)
@@ -73,8 +70,7 @@ async def api_docs_redirect():
 
 @router.get("/redoc")
 async def api_redoc_redirect():
-    """Redirect to ReDoc documentation
-    """
+    """Redirect to ReDoc documentation"""
     from fastapi.responses import RedirectResponse
 
     return RedirectResponse(url="/redoc", status_code=302)
@@ -82,8 +78,7 @@ async def api_redoc_redirect():
 
 @router.get("/openapi.json")
 async def api_openapi_redirect():
-    """Redirect to OpenAPI JSON schema
-    """
+    """Redirect to OpenAPI JSON schema"""
     from fastapi.responses import RedirectResponse
 
     return RedirectResponse(url="/openapi.json", status_code=302)

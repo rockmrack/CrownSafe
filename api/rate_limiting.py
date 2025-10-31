@@ -16,8 +16,7 @@ logger = logging.getLogger("app")
 
 
 class RateLimitConfig:
-    """Configuration for rate limiting
-    """
+    """Configuration for rate limiting"""
 
     # Default limits per endpoint category
     SEARCH_LIMIT = 60  # 60 requests per minute for search
@@ -57,13 +56,12 @@ async def init_rate_limiter() -> bool:
 
 
 async def close_rate_limiter() -> None:
-    """Close rate limiter connections
-    """
+    """Close rate limiter connections"""
     try:
         await FastAPILimiter.close()
         logger.info("Rate limiter closed")
     except Exception as e:
-        logger.error(f"Error closing rate limiter: {e}")
+        logger.exception(f"Error closing rate limiter: {e}")
 
 
 async def rate_limit_exceeded_handler(request: Request, exc) -> JSONResponse:
@@ -125,8 +123,7 @@ def get_rate_limiter(times: int = 100, seconds: int = 60, key_func: callable | N
 
 # Pre-configured rate limiters for common use cases
 class RateLimiters:
-    """Pre-configured rate limiters for different endpoint types
-    """
+    """Pre-configured rate limiters for different endpoint types"""
 
     # Heavy operations - 60 req/min
     search = RateLimiter(times=RateLimitConfig.SEARCH_LIMIT, seconds=RateLimitConfig.WINDOW)

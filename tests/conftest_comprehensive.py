@@ -4,7 +4,7 @@ Provides fixtures and test utilities for all test suites
 
 import os
 import tempfile
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import Generator
 
 import pytest
@@ -98,7 +98,7 @@ def test_user(db_session) -> dict:
     user = User(
         email="test@example.com",
         hashed_password=pwd_context.hash("TestPassword123!"),
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
         is_subscribed=False,
         email_verified=True,
     )
@@ -117,19 +117,18 @@ def test_user(db_session) -> dict:
 
 @pytest.fixture
 def test_subscriber(db_session) -> dict:
-    """Create a test user with active subscription
-    """
+    """Create a test user with active subscription"""
     from core_infra.auth import pwd_context
     from core_infra.database import User
 
     user = User(
         email="subscriber@example.com",
         hashed_password=pwd_context.hash("TestPassword123!"),
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
         is_subscribed=True,
         subscription_tier="premium",
-        subscription_start=datetime.now(timezone.utc),
-        subscription_end=datetime.now(timezone.utc) + timedelta(days=30),
+        subscription_start=datetime.now(UTC),
+        subscription_end=datetime.now(UTC) + timedelta(days=30),
         email_verified=True,
     )
 
@@ -147,15 +146,14 @@ def test_subscriber(db_session) -> dict:
 
 @pytest.fixture
 def test_admin(db_session) -> dict:
-    """Create a test admin user
-    """
+    """Create a test admin user"""
     from core_infra.auth import pwd_context
     from core_infra.database import User
 
     user = User(
         email="admin@example.com",
         hashed_password=pwd_context.hash("AdminPassword123!"),
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
         is_subscribed=True,
         is_admin=True,
         email_verified=True,
@@ -175,8 +173,7 @@ def test_admin(db_session) -> dict:
 
 @pytest.fixture
 def auth_token(test_user) -> str:
-    """Generate authentication token for test user
-    """
+    """Generate authentication token for test user"""
     from core_infra.auth import create_access_token
 
     token = create_access_token(data={"sub": str(test_user["id"]), "email": test_user["email"]})
@@ -185,15 +182,13 @@ def auth_token(test_user) -> str:
 
 @pytest.fixture
 def auth_headers(auth_token) -> dict:
-    """Get authentication headers with Bearer token
-    """
+    """Get authentication headers with Bearer token"""
     return {"Authorization": f"Bearer {auth_token}"}
 
 
 @pytest.fixture
 def test_recall(db_session) -> dict:
-    """Create a test recall record
-    """
+    """Create a test recall record"""
     from core_infra.database import RecallDB
 
     recall = RecallDB(
@@ -202,7 +197,7 @@ def test_recall(db_session) -> dict:
         brand="Test Brand",
         hazard="Choking hazard",
         description="Test recall for automated testing",
-        recall_date=datetime.now(timezone.utc).date(),
+        recall_date=datetime.now(UTC).date(),
         source_agency="CPSC",
         country="USA",
         url="https://example.com/recall/001",
@@ -221,8 +216,7 @@ def test_recall(db_session) -> dict:
 
 @pytest.fixture
 def test_barcode_data() -> dict:
-    """Generate test barcode data
-    """
+    """Generate test barcode data"""
     return {
         "valid_upc": "012345678905",
         "valid_ean": "4006381333931",
@@ -233,8 +227,7 @@ def test_barcode_data() -> dict:
 
 @pytest.fixture
 def mock_external_api(monkeypatch):
-    """Mock external API calls for testing
-    """
+    """Mock external API calls for testing"""
 
     class MockResponse:
         def __init__(self, json_data, status_code=200):
@@ -262,8 +255,7 @@ def mock_external_api(monkeypatch):
 
 @pytest.fixture
 def temp_file():
-    """Create a temporary file for upload testing
-    """
+    """Create a temporary file for upload testing"""
     with tempfile.NamedTemporaryFile(mode="w+b", delete=False, suffix=".jpg") as f:
         # Write some dummy image data
         f.write(b"\xff\xd8\xff\xe0\x00\x10JFIF")  # JPEG header

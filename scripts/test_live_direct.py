@@ -15,8 +15,7 @@ API_URL = "http://localhost:8001/api/v1/safety-check"
 
 
 def main(barcode: str):
-    """Runs a live, direct API test against the running Docker container with a given barcode.
-    """
+    """Runs a live, direct API test against the running Docker container with a given barcode."""
     logger.info(f"--- Starting Live End-to-End Recall Test for barcode: {barcode} ---")
 
     # The payload now includes a user_id, as our Commander expects it.

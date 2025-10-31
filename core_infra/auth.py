@@ -5,7 +5,7 @@ Production-ready authentication system
 import logging
 import os
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import Any
 
 from fastapi import Depends, HTTPException, status
@@ -72,9 +72,9 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
 
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
+        expire = datetime.now(UTC) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
     to_encode.update(
         {
@@ -91,7 +91,7 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
 def create_refresh_token(data: dict[str, Any]) -> str:
     """Create a JWT refresh token"""
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    expire = datetime.now(UTC) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     to_encode.update({"exp": expire, "type": "refresh"})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -103,7 +103,7 @@ def decode_token(token: str) -> dict[str, Any]:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError as e:
-        logger.error(f"JWT decode failed: {e}")
+        logger.exception(f"JWT decode failed: {e}")
         return None
 
 

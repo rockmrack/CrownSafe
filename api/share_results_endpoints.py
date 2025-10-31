@@ -6,7 +6,7 @@ import logging
 import os
 import smtplib
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from html import escape
@@ -46,7 +46,7 @@ def _is_uuid(s: str) -> bool:
 
 def _guess_blob_key(user_id: int, report_uuid: str, content_type: str) -> str | None:
     """Guess Azure Blob key for report by trying common layouts"""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     year = now.strftime("%Y")
     month = now.strftime("%m")
 
@@ -85,7 +85,7 @@ def create_share_token_for_azure_blob(
 ) -> tuple[str, ShareToken]:
     """Create share token for Azure Blob Storage-based content without database record"""
     token = ShareToken.generate_token()
-    expires_at = datetime.now(timezone.utc) + timedelta(hours=ttl_hours)
+    expires_at = datetime.now(UTC) + timedelta(hours=ttl_hours)
 
     # Create content snapshot for Azure Blob Storage-based report
     content_snapshot = {
@@ -172,8 +172,7 @@ class SharedContentResponse(BaseModel):
 
 @share_router.post("/create-dev", response_model=ApiResponse)
 async def create_share_link_dev(request: ShareRequest) -> ApiResponse:
-    """Dev override version of create share link for testing (no database)
-    """
+    """Dev override version of create share link for testing (no database)"""
     try:
         # Validate content type
         valid_content_types = [
@@ -192,8 +191,8 @@ async def create_share_link_dev(request: ShareRequest) -> ApiResponse:
             )
 
         # Mock share creation for testing (no database)
-        token = f"dev_token_{request.user_id}_{int(datetime.now(timezone.utc).timestamp())}"
-        expires_at = datetime.now(timezone.utc) + timedelta(hours=request.expires_in_hours or 24)
+        token = f"dev_token_{request.user_id}_{int(datetime.now(UTC).timestamp())}"
+        expires_at = datetime.now(UTC) + timedelta(hours=request.expires_in_hours or 24)
 
         # Generate URLs
         base_url = os.getenv("APP_BASE_URL", "https://crownsafe.cureviax.ai")
@@ -236,10 +235,10 @@ async def create_share_link_dev(request: ShareRequest) -> ApiResponse:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error creating share link: {e}")
+        logger.exception(f"Error creating share link: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to create share link: {str(e)}",
+            detail=f"Failed to create share link: {e!s}",
         ) from e
 
 
@@ -453,7 +452,7 @@ async def create_share_link(
         # Calculate expiration
         expires_at = None
         if request.expires_in_hours:
-            expires_at = datetime.now(timezone.utc) + timedelta(hours=request.expires_in_hours)
+            expires_at = datetime.now(UTC) + timedelta(hours=request.expires_in_hours)
 
         # Hash password if provided
         password_hash = None
@@ -498,14 +497,13 @@ async def create_share_link(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error creating share link: {e}")
+        logger.exception(f"Error creating share link: {e}")
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @share_router.get("/view-dev/{token}", response_model=ApiResponse)
 async def view_share_link_dev(token: str) -> ApiResponse:
-    """Dev override version of view share link for testing (no database)
-    """
+    """Dev override version of view share link for testing (no database)"""
     try:
         # Get share token from in-memory storage
         if not hasattr(create_share_link_dev, "mock_shares"):
@@ -517,7 +515,7 @@ async def view_share_link_dev(token: str) -> ApiResponse:
             raise HTTPException(status_code=404, detail="Share link not found")
 
         # Check if expired
-        if share_data["expires_at"] and share_data["expires_at"] < datetime.now(timezone.utc):
+        if share_data["expires_at"] and share_data["expires_at"] < datetime.now(UTC):
             raise HTTPException(status_code=410, detail="Share link has expired")
 
         # Check if revoked
@@ -549,8 +547,8 @@ async def view_share_link_dev(token: str) -> ApiResponse:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error viewing share link: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to view share link: {str(e)}") from e
+        logger.exception(f"Error viewing share link: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to view share link: {e!s}") from e
 
 
 @share_router.get("/view/{token}", response_model=ApiResponse)
@@ -620,7 +618,7 @@ async def view_shared_content(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error viewing shared content: {e}")
+        logger.exception(f"Error viewing shared content: {e}")
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
@@ -668,7 +666,7 @@ async def share_via_email(
         expiry_text = "This link does not expire."
         expires_at_value = cast(datetime | None, getattr(share_token, "expires_at", None))
         if expires_at_value is not None:
-            seconds_remaining = (expires_at_value - datetime.now(timezone.utc)).total_seconds()
+            seconds_remaining = (expires_at_value - datetime.now(UTC)).total_seconds()
             hours_remaining = max(0, int(seconds_remaining // 3600))
             expiry_text = f"This link will expire in {hours_remaining} hours."
 
@@ -758,7 +756,7 @@ async def share_via_email(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error sharing via email: {e}")
+        logger.exception(f"Error sharing via email: {e}")
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
@@ -766,8 +764,7 @@ async def share_via_email(
 async def revoke_share_link_dev(
     token: str, user_id: int = Query(..., description="User revoking the share"),
 ) -> ApiResponse:
-    """Dev override version of revoke share link for testing (no database)
-    """
+    """Dev override version of revoke share link for testing (no database)"""
     try:
         # Get share token from in-memory storage
         if not hasattr(create_share_link_dev, "mock_shares"):
@@ -784,7 +781,7 @@ async def revoke_share_link_dev(
 
         # Revoke the token
         share_data["is_active"] = False
-        share_data["revoked_at"] = datetime.now(timezone.utc)
+        share_data["revoked_at"] = datetime.now(UTC)
 
         return ApiResponse(
             success=True,
@@ -794,8 +791,8 @@ async def revoke_share_link_dev(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error revoking share link: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to revoke share link: {str(e)}") from e
+        logger.exception(f"Error revoking share link: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to revoke share link: {e!s}") from e
 
 
 @share_router.delete("/revoke/{token}", response_model=ApiResponse)
@@ -824,7 +821,7 @@ async def revoke_share_link(
 
         # Revoke the token
         share_token.is_active = False  # type: ignore[assignment]
-        share_token.revoked_at = datetime.now(timezone.utc)  # type: ignore[assignment]
+        share_token.revoked_at = datetime.now(UTC)  # type: ignore[assignment]
         db.commit()
 
         return ApiResponse(success=True, data={"message": "Share link revoked successfully"})
@@ -832,7 +829,7 @@ async def revoke_share_link(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error revoking share link: {e}")
+        logger.exception(f"Error revoking share link: {e}")
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
@@ -842,8 +839,7 @@ async def get_my_share_links(
     active_only: bool = Query(True, description="Only show active shares"),
     db: Session = Depends(get_db),  # noqa: B008
 ) -> ApiResponse:
-    """Get all share links created by a user
-    """
+    """Get all share links created by a user"""
     try:
         query = db.query(ShareToken).filter(ShareToken.created_by == user_id)
 
@@ -862,14 +858,13 @@ async def get_my_share_links(
         return ApiResponse(success=True, data={"shares": share_list, "total": len(share_list)})
 
     except Exception as e:
-        logger.error(f"Error fetching user shares: {e}")
+        logger.exception(f"Error fetching user shares: {e}")
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @share_router.get("/qr/{token}")
 async def generate_share_qr_code(token: str):
-    """Generate QR code for share link
-    """
+    """Generate QR code for share link"""
     try:
         from io import BytesIO
 
@@ -895,14 +890,13 @@ async def generate_share_qr_code(token: str):
         return StreamingResponse(img_bytes, media_type="image/png")
 
     except Exception as e:
-        logger.error(f"Error generating QR code: {e}")
+        logger.exception(f"Error generating QR code: {e}")
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @share_router.get("/preview-dev/{token}")
 async def preview_share_link_dev(token: str) -> HTMLResponse:
-    """Dev override version of preview share link for testing (no database)
-    """
+    """Dev override version of preview share link for testing (no database)"""
     try:
         # Get share token from in-memory storage
         if not hasattr(create_share_link_dev, "mock_shares"):
@@ -914,7 +908,7 @@ async def preview_share_link_dev(token: str) -> HTMLResponse:
             raise HTTPException(status_code=404, detail="Share link not found")
 
         # Check if expired
-        if share_data["expires_at"] and share_data["expires_at"] < datetime.now(timezone.utc):
+        if share_data["expires_at"] and share_data["expires_at"] < datetime.now(UTC):
             raise HTTPException(status_code=410, detail="Share link has expired")
 
         # Check if revoked
@@ -963,10 +957,10 @@ async def preview_share_link_dev(token: str) -> HTMLResponse:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error previewing share link: {e}")
+        logger.exception(f"Error previewing share link: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to preview share link: {str(e)}",
+            detail=f"Failed to preview share link: {e!s}",
         ) from e
 
 
@@ -1079,7 +1073,7 @@ async def preview_shared_content(
         return HTMLResponse(content=html_content)
 
     except Exception as e:
-        logger.error(f"Error generating preview: {e}")
+        logger.exception(f"Error generating preview: {e}")
         html_content = """
         <html>
             <head><title>Crown Safe - Error</title></head>

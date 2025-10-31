@@ -32,8 +32,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 
 def convert_sets_to_lists(obj):
-    """Recursively convert all sets in a dict or list to lists for JSON serialization.
-    """
+    """Recursively convert all sets in a dict or list to lists for JSON serialization."""
     if isinstance(obj, dict):
         return {k: convert_sets_to_lists(v) for k, v in obj.items()}
     elif isinstance(obj, set):

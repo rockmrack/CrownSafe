@@ -132,7 +132,7 @@ async def get_redis_connection() -> redis.Redis:
         return redis.Redis(connection_pool=pool)
 
     except (redis.ConnectionError, ConnectionRefusedError) as e:
-        logger.error(f"Unable to get Redis connection: {e}")
+        logger.exception(f"Unable to get Redis connection: {e}")
         raise ConnectionError(f"Redis server may be down or unreachable: {e}") from e
     except Exception as e:
         logger.error(f"Unexpected error getting Redis connection: {e}", exc_info=True)

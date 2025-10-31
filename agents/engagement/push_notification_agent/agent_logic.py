@@ -38,8 +38,7 @@ else:
 
 
 class PushNotificationAgentLogic:
-    """Handles sending push notifications using Firebase Cloud Messaging (HTTP v1 via Admin SDK).
-    """
+    """Handles sending push notifications using Firebase Cloud Messaging (HTTP v1 via Admin SDK)."""
 
     def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None) -> None:
         self.agent_id = agent_id
@@ -53,8 +52,7 @@ class PushNotificationAgentLogic:
         body: str,
         data: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        """Sends a single push notification to a device using Firebase Admin SDK.
-        """
+        """Sends a single push notification to a device using Firebase Admin SDK."""
         self.logger.info(f"Sending notification to device: {device_token[:10]}...")
 
         if not FIREBASE_AVAILABLE:
@@ -81,8 +79,7 @@ class PushNotificationAgentLogic:
             return {"status": "error", "message": str(e)}
 
     async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
-        """Main entry point: processes inputs and sends notification.
-        """
+        """Main entry point: processes inputs and sends notification."""
         self.logger.info(f"Received task inputs: {inputs}")
         device_token = inputs.get("device_token")
         title = inputs.get("title")

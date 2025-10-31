@@ -1,5 +1,4 @@
-"""Run Alembic migration programmatically to work around file locking issues.
-"""
+"""Run Alembic migration programmatically to work around file locking issues."""
 
 import os
 import sys

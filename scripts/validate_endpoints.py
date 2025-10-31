@@ -27,8 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 class EndpointValidator:
-    """Validates API endpoints and reports issues
-    """
+    """Validates API endpoints and reports issues"""
 
     def __init__(self, base_url: str = "http://localhost:8001"):
         self.base_url = base_url
@@ -89,8 +88,7 @@ class EndpointValidator:
             }
 
     async def validate_all_endpoints(self):
-        """Validate all known endpoints
-        """
+        """Validate all known endpoints"""
         logger.info(f"Validating endpoints at {self.base_url}")
 
         # Core health endpoints
@@ -119,8 +117,7 @@ class EndpointValidator:
         self.results = await asyncio.gather(*tasks)
 
     def generate_report(self) -> str:
-        """Generate validation report
-        """
+        """Generate validation report"""
         if not self.results:
             return "No results available"
 
@@ -196,8 +193,7 @@ class EndpointValidator:
         return "\n".join(report)
 
     def save_report(self, filename: str):
-        """Save report to file
-        """
+        """Save report to file"""
         report = self.generate_report()
         with open(filename, "w", encoding="utf-8") as f:
             f.write(report)
@@ -205,8 +201,7 @@ class EndpointValidator:
 
 
 async def main():
-    """Main validation function
-    """
+    """Main validation function"""
     import argparse
 
     parser = argparse.ArgumentParser(description="Validate API endpoints")

@@ -20,8 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class IPAllowlistMiddleware(BaseHTTPMiddleware):
-    """Middleware to restrict admin endpoints to specific IP addresses
-    """
+    """Middleware to restrict admin endpoints to specific IP addresses"""
 
     def __init__(self, app, admin_paths: list[str] = None, allowed_ips: list[str] = None) -> None:
         super().__init__(app)
@@ -135,8 +134,7 @@ class IPAllowlistMiddleware(BaseHTTPMiddleware):
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """Middleware to add security headers to all responses
-    """
+    """Middleware to add security headers to all responses"""
 
     async def dispatch(self, request: Request, call_next):
         """Add security headers to response"""
@@ -173,8 +171,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 class RequestValidationMiddleware(BaseHTTPMiddleware):
-    """Middleware to validate and sanitize incoming requests
-    """
+    """Middleware to validate and sanitize incoming requests"""
 
     def __init__(self, app, max_body_size: int = 10485760) -> None:  # 10MB default
         super().__init__(app)
@@ -251,8 +248,7 @@ class RequestValidationMiddleware(BaseHTTPMiddleware):
 
 
 class APIKeyMiddleware(BaseHTTPMiddleware):
-    """Middleware for API key authentication on specific endpoints
-    """
+    """Middleware for API key authentication on specific endpoints"""
 
     def __init__(self, app, protected_paths: list[str] = None) -> None:
         super().__init__(app)
@@ -315,8 +311,7 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
 
 
 class HMACMiddleware(BaseHTTPMiddleware):
-    """Middleware for HMAC request signing validation
-    """
+    """Middleware for HMAC request signing validation"""
 
     def __init__(self, app, protected_paths: list[str] = None) -> None:
         super().__init__(app)
@@ -385,8 +380,7 @@ class HMACMiddleware(BaseHTTPMiddleware):
 
 
 def get_cors_middleware_config():
-    """Get CORS configuration for FastAPI CORSMiddleware
-    """
+    """Get CORS configuration for FastAPI CORSMiddleware"""
     # Get allowed origins from environment
     allowed_origins_str = os.environ.get("CORS_ALLOWED_ORIGINS", "")
 

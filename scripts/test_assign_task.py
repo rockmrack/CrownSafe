@@ -93,8 +93,7 @@ async def handle_controller_message(message: dict[str, Any]):
 
 # --- Main Test Function ---
 async def run_task_assignment():
-    """Connects as a controller, sends a task, waits for completion or timeout.
-    """
+    """Connects as a controller, sends a task, waits for completion or timeout."""
     global task_result, task_completion_event, task_correlation_id
     logger.info(f"Instantiating MCPClient for controller: {CONTROLLER_AGENT_ID}")
 
@@ -146,12 +145,12 @@ async def run_task_assignment():
                 logger.error("Completion event received, but no result was stored.")
 
         except asyncio.TimeoutError:
-            logger.error(f"Timeout: Did not receive task completion message within {TASK_TIMEOUT_SECONDS} seconds.")
+            logger.exception(f"Timeout: Did not receive task completion message within {TASK_TIMEOUT_SECONDS} seconds.")
 
     except ConnectionError as e:
-        logger.error(f"Connection error during task assignment test: {e}")
+        logger.exception(f"Connection error during task assignment test: {e}")
     except MCPClientError as e:
-        logger.error(f"MCP Client Error during task assignment test: {e}")
+        logger.exception(f"MCP Client Error during task assignment test: {e}")
     except Exception as e:
         logger.error(
             f"An unexpected error occurred in the task assignment test: {e}",

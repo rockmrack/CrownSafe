@@ -11,7 +11,7 @@ import asyncio  # noqa: E402
 import copy  # noqa: E402
 import json  # noqa: E402
 import uuid  # noqa: E402
-from datetime import datetime, timezone  # noqa: E402
+from datetime import datetime, timezone, UTC  # noqa: E402
 from typing import TYPE_CHECKING, Any, Callable  # noqa: E402
 
 import websockets  # noqa: E402
@@ -124,7 +124,7 @@ class MCPClient:
         try:
             return self.websocket.state == WebSocketStateEnum.OPEN
         except AttributeError:
-            self.logger.error(f"AttributeError accessing websocket.state for {self.agent_id}.")
+            self.logger.exception(f"AttributeError accessing websocket.state for {self.agent_id}.")
             return False
         except Exception as e:
             self.logger.error(
@@ -196,7 +196,7 @@ class MCPClient:
         except asyncio.TimeoutError:  # Timeout for the websockets.connect call itself
             self._is_connected = False
             self.websocket = None
-            self.logger.error(
+            self.logger.exception(
                 f"Connection attempt to {self.ws_url} for {self.agent_id} timed out after {connect_timeout}s.",
             )
             raise MCPConnectionError(f"Connection attempt timed out for {self.agent_id}")
@@ -212,10 +212,10 @@ class MCPClient:
                 self.logger.critical(f"Invalid URI for {self.agent_id}: {self.ws_url}")
                 raise MCPConnectionError(f"Invalid URI: {self.ws_url}") from e
             elif isinstance(e, ConnectionRefusedError):
-                self.logger.error(f"Connection refused by server at {self.ws_url} for {self.agent_id}")
+                self.logger.exception(f"Connection refused by server at {self.ws_url} for {self.agent_id}")
                 raise MCPConnectionError(f"Connection refused: {self.ws_url}") from e
             elif isinstance(e, WebsocketsInvalidStatus):
-                self.logger.error(
+                self.logger.exception(
                     f"Server rejected WebSocket for {self.agent_id}: {e.status_code} {e.reason if hasattr(e, 'reason') else 'N/A'}",  # noqa: E501
                 )
                 raise MCPConnectionError(f"Server rejected WebSocket connection: {e.status_code}") from e
@@ -422,7 +422,7 @@ class MCPClient:
                             f"No message handler configured for {self.agent_id} to handle Type='{validated_message.mcp_header.message_type if validated_message else 'N/A'}'.",  # noqa: E501
                         )
                 except json.JSONDecodeError as json_err:
-                    self.logger.error(
+                    self.logger.exception(
                         f"CLIENT_RECV_JSON_FAIL ({self.agent_id}): {json_err}. Raw: {str(message_text)[:300]}",
                     )
                 except Exception as validation_or_handler_err:
@@ -435,7 +435,7 @@ class MCPClient:
                         if message_data and len(str(message_data)) > 500
                         else str(message_data)
                     )
-                    self.logger.error(f"CLIENT_RECV_FAIL_DATA ({self.agent_id}): Problematic data: {data_snippet}")
+                    self.logger.exception(f"CLIENT_RECV_FAIL_DATA ({self.agent_id}): Problematic data: {data_snippet}")
             except asyncio.TimeoutError:
                 self.logger.debug(f"Receive loop ({self.agent_id}): Timeout. Checking connection.")
                 continue
@@ -484,7 +484,7 @@ class MCPClient:
                 break
             try:
                 await self.send_message(
-                    payload={"client_timestamp": datetime.now(timezone.utc).timestamp()},
+                    payload={"client_timestamp": datetime.now(UTC).timestamp()},
                     message_type="PING",
                     target_service="MCP_ROUTER",
                 )
@@ -493,7 +493,7 @@ class MCPClient:
                 self.logger.info(f"Heartbeat cancelled during PING send for {self.agent_id}.")
                 break
             except (MCPConnectionError, MCPError) as e:
-                self.logger.error(
+                self.logger.exception(
                     f"Heartbeat send error for {self.agent_id}: {e}. Connection lost?. Stopping heartbeat.",
                 )
                 self._is_connected = False

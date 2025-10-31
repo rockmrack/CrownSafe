@@ -1,5 +1,4 @@
-"""Chat tools service - stub implementation for chat router
-"""
+"""Chat tools service - stub implementation for chat router"""
 
 from typing import Any
 

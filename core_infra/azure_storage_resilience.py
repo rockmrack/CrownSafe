@@ -5,7 +5,7 @@ Provides retry logic, circuit breakers, and error handling for Azure storage ope
 import functools
 import logging
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from enum import Enum
 from typing import Any, Callable
 
@@ -92,7 +92,7 @@ class CircuitBreaker:
         """Check if enough time has passed to attempt reset"""
         return (
             self.last_failure_time is not None
-            and (datetime.now(timezone.utc) - self.last_failure_time).seconds >= self.recovery_timeout
+            and (datetime.now(UTC) - self.last_failure_time).seconds >= self.recovery_timeout
         )
 
     def _on_success(self) -> None:
@@ -105,7 +105,7 @@ class CircuitBreaker:
     def _on_failure(self) -> None:
         """Handle failed operation"""
         self.failure_count += 1
-        self.last_failure_time = datetime.now(timezone.utc)
+        self.last_failure_time = datetime.now(UTC)
 
         if self.failure_count >= self.failure_threshold:
             self.state = CircuitState.OPEN
@@ -150,7 +150,7 @@ def retry_with_exponential_backoff(
                     last_exception = e
 
                     if attempt == max_retries:
-                        logger.error(
+                        logger.exception(
                             f"Failed after {max_retries} retries: {func.__name__}",
                             extra={
                                 "function": func.__name__,
@@ -169,7 +169,7 @@ def retry_with_exponential_backoff(
 
                     logger.warning(
                         f"Retry attempt {attempt + 1}/{max_retries} for {func.__name__} "
-                        f"after {delay:.2f}s delay. Error: {str(e)}",
+                        f"after {delay:.2f}s delay. Error: {e!s}",
                     )
                     time.sleep(delay)
                 except ResourceNotFoundError:
@@ -181,7 +181,7 @@ def retry_with_exponential_backoff(
                 except Exception as e:
                     # Unexpected error - log and raise immediately
                     logger.error(
-                        f"Unexpected error in {func.__name__}: {str(e)}",
+                        f"Unexpected error in {func.__name__}: {e!s}",
                         exc_info=True,
                     )
                     raise
@@ -236,7 +236,7 @@ def with_correlation_id(func: Callable) -> Callable:
             return result
         except Exception as e:
             logger.error(
-                f"Operation failed: {func.__name__} - {str(e)}",
+                f"Operation failed: {func.__name__} - {e!s}",
                 extra={
                     "correlation_id": correlation_id,
                     "error_type": type(e).__name__,
@@ -264,7 +264,7 @@ def log_azure_error(func: Callable) -> Callable:
         try:
             return func(*args, **kwargs)
         except HttpResponseError as e:
-            logger.error(
+            logger.exception(
                 f"Azure HTTP error in {func.__name__}",
                 extra={
                     "status_code": e.status_code,
@@ -276,26 +276,26 @@ def log_azure_error(func: Callable) -> Callable:
             raise
         except ResourceNotFoundError as e:
             logger.warning(
-                f"Resource not found in {func.__name__}: {str(e)}",
+                f"Resource not found in {func.__name__}: {e!s}",
                 extra={"function": func.__name__},
             )
             raise
         except ResourceExistsError as e:
             logger.warning(
-                f"Resource already exists in {func.__name__}: {str(e)}",
+                f"Resource already exists in {func.__name__}: {e!s}",
                 extra={"function": func.__name__},
             )
             raise
         except ServiceRequestError as e:
             logger.error(
-                f"Azure service request error in {func.__name__}: {str(e)}",
+                f"Azure service request error in {func.__name__}: {e!s}",
                 extra={"function": func.__name__},
                 exc_info=True,
             )
             raise
         except AzureError as e:
             logger.error(
-                f"Azure error in {func.__name__}: {str(e)}",
+                f"Azure error in {func.__name__}: {e!s}",
                 extra={
                     "function": func.__name__,
                     "error_type": type(e).__name__,

@@ -107,7 +107,7 @@ async def activate_subscription(
         return ActivateSubscriptionResponse(**result)
 
     except Exception as e:
-        logger.error(f"Error activating subscription: {e}")
+        logger.exception(f"Error activating subscription: {e}")
         raise HTTPException(status_code=500, detail="Failed to activate subscription")
 
 
@@ -374,7 +374,7 @@ async def get_subscription_history_dev(
         }
 
     except Exception as e:
-        logger.error(f"Error getting subscription history: {e}")
+        logger.exception(f"Error getting subscription history: {e}")
         raise HTTPException(status_code=500, detail="Failed to retrieve subscription history")
 
 
@@ -614,5 +614,5 @@ async def get_subscription_plans(
         return PlansResponse(success=True, plans=plans, total=len(plans))
 
     except Exception as e:
-        logger.error(f"Error getting subscription plans: {e}")
+        logger.exception(f"Error getting subscription plans: {e}")
         raise HTTPException(status_code=500, detail="Failed to retrieve subscription plans")

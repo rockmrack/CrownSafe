@@ -10,7 +10,7 @@ import tracemalloc
 from collections import defaultdict, deque
 from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from functools import wraps
 from typing import Any
 
@@ -40,8 +40,7 @@ class PerformanceMetric:
 
 
 class PerformanceMonitor:
-    """Central performance monitoring system
-    """
+    """Central performance monitoring system"""
 
     def __init__(self, enable_memory_profiling: bool = False) -> None:
         self.metrics: dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
@@ -146,7 +145,7 @@ class PerformanceMonitor:
 
     def get_summary(self, time_window: int = 60) -> dict[str, Any]:
         """Get performance summary for the last N seconds"""
-        cutoff = datetime.now(timezone.utc) - timedelta(seconds=time_window)
+        cutoff = datetime.now(UTC) - timedelta(seconds=time_window)
         summary = {
             "metrics": {},
             "counters": dict(self.counters),
@@ -534,7 +533,7 @@ class MetricsGarbageCollector:
         """Garbage collection loop"""
         while self.running:
             try:
-                cutoff = datetime.now(timezone.utc) - self.max_age
+                cutoff = datetime.now(UTC) - self.max_age
 
                 with self.monitor._lock:
                     for name, metrics in self.monitor.metrics.items():
@@ -546,7 +545,7 @@ class MetricsGarbageCollector:
                 time.sleep(300)
 
             except Exception as e:
-                logger.error(f"Error in metrics GC: {e}")
+                logger.exception(f"Error in metrics GC: {e}")
 
 
 # Example usage

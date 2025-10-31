@@ -30,8 +30,7 @@ TEST_AGENT_ID = "test_agent_001"
 
 # --- Message Handler ---
 async def handle_incoming_message(message: dict[str, Any]):
-    """Callback function to process messages received from the MCP Router.
-    """
+    """Callback function to process messages received from the MCP Router."""
     message_type = message.get("mcp_header", {}).get("message_type", "UNKNOWN")
     sender = message.get("mcp_header", {}).get("sender_id", "UNKNOWN")
     payload = message.get("payload", {})
@@ -41,8 +40,7 @@ async def handle_incoming_message(message: dict[str, Any]):
 
 # --- Main Test Function ---
 async def run_test_client():
-    """Instantiates the client, connects, waits, and disconnects.
-    """
+    """Instantiates the client, connects, waits, and disconnects."""
     logger.info(f"Instantiating MCPClient for agent: {TEST_AGENT_ID}")
     # Instantiate the client, passing our agent ID and message handler
     client = MCPClient(
@@ -79,7 +77,7 @@ async def run_test_client():
                 )
                 logger.info("DISCOVERY_REGISTER message sent.")
             except Exception as send_e:
-                logger.error(f"Error sending register message: {send_e}")
+                logger.exception(f"Error sending register message: {send_e}")
 
             await asyncio.sleep(15)  # Keep connection open for a while
             logger.info("Wait finished.")
@@ -90,9 +88,9 @@ async def run_test_client():
                 logger.error(f"Connection task failed: {connect_task.exception()}")
 
     except ConnectionError as e:
-        logger.error(f"Connection failed permanently: {e}")
+        logger.exception(f"Connection failed permanently: {e}")
     except MCPClientError as e:
-        logger.error(f"MCP Client Error: {e}")
+        logger.exception(f"MCP Client Error: {e}")
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}", exc_info=True)
     finally:

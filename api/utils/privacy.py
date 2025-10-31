@@ -7,7 +7,7 @@ import json
 import logging
 import re
 import secrets
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from functools import wraps
 from typing import Any
 
@@ -244,7 +244,7 @@ def calculate_sla_deadline(jurisdiction: str, submitted_at: datetime | None = No
     from datetime import timedelta
 
     if submitted_at is None:
-        submitted_at = datetime.now(timezone.utc)
+        submitted_at = datetime.now(UTC)
 
     # SLA by jurisdiction (in days)
     sla_days = {
@@ -310,7 +310,7 @@ def privacy_audit_log(func):
 
     @wraps(func)
     async def wrapper(*args, **kwargs):
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
         operation = func.__name__
 
         try:
@@ -324,7 +324,7 @@ def privacy_audit_log(func):
             result = await func(*args, **kwargs)
 
             # Log success
-            duration = (datetime.now(timezone.utc) - start_time).total_seconds()
+            duration = (datetime.now(UTC) - start_time).total_seconds()
             logger.info(
                 f"Privacy operation completed: {operation}",
                 extra={
@@ -338,8 +338,8 @@ def privacy_audit_log(func):
 
         except Exception as e:
             # Log failure
-            duration = (datetime.now(timezone.utc) - start_time).total_seconds()
-            logger.error(
+            duration = (datetime.now(UTC) - start_time).total_seconds()
+            logger.exception(
                 f"Privacy operation failed: {operation}",
                 extra={
                     "operation": operation,
@@ -354,8 +354,7 @@ def privacy_audit_log(func):
 
 
 class PrivacyDataExporter:
-    """Helper class for exporting user data in various formats
-    """
+    """Helper class for exporting user data in various formats"""
 
     @staticmethod
     def to_json(data: dict[str, Any], pretty: bool = True) -> str:
@@ -410,7 +409,7 @@ class PrivacyDataExporter:
         """
         return {
             "export_metadata": {
-                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "generated_at": datetime.now(UTC).isoformat(),
                 "format_version": "1.0",
                 "data_categories": list(user_data.keys()),
                 "record_count": sum(len(v) if isinstance(v, list) else 1 for v in user_data.values()),
@@ -431,8 +430,7 @@ class PrivacyDataExporter:
 
 
 class PIIMasker:
-    """Advanced PII masking for logs and responses
-    """
+    """Advanced PII masking for logs and responses"""
 
     def __init__(self, custom_patterns: dict[str, re.Pattern] | None = None) -> None:
         """Initialize PII masker

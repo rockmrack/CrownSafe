@@ -20,8 +20,7 @@ TOKEN = os.getenv("MIXPANEL_PROJECT_TOKEN")
 
 
 class MetricsAgentLogic:
-    """Handles the logic for tracking user events using Mixpanel.
-    """
+    """Handles the logic for tracking user events using Mixpanel."""
 
     def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None) -> None:
         self.agent_id = agent_id
@@ -37,8 +36,7 @@ class MetricsAgentLogic:
         self.logger.info(f"MetricsAgentLogic initialized for agent {self.agent_id}.")
 
     def track_event(self, user_id: str, event_name: str, properties: dict | None = None) -> bool:
-        """Sends a single event to Mixpanel.
-        """
+        """Sends a single event to Mixpanel."""
         self.logger.info(f"Tracking event '{event_name}' for user: {user_id}")
         try:
             self.mixpanel_client.track(distinct_id=user_id, event_name=event_name, properties=properties or {})
@@ -49,8 +47,7 @@ class MetricsAgentLogic:
             return False
 
     async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
-        """Main entry point for the agent.
-        """
+        """Main entry point for the agent."""
         self.logger.info(f"Received task with inputs: {inputs}")
 
         user_id = inputs.get("user_id")

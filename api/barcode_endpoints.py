@@ -4,7 +4,7 @@ Barcode, QR Code, and DataMatrix scanning with precise recall matching
 
 import base64
 import logging
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timezone, UTC
 from typing import Any
 
 from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile
@@ -155,7 +155,7 @@ def _attempt_unit_verification(scan_result: ScanResult) -> dict[str, Any] | None
             "payload": result.payload,
         }
     except Exception as e:
-        logger.error(f"Verification error: {e}")
+        logger.exception(f"Verification error: {e}")
         return {"verified": False, "status": "error", "message": str(e)}
 
 
@@ -180,14 +180,14 @@ def _persist_verification(
             message=verification.get("message"),
             trace_id=trace_id,
             verification_payload=verification.get("payload"),
-            checked_at=datetime.now(timezone.utc),
+            checked_at=datetime.now(UTC),
         )
         db.add(rec)
         db.commit()
         db.refresh(rec)
         return rec.id
     except Exception as e:
-        logger.error(f"Failed to persist serial verification: {e}")
+        logger.exception(f"Failed to persist serial verification: {e}")
         try:
             db.rollback()
         except Exception:
@@ -213,7 +213,7 @@ async def scan_barcode_text(request: BarcodeScanRequest, db: Session = Depends(g
     """
     try:
         # Generate trace ID
-        trace_id = f"scan_{int(datetime.now(timezone.utc).timestamp())}_{hash(request.barcode_data) % 10000}"
+        trace_id = f"scan_{int(datetime.now(UTC).timestamp())}_{hash(request.barcode_data) % 10000}"
 
         # Parse barcode
         scan_result = scanner.scan_text(request.barcode_data, request.barcode_type)
@@ -239,7 +239,7 @@ async def scan_barcode_text(request: BarcodeScanRequest, db: Session = Depends(g
         return ApiResponse(success=True, data=response_data.model_dump(), message=None)
 
     except Exception as e:
-        logger.error(f"Barcode scan error: {e}")
+        logger.exception(f"Barcode scan error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -255,7 +255,7 @@ async def scan_image(
     """
     try:
         # Generate trace ID
-        trace_id = f"scan_img_{int(datetime.now(timezone.utc).timestamp())}_{hash(file.filename) % 10000}"
+        trace_id = f"scan_img_{int(datetime.now(UTC).timestamp())}_{hash(file.filename) % 10000}"
 
         # Read image data
         image_data = await file.read()
@@ -295,7 +295,7 @@ async def scan_image(
         return ApiResponse(success=True, data=response_data, message=None)
 
     except Exception as e:
-        logger.error(f"Image scan error: {e}")
+        logger.exception(f"Image scan error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -308,7 +308,7 @@ async def scan_qr_code(request: BarcodeScanRequest, db: Session = Depends(get_db
     """
     try:
         # Generate trace ID
-        timestamp = int(datetime.now(timezone.utc).timestamp())
+        timestamp = int(datetime.now(UTC).timestamp())
         hash_val = hash(request.barcode_data) % 10000
         trace_id = f"scan_qr_{timestamp}_{hash_val}"
 
@@ -335,7 +335,7 @@ async def scan_qr_code(request: BarcodeScanRequest, db: Session = Depends(get_db
         return ApiResponse(success=True, data=response_data.model_dump(), message=None)
 
     except Exception as e:
-        logger.error(f"QR scan error: {e}")
+        logger.exception(f"QR scan error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -348,7 +348,7 @@ async def scan_datamatrix(request: ImageScanRequest, db: Session = Depends(get_d
     """
     try:
         # Generate trace ID
-        trace_id = f"scan_dm_{int(datetime.now(timezone.utc).timestamp())}"
+        trace_id = f"scan_dm_{int(datetime.now(UTC).timestamp())}"
 
         # Decode base64 image
         image_data = base64.b64decode(request.image_base64)
@@ -383,7 +383,7 @@ async def scan_datamatrix(request: ImageScanRequest, db: Session = Depends(get_d
         return ApiResponse(success=True, data=response_data.model_dump(), message=None)
 
     except Exception as e:
-        logger.error(f"DataMatrix scan error: {e}")
+        logger.exception(f"DataMatrix scan error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -403,7 +403,7 @@ async def parse_gs1_data(
     """
     try:
         # Generate trace ID
-        trace_id = f"scan_gs1_{int(datetime.now(timezone.utc).timestamp())}"
+        trace_id = f"scan_gs1_{int(datetime.now(UTC).timestamp())}"
 
         # Parse GS1 data
         scan_result = scanner.scan_text(gs1_data, "GS1_128")
@@ -427,7 +427,7 @@ async def parse_gs1_data(
         )
 
     except Exception as e:
-        logger.error(f"GS1 parsing error: {e}")
+        logger.exception(f"GS1 parsing error: {e}")
         return ApiResponse(success=False, data={"error": str(e)}, message="Failed to parse GS1 data")
 
 
@@ -447,7 +447,7 @@ async def verify_unit(request: VerifyRequest, db: Session = Depends(get_db_sessi
     Always persists a verification record for audit.
     """
     try:
-        trace_id = f"verify_{int(datetime.now(timezone.utc).timestamp())}"
+        trace_id = f"verify_{int(datetime.now(UTC).timestamp())}"
 
         exp = None
         if request.expiry_date:
@@ -483,7 +483,7 @@ async def verify_unit(request: VerifyRequest, db: Session = Depends(get_db_sessi
         }
         return ApiResponse(success=True, data=data)
     except Exception as e:
-        logger.error(f"Unit verification error: {e}")
+        logger.exception(f"Unit verification error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -513,7 +513,7 @@ async def generate_qr_code(request: QRGenerateRequest) -> Response:
 
         # Add metadata
         qr_data["generated_by"] = "BabyShield"
-        qr_data["timestamp"] = datetime.now(timezone.utc).isoformat()
+        qr_data["timestamp"] = datetime.now(UTC).isoformat()
 
         # Generate QR code
         qr_image = scanner.generate_qr_code(qr_data)
@@ -526,7 +526,7 @@ async def generate_qr_code(request: QRGenerateRequest) -> Response:
         )
 
     except Exception as e:
-        logger.error(f"QR generation error: {e}")
+        logger.exception(f"QR generation error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -623,7 +623,7 @@ async def get_scan_results_page(request: BarcodeScanRequest, db: Session = Depen
         return results
 
     except Exception as e:
-        logger.error(f"Error creating scan results page: {e}")
+        logger.exception(f"Error creating scan results page: {e}")
         # Return a safe error response
         return create_scan_results(
             {
@@ -693,7 +693,7 @@ async def barcode_scan_with_file(
         image_base64 = base64.b64encode(content).decode("utf-8")
 
         # Generate trace ID
-        trace_id = f"file_scan_{int(datetime.now(timezone.utc).timestamp())}_{hash(file.filename) % 10000}"
+        trace_id = f"file_scan_{int(datetime.now(UTC).timestamp())}_{hash(file.filename) % 10000}"
 
         # Scan image
         scan_results = await scanner.scan_image(image_base64)
@@ -738,5 +738,5 @@ async def barcode_scan_with_file(
         # Re-raise HTTP exceptions (400, 413, etc.)
         raise
     except Exception as e:
-        logger.error(f"File scan error: {e}")
-        raise HTTPException(status_code=500, detail=f"Scan failed: {str(e)}") from e
+        logger.exception(f"File scan error: {e}")
+        raise HTTPException(status_code=500, detail=f"Scan failed: {e!s}") from e

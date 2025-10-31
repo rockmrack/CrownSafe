@@ -308,5 +308,5 @@ if __name__ == "__main__":
         sys.exit(1)
     except Exception as e:
         print(f"\n\n❌ Unexpected error: {type(e).__name__}")
-        print(f"   {str(e)}")
+        print(f"   {e!s}")
         sys.exit(1)

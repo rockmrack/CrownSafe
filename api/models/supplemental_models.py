@@ -1,7 +1,6 @@
-"""Pydantic models for supplemental data and enhanced safety reports
-"""
+"""Pydantic models for supplemental data and enhanced safety reports"""
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -32,7 +31,7 @@ class FoodDataResponse(BaseModel):
     nutritional_info: NutritionalInfo | None = None
     safety_score: float | None = None
     source: str = "unknown"
-    last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_updated: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class CosmeticIngredient(BaseModel):
@@ -54,7 +53,7 @@ class CosmeticDataResponse(BaseModel):
     safety_concerns: list[str] = Field(default_factory=list)
     safety_score: float | None = None
     source: str = "unknown"
-    last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_updated: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class ChemicalSafetyLimits(BaseModel):
@@ -76,7 +75,7 @@ class ChemicalDataResponse(BaseModel):
     exposure_guidelines: dict[str, str] = Field(default_factory=dict)
     safety_score: float | None = None
     source: str = "unknown"
-    last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_updated: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class EnhancedSafetyReport(BaseModel):
@@ -103,7 +102,7 @@ class EnhancedSafetyReport(BaseModel):
 
     # Metadata
     data_sources: list[str] = Field(default_factory=list)
-    last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_updated: datetime = Field(default_factory=lambda: datetime.now(UTC))
     confidence_level: float = 0.5
 
 

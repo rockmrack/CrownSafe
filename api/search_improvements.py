@@ -40,8 +40,7 @@ def tokenize_search_query(query: str) -> list[str]:
 
 
 def build_smart_search_conditions(RecallDB, search_term: str):
-    """Build intelligent search conditions that handle various search patterns
-    """
+    """Build intelligent search conditions that handle various search patterns"""
     conditions = []
 
     # Always search for the full term
@@ -148,8 +147,7 @@ def score_search_result(result, search_term: str) -> float:
 
 
 def deduplicate_results(results, key_fields=["recall_id", "product_name"]):
-    """Remove duplicate results based on key fields
-    """
+    """Remove duplicate results based on key fields"""
     seen = set()
     unique_results = []
 

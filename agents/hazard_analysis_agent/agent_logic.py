@@ -23,8 +23,7 @@ LLM_MODEL = "gpt-4o"  # Updated to the latest model
 
 
 class HazardAnalysisLogic:
-    """Handles the logic for analyzing product hazards from recall data by calling an LLM.
-    """
+    """Handles the logic for analyzing product hazards from recall data by calling an LLM."""
 
     def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None) -> None:
         self.agent_id = agent_id
@@ -72,8 +71,7 @@ advised to stop using this product immediately.", "risk_level": "High"}}
 """
 
     async def _query_llm(self, prompt: str) -> dict[str, Any] | None:
-        """Queries the OpenAI API for analysis using an async HTTPX client with no proxy support.
-        """
+        """Queries the OpenAI API for analysis using an async HTTPX client with no proxy support."""
         self.logger.info(f"Querying {LLM_MODEL} for hazard analysis…")
         try:
             # Disable environment-based proxies

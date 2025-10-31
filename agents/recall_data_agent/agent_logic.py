@@ -158,7 +158,7 @@ class RecallDataAgentLogic:
                             found_recalls.append(recall_dict)
 
                     except Exception as e:
-                        self.logger.error(f"Error converting recall {db_recall.id}: {e}")
+                        self.logger.exception(f"Error converting recall {db_recall.id}: {e}")
                         continue
 
                 self.logger.info(f"[{self.agent_id}] Filtered to {len(found_recalls)} Crown Safe relevant recalls")
@@ -176,7 +176,7 @@ class RecallDataAgentLogic:
 
         except Exception as e:
             self.logger.error(f"[{self.agent_id}] Database query failed: {e}", exc_info=True)
-            return {"status": "FAILED", "error": f"Database query failed: {str(e)}"}
+            return {"status": "FAILED", "error": f"Database query failed: {e!s}"}
 
     async def run_ingestion_cycle(self) -> dict[str, Any]:
         """Run a full ingestion cycle from all enabled connectors.
@@ -278,7 +278,7 @@ class RecallDataAgentLogic:
 
                     except Exception as e:
                         error_msg = f"Error upserting recall {recall_data.recall_id}: {e}"
-                        self.logger.error(error_msg)
+                        self.logger.exception(error_msg)
                         errors.append(error_msg)
                         db.rollback()
 
@@ -308,7 +308,7 @@ class RecallDataAgentLogic:
             }
 
         except Exception as e:
-            error_msg = f"Ingestion cycle failed: {str(e)}"
+            error_msg = f"Ingestion cycle failed: {e!s}"
             self.logger.error(f"[{self.agent_id}] {error_msg}", exc_info=True)
             return {
                 "status": "error",

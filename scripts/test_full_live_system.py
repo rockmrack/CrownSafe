@@ -39,7 +39,7 @@ async def run_live_test(barcode: str):
             else:
                 logger.info(f"No recalls from {connector.__class__.__name__}")
         except Exception as e:
-            logger.error(f"Connector {connector.__class__.__name__} failed: {e}")
+            logger.exception(f"Connector {connector.__class__.__name__} failed: {e}")
 
     logger.info(f"Total live recalls found: {len(all_recalls)}")
     logger.info(all_recalls)
@@ -50,7 +50,7 @@ async def run_live_test(barcode: str):
         product_info = await identifier.identify_product(barcode=barcode, image_url=None)
         logger.info(f"Product identified: {product_info}")
     except Exception as e:
-        logger.error(f"Product identification failed: {e}")
+        logger.exception(f"Product identification failed: {e}")
         return
 
     # 3. Live hazard analysis
@@ -60,7 +60,7 @@ async def run_live_test(barcode: str):
         logger.info("Hazard analysis result:")
         logger.info(hazard_summary)
     except Exception as e:
-        logger.error(f"Hazard analysis failed: {e}")
+        logger.exception(f"Hazard analysis failed: {e}")
         return
 
 

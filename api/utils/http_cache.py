@@ -4,7 +4,7 @@ Implements RFC 7232 for conditional requests
 
 import email.utils as email_utils
 import hashlib
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 from fastapi import Request, Response
@@ -23,9 +23,9 @@ def http_date(dt: datetime) -> str:
     """
     # Ensure UTC timezone
     if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
-    elif dt.tzinfo != timezone.utc:
-        dt = dt.astimezone(timezone.utc)
+        dt = dt.replace(tzinfo=UTC)
+    elif dt.tzinfo != UTC:
+        dt = dt.astimezone(UTC)
 
     return email_utils.format_datetime(dt, usegmt=True)
 
@@ -45,7 +45,7 @@ def parse_http_date(date_str: str) -> datetime | None:
         dt = email_utils.parsedate_to_datetime(date_str)
         # Ensure UTC
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
+            dt = dt.replace(tzinfo=UTC)
         return dt
     except (ValueError, TypeError):
         return None
@@ -240,8 +240,7 @@ def create_not_modified_response(etag: str | None = None, cache_control: str | N
 
 
 class CacheableResponse:
-    """Helper class for creating cacheable responses
-    """
+    """Helper class for creating cacheable responses"""
 
     @staticmethod
     def search_response(
@@ -252,8 +251,7 @@ class CacheableResponse:
         request: Request,
         max_age: int = 60,
     ) -> Response:
-        """Create cacheable search response with conditional request support
-        """
+        """Create cacheable search response with conditional request support"""
         # Generate ETag
         etag = make_search_etag(filters_hash, as_of, result_ids)
 
@@ -275,8 +273,7 @@ class CacheableResponse:
         request: Request,
         max_age: int = 300,
     ) -> Response:
-        """Create cacheable detail response with conditional request support
-        """
+        """Create cacheable detail response with conditional request support"""
         # Generate ETag
         etag = make_detail_etag(item_id, last_updated)
 

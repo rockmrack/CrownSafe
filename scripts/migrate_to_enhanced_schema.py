@@ -76,7 +76,7 @@ class BabyShieldMigration:
             return True
 
         except Exception as e:
-            logger.error(f"❌ Failed to create enhanced schema: {e}")
+            logger.exception(f"❌ Failed to create enhanced schema: {e}")
             return False
 
     def migrate_existing_data(self):
@@ -148,7 +148,7 @@ class BabyShieldMigration:
 
         except Exception as e:
             self.session.rollback()
-            logger.error(f"❌ Migration failed: {e}")
+            logger.exception(f"❌ Migration failed: {e}")
             return False
 
     def create_performance_indexes(self):
@@ -193,7 +193,7 @@ class BabyShieldMigration:
             logger.info(f"✅ Created {len(index_statements)} performance indexes!")
 
         except Exception as e:
-            logger.error(f"❌ Failed to create indexes: {e}")
+            logger.exception(f"❌ Failed to create indexes: {e}")
 
     def backup_current_schema(self):
         """Create backup of current schema before migration"""
@@ -215,7 +215,7 @@ class BabyShieldMigration:
             return True
 
         except Exception as e:
-            logger.error(f"❌ Backup failed: {e}")
+            logger.exception(f"❌ Backup failed: {e}")
             return False
 
     def run_migration(self):

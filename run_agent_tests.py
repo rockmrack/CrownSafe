@@ -28,7 +28,7 @@ def run_command(cmd, description):
         print(f"⏱️  TIMEOUT - {description}")
         return False
     except Exception as e:
-        print(f"❌ ERROR - {description}: {str(e)}")
+        print(f"❌ ERROR - {description}: {e!s}")
         return False
 
 

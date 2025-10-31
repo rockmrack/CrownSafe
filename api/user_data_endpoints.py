@@ -6,7 +6,7 @@ import hashlib
 import json
 import logging
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import Any
 
 from fastapi import (
@@ -85,11 +85,11 @@ def get_user_data(user_id: str, db: Session) -> dict[str, Any]:
     # In production, query all relevant tables
     user_data = {
         "user_id": user_id,
-        "export_timestamp": datetime.now(timezone.utc).isoformat(),
+        "export_timestamp": datetime.now(UTC).isoformat(),
         "data_categories": {
             "profile": {
                 "user_id": user_id,
-                "created_at": datetime.now(timezone.utc).isoformat(),
+                "created_at": datetime.now(UTC).isoformat(),
                 "provider": "oauth",
             },
             "settings": {
@@ -100,7 +100,7 @@ def get_user_data(user_id: str, db: Session) -> dict[str, Any]:
             "activity": {
                 "searches": [],  # Would contain search history if stored
                 "scans": [],  # Would contain scan history if stored
-                "last_active": datetime.now(timezone.utc).isoformat(),
+                "last_active": datetime.now(UTC).isoformat(),
             },
         },
         "data_notes": {
@@ -130,7 +130,7 @@ def delete_user_data(user_id: str, db: Session) -> bool:
         return True
 
     except Exception as e:
-        logger.error(f"Failed to delete user data: {e}")
+        logger.exception(f"Failed to delete user data: {e}")
         db.rollback()
         return False
 
@@ -210,7 +210,7 @@ async def export_user_data(
                     request_id=request_id,
                     status="completed",
                     message="CSV export completed (simplified demo)",
-                    estimated_completion=datetime.now(timezone.utc),
+                    estimated_completion=datetime.now(UTC),
                 )
         else:
             # Email verification flow would go here
@@ -219,11 +219,11 @@ async def export_user_data(
                 request_id=request_id,
                 status="pending_verification",
                 message="Verification email sent. Please check your email to confirm the export request.",
-                estimated_completion=datetime.now(timezone.utc) + timedelta(minutes=30),
+                estimated_completion=datetime.now(UTC) + timedelta(minutes=30),
             )
 
     except Exception as e:
-        logger.error(
+        logger.exception(
             f"Data export failed: {e}",
             extra={"request_id": request_id, "trace_id": trace_id},
         )
@@ -298,7 +298,7 @@ async def delete_user_data_endpoint(
                     request_id=request_id,
                     status="completed",
                     message="All user data has been permanently deleted",
-                    estimated_completion=datetime.now(timezone.utc),
+                    estimated_completion=datetime.now(UTC),
                 )
             else:
                 raise HTTPException(
@@ -312,13 +312,13 @@ async def delete_user_data_endpoint(
                 request_id=request_id,
                 status="pending_verification",
                 message="Verification email sent. Please check your email to confirm the deletion request.",
-                estimated_completion=datetime.now(timezone.utc) + timedelta(hours=24),
+                estimated_completion=datetime.now(UTC) + timedelta(hours=24),
             )
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
+        logger.exception(
             f"Data deletion failed: {e}",
             extra={"request_id": request_id, "trace_id": trace_id},
         )
@@ -343,7 +343,7 @@ async def get_export_status(request_id: str):
         "status": "completed",
         "message": "Export ready for download",
         "download_url": f"/api/v1/user/data/download/{request_id}",
-        "expires_at": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat(),
+        "expires_at": (datetime.now(UTC) + timedelta(days=7)).isoformat(),
     }
 
 
@@ -361,7 +361,7 @@ async def get_deletion_status(request_id: str):
         "request_id": request_id,
         "status": "completed",
         "message": "All user data has been deleted",
-        "completed_at": datetime.now(timezone.utc).isoformat(),
+        "completed_at": datetime.now(UTC).isoformat(),
     }
 
 
@@ -411,7 +411,7 @@ async def download_export(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Export download failed: {e}")
+        logger.exception(f"Export download failed: {e}")
         raise HTTPException(status_code=500, detail="Failed to download export")
 
 
@@ -420,8 +420,7 @@ async def download_export(
 
 @privacy_router.get("/summary")
 async def get_privacy_summary(user_id: str | None = Header(None, alias="X-User-ID")):
-    """Get privacy policy summary and user's privacy settings
-    """
+    """Get privacy policy summary and user's privacy settings"""
     try:
         summary = {
             "ok": True,
@@ -461,7 +460,7 @@ async def get_privacy_summary(user_id: str | None = Header(None, alias="X-User-I
         return JSONResponse(content=summary)
 
     except Exception as e:
-        logger.error(f"Privacy summary error: {e}")
+        logger.exception(f"Privacy summary error: {e}")
         return JSONResponse(
             status_code=500,
             content={

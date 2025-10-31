@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Build store submission bundle (ZIP) with all required assets and documents
-"""
+"""Build store submission bundle (ZIP) with all required assets and documents"""
 
 import json
 import os

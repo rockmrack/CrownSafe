@@ -81,7 +81,7 @@ def enable_pg_trgm():
                 conn.commit()
                 print(f"   ✅ {idx_name} created")
             except Exception as e:
-                print(f"   ⚠️  {idx_name} - {str(e)}")
+                print(f"   ⚠️  {idx_name} - {e!s}")
                 conn.rollback()
 
         print("\n🎉 All done! Search should now work properly.")

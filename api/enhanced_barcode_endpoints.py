@@ -3,7 +3,7 @@ Provides exact validation and comprehensive error handling
 """
 
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -128,8 +128,8 @@ async def exact_barcode_scan(
         return EnhancedScanResponse(**response_data)
 
     except Exception as e:
-        logger.error(f"Enhanced scan failed for user {request.user_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"Enhanced scan failed: {str(e)}")
+        logger.exception(f"Enhanced scan failed for user {request.user_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Enhanced scan failed: {e!s}")
 
 
 @enhanced_barcode_router.post("/validate", response_model=ValidationTestResponse)
@@ -182,8 +182,8 @@ async def validate_barcode_format(
         return ValidationTestResponse(**response_data)
 
     except Exception as e:
-        logger.error(f"Barcode validation failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Validation failed: {str(e)}")
+        logger.exception(f"Barcode validation failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Validation failed: {e!s}")
 
 
 @enhanced_barcode_router.get("/test-validation")
@@ -222,7 +222,7 @@ async def _basic_scan_fallback(request: EnhancedScanRequest) -> EnhancedScanResp
 
         return EnhancedScanResponse(
             success=True,
-            scan_timestamp=datetime.now(timezone.utc).isoformat(),
+            scan_timestamp=datetime.now(UTC).isoformat(),
             is_valid=validation_result.is_valid,
             barcode_type=validation_result.barcode_type.value,
             validation_result=validation_result.validation_result.value
@@ -243,7 +243,7 @@ async def _basic_scan_fallback(request: EnhancedScanRequest) -> EnhancedScanResp
     except Exception as e:
         return EnhancedScanResponse(
             success=False,
-            scan_timestamp=datetime.now(timezone.utc).isoformat(),
+            scan_timestamp=datetime.now(UTC).isoformat(),
             is_valid=False,
             barcode_type="unknown",
             validation_result="error",
@@ -251,7 +251,7 @@ async def _basic_scan_fallback(request: EnhancedScanRequest) -> EnhancedScanResp
             product_found=False,
             exact_matches_count=0,
             confidence_score=0.0,
-            error_message=f"Basic validation failed: {str(e)}",
+            error_message=f"Basic validation failed: {e!s}",
             recommendations=["Try scanning again or contact support"],
         )
 
@@ -271,5 +271,5 @@ async def enhanced_scan_health() -> dict[str, Any]:
             "recommendations",
         ],
         "supported_types": [btype.value for btype in BarcodeType],
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }

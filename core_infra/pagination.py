@@ -87,15 +87,13 @@ def paginate_query(query: SQLQuery, params: PaginationParams) -> tuple[list, int
 
 
 async def paginate_async(query: SQLQuery, params: PaginationParams) -> PaginatedResponse:
-    """Async pagination helper
-    """
+    """Async pagination helper"""
     items, total = paginate_query(query, params)
     return PaginatedResponse.create(items, total, params)
 
 
 class CursorPaginationParams(BaseModel):
-    """Cursor-based pagination for better performance
-    """
+    """Cursor-based pagination for better performance"""
 
     cursor: str | None = Query(None, description="Cursor for next page")
     limit: int = Query(100, ge=1, le=1000, description="Number of items")
@@ -168,8 +166,7 @@ def paginate_with_cursor(
 
 
 def paginate_list(items: list[T], params: PaginationParams) -> PaginatedResponse[T]:
-    """Paginate a Python list
-    """
+    """Paginate a Python list"""
     total = len(items)
     start = params.skip
     end = params.skip + params.limit
@@ -179,8 +176,7 @@ def paginate_list(items: list[T], params: PaginationParams) -> PaginatedResponse
 
 
 def create_pagination_links(base_url: str, params: PaginationParams, total: int) -> dict[str, str | None]:
-    """Create HATEOAS links for pagination
-    """
+    """Create HATEOAS links for pagination"""
     links = {
         "self": f"{base_url}?skip={params.skip}&limit={params.limit}",
         "first": f"{base_url}?skip=0&limit={params.limit}",
@@ -213,8 +209,7 @@ from fastapi import Depends  # noqa: E402
 
 
 def paginated(model_class):
-    """Decorator to automatically paginate endpoint responses
-    """
+    """Decorator to automatically paginate endpoint responses"""
 
     def decorator(func):
         @wraps(func)

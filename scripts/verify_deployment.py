@@ -67,7 +67,7 @@ def test_endpoint(method, path, data, name):
     except requests.exceptions.ConnectionError:
         return f"❌ {name}: Connection error - Server unreachable"
     except Exception as e:
-        return f"❌ {name}: Error - {str(e)}"
+        return f"❌ {name}: Error - {e!s}"
 
 
 def main():

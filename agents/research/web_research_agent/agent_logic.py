@@ -524,8 +524,8 @@ class WebResearchLogic:
             PermissionError,
             FileNotFoundError,
         ) as e:
-            error_msg = f"API Error in _fetch_pubmed_data for '{constructed_api_query_term[:50]}...': {type(e).__name__} - {str(e)}"  # noqa: E501
-            self.logger.error(error_msg)  # No exc_info as _make_ncbi_request should have logged details
+            error_msg = f"API Error in _fetch_pubmed_data for '{constructed_api_query_term[:50]}...': {type(e).__name__} - {e!s}"  # noqa: E501
+            self.logger.exception(error_msg)  # No exc_info as _make_ncbi_request should have logged details
             return SearchResult(
                 query_used_for_api=constructed_api_query_term,
                 articles=[],
@@ -534,7 +534,7 @@ class WebResearchLogic:
                 original_input_query=original_input_query_for_result,
             )
         except Exception as e_unhandled:
-            error_msg = f"Unexpected error in _fetch_pubmed_data for '{constructed_api_query_term[:50]}...': {type(e_unhandled).__name__} - {str(e_unhandled)}"  # noqa: E501
+            error_msg = f"Unexpected error in _fetch_pubmed_data for '{constructed_api_query_term[:50]}...': {type(e_unhandled).__name__} - {e_unhandled!s}"  # noqa: E501
             self.logger.error(error_msg, exc_info=True)
             return SearchResult(
                 query_used_for_api=constructed_api_query_term,
@@ -661,7 +661,7 @@ class WebResearchLogic:
             }
 
         except Exception as e:
-            error_msg = f"Unexpected error in _handle_task_assign for task {task_id}: {type(e).__name__} - {str(e)}"
+            error_msg = f"Unexpected error in _handle_task_assign for task {task_id}: {type(e).__name__} - {e!s}"
             self.logger.error(error_msg, exc_info=True)
             return {
                 "message_type": MessageType.TASK_FAIL.value,

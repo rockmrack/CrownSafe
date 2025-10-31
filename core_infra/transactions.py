@@ -36,7 +36,7 @@ def transaction(db: Session, read_only: bool = False):
             logger.debug("Transaction committed successfully")
     except Exception as e:
         db.rollback()
-        logger.error(f"Transaction rolled back due to error: {str(e)}")
+        logger.exception(f"Transaction rolled back due to error: {e!s}")
         raise
     finally:
         if read_only:
@@ -58,16 +58,14 @@ def nested_transaction(db: Session):
 
 
 class TransactionManager:
-    """Advanced transaction management with retry logic
-    """
+    """Advanced transaction management with retry logic"""
 
     def __init__(self, db: Session, max_retries: int = 3) -> None:
         self.db = db
         self.max_retries = max_retries
 
     def execute(self, func: Callable, *args, **kwargs) -> Any:
-        """Execute function within transaction with retry logic
-        """
+        """Execute function within transaction with retry logic"""
         last_exception = None
 
         for attempt in range(self.max_retries):
@@ -77,7 +75,7 @@ class TransactionManager:
                     return result
             except SQLAlchemyError as e:
                 last_exception = e
-                logger.warning(f"Transaction attempt {attempt + 1} failed: {str(e)}")
+                logger.warning(f"Transaction attempt {attempt + 1} failed: {e!s}")
 
                 # Check if error is retryable
                 if not self._is_retryable_error(e):
@@ -89,12 +87,11 @@ class TransactionManager:
                     asyncio.sleep(wait_time)
 
         # All retries exhausted
-        logger.error(f"All transaction attempts failed: {str(last_exception)}")
+        logger.error(f"All transaction attempts failed: {last_exception!s}")
         raise last_exception
 
     def _is_retryable_error(self, error: SQLAlchemyError) -> bool:
-        """Check if error is retryable
-        """
+        """Check if error is retryable"""
         error_str = str(error).lower()
         retryable_errors = [
             "deadlock",
@@ -126,7 +123,7 @@ def transactional(read_only: bool = False, max_retries: int = 1):
                 except SQLAlchemyError as e:
                     if attempt == max_retries - 1:
                         raise
-                    logger.warning(f"Transaction retry {attempt + 1}: {str(e)}")
+                    logger.warning(f"Transaction retry {attempt + 1}: {e!s}")
 
         return wrapper
 
@@ -134,13 +131,11 @@ def transactional(read_only: bool = False, max_retries: int = 1):
 
 
 class OptimisticLock:
-    """Optimistic locking for preventing lost updates
-    """
+    """Optimistic locking for preventing lost updates"""
 
     @staticmethod
     def check_version(entity, expected_version: int) -> None:
-        """Check if entity version matches expected
-        """
+        """Check if entity version matches expected"""
         if hasattr(entity, "version"):
             if entity.version != expected_version:
                 raise ValueError(
@@ -149,8 +144,7 @@ class OptimisticLock:
 
     @staticmethod
     def increment_version(entity) -> None:
-        """Increment entity version
-        """
+        """Increment entity version"""
         if hasattr(entity, "version"):
             entity.version += 1
         else:
@@ -158,8 +152,7 @@ class OptimisticLock:
 
 
 class DistributedLock:
-    """Distributed locking using Redis for preventing race conditions
-    """
+    """Distributed locking using Redis for preventing race conditions"""
 
     def __init__(self, redis_client, lock_name: str, timeout: int = 10) -> None:
         self.redis = redis_client
@@ -198,8 +191,7 @@ class DistributedLock:
 
 
 def bulk_operation(db: Session, items: list, operation: Callable, batch_size: int = 100):
-    """Perform bulk operations with batching and transactions
-    """
+    """Perform bulk operations with batching and transactions"""
     total = len(items)
     processed = 0
     errors = []
@@ -214,7 +206,7 @@ def bulk_operation(db: Session, items: list, operation: Callable, batch_size: in
                 processed += len(batch)
                 logger.info(f"Processed {processed}/{total} items")
         except Exception as e:
-            logger.error(f"Batch {i // batch_size + 1} failed: {str(e)}")
+            logger.exception(f"Batch {i // batch_size + 1} failed: {e!s}")
             errors.append((i, str(e)))
             # Continue with next batch
 
@@ -226,8 +218,7 @@ def bulk_operation(db: Session, items: list, operation: Callable, batch_size: in
 
 @asynccontextmanager
 async def async_transaction(db_session):
-    """Async transaction context manager
-    """
+    """Async transaction context manager"""
     async with db_session() as session:
         async with session.begin():
             try:
@@ -239,8 +230,7 @@ async def async_transaction(db_session):
 
 
 class Saga:
-    """Saga pattern for distributed transactions
-    """
+    """Saga pattern for distributed transactions"""
 
     def __init__(self) -> None:
         self.steps = []
@@ -248,14 +238,12 @@ class Saga:
         self.completed_steps = []
 
     def add_step(self, step_func: Callable, compensation_func: Callable) -> None:
-        """Add a step with its compensation
-        """
+        """Add a step with its compensation"""
         self.steps.append(step_func)
         self.compensations.append(compensation_func)
 
     async def execute(self) -> bool | None:
-        """Execute all steps, compensate on failure
-        """
+        """Execute all steps, compensate on failure"""
         try:
             for i, step in enumerate(self.steps):
                 result = await step()
@@ -264,20 +252,19 @@ class Saga:
 
             return True
         except Exception as e:
-            logger.error(f"Saga failed at step {len(self.completed_steps)}: {str(e)}")
+            logger.exception(f"Saga failed at step {len(self.completed_steps)}: {e!s}")
             await self._compensate()
             raise
 
     async def _compensate(self) -> None:
-        """Run compensations in reverse order
-        """
+        """Run compensations in reverse order"""
         for step_index, result in reversed(self.completed_steps):
             try:
                 compensation = self.compensations[step_index]
                 await compensation(result)
                 logger.info(f"Compensated step {step_index + 1}")
             except Exception as e:
-                logger.error(f"Compensation failed for step {step_index + 1}: {str(e)}")
+                logger.exception(f"Compensation failed for step {step_index + 1}: {e!s}")
 
 
 # Example usage functions
@@ -285,8 +272,7 @@ class Saga:
 
 @transactional()
 def create_user_with_profile(db: Session, email: str, name: str):
-    """Example: Create user and profile in single transaction
-    """
+    """Example: Create user and profile in single transaction"""
     from core_infra.database import User
 
     # Create user
@@ -302,8 +288,7 @@ def create_user_with_profile(db: Session, email: str, name: str):
 
 
 def safe_bulk_insert(db: Session, records: list):
-    """Example: Bulk insert with transaction management
-    """
+    """Example: Bulk insert with transaction management"""
 
     def insert_record(session, record) -> None:
         # Your insert logic here

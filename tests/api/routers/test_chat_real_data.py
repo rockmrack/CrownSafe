@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
@@ -23,7 +23,7 @@ class TestChatWithRealData:
         scan = ScanHistory(
             user_id=1,  # Assuming user ID 1 exists
             scan_id=scan_id,
-            scan_timestamp=datetime.now(timezone.utc),
+            scan_timestamp=datetime.now(UTC),
             product_name="Test Baby Formula",
             brand="TestBrand",
             barcode="123456789012",
@@ -153,7 +153,7 @@ class TestChatWithRealData:
         test_scan = ScanHistory(
             scan_id="real_conv_test_456",
             user_id=1,
-            scan_timestamp=datetime.now(timezone.utc),
+            scan_timestamp=datetime.now(UTC),
             product_name="Fisher-Price Rock 'n Play",
             brand="Fisher-Price",
             barcode="027084567890",

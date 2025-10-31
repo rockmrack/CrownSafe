@@ -1,8 +1,7 @@
-"""Enhanced Notification Endpoints - Push notifications, history, and device management
-"""
+"""Enhanced Notification Endpoints - Push notifications, history, and device management"""
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
@@ -177,7 +176,7 @@ def get_firebase_app():
             return None
 
     except Exception as e:
-        logger.error(f"Failed to initialize Firebase: {e}")
+        logger.exception(f"Failed to initialize Firebase: {e}")
         return None
 
 
@@ -221,7 +220,7 @@ async def send_push_notification(
         return True
 
     except Exception as e:
-        logger.error(f"Failed to send push notification: {e}")
+        logger.exception(f"Failed to send push notification: {e}")
         return False
 
 
@@ -243,7 +242,7 @@ async def register_device(
             existing.device_name = request.device_name
             existing.device_model = request.device_model
             existing.app_version = request.app_version
-            existing.last_used = datetime.now(timezone.utc)
+            existing.last_used = datetime.now(UTC)
             existing.is_active = True
         else:
             # Create new token
@@ -263,7 +262,7 @@ async def register_device(
 
     except Exception as e:
         logger.error(f"Error registering device: {e}", exc_info=True)
-        return fail(f"Failed to register device: {str(e)}", status=500)
+        return fail(f"Failed to register device: {e!s}", status=500)
 
 
 # DEV OVERRIDE ENDPOINTS - For testing without authentication/database dependencies
@@ -271,8 +270,7 @@ async def register_device(
 
 @router.post("/device/register-dev", response_model=ApiResponse)
 async def register_device_dev(request: RegisterDeviceRequest):
-    """DEV OVERRIDE: Register device without authentication/database dependencies
-    """
+    """DEV OVERRIDE: Register device without authentication/database dependencies"""
     try:
         # Simulate device registration
         device_id = f"DEV-{request.token[:8].upper()}"
@@ -283,19 +281,18 @@ async def register_device_dev(request: RegisterDeviceRequest):
                 "device_id": device_id,
                 "token": request.token,
                 "platform": request.platform,
-                "registered_at": datetime.now(timezone.utc).isoformat(),
+                "registered_at": datetime.now(UTC).isoformat(),
             },
         )
 
     except Exception as e:
-        logger.error(f"Error in dev device registration: {e}")
-        return fail(f"Failed to register device: {str(e)}", status=500)
+        logger.exception(f"Error in dev device registration: {e}")
+        return fail(f"Failed to register device: {e!s}", status=500)
 
 
 @router.get("/devices-dev", response_model=ApiResponse)
 async def get_devices_dev():
-    """DEV OVERRIDE: Get devices without authentication/database dependencies
-    """
+    """DEV OVERRIDE: Get devices without authentication/database dependencies"""
     try:
         # Mock device data
         mock_devices = [
@@ -307,8 +304,8 @@ async def get_devices_dev():
                 "device_model": "Pixel 7",
                 "app_version": "1.0.0",
                 "is_active": True,
-                "last_used": datetime.now(timezone.utc).isoformat(),
-                "created_at": (datetime.now(timezone.utc) - timedelta(days=7)).isoformat(),
+                "last_used": datetime.now(UTC).isoformat(),
+                "created_at": (datetime.now(UTC) - timedelta(days=7)).isoformat(),
             },
             {
                 "device_id": "DEV-87654321",
@@ -318,40 +315,38 @@ async def get_devices_dev():
                 "device_model": "iPhone 14",
                 "app_version": "1.0.0",
                 "is_active": True,
-                "last_used": datetime.now(timezone.utc).isoformat(),
-                "created_at": (datetime.now(timezone.utc) - timedelta(days=3)).isoformat(),
+                "last_used": datetime.now(UTC).isoformat(),
+                "created_at": (datetime.now(UTC) - timedelta(days=3)).isoformat(),
             },
         ]
 
         return ok({"devices": mock_devices, "total_count": len(mock_devices)})
 
     except Exception as e:
-        logger.error(f"Error in dev devices list: {e}")
-        return fail(f"Failed to get devices: {str(e)}", status=500)
+        logger.exception(f"Error in dev devices list: {e}")
+        return fail(f"Failed to get devices: {e!s}", status=500)
 
 
 @router.delete("/device-dev/{token}", response_model=ApiResponse)
 async def unregister_device_dev(token: str):
-    """DEV OVERRIDE: Unregister device without authentication/database dependencies
-    """
+    """DEV OVERRIDE: Unregister device without authentication/database dependencies"""
     try:
         # Simulate device unregistration
         return ok(
             {
                 "message": f"Device with token {token[:8]}... unregistered successfully (dev override)",
-                "unregistered_at": datetime.now(timezone.utc).isoformat(),
+                "unregistered_at": datetime.now(UTC).isoformat(),
             },
         )
 
     except Exception as e:
-        logger.error(f"Error in dev device unregistration: {e}")
-        return fail(f"Failed to unregister device: {str(e)}", status=500)
+        logger.exception(f"Error in dev device unregistration: {e}")
+        return fail(f"Failed to unregister device: {e!s}", status=500)
 
 
 @router.get("/history-dev", response_model=ApiResponse)
 async def get_notification_history_dev():
-    """DEV OVERRIDE: Get notification history without authentication/database dependencies
-    """
+    """DEV OVERRIDE: Get notification history without authentication/database dependencies"""
     try:
         # Mock notification history
         mock_notifications = [
@@ -360,7 +355,7 @@ async def get_notification_history_dev():
                 "title": "Test Recall Alert",
                 "body": "This is a test recall notification",
                 "type": "recall",
-                "sent_at": datetime.now(timezone.utc).isoformat(),
+                "sent_at": datetime.now(UTC).isoformat(),
                 "read": False,
                 "data": {"recall_id": "RECALL-123"},
             },
@@ -369,7 +364,7 @@ async def get_notification_history_dev():
                 "title": "Safety Update",
                 "body": "New safety information available",
                 "type": "safety_alert",
-                "sent_at": (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat(),
+                "sent_at": (datetime.now(UTC) - timedelta(hours=2)).isoformat(),
                 "read": True,
                 "data": {"product_id": "PROD-456"},
             },
@@ -384,36 +379,34 @@ async def get_notification_history_dev():
         )
 
     except Exception as e:
-        logger.error(f"Error in dev notification history: {e}")
-        return fail(f"Failed to get notification history: {str(e)}", status=500)
+        logger.exception(f"Error in dev notification history: {e}")
+        return fail(f"Failed to get notification history: {e!s}", status=500)
 
 
 @router.put("/preferences-dev", response_model=ApiResponse)
 async def update_preferences_dev(request: dict):
-    """DEV OVERRIDE: Update notification preferences without authentication/database dependencies
-    """
+    """DEV OVERRIDE: Update notification preferences without authentication/database dependencies"""
     try:
         # Simulate preferences update
         return ok(
             {
                 "message": "Notification preferences updated successfully (dev override)",
                 "preferences": request,
-                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(UTC).isoformat(),
             },
         )
 
     except Exception as e:
-        logger.error(f"Error in dev preferences update: {e}")
-        return fail(f"Failed to update preferences: {str(e)}", status=500)
+        logger.exception(f"Error in dev preferences update: {e}")
+        return fail(f"Failed to update preferences: {e!s}", status=500)
 
 
 @router.post("/test-dev", response_model=ApiResponse)
 async def send_test_notification_dev(request: dict):
-    """DEV OVERRIDE: Send test notification without authentication/database dependencies
-    """
+    """DEV OVERRIDE: Send test notification without authentication/database dependencies"""
     try:
         # Simulate test notification
-        notification_id = f"TEST-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+        notification_id = f"TEST-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
 
         return ok(
             {
@@ -421,15 +414,15 @@ async def send_test_notification_dev(request: dict):
                 "notification_id": notification_id,
                 "title": request.get("title", "Test Notification"),
                 "body": request.get("body", "This is a test notification"),
-                "sent_at": datetime.now(timezone.utc).isoformat(),
+                "sent_at": datetime.now(UTC).isoformat(),
                 "devices_targeted": 2,
                 "delivery_status": "success",
             },
         )
 
     except Exception as e:
-        logger.error(f"Error in dev test notification: {e}")
-        return fail(f"Failed to send test notification: {str(e)}", status=500)
+        logger.exception(f"Error in dev test notification: {e}")
+        return fail(f"Failed to send test notification: {e!s}", status=500)
 
 
 @router.delete("/device/{token}", response_model=ApiResponse)
@@ -453,7 +446,7 @@ async def unregister_device(
 
     except Exception as e:
         logger.error(f"Error unregistering device: {e}", exc_info=True)
-        return fail(f"Failed to unregister device: {str(e)}", status=500)
+        return fail(f"Failed to unregister device: {e!s}", status=500)
 
 
 @router.get("/devices", response_model=ApiResponse)
@@ -479,7 +472,7 @@ async def get_registered_devices(current_user=Depends(get_current_active_user), 
 
     except Exception as e:
         logger.error(f"Error fetching devices: {e}", exc_info=True)
-        return fail(f"Failed to fetch devices: {str(e)}", status=500)
+        return fail(f"Failed to fetch devices: {e!s}", status=500)
 
 
 @router.get("/history", response_model=ApiResponse)
@@ -548,7 +541,7 @@ async def get_notification_history(
 
     except Exception as e:
         logger.error(f"Error fetching notification history: {e}", exc_info=True)
-        return fail(f"Failed to fetch history: {str(e)}", status=500)
+        return fail(f"Failed to fetch history: {e!s}", status=500)
 
 
 @router.post("/mark-read/{notification_id}", response_model=ApiResponse)
@@ -571,7 +564,7 @@ async def mark_notification_read(
         if not notification:
             return fail("Notification not found", code="NOT_FOUND", status=404)
 
-        notification.read_at = datetime.now(timezone.utc)
+        notification.read_at = datetime.now(UTC)
         notification.status = "read"
         db.commit()
 
@@ -579,7 +572,7 @@ async def mark_notification_read(
 
     except Exception as e:
         logger.error(f"Error marking notification read: {e}", exc_info=True)
-        return fail(f"Failed to mark as read: {str(e)}", status=500)
+        return fail(f"Failed to mark as read: {e!s}", status=500)
 
 
 @router.post("/mark-all-read", response_model=ApiResponse)
@@ -589,14 +582,14 @@ async def mark_all_notifications_read(current_user=Depends(get_current_active_us
         db.query(NotificationHistory).filter(
             NotificationHistory.user_id == current_user.id,
             NotificationHistory.read_at.is_(None),
-        ).update({"read_at": datetime.now(timezone.utc), "status": "read"})
+        ).update({"read_at": datetime.now(UTC), "status": "read"})
         db.commit()
 
         return ok({"message": "All notifications marked as read"})
 
     except Exception as e:
         logger.error(f"Error marking all as read: {e}", exc_info=True)
-        return fail(f"Failed to mark all as read: {str(e)}", status=500)
+        return fail(f"Failed to mark all as read: {e!s}", status=500)
 
 
 @router.put("/preferences", response_model=ApiResponse)
@@ -630,7 +623,7 @@ async def update_notification_preferences(
 
     except Exception as e:
         logger.error(f"Error updating preferences: {e}", exc_info=True)
-        return fail(f"Failed to update preferences: {str(e)}", status=500)
+        return fail(f"Failed to update preferences: {e!s}", status=500)
 
 
 @router.post("/test", response_model=ApiResponse)
@@ -653,7 +646,7 @@ async def send_test_notification(
             title="Test Notification",
             body="This is a test notification from BabyShield",
             priority="normal",
-            data={"test": True, "timestamp": datetime.now(timezone.utc).isoformat()},
+            data={"test": True, "timestamp": datetime.now(UTC).isoformat()},
         )
         db.add(notification)
         db.commit()
@@ -681,4 +674,4 @@ async def send_test_notification(
 
     except Exception as e:
         logger.error(f"Error sending test notification: {e}", exc_info=True)
-        return fail(f"Failed to send test: {str(e)}", status=500)
+        return fail(f"Failed to send test: {e!s}", status=500)

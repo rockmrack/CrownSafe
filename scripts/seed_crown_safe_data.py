@@ -8,7 +8,7 @@ import sys
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 from sqlalchemy.orm import Session
 
@@ -595,7 +595,7 @@ def seed_ingredients(db: Session) -> int:
                 safety_level=ingredient_data["safety_level"],
                 impact_score=ingredient_data["impact_score"],
                 description=ingredient_data["description"],
-                created_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
             )
             db.add(ingredient)
             count += 1
@@ -636,7 +636,7 @@ def seed_hair_products(db: Session) -> int:
                 product_image_url=product_data.get("product_image_url"),
                 average_crown_score=0.0,  # Will be updated as users scan
                 scan_count=0,
-                created_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
             )
             db.add(product)
             count += 1
@@ -656,7 +656,7 @@ def main():
     print("=" * 60)
     print("CROWN SAFE DATABASE SEEDING")
     print("=" * 60)
-    print(f"Timestamp: {datetime.now(timezone.utc).isoformat()}")
+    print(f"Timestamp: {datetime.now(UTC).isoformat()}")
     print(f"Target: {len(INGREDIENTS_DATA)} ingredients, {len(HAIR_PRODUCTS_DATA)} products")
     print("=" * 60)
 

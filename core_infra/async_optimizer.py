@@ -22,8 +22,7 @@ class AsyncWorkflowOptimizer:
         self.logger = logger
 
     async def parallel_database_queries(self, queries: list[Callable]) -> list[Any]:
-        """Execute multiple database queries concurrently for massive speedup
-        """
+        """Execute multiple database queries concurrently for massive speedup"""
         start_time = time.time()
 
         try:
@@ -49,12 +48,11 @@ class AsyncWorkflowOptimizer:
             return valid_results
 
         except Exception as e:
-            self.logger.error(f"Parallel query execution failed: {e}")
+            self.logger.exception(f"Parallel query execution failed: {e}")
             return []
 
     async def concurrent_agent_calls(self, agent_tasks: dict[str, Callable]) -> dict[str, Any]:
-        """Execute multiple agent operations concurrently when possible
-        """
+        """Execute multiple agent operations concurrently when possible"""
         start_time = time.time()
 
         try:
@@ -69,7 +67,7 @@ class AsyncWorkflowOptimizer:
                 try:
                     results[agent_name] = await task
                 except Exception as e:
-                    self.logger.error(f"Agent {agent_name} failed: {e}")
+                    self.logger.exception(f"Agent {agent_name} failed: {e}")
                     results[agent_name] = {"status": "FAILED", "error": str(e)}
 
             elapsed = time.time() - start_time
@@ -83,12 +81,11 @@ class AsyncWorkflowOptimizer:
             return results
 
         except Exception as e:
-            self.logger.error(f"Concurrent agent execution failed: {e}")
+            self.logger.exception(f"Concurrent agent execution failed: {e}")
             return {}
 
     async def optimized_safety_check(self, user_request: dict[str, Any]) -> dict[str, Any]:
-        """Optimized safety check workflow with parallel processing where possible
-        """
+        """Optimized safety check workflow with parallel processing where possible"""
         start_time = time.time()
         workflow_id = f"opt_{int(time.time())}"
 
@@ -177,7 +174,7 @@ class AsyncWorkflowOptimizer:
                     self.logger.error(f"Planner error with image_url: {plan_error}", exc_info=True)
                     return {
                         "status": "FAILED",
-                        "error": f"Planner error: {str(plan_error)}",
+                        "error": f"Planner error: {plan_error!s}",
                     }
 
             # Step 2: Execute with optimization
@@ -222,7 +219,7 @@ class AsyncWorkflowOptimizer:
             self.logger.error(f"Optimized workflow failed after {elapsed:.3f}s: {e}", exc_info=True)
             return {
                 "status": "FAILED",
-                "error": f"Optimized workflow error: {str(e)}",
+                "error": f"Optimized workflow error: {e!s}",
                 "response_time_ms": int(elapsed * 1000),
             }
 

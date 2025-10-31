@@ -82,7 +82,7 @@ class USDAClient:
                 data = response.json()
                 return data.get("foods", [])
         except Exception as e:
-            logger.error(f"USDA API error: {e}")
+            logger.exception(f"USDA API error: {e}")
             return []
 
     async def get_food_details(self, fdc_id: str) -> dict[str, Any] | None:
@@ -100,7 +100,7 @@ class USDAClient:
                 response.raise_for_status()
                 return response.json()
         except Exception as e:
-            logger.error(f"USDA API error for FDC ID {fdc_id}: {e}")
+            logger.exception(f"USDA API error for FDC ID {fdc_id}: {e}")
             return None
 
 
@@ -137,7 +137,7 @@ class EdamamClient:
                 data = response.json()
                 return data.get("hints", [])
         except Exception as e:
-            logger.error(f"Edamam API error: {e}")
+            logger.exception(f"Edamam API error: {e}")
             return []
 
     async def get_nutrition_info(self, food_id: str) -> dict[str, Any] | None:
@@ -164,7 +164,7 @@ class EdamamClient:
                 response.raise_for_status()
                 return response.json()
         except Exception as e:
-            logger.error(f"Edamam nutrition API error for food ID {food_id}: {e}")
+            logger.exception(f"Edamam nutrition API error for food ID {food_id}: {e}")
             return None
 
 
@@ -199,7 +199,7 @@ class CosIngClient:
                 },
             ]
         except Exception as e:
-            logger.error(f"CosIng API error: {e}")
+            logger.exception(f"CosIng API error: {e}")
             return []
 
 

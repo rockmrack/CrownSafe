@@ -1,5 +1,4 @@
-"""API endpoints for supplemental data and enhanced safety reports
-"""
+"""API endpoints for supplemental data and enhanced safety reports"""
 
 import logging
 import time
@@ -54,7 +53,7 @@ async def get_enhanced_safety_report(
 
     except Exception as e:
         logger.error(f"Error generating enhanced safety report: {e}", exc_info=True)
-        return fail(message=f"Failed to generate enhanced safety report: {str(e)}", status=500)
+        return fail(message=f"Failed to generate enhanced safety report: {e!s}", status=500)
 
 
 @router.get("/food-data/{product_identifier}", response_model=SupplementalDataResponse)
@@ -88,7 +87,7 @@ async def get_food_data(
 
     except Exception as e:
         logger.error(f"Error getting food data: {e}", exc_info=True)
-        return fail(message=f"Failed to get food data: {str(e)}", status=500)
+        return fail(message=f"Failed to get food data: {e!s}", status=500)
 
 
 @router.get("/cosmetic-data/{product_identifier}", response_model=SupplementalDataResponse)
@@ -129,7 +128,7 @@ async def get_cosmetic_data(
 
     except Exception as e:
         logger.error(f"Error getting cosmetic data: {e}", exc_info=True)
-        return fail(message=f"Failed to get cosmetic data: {str(e)}", status=500)
+        return fail(message=f"Failed to get cosmetic data: {e!s}", status=500)
 
 
 @router.get("/chemical-data/{product_identifier}", response_model=SupplementalDataResponse)
@@ -163,13 +162,12 @@ async def get_chemical_data(
 
     except Exception as e:
         logger.error(f"Error getting chemical data: {e}", exc_info=True)
-        return fail(message=f"Failed to get chemical data: {str(e)}", status=500)
+        return fail(message=f"Failed to get chemical data: {e!s}", status=500)
 
 
 @router.get("/data-sources", response_model=dict)
 async def get_available_data_sources():
-    """Get list of available supplemental data sources and their status
-    """
+    """Get list of available supplemental data sources and their status"""
     try:
         sources = {
             "food": {
@@ -209,13 +207,12 @@ async def get_available_data_sources():
 
     except Exception as e:
         logger.error(f"Error getting data sources: {e}", exc_info=True)
-        return fail(message=f"Failed to get data sources: {str(e)}", status=500)
+        return fail(message=f"Failed to get data sources: {e!s}", status=500)
 
 
 @router.get("/health", response_model=dict)
 async def supplemental_data_health():
-    """Health check for supplemental data services
-    """
+    """Health check for supplemental data services"""
     try:
         health_status = {
             "status": "healthy",
@@ -237,25 +234,23 @@ async def supplemental_data_health():
 
     except Exception as e:
         logger.error(f"Error in health check: {e}", exc_info=True)
-        return fail(message=f"Health check failed: {str(e)}", status=500)
+        return fail(message=f"Health check failed: {e!s}", status=500)
 
 
 @router.get("/test-simple", response_model=dict)
 async def test_simple():
-    """Simple test endpoint that doesn't use any services
-    """
+    """Simple test endpoint that doesn't use any services"""
     try:
         logger.info("Testing simple endpoint...")
         return ok(data={"message": "Simple test successful", "timestamp": time.time()})
     except Exception as e:
         logger.error(f"Error in simple test: {e}", exc_info=True)
-        return fail(message=f"Simple test failed: {str(e)}", status=500)
+        return fail(message=f"Simple test failed: {e!s}", status=500)
 
 
 @router.get("/test-cosmetic-simple", response_model=dict)
 async def test_cosmetic_simple():
-    """Simple test to create a CosmeticDataResponse directly
-    """
+    """Simple test to create a CosmeticDataResponse directly"""
     try:
         from api.models.supplemental_models import (
             CosmeticDataResponse,
@@ -288,13 +283,12 @@ async def test_cosmetic_simple():
 
     except Exception as e:
         logger.error(f"Simple test error: {e}", exc_info=True)
-        return {"error": f"Simple test error: {str(e)}"}
+        return {"error": f"Simple test error: {e!s}"}
 
 
 @router.get("/test-dataclass", response_model=dict)
 async def test_dataclass():
-    """Test creating CosmeticData dataclass directly
-    """
+    """Test creating CosmeticData dataclass directly"""
     try:
         from core_infra.supplemental_data_service import CosmeticData
 
@@ -312,13 +306,12 @@ async def test_dataclass():
 
     except Exception as e:
         logger.error(f"Dataclass test error: {e}", exc_info=True)
-        return {"error": f"Dataclass test error: {str(e)}"}
+        return {"error": f"Dataclass test error: {e!s}"}
 
 
 @router.get("/test-post-endpoint", response_model=dict)
 async def test_post_endpoint():
-    """Test the POST safety-report endpoint with a GET request for easier testing
-    """
+    """Test the POST safety-report endpoint with a GET request for easier testing"""
     try:
         from api.models.supplemental_models import SupplementalDataRequest
 
@@ -350,7 +343,7 @@ async def test_post_endpoint():
 
     except Exception as e:
         logger.error(f"POST test error: {e}", exc_info=True)
-        return {"error": f"POST test error: {str(e)}"}
+        return {"error": f"POST test error: {e!s}"}
 
 
 # REMOVED FOR CROWN SAFE: RecallDB test endpoints
@@ -367,8 +360,7 @@ async def test_post_endpoint():
 
 @router.get("/test-cache-clear", response_model=dict)
 async def test_cache_clear():
-    """Test the cache clear endpoint functionality
-    """
+    """Test the cache clear endpoint functionality"""
     try:
         from api.barcode_bridge import barcode_cache
 
@@ -394,13 +386,12 @@ async def test_cache_clear():
 
     except Exception as e:
         logger.error(f"Cache clear test error: {e}", exc_info=True)
-        return {"error": f"Cache clear test error: {str(e)}"}
+        return {"error": f"Cache clear test error: {e!s}"}
 
 
 @router.get("/test-cosmetic", response_model=dict)
 async def test_cosmetic_data():
-    """Simple test endpoint for cosmetic data
-    """
+    """Simple test endpoint for cosmetic data"""
     try:
         logger.info("Testing cosmetic data service...")
 
@@ -445,4 +436,4 @@ async def test_cosmetic_data():
 
     except Exception as e:
         logger.error(f"Error in cosmetic test: {e}", exc_info=True)
-        return fail(message=f"Cosmetic test failed: {str(e)}", status=500)
+        return fail(message=f"Cosmetic test failed: {e!s}", status=500)

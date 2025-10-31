@@ -80,7 +80,7 @@ def get_collection_names_safe(chroma_client) -> list:
             return []
 
     except Exception as e:
-        logger.error(f"Failed to get collection names: {e}")
+        logger.exception(f"Failed to get collection names: {e}")
         return []
 
 
@@ -109,8 +109,8 @@ def test_basic_memory_manager():
         return True
 
     except Exception as e:
-        logger.error(f"Basic MemoryManager test failed: {e}")
-        logger.error(f"Full traceback: {traceback.format_exc()}")
+        logger.exception(f"Basic MemoryManager test failed: {e}")
+        logger.exception(f"Full traceback: {traceback.format_exc()}")
         try:
             os.chdir(original_cwd)
         except (OSError, PermissionError):
@@ -152,8 +152,8 @@ def migrate_memory_system():
             enhanced_memory = EnhancedMemoryManager()
             logger.info("EnhancedMemoryManager initialized successfully")
         except Exception as init_error:
-            logger.error(f"EnhancedMemoryManager initialization failed: {init_error}")
-            logger.error(f"Full initialization traceback: {traceback.format_exc()}")
+            logger.exception(f"EnhancedMemoryManager initialization failed: {init_error}")
+            logger.exception(f"Full initialization traceback: {traceback.format_exc()}")
             raise init_error
 
         # Test if the enhanced memory manager has basic functionality
@@ -174,7 +174,7 @@ def migrate_memory_system():
             collection_names = get_collection_names_safe(enhanced_memory.chroma_client)
             logger.info(f"Found collections: {collection_names}")
         except Exception as e:
-            logger.error(f"Failed to list collections: {e}")
+            logger.exception(f"Failed to list collections: {e}")
             # Don't fail migration just because we can't list collections
             collection_names = []
             logger.warning("Continuing migration despite collection listing failure")
@@ -262,8 +262,8 @@ def migrate_memory_system():
             return False
 
     except Exception as e:
-        logger.error(f"Migration failed: {e}")
-        logger.error(f"Full migration traceback: {traceback.format_exc()}")
+        logger.exception(f"Migration failed: {e}")
+        logger.exception(f"Full migration traceback: {traceback.format_exc()}")
         # Restore original working directory
         try:
             os.chdir(original_cwd)
@@ -339,7 +339,7 @@ def verify_migration():
             return False
 
     except Exception as e:
-        logger.error(f"Migration verification failed: {e}")
+        logger.exception(f"Migration verification failed: {e}")
         try:
             os.chdir(original_cwd)
         except (OSError, PermissionError):
@@ -414,8 +414,8 @@ def simple_enhanced_test():
         return True
 
     except Exception as e:
-        logger.error(f"Simple enhanced test failed: {e}")
-        logger.error(f"Simple test traceback: {traceback.format_exc()}")
+        logger.exception(f"Simple enhanced test failed: {e}")
+        logger.exception(f"Simple test traceback: {traceback.format_exc()}")
         try:
             os.chdir(original_cwd)
         except (OSError, PermissionError):

@@ -1,5 +1,4 @@
-"""SQLAlchemy model for user_reports table
-"""
+"""SQLAlchemy model for user_reports table"""
 
 from sqlalchemy import JSON, Column, Date, DateTime, Integer, String, Text
 from sqlalchemy.sql import func

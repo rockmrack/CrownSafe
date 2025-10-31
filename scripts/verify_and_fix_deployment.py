@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Comprehensive deployment verification and fix script
-"""
+"""Comprehensive deployment verification and fix script"""
 
 import sys
 

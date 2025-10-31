@@ -196,7 +196,7 @@ async def check_pregnancy_safety(
         raise
     except Exception as e:
         logger.error(f"Pregnancy safety check failed: {e}", exc_info=True)
-        fail(f"Safety check failed: {str(e)}", code="INTERNAL_ERROR", status=500)
+        fail(f"Safety check failed: {e!s}", code="INTERNAL_ERROR", status=500)
 
 
 # ==================== Allergy Check Endpoints ====================
@@ -295,7 +295,7 @@ async def check_product_allergies(
         raise
     except Exception as e:
         logger.error(f"Allergy check failed: {e}", exc_info=True)
-        fail(f"Allergy check failed: {str(e)}", code="INTERNAL_ERROR", status=500)
+        fail(f"Allergy check failed: {e!s}", code="INTERNAL_ERROR", status=500)
 
 
 # ==================== Family Member Management Endpoints ====================
@@ -303,8 +303,7 @@ async def check_product_allergies(
 
 @router.get("/family/members", response_model=list[FamilyMemberResponse])
 async def get_family_members(user_id: int = Query(..., description="User ID"), db: Session = Depends(get_db)):
-    """Get all family members and their allergy profiles.
-    """
+    """Get all family members and their allergy profiles."""
     try:
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
@@ -335,7 +334,7 @@ async def get_family_members(user_id: int = Query(..., description="User ID"), d
         raise
     except Exception as e:
         logger.error(f"Failed to get family members: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve family members: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve family members: {e!s}")
 
 
 @router.post("/family/members", response_model=FamilyMemberResponse)
@@ -344,8 +343,7 @@ async def add_family_member(
     member: FamilyMemberRequest = Body(...),
     db: Session = Depends(get_db),
 ):
-    """Add a new family member with their allergy profile.
-    """
+    """Add a new family member with their allergy profile."""
     try:
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
@@ -377,7 +375,7 @@ async def add_family_member(
     except Exception as e:
         logger.error(f"Failed to add family member: {e}", exc_info=True)
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to add family member: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to add family member: {e!s}")
 
 
 @router.put("/family/members/{member_id}", response_model=FamilyMemberResponse)
@@ -387,8 +385,7 @@ async def update_family_member(
     member: FamilyMemberRequest = Body(...),
     db: Session = Depends(get_db),
 ):
-    """Update a family member's allergy profile.
-    """
+    """Update a family member's allergy profile."""
     try:
         # Verify user owns this family member
         user = db.query(User).filter(User.id == user_id).first()
@@ -428,7 +425,7 @@ async def update_family_member(
     except Exception as e:
         logger.error(f"Failed to update family member: {e}", exc_info=True)
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to update family member: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to update family member: {e!s}")
 
 
 @router.delete("/family/members/{member_id}")
@@ -437,8 +434,7 @@ async def delete_family_member(
     user_id: int = Query(..., description="User ID"),
     db: Session = Depends(get_db),
 ):
-    """Remove a family member from the user's family.
-    """
+    """Remove a family member from the user's family."""
     try:
         # Verify user owns this family member
         user = db.query(User).filter(User.id == user_id).first()
@@ -468,7 +464,7 @@ async def delete_family_member(
     except Exception as e:
         logger.error(f"Failed to delete family member: {e}", exc_info=True)
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to delete family member: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete family member: {e!s}")
 
 
 # ==================== Dev Override Endpoints for Testing ====================
@@ -476,8 +472,7 @@ async def delete_family_member(
 
 @router.post("/pregnancy/check-dev")
 async def check_pregnancy_safety_dev(payload: PregnancyCheckRequest, db: Session = Depends(get_db)):
-    """Dev override version of pregnancy safety check - no authentication required
-    """
+    """Dev override version of pregnancy safety check - no authentication required"""
     try:
         # Check dev override for premium features
         from api.services.dev_override import dev_entitled
@@ -513,14 +508,13 @@ async def check_pregnancy_safety_dev(payload: PregnancyCheckRequest, db: Session
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Pregnancy safety check failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Pregnancy safety check failed: {str(e)}")
+        logger.exception(f"Pregnancy safety check failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Pregnancy safety check failed: {e!s}")
 
 
 @router.post("/allergy/check-dev")
 async def check_allergy_safety_dev(payload: AllergyCheckRequest, db: Session = Depends(get_db)):
-    """Dev override version of allergy safety check - no authentication required
-    """
+    """Dev override version of allergy safety check - no authentication required"""
     try:
         # Check dev override for premium features
         from api.services.dev_override import dev_entitled
@@ -555,8 +549,8 @@ async def check_allergy_safety_dev(payload: AllergyCheckRequest, db: Session = D
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Allergy safety check failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Allergy safety check failed: {str(e)}")
+        logger.exception(f"Allergy safety check failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Allergy safety check failed: {e!s}")
 
 
 # ==================== Combined Safety Check Endpoint ====================
@@ -645,4 +639,4 @@ async def comprehensive_safety_check(request: CombinedSafetyCheckRequest, db: Se
         raise
     except Exception as e:
         logger.error(f"Comprehensive safety check failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Safety check failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Safety check failed: {e!s}")

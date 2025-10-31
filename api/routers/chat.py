@@ -675,7 +675,7 @@ class SuperSmartLLMClient:
             return response
 
         except Exception as e:
-            logger.error(f"Error in chat_json: {e}")
+            logger.exception(f"Error in chat_json: {e}")
             return self._fallback_response()
 
     def _translate_response(self, response: dict[str, Any], language: str) -> dict[str, Any]:
@@ -1033,7 +1033,7 @@ async def chat_flags(request: Request) -> JSONResponse:
         )
 
     except Exception as e:
-        logger.error(f"Flags error: {e}")
+        logger.exception(f"Flags error: {e}")
         return JSONResponse(status_code=500, content={"success": False, "error": str(e)})
 
 
@@ -1120,5 +1120,5 @@ def fetch_scan_data(db, scan_id: int):
     except Exception as e:
         import logging
 
-        logging.getLogger(__name__).error(f"Error fetching scan data: {e}")
+        logging.getLogger(__name__).exception(f"Error fetching scan data: {e}")
         return None

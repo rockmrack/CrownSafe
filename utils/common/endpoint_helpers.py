@@ -3,7 +3,7 @@ Reduces code duplication across endpoint files
 """
 
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any, Callable
 
 from fastapi import HTTPException, status
@@ -22,7 +22,7 @@ class StandardResponse(BaseModel):
     data: Any | None = None
     error: str | None = None
     message: str | None = None
-    timestamp: str = datetime.now(timezone.utc).isoformat()
+    timestamp: str = datetime.now(UTC).isoformat()
     trace_id: str | None = None
 
 
@@ -36,7 +36,7 @@ class PaginatedResponse(BaseModel):
     offset: int
     has_more: bool
     next_cursor: str | None = None
-    timestamp: str = datetime.now(timezone.utc).isoformat()
+    timestamp: str = datetime.now(UTC).isoformat()
 
 
 def success_response(data: Any = None, message: str | None = None, trace_id: str | None = None) -> dict[str, Any]:
@@ -55,7 +55,7 @@ def success_response(data: Any = None, message: str | None = None, trace_id: str
         "success": True,
         "data": data,
         "message": message,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "trace_id": trace_id,
     }
 
@@ -75,7 +75,7 @@ def error_response(error: str, status_code: int = 500, trace_id: str | None = No
     return {
         "success": False,
         "error": error,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "trace_id": trace_id,
         "status_code": status_code,
     }
@@ -113,7 +113,7 @@ def paginated_response(
             "has_more": has_more,
             "next_cursor": next_cursor,
         },
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
 
@@ -232,7 +232,7 @@ def log_endpoint_call(
         "user_id": user_id,
         "params": params,
         "trace_id": trace_id,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
     logger.info(f"Endpoint called: {endpoint}", extra=log_data)
 
@@ -248,7 +248,7 @@ def handle_db_error(e: Exception, operation: str = "database operation") -> HTTP
         HTTPException with appropriate status code and message
 
     """
-    logger.error(f"Database error during {operation}: {str(e)}")
+    logger.error(f"Database error during {operation}: {e!s}")
 
     # Check for specific error types
     error_msg = str(e).lower()
@@ -339,10 +339,10 @@ class EndpointWrapper:
             except HTTPException:
                 raise  # Re-raise HTTP exceptions
             except Exception as e:
-                logger.error(f"Error in {endpoint_name}: {str(e)}", exc_info=True)
+                logger.error(f"Error in {endpoint_name}: {e!s}", exc_info=True)
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=f"Internal error: {str(e)}",
+                    detail=f"Internal error: {e!s}",
                 )
 
         return wrapper

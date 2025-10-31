@@ -4,7 +4,7 @@ Shows how to wire cursor pagination and HTTP caching into existing endpoints
 
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException, Request
@@ -53,8 +53,7 @@ def setup_pagination_cache(app: FastAPI) -> None:
 
 
 def create_search_endpoint_v2(app: FastAPI) -> None:
-    """Create enhanced search endpoint with cursor pagination and caching
-    """
+    """Create enhanced search endpoint with cursor pagination and caching"""
 
     @app.post("/api/v2/search/advanced")
     async def search_advanced_v2(request: Request, payload: dict[str, Any], db: Session = Depends(get_db)):
@@ -103,7 +102,7 @@ def create_search_endpoint_v2(app: FastAPI) -> None:
                     )
             else:
                 # New search - set snapshot time
-                as_of = datetime.now(timezone.utc)
+                as_of = datetime.now(UTC)
                 as_of_str = as_of.isoformat().replace("+00:00", "Z")
 
             # Check Redis cache
@@ -172,8 +171,7 @@ def create_search_endpoint_v2(app: FastAPI) -> None:
 
 
 def enhance_recall_detail_endpoint(app: FastAPI) -> None:
-    """Enhance recall detail endpoint with HTTP caching
-    """
+    """Enhance recall detail endpoint with HTTP caching"""
     # Get the existing endpoint and wrap it
     # Or define a new one:
 

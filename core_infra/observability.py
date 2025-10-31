@@ -24,8 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class ObservabilityManager:
-    """Manages observability, tracing, and instrumentation
-    """
+    """Manages observability, tracing, and instrumentation"""
 
     def __init__(self, service_name: str = "crownsafe-api") -> None:
         self.service_name = service_name
@@ -57,7 +56,7 @@ class ObservabilityManager:
             logger.info("Observability system initialized")
 
         except Exception as e:
-            logger.error(f"Failed to initialize observability: {e}")
+            logger.exception(f"Failed to initialize observability: {e}")
 
     def instrument_fastapi(self, app) -> None:
         """Instrument FastAPI application
@@ -70,7 +69,7 @@ class ObservabilityManager:
             FastAPIInstrumentor.instrument_app(app)
             logger.info("FastAPI instrumentation enabled")
         except Exception as e:
-            logger.error(f"FastAPI instrumentation failed: {e}")
+            logger.exception(f"FastAPI instrumentation failed: {e}")
 
     def instrument_sqlalchemy(self, engine) -> None:
         """Instrument SQLAlchemy database engine
@@ -83,25 +82,23 @@ class ObservabilityManager:
             SQLAlchemyInstrumentor().instrument(engine=engine)
             logger.info("SQLAlchemy instrumentation enabled")
         except Exception as e:
-            logger.error(f"SQLAlchemy instrumentation failed: {e}")
+            logger.exception(f"SQLAlchemy instrumentation failed: {e}")
 
     def instrument_redis(self) -> None:
-        """Instrument Redis client
-        """
+        """Instrument Redis client"""
         try:
             RedisInstrumentor().instrument()
             logger.info("Redis instrumentation enabled")
         except Exception as e:
-            logger.error(f"Redis instrumentation failed: {e}")
+            logger.exception(f"Redis instrumentation failed: {e}")
 
     def instrument_requests(self) -> None:
-        """Instrument HTTP requests library
-        """
+        """Instrument HTTP requests library"""
         try:
             RequestsInstrumentor().instrument()
             logger.info("Requests instrumentation enabled")
         except Exception as e:
-            logger.error(f"Requests instrumentation failed: {e}")
+            logger.exception(f"Requests instrumentation failed: {e}")
 
     def create_span(self, name: str, attributes: dict[str, str] = None):
         """Create a custom span for tracing
@@ -129,16 +126,14 @@ class ObservabilityManager:
 
 
 class AzureMonitorIntegration:
-    """Integration with Azure Application Insights
-    """
+    """Integration with Azure Application Insights"""
 
     def __init__(self, connection_string: str = None) -> None:
         self.connection_string = connection_string
         self.client = None
 
     def initialize(self) -> None:
-        """Initialize Azure Application Insights
-        """
+        """Initialize Azure Application Insights"""
         if not self.connection_string:
             logger.warning("Azure Monitor connection string not configured")
             return
@@ -157,7 +152,7 @@ class AzureMonitorIntegration:
             logger.info("Azure Monitor integration initialized")
 
         except Exception as e:
-            logger.error(f"Azure Monitor initialization failed: {e}")
+            logger.exception(f"Azure Monitor initialization failed: {e}")
 
     def log_custom_event(self, event_name: str, properties: dict = None) -> None:
         """Log custom event to Application Insights
@@ -171,7 +166,7 @@ class AzureMonitorIntegration:
             # Log custom event
             logger.info(f"Custom event: {event_name}", extra=properties or {})
         except Exception as e:
-            logger.error(f"Failed to log custom event: {e}")
+            logger.exception(f"Failed to log custom event: {e}")
 
     def log_custom_metric(self, metric_name: str, value: float, properties: dict = None) -> None:
         """Log custom metric to Application Insights
@@ -186,7 +181,7 @@ class AzureMonitorIntegration:
             # Log custom metric
             logger.info(f"Custom metric: {metric_name} = {value}", extra=properties or {})
         except Exception as e:
-            logger.error(f"Failed to log custom metric: {e}")
+            logger.exception(f"Failed to log custom metric: {e}")
 
 
 # ====================
@@ -197,8 +192,7 @@ _observability_manager = None
 
 
 def get_observability_manager() -> ObservabilityManager:
-    """Get global observability manager instance
-    """
+    """Get global observability manager instance"""
     global _observability_manager
     if _observability_manager is None:
         _observability_manager = ObservabilityManager()

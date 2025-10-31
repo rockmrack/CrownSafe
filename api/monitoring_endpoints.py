@@ -1,8 +1,7 @@
-"""Product Monitoring Management Endpoints
-"""
+"""Product Monitoring Management Endpoints"""
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlalchemy import desc
@@ -95,7 +94,7 @@ async def add_product_to_monitoring(
 
     except Exception as e:
         logger.error(f"Error adding product to monitoring: {e}", exc_info=True)
-        return fail(f"Failed to add product: {str(e)}", status=500)
+        return fail(f"Failed to add product: {e!s}", status=500)
 
 
 @router.get("/products", response_model=ApiResponse)
@@ -163,7 +162,7 @@ async def get_monitored_products(
 
     except Exception as e:
         logger.error(f"Error fetching monitored products: {e}", exc_info=True)
-        return fail(f"Failed to fetch products: {str(e)}", status=500)
+        return fail(f"Failed to fetch products: {e!s}", status=500)
 
 
 @router.delete("/products/{product_id}", response_model=ApiResponse)
@@ -188,14 +187,14 @@ async def remove_product_from_monitoring(
 
         # Soft delete
         product.is_active = False
-        product.updated_at = datetime.now(timezone.utc)
+        product.updated_at = datetime.now(UTC)
         db.commit()
 
         return ok({"message": "Product removed from monitoring"})
 
     except Exception as e:
         logger.error(f"Error removing product: {e}", exc_info=True)
-        return fail(f"Failed to remove product: {str(e)}", status=500)
+        return fail(f"Failed to remove product: {e!s}", status=500)
 
 
 @router.put("/products/{product_id}/frequency", response_model=ApiResponse)
@@ -220,8 +219,8 @@ async def update_check_frequency(
             return fail("Product not found", code="NOT_FOUND", status=404)
 
         product.check_frequency_hours = frequency_hours
-        product.next_check = datetime.now(timezone.utc) + timedelta(hours=frequency_hours)
-        product.updated_at = datetime.now(timezone.utc)
+        product.next_check = datetime.now(UTC) + timedelta(hours=frequency_hours)
+        product.updated_at = datetime.now(UTC)
         db.commit()
 
         return ok(
@@ -233,7 +232,7 @@ async def update_check_frequency(
 
     except Exception as e:
         logger.error(f"Error updating frequency: {e}", exc_info=True)
-        return fail(f"Failed to update frequency: {str(e)}", status=500)
+        return fail(f"Failed to update frequency: {e!s}", status=500)
 
 
 @router.post("/products/{product_id}/check-now", response_model=ApiResponse)
@@ -261,8 +260,8 @@ async def check_product_now(
         result = await ProductMonitoringScheduler.check_product_for_recalls(product, db)
 
         # Update product
-        product.last_checked = datetime.now(timezone.utc)
-        product.next_check = datetime.now(timezone.utc) + timedelta(hours=product.check_frequency_hours)
+        product.last_checked = datetime.now(UTC)
+        product.next_check = datetime.now(UTC) + timedelta(hours=product.check_frequency_hours)
 
         if result.get("recalls_found", 0) > 0:
             product.recall_status = "recalled"
@@ -292,7 +291,7 @@ async def check_product_now(
 
     except Exception as e:
         logger.error(f"Error checking product: {e}", exc_info=True)
-        return fail(f"Failed to check product: {str(e)}", status=500)
+        return fail(f"Failed to check product: {e!s}", status=500)
 
 
 @router.post("/auto-add-scans", response_model=ApiResponse)
@@ -312,7 +311,7 @@ async def auto_add_from_scans(
             .filter(
                 ImageJob.user_id == current_user.id,
                 ImageJob.status == JobStatus.COMPLETED,
-                ImageJob.created_at >= datetime.now(timezone.utc) - timedelta(days=30),
+                ImageJob.created_at >= datetime.now(UTC) - timedelta(days=30),
             )
             .all()
         )
@@ -357,7 +356,7 @@ async def auto_add_from_scans(
 
     except Exception as e:
         logger.error(f"Error auto-adding products: {e}", exc_info=True)
-        return fail(f"Failed to auto-add products: {str(e)}", status=500)
+        return fail(f"Failed to auto-add products: {e!s}", status=500)
 
 
 @router.get("/status", response_model=ApiResponse)
@@ -387,7 +386,7 @@ async def get_monitoring_status(current_user=Depends(get_current_active_user), d
             .filter(
                 MonitoredProduct.user_id == current_user.id,
                 MonitoredProduct.is_active,
-                MonitoredProduct.next_check <= datetime.now(timezone.utc) + timedelta(hours=1),
+                MonitoredProduct.next_check <= datetime.now(UTC) + timedelta(hours=1),
             )
             .count()
         )
@@ -407,11 +406,11 @@ async def get_monitoring_status(current_user=Depends(get_current_active_user), d
             "safe_products": total_products - recalled_products,
             "products_due_check": due_soon,
             "last_system_check": last_run.completed_at.isoformat() + "Z" if last_run else None,
-            "next_system_check": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat() + "Z",
+            "next_system_check": (datetime.now(UTC) + timedelta(hours=1)).isoformat() + "Z",
         }
 
         return ok(status)
 
     except Exception as e:
         logger.error(f"Error fetching monitoring status: {e}", exc_info=True)
-        return fail(f"Failed to fetch status: {str(e)}", status=500)
+        return fail(f"Failed to fetch status: {e!s}", status=500)

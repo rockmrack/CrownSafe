@@ -3,7 +3,7 @@
 
 import logging
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import (
     Any,
 )  # Removed Set, Union as not used in this simplified version
@@ -35,7 +35,7 @@ class MCPHeader(BaseModel):
     sender_id: str = Field(..., description="Unique ID of the sending agent or service")
     message_type: str = Field(..., description="Type of the message")
     correlation_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
     version: str = Field("1.0")
     target_agent_id: str | None = Field(None)
     target_service: str | None = Field(None)

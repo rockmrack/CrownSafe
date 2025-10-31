@@ -10,12 +10,10 @@ from typing import Any
 
 
 class JsonFormatter(logging.Formatter):
-    """Custom formatter to output logs as JSON
-    """
+    """Custom formatter to output logs as JSON"""
 
     def format(self, record: logging.LogRecord) -> str:
-        """Format log record as JSON
-        """
+        """Format log record as JSON"""
         # Base payload
         payload: dict[str, Any] = {
             "timestamp": int(time.time() * 1000),  # Unix timestamp in milliseconds

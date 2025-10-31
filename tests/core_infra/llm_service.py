@@ -9,7 +9,7 @@ import threading
 import time
 from collections import deque
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from enum import Enum
 from typing import Any, Callable, Union
 
@@ -495,7 +495,7 @@ class LLMClient:
                 raise ValueError(f"Unsupported provider: {self.config.provider}")
 
         except Exception as e:
-            logger.error(f"Failed to initialize {self.config.provider.value}: {e}")
+            logger.exception(f"Failed to initialize {self.config.provider.value}: {e}")
             logger.warning("Falling back to mock provider")
             self.config.provider = LLMProvider.MOCK
 
@@ -676,7 +676,7 @@ class LLMClient:
             self.metrics.failed_requests += 1
             error_type = type(e).__name__
             self.metrics.errors_by_type[error_type] = self.metrics.errors_by_type.get(error_type, 0) + 1
-            logger.error(f"LLM request {request_id} failed: {e}")
+            logger.exception(f"LLM request {request_id} failed: {e}")
             raise
 
     async def _make_async_request(self, **kwargs) -> Any:
@@ -1076,7 +1076,7 @@ class CostTracker:
         """Start a new cost tracking session"""
         self.current_session = session_name
         self.sessions[session_name] = {
-            "start_time": datetime.now(timezone.utc),
+            "start_time": datetime.now(UTC),
             "requests": 0,
             "tokens": 0,
             "cost": 0.0,
@@ -1096,7 +1096,7 @@ class CostTracker:
             return {"error": f"Session '{session_name}' not found"}
 
         session = self.sessions[session_name]
-        duration = (datetime.now(timezone.utc) - session["start_time"]).total_seconds()
+        duration = (datetime.now(UTC) - session["start_time"]).total_seconds()
 
         return {
             "session_name": session_name,

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Temporary script to comment out legacy router registrations for Crown Safe migration.
-"""
+"""Temporary script to comment out legacy router registrations for Crown Safe migration."""
 
 import re
 

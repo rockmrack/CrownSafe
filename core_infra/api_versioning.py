@@ -13,8 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class APIVersion:
-    """Represents an API version
-    """
+    """Represents an API version"""
 
     def __init__(self, version: str, deprecated: bool = False, sunset_date: str = None) -> None:
         self.version = version
@@ -50,8 +49,7 @@ class APIVersion:
 
 
 class VersionedAPI:
-    """Manages API versioning
-    """
+    """Manages API versioning"""
 
     SUPPORTED_VERSIONS = {
         "v1": APIVersion("v1.0.0", deprecated=True, sunset_date="2025-01-01"),
@@ -148,8 +146,7 @@ def versioned_endpoint(versions: list = None, deprecated_in: str = None, removed
 
 
 class VersionedRouter:
-    """Router that handles multiple API versions
-    """
+    """Router that handles multiple API versions"""
 
     def __init__(self) -> None:
         self.routers = {}
@@ -173,8 +170,7 @@ class VersionedRouter:
 
 # Version-specific response transformers
 class ResponseTransformer:
-    """Transform responses based on API version
-    """
+    """Transform responses based on API version"""
 
     @staticmethod
     def transform_v1_to_v2(data: dict) -> dict:
@@ -216,8 +212,7 @@ class ResponseTransformer:
 
 # Middleware for API versioning
 async def api_version_middleware(request: Request, call_next):
-    """Middleware to handle API versioning
-    """
+    """Middleware to handle API versioning"""
     # Get requested version
     version = VersionedAPI.get_version_from_request(request)
 
@@ -263,13 +258,11 @@ async def api_version_middleware(request: Request, call_next):
 
 # Backward compatibility helpers
 class BackwardCompatibility:
-    """Helpers for maintaining backward compatibility
-    """
+    """Helpers for maintaining backward compatibility"""
 
     @staticmethod
     def deprecated_field(old_name: str, new_name: str):
-        """Mark a field as deprecated
-        """
+        """Mark a field as deprecated"""
 
         def decorator(func):
             @wraps(func)
@@ -294,8 +287,7 @@ class BackwardCompatibility:
 
     @staticmethod
     def removed_endpoint(version: str, alternative: str = None):
-        """Mark an endpoint as removed
-        """
+        """Mark an endpoint as removed"""
 
         def decorator(func):
             @wraps(func)
@@ -313,13 +305,11 @@ class BackwardCompatibility:
 
 # Version migration helpers
 class VersionMigration:
-    """Help users migrate between API versions
-    """
+    """Help users migrate between API versions"""
 
     @staticmethod
     def generate_migration_guide(from_version: str, to_version: str) -> dict:
-        """Generate migration guide between versions
-        """
+        """Generate migration guide between versions"""
         guide = {"from_version": from_version, "to_version": to_version, "changes": []}
 
         if from_version == "v1" and to_version == "v2":

@@ -20,8 +20,7 @@ AgencyList = conlist(Str32, min_length=1, max_length=10)
 
 
 class SecureAdvancedSearchRequest(BaseModel):
-    """Search request with strict validation and size limits
-    """
+    """Search request with strict validation and size limits"""
 
     # Text search fields (capped length)
     query: Str128 | None = Field(
@@ -82,8 +81,7 @@ class SecureAdvancedSearchRequest(BaseModel):
     @field_validator("query", "product")
     @classmethod
     def validate_text_fields(cls, v: str | None) -> str | None:
-        """Validate text search fields
-        """
+        """Validate text search fields"""
         if v is None:
             return v
 
@@ -126,8 +124,7 @@ class SecureAdvancedSearchRequest(BaseModel):
     @field_validator("keywords")
     @classmethod
     def validate_keywords(cls, v: list[str] | None) -> list[str] | None:
-        """Validate keyword list
-        """
+        """Validate keyword list"""
         if v is None:
             return v
 
@@ -148,8 +145,7 @@ class SecureAdvancedSearchRequest(BaseModel):
     @field_validator("agencies")
     @classmethod
     def validate_agencies(cls, v: list[str] | None) -> list[str] | None:
-        """Validate agency codes
-        """
+        """Validate agency codes"""
         if v is None:
             return v
 
@@ -180,8 +176,7 @@ class SecureAdvancedSearchRequest(BaseModel):
     @field_validator("date_from", "date_to")
     @classmethod
     def validate_dates(cls, v: date | None) -> date | None:
-        """Validate date ranges
-        """
+        """Validate date ranges"""
         if v is None:
             return v
 
@@ -199,8 +194,7 @@ class SecureAdvancedSearchRequest(BaseModel):
 
     @model_validator(mode="after")
     def validate_date_range(self):
-        """Validate date range consistency
-        """
+        """Validate date range consistency"""
         if self.date_from and self.date_to:
             if self.date_to < self.date_from:
                 raise ValueError("date_to must be >= date_from")
@@ -209,8 +203,7 @@ class SecureAdvancedSearchRequest(BaseModel):
 
     @model_validator(mode="after")
     def validate_search_criteria(self):
-        """Ensure at least one search criterion is provided
-        """
+        """Ensure at least one search criterion is provided"""
         # Check if ID is provided (exact lookup)
         if self.id:
             return self
@@ -247,8 +240,7 @@ class SecureAdvancedSearchRequest(BaseModel):
 
 
 class RecallDetailRequest(BaseModel):
-    """Request for recall detail endpoint
-    """
+    """Request for recall detail endpoint"""
 
     recall_id: constr(strip_whitespace=True, min_length=3, max_length=64, pattern=r"^[A-Za-z0-9\-_]+$") = Field(
         ...,

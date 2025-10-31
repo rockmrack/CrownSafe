@@ -334,7 +334,7 @@ class ImageAnalysisService:
 
             return barcodes
         except Exception as e:
-            logger.error(f"Barcode extraction error: {e}")
+            logger.exception(f"Barcode extraction error: {e}")
             return []
 
     async def _extract_text(self, image: Image.Image, providers: list[Provider]) -> OCRResult | None:
@@ -753,7 +753,7 @@ class ImageAnalysisService:
             logger.info(f"Detected {len(defects)} visual defects")
 
         except Exception as e:
-            logger.error(f"Error in defect detection: {e}")
+            logger.exception(f"Error in defect detection: {e}")
             # Return empty list on error rather than failing
 
         return defects

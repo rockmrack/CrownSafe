@@ -1,5 +1,4 @@
-"""Check recalled products count in the database
-"""
+"""Check recalled products count in the database"""
 
 import os
 

@@ -1,8 +1,7 @@
-"""User Dashboard & Statistics Endpoints
-"""
+"""User Dashboard & Statistics Endpoints"""
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import desc, func
@@ -55,7 +54,7 @@ class ProductCategory(AppModel):
 async def get_dashboard_overview(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
     """Get dashboard overview statistics"""
     try:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         month_ago = now - timedelta(days=30)
 
         # Get scan statistics
@@ -117,7 +116,7 @@ async def get_dashboard_overview(current_user=Depends(get_current_active_user), 
 
     except Exception as e:
         logger.error(f"Error fetching dashboard overview: {e}", exc_info=True)
-        return fail(f"Failed to fetch overview: {str(e)}", status=500)
+        return fail(f"Failed to fetch overview: {e!s}", status=500)
 
 
 @router.get("/activity", response_model=ApiResponse)
@@ -129,7 +128,7 @@ async def get_activity_timeline(
     """Get activity timeline for the last N days"""
     try:
         activities = []
-        end_date = datetime.now(timezone.utc).date()
+        end_date = datetime.now(UTC).date()
         start_date = end_date - timedelta(days=days - 1)
 
         # Generate date range
@@ -194,7 +193,7 @@ async def get_activity_timeline(
 
     except Exception as e:
         logger.error(f"Error fetching activity timeline: {e}", exc_info=True)
-        return fail(f"Failed to fetch activity: {str(e)}", status=500)
+        return fail(f"Failed to fetch activity: {e!s}", status=500)
 
 
 @router.get("/product-categories", response_model=ApiResponse)
@@ -248,7 +247,7 @@ async def get_product_categories(current_user=Depends(get_current_active_user), 
 
     except Exception as e:
         logger.error(f"Error fetching product categories: {e}", exc_info=True)
-        return fail(f"Failed to fetch categories: {str(e)}", status=500)
+        return fail(f"Failed to fetch categories: {e!s}", status=500)
 
 
 @router.get("/safety-insights", response_model=ApiResponse)
@@ -295,7 +294,7 @@ async def get_safety_insights(current_user=Depends(get_current_active_user), db:
         )
 
         if last_scan:
-            days_since = (datetime.now(timezone.utc) - last_scan.created_at).days
+            days_since = (datetime.now(UTC) - last_scan.created_at).days
             if days_since > 14:
                 insights.append(
                     {
@@ -362,11 +361,11 @@ async def get_safety_insights(current_user=Depends(get_current_active_user), db:
                 },
             )
 
-        return ok({"insights": insights, "generated_at": datetime.now(timezone.utc).isoformat() + "Z"})
+        return ok({"insights": insights, "generated_at": datetime.now(UTC).isoformat() + "Z"})
 
     except Exception as e:
         logger.error(f"Error fetching safety insights: {e}", exc_info=True)
-        return fail(f"Failed to fetch insights: {str(e)}", status=500)
+        return fail(f"Failed to fetch insights: {e!s}", status=500)
 
 
 @router.get("/recent-recalls", response_model=ApiResponse)
@@ -421,7 +420,7 @@ async def get_recent_recalls(
 
     except Exception as e:
         logger.error(f"Error fetching recent recalls: {e}", exc_info=True)
-        return fail(f"Failed to fetch recalls: {str(e)}", status=500)
+        return fail(f"Failed to fetch recalls: {e!s}", status=500)
 
 
 @router.get("/user-achievements", response_model=ApiResponse)
@@ -500,7 +499,7 @@ async def get_user_achievements(current_user=Depends(get_current_active_user), d
 
         # Streak achievements
         # Check for daily scanning streak
-        today = datetime.now(timezone.utc).date()
+        today = datetime.now(UTC).date()
         streak = 0
         for i in range(30):
             check_date = today - timedelta(days=i)
@@ -550,4 +549,4 @@ async def get_user_achievements(current_user=Depends(get_current_active_user), d
 
     except Exception as e:
         logger.error(f"Error fetching achievements: {e}", exc_info=True)
-        return fail(f"Failed to fetch achievements: {str(e)}", status=500)
+        return fail(f"Failed to fetch achievements: {e!s}", status=500)

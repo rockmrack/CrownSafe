@@ -85,8 +85,7 @@ def setup_observability(app: FastAPI) -> None:
 
 
 async def on_startup(app: FastAPI) -> None:
-    """Startup event handler for async initialization
-    """
+    """Startup event handler for async initialization"""
     # Initialize rate limiter
     rate_limit_enabled = await init_rate_limiter()
     if rate_limit_enabled:
@@ -96,8 +95,7 @@ async def on_startup(app: FastAPI) -> None:
 
 
 async def on_shutdown(app: FastAPI) -> None:
-    """Shutdown event handler for cleanup
-    """
+    """Shutdown event handler for cleanup"""
     # Close rate limiter
     await close_rate_limiter()
     logger.info("Cleanup completed")

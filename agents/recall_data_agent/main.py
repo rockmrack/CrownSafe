@@ -42,7 +42,7 @@ async def run_manual_ingestion():
         Base.metadata.create_all(bind=engine)
         logger.info("✓ Database tables verified/created")
     except Exception as e:
-        logger.error(f"✗ Database initialization failed: {e}")
+        logger.exception(f"✗ Database initialization failed: {e}")
         return {"status": "error", "error": str(e)}
 
     # Initialize agent

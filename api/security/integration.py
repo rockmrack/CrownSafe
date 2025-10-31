@@ -84,8 +84,7 @@ def get_security_config() -> dict:
 
 
 def validate_security_config() -> None:
-    """Validate security configuration and warn about issues
-    """
+    """Validate security configuration and warn about issues"""
     config = get_security_config()
 
     # Check CORS origins
@@ -142,8 +141,7 @@ async def search_advanced(request: SecureAdvancedSearchRequest):
 
 
 class SecurityDefaults:
-    """Default security settings
-    """
+    """Default security settings"""
 
     # Request limits
     MAX_REQUEST_SIZE = 100_000  # 100KB
@@ -173,8 +171,7 @@ class SecurityDefaults:
 
     @classmethod
     def apply_to_env(cls) -> None:
-        """Apply defaults to environment if not set
-        """
+        """Apply defaults to environment if not set"""
         defaults = {
             "MAX_REQUEST_BYTES": str(cls.MAX_REQUEST_SIZE),
             "GZIP_MINIMUM_SIZE": str(cls.GZIP_MIN_SIZE),

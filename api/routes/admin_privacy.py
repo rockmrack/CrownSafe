@@ -3,7 +3,7 @@ Allows administrators to manage and process privacy requests
 """
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request
@@ -29,8 +29,7 @@ router = APIRouter(
 
 
 class UpdatePrivacyRequest(BaseModel):
-    """Model for updating privacy request status
-    """
+    """Model for updating privacy request status"""
 
     status: str = Field(
         ...,
@@ -45,8 +44,7 @@ class UpdatePrivacyRequest(BaseModel):
 
 
 class PrivacyRequestFilter(BaseModel):
-    """Filters for privacy request queries
-    """
+    """Filters for privacy request queries"""
 
     kind: str | None = Field(None, pattern="^(export|delete|rectify|access|restrict|object)$")
     status: str | None = Field(None, pattern="^(queued|verifying|processing|done|rejected|expired|cancelled)$")
@@ -100,7 +98,7 @@ async def list_privacy_requests(
 
         if overdue_only:
             # Filter for overdue requests
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
             query = query.filter(
                 and_(
                     PrivacyRequest.status.in_(["queued", "verifying", "processing"]),
@@ -165,7 +163,7 @@ async def list_privacy_requests(
         )
 
     except Exception as e:
-        logger.error(f"Failed to list privacy requests: {e}")
+        logger.exception(f"Failed to list privacy requests: {e}")
         raise APIError(
             status_code=500,
             code="LIST_REQUESTS_FAILED",
@@ -224,7 +222,7 @@ async def get_privacy_request_details(
     except APIError:
         raise
     except Exception as e:
-        logger.error(f"Failed to get privacy request {request_id}: {e}")
+        logger.exception(f"Failed to get privacy request {request_id}: {e}")
         raise APIError(
             status_code=500,
             code="GET_REQUEST_FAILED",
@@ -293,7 +291,7 @@ async def update_privacy_request_status(
 
         # Update additional fields based on status
         if new_status == "verifying":
-            privacy_request.verified_at = datetime.now(timezone.utc)
+            privacy_request.verified_at = datetime.now(UTC)
 
         elif new_status == "done":
             privacy_request.set_completed(export_url=body.export_url if privacy_request.kind == "export" else None)
@@ -303,12 +301,12 @@ async def update_privacy_request_status(
 
         elif new_status == "cancelled":
             privacy_request.status = "cancelled"
-            privacy_request.completed_at = datetime.now(timezone.utc)
+            privacy_request.completed_at = datetime.now(UTC)
 
         # Add admin notes if provided
         if body.notes:
             existing_notes = privacy_request.notes or ""
-            timestamp = datetime.now(timezone.utc).isoformat()
+            timestamp = datetime.now(UTC).isoformat()
             privacy_request.notes = f"{existing_notes}\n[{timestamp}] Admin ({admin}): {body.notes}".strip()
 
         # Save changes
@@ -332,7 +330,7 @@ async def update_privacy_request_status(
                 "status": privacy_request.status,
                 "previous_status": current_status,
                 "updated_by": admin,
-                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(UTC).isoformat(),
             },
             request,
         )
@@ -340,7 +338,7 @@ async def update_privacy_request_status(
     except APIError:
         raise
     except Exception as e:
-        logger.error(f"Failed to update privacy request {request_id}: {e}")
+        logger.exception(f"Failed to update privacy request {request_id}: {e}")
         raise APIError(
             status_code=500,
             code="UPDATE_REQUEST_FAILED",
@@ -360,7 +358,7 @@ async def privacy_request_statistics(
     Provides overview of DSAR requests for compliance reporting.
     """
     try:
-        since_date = datetime.now(timezone.utc) - timedelta(days=days)
+        since_date = datetime.now(UTC) - timedelta(days=days)
 
         # Overall statistics
         total_requests = (
@@ -412,7 +410,7 @@ async def privacy_request_statistics(
         )
 
         # Overdue requests
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         overdue_count = (
             db.query(func.count(PrivacyRequest.id))
             .filter(
@@ -467,7 +465,7 @@ async def privacy_request_statistics(
         return create_response(stats, request)
 
     except Exception as e:
-        logger.error(f"Failed to get privacy statistics: {e}")
+        logger.exception(f"Failed to get privacy statistics: {e}")
         raise APIError(
             status_code=500,
             code="STATISTICS_FAILED",
@@ -517,10 +515,10 @@ async def process_privacy_request(
 
         # Update to processing status
         privacy_request.status = "processing"
-        privacy_request.verified_at = privacy_request.verified_at or datetime.now(timezone.utc)
+        privacy_request.verified_at = privacy_request.verified_at or datetime.now(UTC)
 
         # Add note
-        timestamp = datetime.now(timezone.utc).isoformat()
+        timestamp = datetime.now(UTC).isoformat()
         notes = privacy_request.notes or ""
         privacy_request.notes = f"{notes}\n[{timestamp}] Processing initiated by admin ({admin})".strip()
 
@@ -554,7 +552,7 @@ async def process_privacy_request(
     except APIError:
         raise
     except Exception as e:
-        logger.error(f"Failed to process privacy request {request_id}: {e}")
+        logger.exception(f"Failed to process privacy request {request_id}: {e}")
         raise APIError(
             status_code=500,
             code="PROCESS_REQUEST_FAILED",
@@ -604,7 +602,7 @@ async def get_export_template(request: Request, admin: str = Depends(require_adm
         )
 
     except Exception as e:
-        logger.error(f"Failed to get export template: {e}")
+        logger.exception(f"Failed to get export template: {e}")
         raise APIError(
             status_code=500,
             code="TEMPLATE_FAILED",

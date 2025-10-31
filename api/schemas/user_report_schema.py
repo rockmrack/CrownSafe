@@ -1,5 +1,4 @@
-"""Pydantic schemas for user report endpoints
-"""
+"""Pydantic schemas for user report endpoints"""
 
 from datetime import date, datetime
 

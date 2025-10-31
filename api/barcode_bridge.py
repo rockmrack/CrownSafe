@@ -9,7 +9,7 @@ import hashlib  # noqa: E402
 import logging  # noqa: E402
 import re  # noqa: E402
 from collections import OrderedDict  # noqa: E402
-from datetime import datetime, timedelta, timezone  # noqa: E402
+from datetime import datetime, timedelta, timezone, UTC  # noqa: E402
 from typing import Any  # noqa: E402
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, Query  # noqa: E402
@@ -54,7 +54,7 @@ def _normalize_scan_payload(barcode: str, payload: dict, trace_id: str, cached: 
 
     # new required field (fixes Pydantic v2 error)
     if not data.get("scan_timestamp"):
-        data["scan_timestamp"] = datetime.now(timezone.utc).isoformat()
+        data["scan_timestamp"] = datetime.now(UTC).isoformat()
 
     return data
 
@@ -356,7 +356,7 @@ async def scan_barcode(
         trace_hash = hashlib.md5(trace_data, usedforsecurity=False).hexdigest()[:8]
         trace_id = f"barcode_{trace_hash}"
     except Exception as e:
-        logger.error(f"Error initializing barcode scan: {str(e)}")
+        logger.exception(f"Error initializing barcode scan: {e!s}")
         # Return error response instead of raising 500
         barcode_value = getattr(request, "barcode", "") if hasattr(request, "barcode") else ""
         err = {
@@ -378,7 +378,7 @@ async def scan_barcode(
         # Normalize and validate barcode
         normalized_barcode, barcode_type = normalize_barcode(request.barcode)
     except Exception as e:
-        logger.error(f"Barcode scan error at start: {str(e)}")
+        logger.exception(f"Barcode scan error at start: {e!s}")
         normalized_barcode = request.barcode
         _ = "UNKNOWN"  # barcode_type (reserved for future type-specific logic)
 
@@ -398,10 +398,10 @@ async def scan_barcode(
         try:
             exact_recalls = search_exact_barcode(normalized_barcode, db) if db else []
         except Exception as e:
-            logger.error(f"Database error searching barcode: {str(e)}")
+            logger.exception(f"Database error searching barcode: {e!s}")
             exact_recalls = []
     except Exception as e:
-        logger.error(f"Critical error in barcode processing: {str(e)}")
+        logger.exception(f"Critical error in barcode processing: {e!s}")
         # Return safe error response
         err = {
             "ok": False,
@@ -434,7 +434,7 @@ async def scan_barcode(
                         ),
                     )
                 except Exception as recall_error:
-                    logger.error(f"Error processing recall: {str(recall_error)}")
+                    logger.exception(f"Error processing recall: {recall_error!s}")
                     continue
 
             # Build fresh result with normalized payload
@@ -454,7 +454,7 @@ async def scan_barcode(
             try:
                 similar_recalls = search_similar_products(normalized_barcode, brand, product.category, db) if db else []
             except Exception as e:
-                logger.error(f"Database error searching similar products: {str(e)}")
+                logger.exception(f"Database error searching similar products: {e!s}")
                 similar_recalls = []
 
             if similar_recalls:
@@ -528,7 +528,7 @@ async def scan_barcode(
             response = BarcodeScanResponse.model_validate(payload)
 
     except Exception as response_error:
-        logger.error(f"Error generating response: {str(response_error)}")
+        logger.exception(f"Error generating response: {response_error!s}")
         # Return safe fallback response with normalized payload
         err = {
             "ok": False,
@@ -543,7 +543,7 @@ async def scan_barcode(
         cache_data = response.dict(exclude={"trace_id", "cached"})
         background_tasks.add_task(barcode_cache.set, normalized_barcode, cache_data, user_id)
     except Exception as cache_error:
-        logger.error(f"Error caching result: {str(cache_error)}")
+        logger.exception(f"Error caching result: {cache_error!s}")
 
     # Log scan
     try:
@@ -559,7 +559,7 @@ async def scan_barcode(
             },
         )
     except Exception as log_error:
-        logger.error(f"Error logging barcode scan: {str(log_error)}")
+        logger.exception(f"Error logging barcode scan: {log_error!s}")
 
     return response
 
@@ -634,8 +634,7 @@ async def clear_cache(
 
 @router.get("/test/barcodes")
 async def get_test_barcodes():
-    """Get 5 test barcodes with expected behaviors for acceptance testing
-    """
+    """Get 5 test barcodes with expected behaviors for acceptance testing"""
     return {
         "ok": True,
         "test_barcodes": [

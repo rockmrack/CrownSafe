@@ -117,8 +117,7 @@ def add_strict_cors(
 
 
 class CORSConfig:
-    """CORS configuration settings
-    """
+    """CORS configuration settings"""
 
     # Production origins
     PRODUCTION_ORIGINS = [

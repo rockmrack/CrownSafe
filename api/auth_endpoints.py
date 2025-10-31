@@ -94,7 +94,7 @@ async def register(
         )
     except Exception as e:
         db.rollback()
-        logger.error(f"Error registering user: {str(e)}")
+        logger.exception(f"Error registering user: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error creating user account",
@@ -175,8 +175,7 @@ async def login(
 
 @router.post("/refresh", response_model=Token)
 async def refresh_token(request: Request, db: Session = Depends(get_db)):  # noqa: B008
-    """Refresh access token using refresh token
-    """
+    """Refresh access token using refresh token"""
     try:
         # Extract refresh_token from JSON body
         body = await request.json()
@@ -265,7 +264,7 @@ async def update_profile(
         }
     except Exception as e:
         db.rollback()
-        logger.error(f"Error updating profile: {str(e)}")
+        logger.exception(f"Error updating profile: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error updating profile",

@@ -149,7 +149,7 @@ class UpsertHandler:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to upsert recall {recall_data.get('recall_id')}: {e}")
+            logger.exception(f"Failed to upsert recall {recall_data.get('recall_id')}: {e}")
             return False
 
     @staticmethod
@@ -270,7 +270,7 @@ class UpsertHandler:
                 counts["inserted"] += len(batch)
 
             except Exception as e:
-                logger.error(f"Bulk upsert batch failed: {e}")
+                logger.exception(f"Bulk upsert batch failed: {e}")
                 counts["failed"] += len(batch)
                 db.rollback()
                 continue
@@ -278,7 +278,7 @@ class UpsertHandler:
         try:
             db.commit()
         except Exception as e:
-            logger.error(f"Failed to commit bulk upsert: {e}")
+            logger.exception(f"Failed to commit bulk upsert: {e}")
             db.rollback()
 
         return counts
@@ -335,13 +335,12 @@ class UpsertHandler:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to upsert subscription: {e}")
+            logger.exception(f"Failed to upsert subscription: {e}")
             return False
 
 
 class EnhancedUpsertHandler(UpsertHandler):
-    """Enhanced UPSERT handler with additional features
-    """
+    """Enhanced UPSERT handler with additional features"""
 
     @staticmethod
     def upsert_with_history(
@@ -415,7 +414,7 @@ class EnhancedUpsertHandler(UpsertHandler):
             return True
 
         except Exception as e:
-            logger.error(f"Enhanced upsert failed for {table}: {e}")
+            logger.exception(f"Enhanced upsert failed for {table}: {e}")
             return False
 
 

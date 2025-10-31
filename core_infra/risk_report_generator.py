@@ -5,7 +5,7 @@ Produces comprehensive product safety reports with legal disclaimers
 import json
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from io import BytesIO
 from typing import Any
 
@@ -238,7 +238,7 @@ class RiskReportGenerator:
         report_record = {
             "product_id": product.id,
             "report_type": "full",
-            "generated_at": datetime.now(timezone.utc),
+            "generated_at": datetime.now(UTC),
             "report_version": "1.0",
             "risk_score": risk_components.total_score,
             "risk_level": risk_components.risk_level,
@@ -257,11 +257,10 @@ class RiskReportGenerator:
         incidents: list[SafetyIncident],
         company_profile: CompanyComplianceProfile | None,
     ) -> dict:
-        """Prepare all data for report generation
-        """
+        """Prepare all data for report generation"""
         data = {
-            "report_id": f"RSK-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "report_id": f"RSK-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}",
+            "generated_at": datetime.now(UTC).isoformat(),
             "product": {
                 "name": product.product_name,
                 "brand": product.brand,
@@ -315,8 +314,7 @@ class RiskReportGenerator:
         return data
 
     def _generate_pdf_report(self, data: dict) -> BytesIO:
-        """Generate PDF report using ReportLab
-        """
+        """Generate PDF report using ReportLab"""
         buffer = BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=letter)
         story = []
@@ -475,8 +473,7 @@ class RiskReportGenerator:
         return self.RISK_REPORT_HTML_TEMPLATE.render(**context)
 
     def _generate_json_report(self, data: dict) -> str:
-        """Generate JSON report
-        """
+        """Generate JSON report"""
 
         # Ensure all data is JSON serializable
         def serialize(obj):
@@ -489,8 +486,7 @@ class RiskReportGenerator:
         return json.dumps(data, default=serialize, indent=2)
 
     def _summarize_incidents(self, incidents: list[SafetyIncident]) -> str:
-        """Create incident summary text
-        """
+        """Create incident summary text"""
         if not incidents:
             return "No incidents reported."
 
@@ -505,7 +501,7 @@ class RiskReportGenerator:
             summary += f"Injuries Reported: {injuries}\n"
 
         # Recent incidents
-        recent = [i for i in incidents if i.incident_date and (datetime.now(timezone.utc) - i.incident_date).days < 90]
+        recent = [i for i in incidents if i.incident_date and (datetime.now(UTC) - i.incident_date).days < 90]
         if recent:
             summary += f"Recent Incidents (last 90 days): {len(recent)}\n"
 
@@ -522,8 +518,7 @@ class RiskReportGenerator:
         return summary
 
     def _summarize_company(self, company: CompanyComplianceProfile) -> str:
-        """Create company summary text
-        """
+        """Create company summary text"""
         summary = f"Company: {company.company_name}\n"
         summary += f"Total Recalls: {company.total_recalls}\n"
         summary += f"Recent Recalls (12 months): {company.recent_recalls}\n"
@@ -539,8 +534,7 @@ class RiskReportGenerator:
         return summary
 
     def _generate_recommendations(self, risk_components: RiskScoreComponents) -> list[str]:
-        """Generate actionable recommendations based on risk analysis
-        """
+        """Generate actionable recommendations based on risk analysis"""
         recommendations = []
 
         # Always include verification recommendation
@@ -580,8 +574,7 @@ class RiskReportGenerator:
         return recommendations
 
     def _list_data_sources(self, product: ProductGoldenRecord) -> str:
-        """List all data sources used
-        """
+        """List all data sources used"""
         sources = []
 
         if product.data_sources:
@@ -598,8 +591,7 @@ class RiskReportGenerator:
         return "\n".join(sources)
 
     def _format_details(self, details: dict) -> str:
-        """Format details dictionary as readable text
-        """
+        """Format details dictionary as readable text"""
         if not details:
             return "No additional details available."
 
@@ -613,8 +605,7 @@ class RiskReportGenerator:
         return "\n".join(lines) if lines else "No significant details."
 
     def _get_risk_color(self, risk_level: str) -> colors.Color:
-        """Get color for risk level (ReportLab)
-        """
+        """Get color for risk level (ReportLab)"""
         level = risk_level.lower()
         if level == "critical":
             return colors.HexColor("#d32f2f")  # Dark red
@@ -626,8 +617,7 @@ class RiskReportGenerator:
             return colors.HexColor("#689f38")  # Green
 
     def _get_risk_color_hex(self, risk_level: str) -> str:
-        """Get hex color for risk level (HTML)
-        """
+        """Get hex color for risk level (HTML)"""
         level = risk_level.lower()
         if level == "critical":
             return "#d32f2f"
@@ -639,9 +629,8 @@ class RiskReportGenerator:
             return "#689f38"
 
     def _upload_to_azure_blob(self, content: Any, product_id: str, format: str) -> str:
-        """Upload report to Azure Blob Storage and return SAS URL
-        """
-        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+        """Upload report to Azure Blob Storage and return SAS URL"""
+        timestamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
         blob_name = f"risk-reports/{product_id}/{timestamp}.{format}"
 
         # Check if Azure Blob Storage is configured

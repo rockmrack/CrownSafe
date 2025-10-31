@@ -152,7 +152,7 @@ def _configure_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(ValueError)
     async def value_error_handler(request, exc):
         """Handle ValueError exceptions"""
-        logger.warning(f"ValueError: {str(exc)}")
+        logger.warning(f"ValueError: {exc!s}")
         return JSONResponse(
             status_code=400,
             content={"success": False, "error": str(exc), "type": "validation_error"},
@@ -161,7 +161,7 @@ def _configure_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(Exception)
     async def general_exception_handler(request, exc):
         """Handle unexpected exceptions"""
-        logger.error(f"Unhandled exception: {str(exc)}", exc_info=True)
+        logger.error(f"Unhandled exception: {exc!s}", exc_info=True)
 
         # Don't expose internal errors in production
         if os.getenv("ENVIRONMENT", "development") == "production":
@@ -207,7 +207,7 @@ def configure_startup_events(app: FastAPI) -> None:
             with engine.connect() as _:
                 logger.info("✅ Database connection established")
         except Exception as e:
-            logger.error(f"❌ Database connection failed: {e}")
+            logger.exception(f"❌ Database connection failed: {e}")
 
         # Warm up cache
         try:
@@ -232,7 +232,7 @@ def configure_startup_events(app: FastAPI) -> None:
             engine.dispose()
             logger.info("✅ Database connections closed")
         except Exception as e:
-            logger.error(f"Error closing database: {e}")
+            logger.exception(f"Error closing database: {e}")
 
         logger.info("✅ Application shutdown complete")
 

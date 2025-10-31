@@ -1,5 +1,4 @@
-"""Quick verification that Report Unsafe Product endpoints work
-"""
+"""Quick verification that Report Unsafe Product endpoints work"""
 
 import json
 

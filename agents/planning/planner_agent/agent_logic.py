@@ -8,7 +8,7 @@ import json
 import logging
 import traceback
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from pathlib import Path
 from typing import Any
 
@@ -53,7 +53,7 @@ try:
         # product_identifier_value: str
         steps: list[PlanStep]
         template_name: str
-        created_timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+        created_timestamp: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     PYDANTIC_AVAILABLE = True
 except ImportError:
@@ -124,11 +124,10 @@ class BabyShieldPlannerLogic:
                     self.plan_templates[template_name] = template_data
                     self.logger.info(f"  -> Loaded template: '{template_name}'")
             except Exception as e:
-                self.logger.error(f"Failed to load template {template_file}: {e}")
+                self.logger.exception(f"Failed to load template {template_file}: {e}")
 
     def _generate_plan_from_template(self, template_name: str, task_payload: dict[str, Any]) -> dict[str, Any]:
-        """Generates a structured plan by loading a JSON template and substituting placeholders.
-        """
+        """Generates a structured plan by loading a JSON template and substituting placeholders."""
         self.logger.info(f"Generating plan from template '{template_name}'...")
 
         if template_name not in self.plan_templates:
@@ -207,13 +206,12 @@ class BabyShieldPlannerLogic:
             self.logger.info(f"Successfully generated and validated plan '{validated_plan.plan_id}' from template.")
             return validated_plan.model_dump()
         except Exception as e:
-            self.logger.error(f"Pydantic validation failed for the generated plan: {e}")
+            self.logger.exception(f"Pydantic validation failed for the generated plan: {e}")
             self.logger.debug(f"Data that failed validation: {final_plan_data}")
             raise
 
     def process_task(self, task_data: dict[str, Any]) -> dict[str, Any]:
-        """Main entry point for the agent. It receives a task and returns a completed plan.
-        """
+        """Main entry point for the agent. It receives a task and returns a completed plan."""
         self.logger.info(f"Planner agent received task: {task_data}")
         try:
             # The name of your file, without the .json extension
@@ -226,18 +224,18 @@ class BabyShieldPlannerLogic:
                 "plan": generated_plan,
                 "message": f"Plan created successfully using template: '{plan_template_name}'.",
                 "agent_id": self.agent_id,
-                "processed_timestamp": datetime.now(timezone.utc).isoformat(),
+                "processed_timestamp": datetime.now(UTC).isoformat(),
                 "version": "3.1-BABYSHIELD",
             }
 
         except Exception as e:
-            self.logger.error(f"Planning process failed: {e}")
-            self.logger.error(f"Full traceback: {traceback.format_exc()}")
+            self.logger.exception(f"Planning process failed: {e}")
+            self.logger.exception(f"Full traceback: {traceback.format_exc()}")
             return {
                 "status": "FAILED",
                 "error": str(e),
                 "message": "Planning process failed.",
                 "agent_id": self.agent_id,
-                "processed_timestamp": datetime.now(timezone.utc).isoformat(),
+                "processed_timestamp": datetime.now(UTC).isoformat(),
                 "version": "3.1-BABYSHIELD",
             }

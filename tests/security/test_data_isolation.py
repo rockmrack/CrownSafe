@@ -8,7 +8,7 @@ Date: October 10, 2025
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from unittest.mock import patch
 
 import pytest
@@ -77,8 +77,8 @@ class TestMultiTenancyDataIsolation:
             id=str(uuid.uuid4()),
             user_id=user_a.user_id,
             scan_id="scan_test_001",
-            started_at=datetime.now(timezone.utc),
-            last_activity_at=datetime.now(timezone.utc),
+            started_at=datetime.now(UTC),
+            last_activity_at=datetime.now(UTC),
         )
         db_session.add(conversation)
         db_session.commit()
@@ -174,8 +174,8 @@ class TestMultiTenancyDataIsolation:
         - Conversations are user-specific
         """
         # Create conversations for both users
-        conv_a = Conversation(id=str(uuid.uuid4()), user_id=user_a.user_id, started_at=datetime.now(timezone.utc))
-        conv_b = Conversation(id=str(uuid.uuid4()), user_id=user_b.user_id, started_at=datetime.now(timezone.utc))
+        conv_a = Conversation(id=str(uuid.uuid4()), user_id=user_a.user_id, started_at=datetime.now(UTC))
+        conv_b = Conversation(id=str(uuid.uuid4()), user_id=user_b.user_id, started_at=datetime.now(UTC))
         db_session.add(conv_a)
         db_session.add(conv_b)
         db_session.commit()
@@ -205,8 +205,8 @@ class TestMultiTenancyDataIsolation:
                 id=str(uuid.uuid4()),
                 user_id=user_a.user_id,
                 scan_id=f"scan_{i}",
-                started_at=datetime.now(timezone.utc),
-                last_activity_at=datetime.now(timezone.utc),
+                started_at=datetime.now(UTC),
+                last_activity_at=datetime.now(UTC),
             )
             db_session.add(conv)
         db_session.commit()
@@ -237,7 +237,7 @@ class TestMultiTenancyDataIsolation:
                 conversation_id=user_a_conversation.id,
                 role="user",
                 content={"text": "Unauthorized message"},
-                created_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
             )
             db_session.add(message)
 

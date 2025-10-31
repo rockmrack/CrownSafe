@@ -2,7 +2,7 @@
 Ensures legally defensible language and transparent reporting
 """
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from enum import Enum
 from typing import Any
 
@@ -220,7 +220,7 @@ def create_scan_results(
     safety_check = SafetyCheckStatus(
         status="All checks complete",
         agencies_checked=agencies_checked,
-        check_timestamp=datetime.now(timezone.utc),
+        check_timestamp=datetime.now(UTC),
         database_version="v2025.01.08",
     )
 
@@ -250,7 +250,7 @@ def create_scan_results(
         safety_check=safety_check,
         recalls=recalls,
         total_recalls=len(recalls),
-        scan_id=f"scan_{int(datetime.now(timezone.utc).timestamp())}",
-        scan_timestamp=datetime.now(timezone.utc),
+        scan_id=f"scan_{int(datetime.now(UTC).timestamp())}",
+        scan_timestamp=datetime.now(UTC),
         scan_type=scan_data.get("scan_type", "barcode"),
     )

@@ -61,8 +61,7 @@ def setup_privacy_compliance(app: FastAPI) -> None:
 
 
 def configure_privacy_logging() -> None:
-    """Configure logging to mask PII in logs
-    """
+    """Configure logging to mask PII in logs"""
     import logging
 
     from api.utils.privacy import mask_pii

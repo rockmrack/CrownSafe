@@ -222,8 +222,8 @@ class BarcodeScanner:
                 results.append(ScanResult(success=False, error_message="No barcodes detected in image"))
 
         except Exception as e:
-            logger.error(f"Error scanning image: {e}")
-            results.append(ScanResult(success=False, error_message=f"Scan error: {str(e)}"))
+            logger.exception(f"Error scanning image: {e}")
+            results.append(ScanResult(success=False, error_message=f"Scan error: {e!s}"))
 
         return results
 
@@ -282,7 +282,7 @@ class BarcodeScanner:
                     logger.debug(f"OpenCV barcode detection not available: {e}")
 
         except Exception as e:
-            logger.error(f"OpenCV scanning error: {e}")
+            logger.exception(f"OpenCV scanning error: {e}")
 
         return results
 
@@ -305,7 +305,7 @@ class BarcodeScanner:
                 results.append(scan_result)
 
         except Exception as e:
-            logger.error(f"Pyzbar scanning error: {e}")
+            logger.exception(f"Pyzbar scanning error: {e}")
 
         return results
 
@@ -330,7 +330,7 @@ class BarcodeScanner:
                 results.append(scan_result)
 
         except Exception as e:
-            logger.error(f"DataMatrix scanning error: {e}")
+            logger.exception(f"DataMatrix scanning error: {e}")
 
         return results
 
@@ -394,7 +394,7 @@ class BarcodeScanner:
                         results.append(scan_result)
 
         except Exception as e:
-            logger.error(f"Preprocessing scan error: {e}")
+            logger.exception(f"Preprocessing scan error: {e}")
 
         return results
 

@@ -1,5 +1,4 @@
-"""Test Report Unsafe Product endpoint
-"""
+"""Test Report Unsafe Product endpoint"""
 
 import pytest
 

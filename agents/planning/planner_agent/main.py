@@ -180,7 +180,7 @@ class PlannerAgentManager:
                             "error": str(process_error),
                             "agent_id": AGENT_ID,
                             "correlation_id": correlation_id,
-                            "message": f"Exception in planner logic: {str(process_error)}",
+                            "message": f"Exception in planner logic: {process_error!s}",
                         },
                     }
                 else:
@@ -280,8 +280,8 @@ class PlannerAgentManager:
                     "correlation_id": correlation_id,
                     "agent_id": AGENT_ID,
                     "status": "FAILED",
-                    "error_message": f"PlannerAgent failed to process {message_type}: {str(error)}",
-                    "message": f"Internal error in {AGENT_NAME}: {str(error)}",
+                    "error_message": f"PlannerAgent failed to process {message_type}: {error!s}",
+                    "message": f"Internal error in {AGENT_NAME}: {error!s}",
                 }
 
                 await self.mcp_client.send_message(

@@ -162,7 +162,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.info("Enhanced collections initialized successfully")
 
         except Exception as e:
-            self.logger.error(f"Failed to initialize enhanced collections: {e}")
+            self.logger.exception(f"Failed to initialize enhanced collections: {e}")
             # Set collections to None if initialization fails
             self.temporal_collection = None
             self.contradictions_collection = None
@@ -170,8 +170,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.insights_collection = None
 
     async def store_workflow_outputs_enhanced(self, workflow_data: dict[str, Any]) -> dict[str, Any]:
-        """Enhanced workflow storage with temporal analysis and contradiction detection
-        """
+        """Enhanced workflow storage with temporal analysis and contradiction detection"""
         self.logger.info("Starting enhanced workflow storage with advanced analysis")
 
         # First, perform standard storage from MVP-1.4
@@ -233,7 +232,7 @@ class EnhancedMemoryManager(MemoryManager):
             return enhanced_results
 
         except Exception as e:
-            self.logger.error(f"Enhanced analysis failed: {e}")
+            self.logger.exception(f"Enhanced analysis failed: {e}")
             # Return standard results if enhanced analysis fails
             enhanced_results["error"] = str(e)
             return enhanced_results
@@ -298,7 +297,7 @@ class EnhancedMemoryManager(MemoryManager):
             return entities
 
         except Exception as e:
-            self.logger.error(f"Enhanced entity extraction failed: {e}")
+            self.logger.exception(f"Enhanced entity extraction failed: {e}")
             return entities
 
     async def _analyze_temporal_patterns(
@@ -345,7 +344,7 @@ class EnhancedMemoryManager(MemoryManager):
             return temporal_results
 
         except Exception as e:
-            self.logger.error(f"Temporal pattern analysis failed: {e}")
+            self.logger.exception(f"Temporal pattern analysis failed: {e}")
             return temporal_results
 
     async def _get_historical_documents(self, entity: str) -> list[dict[str, Any]]:
@@ -377,7 +376,7 @@ class EnhancedMemoryManager(MemoryManager):
             return documents
 
         except Exception as e:
-            self.logger.error(f"Failed to retrieve historical documents for {entity}: {e}")
+            self.logger.exception(f"Failed to retrieve historical documents for {entity}: {e}")
             return []
 
     def _extract_timestamp(self, metadata: dict[str, Any]) -> datetime | None:
@@ -407,7 +406,7 @@ class EnhancedMemoryManager(MemoryManager):
             return None
 
         except Exception as e:
-            self.logger.error(f"Failed to extract timestamp from metadata: {e}")
+            self.logger.exception(f"Failed to extract timestamp from metadata: {e}")
             return None
 
     async def _detect_temporal_pattern(
@@ -463,7 +462,7 @@ class EnhancedMemoryManager(MemoryManager):
             return pattern
 
         except Exception as e:
-            self.logger.error(f"Failed to detect temporal pattern for {entity}: {e}")
+            self.logger.exception(f"Failed to detect temporal pattern for {entity}: {e}")
             return None
 
     async def _generate_temporal_insights(self, entities: dict[str, list[str]]) -> list[str]:
@@ -493,7 +492,7 @@ class EnhancedMemoryManager(MemoryManager):
             return insights
 
         except Exception as e:
-            self.logger.error(f"Failed to generate temporal insights: {e}")
+            self.logger.exception(f"Failed to generate temporal insights: {e}")
             return insights
 
     async def _detect_contradictions(
@@ -534,7 +533,7 @@ class EnhancedMemoryManager(MemoryManager):
             return contradiction_results
 
         except Exception as e:
-            self.logger.error(f"Contradiction detection failed: {e}")
+            self.logger.exception(f"Contradiction detection failed: {e}")
             return contradiction_results
 
     async def _find_contradictory_evidence(self, entity: str) -> list[Contradiction]:
@@ -590,7 +589,7 @@ class EnhancedMemoryManager(MemoryManager):
             return contradictions
 
         except Exception as e:
-            self.logger.error(f"Failed to find contradictory evidence for {entity}: {e}")
+            self.logger.exception(f"Failed to find contradictory evidence for {entity}: {e}")
             return contradictions
 
     async def _analyze_statement_contradictions(
@@ -652,7 +651,7 @@ class EnhancedMemoryManager(MemoryManager):
             return contradictions
 
         except Exception as e:
-            self.logger.error(f"Failed to analyze statement contradictions for {entity}: {e}")
+            self.logger.exception(f"Failed to analyze statement contradictions for {entity}: {e}")
             return contradictions
 
     async def _suggest_contradiction_resolutions(self) -> list[str]:
@@ -692,7 +691,7 @@ class EnhancedMemoryManager(MemoryManager):
             return suggestions
 
         except Exception as e:
-            self.logger.error(f"Failed to suggest contradiction resolutions: {e}")
+            self.logger.exception(f"Failed to suggest contradiction resolutions: {e}")
             return suggestions
 
     async def _identify_research_gaps(
@@ -732,7 +731,7 @@ class EnhancedMemoryManager(MemoryManager):
             return gap_results
 
         except Exception as e:
-            self.logger.error(f"Research gap identification failed: {e}")
+            self.logger.exception(f"Research gap identification failed: {e}")
             return gap_results
 
     async def _analyze_research_gaps_for_entity(self, entity: str) -> list[ResearchGap]:
@@ -828,7 +827,7 @@ class EnhancedMemoryManager(MemoryManager):
             return gaps
 
         except Exception as e:
-            self.logger.error(f"Failed to analyze research gaps for {entity}: {e}")
+            self.logger.exception(f"Failed to analyze research gaps for {entity}: {e}")
             return gaps
 
     def _generate_gap_specific_suggestions(self, entity: str, gap_type: str) -> list[str]:
@@ -896,7 +895,7 @@ class EnhancedMemoryManager(MemoryManager):
             return priority_areas
 
         except Exception as e:
-            self.logger.error(f"Failed to prioritize research areas: {e}")
+            self.logger.exception(f"Failed to prioritize research areas: {e}")
             return priority_areas
 
     async def _generate_research_suggestions(self) -> list[str]:
@@ -933,7 +932,7 @@ class EnhancedMemoryManager(MemoryManager):
             return suggestions
 
         except Exception as e:
-            self.logger.error(f"Failed to generate research suggestions: {e}")
+            self.logger.exception(f"Failed to generate research suggestions: {e}")
             return suggestions
 
     async def _generate_cross_workflow_insights(
@@ -966,7 +965,7 @@ class EnhancedMemoryManager(MemoryManager):
             return insight_results
 
         except Exception as e:
-            self.logger.error(f"Cross-workflow insight generation failed: {e}")
+            self.logger.exception(f"Cross-workflow insight generation failed: {e}")
             return insight_results
 
     async def _analyze_drug_class_patterns(self, entities: dict[str, list[str]]) -> list[dict[str, Any]]:
@@ -1017,7 +1016,7 @@ class EnhancedMemoryManager(MemoryManager):
             return insights
 
         except Exception as e:
-            self.logger.error(f"Failed to analyze drug class patterns: {e}")
+            self.logger.exception(f"Failed to analyze drug class patterns: {e}")
             return insights
 
     async def _find_common_outcomes(self, drugs: list[str]) -> list[str]:
@@ -1055,7 +1054,7 @@ class EnhancedMemoryManager(MemoryManager):
             return common_outcomes
 
         except Exception as e:
-            self.logger.error(f"Failed to find common outcomes: {e}")
+            self.logger.exception(f"Failed to find common outcomes: {e}")
             return []
 
     async def _find_common_indications(self, drugs: list[str]) -> list[str]:
@@ -1091,7 +1090,7 @@ class EnhancedMemoryManager(MemoryManager):
             return common_indications
 
         except Exception as e:
-            self.logger.error(f"Failed to find common indications: {e}")
+            self.logger.exception(f"Failed to find common indications: {e}")
             return []
 
     async def _analyze_indication_patterns(self, entities: dict[str, list[str]]) -> list[dict[str, Any]]:
@@ -1129,7 +1128,7 @@ class EnhancedMemoryManager(MemoryManager):
             return insights
 
         except Exception as e:
-            self.logger.error(f"Failed to analyze indication patterns: {e}")
+            self.logger.exception(f"Failed to analyze indication patterns: {e}")
             return insights
 
     async def _generate_insight_recommendations(self) -> list[str]:
@@ -1157,7 +1156,7 @@ class EnhancedMemoryManager(MemoryManager):
             return unique_recommendations[:10]  # Top 10 recommendations
 
         except Exception as e:
-            self.logger.error(f"Failed to generate insight recommendations: {e}")
+            self.logger.exception(f"Failed to generate insight recommendations: {e}")
             return recommendations
 
     def get_enhanced_analytics(self) -> dict[str, Any]:
@@ -1222,7 +1221,7 @@ class EnhancedMemoryManager(MemoryManager):
             return enhanced_analytics
 
         except Exception as e:
-            self.logger.error(f"Failed to get enhanced analytics: {e}")
+            self.logger.exception(f"Failed to get enhanced analytics: {e}")
             return {"error": str(e)}
 
     async def get_enhanced_research_recommendations(self, entities: dict[str, Any]) -> dict[str, Any]:
@@ -1348,10 +1347,10 @@ class EnhancedMemoryManager(MemoryManager):
             return recommendations
 
         except Exception as e:
-            self.logger.error(f"Enhanced research recommendations failed: {e}")
+            self.logger.exception(f"Enhanced research recommendations failed: {e}")
             import traceback
 
-            self.logger.error(f"Traceback: {traceback.format_exc()}")
+            self.logger.exception(f"Traceback: {traceback.format_exc()}")
             return {
                 "error": str(e),
                 "research_strategy": "comprehensive",
@@ -1368,8 +1367,7 @@ class EnhancedMemoryManager(MemoryManager):
         primary_disease: str | None = None,
         drug_class: str | None = None,
     ) -> dict[str, Any]:
-        """Find existing evidence for an entity using multiple similarity search strategies
-        """
+        """Find existing evidence for an entity using multiple similarity search strategies"""
         self.logger.debug(f"=== FINDING EXISTING EVIDENCE FOR {primary_drug} ===")
 
         evidence_results = {
@@ -1520,7 +1518,7 @@ class EnhancedMemoryManager(MemoryManager):
             return evidence_results
 
         except Exception as e:
-            self.logger.error(f"Failed to find existing evidence for {primary_drug}: {e}")
+            self.logger.exception(f"Failed to find existing evidence for {primary_drug}: {e}")
             return evidence_results
 
     def _determine_research_strategy(
@@ -1529,8 +1527,7 @@ class EnhancedMemoryManager(MemoryManager):
         primary_drug: str,
         drug_class: str | None = None,
     ) -> dict[str, Any]:
-        """Determine the appropriate research strategy based on existing evidence analysis
-        """
+        """Determine the appropriate research strategy based on existing evidence analysis"""
         self.logger.debug(f"=== DETERMINING RESEARCH STRATEGY FOR {primary_drug} ===")
 
         total_docs = evidence_results.get("total_documents", 0)
@@ -1629,8 +1626,7 @@ class EnhancedMemoryManager(MemoryManager):
     async def _generate_strategy_specific_recommendations(
         self, strategy: str, primary_drug: str, evidence_results: dict[str, Any],
     ) -> dict[str, Any]:
-        """Generate specific recommendations based on the determined research strategy
-        """
+        """Generate specific recommendations based on the determined research strategy"""
         self.logger.debug(f"=== GENERATING {strategy.upper()} STRATEGY RECOMMENDATIONS FOR {primary_drug} ===")
 
         recommendations = {
@@ -1732,5 +1728,5 @@ class EnhancedMemoryManager(MemoryManager):
             return recommendations
 
         except Exception as e:
-            self.logger.error(f"Failed to generate strategy-specific recommendations: {e}")
+            self.logger.exception(f"Failed to generate strategy-specific recommendations: {e}")
             return recommendations

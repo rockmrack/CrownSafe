@@ -1,5 +1,4 @@
-"""Security package for API protection
-"""
+"""Security package for API protection"""
 
 from .cors import CORSConfig, add_strict_cors, get_allowed_origins
 from .headers import (

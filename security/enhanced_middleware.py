@@ -13,8 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class BulletproofSecurityMiddleware:
-    """Enterprise-grade security middleware with AI-powered threat detection
-    """
+    """Enterprise-grade security middleware with AI-powered threat detection"""
 
     def __init__(self):
         self.request_history: dict[str, deque] = defaultdict(lambda: deque(maxlen=100))
@@ -183,7 +182,7 @@ class BulletproofSecurityMiddleware:
             return response
 
         except Exception as e:
-            logger.error(f"Security middleware error: {e}")
+            logger.exception(f"Security middleware error: {e}")
             # Fail secure - block on error
             return self._create_block_response(request, "middleware_error")
 

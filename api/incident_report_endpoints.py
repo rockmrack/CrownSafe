@@ -5,7 +5,7 @@ Handles crowdsourced safety incident reporting
 import asyncio
 import logging
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import Any
 
 from fastapi import (
@@ -117,7 +117,7 @@ class IncidentAnalyzer:
             db.commit()
 
         except Exception as e:
-            logger.error(f"Error analyzing incident: {e}")
+            logger.exception(f"Error analyzing incident: {e}")
             db.rollback()
 
         return analysis_result
@@ -127,7 +127,7 @@ class IncidentAnalyzer:
         cls, incident: IncidentReport, db: Session, days_back: int = 30,
     ) -> list[IncidentReport]:
         """Find incidents similar to the given one"""
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
+        cutoff_date = datetime.now(UTC) - timedelta(days=days_back)
 
         # Search for similar product and incident type
         similar = (
@@ -209,14 +209,14 @@ class IncidentAnalyzer:
             .filter(
                 and_(
                     IncidentReport.cluster_id == cluster.id,
-                    IncidentReport.created_at >= datetime.now(timezone.utc) - timedelta(days=7),
+                    IncidentReport.created_at >= datetime.now(UTC) - timedelta(days=7),
                 ),
             )
             .count()
         )
 
         cluster.trending = recent_count >= cls.ALERT_THRESHOLDS["trending"]
-        cluster.updated_at = datetime.now(timezone.utc)
+        cluster.updated_at = datetime.now(UTC)
 
     @classmethod
     def _calculate_risk_level(cls, cluster: IncidentCluster) -> str:
@@ -269,7 +269,7 @@ class IncidentAnalyzer:
 
         # Mark cluster as alerted
         cluster.alert_triggered = True
-        cluster.alert_triggered_at = datetime.now(timezone.utc)
+        cluster.alert_triggered_at = datetime.now(UTC)
 
         # In production, this would notify safety team
         # For now, log the alert
@@ -308,7 +308,7 @@ class IncidentAnalyzer:
 
         # Mark cluster as notified
         cluster.cpsc_notified = True
-        cluster.cpsc_notified_at = datetime.now(timezone.utc)
+        cluster.cpsc_notified_at = datetime.now(UTC)
 
         # In production, this would call CPSC API
         # For now, log the notification
@@ -371,7 +371,7 @@ async def submit_incident_report(
     """
     try:
         # Generate report ID
-        report_id = f"INC_{datetime.now(timezone.utc).strftime('%Y%m%d')}_{uuid.uuid4().hex[:6].upper()}"
+        report_id = f"INC_{datetime.now(UTC).strftime('%Y%m%d')}_{uuid.uuid4().hex[:6].upper()}"
 
         # Upload photos to S3
         product_photo_urls = []
@@ -442,7 +442,7 @@ async def submit_incident_report(
         return ApiResponse(
             success=False,
             data={
-                "report_id": f"ERROR-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
+                "report_id": f"ERROR-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}",
                 "incident_id": None,
                 "status": "error",
                 "message": "Incident reporting service temporarily unavailable. Please try again later.",
@@ -475,7 +475,7 @@ async def submit_incident_json(
         #         product_found = True
 
         # Generate report ID
-        report_id = f"INC-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
+        report_id = f"INC-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
 
         # Create incident report (tolerant of missing products)
         incident = IncidentReport(
@@ -484,7 +484,7 @@ async def submit_incident_json(
             model_number=request.model_number,
             barcode=request.product_barcode,
             incident_type=IncidentType(request.incident_type),
-            incident_date=datetime.now(timezone.utc),
+            incident_date=datetime.now(UTC),
             severity_level=SeverityLevel(request.severity_level),
             incident_description=request.description,
             reporter_email=None,  # Not provided in JSON request
@@ -524,7 +524,7 @@ async def submit_incident_json(
         return ApiResponse(
             success=False,
             data={
-                "report_id": f"ERROR-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
+                "report_id": f"ERROR-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}",
                 "incident_id": None,
                 "status": "error",
                 "product_found": False,
@@ -541,8 +541,7 @@ async def submit_incident_json_alias(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """Alias for /submit-json endpoint using singular "incident" path
-    """
+    """Alias for /submit-json endpoint using singular "incident" path"""
     return await submit_incident_json(request, background_tasks, db)
 
 
@@ -585,7 +584,7 @@ async def get_incident_clusters(trending_only: bool = False, min_incidents: int 
 @incident_router.get("/stats", response_model=ApiResponse)
 async def get_incident_statistics(days: int = 30, db: Session = Depends(get_db)):
     """Get incident reporting statistics"""
-    cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
+    cutoff_date = datetime.now(UTC) - timedelta(days=days)
 
     # Total incidents
     total_incidents = db.query(IncidentReport).filter(IncidentReport.created_at >= cutoff_date).count()
@@ -629,11 +628,10 @@ async def get_incident_statistics(days: int = 30, db: Session = Depends(get_db))
 
 @incident_router.post("/submit-dev", response_model=ApiResponse)
 async def submit_incident_dev(request: IncidentSubmitRequest):
-    """DEV OVERRIDE: Submit incident report without database dependencies
-    """
+    """DEV OVERRIDE: Submit incident report without database dependencies"""
     try:
         # Generate report ID
-        report_id = f"INC-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
+        report_id = f"INC-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
 
         # Simulate product lookup
         product_found = False
@@ -655,19 +653,18 @@ async def submit_incident_dev(request: IncidentSubmitRequest):
                 "status": "submitted",
                 "product_found": product_found,
                 "description": safe_description,
-                "created_at": datetime.now(timezone.utc).isoformat(),
+                "created_at": datetime.now(UTC).isoformat(),
             },
         )
 
     except Exception as e:
-        logger.error(f"Error in dev incident submission: {e}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        logger.exception(f"Error in dev incident submission: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {e!s}")
 
 
 @incident_router.get("/clusters-dev", response_model=ApiResponse)
 async def get_incident_clusters_dev(trending_only: bool = False, min_incidents: int = 3):
-    """DEV OVERRIDE: Get incident clusters without database dependencies
-    """
+    """DEV OVERRIDE: Get incident clusters without database dependencies"""
     try:
         # Mock cluster data
         mock_clusters = [
@@ -682,8 +679,8 @@ async def get_incident_clusters_dev(trending_only: bool = False, min_incidents: 
                 "trending": True,
                 "alert_triggered": False,
                 "cpsc_notified": False,
-                "first_incident": (datetime.now(timezone.utc) - timedelta(days=7)).isoformat(),
-                "last_incident": datetime.now(timezone.utc).isoformat(),
+                "first_incident": (datetime.now(UTC) - timedelta(days=7)).isoformat(),
+                "last_incident": datetime.now(UTC).isoformat(),
             },
             {
                 "cluster_id": "CLUSTER-002",
@@ -696,8 +693,8 @@ async def get_incident_clusters_dev(trending_only: bool = False, min_incidents: 
                 "trending": False,
                 "alert_triggered": False,
                 "cpsc_notified": False,
-                "first_incident": (datetime.now(timezone.utc) - timedelta(days=3)).isoformat(),
-                "last_incident": (datetime.now(timezone.utc) - timedelta(days=1)).isoformat(),
+                "first_incident": (datetime.now(UTC) - timedelta(days=3)).isoformat(),
+                "last_incident": (datetime.now(UTC) - timedelta(days=1)).isoformat(),
             },
         ]
 
@@ -711,14 +708,13 @@ async def get_incident_clusters_dev(trending_only: bool = False, min_incidents: 
         return ApiResponse(success=True, data={"clusters": filtered_clusters})
 
     except Exception as e:
-        logger.error(f"Error in dev clusters: {e}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        logger.exception(f"Error in dev clusters: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {e!s}")
 
 
 @incident_router.get("/stats-dev", response_model=ApiResponse)
 async def get_incident_statistics_dev(days: int = 30):
-    """DEV OVERRIDE: Get incident statistics without database dependencies
-    """
+    """DEV OVERRIDE: Get incident statistics without database dependencies"""
     try:
         # Mock statistics data
         mock_stats = {
@@ -738,8 +734,8 @@ async def get_incident_statistics_dev(days: int = 30):
         return ApiResponse(success=True, data=mock_stats)
 
     except Exception as e:
-        logger.error(f"Error in dev stats: {e}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        logger.exception(f"Error in dev stats: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {e!s}")
 
 
 # Serve the HTML page
@@ -750,5 +746,5 @@ async def serve_report_page(request: Request):
         # Return the static HTML file
         return FileResponse("static/report_incident.html")
     except Exception as e:
-        logger.error(f"Error serving report page: {e}")
+        logger.exception(f"Error serving report page: {e}")
         raise HTTPException(status_code=500, detail="Could not load report page")

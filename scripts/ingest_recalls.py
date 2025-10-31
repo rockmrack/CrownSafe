@@ -66,7 +66,7 @@ class RecallDataIngester:
             logger.info("✅ Database migration completed successfully")
             return True
         except Exception as e:
-            logger.error(f"❌ Migration failed: {e}")
+            logger.exception(f"❌ Migration failed: {e}")
             return False
 
     def check_table_exists(self) -> bool:
@@ -85,7 +85,7 @@ class RecallDataIngester:
                 )
                 return result.scalar()
         except Exception as e:
-            logger.error(f"Error checking table existence: {e}")
+            logger.exception(f"Error checking table existence: {e}")
             return False
 
     def get_table_count(self) -> int:
@@ -119,7 +119,7 @@ class RecallDataIngester:
             return recalls
 
         except Exception as e:
-            logger.error(f"❌ Error fetching data from {agency_name}: {e}")
+            logger.exception(f"❌ Error fetching data from {agency_name}: {e}")
             return []
 
     def convert_recall_to_db_record(self, recall_data) -> dict:
@@ -184,7 +184,7 @@ class RecallDataIngester:
             return record
 
         except Exception as e:
-            logger.error(f"Error converting recall to database record: {e}")
+            logger.exception(f"Error converting recall to database record: {e}")
             return None
 
     def insert_recalls_batch(self, recalls: list[dict], agency_name: str) -> int:
@@ -212,7 +212,7 @@ class RecallDataIngester:
                     )
 
         except Exception as e:
-            logger.error(f"Batch insert failed for {agency_name}: {e}")
+            logger.exception(f"Batch insert failed for {agency_name}: {e}")
 
         return processed_count
 
@@ -232,7 +232,7 @@ class RecallDataIngester:
             return count
 
         except Exception as e:
-            logger.error(f"❌ Failed to ingest data for {agency_name}: {e}")
+            logger.exception(f"❌ Failed to ingest data for {agency_name}: {e}")
             return 0
 
     async def run_full_ingestion(self, agencies: list[str], since_date: date | None = None):
@@ -286,7 +286,7 @@ async def main():
         try:
             since_date = datetime.strptime(args.since, "%Y-%m-%d").date()
         except ValueError:
-            logger.error("Invalid date format. Use YYYY-MM-DD")
+            logger.exception("Invalid date format. Use YYYY-MM-DD")
             return 1
     elif not args.full_refresh:
         # Default to last 12 months for incremental sync
@@ -314,7 +314,7 @@ async def main():
         logger.info("Ingestion interrupted by user")
         return 1
     except Exception as e:
-        logger.error(f"Ingestion failed: {e}")
+        logger.exception(f"Ingestion failed: {e}")
         return 1
 
 

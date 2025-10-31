@@ -76,7 +76,7 @@ def test_api_endpoint_with_model_number(
             }
 
     except requests.exceptions.RequestException as e:
-        logger.error(f"Request failed: {e}")
+        logger.exception(f"Request failed: {e}")
         return {"success": False, "error": str(e)}
 
 
@@ -133,7 +133,7 @@ async def test_direct_database_search(model_number: str) -> dict[str, Any]:
                 }
 
     except Exception as e:
-        logger.error(f"Database search failed: {e}")
+        logger.exception(f"Database search failed: {e}")
         return {"success": False, "error": str(e)}
 
 
@@ -168,7 +168,7 @@ async def test_recall_data_agent_directly(model_number: str) -> dict[str, Any]:
         return {"success": result.get("status") == "COMPLETED", "agent_result": result}
 
     except Exception as e:
-        logger.error(f"Agent test failed: {e}")
+        logger.exception(f"Agent test failed: {e}")
         return {"success": False, "error": str(e)}
 
 

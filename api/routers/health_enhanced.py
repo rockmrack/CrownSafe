@@ -6,7 +6,7 @@ including database, cache, and external service dependencies.
 
 import logging
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -28,7 +28,7 @@ async def basic_health_check():
         Simple OK status for load balancers and monitoring
 
     """
-    return {"status": "ok", "timestamp": datetime.now(timezone.utc).isoformat()}
+    return {"status": "ok", "timestamp": datetime.now(UTC).isoformat()}
 
 
 @router.get("/health/detailed")
@@ -79,7 +79,7 @@ async def detailed_health_check(db: Session = Depends(get_db)) -> dict[str, Any]
             overall_status = "degraded"
 
     except Exception as e:
-        logger.error(f"Database health check failed: {e}")
+        logger.exception(f"Database health check failed: {e}")
         checks["database"] = {
             "status": "unhealthy",
             "error": str(e),
@@ -98,7 +98,7 @@ async def detailed_health_check(db: Session = Depends(get_db)) -> dict[str, Any]
     except ImportError:
         checks["memory_cache"] = {"status": "not_available"}
     except Exception as e:
-        logger.error(f"Cache health check failed: {e}")
+        logger.exception(f"Cache health check failed: {e}")
         checks["memory_cache"] = {
             "status": "error",
             "error": str(e),
@@ -152,7 +152,7 @@ async def detailed_health_check(db: Session = Depends(get_db)) -> dict[str, Any]
 
     response = {
         "status": overall_status,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "response_time_ms": round(response_time_ms, 2),
         "version": os.getenv("GIT_COMMIT", "unknown"),
         "environment": os.getenv("ENVIRONMENT", "unknown"),
@@ -177,7 +177,7 @@ async def readiness_check(db: Session = Depends(get_db)):
         db.execute(text("SELECT 1"))
         return {"status": "ready"}
     except Exception as e:
-        logger.error(f"Readiness check failed: {e}")
+        logger.exception(f"Readiness check failed: {e}")
         raise HTTPException(
             status_code=503,
             detail={"status": "not_ready", "error": str(e)},
@@ -191,4 +191,4 @@ async def liveness_check():
     Returns 200 if the service is alive (process is running).
     This should never fail unless the process is completely dead.
     """
-    return {"status": "alive", "timestamp": datetime.now(timezone.utc).isoformat()}
+    return {"status": "alive", "timestamp": datetime.now(UTC).isoformat()}

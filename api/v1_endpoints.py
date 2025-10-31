@@ -677,7 +677,7 @@ async def search_fda_v1(
         results = await search_agency_recalls("FDA", product, limit, cursor)
         return JSONResponse(content={"ok": True, "data": results, "traceId": trace_id})
     except ValueError as e:
-        logger.error(f"[{trace_id}] FDA validation error: {e}")
+        logger.exception(f"[{trace_id}] FDA validation error: {e}")
         return JSONResponse(
             status_code=400,
             content={
@@ -694,7 +694,7 @@ async def search_fda_v1(
                 "ok": False,
                 "error": {
                     "code": "INTERNAL_ERROR",
-                    "message": f"Failed to search FDA recalls: {str(e)}",
+                    "message": f"Failed to search FDA recalls: {e!s}",
                 },
                 "traceId": trace_id,
             },
@@ -716,7 +716,7 @@ async def search_cpsc_v1(
         results = await search_agency_recalls("CPSC", product, limit, cursor)
         return JSONResponse(content={"ok": True, "data": results, "traceId": trace_id})
     except ValueError as e:
-        logger.error(f"[{trace_id}] CPSC validation error: {e}")
+        logger.exception(f"[{trace_id}] CPSC validation error: {e}")
         return JSONResponse(
             status_code=400,
             content={
@@ -733,7 +733,7 @@ async def search_cpsc_v1(
                 "ok": False,
                 "error": {
                     "code": "INTERNAL_ERROR",
-                    "message": f"Failed to search CPSC recalls: {str(e)}",
+                    "message": f"Failed to search CPSC recalls: {e!s}",
                 },
                 "traceId": trace_id,
             },
@@ -755,7 +755,7 @@ async def search_eu_safety_gate_v1(
         results = await search_agency_recalls("EU_SAFETY_GATE", product, limit, cursor)
         return JSONResponse(content={"ok": True, "data": results, "traceId": trace_id})
     except ValueError as e:
-        logger.error(f"[{trace_id}] EU Safety Gate validation error: {e}")
+        logger.exception(f"[{trace_id}] EU Safety Gate validation error: {e}")
         return JSONResponse(
             status_code=400,
             content={
@@ -772,7 +772,7 @@ async def search_eu_safety_gate_v1(
                 "ok": False,
                 "error": {
                     "code": "INTERNAL_ERROR",
-                    "message": f"Failed to search EU Safety Gate recalls: {str(e)}",
+                    "message": f"Failed to search EU Safety Gate recalls: {e!s}",
                 },
                 "traceId": trace_id,
             },
@@ -794,7 +794,7 @@ async def search_uk_opss_v1(
         results = await search_agency_recalls("UK_OPSS", product, limit, cursor)
         return JSONResponse(content={"ok": True, "data": results, "traceId": trace_id})
     except ValueError as e:
-        logger.error(f"[{trace_id}] UK OPSS validation error: {e}")
+        logger.exception(f"[{trace_id}] UK OPSS validation error: {e}")
         return JSONResponse(
             status_code=400,
             content={
@@ -811,7 +811,7 @@ async def search_uk_opss_v1(
                 "ok": False,
                 "error": {
                     "code": "INTERNAL_ERROR",
-                    "message": f"Failed to search UK OPSS recalls: {str(e)}",
+                    "message": f"Failed to search UK OPSS recalls: {e!s}",
                 },
                 "traceId": trace_id,
             },

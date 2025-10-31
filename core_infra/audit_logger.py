@@ -6,7 +6,7 @@ import json
 import logging
 import traceback
 from contextvars import ContextVar
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from functools import wraps
 from typing import Any
 
@@ -28,8 +28,7 @@ def get_base():
 
 
 class AuditLog(get_base()):
-    """Audit log table for tracking all changes
-    """
+    """Audit log table for tracking all changes"""
 
     __tablename__ = "audit_logs"
 
@@ -55,8 +54,7 @@ class AuditLog(get_base()):
 
 
 class AuditLogger:
-    """Main audit logging service
-    """
+    """Main audit logging service"""
 
     def __init__(self, db_session: Session = None) -> None:
         self.db_session = db_session
@@ -72,8 +70,7 @@ class AuditLogger:
         metadata: dict = None,
         error: str = None,
     ) -> None:
-        """Create an audit log entry
-        """
+        """Create an audit log entry"""
         try:
             # Get context
             user_id = current_user_context.get()
@@ -114,11 +111,10 @@ class AuditLogger:
             )
 
         except Exception as e:
-            self.logger.error(f"Failed to create audit log: {e}")
+            self.logger.exception(f"Failed to create audit log: {e}")
 
     def _calculate_diff(self, old: dict, new: dict) -> dict:
-        """Calculate differences between old and new values
-        """
+        """Calculate differences between old and new values"""
         changes = {}
 
         # Find changed fields
@@ -192,8 +188,7 @@ class AuditLogger:
         )
 
     def _serialize_entity(self, entity: Any) -> dict:
-        """Serialize entity to dictionary
-        """
+        """Serialize entity to dictionary"""
         if hasattr(entity, "to_dict"):
             return entity.to_dict()
         elif hasattr(entity, "__dict__"):
@@ -214,8 +209,7 @@ class AuditLogger:
 
 # SQLAlchemy event listeners for automatic audit logging
 def setup_audit_listeners(Base, db_session) -> None:
-    """Setup automatic audit logging for SQLAlchemy models
-    """
+    """Setup automatic audit logging for SQLAlchemy models"""
     audit_logger = AuditLogger(db_session)
 
     @event.listens_for(Base, "after_insert", propagate=True)
@@ -246,8 +240,7 @@ def setup_audit_listeners(Base, db_session) -> None:
 
 # Decorators for audit logging
 def audit_action(action: str, entity_type: str = None):
-    """Decorator to audit function calls
-    """
+    """Decorator to audit function calls"""
 
     def decorator(func):
         @wraps(func)
@@ -295,8 +288,7 @@ def audit_action(action: str, entity_type: str = None):
 
 
 def audit_api_endpoint(func):
-    """Decorator for auditing API endpoints
-    """
+    """Decorator for auditing API endpoints"""
 
     @wraps(func)
     async def wrapper(*args, **kwargs):
@@ -343,8 +335,7 @@ def audit_api_endpoint(func):
 
 # Query audit logs
 class AuditQuery:
-    """Query audit logs
-    """
+    """Query audit logs"""
 
     def __init__(self, db_session: Session) -> None:
         self.db = db_session
@@ -372,7 +363,7 @@ class AuditQuery:
         """Get recent changes"""
         from datetime import timedelta
 
-        cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
+        cutoff = datetime.now(UTC) - timedelta(hours=hours)
 
         return self.db.query(AuditLog).filter(AuditLog.timestamp >= cutoff).order_by(AuditLog.timestamp.desc()).all()
 
@@ -403,8 +394,7 @@ class AuditQuery:
 
 # Middleware to set audit context
 async def audit_middleware(request, call_next):
-    """Middleware to set audit context for requests
-    """
+    """Middleware to set audit context for requests"""
     import uuid
 
     # Generate request ID

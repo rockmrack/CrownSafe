@@ -1,5 +1,4 @@
-"""Dev override service for entitlement bypass during QA/testing
-"""
+"""Dev override service for entitlement bypass during QA/testing"""
 
 import os
 

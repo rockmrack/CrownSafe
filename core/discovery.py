@@ -5,7 +5,7 @@ import asyncio
 import copy
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 print(f"Loading discovery.py (Step 77 Version - Fixed): {__file__}")
@@ -135,7 +135,7 @@ async def handle_discovery_message(message: dict[str, Any], sender_id: str):
         )
         error_payload = {
             "error_code": "E999",
-            "error_message": f"Internal error processing message: {str(e)}",
+            "error_message": f"Internal error processing message: {e!s}",
         }
         response_message = create_mcp_error_response(sender_id, correlation_id, "MCP_DISCOVERY", error_payload)
 
@@ -218,7 +218,7 @@ async def handle_registration(
         return create_mcp_error_response(sender_id, correlation_id, "MCP_DISCOVERY", error_payload)
 
     registration_info = copy.deepcopy(payload)
-    registration_info["_last_seen"] = datetime.now(timezone.utc).isoformat()
+    registration_info["_last_seen"] = datetime.now(UTC).isoformat()
 
     async with registry_lock:
         agent_registry[agent_id_from_payload] = registration_info
@@ -384,6 +384,6 @@ async def handle_query(payload: dict[str, Any], sender_id: str, correlation_id: 
         )
         error_payload = {
             "error_code": "E999",
-            "error_message": f"Internal server error during query processing: {str(e)}",
+            "error_message": f"Internal server error during query processing: {e!s}",
         }
         return create_mcp_error_response(sender_id, correlation_id, "MCP_DISCOVERY", error_payload)

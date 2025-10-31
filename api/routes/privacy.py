@@ -35,8 +35,7 @@ dsar_limiter = RateLimiter(times=5, seconds=3600)
 
 
 class DSARRequest(BaseModel):
-    """Data Subject Access Request model
-    """
+    """Data Subject Access Request model"""
 
     email: EmailStr = Field(..., description="User email for export/delete")
     jurisdiction: str | None = Field(
@@ -61,8 +60,7 @@ class DSARRequest(BaseModel):
 
 
 class DSARResponse(BaseModel):
-    """Standard DSAR response model
-    """
+    """Standard DSAR response model"""
 
     ok: bool = True
     message: str
@@ -174,7 +172,7 @@ async def request_data_export(
         return create_response(response_data, request)
 
     except Exception as e:
-        logger.error(f"Failed to create export request: {e}")
+        logger.exception(f"Failed to create export request: {e}")
         raise APIError(
             status_code=500,
             code="EXPORT_REQUEST_FAILED",
@@ -265,7 +263,7 @@ async def request_data_deletion(
         return create_response(response_data, request)
 
     except Exception as e:
-        logger.error(f"Failed to create deletion request: {e}")
+        logger.exception(f"Failed to create deletion request: {e}")
         raise APIError(
             status_code=500,
             code="DELETION_REQUEST_FAILED",
@@ -323,7 +321,7 @@ async def privacy_summary(request: Request):
         return create_response(summary, request)
 
     except Exception as e:
-        logger.error(f"Failed to get privacy summary: {e}")
+        logger.exception(f"Failed to get privacy summary: {e}")
         raise APIError(
             status_code=500,
             code="PRIVACY_SUMMARY_FAILED",
@@ -381,7 +379,7 @@ async def verify_privacy_request(token: str, request: Request, db: Session = Dep
     except APIError:
         raise
     except Exception as e:
-        logger.error(f"Failed to verify privacy request: {e}")
+        logger.exception(f"Failed to verify privacy request: {e}")
         raise APIError(
             status_code=500,
             code="VERIFICATION_FAILED",
@@ -437,7 +435,7 @@ async def check_request_status(request_id: str, request: Request, db: Session = 
     except APIError:
         raise
     except Exception as e:
-        logger.error(f"Failed to check request status: {e}")
+        logger.exception(f"Failed to check request status: {e}")
         raise APIError(
             status_code=500,
             code="STATUS_CHECK_FAILED",
@@ -450,8 +448,7 @@ async def check_request_status(request_id: str, request: Request, db: Session = 
 
 @router.post("/data/rectify", dependencies=[Depends(dsar_limiter)])
 async def request_data_rectification(request: Request, body: DSARRequest, db: Session = Depends(get_db)):
-    """Request rectification of inaccurate data (GDPR Article 16)
-    """
+    """Request rectification of inaccurate data (GDPR Article 16)"""
     # Similar implementation to export/delete
     # Would create a "rectify" type request
     return create_response(format_dsar_response("rectify", "queued", body.jurisdiction or "other"), request)
@@ -459,8 +456,7 @@ async def request_data_rectification(request: Request, body: DSARRequest, db: Se
 
 @router.post("/data/restrict", dependencies=[Depends(dsar_limiter)])
 async def request_processing_restriction(request: Request, body: DSARRequest, db: Session = Depends(get_db)):
-    """Request restriction of processing (GDPR Article 18)
-    """
+    """Request restriction of processing (GDPR Article 18)"""
     return create_response(
         format_dsar_response("restrict", "queued", body.jurisdiction or "other"),
         request,
@@ -469,8 +465,7 @@ async def request_processing_restriction(request: Request, body: DSARRequest, db
 
 @router.post("/data/object", dependencies=[Depends(dsar_limiter)])
 async def object_to_processing(request: Request, body: DSARRequest, db: Session = Depends(get_db)):
-    """Object to data processing (GDPR Article 21)
-    """
+    """Object to data processing (GDPR Article 21)"""
     return create_response(format_dsar_response("object", "queued", body.jurisdiction or "other"), request)
 
 

@@ -1,9 +1,8 @@
-"""SQLAlchemy model for privacy request (DSAR) tracking
-"""
+"""SQLAlchemy model for privacy request (DSAR) tracking"""
 
 import hashlib
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import Any
 
 from sqlalchemy import CheckConstraint, Column, DateTime, String, Text
@@ -139,7 +138,7 @@ class PrivacyRequest(Base):
 
         if self.submitted_at:
             deadline = self.submitted_at + timedelta(days=self.sla_days)
-            return datetime.now(timezone.utc) > deadline
+            return datetime.now(UTC) > deadline
 
         return False
 
@@ -147,7 +146,7 @@ class PrivacyRequest(Base):
     def days_elapsed(self) -> int | None:
         """Calculate days elapsed since submission"""
         if self.submitted_at:
-            elapsed = datetime.now(timezone.utc) - self.submitted_at
+            elapsed = datetime.now(UTC) - self.submitted_at
             return elapsed.days
         return None
 
@@ -188,7 +187,7 @@ class PrivacyRequest(Base):
     def set_verified(self):
         """Mark request as verified"""
         self.status = "processing"
-        self.verified_at = datetime.now(timezone.utc)
+        self.verified_at = datetime.now(UTC)
         self.verification_token = None  # Clear token after use
 
     def set_completed(self, export_url: str | None = None, expiry_days: int = 7):
@@ -200,11 +199,11 @@ class PrivacyRequest(Base):
 
         """
         self.status = "done"
-        self.completed_at = datetime.now(timezone.utc)
+        self.completed_at = datetime.now(UTC)
 
         if export_url:
             self.export_url = export_url
-            self.expires_at = datetime.now(timezone.utc) + timedelta(days=expiry_days)
+            self.expires_at = datetime.now(UTC) + timedelta(days=expiry_days)
 
     def set_rejected(self, reason: str):
         """Mark request as rejected
@@ -214,7 +213,7 @@ class PrivacyRequest(Base):
 
         """
         self.status = "rejected"
-        self.completed_at = datetime.now(timezone.utc)
+        self.completed_at = datetime.now(UTC)
         self.rejection_reason = reason
 
     def set_expired(self):

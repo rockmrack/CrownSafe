@@ -12,7 +12,7 @@ Features:
 import hashlib
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 import redis
 
@@ -55,7 +55,7 @@ class AzureStorageCacheManager:
                 self.redis_client = None
                 logger.warning("Redis URL not provided, SAS URL caching disabled")
         except Exception as e:
-            logger.error(f"Failed to connect to Redis: {e}. Caching disabled.")
+            logger.exception(f"Failed to connect to Redis: {e}. Caching disabled.")
             self.cache_enabled = False
             self.redis_client = None
 
@@ -111,7 +111,7 @@ class AzureStorageCacheManager:
                 cached_at = datetime.fromisoformat(data.get("cached_at"))
 
                 # Verify cache hasn't expired (double-check)
-                age_hours = (datetime.now(timezone.utc) - cached_at).total_seconds() / 3600
+                age_hours = (datetime.now(UTC) - cached_at).total_seconds() / 3600
                 if age_hours < self.default_ttl_hours:
                     self.cache_hits += 1
                     logger.debug(f"Cache HIT for {blob_name} (age: {age_hours:.1f}h)")
@@ -126,7 +126,7 @@ class AzureStorageCacheManager:
             return None
 
         except Exception as e:
-            logger.error(f"Cache retrieval error for {blob_name}: {e}")
+            logger.exception(f"Cache retrieval error for {blob_name}: {e}")
             self.cache_misses += 1
             return None
 
@@ -163,7 +163,7 @@ class AzureStorageCacheManager:
                 "blob_name": blob_name,
                 "container_name": container_name,
                 "permissions": permissions,
-                "cached_at": datetime.now(timezone.utc).isoformat(),
+                "cached_at": datetime.now(UTC).isoformat(),
             }
 
             # Set with TTL in seconds
@@ -174,7 +174,7 @@ class AzureStorageCacheManager:
             return True
 
         except Exception as e:
-            logger.error(f"Cache storage error for {blob_name}: {e}")
+            logger.exception(f"Cache storage error for {blob_name}: {e}")
             return False
 
     def invalidate_cache(
@@ -222,7 +222,7 @@ class AzureStorageCacheManager:
                 return deleted_count > 0
 
         except Exception as e:
-            logger.error(f"Cache invalidation error for {blob_name}: {e}")
+            logger.exception(f"Cache invalidation error for {blob_name}: {e}")
             return False
 
     def clear_all_cache(self) -> int:
@@ -246,7 +246,7 @@ class AzureStorageCacheManager:
             return 0
 
         except Exception as e:
-            logger.error(f"Failed to clear cache: {e}")
+            logger.exception(f"Failed to clear cache: {e}")
             return 0
 
     def get_cache_stats(self) -> dict:

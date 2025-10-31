@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Validate OpenAPI specification file locally
-"""
+"""Validate OpenAPI specification file locally"""
 
 import json
 import os

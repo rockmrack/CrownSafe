@@ -7,7 +7,7 @@ import json
 import logging
 import os
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from email.message import EmailMessage
 from enum import Enum
 
@@ -309,7 +309,7 @@ This is an automated notification from BabyShield Support System
         return True
 
     except Exception as e:
-        logger.error(f"Failed to send email notification: {e}")
+        logger.exception(f"Failed to send email notification: {e}")
         return False
 
 
@@ -368,7 +368,7 @@ For urgent issues, call 1-800-BABY-SAFE.
         return True
 
     except Exception as e:
-        logger.error(f"Failed to send auto-reply: {e}")
+        logger.exception(f"Failed to send auto-reply: {e}")
         return False
 
 
@@ -393,7 +393,7 @@ def track_feedback_metrics(feedback: FeedbackRequest, priority: Priority) -> Non
         logger.info(f"Feedback metrics: {json.dumps(metrics)}")
 
     except Exception as e:
-        logger.error(f"Failed to track metrics: {e}")
+        logger.exception(f"Failed to track metrics: {e}")
 
 
 # =====================================================
@@ -442,7 +442,7 @@ async def submit_feedback(feedback: FeedbackRequest, background_tasks: Backgroun
             "priority": priority,
             "status": "open",
             "feedback": feedback.dict(),
-            "created_at": datetime.now(timezone.utc),
+            "created_at": datetime.now(UTC),
             "ip_address": client_ip,
         }
 
@@ -462,7 +462,7 @@ async def submit_feedback(feedback: FeedbackRequest, background_tasks: Backgroun
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"Failed to submit feedback: {e}")
+        logger.exception(f"Failed to submit feedback: {e}")
         raise HTTPException(status_code=500, detail="Failed to submit feedback. Please try again.")
 
 
@@ -481,8 +481,8 @@ async def get_ticket_status(ticket_number: int):
         ticket_number=ticket_number,
         status="in_progress",
         priority=Priority.P2_MEDIUM,
-        created_at=datetime.now(timezone.utc),
-        last_updated=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
+        last_updated=datetime.now(UTC),
         assigned_to="Support Agent",
         resolution=None,
         customer_satisfied=None,

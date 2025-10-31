@@ -125,7 +125,7 @@ def init_database():
         return True
 
     except Exception as e:
-        logger.error(f"✗ Database initialization failed: {e}")
+        logger.exception(f"✗ Database initialization failed: {e}")
         import traceback
 
         traceback.print_exc()

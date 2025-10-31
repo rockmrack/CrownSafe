@@ -208,7 +208,7 @@ class NHTSAConnector:
                                 )
 
                     except Exception as e:
-                        logger.error(f"Error fetching NHTSA recalls for year {year}: {e}")
+                        logger.exception(f"Error fetching NHTSA recalls for year {year}: {e}")
 
             logger.info(f"Successfully fetched {len(recalls)} NHTSA recalls")
 

@@ -35,8 +35,7 @@ class SmartCacheWarmer:
         }
 
     async def analyze_popular_products(self) -> dict[str, list[str]]:
-        """Analyze 3,218+ recalls to identify most popular products and brands for cache warming
-        """
+        """Analyze 3,218+ recalls to identify most popular products and brands for cache warming"""
         start_time = time.time()
 
         try:
@@ -63,12 +62,11 @@ class SmartCacheWarmer:
             #         pass
 
         except Exception as e:
-            self.logger.error(f"Popular product analysis failed: {e}")
+            self.logger.exception(f"Popular product analysis failed: {e}")
             return {"products": [], "brands": []}
 
     async def warm_cache_for_products(self, products: list[str]) -> int:
-        """Pre-warm cache for popular products with optimized batch operations
-        """
+        """Pre-warm cache for popular products with optimized batch operations"""
         start_time = time.time()
         successful_warming = 0
 
@@ -122,12 +120,11 @@ class SmartCacheWarmer:
             return successful_warming
 
         except Exception as e:
-            self.logger.error(f"Cache warming failed: {e}")
+            self.logger.exception(f"Cache warming failed: {e}")
             return 0
 
     async def warm_cache_for_autocomplete(self, products: list[str], brands: list[str]) -> int:
-        """Pre-warm autocomplete cache for instant typing responses
-        """
+        """Pre-warm autocomplete cache for instant typing responses"""
         try:
             # Pre-generate common autocomplete queries
             common_queries = []
@@ -168,12 +165,11 @@ class SmartCacheWarmer:
             #         successful_warming += 1
 
         except Exception as e:
-            self.logger.error(f"Autocomplete cache warming failed: {e}")
+            self.logger.exception(f"Autocomplete cache warming failed: {e}")
             return 0
 
     async def start_intelligent_cache_warming(self) -> dict[str, Any]:
-        """Start intelligent cache warming process for maximum performance
-        """
+        """Start intelligent cache warming process for maximum performance"""
         if self.warming_active:
             self.logger.info("Cache warming already in progress...")
             return {"status": "already_running"}
@@ -221,7 +217,7 @@ class SmartCacheWarmer:
             return result
 
         except Exception as e:
-            self.logger.error(f"Intelligent cache warming failed: {e}")
+            self.logger.exception(f"Intelligent cache warming failed: {e}")
             return {"status": "failed", "error": str(e)}
 
         finally:
@@ -229,8 +225,7 @@ class SmartCacheWarmer:
                 self.warming_active = False
 
     def should_refresh_cache(self) -> bool:
-        """Determine if cache should be refreshed based on time and usage patterns
-        """
+        """Determine if cache should be refreshed based on time and usage patterns"""
         if not self.last_warming:
             return True
 
@@ -238,8 +233,7 @@ class SmartCacheWarmer:
         return elapsed > self.config["warming_interval"]
 
     async def background_cache_refresh(self) -> None:
-        """Background task for continuous cache optimization
-        """
+        """Background task for continuous cache optimization"""
         while True:
             try:
                 if self.should_refresh_cache():
@@ -250,7 +244,7 @@ class SmartCacheWarmer:
                 await asyncio.sleep(300)  # Check every 5 minutes
 
             except Exception as e:
-                self.logger.error(f"Background cache refresh failed: {e}")
+                self.logger.exception(f"Background cache refresh failed: {e}")
                 await asyncio.sleep(600)  # Wait longer on error
 
 

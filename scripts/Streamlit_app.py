@@ -937,7 +937,7 @@ Reference our previous discussions and maintain continuity.""",
             return full_response
 
         except Exception as e:
-            return f"Claude error: {str(e)}"
+            return f"Claude error: {e!s}"
 
     async def execute_gemini(self, prompt: str, attachments: list[dict] = None) -> str:
         """Execute Gemini"""
@@ -995,7 +995,7 @@ Context about our project:
             return full_response
 
         except Exception as e:
-            return f"Gemini error: {str(e)}"
+            return f"Gemini error: {e!s}"
 
     async def execute_gpt(self, prompt: str, attachments: list[dict] = None) -> str:
         """Execute GPT"""
@@ -1083,7 +1083,7 @@ Project context:
             return full_response
 
         except Exception as e:
-            return f"GPT error: {str(e)}"
+            return f"GPT error: {e!s}"
 
 
 # Helper functions
@@ -1168,7 +1168,7 @@ def process_uploaded_file(uploaded_file) -> dict[str, Any]:
 
     except Exception as e:
         file_details["error"] = str(e)
-        file_details["content"] = f"Error processing file: {str(e)}"
+        file_details["content"] = f"Error processing file: {e!s}"
 
     return file_details
 

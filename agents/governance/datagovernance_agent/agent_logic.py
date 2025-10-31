@@ -12,8 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class DataGovernanceAgentLogic:
-    """Handles data privacy tasks, such as user data deletion, to comply with regulations.
-    """
+    """Handles data privacy tasks, such as user data deletion, to comply with regulations."""
 
     def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None) -> None:
         self.agent_id = agent_id
@@ -43,8 +42,7 @@ class DataGovernanceAgentLogic:
             return False
 
     async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
-        """Main entry point for the agent.
-        """
+        """Main entry point for the agent."""
         self.logger.info(f"Received data governance task with inputs: {inputs}")
         action = inputs.get("action")
         payload = inputs.get("payload", {})

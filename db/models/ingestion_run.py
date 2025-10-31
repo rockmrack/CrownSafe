@@ -1,7 +1,6 @@
-"""SQLAlchemy model for ingestion run tracking
-"""
+"""SQLAlchemy model for ingestion run tracking"""
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 from sqlalchemy import CheckConstraint, Column, DateTime, Integer, String, Text
@@ -12,8 +11,7 @@ from core_infra.database import Base  # Use existing Base from project
 
 
 class IngestionRun(Base):
-    """Model for tracking data ingestion runs
-    """
+    """Model for tracking data ingestion runs"""
 
     __tablename__ = "ingestion_runs"
 
@@ -93,7 +91,7 @@ class IngestionRun(Base):
             return (self.finished_at - self.started_at).total_seconds()
         elif self.started_at:
             # Still running
-            return (datetime.now(timezone.utc).replace(tzinfo=self.started_at.tzinfo) - self.started_at).total_seconds()
+            return (datetime.now(UTC).replace(tzinfo=self.started_at.tzinfo) - self.started_at).total_seconds()
         return None
 
     @property
@@ -119,7 +117,7 @@ class IngestionRun(Base):
     def set_running(self, trace_id: str | None = None):
         """Mark ingestion as running"""
         self.status = "running"
-        self.started_at = datetime.now(timezone.utc).replace(tzinfo=timezone.utc)
+        self.started_at = datetime.now(UTC).replace(tzinfo=UTC)
         if trace_id:
             self.trace_id = trace_id
 
@@ -132,7 +130,7 @@ class IngestionRun(Base):
     ):
         """Mark ingestion as successful"""
         self.status = "success" if items_failed == 0 else "partial"
-        self.finished_at = datetime.now(timezone.utc).replace(tzinfo=timezone.utc)
+        self.finished_at = datetime.now(UTC).replace(tzinfo=UTC)
         self.items_inserted = items_inserted
         self.items_updated = items_updated
         self.items_skipped = items_skipped
@@ -141,13 +139,13 @@ class IngestionRun(Base):
     def set_failed(self, error: str):
         """Mark ingestion as failed"""
         self.status = "failed"
-        self.finished_at = datetime.now(timezone.utc).replace(tzinfo=timezone.utc)
+        self.finished_at = datetime.now(UTC).replace(tzinfo=UTC)
         self.error_text = error[:5000] if error else None  # Truncate to 5000 chars
 
     def set_cancelled(self):
         """Mark ingestion as cancelled"""
         self.status = "cancelled"
-        self.finished_at = datetime.now(timezone.utc).replace(tzinfo=timezone.utc)
+        self.finished_at = datetime.now(UTC).replace(tzinfo=UTC)
         self.error_text = "Ingestion cancelled by user"
 
 

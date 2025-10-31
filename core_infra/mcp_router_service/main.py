@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -202,7 +202,7 @@ async def read_root():
         "status": "Operational",
         "active_websocket_connections": active_conn_count,
         "registered_agents_in_discovery": reg_agent_count,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
 

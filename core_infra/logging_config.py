@@ -6,7 +6,7 @@ import json
 import logging
 import logging.config
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 
 class StructuredFormatter(logging.Formatter):
@@ -14,7 +14,7 @@ class StructuredFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         log_obj = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "level": record.levelname,
             "logger": record.name,
             "message": record.getMessage(),
@@ -201,7 +201,7 @@ class RequestLogger:
         request_id = str(uuid.uuid4())[:8]
 
         # Log request
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
         path = scope["path"]
         method = scope["method"]
 
@@ -214,7 +214,7 @@ class RequestLogger:
         async def send_wrapper(message) -> None:
             if message["type"] == "http.response.start":
                 # Log response
-                duration_ms = int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000)
+                duration_ms = int((datetime.now(UTC) - start_time).total_seconds() * 1000)
                 status_code = message["status"]
 
                 log_level = logging.INFO

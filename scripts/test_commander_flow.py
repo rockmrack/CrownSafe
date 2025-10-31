@@ -206,7 +206,7 @@ async def run_test():
         logger.info("=" * 60 + "\n")
 
     except MCPConnectionError as e:
-        logger.error(f"MCP Connection Error: {e}")
+        logger.exception(f"MCP Connection Error: {e}")
     except Exception as e:
         logger.error(f"Test script failed with an unexpected error: {e}", exc_info=True)
     finally:

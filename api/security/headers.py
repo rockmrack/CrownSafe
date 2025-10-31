@@ -12,8 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """Middleware to add security headers to all responses
-    """
+    """Middleware to add security headers to all responses"""
 
     def __init__(
         self,
@@ -104,8 +103,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         logger.info("Security headers middleware configured")
 
     async def dispatch(self, request: Request, call_next):
-        """Add security headers to response
-        """
+        """Add security headers to response"""
         response = await call_next(request)
 
         # Apply security headers

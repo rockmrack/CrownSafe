@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 import redis
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -40,7 +40,7 @@ def _rate_limit_delete(user_id: int, limit=3, window_sec=86400) -> None:
         if v > limit:
             raise HTTPException(status_code=429, detail="Too many deletion attempts. Limit: 3 per day.")
     except Exception as e:
-        logger.error(f"Rate limiting error: {e}")
+        logger.exception(f"Rate limiting error: {e}")
         # Continue without rate limiting if Redis is unavailable
 
 
@@ -80,7 +80,7 @@ def _blocklist_access_token(raw_token: str) -> None:
         else:
             logger.warning("Token missing JTI or EXP claims - cannot blocklist")
     except Exception as e:
-        logger.error(f"Failed to blocklist token: {e}")
+        logger.exception(f"Failed to blocklist token: {e}")
         # Never fail deletion because of blocklist issues
 
 
@@ -100,7 +100,7 @@ def revoke_tokens_for_user(db: Session, user_id: int) -> None:
         # In this case, tokens should be blacklisted in Redis/cache
         logger.warning(f"Token revocation not fully implemented - consider adding token blacklist for user {user_id}")
     except Exception as e:
-        logger.error(f"Failed to revoke tokens for user {user_id}: {e}")
+        logger.exception(f"Failed to revoke tokens for user {user_id}: {e}")
         db.rollback()
 
 
@@ -114,7 +114,7 @@ def invalidate_push_tokens(db: Session, user_id: int) -> None:
         db.commit()
         logger.info(f"Invalidated {deleted_count} push tokens for user {user_id}")
     except Exception as e:
-        logger.error(f"Failed to invalidate push tokens for user {user_id}: {e}")
+        logger.exception(f"Failed to invalidate push tokens for user {user_id}: {e}")
         db.rollback()
 
 
@@ -139,7 +139,7 @@ def unlink_devices_and_sessions(db: Session, user_id: int) -> None:
         # TODO: Clear Redis session cache if implemented
         # redis_client.delete(f"session:user:{user_id}:*")
     except Exception as e:
-        logger.error(f"Failed to unlink devices/sessions for user {user_id}: {e}")
+        logger.exception(f"Failed to unlink devices/sessions for user {user_id}: {e}")
         db.rollback()
 
 
@@ -183,7 +183,7 @@ def delete_account(
             )
         jti = payload.get("jti")
     except Exception as e:
-        logger.error(f"Failed to validate auth time: {e}")
+        logger.exception(f"Failed to validate auth time: {e}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Re-authentication required",
@@ -224,7 +224,7 @@ def delete_account(
                     detail="Failed to delete user data",
                 )
         except Exception as e:
-            logger.error(f"Failed to delete user data for {user_id}: {e}")
+            logger.exception(f"Failed to delete user data for {user_id}: {e}")
             _audit(db, user_id, jti, "failed", meta={"error": str(e)[:200]})
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -237,7 +237,7 @@ def delete_account(
             if hasattr(current_user, "is_active"):
                 current_user.is_active = False
             if hasattr(current_user, "deleted_at"):
-                current_user.deleted_at = datetime.now(timezone.utc)
+                current_user.deleted_at = datetime.now(UTC)
             if hasattr(current_user, "email") and current_user.email:
                 current_user.email = f"deleted+{user_id}@example.invalid"
             if hasattr(current_user, "full_name"):
@@ -247,7 +247,7 @@ def delete_account(
             db.commit()
             logger.info(f"Soft-deleted user {user_id}")
         except Exception as e:
-            logger.error(f"Failed to soft-delete user {user_id}: {e}")
+            logger.exception(f"Failed to soft-delete user {user_id}: {e}")
             _audit(db, user_id, jti, "failed", meta={"error": str(e)[:200]})
             db.rollback()
             raise HTTPException(
@@ -291,7 +291,7 @@ def delete_account(
         db.commit()
         logger.info(f"Account deletion completed for user {user_id}")
     except Exception as e:
-        logger.error(f"Failed to commit changes: {e}")
+        logger.exception(f"Failed to commit changes: {e}")
 
     # Blocklist the current access token
     _blocklist_access_token(token)

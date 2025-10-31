@@ -124,7 +124,7 @@ async def list_all_users(
         raise
     except Exception as e:
         logger.error(f"Error listing users: {e}", exc_info=True)
-        return fail(f"Failed to list users: {str(e)}", status=500)
+        return fail(f"Failed to list users: {e!s}", status=500)
 
 
 @router.get("/users/{user_id}", response_model=ApiResponse)
@@ -187,7 +187,7 @@ async def get_user_details(
         raise
     except Exception as e:
         logger.error(f"Error fetching user details: {e}", exc_info=True)
-        return fail(f"Failed to fetch user details: {str(e)}", status=500)
+        return fail(f"Failed to fetch user details: {e!s}", status=500)
 
 
 @router.post("/database/enable-pg-trgm", response_model=ApiResponse)
@@ -310,4 +310,4 @@ async def enable_pg_trgm_extension(
     except Exception as e:
         logger.error(f"Error enabling pg_trgm: {e}", exc_info=True)
         db.rollback()
-        return fail(f"Failed to enable pg_trgm: {str(e)}", status=500)
+        return fail(f"Failed to enable pg_trgm: {e!s}", status=500)

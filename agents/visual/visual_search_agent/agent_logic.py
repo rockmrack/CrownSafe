@@ -178,8 +178,8 @@ class VisualSearchAgentLogic:
                 suggestions = json.loads(cleaned_json)
                 return {"status": "COMPLETED", "result": {"suggestions": suggestions}}
             except json.JSONDecodeError as json_error:
-                self.logger.error(f"Failed to parse OpenAI suggestions JSON: {json_error}")
-                self.logger.error(f"Raw suggestions content: {suggestions_json}")
+                self.logger.exception(f"Failed to parse OpenAI suggestions JSON: {json_error}")
+                self.logger.exception(f"Raw suggestions content: {suggestions_json}")
 
                 return {
                     "status": "FAILED",
@@ -346,8 +346,8 @@ class VisualSearchAgentLogic:
 
                 return {"status": "COMPLETED", "result": best_guess}
             except json.JSONDecodeError as json_error:
-                self.logger.error(f"Failed to parse OpenAI JSON response: {json_error}")
-                self.logger.error(f"Raw response content: {result_json}")
+                self.logger.exception(f"Failed to parse OpenAI JSON response: {json_error}")
+                self.logger.exception(f"Raw response content: {result_json}")
 
                 # Try to extract useful information even if JSON parsing fails
                 return {

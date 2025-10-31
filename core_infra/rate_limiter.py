@@ -153,7 +153,7 @@ async def get_rate_limit_status(request: Request) -> dict:
             },
         }
     except Exception as e:
-        return {"error": f"Could not get rate limit status: {str(e)}"}
+        return {"error": f"Could not get rate limit status: {e!s}"}
 
 
 # Middleware to add user to request state

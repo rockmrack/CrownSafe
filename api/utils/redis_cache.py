@@ -14,8 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class RedisSearchCache:
-    """Redis-based cache for search results
-    """
+    """Redis-based cache for search results"""
 
     def __init__(self, redis_client: Redis | None = None) -> None:
         """Initialize cache with Redis client
@@ -169,8 +168,7 @@ class RedisSearchCache:
             return False
 
     async def invalidate_all(self) -> None:
-        """Invalidate all cached search results by incrementing epoch
-        """
+        """Invalidate all cached search results by incrementing epoch"""
         if not self.enabled or not self.redis:
             return
 
@@ -270,8 +268,7 @@ _cache: RedisSearchCache | None = None
 
 
 async def get_cache() -> RedisSearchCache:
-    """Get global cache instance
-    """
+    """Get global cache instance"""
     global _cache
     if _cache is None:
         _cache = RedisSearchCache()
@@ -280,8 +277,7 @@ async def get_cache() -> RedisSearchCache:
 
 
 async def close_cache() -> None:
-    """Close global cache instance
-    """
+    """Close global cache instance"""
     global _cache
     if _cache:
         await _cache.close()

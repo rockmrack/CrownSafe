@@ -28,7 +28,7 @@ async def main():
             mock_html = f.read()
         logger.info("Successfully loaded mock HTML fixture.")
     except FileNotFoundError:
-        logger.error(f"Mock HTML file not found at: {fixture_path}")
+        logger.exception(f"Mock HTML file not found at: {fixture_path}")
         return
 
     try:

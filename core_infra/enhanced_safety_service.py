@@ -86,7 +86,7 @@ class EnhancedSafetyService:
             # For now, returning mock data structure
             return {"status": "no_recalls", "count": 0, "recalls": []}
         except Exception as e:
-            logger.error(f"Error getting recall data: {e}")
+            logger.exception(f"Error getting recall data: {e}")
             return {"status": "error", "count": 0, "recalls": []}
 
     async def _get_food_data(self, product_identifier: str, product_name: str | None) -> FoodDataResponse | None:
@@ -122,7 +122,7 @@ class EnhancedSafetyService:
                 source=food_data.source,
             )
         except Exception as e:
-            logger.error(f"Error getting food data: {e}")
+            logger.exception(f"Error getting food data: {e}")
             return None
 
     async def _get_cosmetic_data(
@@ -156,7 +156,7 @@ class EnhancedSafetyService:
                     )
                     ingredients.append(ingredient)
                 except Exception as e:
-                    logger.error(f"Error creating ingredient '{ingredient_name}': {e}")
+                    logger.exception(f"Error creating ingredient '{ingredient_name}': {e}")
                     continue
 
             logger.info(f"Created {len(ingredients)} ingredients")
@@ -211,7 +211,7 @@ class EnhancedSafetyService:
                 source=chemical_data.source,
             )
         except Exception as e:
-            logger.error(f"Error getting chemical data: {e}")
+            logger.exception(f"Error getting chemical data: {e}")
             return None
 
     def _calculate_overall_safety_score(self, report: EnhancedSafetyReport) -> float:

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 from sqlalchemy import BigInteger, Boolean, Column, DateTime, String, Text
 from sqlalchemy.dialects.postgresql import UUID
@@ -12,7 +12,7 @@ class ExplainFeedback(Base):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     created_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
         nullable=False,
     )
     user_id = Column(UUID(as_uuid=True), nullable=True)

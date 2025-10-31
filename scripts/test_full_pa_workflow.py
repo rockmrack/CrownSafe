@@ -74,7 +74,7 @@ def check_endpoint(method: str, endpoint: str, data: dict | None = None, expecte
     except requests.exceptions.Timeout:
         return False, None, "Request timed out"
     except Exception as e:
-        return False, None, f"Error: {str(e)}"
+        return False, None, f"Error: {e!s}"
 
 
 def check_redis_for_workflow(workflow_id: str) -> dict[str, Any]:
@@ -196,7 +196,7 @@ def diagnose_api():
             logger.info(f"   Response Body: {json.dumps(response_data, indent=6)}")
         except (json.JSONDecodeError, ValueError):
             # Response is not JSON
-            logger.error(f"   Response Text: {response.text}")
+            logger.exception(f"   Response Text: {response.text}")
 
         if response.status_code == 202:
             logger.info("   ✅ Workflow submission successful!")
@@ -263,7 +263,7 @@ def diagnose_api():
             logger.error(f"   ❌ Unexpected status code: {response.status_code}")
 
     except Exception as e:
-        logger.error(f"   ❌ Error during workflow submission: {str(e)}")
+        logger.exception(f"   ❌ Error during workflow submission: {e!s}")
 
     # 6. Check system dependencies
     logger.info("\n6️⃣ Checking system dependencies...")
@@ -282,8 +282,8 @@ def diagnose_api():
 
     except (redis.ConnectionError, redis.TimeoutError):
         # Redis connection failed
-        logger.error("   ❌ Redis is not accessible")
-        logger.error("   Start Redis with: redis-server")
+        logger.exception("   ❌ Redis is not accessible")
+        logger.exception("   Start Redis with: redis-server")
 
     # Summary
     logger.info("\n" + "=" * 70)
@@ -372,10 +372,10 @@ def test_minimal_workflow():
                 logger.error(f"Response: {response.json()}")
             except (json.JSONDecodeError, ValueError):
                 # Response is not JSON
-                logger.error(f"Response text: {response.text}")
+                logger.exception(f"Response text: {response.text}")
 
     except Exception as e:
-        logger.error(f"❌ Error: {str(e)}")
+        logger.exception(f"❌ Error: {e!s}")
 
 
 def check_workflow_id_fix():
@@ -414,7 +414,7 @@ def check_workflow_id_fix():
                     logger.info(f"   workflow_id field: {stored_id}")
 
             except Exception as e:
-                logger.error(f"Error checking {key}: {e}")
+                logger.exception(f"Error checking {key}: {e}")
 
         if missing_id_count > 0:
             logger.error(f"\n❌ Found {missing_id_count} workflows with missing/invalid workflow_id field")
@@ -427,7 +427,7 @@ def check_workflow_id_fix():
             logger.info("\n✅ All checked workflows have proper workflow_id fields")
 
     except Exception as e:
-        logger.error(f"Error checking workflows: {e}")
+        logger.exception(f"Error checking workflows: {e}")
 
 
 if __name__ == "__main__":

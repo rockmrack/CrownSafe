@@ -36,8 +36,7 @@ class NonRetryableError(Exception):
 
 
 class RetryConfig:
-    """Configuration for retry behavior
-    """
+    """Configuration for retry behavior"""
 
     def __init__(
         self,
@@ -112,8 +111,7 @@ class RetryConfig:
 
 
 class RetryHandler:
-    """Handles retry logic with various strategies
-    """
+    """Handles retry logic with various strategies"""
 
     def __init__(self, config: RetryConfig = None) -> None:
         self.config = config or RetryConfig()
@@ -121,8 +119,7 @@ class RetryHandler:
         self.last_exception = None
 
     def retry(self, func: Callable) -> Callable:
-        """Decorator for sync functions with retry
-        """
+        """Decorator for sync functions with retry"""
 
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -131,8 +128,7 @@ class RetryHandler:
         return wrapper
 
     def async_retry(self, func: Callable) -> Callable:
-        """Decorator for async functions with retry
-        """
+        """Decorator for async functions with retry"""
 
         @wraps(func)
         async def wrapper(*args, **kwargs):
@@ -161,7 +157,7 @@ class RetryHandler:
 
                 # Check if should retry
                 if not self.config.should_retry(e):
-                    logger.error(f"{func.__name__} failed with non-retryable error: {e}")
+                    logger.exception(f"{func.__name__} failed with non-retryable error: {e}")
                     raise
 
                 if attempt == self.config.max_attempts:
@@ -169,7 +165,7 @@ class RetryHandler:
                     if self.config.on_failure:
                         self.config.on_failure(e, attempt)
 
-                    logger.error(f"{func.__name__} failed after {attempt} attempts: {e}")
+                    logger.exception(f"{func.__name__} failed after {attempt} attempts: {e}")
                     raise
 
                 # Calculate delay
@@ -208,7 +204,7 @@ class RetryHandler:
 
                 # Check if should retry
                 if not self.config.should_retry(e):
-                    logger.error(f"{func.__name__} failed with non-retryable error: {e}")
+                    logger.exception(f"{func.__name__} failed with non-retryable error: {e}")
                     raise
 
                 if attempt == self.config.max_attempts:
@@ -219,7 +215,7 @@ class RetryHandler:
                         else:
                             self.config.on_failure(e, attempt)
 
-                    logger.error(f"{func.__name__} failed after {attempt} attempts: {e}")
+                    logger.exception(f"{func.__name__} failed after {attempt} attempts: {e}")
                     raise
 
                 # Calculate delay
@@ -272,8 +268,7 @@ def retry(
 
 # Advanced retry patterns
 class CircuitBreakerRetry:
-    """Combines circuit breaker with retry logic
-    """
+    """Combines circuit breaker with retry logic"""
 
     def __init__(
         self,
@@ -331,8 +326,7 @@ class CircuitBreakerRetry:
 
 
 class BulkRetry:
-    """Retry logic for bulk operations
-    """
+    """Retry logic for bulk operations"""
 
     def __init__(self, config: RetryConfig = None) -> None:
         self.config = config or RetryConfig()
@@ -340,8 +334,7 @@ class BulkRetry:
     async def process_batch_with_retry(
         self, items: list[Any], process_func: Callable, batch_size: int = 100,
     ) -> dict[str, list]:
-        """Process items in batches with retry
-        """
+        """Process items in batches with retry"""
         results = {"success": [], "failed": [], "retried": []}
 
         for i in range(0, len(items), batch_size):
@@ -363,15 +356,14 @@ class BulkRetry:
 
                 except Exception as e:
                     results["failed"].append((item, str(e)))
-                    logger.error(f"Failed to process item after retries: {e}")
+                    logger.exception(f"Failed to process item after retries: {e}")
 
         return results
 
 
 # Retry with fallback
 class FallbackRetry:
-    """Retry with fallback options
-    """
+    """Retry with fallback options"""
 
     def __init__(self, primary_func: Callable, fallback_funcs: list[Callable]) -> None:
         self.primary_func = primary_func

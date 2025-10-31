@@ -1,8 +1,7 @@
-"""Scan History Endpoints - Shows users their past scans
-"""
+"""Scan History Endpoints - Shows users their past scans"""
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import and_, desc
@@ -71,7 +70,7 @@ async def get_scan_history(
 
         # Apply filters
         if days:
-            since_date = datetime.now(timezone.utc) - timedelta(days=days)
+            since_date = datetime.now(UTC) - timedelta(days=days)
             query = query.filter(ImageJob.created_at >= since_date)
 
         if status:
@@ -140,7 +139,7 @@ async def get_scan_history(
 
     except Exception as e:
         logger.error(f"Error fetching scan history: {e}", exc_info=True)
-        return fail(f"Failed to fetch scan history: {str(e)}", status=500)
+        return fail(f"Failed to fetch scan history: {e!s}", status=500)
 
 
 @router.get("/scan-history/{job_id}", response_model=ApiResponse)
@@ -210,7 +209,7 @@ async def get_scan_details(
 
     except Exception as e:
         logger.error(f"Error fetching scan details: {e}", exc_info=True)
-        return fail(f"Failed to fetch scan details: {str(e)}", status=500)
+        return fail(f"Failed to fetch scan details: {e!s}", status=500)
 
 
 @router.delete("/scan-history/{job_id}", response_model=ApiResponse)
@@ -239,7 +238,7 @@ async def delete_scan(
 
     except Exception as e:
         logger.error(f"Error deleting scan: {e}", exc_info=True)
-        return fail(f"Failed to delete scan: {str(e)}", status=500)
+        return fail(f"Failed to delete scan: {e!s}", status=500)
 
 
 @router.get("/scan-statistics", response_model=ApiResponse)
@@ -263,7 +262,7 @@ async def get_scan_statistics(current_user=Depends(get_current_active_user), db:
         failed_scans = len([j for j in jobs if j.status == JobStatus.FAILED])
 
         # Get scans by time period
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         today_scans = len([j for j in jobs if j.created_at.date() == now.date()])
         week_scans = len([j for j in jobs if (now - j.created_at).days <= 7])
         month_scans = len([j for j in jobs if (now - j.created_at).days <= 30])
@@ -310,7 +309,7 @@ async def get_scan_statistics(current_user=Depends(get_current_active_user), db:
 
     except Exception as e:
         logger.error(f"Error fetching scan statistics: {e}", exc_info=True)
-        return fail(f"Failed to fetch statistics: {str(e)}", status=500)
+        return fail(f"Failed to fetch statistics: {e!s}", status=500)
 
 
 # ============================================================================
@@ -362,7 +361,7 @@ async def get_user_profile(current_user=Depends(get_current_active_user), db: Se
             "is_premium": getattr(current_user, "is_premium", False),
             "created_at": current_user.created_at.isoformat() + "Z"
             if hasattr(current_user, "created_at")
-            else datetime.now(timezone.utc).isoformat() + "Z",
+            else datetime.now(UTC).isoformat() + "Z",
             "last_login": current_user.last_login.isoformat() + "Z"
             if hasattr(current_user, "last_login") and current_user.last_login
             else None,
@@ -374,7 +373,7 @@ async def get_user_profile(current_user=Depends(get_current_active_user), db: Se
 
     except Exception as e:
         logger.error(f"Error fetching user profile: {e}", exc_info=True)
-        return fail(f"Failed to fetch profile: {str(e)}", status=500)
+        return fail(f"Failed to fetch profile: {e!s}", status=500)
 
 
 @router.put("/profile", response_model=ApiResponse)
@@ -408,7 +407,7 @@ async def update_user_profile(
 
         # Update last_modified timestamp if exists
         if hasattr(current_user, "updated_at"):
-            current_user.updated_at = datetime.now(timezone.utc)
+            current_user.updated_at = datetime.now(UTC)
 
         db.commit()
         db.refresh(current_user)
@@ -423,7 +422,7 @@ async def update_user_profile(
             "is_premium": getattr(current_user, "is_premium", False),
             "created_at": current_user.created_at.isoformat() + "Z"
             if hasattr(current_user, "created_at")
-            else datetime.now(timezone.utc).isoformat() + "Z",
+            else datetime.now(UTC).isoformat() + "Z",
             "notification_preferences": getattr(current_user, "notification_preferences", {}),
         }
 
@@ -432,7 +431,7 @@ async def update_user_profile(
     except Exception as e:
         db.rollback()
         logger.error(f"Error updating user profile: {e}", exc_info=True)
-        return fail(f"Failed to update profile: {str(e)}", status=500)
+        return fail(f"Failed to update profile: {e!s}", status=500)
 
 
 @router.get("/{user_id}/profile", response_model=ApiResponse)
@@ -485,4 +484,4 @@ async def get_other_user_profile(
         raise
     except Exception as e:
         logger.error(f"Error fetching user profile: {e}", exc_info=True)
-        return fail(f"Failed to fetch profile: {str(e)}", status=500)
+        return fail(f"Failed to fetch profile: {e!s}", status=500)

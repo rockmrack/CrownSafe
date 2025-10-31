@@ -18,8 +18,7 @@ except ImportError:
 
 
 class OpenAILLMClient:
-    """OpenAI client that implements the LLMClient protocol for chat functionality.
-    """
+    """OpenAI client that implements the LLMClient protocol for chat functionality."""
 
     def __init__(self, api_key: str | None = None):
         """Initialize the OpenAI client with optimized HTTP settings.
@@ -58,7 +57,7 @@ class OpenAILLMClient:
                     f"OpenAI client initialized successfully with {OPENAI_TIMEOUT}s timeout, IPv4-only, fast-fail mode",
                 )
             except Exception as e:
-                logging.error(f"Failed to initialize OpenAI client: {e}")
+                logging.exception(f"Failed to initialize OpenAI client: {e}")
                 self.client = None
         else:
             logging.warning("OpenAI client not initialized - missing API key or library")
@@ -121,13 +120,13 @@ class OpenAILLMClient:
                 try:
                     return json.loads(content)
                 except json.JSONDecodeError as e:
-                    logging.error(f"Failed to parse JSON response: {e}")
+                    logging.exception(f"Failed to parse JSON response: {e}")
                     return self._get_fallback_response()
             else:
                 return {"content": content}
 
         except Exception as e:
-            logging.error(f"OpenAI API call failed: {e}")
+            logging.exception(f"OpenAI API call failed: {e}")
             return self._get_fallback_response()
 
     def _get_fallback_response(self) -> dict[str, Any]:

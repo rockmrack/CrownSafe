@@ -34,7 +34,7 @@ if ENABLE_RECEIPT_VALIDATION:
         GOOGLE_API_AVAILABLE = True
         logger.info("Receipt validation enabled - Google API libraries available")
     except ImportError:
-        logger.error("Receipt validation enabled but Google API libraries not available")
+        logger.exception("Receipt validation enabled but Google API libraries not available")
         if os.getenv("ENVIRONMENT") == "production":
             raise RuntimeError("Receipt validation enabled in production but Google API libraries missing")
 else:
@@ -93,7 +93,7 @@ class AppleReceiptValidator:
             return False, None
 
         except Exception as e:
-            logger.error(f"Apple receipt validation error: {e}")
+            logger.exception(f"Apple receipt validation error: {e}")
             return False, None
 
     def _parse_receipt(self, receipt_data: dict) -> dict:
@@ -152,7 +152,7 @@ class GoogleReceiptValidator:
                     )
                     return build("androidpublisher", "v3", credentials=credentials)
                 except Exception as e:
-                    logger.error(f"Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON: {e}")
+                    logger.exception(f"Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON: {e}")
                     return None
 
             # Fallback to file path
@@ -171,7 +171,7 @@ class GoogleReceiptValidator:
 
             return build("androidpublisher", "v3", credentials=credentials)
         except Exception as e:
-            logger.error(f"Failed to initialize Google Play service: {e}")
+            logger.exception(f"Failed to initialize Google Play service: {e}")
             return None
 
     async def validate(self, purchase_token: str, product_id: str) -> tuple[bool, dict | None]:
@@ -203,7 +203,7 @@ class GoogleReceiptValidator:
             return False, None
 
         except Exception as e:
-            logger.error(f"Google receipt validation error: {e}")
+            logger.exception(f"Google receipt validation error: {e}")
             return False, None
 
     def _parse_purchase(self, purchase: dict, product_id: str) -> dict:
@@ -313,7 +313,7 @@ class ReceiptValidationService:
             return {"success": True, "subscription": subscription.to_dict()}
 
         except Exception as e:
-            logger.error(f"Receipt validation error: {e}")
+            logger.exception(f"Receipt validation error: {e}")
             return {"success": False, "error": str(e)}
 
     async def _create_or_update_subscription(
@@ -402,4 +402,4 @@ class ReceiptValidationService:
                 db.add(validation)
                 db.commit()
         except Exception as e:
-            logger.error(f"Failed to log validation: {e}")
+            logger.exception(f"Failed to log validation: {e}")

@@ -1,5 +1,4 @@
-"""Load and stress testing for production deployment
-"""
+"""Load and stress testing for production deployment"""
 
 import concurrent.futures
 import time

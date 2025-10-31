@@ -3,7 +3,7 @@ Monitors agencies for new recalls and pushes alerts to affected users
 """
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import Any
 
 import httpx
@@ -35,11 +35,10 @@ recall_alert_router = APIRouter(prefix="/api/v1/recall-alerts", tags=["recall-al
 
 @recall_alert_router.post("/test-alert-dev", response_model=dict)
 async def send_test_recall_alert_dev(request: dict):
-    """DEV OVERRIDE: Send test recall alert without database dependencies
-    """
+    """DEV OVERRIDE: Send test recall alert without database dependencies"""
     try:
         # Simulate recall alert
-        alert_id = f"ALERT-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+        alert_id = f"ALERT-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
 
         return {
             "success": True,
@@ -51,31 +50,30 @@ async def send_test_recall_alert_dev(request: dict):
                 "product_name": request.get("product_name", "Test Product"),
                 "severity": request.get("severity", "high"),
                 "agency": request.get("agency", "CPSC"),
-                "sent_at": datetime.now(timezone.utc).isoformat(),
+                "sent_at": datetime.now(UTC).isoformat(),
                 "devices_notified": 2,
                 "delivery_status": "success",
             },
         }
 
     except Exception as e:
-        logger.error(f"Error in dev recall alert: {e}")
-        return {"success": False, "error": f"Failed to send recall alert: {str(e)}"}
+        logger.exception(f"Error in dev recall alert: {e}")
+        return {"success": False, "error": f"Failed to send recall alert: {e!s}"}
 
 
 @recall_alert_router.get("/check-now-dev", response_model=dict)
 async def check_recalls_now_dev():
-    """DEV OVERRIDE: Check for recalls without database dependencies
-    """
+    """DEV OVERRIDE: Check for recalls without database dependencies"""
     try:
         # Simulate recall check
-        check_id = f"CHECK-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+        check_id = f"CHECK-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
 
         return {
             "success": True,
             "data": {
                 "message": "Recall check completed successfully (dev override)",
                 "check_id": check_id,
-                "checked_at": datetime.now(timezone.utc).isoformat(),
+                "checked_at": datetime.now(UTC).isoformat(),
                 "agencies_checked": ["CPSC", "FDA", "NHTSA"],
                 "new_recalls_found": 3,
                 "recalls": [
@@ -83,14 +81,14 @@ async def check_recalls_now_dev():
                         "recall_id": "RECALL-001",
                         "product_name": "Test Baby Product",
                         "agency": "CPSC",
-                        "date": datetime.now(timezone.utc).isoformat(),
+                        "date": datetime.now(UTC).isoformat(),
                         "severity": "high",
                     },
                     {
                         "recall_id": "RECALL-002",
                         "product_name": "Test Toy",
                         "agency": "CPSC",
-                        "date": (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat(),
+                        "date": (datetime.now(UTC) - timedelta(hours=2)).isoformat(),
                         "severity": "medium",
                     },
                 ],
@@ -98,14 +96,13 @@ async def check_recalls_now_dev():
         }
 
     except Exception as e:
-        logger.error(f"Error in dev recall check: {e}")
-        return {"success": False, "error": f"Failed to check recalls: {str(e)}"}
+        logger.exception(f"Error in dev recall check: {e}")
+        return {"success": False, "error": f"Failed to check recalls: {e!s}"}
 
 
 @recall_alert_router.get("/preferences-dev", response_model=dict)
 async def get_alert_preferences_dev():
-    """DEV OVERRIDE: Get alert preferences without database dependencies
-    """
+    """DEV OVERRIDE: Get alert preferences without database dependencies"""
     try:
         # Return default preferences for dev/testing
         default_preferences = {
@@ -122,19 +119,18 @@ async def get_alert_preferences_dev():
             "data": {
                 "message": "Alert preferences retrieved successfully (dev override)",
                 "preferences": default_preferences,
-                "retrieved_at": datetime.now(timezone.utc).isoformat(),
+                "retrieved_at": datetime.now(UTC).isoformat(),
             },
         }
 
     except Exception as e:
-        logger.error(f"Error in dev alert preferences: {e}")
-        return {"success": False, "error": f"Failed to get preferences: {str(e)}"}
+        logger.exception(f"Error in dev alert preferences: {e}")
+        return {"success": False, "error": f"Failed to get preferences: {e!s}"}
 
 
 @recall_alert_router.post("/preferences-dev", response_model=dict)
 async def update_alert_preferences_dev(request: dict):
-    """DEV OVERRIDE: Update alert preferences without database dependencies
-    """
+    """DEV OVERRIDE: Update alert preferences without database dependencies"""
     try:
         # Simulate preferences update
         return {
@@ -142,19 +138,18 @@ async def update_alert_preferences_dev(request: dict):
             "data": {
                 "message": "Alert preferences updated successfully (dev override)",
                 "preferences": request,
-                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(UTC).isoformat(),
             },
         }
 
     except Exception as e:
-        logger.error(f"Error in dev alert preferences: {e}")
-        return {"success": False, "error": f"Failed to update preferences: {str(e)}"}
+        logger.exception(f"Error in dev alert preferences: {e}")
+        return {"success": False, "error": f"Failed to update preferences: {e!s}"}
 
 
 @recall_alert_router.get("/history-dev/{user_id}", response_model=dict)
 async def get_alert_history_dev(user_id: int):
-    """DEV OVERRIDE: Get alert history without database dependencies
-    """
+    """DEV OVERRIDE: Get alert history without database dependencies"""
     try:
         # Mock alert history
         mock_alerts = [
@@ -165,7 +160,7 @@ async def get_alert_history_dev(user_id: int):
                 "product_name": "Test Product A",
                 "severity": "high",
                 "agency": "CPSC",
-                "sent_at": datetime.now(timezone.utc).isoformat(),
+                "sent_at": datetime.now(UTC).isoformat(),
                 "delivery_status": "delivered",
             },
             {
@@ -175,7 +170,7 @@ async def get_alert_history_dev(user_id: int):
                 "product_name": "Test Product B",
                 "severity": "medium",
                 "agency": "FDA",
-                "sent_at": (datetime.now(timezone.utc) - timedelta(days=1)).isoformat(),
+                "sent_at": (datetime.now(UTC) - timedelta(days=1)).isoformat(),
                 "delivery_status": "delivered",
             },
         ]
@@ -190,8 +185,8 @@ async def get_alert_history_dev(user_id: int):
         }
 
     except Exception as e:
-        logger.error(f"Error in dev alert history: {e}")
-        return {"success": False, "error": f"Failed to get alert history: {str(e)}"}
+        logger.exception(f"Error in dev alert history: {e}")
+        return {"success": False, "error": f"Failed to get alert history: {e!s}"}
 
 
 class RecallCheckResult(BaseModel):
@@ -267,18 +262,18 @@ class RecallAlertService:
                                         },
                                     )
                     except Exception as e:
-                        logger.error(f"Error checking CPSC: {e}")
+                        logger.exception(f"Error checking CPSC: {e}")
 
             # Add similar checks for other agencies...
 
         except Exception as e:
-            logger.error(f"Error checking agency {agency}: {e}")
+            logger.exception(f"Error checking agency {agency}: {e}")
 
         return RecallCheckResult(
             agency=agency,
             new_recalls_count=len(new_recalls),
             recalls=new_recalls,
-            check_timestamp=datetime.now(timezone.utc),
+            check_timestamp=datetime.now(UTC),
         )
 
     @classmethod
@@ -325,7 +320,7 @@ class RecallAlertService:
                     affected_user_ids.append(product.user_id)
 
         except Exception as e:
-            logger.error(f"Error finding affected users: {e}")
+            logger.exception(f"Error finding affected users: {e}")
 
         return affected_user_ids
 
@@ -352,7 +347,7 @@ class RecallAlertService:
                 "recall_id": recall.get("recall_id"),
                 "product_name": product_name,
                 "severity": cls._determine_severity(recall),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
             # Store notification in history
@@ -365,14 +360,14 @@ class RecallAlertService:
                     priority="high",
                     category="safety",
                     data=recall,
-                    sent_at=datetime.now(timezone.utc),
+                    sent_at=datetime.now(UTC),
                 )
                 db.add(notification)
             except NameError:
                 # NotificationHistory not available, skip storage
                 logger.warning("NotificationHistory not available, skipping notification storage")
             except Exception as e:
-                logger.error(f"Error storing notification history: {e}")
+                logger.exception(f"Error storing notification history: {e}")
 
             # Send to each device
             success_count = 0
@@ -393,7 +388,7 @@ class RecallAlertService:
             return success_count > 0
 
         except Exception as e:
-            logger.error(f"Error sending recall alert: {e}")
+            logger.exception(f"Error sending recall alert: {e}")
             return False
 
     @classmethod
@@ -436,7 +431,7 @@ async def check_all_agencies_for_recalls():
     try:
         # Get last check time (stored in system config or database)
         # For now, check last 24 hours
-        last_check = datetime.now(timezone.utc) - timedelta(hours=24)
+        last_check = datetime.now(UTC) - timedelta(hours=24)
 
         all_new_recalls = []
 
@@ -476,7 +471,7 @@ async def check_all_agencies_for_recalls():
                         remedy=recall.get("remedy"),
                         recall_date=datetime.fromisoformat(recall.get("date"))
                         if recall.get("date")
-                        else datetime.now(timezone.utc),
+                        else datetime.now(UTC),
                     )
                     db.add(new_recall)
                     db.commit()
@@ -493,13 +488,12 @@ async def check_all_agencies_for_recalls():
 
 # @celery_app.task(name="send_daily_recall_digest")  # Commented out - celery not available
 def send_daily_recall_digest() -> None:
-    """Send daily digest of recalls to users who prefer daily updates
-    """
+    """Send daily digest of recalls to users who prefer daily updates"""
     logger.info("Sending daily recall digest...")
 
     with get_db() as db:
         # Get recalls from last 24 hours
-        yesterday = datetime.now(timezone.utc) - timedelta(days=1)
+        yesterday = datetime.now(UTC) - timedelta(days=1)
 
         recent_recalls = db.query(RecallDB).filter(RecallDB.created_at >= yesterday).all()
 
@@ -528,7 +522,7 @@ def send_daily_recall_digest() -> None:
 async def test_recall_alert(user_id: int, product_name: str, db: Session = Depends(get_db)):
     """Test endpoint to trigger a recall alert for a user"""
     mock_recall = {
-        "recall_id": f"TEST_{datetime.now(timezone.utc).timestamp()}",
+        "recall_id": f"TEST_{datetime.now(UTC).timestamp()}",
         "product_name": product_name,
         "hazard": "Test hazard - this is a test alert",
         "remedy": "No action needed - this is a test",
@@ -577,8 +571,8 @@ async def get_alert_preferences(
         }
 
     except Exception as e:
-        logger.error(f"Error getting alert preferences: {e}")
-        return {"success": False, "error": f"Failed to get preferences: {str(e)}"}
+        logger.exception(f"Error getting alert preferences: {e}")
+        return {"success": False, "error": f"Failed to get preferences: {e!s}"}
 
 
 @recall_alert_router.post("/preferences")
@@ -636,10 +630,10 @@ async def get_alert_history(user_id: int, limit: int = 50, db: Session = Depends
             "message": "Alert history not available (database table not initialized)",
         }
     except Exception as e:
-        logger.error(f"Error retrieving alert history for user {user_id}: {e}")
+        logger.exception(f"Error retrieving alert history for user {user_id}: {e}")
         return {
             "success": False,
-            "error": f"Failed to retrieve alert history: {str(e)}",
+            "error": f"Failed to retrieve alert history: {e!s}",
             "alerts": [],
             "total": 0,
         }

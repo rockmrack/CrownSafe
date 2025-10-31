@@ -250,7 +250,7 @@ async def readiness_check():
             result = conn.execute(text("SELECT 1"))
             checks["database"] = result.scalar() == 1
     except Exception as e:
-        errors.append(f"Database check failed: {str(e)}")
+        errors.append(f"Database check failed: {e!s}")
 
     # Check Redis only if REDIS_URL provided
     try:
@@ -266,7 +266,7 @@ async def readiness_check():
             checks["redis"] = True
     except Exception as e:
         checks["redis"] = False
-        errors.append(f"Redis check failed: {str(e)}")
+        errors.append(f"Redis check failed: {e!s}")
 
     # Check memory usage
     memory = psutil.virtual_memory()

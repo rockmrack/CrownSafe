@@ -8,7 +8,7 @@ Date: October 10, 2025
 """
 
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from unittest.mock import patch
 
 import pytest
@@ -347,7 +347,7 @@ class TestCeleryTaskExecution:
         """
         # Arrange
         with patch("workers.maintenance_tasks.TaskResult") as mock_result:
-            _old_date = datetime.now(timezone.utc) - timedelta(days=31)
+            _old_date = datetime.now(UTC) - timedelta(days=31)
             mock_result.objects.filter.return_value.delete.return_value = (45, {})
 
             # Act

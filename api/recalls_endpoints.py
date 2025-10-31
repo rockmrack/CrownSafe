@@ -204,8 +204,7 @@ def search_recalls_dev(
     offset: int | None = Query(None, ge=0, description="Number of results to skip (offset pagination)"),
     cursor: str | None = Query(None, description="Cursor for pagination (cursor-based pagination)"),
 ):
-    """DEV OVERRIDE: Search recalls without database dependencies
-    """
+    """DEV OVERRIDE: Search recalls without database dependencies"""
     try:
         # Mock recall data
         mock_recalls = [
@@ -342,13 +341,12 @@ def search_recalls_dev(
         }
 
     except Exception as e:
-        return {"success": False, "error": f"Failed to search recalls: {str(e)}"}
+        return {"success": False, "error": f"Failed to search recalls: {e!s}"}
 
 
 @router.get("/stats-dev", response_model=dict)
 def get_recall_stats_dev():
-    """DEV OVERRIDE: Get recall statistics without database dependencies
-    """
+    """DEV OVERRIDE: Get recall statistics without database dependencies"""
     try:
         # Mock statistics
         mock_stats = {
@@ -373,7 +371,7 @@ def get_recall_stats_dev():
         return {"success": True, "data": mock_stats}
 
     except Exception as e:
-        return {"success": False, "error": f"Failed to get recall stats: {str(e)}"}
+        return {"success": False, "error": f"Failed to get recall stats: {e!s}"}
 
 
 @router.get("/stats", response_model=dict)

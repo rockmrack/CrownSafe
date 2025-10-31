@@ -291,7 +291,7 @@ async def get_legal_document(document_id: str, format: str | None = "html", lang
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error retrieving document {document_id}: {e}")
+        logger.exception(f"Error retrieving document {document_id}: {e}")
         raise HTTPException(status_code=500, detail="Error retrieving document")
 
 

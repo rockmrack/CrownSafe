@@ -4,7 +4,7 @@
 import copy  # For deepcopy
 import json
 import uuid
-from datetime import datetime, timezone  # Ensure timezone is imported
+from datetime import datetime, timezone, UTC  # Ensure timezone is imported
 from typing import Any  # Added Union for safe_json_serialize
 
 # Attempt to import logger from config, fallback to basic logging
@@ -94,7 +94,7 @@ def create_mcp_message(
             "target_service": target_service,
             "message_type": message_type,
             "correlation_id": current_correlation_id,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "version": version,
         }
 
@@ -274,5 +274,5 @@ def safe_json_serialize(obj: Any, default_msg: str = "Object not serializable") 
             logger.warning(f"Attempting to send sanitized list after serialization error. Length: {len(sanitized)}")
             return json.dumps(sanitized)
         else:
-            logger.error(f"Cannot sanitize non-dict/list object of type {type(obj)}. Returning error placeholder.")
+            logger.exception(f"Cannot sanitize non-dict/list object of type {type(obj)}. Returning error placeholder.")
             return json.dumps({"error": default_msg, "original_type": str(type(obj))})

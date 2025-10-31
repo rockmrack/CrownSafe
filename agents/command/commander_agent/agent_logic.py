@@ -59,8 +59,7 @@ class CrownSafeCommanderLogic:
         agent_id: str = "commander_001",
         logger_instance: logging.Logger | None = None,
     ) -> None:
-        """Initializes the Commander and the orchestration agents it controls.
-        """
+        """Initializes the Commander and the orchestration agents it controls."""
         self.agent_id = agent_id
         self.logger = logger_instance or logging.getLogger(__name__)
         self.planner = BabyShieldPlannerLogic(agent_id="planner_for_commander", logger_instance=self.logger)
@@ -144,7 +143,7 @@ class CrownSafeCommanderLogic:
                     else:
                         self.logger.error("Recall not found even with direct DB fallback.")
                 except Exception as fallback_exc:
-                    self.logger.error(f"DB fallback failed: {fallback_exc}")
+                    self.logger.exception(f"DB fallback failed: {fallback_exc}")
                 # --------- END DB FALLBACK -----------
 
                 return {"status": "FAILED", "error": error_msg}

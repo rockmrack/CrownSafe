@@ -14,8 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class UserAgentBlocker(BaseHTTPMiddleware):
-    """Middleware to block requests from suspicious user agents
-    """
+    """Middleware to block requests from suspicious user agents"""
 
     # Known malicious scanner patterns
     DEFAULT_BLOCKED_PATTERNS = [
@@ -90,8 +89,7 @@ class UserAgentBlocker(BaseHTTPMiddleware):
         logger.info(f"UA blocker configured with {len(self.blocked_patterns)} blocked patterns")
 
     async def dispatch(self, request: Request, call_next):
-        """Check user agent and block if suspicious
-        """
+        """Check user agent and block if suspicious"""
         # Get user agent
         user_agent = request.headers.get("user-agent", "").strip()
         trace_id = getattr(request.state, "trace_id", None)
@@ -221,8 +219,7 @@ class UserAgentBlocker(BaseHTTPMiddleware):
 
 
 class SmartUserAgentFilter(UserAgentBlocker):
-    """Advanced UA filter with ML-based detection (future enhancement)
-    """
+    """Advanced UA filter with ML-based detection (future enhancement)"""
 
     def __init__(self, app, **kwargs) -> None:
         super().__init__(app, **kwargs)

@@ -9,7 +9,7 @@ Endpoints:
 """
 
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -164,7 +164,7 @@ async def create_hair_profile(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"❌ Error creating hair profile: {e}")
+        logger.exception(f"❌ Error creating hair profile: {e}")
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -233,7 +233,7 @@ async def update_hair_profile(
         for field, value in update_data.items():
             setattr(profile, field, value)
 
-        profile.updated_at = datetime.now(timezone.utc)
+        profile.updated_at = datetime.now(UTC)
 
         db.commit()
         db.refresh(profile)
@@ -250,7 +250,7 @@ async def update_hair_profile(
         )
 
     except Exception as e:
-        logger.error(f"❌ Error updating hair profile: {e}")
+        logger.exception(f"❌ Error updating hair profile: {e}")
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -292,7 +292,7 @@ async def delete_hair_profile(
         return ApiResponse(success=True, message="Hair profile deleted successfully", data=None)
 
     except Exception as e:
-        logger.error(f"❌ Error deleting hair profile: {e}")
+        logger.exception(f"❌ Error deleting hair profile: {e}")
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

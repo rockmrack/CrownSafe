@@ -1,5 +1,4 @@
-"""Quick script to add is_active column to users table
-"""
+"""Quick script to add is_active column to users table"""
 
 from sqlalchemy import text
 

@@ -27,8 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 class QueryOptimizer:
-    """Optimize database queries to prevent N+1 problems
-    """
+    """Optimize database queries to prevent N+1 problems"""
 
     @staticmethod
     def eager_load_relationships(query: Query, *relationships) -> Query:
@@ -144,8 +143,7 @@ class QueryOptimizer:
 
 
 def optimize_query(query_func):
-    """Decorator to automatically optimize queries
-    """
+    """Decorator to automatically optimize queries"""
 
     @wraps(query_func)
     def wrapper(*args, **kwargs):
@@ -165,16 +163,14 @@ def optimize_query(query_func):
 
 
 class QueryCache:
-    """Simple query result caching
-    """
+    """Simple query result caching"""
 
     def __init__(self, ttl: int = 60) -> None:
         self.cache = {}
         self.ttl = ttl
 
     def get_or_fetch(self, key: str, fetch_func: callable):
-        """Get from cache or fetch from database
-        """
+        """Get from cache or fetch from database"""
         if key in self.cache:
             value, timestamp = self.cache[key]
             if time.time() - timestamp < self.ttl:
@@ -186,8 +182,7 @@ class QueryCache:
         return value
 
     def invalidate(self, key: str = None) -> None:
-        """Invalidate cache entries
-        """
+        """Invalidate cache entries"""
         if key:
             self.cache.pop(key, None)
         else:
@@ -196,13 +191,11 @@ class QueryCache:
 
 # Prevent N+1 in common patterns
 class OptimizedQueries:
-    """Pre-optimized common query patterns
-    """
+    """Pre-optimized common query patterns"""
 
     @staticmethod
     def get_user_with_all_data(db: Session, user_id: int):
-        """Get user with all related data in one query
-        """
+        """Get user with all related data in one query"""
         return (
             db.query(User)
             .options(
@@ -216,14 +209,12 @@ class OptimizedQueries:
 
     @staticmethod
     def get_recalls_with_details(db: Session, limit: int = 100):
-        """Get recalls with all details efficiently
-        """
+        """Get recalls with all details efficiently"""
         return db.query(Recall).options(selectinload("images"), selectinload("incidents")).limit(limit).all()
 
     @staticmethod
     def search_products_optimized(db: Session, search_term: str, limit: int = 50):
-        """Optimized product search
-        """
+        """Optimized product search"""
         # Use index-friendly query
         return (
             db.query(Product)
@@ -241,8 +232,7 @@ class OptimizedQueries:
 
 @contextmanager
 def query_profiler(name: str = "Query"):
-    """Profile query execution time
-    """
+    """Profile query execution time"""
     start = time.time()
     try:
         yield
@@ -255,8 +245,7 @@ def query_profiler(name: str = "Query"):
 
 
 class LazyLoader:
-    """Lazy loading for expensive operations
-    """
+    """Lazy loading for expensive operations"""
 
     def __init__(self, loader_func) -> None:
         self.loader_func = loader_func
@@ -277,8 +266,7 @@ class LazyLoader:
 
 # Query optimization middleware
 async def query_optimization_middleware(request, call_next):
-    """Middleware to track and optimize queries per request
-    """
+    """Middleware to track and optimize queries per request"""
     # Track queries for this request
     request.state.query_count = 0
     request.state.query_time = 0
@@ -298,8 +286,7 @@ async def query_optimization_middleware(request, call_next):
 
 # Example optimizations for existing code
 def optimize_recall_search(db: Session, barcode: str):
-    """Optimized recall search
-    """
+    """Optimized recall search"""
     # Original (N+1 problem):
     # recalls = db.query(Recall).filter_by(barcode=barcode).all()
     # for recall in recalls:
@@ -321,8 +308,7 @@ def optimize_recall_search(db: Session, barcode: str):
 
 
 def optimize_user_dashboard(db: Session, user_id: int):
-    """Optimized user dashboard data loading
-    """
+    """Optimized user dashboard data loading"""
     with query_profiler("User Dashboard"):
         # Load everything in one query
         user = (
@@ -342,8 +328,7 @@ def optimize_user_dashboard(db: Session, user_id: int):
 
 # Batch operations for better performance
 class BatchProcessor:
-    """Process database operations in batches
-    """
+    """Process database operations in batches"""
 
     def __init__(self, db: Session, batch_size: int = 100) -> None:
         self.db = db

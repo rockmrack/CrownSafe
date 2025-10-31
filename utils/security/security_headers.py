@@ -50,10 +50,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             self.enable_xss_protection = enable_xss_protection
             logger.info("✅ SecurityHeadersMiddleware __init__ completed!")
         except Exception as e:
-            logger.error(f"❌ SecurityHeadersMiddleware __init__ FAILED: {e}")
+            logger.exception(f"❌ SecurityHeadersMiddleware __init__ FAILED: {e}")
             import traceback
 
-            logger.error(traceback.format_exc())
+            logger.exception(traceback.format_exc())
             raise
 
     @staticmethod

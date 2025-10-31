@@ -12,7 +12,7 @@ Features:
 import logging
 import os
 import threading
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 from azure.storage.blob import BlobServiceClient
 
@@ -69,8 +69,8 @@ class AzureBlobConnectionPool:
                     self._pool.append(
                         {
                             "client": client,
-                            "created_at": datetime.now(timezone.utc),
-                            "last_used": datetime.now(timezone.utc),
+                            "created_at": datetime.now(UTC),
+                            "last_used": datetime.now(UTC),
                             "use_count": 0,
                         },
                     )
@@ -88,7 +88,7 @@ class AzureBlobConnectionPool:
                 logger.error("Azure Storage credentials not configured")
                 return None
         except Exception as e:
-            logger.error(f"Failed to create Azure Blob client: {e}")
+            logger.exception(f"Failed to create Azure Blob client: {e}")
             return None
 
     def acquire(self) -> BlobServiceClient | None:
@@ -102,7 +102,7 @@ class AzureBlobConnectionPool:
             if self._pool:
                 # Get connection from pool
                 conn_data = self._pool.pop(0)
-                conn_data["last_used"] = datetime.now(timezone.utc)
+                conn_data["last_used"] = datetime.now(UTC)
                 conn_data["use_count"] += 1
 
                 self._in_use.add(id(conn_data["client"]))
@@ -148,8 +148,8 @@ class AzureBlobConnectionPool:
                     self._pool.append(
                         {
                             "client": client,
-                            "created_at": datetime.now(timezone.utc),
-                            "last_used": datetime.now(timezone.utc),
+                            "created_at": datetime.now(UTC),
+                            "last_used": datetime.now(UTC),
                             "use_count": 0,
                         },
                     )

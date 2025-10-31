@@ -328,7 +328,7 @@ async def research_product_safety(
         raise
     except Exception as e:
         logger.error(f"Web research failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Research failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Research failed: {e!s}")
 
 
 # ==================== Guidelines Endpoints ====================
@@ -536,7 +536,7 @@ async def recognize_product_from_image(
                 logger.info(f"Real defect detection found {len(detected_defects)} defects")
 
             except Exception as e:
-                logger.error(f"Defect detection failed: {e}")
+                logger.exception(f"Defect detection failed: {e}")
                 # Fallback: no defects detected if analysis fails
                 pass
 
@@ -578,7 +578,7 @@ async def recognize_product_from_image(
         raise
     except Exception as e:
         logger.error(f"Visual recognition failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Visual recognition failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Visual recognition failed: {e!s}")
 
 
 # ==================== Continuous Monitoring Endpoints ====================
@@ -650,7 +650,7 @@ async def setup_product_monitoring(
         raise
     except Exception as e:
         logger.error(f"Monitoring setup failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Monitoring setup failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Monitoring setup failed: {e!s}")
 
 
 @router.get("/monitor/{monitoring_id}/status")
@@ -659,8 +659,7 @@ async def get_monitoring_status(
     user_id: int = Query(..., description="User ID"),
     db: Session = Depends(get_db),
 ):
-    """Get status of an active monitoring job.
-    """
+    """Get status of an active monitoring job."""
     try:
         # Validate user
         user = db.query(User).filter(User.id == user_id).first()
@@ -698,7 +697,7 @@ async def get_monitoring_status(
         raise
     except Exception as e:
         logger.error(f"Status check failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Status check failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Status check failed: {e!s}")
 
 
 @router.delete("/monitor/{monitoring_id}")
@@ -707,8 +706,7 @@ async def cancel_monitoring(
     user_id: int = Query(..., description="User ID"),
     db: Session = Depends(get_db),
 ):
-    """Cancel an active monitoring job.
-    """
+    """Cancel an active monitoring job."""
     try:
         # Validate user
         user = db.query(User).filter(User.id == user_id).first()
@@ -728,4 +726,4 @@ async def cancel_monitoring(
         raise
     except Exception as e:
         logger.error(f"Cancellation failed: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Cancellation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Cancellation failed: {e!s}")

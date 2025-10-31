@@ -114,7 +114,7 @@ class SubmissionValidator:
                     )
 
             except Exception as e:
-                self.print_result(f"{name}: {endpoint}", False, f"Error: {str(e)}")
+                self.print_result(f"{name}: {endpoint}", False, f"Error: {e!s}")
                 all_passed = False
                 results.append({"endpoint": endpoint, "status": "error", "error": str(e)})
 

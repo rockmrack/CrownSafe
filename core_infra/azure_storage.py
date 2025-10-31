@@ -16,7 +16,7 @@ Features:
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from urllib.parse import urlparse
 
 from azure.core.exceptions import ResourceNotFoundError
@@ -240,7 +240,7 @@ class AzureBlobStorageClient:
                 logger.warning(f"Cache lookup failed: {e}, generating new SAS URL")
 
         # Generate new SAS token
-        expiry = datetime.now(timezone.utc) + timedelta(hours=expiry_hours)
+        expiry = datetime.now(UTC) + timedelta(hours=expiry_hours)
 
         sas_token = generate_blob_sas(
             account_name=self.account_name,

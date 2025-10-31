@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Lint JSON/YAML files and validate links in documentation
-"""
+"""Lint JSON/YAML files and validate links in documentation"""
 
 import json
 import os

@@ -8,7 +8,7 @@ import io
 import logging
 import os
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import Any
 
 from fastapi import (
@@ -205,7 +205,7 @@ def extract_image_from_base64(base64_data: str) -> Image.Image:
         image = Image.open(io.BytesIO(image_bytes))
         return image
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Failed to decode image: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Failed to decode image: {e!s}")
 
 
 def analyze_image_quality(image: Image.Image) -> float:
@@ -373,7 +373,7 @@ async def upload_product_image(
             )
             image_url = storage_client.get_blob_url(blob_name)
         except Exception as e:
-            logger.error(f"Azure Blob Storage upload failed: {e}")
+            logger.exception(f"Azure Blob Storage upload failed: {e}")
             raise HTTPException(status_code=500, detail="Image upload failed") from e
     else:
         # Store locally
@@ -404,7 +404,7 @@ async def upload_product_image(
         upload_url=image_url,
         status="uploaded",
         message="Image uploaded successfully. Use scan_id for analysis.",
-        expires_at=datetime.now(timezone.utc) + timedelta(hours=24),
+        expires_at=datetime.now(UTC) + timedelta(hours=24),
     )
 
 
@@ -425,7 +425,7 @@ async def analyze_product_image(
     5. Analyze ingredient safety
     6. Return comprehensive analysis
     """
-    start_time = datetime.now(timezone.utc)
+    start_time = datetime.now(UTC)
 
     # Get image
     image = None
@@ -478,7 +478,7 @@ async def analyze_product_image(
     safety_analysis = await analyze_product_safety(extracted_ingredients, db)
 
     # Calculate processing time
-    end_time = datetime.now(timezone.utc)
+    end_time = datetime.now(UTC)
     processing_ms = int((end_time - start_time).total_seconds() * 1000)
 
     # Prepare response
@@ -609,5 +609,5 @@ def update_scan_record(db: Session, scan_id: str, analysis: HairProductImageAnal
             scan.analysis_results = analysis.dict()
             db.commit()
     except Exception as e:
-        logger.error(f"Failed to update scan record: {e}")
+        logger.exception(f"Failed to update scan record: {e}")
         db.rollback()

@@ -2,7 +2,7 @@
 # MODIFIED for Step 98.1.14: Add CRITICAL entry log to handle_message
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 from fastapi import WebSocket
@@ -228,7 +228,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             pong_payload = {
                 "timestamp": payload.get("timestamp")
                 if isinstance(payload, dict)
-                else datetime.now(timezone.utc).timestamp(),
+                else datetime.now(UTC).timestamp(),
                 "status": "acknowledged",
             }
             # PONG is sent from MCP_ROUTER back to the pinger (agent_id)

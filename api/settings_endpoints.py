@@ -4,7 +4,7 @@ Includes Crashlytics toggle and other app preferences
 
 import logging
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException, Request, status
@@ -145,7 +145,7 @@ async def update_settings(
         },
     )
 
-    return SettingsResponse(ok=True, settings=settings, updated_at=datetime.now(timezone.utc))
+    return SettingsResponse(ok=True, settings=settings, updated_at=datetime.now(UTC))
 
 
 @router.post("/crashlytics", response_model=dict[str, Any])
@@ -199,7 +199,7 @@ async def toggle_crashlytics(
         }
 
     except Exception as e:
-        logger.error(f"Failed to toggle Crashlytics: {e}", extra={"trace_id": trace_id})
+        logger.exception(f"Failed to toggle Crashlytics: {e}", extra={"trace_id": trace_id})
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to update Crashlytics setting",
@@ -263,7 +263,7 @@ async def reset_settings(
         },
     )
 
-    return SettingsResponse(ok=True, settings=settings_store[identifier], updated_at=datetime.now(timezone.utc))
+    return SettingsResponse(ok=True, settings=settings_store[identifier], updated_at=datetime.now(UTC))
 
 
 # ========================= ERROR RECOVERY =========================

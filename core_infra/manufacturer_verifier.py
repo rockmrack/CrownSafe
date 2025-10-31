@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timezone, UTC
 from typing import Any
 
 
@@ -30,7 +30,7 @@ class VerificationResult:
     source: str | None = None
     message: str | None = None
     payload: dict[str, Any] | None = None
-    checked_at: datetime = datetime.now(timezone.utc)
+    checked_at: datetime = datetime.now(UTC)
 
 
 class ManufacturerVerifier:

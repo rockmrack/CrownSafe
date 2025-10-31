@@ -1,5 +1,4 @@
-"""Comprehensive test suite for EnhancedMemoryManager V2.0
-"""
+"""Comprehensive test suite for EnhancedMemoryManager V2.0"""
 
 import asyncio
 import logging
