@@ -25,6 +25,8 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, EmailStr, Field, ValidationError, model_validator
 from slowapi.errors import RateLimitExceeded
+from sqlalchemy import asc as sa_asc
+from sqlalchemy import desc as sa_desc
 from sqlalchemy import inspect as sa_inspect
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError as SAIntegrityError
@@ -2939,6 +2941,59 @@ async def system_health():
             "timestamp": datetime.now().isoformat(),
             "error": str(e),
         }
+
+
+@app.get("/api/v1/monitoring/azure-storage", tags=["monitoring"])
+async def azure_storage_health():
+    """
+    Check Azure Blob Storage health and performance
+    Enterprise-grade monitoring for cloud storage
+    """
+    try:
+        from core_infra.azure_storage_health import AzureStorageHealthCheck
+
+        health_checker = AzureStorageHealthCheck()
+        health_status = await health_checker.comprehensive_health_check()
+
+        return JSONResponse(
+            content=health_status,
+            status_code=200 if health_status["status"] == "healthy" else 503,
+        )
+
+    except Exception as e:
+        logger.error(f"Azure storage health check failed: {e}")
+        return JSONResponse(
+            content={
+                "service": "azure_blob_storage",
+                "status": "error",
+                "error": str(e),
+                "timestamp": datetime.utcnow().isoformat(),
+            },
+            status_code=503,
+        )
+
+
+@app.get("/api/v1/monitoring/azure-storage/metrics", tags=["monitoring"])
+async def azure_storage_metrics():
+    """
+    Get Azure Blob Storage performance metrics
+    """
+    try:
+        from core_infra.azure_storage_health import azure_storage_metrics
+
+        metrics = azure_storage_metrics.get_metrics()
+
+        return JSONResponse(content=metrics, status_code=200)
+
+    except Exception as e:
+        logger.error(f"Failed to retrieve Azure storage metrics: {e}")
+        return JSONResponse(
+            content={
+                "error": str(e),
+                "timestamp": datetime.utcnow().isoformat(),
+            },
+            status_code=500,
+        )
 
 
 # --- NOTIFICATION SYSTEM ---
