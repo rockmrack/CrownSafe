@@ -159,7 +159,6 @@ class MemorySafeImageProcessor:
         from PIL import Image
 
         img = None
-        text = None
 
         try:
             # Use PIL to open and preprocess
