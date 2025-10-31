@@ -28,7 +28,8 @@ if cmd_len > 0:
                 print("      Contents:")
                 for subkey in payload[key].keys():
                     print(f"        - {subkey}")
-    except:
+    except (json.JSONDecodeError, TypeError, AttributeError):
+        # Invalid JSON or missing fields
         print("  Could not parse message")
 
 # 2. Check other queues
@@ -50,5 +51,6 @@ if all_workflows:
             print(f"    Status: {data.get('status')}")
             print(f"    Created by: {data.get('original_requester_id', 'Unknown')}")
             print(f"    workflow_id field: {data.get('workflow_id', 'MISSING')}")
-        except:
+        except (json.JSONDecodeError, TypeError):
+            # Invalid JSON or data format
             pass

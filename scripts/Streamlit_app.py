@@ -818,7 +818,7 @@ class ConnectionManager:
                 )
                 self.status["gpt"] = True
                 return True
-            except Exception as gpt_error_4o:
+            except Exception:
                 # GPT-4o failed, try GPT-4-turbo-preview
                 try:
                     _ = openai.ChatCompletion.create(
@@ -828,7 +828,7 @@ class ConnectionManager:
                     )
                     self.status["gpt"] = True
                     return True
-                except Exception as gpt_error_turbo:
+                except Exception:
                     # GPT-4-turbo-preview failed, try GPT-4
                     _ = openai.ChatCompletion.create(
                         model="gpt-4",

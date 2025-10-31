@@ -116,7 +116,8 @@ def test_basic_memory_manager():
         logger.error(f"Full traceback: {traceback.format_exc()}")
         try:
             os.chdir(original_cwd)
-        except:
+        except (OSError, PermissionError):
+            # Failed to change directory back
             pass
         return False
 
@@ -270,7 +271,8 @@ def migrate_memory_system():
         # Restore original working directory
         try:
             os.chdir(original_cwd)
-        except:
+        except (OSError, PermissionError):
+            # Failed to change directory back
             pass
         return False
 
@@ -345,7 +347,8 @@ def verify_migration():
         logger.error(f"Migration verification failed: {e}")
         try:
             os.chdir(original_cwd)
-        except:
+        except (OSError, PermissionError):
+            # Failed to change directory back
             pass
         return False
 
@@ -380,7 +383,8 @@ def cleanup_old_backups(keep_count=3):
         logger.warning(f"Backup cleanup failed: {e}")
         try:
             os.chdir(original_cwd)
-        except:
+        except (OSError, PermissionError):
+            # Failed to change directory back
             pass
 
 
@@ -421,7 +425,8 @@ def simple_enhanced_test():
         logger.error(f"Simple test traceback: {traceback.format_exc()}")
         try:
             os.chdir(original_cwd)
-        except:
+        except (OSError, PermissionError):
+            # Failed to change directory back
             pass
         return False
 

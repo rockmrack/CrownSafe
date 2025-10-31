@@ -35,7 +35,8 @@ for i in range(min(queue_len, 10)):  # Check up to 10 messages
                 print("  ✅ Has user_request field!")
         print()
 
-    except:
+    except (json.JSONDecodeError, TypeError, AttributeError):
+        # Invalid JSON or missing fields
         print(f"Message {i + 1}: Could not parse\n")
 
 # Also check for workflows with API correlation IDs
@@ -53,5 +54,6 @@ for key in all_workflows:
             print(f"   Status: {data.get('status')}")
             print(f"   workflow_id field: {data.get('workflow_id', 'MISSING')}")
             print(f"   controller_correlation_id: {data.get('controller_correlation_id', 'None')}")
-    except:
+    except (json.JSONDecodeError, TypeError):
+        # Invalid JSON or data format
         pass

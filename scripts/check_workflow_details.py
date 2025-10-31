@@ -28,5 +28,6 @@ for key in workflow_keys:
 
             if workflow_id_from_key != data.get("workflow_id"):
                 print("  ⚠️  MISMATCH: Key ID doesn't match stored ID!")
-        except:
+        except (json.JSONDecodeError, TypeError, KeyError):
+            # Invalid JSON or missing fields
             print("  Error parsing data")

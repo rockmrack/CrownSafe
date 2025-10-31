@@ -54,7 +54,8 @@ def test_download_report_production():
             print(f"Status: {response.status_code}")
             try:
                 print(f"Response: {json.dumps(response.json(), indent=2)}")
-            except:
+            except (json.JSONDecodeError, ValueError):
+                # Invalid JSON response
                 print(f"Response: {response.text[:500]}")
 
     except requests.exceptions.ConnectionError:

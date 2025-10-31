@@ -38,7 +38,8 @@ def test_endpoint(name, method, path, data=None, params=None, files=None):
                     if isinstance(result, dict):
                         keys = list(result.keys())[:3]
                         print(f"   Response keys: {keys}")
-                except:
+                except (json.JSONDecodeError, ValueError):
+                    # Invalid JSON response
                     print(f"   Response: {response.text[:100]}")
             results["passed"].append(name)
             return True
@@ -47,7 +48,8 @@ def test_endpoint(name, method, path, data=None, params=None, files=None):
             try:
                 error = response.json()
                 print(f"   Error: {error.get('detail', error.get('error', str(error))[:100])}")
-            except:
+            except (json.JSONDecodeError, ValueError):
+                # Invalid JSON error response
                 print(f"   Error: {response.text[:100]}")
             results["failed"].append(name)
             return False

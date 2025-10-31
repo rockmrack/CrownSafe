@@ -23,7 +23,8 @@ for key in workflow_keys[:20]:  # Show first 20
             data = json.loads(value)
             print(f"  Status: {data.get('status', 'N/A')}")
             print(f"  Workflow ID: {data.get('workflow_id', 'N/A')}")
-    except:
+    except (json.JSONDecodeError, TypeError):
+        # Invalid JSON or data format
         print("  (Could not parse)")
     print()
 

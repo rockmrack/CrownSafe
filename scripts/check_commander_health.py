@@ -27,7 +27,8 @@ def check_commander():
             timestamp = msg_data.get("mcp_header", {}).get("timestamp")
             print(f"   First message type: {msg_type}")
             print(f"   Timestamp: {timestamp}")
-        except:
+        except (json.JSONDecodeError, TypeError, AttributeError):
+            # Invalid JSON or missing fields
             print("   Could not parse first message")
 
     # 2. Send a PING and see if it's processed

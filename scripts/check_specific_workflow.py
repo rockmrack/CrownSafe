@@ -35,7 +35,8 @@ else:
                 print("This is why API can't find it - wrong key!")
                 found = True
                 break
-        except:
+        except (json.JSONDecodeError, TypeError):
+            # Invalid JSON or data format
             pass
 
     if not found:
