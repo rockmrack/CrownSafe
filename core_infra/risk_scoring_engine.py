@@ -4,7 +4,7 @@ Implements weighted scoring model based on CPSC penalty factors.
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from enum import Enum
 
 from sqlalchemy.orm import Session

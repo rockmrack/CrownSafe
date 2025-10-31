@@ -4,7 +4,7 @@ Implements RFC 7232 for conditional requests.
 
 import email.utils as email_utils
 import hashlib
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import Request, Response

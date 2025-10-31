@@ -1,7 +1,7 @@
 """Chat memory CRUD operations - stub implementation for chat router."""
 
 import json
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any, Union
 from uuid import UUID, uuid4
 

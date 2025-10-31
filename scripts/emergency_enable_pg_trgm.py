@@ -88,9 +88,9 @@ try:
     print("📊 Checking GIN indexes...")
     cursor.execute(
         """
-        SELECT indexname, indexdef 
-        FROM pg_indexes 
-        WHERE tablename = 'recalls_enhanced' 
+        SELECT indexname, indexdef
+        FROM pg_indexes
+        WHERE tablename = 'recalls_enhanced'
         AND indexname LIKE '%trgm%'
         ORDER BY indexname;
     """,

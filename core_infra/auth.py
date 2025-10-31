@@ -5,7 +5,7 @@ Production-ready authentication system.
 import logging
 import os
 import secrets
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from fastapi import Depends, HTTPException, status
@@ -149,7 +149,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
             except Exception as e:
                 # Log Redis connection issues but continue without blocklist check
                 logger.warning(f"Redis blocklist check failed: {e}")
-                pass
 
         user_id: int = payload.get("sub")
         if user_id is None:

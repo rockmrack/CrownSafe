@@ -1,10 +1,10 @@
 import time
+from typing import Never
 from unittest.mock import patch
 
 import pytest
 
 from core.resilience import CircuitBreaker, call_with_timeout
-from typing import Never
 
 
 def test_circuit_breaker_allows_initially() -> None:

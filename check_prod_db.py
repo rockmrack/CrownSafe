@@ -16,9 +16,9 @@ try:
     print("\n=== CHECKING TABLES ===")
     cur.execute(
         """
-        SELECT table_name 
-        FROM information_schema.tables 
-        WHERE table_schema='public' 
+        SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema='public'
         AND table_name IN ('recalls', 'recalls_enhanced')
         ORDER BY table_name
     """,
@@ -32,7 +32,7 @@ try:
         cur.execute(
             """
             SELECT column_name, data_type, is_nullable
-            FROM information_schema.columns 
+            FROM information_schema.columns
             WHERE table_name = 'recalls_enhanced'
             AND column_name IN ('source_agency', 'severity', 'risk_category', 'product_name', 'description')
             ORDER BY column_name
@@ -56,9 +56,9 @@ try:
         print("\n=== SAMPLE AGENCY VALUES ===")
         cur.execute(
             """
-            SELECT DISTINCT source_agency 
-            FROM recalls_enhanced 
-            WHERE source_agency IS NOT NULL 
+            SELECT DISTINCT source_agency
+            FROM recalls_enhanced
+            WHERE source_agency IS NOT NULL
             LIMIT 10
         """,
         )
@@ -71,8 +71,8 @@ try:
     try:
         cur.execute(
             """
-            SELECT COUNT(*) 
-            FROM recalls_enhanced 
+            SELECT COUNT(*)
+            FROM recalls_enhanced
             WHERE source_agency = ANY(ARRAY['FDA'])
             AND lower(product_name) LIKE %s
         """,

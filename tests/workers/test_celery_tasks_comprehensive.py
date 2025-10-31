@@ -8,7 +8,7 @@ Date: October 10, 2025
 """
 
 import time
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from unittest.mock import patch
 
 import pytest
@@ -63,7 +63,6 @@ class TestCeleryTaskExecution:
             # assert result.successful() is True
             # assert result.result["success"] is True
             # assert result.result["recall_id"] == "CPSC-2025-001"
-            pass
 
     def test_recall_ingestion_task_retry_on_network_failure(self, sample_recall_data) -> None:
         """Verify task retries when network fails (exponential backoff).
@@ -86,7 +85,6 @@ class TestCeleryTaskExecution:
 
             # Verify retry was attempted with correct backoff
             # assert mock_agent.return_value.process_recall.call_count == 1
-            pass
 
     def test_recall_ingestion_task_max_retries_exceeded(self, sample_recall_data) -> None:
         """Test task failure after max retries exceeded.
@@ -109,7 +107,6 @@ class TestCeleryTaskExecution:
             # Assert
             # assert "Persistent error" in str(exc_info.value)
             # assert mock_agent.return_value.process_recall.call_count == 4
-            pass
 
     def test_recall_ingestion_task_timeout_handling(self) -> None:
         """Verify task timeout and cleanup after configured duration.
@@ -134,7 +131,6 @@ class TestCeleryTaskExecution:
             #         args=[{"data": "test"}],
             #         time_limit=300
             #     )
-            pass
 
     def test_notification_send_task_batch_processing(self) -> None:
         """Test batch notification sending with rate limiting.
@@ -158,7 +154,6 @@ class TestCeleryTaskExecution:
             # assert result.result["total_sent"] == 100
             # assert result.result["batch_count"] == 10
             # assert result.result["success_rate"] >= 0.95
-            pass
 
     def test_notification_send_task_partial_failure(self) -> None:
         """Verify graceful handling of partial batch failures.
@@ -188,7 +183,6 @@ class TestCeleryTaskExecution:
             # assert result.result["success_count"] == 7
             # assert result.result["failure_count"] == 3
             # assert len(result.result["failed_ids"]) == 3
-            pass
 
     def test_report_generation_task_large_dataset(self) -> None:
         """Test PDF report generation with 10,000+ recall records.
@@ -222,7 +216,6 @@ class TestCeleryTaskExecution:
             # Assert
             # assert result.successful() is True
             # assert result.result["size_mb"] < 100  # Reasonable file size
-            pass
 
     def test_report_generation_task_concurrent_requests(self) -> None:
         """Verify concurrent report generation doesn't cause conflicts.
@@ -253,7 +246,6 @@ class TestCeleryTaskExecution:
             # assert all(r.successful() for r in results)
             # file_paths = [r.result["file_path"] for r in results]
             # assert len(set(file_paths)) == num_concurrent  # All unique
-            pass
 
     def test_cache_warming_task_scheduled_execution(self) -> None:
         """Test automatic cache warming on schedule.
@@ -276,7 +268,6 @@ class TestCeleryTaskExecution:
             # assert mock_cache.return_value.set_many.called
             # cached_items = mock_cache.return_value.set_many.call_args[0][0]
             # assert len(cached_items) >= 100
-            pass
 
     def test_data_export_task_gdpr_compliance(self) -> None:
         """Verify GDPR export task includes all user data.
@@ -305,7 +296,6 @@ class TestCeleryTaskExecution:
             # assert result.successful() is True
             # assert result.result["tables_exported"] >= 15
             # assert result.result["file_path"].endswith(".enc")  # Encrypted
-            pass
 
     def test_data_deletion_task_cascade_relationships(self) -> None:
         """Test complete user data deletion across all tables.
@@ -334,7 +324,6 @@ class TestCeleryTaskExecution:
             # assert result.successful() is True
             # assert result.result["records_deleted"] > 0
             # assert result.result["audit_log_id"] is not None
-            pass
 
     def test_task_result_cleanup_old_entries(self) -> None:
         """Verify automatic cleanup of old task results (>30 days).
@@ -356,7 +345,6 @@ class TestCeleryTaskExecution:
             # Assert
             # assert result.successful() is True
             # assert result.result["deleted_count"] >= 0
-            pass
 
 
 @pytest.mark.workers
@@ -370,7 +358,6 @@ class TestCeleryTaskConfiguration:
         # Assert
         # assert ingest_recall_data_task.max_retries == 3
         # assert ingest_recall_data_task.default_retry_delay == 60
-        pass
 
     def test_task_time_limits(self) -> None:
         """Verify time limits are properly configured."""
@@ -379,14 +366,12 @@ class TestCeleryTaskConfiguration:
         # Assert
         # assert generate_report_task.time_limit == 600  # 10 minutes
         # assert generate_report_task.soft_time_limit == 540  # 9 minutes
-        pass
 
     def test_task_priority_levels(self) -> None:
         """Verify task priorities are correctly set."""
         # High priority: notifications, alerts
         # Medium priority: report generation
         # Low priority: cache warming, cleanup
-        pass
 
 
 if __name__ == "__main__":

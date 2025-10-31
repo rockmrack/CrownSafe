@@ -200,7 +200,7 @@ class BabyShieldMigration:
 
         try:
             backup_table_sql = """
-            CREATE TABLE IF NOT EXISTS recalls_backup AS 
+            CREATE TABLE IF NOT EXISTS recalls_backup AS
             SELECT * FROM recalls;
             """
 

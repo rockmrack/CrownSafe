@@ -6,7 +6,7 @@ import json
 import logging
 import traceback
 from contextvars import ContextVar
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from functools import wraps
 from typing import Any
 

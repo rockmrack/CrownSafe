@@ -124,7 +124,7 @@ def init_ci_database() -> None:
     if count == 0:
         c.execute(
             """
-        INSERT INTO recalls_enhanced 
+        INSERT INTO recalls_enhanced
         (recall_id, product_name, brand, manufacturer, hazard, recall_date, source_agency, url, country, description)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,

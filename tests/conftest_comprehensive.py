@@ -4,7 +4,7 @@ Provides fixtures and test utilities for all test suites.
 
 import os
 import tempfile
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from typing import Generator
 
 import pytest

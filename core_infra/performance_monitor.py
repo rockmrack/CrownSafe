@@ -10,7 +10,7 @@ import tracemalloc
 from collections import defaultdict, deque
 from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from functools import wraps
 from typing import Any
 
@@ -551,7 +551,7 @@ class MetricsGarbageCollector:
 """
 # In your FastAPI app:
 from core_infra.performance_monitor import (
-    monitor, 
+    monitor,
     APIEndpointMonitor,
     PerformanceReporter
 )

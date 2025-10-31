@@ -138,7 +138,7 @@ async def startup():
     from api.rate_limiting import init_rate_limiter
     await init_rate_limiter()
 
-@app.on_event("shutdown") 
+@app.on_event("shutdown")
 async def shutdown():
     from api.rate_limiting import close_rate_limiter
     await close_rate_limiter()

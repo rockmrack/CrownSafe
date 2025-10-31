@@ -16,7 +16,7 @@ Features:
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from urllib.parse import urlparse
 
 from azure.core.exceptions import ResourceNotFoundError

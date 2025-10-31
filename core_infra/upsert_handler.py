@@ -58,7 +58,7 @@ class UpsertHandler:
                     :country, :regions_affected, :url, :manufacturer_contact,
                     :search_keywords, :agency_specific_data
                 )
-                ON CONFLICT (recall_id) 
+                ON CONFLICT (recall_id)
                 DO UPDATE SET
                     product_name = EXCLUDED.product_name,
                     brand = COALESCE(EXCLUDED.brand, recalls.brand),
@@ -251,7 +251,7 @@ class UpsertHandler:
                         country, regions_affected, url, manufacturer_contact,
                         search_keywords, agency_specific_data
                     ) VALUES {", ".join(values_list)}
-                    ON CONFLICT (recall_id) 
+                    ON CONFLICT (recall_id)
                     DO UPDATE SET
                         product_name = EXCLUDED.product_name,
                         brand = COALESCE(EXCLUDED.brand, recalls.brand),
@@ -311,7 +311,7 @@ class UpsertHandler:
                     :original_transaction_id, :latest_receipt,
                     :auto_renew, :trial_end_date
                 )
-                ON CONFLICT (user_id, original_transaction_id) 
+                ON CONFLICT (user_id, original_transaction_id)
                 DO UPDATE SET
                     status = EXCLUDED.status,
                     expires_at = EXCLUDED.expires_at,

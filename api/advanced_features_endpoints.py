@@ -456,8 +456,8 @@ async def recognize_product_from_image(
 
                     recall_query = text(
                         """
-                        SELECT product_name, hazard, description 
-                        FROM recalls_enhanced 
+                        SELECT product_name, hazard, description
+                        FROM recalls_enhanced
                         WHERE LOWER(product_name) LIKE LOWER(:product_name)
                         LIMIT 1
                     """,
@@ -538,7 +538,6 @@ async def recognize_product_from_image(
             except Exception as e:
                 logger.exception(f"Defect detection failed: {e}")
                 # Fallback: no defects detected if analysis fails
-                pass
 
         # Find similar products if requested and confidence is low
         if include_similar and confidence < confidence_threshold:

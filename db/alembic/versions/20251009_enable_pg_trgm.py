@@ -24,28 +24,28 @@ def upgrade() -> None:
     # These indexes will significantly speed up similarity searches
     op.execute(
         """
-        CREATE INDEX IF NOT EXISTS idx_recalls_product_trgm 
+        CREATE INDEX IF NOT EXISTS idx_recalls_product_trgm
         ON recalls_enhanced USING gin (lower(product_name) gin_trgm_ops);
     """,
     )
 
     op.execute(
         """
-        CREATE INDEX IF NOT EXISTS idx_recalls_brand_trgm 
+        CREATE INDEX IF NOT EXISTS idx_recalls_brand_trgm
         ON recalls_enhanced USING gin (lower(brand) gin_trgm_ops);
     """,
     )
 
     op.execute(
         """
-        CREATE INDEX IF NOT EXISTS idx_recalls_description_trgm 
+        CREATE INDEX IF NOT EXISTS idx_recalls_description_trgm
         ON recalls_enhanced USING gin (lower(description) gin_trgm_ops);
     """,
     )
 
     op.execute(
         """
-        CREATE INDEX IF NOT EXISTS idx_recalls_hazard_trgm 
+        CREATE INDEX IF NOT EXISTS idx_recalls_hazard_trgm
         ON recalls_enhanced USING gin (lower(hazard) gin_trgm_ops);
     """,
     )

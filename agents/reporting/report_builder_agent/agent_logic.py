@@ -7,7 +7,7 @@ import sys
 import uuid
 from collections import Counter
 from dataclasses import asdict
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any

@@ -6,7 +6,7 @@ import logging
 import os
 import smtplib
 import uuid
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from html import escape

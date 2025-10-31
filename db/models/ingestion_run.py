@@ -1,6 +1,6 @@
 """SQLAlchemy model for ingestion run tracking."""
 
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import CheckConstraint, Column, DateTime, Integer, String, Text

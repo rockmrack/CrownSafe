@@ -3,7 +3,7 @@ Reduces code duplication across endpoint files.
 """
 
 import logging
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any, Callable
 
 from fastapi import HTTPException, status

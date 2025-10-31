@@ -7,7 +7,7 @@ import json
 import logging
 import os
 import uuid
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from email.message import EmailMessage
 from enum import Enum
 

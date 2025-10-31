@@ -3,7 +3,7 @@ Scan hair product barcodes and analyze ingredients for 3C-4C hair safety.
 """
 
 import logging
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile

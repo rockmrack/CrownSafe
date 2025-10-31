@@ -32,7 +32,7 @@ def upgrade() -> None:
         text(
             """
         SELECT EXISTS (
-            SELECT FROM information_schema.tables 
+            SELECT FROM information_schema.tables
             WHERE table_name = 'recalls_enhanced'
         );
     """,
@@ -156,12 +156,12 @@ def upgrade() -> None:
     op.execute(
         text(
             """
-        CREATE INDEX idx_recalls_enhanced_product_search 
-        ON recalls_enhanced 
-        USING GIN (to_tsvector('english', 
-            COALESCE(product_name, '') || ' ' || 
-            COALESCE(brand, '') || ' ' || 
-            COALESCE(model_number, '') || ' ' || 
+        CREATE INDEX idx_recalls_enhanced_product_search
+        ON recalls_enhanced
+        USING GIN (to_tsvector('english',
+            COALESCE(product_name, '') || ' ' ||
+            COALESCE(brand, '') || ' ' ||
+            COALESCE(model_number, '') || ' ' ||
             COALESCE(description, '')
         ))
     """,

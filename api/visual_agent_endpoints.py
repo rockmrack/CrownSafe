@@ -6,7 +6,7 @@ import json
 import logging
 import os
 import uuid
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 import boto3
@@ -725,8 +725,8 @@ async def visual_search(request: ImageAnalysisRequest, db: Session = Depends(get
                 if inspector.has_table("recalls_enhanced"):
                     recall_query = text(
                         """
-                        SELECT COUNT(*) as count 
-                        FROM recalls_enhanced 
+                        SELECT COUNT(*) as count
+                        FROM recalls_enhanced
                         WHERE LOWER(product_name) LIKE LOWER(:product_name)
                         LIMIT 1
                     """,

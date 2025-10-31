@@ -11,7 +11,7 @@ import socket
 import sys
 import traceback
 import uuid
-from datetime import date, datetime, timedelta, UTC
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Literal, cast
 
@@ -1869,8 +1869,8 @@ def debug_db_info():
             columns_result = db.execute(
                 text(
                     """
-                SELECT column_name, data_type, is_nullable, column_default 
-                FROM information_schema.columns 
+                SELECT column_name, data_type, is_nullable, column_default
+                FROM information_schema.columns
                 WHERE table_name = 'users' AND table_schema = 'public'
                 ORDER BY ordinal_position
             """,

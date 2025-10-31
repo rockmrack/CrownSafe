@@ -92,7 +92,7 @@ def upgrade() -> None:
         text(
             f"""
         SELECT EXISTS (
-            SELECT 1 FROM information_schema.columns 
+            SELECT 1 FROM information_schema.columns
             WHERE table_name = '{table}' AND column_name = 'title'
         );
     """,
@@ -114,7 +114,7 @@ def upgrade() -> None:
     # Agency filter
     op.execute(
         f"""
-        CREATE INDEX IF NOT EXISTS ix_{table}_agency 
+        CREATE INDEX IF NOT EXISTS ix_{table}_agency
         ON {table} (source_agency);
     """,
     )
@@ -122,7 +122,7 @@ def upgrade() -> None:
     # Date sorting (DESC for most recent first)
     op.execute(
         f"""
-        CREATE INDEX IF NOT EXISTS ix_{table}_recalldate 
+        CREATE INDEX IF NOT EXISTS ix_{table}_recalldate
         ON {table} (recall_date DESC);
     """,
     )
@@ -130,7 +130,7 @@ def upgrade() -> None:
     # Composite index for common query pattern
     op.execute(
         f"""
-        CREATE INDEX IF NOT EXISTS ix_{table}_agency_date 
+        CREATE INDEX IF NOT EXISTS ix_{table}_agency_date
         ON {table} (source_agency, recall_date DESC);
     """,
     )
@@ -139,8 +139,8 @@ def upgrade() -> None:
     result = connection.execute(
         text(
             f"""
-        SELECT column_name FROM information_schema.columns 
-        WHERE table_name = '{table}' 
+        SELECT column_name FROM information_schema.columns
+        WHERE table_name = '{table}'
         AND column_name IN ('risk_category', 'severity', 'hazard_category');
     """,
         ),
@@ -150,7 +150,7 @@ def upgrade() -> None:
     if "risk_category" in risk_columns:
         op.execute(
             f"""
-            CREATE INDEX IF NOT EXISTS ix_{table}_riskcategory 
+            CREATE INDEX IF NOT EXISTS ix_{table}_riskcategory
             ON {table} (risk_category);
         """,
         )
@@ -158,7 +158,7 @@ def upgrade() -> None:
     if "severity" in risk_columns:
         op.execute(
             f"""
-            CREATE INDEX IF NOT EXISTS ix_{table}_severity 
+            CREATE INDEX IF NOT EXISTS ix_{table}_severity
             ON {table} (severity);
         """,
         )
@@ -166,7 +166,7 @@ def upgrade() -> None:
     if "hazard_category" in risk_columns:
         op.execute(
             f"""
-            CREATE INDEX IF NOT EXISTS ix_{table}_hazard_category 
+            CREATE INDEX IF NOT EXISTS ix_{table}_hazard_category
             ON {table} (hazard_category);
         """,
         )
@@ -174,7 +174,7 @@ def upgrade() -> None:
     # UPC index for barcode lookups
     op.execute(
         f"""
-        CREATE INDEX IF NOT EXISTS ix_{table}_upc 
+        CREATE INDEX IF NOT EXISTS ix_{table}_upc
         ON {table} (upc) WHERE upc IS NOT NULL;
     """,
     )
@@ -182,7 +182,7 @@ def upgrade() -> None:
     # Model number index
     op.execute(
         f"""
-        CREATE INDEX IF NOT EXISTS ix_{table}_model_number 
+        CREATE INDEX IF NOT EXISTS ix_{table}_model_number
         ON {table} (model_number) WHERE model_number IS NOT NULL;
     """,
     )

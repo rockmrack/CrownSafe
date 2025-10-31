@@ -11,7 +11,7 @@ import asyncio  # noqa: E402
 import copy  # noqa: E402
 import json  # noqa: E402
 import uuid  # noqa: E402
-from datetime import datetime, UTC  # noqa: E402
+from datetime import UTC, datetime  # noqa: E402
 from typing import TYPE_CHECKING, Any, Callable  # noqa: E402
 
 import websockets  # noqa: E402

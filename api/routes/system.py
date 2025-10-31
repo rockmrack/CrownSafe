@@ -4,13 +4,13 @@ Provides health checks for monitoring and orchestration.
 
 import logging
 import os
+from datetime import UTC
 from typing import Any
 
 from fastapi import APIRouter, Response
 from fastapi.responses import JSONResponse
 from redis.asyncio import Redis
 from sqlalchemy import text
-from datetime import UTC
 
 logger = logging.getLogger("app")
 

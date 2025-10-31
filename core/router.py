@@ -2,7 +2,7 @@
 # MODIFIED for Step 98.1.14: Add CRITICAL entry log to handle_message
 
 import json
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import WebSocket

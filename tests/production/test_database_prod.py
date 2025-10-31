@@ -373,8 +373,8 @@ class TestProductionDatabaseHealth:
             result = db.execute(
                 text(
                     """
-                SELECT count(*) as conn_count 
-                FROM pg_stat_activity 
+                SELECT count(*) as conn_count
+                FROM pg_stat_activity
                 WHERE datname = current_database()
             """,
                 ),

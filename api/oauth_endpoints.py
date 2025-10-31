@@ -5,7 +5,7 @@ Stores only internal user_id and provider subject ID.
 import hashlib
 import logging
 import uuid
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import httpx

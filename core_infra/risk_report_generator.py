@@ -5,7 +5,7 @@ Produces comprehensive product safety reports with legal disclaimers.
 import json
 import logging
 import os
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from io import BytesIO
 from typing import Any
 

@@ -242,9 +242,9 @@ async def enable_pg_trgm_extension(
         idx_check = db.execute(
             text(
                 """
-                SELECT indexname 
-                FROM pg_indexes 
-                WHERE tablename = 'recalls_enhanced' 
+                SELECT indexname
+                FROM pg_indexes
+                WHERE tablename = 'recalls_enhanced'
                 AND indexname LIKE '%trgm%'
             """,
             ),

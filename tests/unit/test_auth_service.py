@@ -18,7 +18,6 @@ class TestAuthService:
         Then: Valid JWT token is returned
         """
         # This will be implemented with your actual auth service
-        pass
 
     def test_create_access_token_with_expiration_sets_correct_exp(self) -> None:
         """Test that token expiration is set correctly.
@@ -27,7 +26,6 @@ class TestAuthService:
         When: Token is created
         Then: Token exp claim matches expected expiration
         """
-        pass
 
     def test_decode_token_with_valid_token_returns_payload(self) -> None:
         """Test that valid tokens are decoded correctly.
@@ -36,7 +34,6 @@ class TestAuthService:
         When: decode_token is called
         Then: Original payload is returned
         """
-        pass
 
     def test_decode_token_with_expired_token_raises_exception(self) -> None:
         """Test that expired tokens are rejected.
@@ -45,7 +42,6 @@ class TestAuthService:
         When: decode_token is called
         Then: TokenExpired exception is raised
         """
-        pass
 
     def test_decode_token_with_invalid_token_raises_exception(self) -> None:
         """Test that invalid tokens are rejected.
@@ -54,7 +50,6 @@ class TestAuthService:
         When: decode_token is called
         Then: InvalidToken exception is raised
         """
-        pass
 
     def test_hash_password_returns_bcrypt_hash(self) -> None:
         """Test that passwords are properly hashed.
@@ -63,7 +58,6 @@ class TestAuthService:
         When: hash_password is called
         Then: Bcrypt hash is returned
         """
-        pass
 
     def test_verify_password_with_correct_password_returns_true(self) -> None:
         """Test password verification with correct password.
@@ -72,7 +66,6 @@ class TestAuthService:
         When: verify_password is called
         Then: True is returned
         """
-        pass
 
     def test_verify_password_with_incorrect_password_returns_false(self) -> None:
         """Test password verification with incorrect password.
@@ -81,7 +74,6 @@ class TestAuthService:
         When: verify_password is called
         Then: False is returned
         """
-        pass
 
     def test_create_refresh_token_with_valid_data_returns_token(self) -> None:
         """Test refresh token generation.
@@ -90,7 +82,6 @@ class TestAuthService:
         When: create_refresh_token is called
         Then: Valid refresh token is returned with longer expiration
         """
-        pass
 
     def test_validate_token_permissions_with_valid_permissions_returns_true(self) -> None:
         """Test that token permissions are validated correctly.
@@ -99,7 +90,6 @@ class TestAuthService:
         When: Permission is checked
         Then: True is returned for valid permissions
         """
-        pass
 
 
 class TestAuthenticationEndpoints:
@@ -112,7 +102,6 @@ class TestAuthenticationEndpoints:
         When: POST /api/v1/auth/register
         Then: User is created with 201 status
         """
-        pass
 
     def test_register_with_duplicate_email_returns_409(self) -> None:
         """Test registration with existing email.
@@ -121,7 +110,6 @@ class TestAuthenticationEndpoints:
         When: POST /api/v1/auth/register
         Then: 409 Conflict is returned
         """
-        pass
 
     def test_register_with_weak_password_returns_400(self) -> None:
         """Test registration with weak password.
@@ -130,7 +118,6 @@ class TestAuthenticationEndpoints:
         When: POST /api/v1/auth/register
         Then: 400 Bad Request with error details
         """
-        pass
 
     def test_login_with_valid_credentials_returns_tokens(self) -> None:
         """Test login with correct credentials.
@@ -139,7 +126,6 @@ class TestAuthenticationEndpoints:
         When: POST /api/v1/auth/token
         Then: Access and refresh tokens are returned
         """
-        pass
 
     def test_login_with_invalid_credentials_returns_401(self) -> None:
         """Test login with incorrect password.
@@ -148,7 +134,6 @@ class TestAuthenticationEndpoints:
         When: POST /api/v1/auth/token
         Then: 401 Unauthorized is returned
         """
-        pass
 
     def test_refresh_token_with_valid_token_returns_new_access_token(self) -> None:
         """Test token refresh endpoint.
@@ -157,7 +142,6 @@ class TestAuthenticationEndpoints:
         When: POST /api/v1/auth/refresh
         Then: New access token is returned
         """
-        pass
 
     def test_protected_endpoint_without_token_returns_401(self) -> None:
         """Test protected endpoint access without authentication.
@@ -166,7 +150,6 @@ class TestAuthenticationEndpoints:
         When: GET /api/v1/user/profile
         Then: 401 Unauthorized is returned
         """
-        pass
 
     def test_protected_endpoint_with_valid_token_returns_data(self) -> None:
         """Test protected endpoint access with valid token.
@@ -175,7 +158,6 @@ class TestAuthenticationEndpoints:
         When: GET /api/v1/user/profile
         Then: 200 OK with user data
         """
-        pass
 
 
 # Add more test classes for:

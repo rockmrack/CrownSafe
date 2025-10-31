@@ -4,7 +4,7 @@ Barcode, QR Code, and DataMatrix scanning with precise recall matching.
 
 import base64
 import logging
-from datetime import date, datetime, UTC
+from datetime import UTC, date, datetime
 from typing import Any
 
 from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile

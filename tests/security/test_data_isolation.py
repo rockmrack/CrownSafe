@@ -8,7 +8,7 @@ Date: October 10, 2025
 """
 
 import uuid
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 import pytest
@@ -296,7 +296,6 @@ class TestOrganizationIsolation:
         """
         # Placeholder for organization-level isolation
         # BabyShield may not have organizations yet
-        pass
 
     def test_shared_data_across_organizations(self) -> None:
         """Test shared data visibility across organizations.
@@ -307,7 +306,6 @@ class TestOrganizationIsolation:
         - Shared resources properly scoped
         - Cache keys include org context
         """
-        pass
 
 
 if __name__ == "__main__":

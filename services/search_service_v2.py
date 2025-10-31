@@ -4,7 +4,7 @@ Implements cursor-based pagination without OFFSET for better performance.
 
 import logging
 import os
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import text
@@ -147,7 +147,7 @@ class SearchServiceV2:
             params["recall_id"] = id
             # For exact ID, simplified query
             sql = f"""
-                SELECT 
+                SELECT
                     {", ".join(select_columns)},
                     1.0 as score
                 FROM {table}
@@ -218,7 +218,7 @@ class SearchServiceV2:
                 params["search_pattern"] = f"%{text_query}%"
                 # Simple relevance based on exact match
                 score_expression = f"""
-                    CASE 
+                    CASE
                         WHEN lower({table}.product_name) = :search_text THEN 1.0
                         WHEN lower({table}.brand) = :search_text THEN 0.9
                         WHEN lower({table}.product_name) LIKE :search_start THEN 0.8
@@ -278,7 +278,7 @@ class SearchServiceV2:
 
         # Fetch one extra to detect if there's a next page
         sql = f"""
-            SELECT 
+            SELECT
                 {", ".join(select_columns)},
                 {score_expression} as score
             FROM {table}

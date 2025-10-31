@@ -602,7 +602,6 @@ class ImageAnalysisService:
     def _cache_result(self, file_hash: str, result: ExtractionResult) -> None:
         """Cache analysis result."""
         # TODO: Implement cache storage to database
-        pass
 
     def detect_visual_defects(self, pil_image: Image) -> list[dict[str, Any]]:
         """Detect visual defects using OpenCV computer vision.

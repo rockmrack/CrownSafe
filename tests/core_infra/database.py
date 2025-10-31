@@ -344,10 +344,10 @@ def ensure_test_users() -> None:
             stmt = text(
                 """
                 INSERT INTO users (id, email, stripe_customer_id, hashed_password, is_subscribed, is_pregnant)
-                VALUES 
+                VALUES
                     (1, 'subscribed@test.com', NULL, 'testhash', true, true),
                     (2, 'unsubscribed@test.com', NULL, 'testhash', false, false)
-                ON CONFLICT (id) 
+                ON CONFLICT (id)
                 DO UPDATE SET
                     email = EXCLUDED.email,
                     stripe_customer_id = EXCLUDED.stripe_customer_id,
@@ -360,7 +360,7 @@ def ensure_test_users() -> None:
             stmt = text(
                 """
                 INSERT OR REPLACE INTO users (id, email, stripe_customer_id, hashed_password, is_subscribed, is_pregnant)  # noqa: E501
-                VALUES 
+                VALUES
                     (1, 'subscribed@test.com', NULL, 'testhash', 1, 1),
                     (2, 'unsubscribed@test.com', NULL, 'testhash', 0, 0)
             """,

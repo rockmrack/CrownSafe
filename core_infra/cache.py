@@ -186,7 +186,6 @@ def get_product_safety_score_cached(product_id: int, db) -> None:
     Example of how to cache expensive safety calculations.
     """
     # Your actual safety score calculation here
-    pass
 
 
 # Health check endpoint helper

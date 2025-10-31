@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 import redis
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -267,7 +267,7 @@ def delete_account(
             # Check if table exists first
             check_query = """
                 SELECT EXISTS (
-                    SELECT FROM information_schema.tables 
+                    SELECT FROM information_schema.tables
                     WHERE table_name = :table_name
                 )
             """

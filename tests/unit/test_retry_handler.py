@@ -4,6 +4,7 @@ Tests retry logic, strategies, circuit breaker, and bulk operations.
 
 import asyncio
 import time
+from typing import Never
 from unittest.mock import Mock, patch
 
 import pytest
@@ -18,7 +19,6 @@ from core_infra.retry_handler import (
     RetryStrategy,
     retry,
 )
-from typing import Never
 
 
 class TestRetryStrategy:

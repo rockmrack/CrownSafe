@@ -1,7 +1,7 @@
 """Share Token Model for secure result sharing."""
 
 import secrets
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 from sqlalchemy import (
     JSON,

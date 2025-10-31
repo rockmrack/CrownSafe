@@ -910,7 +910,7 @@ CRITICAL: Always complete your responses fully. Never cut off mid-sentence or mi
 
 Key context about our project:
 - Building CureViaX: Advanced healthcare AI platform
-- Multi-agent architecture with specialized AI agents  
+- Multi-agent architecture with specialized AI agents
 - Persistent memory using Redis and ChromaDB
 - Production-ready code with comprehensive documentation
 

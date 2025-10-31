@@ -7,7 +7,7 @@ import logging
 import os
 import statistics
 from collections import defaultdict
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any, Union
 
 import chromadb

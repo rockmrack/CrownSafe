@@ -3,7 +3,7 @@
 import hashlib
 import logging
 import secrets
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, BackgroundTasks, Body, Depends, Query
 from pydantic import EmailStr
@@ -120,8 +120,8 @@ async def send_reset_email(email: str, token: str, user_name: str | None = None)
               <p>Hello {user_name or "User"},</p>
               <p>You requested to reset your password for your Crown Safe account.</p>
               <p style="margin: 30px 0;">
-                <a href="{reset_url}" 
-                   style="background-color: #3498db; color: white; padding: 12px 30px; 
+                <a href="{reset_url}"
+                   style="background-color: #3498db; color: white; padding: 12px 30px;
                           text-decoration: none; border-radius: 5px; display: inline-block;">
                   Reset Password
                 </a>

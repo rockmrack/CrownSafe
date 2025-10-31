@@ -10,7 +10,7 @@ Date: October 10, 2025
 import threading
 import time
 import uuid
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 import pytest
@@ -482,7 +482,6 @@ class TestConnectionPooling:
         """
         # This would require monitoring connection lifecycle
         # Placeholder for implementation
-        pass
 
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@ Features:
 import hashlib
 import json
 import logging
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 import redis
 

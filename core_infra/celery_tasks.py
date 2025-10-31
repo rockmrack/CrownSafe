@@ -4,7 +4,7 @@ Handles async job queue with Azure Blob Storage integration and multi-step proce
 
 import logging
 import os
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 from celery import Celery, Task
@@ -69,7 +69,6 @@ except Exception as e:
 class CallbackTask(Task):
     """Task base class (avoid persistent DB session on task instance)."""
 
-    pass
 
 
 @app.task(base=CallbackTask, bind=True, name="process_image")

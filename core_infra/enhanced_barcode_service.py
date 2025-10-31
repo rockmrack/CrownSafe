@@ -4,7 +4,7 @@ Integrates comprehensive validation with exact product matching.
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 # REMOVED FOR CROWN SAFE: RecallDB barcode scanning no longer applicable

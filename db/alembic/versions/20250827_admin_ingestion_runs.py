@@ -85,14 +85,14 @@ def upgrade() -> None:
     if not is_sqlite:
         op.execute(
             """
-            ALTER TABLE ingestion_runs 
+            ALTER TABLE ingestion_runs
             ADD CONSTRAINT check_mode CHECK (mode IN ('delta', 'full', 'incremental'))
         """,
         )
 
         op.execute(
             """
-            ALTER TABLE ingestion_runs 
+            ALTER TABLE ingestion_runs
             ADD CONSTRAINT check_status CHECK (
                 status IN ('queued', 'running', 'success', 'failed', 'cancelled', 'partial')
             )

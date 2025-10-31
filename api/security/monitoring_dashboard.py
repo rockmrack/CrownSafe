@@ -4,7 +4,7 @@ Real-time threat intelligence and attack visualization.
 
 import logging
 import time
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -166,7 +166,7 @@ async def security_dashboard():
             </div>
             
             <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px; font-size: 0.9em; color: #6b7280;">  # noqa: E501
-                <strong>Security Status:</strong> 
+                <strong>Security Status:</strong>
                 <span class="status-indicator status-safe"></span>
                 Bulletproof security active • Last updated: {datetime.fromtimestamp(security_metrics["last_updated"]).strftime("%Y-%m-%d %H:%M:%S")} UTC  # noqa: E501
             </div>

@@ -3,10 +3,10 @@ Tests complete request/response cycles with database.
 """
 
 import uuid
+from typing import Never
 
 import pytest
 from fastapi.testclient import TestClient
-from typing import Never
 
 
 @pytest.mark.integration
@@ -245,7 +245,6 @@ class TestErrorHandling:
 
         # Trigger error and verify response
         # Implementation depends on your error handling
-        pass
 
 
 # Add pytest fixtures
@@ -265,7 +264,6 @@ def db_session() -> None:
     # Setup test database
     # Yield session
     # Teardown
-    pass
 
 
 @pytest.fixture
@@ -308,4 +306,3 @@ def authenticated_user(client, db_session):
 def sample_barcode_image() -> None:
     """Sample barcode image for testing."""
     # Return test barcode image
-    pass

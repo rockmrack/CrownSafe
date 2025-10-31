@@ -94,7 +94,7 @@ class SearchService:
             params["recall_id"] = id
             # For exact ID, no scoring needed
             sql = f"""
-                SELECT 
+                SELECT
                     {", ".join(select_columns)},
                     1.0 as score
                 FROM {table}
@@ -173,7 +173,7 @@ class SearchService:
 
                 # Simple relevance scoring for SQLite
                 score_expression = f"""
-                    CASE 
+                    CASE
                         WHEN lower({table}.product_name) = :search_text THEN 1.0
                         WHEN lower({table}.brand) = :search_text THEN 0.9
                         WHEN lower({table}.product_name) LIKE :search_start THEN 0.8
@@ -231,7 +231,7 @@ class SearchService:
                 # (recall_date < last_date) OR (recall_date = last_date AND recall_id > last_id)
                 cursor_conditions.append(
                     f"""
-                    ({table}.recall_date < :cursor_date) OR 
+                    ({table}.recall_date < :cursor_date) OR
                     ({table}.recall_date = :cursor_date AND {table}.recall_id > :cursor_id)
                 """,
                 )
@@ -246,7 +246,7 @@ class SearchService:
                     where_clause = " AND ".join(cursor_conditions)
 
         sql = f"""
-            SELECT 
+            SELECT
                 {", ".join(select_columns)},
                 {score_expression} as score
             FROM {table}

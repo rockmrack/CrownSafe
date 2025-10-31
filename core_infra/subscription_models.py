@@ -4,7 +4,7 @@ Supports monthly ($7.99) and annual ($79.99) plans.
 
 import enum
 import uuid
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import (
     Boolean,

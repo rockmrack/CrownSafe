@@ -74,7 +74,7 @@ def enable_pg_trgm() -> None:
                 print(f"   Creating {idx_name}...")
                 cur.execute(
                     f"""
-                    CREATE INDEX IF NOT EXISTS "{idx_name}" 
+                    CREATE INDEX IF NOT EXISTS "{idx_name}"
                     ON "{table}" USING gin ("{column}" gin_trgm_ops);
                 """,
                 )

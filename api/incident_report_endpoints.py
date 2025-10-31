@@ -5,7 +5,7 @@ Handles crowdsourced safety incident reporting.
 import asyncio
 import logging
 import uuid
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from fastapi import (
@@ -281,7 +281,6 @@ class IncidentAnalyzer:
 
         # In production, this would page on-call safety team
         # Send immediate notifications to safety team
-        pass
 
     @classmethod
     async def _notify_agency(cls, cluster: IncidentCluster, db: Session) -> None:

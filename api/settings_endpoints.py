@@ -4,7 +4,7 @@ Includes Crashlytics toggle and other app preferences.
 
 import logging
 import uuid
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException, Request, status

@@ -45,9 +45,9 @@ def main() -> None:
             # Check if is_active column exists
             cur.execute(
                 """
-                SELECT column_name 
-                FROM information_schema.columns 
-                WHERE table_name = 'users' 
+                SELECT column_name
+                FROM information_schema.columns
+                WHERE table_name = 'users'
                 AND table_schema = 'public'
                 AND column_name = 'is_active';
             """,
@@ -60,7 +60,7 @@ def main() -> None:
                 print("➕ Adding is_active column to users table...")
                 cur.execute(
                     """
-                    ALTER TABLE users 
+                    ALTER TABLE users
                     ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT true;
                 """,
                 )
@@ -70,8 +70,8 @@ def main() -> None:
             # Verify all columns
             cur.execute(
                 """
-                SELECT column_name, data_type, is_nullable, column_default 
-                FROM information_schema.columns 
+                SELECT column_name, data_type, is_nullable, column_default
+                FROM information_schema.columns
                 WHERE table_name = 'users' AND table_schema = 'public'
                 ORDER BY ordinal_position;
             """,

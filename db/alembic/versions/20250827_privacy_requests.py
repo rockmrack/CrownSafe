@@ -85,7 +85,7 @@ def upgrade() -> None:
     if not is_sqlite:
         op.execute(
             """
-            ALTER TABLE privacy_requests 
+            ALTER TABLE privacy_requests
             ADD CONSTRAINT check_kind CHECK (
                 kind IN ('export', 'delete', 'rectify', 'access', 'restrict', 'object')
             )
@@ -94,7 +94,7 @@ def upgrade() -> None:
 
         op.execute(
             """
-            ALTER TABLE privacy_requests 
+            ALTER TABLE privacy_requests
             ADD CONSTRAINT check_status CHECK (
                 status IN ('queued', 'verifying', 'processing', 'done', 'rejected', 'expired', 'cancelled')
             )
@@ -103,9 +103,9 @@ def upgrade() -> None:
 
         op.execute(
             """
-            ALTER TABLE privacy_requests 
+            ALTER TABLE privacy_requests
             ADD CONSTRAINT check_jurisdiction CHECK (
-                jurisdiction IS NULL OR 
+                jurisdiction IS NULL OR
                 jurisdiction IN ('gdpr', 'ccpa', 'pipeda', 'lgpd', 'appi', 'uk_gdpr', 'other')
             )
         """,
@@ -113,9 +113,9 @@ def upgrade() -> None:
 
         op.execute(
             """
-            ALTER TABLE privacy_requests 
+            ALTER TABLE privacy_requests
             ADD CONSTRAINT check_source CHECK (
-                source IS NULL OR 
+                source IS NULL OR
                 source IN ('ios', 'android', 'web', 'email', 'api', 'admin')
             )
         """,

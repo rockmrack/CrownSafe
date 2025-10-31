@@ -26,13 +26,11 @@ class RetryStrategy(Enum):
 class RetryableError(Exception):
     """Base class for retryable errors."""
 
-    pass
 
 
 class NonRetryableError(Exception):
     """Errors that should not be retried."""
 
-    pass
 
 
 class RetryConfig:

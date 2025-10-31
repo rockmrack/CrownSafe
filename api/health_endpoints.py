@@ -2,7 +2,7 @@
 
 import os
 import platform
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Request, Response

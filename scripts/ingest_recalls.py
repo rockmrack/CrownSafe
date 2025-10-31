@@ -77,7 +77,7 @@ class RecallDataIngester:
                     text(
                         """
                     SELECT EXISTS (
-                        SELECT FROM information_schema.tables 
+                        SELECT FROM information_schema.tables
                         WHERE table_name = 'recalls_enhanced'
                     );
                 """,

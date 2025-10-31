@@ -4,7 +4,7 @@ Validates security configuration and best practices across the application.
 
 import logging
 import os
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 logger = logging.getLogger(__name__)

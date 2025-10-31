@@ -9,7 +9,7 @@ import hashlib  # noqa: E402
 import logging  # noqa: E402
 import re  # noqa: E402
 from collections import OrderedDict  # noqa: E402
-from datetime import datetime, timedelta, UTC  # noqa: E402
+from datetime import UTC, datetime, timedelta  # noqa: E402
 from typing import Any  # noqa: E402
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, Query  # noqa: E402

@@ -5,7 +5,7 @@ import asyncio
 import copy
 import json
 import logging
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 print(f"Loading discovery.py (Step 77 Version - Fixed): {__file__}")

@@ -176,9 +176,9 @@ class RestoreTester:
             # 1. Check if critical tables exist
             cursor.execute(
                 """
-                SELECT table_name 
-                FROM information_schema.tables 
-                WHERE table_schema = 'public' 
+                SELECT table_name
+                FROM information_schema.tables
+                WHERE table_schema = 'public'
                   AND table_name IN ('users', 'recalls_enhanced', 'subscriptions', 'family_members')
                 ORDER BY table_name
             """,
@@ -217,7 +217,7 @@ class RestoreTester:
             # 4. Check for orphaned records (data integrity)
             cursor.execute(
                 """
-                SELECT COUNT(*) 
+                SELECT COUNT(*)
                 FROM family_members fm
                 LEFT JOIN users u ON fm.user_id = u.id
                 WHERE u.id IS NULL
@@ -232,7 +232,7 @@ class RestoreTester:
             # 5. Check indexes
             cursor.execute(
                 """
-                SELECT COUNT(*) 
+                SELECT COUNT(*)
                 FROM pg_indexes
                 WHERE schemaname = 'public'
             """,
@@ -245,7 +245,7 @@ class RestoreTester:
             # 6. Check constraints
             cursor.execute(
                 """
-                SELECT COUNT(*) 
+                SELECT COUNT(*)
                 FROM information_schema.table_constraints
                 WHERE constraint_schema = 'public'
                   AND constraint_type IN ('PRIMARY KEY', 'FOREIGN KEY', 'UNIQUE')

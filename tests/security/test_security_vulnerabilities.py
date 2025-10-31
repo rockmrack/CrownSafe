@@ -188,7 +188,6 @@ class TestCSRFProtection:
         Then: 403 Forbidden or CSRF check performed
         """
         # Implementation depends on your CSRF strategy
-        pass
 
 
 class TestRateLimiting:
@@ -273,7 +272,6 @@ class TestSecurityHeaders:
         _ = client.get("/healthz")  # response (HSTS check disabled for testing)
         # In production, HSTS should be present
         # assert "Strict-Transport-Security" in response.headers
-        pass
 
     def test_content_security_policy_configured(self, client) -> None:
         """Test CSP header configuration.

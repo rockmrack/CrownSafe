@@ -3,7 +3,7 @@ Allows administrators to manage and process privacy requests.
 """
 
 import logging
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request

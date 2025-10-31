@@ -3,10 +3,10 @@ This file shows best practices for unit testing in the BabyShield backend.
 """
 
 from datetime import datetime, timedelta
+from typing import Never
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
-from typing import Never
 
 
 @pytest.mark.unit

@@ -6,7 +6,7 @@ including database, cache, and external service dependencies.
 
 import logging
 import time
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException

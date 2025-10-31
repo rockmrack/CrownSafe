@@ -4,7 +4,7 @@ import asyncio
 import json
 import time
 import uuid
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 import redis
 

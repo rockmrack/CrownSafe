@@ -1,7 +1,7 @@
 """Product Monitoring Management Endpoints."""
 
 import logging
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlalchemy import desc

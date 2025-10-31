@@ -54,8 +54,8 @@ def main() -> None:
         """
         INSERT INTO scan_history (
           user_id, scan_id, scan_timestamp, product_name, brand, barcode, model_number,
-          upc_gtin, category, scan_type, confidence_score, barcode_format, verdict, 
-          risk_level, recalls_found, recall_ids, agencies_checked, allergen_alerts, 
+          upc_gtin, category, scan_type, confidence_score, barcode_format, verdict,
+          risk_level, recalls_found, recall_ids, agencies_checked, allergen_alerts,
           pregnancy_warnings, age_warnings, included_in_reports, created_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(scan_id) DO UPDATE SET

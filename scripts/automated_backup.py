@@ -12,7 +12,7 @@ Features:
 import logging
 import os
 import subprocess
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 
 logger = logging.getLogger(__name__)
 

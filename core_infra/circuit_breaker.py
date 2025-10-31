@@ -264,14 +264,12 @@ async def external_api_fallback(*args, **kwargs):
 async def safe_database_query(query: str) -> None:
     """Example of a protected database query."""
     # Your database query logic here
-    pass
 
 
 @resilient_operation("external_api", max_attempts=2, fallback=external_api_fallback)
 async def safe_api_call(url: str) -> None:
     """Example of a protected API call."""
     # Your API call logic here
-    pass
 
 
 # Health check for circuit breakers

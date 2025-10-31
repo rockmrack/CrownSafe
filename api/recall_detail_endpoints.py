@@ -65,7 +65,7 @@ async def get_recall_detail(recall_id: str, request: Request, response: Response
             # Optimized UNION query to check both tables in one go
             query = text(
                 """
-                SELECT 
+                SELECT
                     recall_id as id,
                     product_name as "productName",
                     brand,
@@ -91,7 +91,7 @@ async def get_recall_detail(recall_id: str, request: Request, response: Response
                 
                 UNION ALL
                 
-                SELECT 
+                SELECT
                     recall_id as id,
                     product_name as "productName",
                     brand,

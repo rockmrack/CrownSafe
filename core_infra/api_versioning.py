@@ -334,7 +334,7 @@ class VersionMigration:
 # In your main app:
 
 from core_infra.api_versioning import (
-    VersionedRouter, 
+    VersionedRouter,
     api_version_middleware,
     versioned_endpoint
 )

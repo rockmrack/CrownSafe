@@ -1,7 +1,7 @@
 """Scan History Endpoints - Shows users their past scans."""
 
 import logging
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import and_, desc

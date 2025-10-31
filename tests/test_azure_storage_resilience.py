@@ -3,6 +3,7 @@ Tests circuit breaker, retry logic, correlation IDs, and error handling.
 """
 
 import time
+from typing import Never
 from unittest.mock import patch
 
 import pytest
@@ -21,7 +22,6 @@ from core_infra.azure_storage_resilience import (
     retry_with_exponential_backoff,
     with_correlation_id,
 )
-from typing import Never
 
 
 class TestCircuitBreaker:

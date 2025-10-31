@@ -27,7 +27,6 @@ class TestBarcodeScanner:
 
         TODO: Implement with real barcode scanning service
         """
-        pass
 
     def test_scan_barcode_with_no_barcode_returns_none(self) -> None:
         """Test scanning image without barcode.
@@ -38,7 +37,6 @@ class TestBarcodeScanner:
 
         TODO: Implement this test
         """
-        pass
 
     def test_scan_barcode_with_multiple_barcodes_returns_all(self) -> None:
         """Test scanning image with multiple barcodes.
@@ -49,7 +47,6 @@ class TestBarcodeScanner:
 
         TODO: Implement this test
         """
-        pass
 
     def test_validate_barcode_with_valid_upc_returns_true(self) -> None:
         """Test barcode validation with valid UPC.
@@ -60,7 +57,6 @@ class TestBarcodeScanner:
 
         TODO: Implement this test
         """
-        pass
 
     def test_validate_barcode_with_invalid_checksum_returns_false(self) -> None:
         """Test barcode validation with invalid checksum.
@@ -71,7 +67,6 @@ class TestBarcodeScanner:
 
         TODO: Implement this test
         """
-        pass
 
     def test_detect_barcode_type_with_upc_returns_upc_type(self) -> None:
         """Test barcode type detection.
@@ -82,7 +77,6 @@ class TestBarcodeScanner:
 
         TODO: Implement this test
         """
-        pass
 
     def test_scan_with_poor_image_quality_handles_gracefully(self) -> None:
         """Test scanning with low quality image.
@@ -93,7 +87,6 @@ class TestBarcodeScanner:
 
         TODO: Implement this test
         """
-        pass
 
     def test_scan_with_rotated_image_detects_barcode(self) -> None:
         """Test barcode detection with rotated image.
@@ -104,7 +97,6 @@ class TestBarcodeScanner:
 
         TODO: Implement this test
         """
-        pass
 
 
 class TestBarcodeValidator:
@@ -119,7 +111,6 @@ class TestBarcodeValidator:
 
         TODO: Implement this test
         """
-        pass
 
     def test_validate_ean_with_valid_13_digit_returns_true(self) -> None:
         """Test EAN validation with valid 13-digit code.
@@ -130,7 +121,6 @@ class TestBarcodeValidator:
 
         TODO: Implement this test
         """
-        pass
 
     def test_calculate_checksum_returns_correct_digit(self) -> None:
         """Test checksum calculation.
@@ -141,7 +131,6 @@ class TestBarcodeValidator:
 
         TODO: Implement this test
         """
-        pass
 
     def test_normalize_barcode_removes_spaces(self) -> None:
         """Test barcode normalization.
@@ -152,7 +141,6 @@ class TestBarcodeValidator:
 
         TODO: Implement this test
         """
-        pass
 
 
 class TestBarcodeEndpoints:
@@ -167,7 +155,6 @@ class TestBarcodeEndpoints:
 
         TODO: Implement this test
         """
-        pass
 
     def test_scan_endpoint_with_invalid_file_returns_400(self) -> None:
         """Test scan endpoint with non-image file.
@@ -178,7 +165,6 @@ class TestBarcodeEndpoints:
 
         TODO: Implement this test
         """
-        pass
 
     def test_scan_endpoint_with_large_file_returns_413(self) -> None:
         """Test scan endpoint with file exceeding size limit.
@@ -189,7 +175,6 @@ class TestBarcodeEndpoints:
 
         TODO: Implement this test
         """
-        pass
 
     def test_scan_result_includes_product_safety_info(self) -> None:
         """Test that scan results include safety information.
@@ -200,7 +185,6 @@ class TestBarcodeEndpoints:
 
         TODO: Implement this test
         """
-        pass
 
 
 # IMPLEMENTATION CHECKLIST:

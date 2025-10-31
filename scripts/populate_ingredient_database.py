@@ -5,7 +5,7 @@ This replaces the mock JSON files with comprehensive database tables.
 
 import logging
 import sys
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from pathlib import Path
 
 # Add the project root to Python path

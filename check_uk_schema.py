@@ -34,9 +34,9 @@ try:
     print("=" * 80)
 
     cursor.execute("""
-        SELECT column_name, data_type 
-        FROM information_schema.columns 
-        WHERE table_name = 'recalls' 
+        SELECT column_name, data_type
+        FROM information_schema.columns
+        WHERE table_name = 'recalls'
         ORDER BY ordinal_position;
     """)
 
@@ -81,8 +81,8 @@ try:
     print("=" * 80)
 
     cursor.execute("""
-        SELECT id, source_agency, country, recall_date 
-        FROM recalls 
+        SELECT id, source_agency, country, recall_date
+        FROM recalls
         WHERE source_agency ILIKE '%UK%' OR country ILIKE '%UK%'
         LIMIT 5;
     """)

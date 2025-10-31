@@ -1,7 +1,7 @@
 """User Dashboard & Statistics Endpoints."""
 
 import logging
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import desc, func

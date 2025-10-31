@@ -156,7 +156,7 @@ AGENCY_FIELD_MAPPING = {
 """
 ✅ COMPLETE COVERAGE: All 39 agencies can store their specific identifiers
 ✅ FOOD SAFETY: Lot numbers, expiry dates for USDA FSIS, CFIA, ANVISA, etc.
-✅ VEHICLE SAFETY: Make/model/year for NHTSA, Transport Canada car seats  
+✅ VEHICLE SAFETY: Make/model/year for NHTSA, Transport Canada car seats
 ✅ PHARMACEUTICAL: NDC, DIN codes for FDA, Health Canada drugs
 ✅ INTERNATIONAL: Registry codes for Latin American agencies
 ✅ EUROPEAN: EAN/GTIN codes for EU agencies

@@ -4,7 +4,7 @@ Part of the Proactive Consumer Product Safety Framework.
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 import aiohttp
 

@@ -188,7 +188,6 @@ def register_routers(app: FastAPI) -> None:
     # Import and register routers
     # (This is done in main_crownsafe.py for visibility)
 
-    pass
 
 
 def configure_startup_events(app: FastAPI) -> None:

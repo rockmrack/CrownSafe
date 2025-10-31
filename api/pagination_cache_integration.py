@@ -4,7 +4,7 @@ Shows how to wire cursor pagination and HTTP caching into existing endpoints.
 
 import logging
 import os
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException, Request
