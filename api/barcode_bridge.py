@@ -215,7 +215,7 @@ def validate_upc(upc: str) -> bool:
         else:
             # UPC-E validation (simplified)
             return True
-    except:
+    except (ValueError, IndexError, TypeError):
         return False
 
 
@@ -240,7 +240,7 @@ def validate_ean(ean: str) -> bool:
             check = (10 - ((odd_sum * 3 + even_sum) % 10)) % 10
 
         return check == int(ean[-1])
-    except:
+    except (ValueError, IndexError, TypeError):
         return False
 
 

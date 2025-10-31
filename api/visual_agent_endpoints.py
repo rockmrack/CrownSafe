@@ -4,6 +4,7 @@ Visual Agent API Endpoints - Phase 2
 Image upload, analysis, MFV, and HITL review queue
 """
 
+import json
 import logging
 import os
 import uuid
@@ -493,7 +494,7 @@ async def claim_review(review_id: int, request: Request, db: Session = Depends(g
                     reviewer_email = str(body_data.get("assignee") or body_data.get("user_id", ""))
                 else:
                     reviewer_email = str(body_data)
-            except:
+            except (json.JSONDecodeError, AttributeError, KeyError):
                 reviewer_email = body.decode("utf-8")
         else:
             # Raw string

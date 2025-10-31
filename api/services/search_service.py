@@ -437,5 +437,6 @@ class SearchService:
                 return False
             result = self.db.execute(text("SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')"))
             return result.scalar()
-        except:
+        except Exception as e:
+            logger.debug(f"Could not check pg_trgm extension: {e}")
             return False

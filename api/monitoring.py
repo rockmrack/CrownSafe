@@ -340,8 +340,8 @@ async def get_metrics():
         if len(matches) >= 2:
             active_connections = int(matches[0]) - int(matches[1])
             database_connections_active.set(active_connections)
-    except:
-        pass
+    except (ValueError, IndexError, AttributeError) as e:
+        logger.debug(f"Could not parse database connection metrics: {e}")
 
     # Generate metrics
     metrics = generate_latest(REGISTRY)

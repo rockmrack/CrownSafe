@@ -290,8 +290,8 @@ This is an automated notification from BabyShield Support System
                     subtype="png",
                     filename=f"screenshot_{ticket_number}.png",
                 )
-            except:
-                logger.warning(f"Failed to attach screenshot for ticket {ticket_id}")
+            except Exception as e:
+                logger.warning(f"Failed to attach screenshot for ticket {ticket_id}: {e}")
 
         if feedback.logs:
             message.add_attachment(
