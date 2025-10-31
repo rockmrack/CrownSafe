@@ -64,10 +64,12 @@ Recall Data:
 
 Based on this data, determine a risk level from this specific list: ["None", "Low", "Medium", "High", "Critical"].
 
-Your response MUST be a single, valid JSON object with exactly two keys: "summary" and "risk_level". Do not include any other text, explanations, or markdown.  # noqa: E501
+Your response MUST be a single, valid JSON object with exactly two keys: "summary" and
+"risk_level". Do not include any other text, explanations, or markdown.
 
 Example of a perfect response:
-{{"summary": "This product has an active recall due to a potential contamination risk. It is advised to stop using this product immediately.", "risk_level": "High"}}  # noqa: E501
+{{"summary": "This product has an active recall due to a potential contamination risk. It is
+advised to stop using this product immediately.", "risk_level": "High"}}
 """
 
     async def _query_llm(self, prompt: str) -> Optional[Dict[str, Any]]:

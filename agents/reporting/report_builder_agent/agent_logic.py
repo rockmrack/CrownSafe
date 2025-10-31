@@ -230,7 +230,9 @@ def format_highlights(pubmed_articles, trials, adverse_events):
     t = len(trials.get("trials_data", [])) if trials else 0
     aecount = len(adverse_events.get("top_adverse_reactions", [])) if adverse_events else 0
     return f"""
-    <div style="background:#f6fbff;border:1.5px solid #bee1fa;padding:10px 18px 8px 18px;border-radius:9px;display:flex;flex-direction:row;justify-content:space-between;margin:12px 0 18px 0;font-size:12pt;">  # noqa: E501
+    <div style="background:#f6fbff;border:1.5px solid #bee1fa;padding:10px 18px 8px 18px;
+    border-radius:9px;display:flex;flex-direction:row;justify-content:space-between;
+    margin:12px 0 18px 0;font-size:12pt;">
         <div><b>Articles:</b> {n}</div>
         <div><b>Trials:</b> {t}</div>
         <div><b>Top AE Reactions:</b> {aecount}</div>
