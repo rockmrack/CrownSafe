@@ -219,14 +219,13 @@ def bulk_operation(db: Session, items: list, operation: Callable, batch_size: in
 @asynccontextmanager
 async def async_transaction(db_session):
     """Async transaction context manager."""
-    async with db_session() as session:
-        async with session.begin():
-            try:
-                yield session
-                await session.commit()
-            except Exception:
-                await session.rollback()
-                raise
+    async with db_session() as session, session.begin():
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
 
 
 class Saga:

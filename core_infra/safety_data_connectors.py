@@ -181,43 +181,42 @@ class CPSCDataConnector:
         articles = []
 
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    news_api_url,
-                    params={"type": "blog"},
-                    timeout=aiohttp.ClientTimeout(total=15),
-                ) as response:
-                    if response.status == 200:
-                        data = await response.json()
+            async with aiohttp.ClientSession() as session, session.get(
+                news_api_url,
+                params={"type": "blog"},
+                timeout=aiohttp.ClientTimeout(total=15),
+            ) as response:
+                if response.status == 200:
+                    data = await response.json()
 
-                        for item in data:
-                            # We only want articles with a clear title and URL
-                            if not item.get("title") or not item.get("url"):
-                                continue
+                    for item in data:
+                        # We only want articles with a clear title and URL
+                        if not item.get("title") or not item.get("url"):
+                            continue
 
-                            # Create a unique ID for our database
-                            article_id = f"CPSC-NEWS-{item.get('nid', 'unknown')}"
+                        # Create a unique ID for our database
+                        article_id = f"CPSC-NEWS-{item.get('nid', 'unknown')}"
 
-                            # Parse publication date
-                            pub_date = datetime.fromtimestamp(int(item.get("created", 0)))
+                        # Parse publication date
+                        pub_date = datetime.fromtimestamp(int(item.get("created", 0)))
 
-                            articles.append(
-                                {
-                                    "article_id": article_id,
-                                    "title": item["title"],
-                                    "summary": item.get("description", "Read more for details."),
-                                    "source_agency": "CPSC",
-                                    "publication_date": pub_date.date(),
-                                    "image_url": item.get("image_medium"),
-                                    "article_url": f"https://www.cpsc.gov{item['url']}",
-                                    "is_featured": "safe sleep" in item["title"].lower()
-                                    or "anchor it" in item["title"].lower(),
-                                },
-                            )
+                        articles.append(
+                            {
+                                "article_id": article_id,
+                                "title": item["title"],
+                                "summary": item.get("description", "Read more for details."),
+                                "source_agency": "CPSC",
+                                "publication_date": pub_date.date(),
+                                "image_url": item.get("image_medium"),
+                                "article_url": f"https://www.cpsc.gov{item['url']}",
+                                "is_featured": "safe sleep" in item["title"].lower()
+                                or "anchor it" in item["title"].lower(),
+                            },
+                        )
 
-                        logger.info(f"Successfully fetched {len(articles)} safety articles from CPSC.")
-                    else:
-                        logger.error(f"CPSC News API returned status {response.status}")
+                    logger.info(f"Successfully fetched {len(articles)} safety articles from CPSC.")
+                else:
+                    logger.error(f"CPSC News API returned status {response.status}")
 
         except Exception as e:
             logger.exception(f"Failed to fetch safety articles from CPSC: {e}")

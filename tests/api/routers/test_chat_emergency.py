@@ -118,12 +118,12 @@ class TestSuggestedQuestions:
         # Test pregnant user
         profile_pregnant = {"is_pregnant": True}
         questions = build_suggested_questions("general", profile_pregnant)
-        assert "Safe in pregnancy?" == questions[0]  # Should be first
+        assert questions[0] == "Safe in pregnancy?"  # Should be first
 
         # Test user with allergies
         profile_allergies = {"allergies": ["peanut", "dairy"]}
         questions = build_suggested_questions("general", profile_allergies)
-        assert "Safe for my allergies?" == questions[0]  # Should be first
+        assert questions[0] == "Safe for my allergies?"  # Should be first
 
     def test_unique_questions_only(self) -> None:
         # Test that duplicate questions are removed

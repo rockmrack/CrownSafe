@@ -769,7 +769,7 @@ class DrugClassPatternTester:
 
             # Get unique SGLT2 drugs
             unique_sglt2_drugs = set()
-            for drug_list in drug_document_map.keys():
+            for drug_list in drug_document_map:
                 if any(sglt2 in drug_list.lower() for sglt2 in self.sglt2_drugs):
                     unique_sglt2_drugs.add(drug_list)
 

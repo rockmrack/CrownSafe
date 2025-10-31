@@ -34,7 +34,7 @@ values = dict(
     created_at=datetime.datetime.now(datetime.UTC).isoformat() + "Z",
 )
 if row:
-    sets = ",".join([f"{k}=?" for k in values.keys()])
+    sets = ",".join([f"{k}=?" for k in values])
     c.execute(f"UPDATE scan_history SET {sets} WHERE scan_id=?", [*values.values(), scan_id])
 else:
     cols = ",".join(values.keys())

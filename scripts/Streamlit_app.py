@@ -1604,10 +1604,9 @@ with col2:
         status_text += " (ChromaDB)"
     st.info(status_text)
 
-with col3:
-    with st.expander("🚀 Features & Tips"):
-        st.write(
-            """
+with col3, st.expander("🚀 Features & Tips"):
+    st.write(
+        """
         **✅ FINAL FIXED VERSION:**
         - Claude API requires max_tokens (set to 4000)
         - Uses ONLY claude-opus-4-20250514
@@ -1625,7 +1624,7 @@ with col3:
         - Smart context management
         - Semantic search via ChromaDB
         """,
-        )
+    )
 
 # Optional dependency info
 if not PDF_SUPPORT:

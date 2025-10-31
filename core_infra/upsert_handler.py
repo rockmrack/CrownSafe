@@ -225,9 +225,7 @@ class UpsertHandler:
                         # Handle default values
                         if field == "product_name" and not recall.get(field):
                             params_dict[param_name] = "Unknown Product"
-                        elif field == "source_agency" and not recall.get(field):
-                            params_dict[param_name] = "Unknown"
-                        elif field == "country" and not recall.get(field):
+                        elif field == "source_agency" and not recall.get(field) or field == "country" and not recall.get(field):
                             params_dict[param_name] = "Unknown"
                         else:
                             params_dict[param_name] = recall.get(field)

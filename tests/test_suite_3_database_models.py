@@ -772,9 +772,8 @@ class TestDatabaseAndModels:
         from core_infra.database import get_db_session
 
         try:
-            with get_db_session() as session1:
-                with get_db_session() as session2:
-                    assert session1 != session2
+            with get_db_session() as session1, get_db_session() as session2:
+                assert session1 != session2
         except Exception:
             pytest.skip("Database not available")
 

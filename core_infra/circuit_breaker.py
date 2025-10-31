@@ -218,7 +218,7 @@ def get_circuit_status(service_name: str) -> dict[str, Any]:
 
 def get_all_circuit_status() -> dict[str, dict[str, Any]]:
     """Get status of all circuit breakers."""
-    return {service: get_circuit_status(service) for service in breakers.keys()}
+    return {service: get_circuit_status(service) for service in breakers}
 
 
 def reset_circuit(service_name: str) -> bool:
