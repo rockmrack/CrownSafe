@@ -3023,6 +3023,38 @@ async def security_audit():
         )
 
 
+@app.get("/api/v1/monitoring/azure-cache-stats", tags=["monitoring"])
+async def azure_cache_stats():
+    """
+    Azure Storage cache performance statistics
+    Redis-based SAS URL caching metrics
+    """
+    try:
+        from core_infra.azure_storage_cache import get_cache_manager
+
+        cache_manager = get_cache_manager()
+        stats = cache_manager.get_cache_stats()
+
+        return JSONResponse(
+            content={
+                "cache_stats": stats,
+                "timestamp": datetime.utcnow().isoformat(),
+            },
+            status_code=200,
+        )
+
+    except Exception as e:
+        logger.error(f"Cache stats retrieval failed: {e}")
+        return JSONResponse(
+            content={
+                "error": str(e),
+                "cache_enabled": False,
+                "timestamp": datetime.utcnow().isoformat(),
+            },
+            status_code=500,
+        )
+
+
 # --- NOTIFICATION SYSTEM ---
 
 

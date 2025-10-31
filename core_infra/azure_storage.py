@@ -165,23 +165,40 @@ class AzureBlobStorageClient:
         container_name: Optional[str] = None,
         expiry_hours: int = 24,
         permissions: str = "r",
+        use_cache: bool = True,
     ) -> str:
         """
         Generate SAS (Shared Access Signature) URL for secure blob access
+        Supports Redis caching for improved performance (23h cache TTL)
 
         Args:
             blob_name: Name of the blob
             container_name: Container name
             expiry_hours: URL expiry time in hours (default 24)
             permissions: Permissions string ('r' = read, 'w' = write, 'd' = delete)
+            use_cache: Enable Redis caching (default True)
 
         Returns:
             SAS URL with temporary access token
         """
         container = container_name or self.container_name
+
+        # Try cache first (if enabled)
+        if use_cache:
+            try:
+                from core_infra.azure_storage_cache import get_cache_manager
+
+                cache_manager = get_cache_manager()
+                cached_url = cache_manager.get_cached_sas_url(blob_name, container, permissions)
+                if cached_url:
+                    logger.debug(f"Returning cached SAS URL for {blob_name}")
+                    return cached_url
+            except Exception as e:
+                logger.warning(f"Cache lookup failed: {e}, generating new SAS URL")
+
+        # Generate new SAS token
         expiry = datetime.utcnow() + timedelta(hours=expiry_hours)
 
-        # Generate SAS token
         sas_token = generate_blob_sas(
             account_name=self.account_name,
             container_name=container,
@@ -195,6 +212,17 @@ class AzureBlobStorageClient:
         blob_url = f"https://{self.account_name}.blob.core.windows.net/{container}/{blob_name}?{sas_token}"
 
         logger.info(f"Generated SAS URL for {blob_name}, expires in {expiry_hours}h")
+
+        # Cache the URL (23h TTL, expires before 24h SAS URL)
+        if use_cache:
+            try:
+                from core_infra.azure_storage_cache import get_cache_manager
+
+                cache_manager = get_cache_manager()
+                cache_manager.cache_sas_url(blob_name, container, blob_url, permissions, ttl_hours=23)
+            except Exception as e:
+                logger.warning(f"Failed to cache SAS URL: {e}")
+
         return blob_url
 
     @retry_with_exponential_backoff(max_retries=3, base_delay=1.0)
@@ -271,6 +299,7 @@ class AzureBlobStorageClient:
     def delete_blob(self, blob_name: str, container_name: Optional[str] = None) -> bool:
         """
         Delete blob from container
+        Automatically invalidates cached SAS URLs
 
         Args:
             blob_name: Name of the blob
@@ -279,9 +308,20 @@ class AzureBlobStorageClient:
         Returns:
             True if deleted successfully, False otherwise
         """
-        blob_client = self._get_blob_client(blob_name, container_name)
+        container = container_name or self.container_name
+        blob_client = self._get_blob_client(blob_name, container)
         blob_client.delete_blob()
         logger.info(f"Deleted blob: {blob_name}")
+
+        # Invalidate cached SAS URLs
+        try:
+            from core_infra.azure_storage_cache import get_cache_manager
+
+            cache_manager = get_cache_manager()
+            cache_manager.invalidate_cache(blob_name, container)
+        except Exception as e:
+            logger.warning(f"Failed to invalidate cache for {blob_name}: {e}")
+
         return True
 
     @retry_with_exponential_backoff(max_retries=3, base_delay=1.0)
