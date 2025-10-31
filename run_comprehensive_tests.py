@@ -263,8 +263,8 @@ class ComprehensiveTestRunner:
                     cov_data = json.load(f)
                     total_cov = cov_data.get("totals", {}).get("percent_covered", 0)
                     print(f"\n📊 Code Coverage: {total_cov:.2f}%")
-        except:
-            pass
+        except (FileNotFoundError, json.JSONDecodeError, KeyError):
+            pass  # Coverage file not found or invalid
 
         print("\n" + "=" * 80)
         print("CATEGORY BREAKDOWN")

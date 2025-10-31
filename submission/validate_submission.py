@@ -343,8 +343,8 @@ class SubmissionValidator:
                         else:
                             _ = False  # format_ok
                             self.warnings.append(f"{name} may not be a valid PNG")
-                except:
-                    pass
+                except (OSError, IOError):
+                    pass  # Can't read file header
 
             else:
                 self.print_result(name, False, "File not found")

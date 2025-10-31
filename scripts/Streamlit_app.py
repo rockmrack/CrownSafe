@@ -219,8 +219,8 @@ class UnifiedMemoryManager:
         # Token counter
         try:
             self.encoder = tiktoken.encoding_for_model("gpt-4")
-        except:
-            self.encoder = tiktoken.get_encoding("cl100k_base")
+        except Exception:
+            self.encoder = tiktoken.get_encoding("cl100k_base")  # Fallback encoder
 
         # Token limits for different models
         self.token_limits = {

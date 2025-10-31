@@ -196,8 +196,8 @@ class SearchServiceV2:
                     has_trgm = trgm_check.scalar()
                 else:
                     has_trgm = False
-            except:
-                has_trgm = False
+            except Exception:
+                has_trgm = False  # Extension check failed
 
             if has_trgm:
                 # Use pg_trgm similarity

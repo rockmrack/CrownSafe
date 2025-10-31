@@ -31,7 +31,7 @@ def check_services():
         r = redis.Redis(host="localhost", port=6379)
         r.ping()
         print("✅ Redis is running on port 6379")
-    except:
+    except (redis.ConnectionError, redis.TimeoutError):
         print("❌ Redis is NOT running")
         all_good = False
 
@@ -48,7 +48,7 @@ def check_services():
         else:
             print("❌ API Gateway is not healthy")
             all_good = False
-    except:
+    except (requests.RequestException, requests.Timeout):
         print("❌ API Gateway is NOT running on port 8000")
         print("   Start with: python api_gateway/main.py")
         all_good = False

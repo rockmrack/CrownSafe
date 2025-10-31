@@ -115,7 +115,7 @@ def upgrade():
         op.execute("UPDATE users SET is_admin = false WHERE is_admin IS NULL")
         # Make it non-nullable
         op.alter_column("users", "is_admin", nullable=False, server_default="false")
-    except:
+    except Exception:
         # Column might already exist
         pass
 
