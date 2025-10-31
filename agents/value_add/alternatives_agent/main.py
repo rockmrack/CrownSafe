@@ -1,5 +1,3 @@
-
-
 from .agent_logic import AlternativesAgentLogic
 
 # ... (Standard logging and agent setup) ...

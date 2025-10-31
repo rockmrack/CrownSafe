@@ -1,4 +1,3 @@
-
 """
 Integration module for pagination and caching features (Task 5)
 Shows how to wire cursor pagination and HTTP caching into existing endpoints

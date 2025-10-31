@@ -4,7 +4,6 @@ Tests for OWASP Top 10 vulnerabilities and security best practices
 """
 
 
-
 class TestSQLInjection:
     """Test suite for SQL injection protection"""
 

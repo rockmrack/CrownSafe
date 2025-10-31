@@ -5,7 +5,6 @@ Revises: bcef138c88a2
 Create Date: 2025-10-12 00:00:00.000000
 """
 
-
 from alembic import op
 
 # revision identifiers, used by Alembic.

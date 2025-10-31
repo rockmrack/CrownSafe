@@ -4,7 +4,6 @@ Tests JWT token generation, validation, and user authentication
 """
 
 
-
 # These tests will be implemented based on your actual auth service
 # This is a comprehensive template for enterprise-grade auth testing
 

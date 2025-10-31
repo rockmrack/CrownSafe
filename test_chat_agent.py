@@ -32,7 +32,6 @@ except Exception as e:
 # Test 2: Check chat agent logic
 print("\n[2/4] Testing chat agent logic...")
 try:
-
     print("✓ ChatAgentLogic imported successfully")
 except Exception as e:
     print(f"✗ Failed to import ChatAgentLogic: {e}")
@@ -43,7 +42,6 @@ except Exception as e:
 # Test 3: Check chat tools
 print("\n[3/4] Testing chat tools...")
 try:
-
     print("✓ Chat tools imported successfully")
 except Exception as e:
     print(f"✗ Failed to import chat tools: {e}")
@@ -54,7 +52,6 @@ except Exception as e:
 # Test 4: Check chat memory/CRUD
 print("\n[4/4] Testing chat memory...")
 try:
-
     print("✓ Chat memory functions imported successfully")
 except Exception as e:
     print(f"✗ Failed to import chat memory: {e}")

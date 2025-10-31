@@ -1,4 +1,3 @@
-
 from agents.chat.chat_agent.agent_logic import (
     ChatAgentLogic,
     EvidenceItem,

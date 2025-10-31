@@ -13,7 +13,6 @@ from dotenv import load_dotenv
 
 # Fix Unicode encoding for Windows console
 if sys.platform.startswith("win"):
-
     sys.stdout.reconfigure(encoding="utf-8")
 
 # Add project root to sys.path

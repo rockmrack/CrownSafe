@@ -206,7 +206,6 @@ def run_tests():
         import logging
         import os
 
-
         print("PASS - All module dependencies available")
         print("  - logging: OK")
         print("  - json: OK")

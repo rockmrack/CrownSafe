@@ -1,4 +1,3 @@
-
 """
 Recall Detail Endpoints for Individual Recall Lookup
 """

@@ -1,4 +1,3 @@
-
 """
 Improved search functionality for better recall matching
 Handles compound searches, partial matches, and brand-product combinations
