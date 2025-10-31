@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test Suite 3: Database and Models Tests (100 tests)
+"""Test Suite 3: Database and Models Tests (100 tests)
 Tests database connections, models, queries, and data integrity
 """
 

@@ -14,7 +14,6 @@ from agents.recall_data_agent.connectors import CPSCConnector  # noqa: E402
 
 async def test_cpsc():
     """Test CPSC connector only"""
-
     print("\n" + "=" * 80)
     print("TESTING CPSC CONNECTOR (US Consumer Product Safety Commission)")
     print("=" * 80 + "\n")

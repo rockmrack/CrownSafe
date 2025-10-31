@@ -1,5 +1,4 @@
-"""
-Observability Integration Module
+"""Observability Integration Module
 Wires all observability features into the FastAPI app
 """
 
@@ -28,15 +27,13 @@ logger = logging.getLogger("app")
 
 
 def setup_observability(app: FastAPI):
-    """
-    Configure all observability features for the FastAPI app
+    """Configure all observability features for the FastAPI app
 
     This should be called BEFORE adding routes to ensure proper middleware order
 
     Args:
         app: FastAPI application instance
     """
-
     # 1. Setup JSON logging (do this first)
     log_level = os.getenv("LOG_LEVEL", "INFO")
     setup_json_logging(log_level)
@@ -87,8 +84,7 @@ def setup_observability(app: FastAPI):
 
 
 async def on_startup(app: FastAPI):
-    """
-    Startup event handler for async initialization
+    """Startup event handler for async initialization
     """
     # Initialize rate limiter
     rate_limit_enabled = await init_rate_limiter()
@@ -99,8 +95,7 @@ async def on_startup(app: FastAPI):
 
 
 async def on_shutdown(app: FastAPI):
-    """
-    Shutdown event handler for cleanup
+    """Shutdown event handler for cleanup
     """
     # Close rate limiter
     await close_rate_limiter()
@@ -108,11 +103,9 @@ async def on_shutdown(app: FastAPI):
 
 
 def add_rate_limited_routes(app: FastAPI):
-    """
-    Example of adding rate limits to specific routes
+    """Example of adding rate limits to specific routes
     This should be called AFTER routes are defined
     """
-
     # Import here to avoid circular imports
 
     # Example: Add rate limiting to search endpoint

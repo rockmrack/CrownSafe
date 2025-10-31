@@ -313,7 +313,7 @@ class ReportBuilderAgentManager:
         try:
             # Initialize ReportBuilderAgentLogic
             self.report_builder_logic = ReportBuilderAgentLogic(
-                agent_id=AGENT_ID, version=AGENT_VERSION, logger_instance=logic_logger
+                agent_id=AGENT_ID, version=AGENT_VERSION, logger_instance=logic_logger,
             )
 
             # Get MCP server URL
@@ -336,7 +336,7 @@ class ReportBuilderAgentManager:
             logger.info(f"Environment loaded from: {env_source}")
             logger.info(f"MCP Server URL: {base_mcp_server_url}")
             logger.info(
-                f"Connection config: Max retries={MAX_CONNECT_RETRIES}, Base delay={BASE_RETRY_DELAY}s, Health check={CONNECTION_HEALTH_CHECK_INTERVAL}s"  # noqa: E501
+                f"Connection config: Max retries={MAX_CONNECT_RETRIES}, Base delay={BASE_RETRY_DELAY}s, Health check={CONNECTION_HEALTH_CHECK_INTERVAL}s",  # noqa: E501
             )
 
             return True

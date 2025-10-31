@@ -1,5 +1,4 @@
-"""
-Quick Agent Test Runner
+"""Quick Agent Test Runner
 Runs tests for all major BabyShield agents
 """
 

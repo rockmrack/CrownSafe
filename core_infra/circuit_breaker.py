@@ -1,5 +1,4 @@
-"""
-Circuit Breaker Pattern for BabyShield API
+"""Circuit Breaker Pattern for BabyShield API
 Prevents cascade failures and provides graceful degradation
 """
 
@@ -88,8 +87,7 @@ for breaker in breakers.values():
 
 # Decorator for applying circuit breaker to functions
 def with_circuit_breaker(service_name: str, fallback=None):
-    """
-    Decorator to apply circuit breaker to a function
+    """Decorator to apply circuit breaker to a function
 
     Args:
         service_name: Name of the service (must be in BREAKER_CONFIGS)
@@ -166,8 +164,7 @@ def with_retry(
     wait_exponential_max: int = 10,
     retry_on: tuple = (Exception,),
 ):
-    """
-    Decorator for retrying operations with exponential backoff
+    """Decorator for retrying operations with exponential backoff
 
     Args:
         max_attempts: Maximum number of retry attempts
@@ -184,8 +181,7 @@ def with_retry(
 
 # Combined decorator for circuit breaker + retry
 def resilient_operation(service_name: str, max_attempts: int = 3, fallback=None):
-    """
-    Combine circuit breaker with retry logic
+    """Combine circuit breaker with retry logic
 
     Args:
         service_name: Name of the service

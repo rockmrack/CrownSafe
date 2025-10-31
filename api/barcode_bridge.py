@@ -37,8 +37,7 @@ router = APIRouter(prefix="/api/v1/barcode", tags=["Barcode Bridge"])
 
 
 def _normalize_scan_payload(barcode: str, payload: dict, trace_id: str, cached: bool) -> dict:
-    """
-    Ensure the response payload has all required fields for BarcodeScanResponse.
+    """Ensure the response payload has all required fields for BarcodeScanResponse.
     Never read barcode from upstream objects – always use the request barcode.
     """
     data = dict(payload or {})
@@ -247,8 +246,7 @@ def validate_ean(ean: str) -> bool:
 
 
 def normalize_barcode(barcode: str) -> tuple[str, str]:
-    """
-    Normalize barcode and detect type
+    """Normalize barcode and detect type
     Returns: (normalized_barcode, barcode_type)
     """
     # Remove spaces and special characters
@@ -270,8 +268,7 @@ def normalize_barcode(barcode: str) -> tuple[str, str]:
 
 
 def extract_brand_from_barcode(barcode: str) -> str | None:
-    """
-    Extract potential brand from barcode prefix
+    """Extract potential brand from barcode prefix
     Common manufacturer prefixes (simplified)
     """
     if not barcode.isdigit() or len(barcode) < 6:
@@ -328,8 +325,7 @@ async def scan_barcode(
     user_id: str | None = Header(None, alias="X-User-ID"),
     device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
-    """
-    Enhanced barcode scanning with intelligent matching and fallback
+    """Enhanced barcode scanning with intelligent matching and fallback
 
     Flow:
     1. Check cache for recent scan
@@ -339,7 +335,6 @@ async def scan_barcode(
     5. Cache the result
     6. Return with appropriate message
     """
-
     try:
         # Validate request has required barcode field
         if not request.barcode or not request.barcode.strip():
@@ -436,7 +431,7 @@ async def scan_barcode(
                             agency=recall.source_agency if hasattr(recall, "source_agency") else "Unknown",
                             match_confidence=1.0,
                             match_type="exact",
-                        )
+                        ),
                     )
                 except Exception as recall_error:
                     logger.error(f"Error processing recall: {str(recall_error)}")
@@ -493,7 +488,7 @@ async def scan_barcode(
                             agency=recall.source_agency if hasattr(recall, "source_agency") else "Unknown",
                             match_confidence=confidence,
                             match_type=match_type,
-                        )
+                        ),
                     )
 
                 # Build fresh result with normalized payload
@@ -572,7 +567,6 @@ async def scan_barcode(
 @router.get("/cache/status")
 async def get_cache_status(user_id: str | None = Header(None, alias="X-User-ID")):
     """Get cache status and optionally user's cached items"""
-
     cache_info = {
         "ok": True,
         "total_cached": len(barcode_cache.cache),
@@ -595,7 +589,6 @@ async def clear_cache(
     user_id: str | None = Header(None, alias="X-User-ID", description="User ID for user-specific cache"),
 ):
     """Clear cache - all or specific barcode"""
-
     if barcode:
         # Clear specific barcode
         if hasattr(barcode_cache, "clear_barcode"):
@@ -641,8 +634,7 @@ async def clear_cache(
 
 @router.get("/test/barcodes")
 async def get_test_barcodes():
-    """
-    Get 5 test barcodes with expected behaviors for acceptance testing
+    """Get 5 test barcodes with expected behaviors for acceptance testing
     """
     return {
         "ok": True,

@@ -1,5 +1,4 @@
-"""
-API versioning system for BabyShield
+"""API versioning system for BabyShield
 Enables backward compatibility and smooth transitions
 """
 
@@ -14,8 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class APIVersion:
-    """
-    Represents an API version
+    """Represents an API version
     """
 
     def __init__(self, version: str, deprecated: bool = False, sunset_date: str = None):
@@ -52,8 +50,7 @@ class APIVersion:
 
 
 class VersionedAPI:
-    """
-    Manages API versioning
+    """Manages API versioning
     """
 
     SUPPORTED_VERSIONS = {
@@ -67,8 +64,7 @@ class VersionedAPI:
 
     @classmethod
     def get_version_from_request(cls, request: Request) -> str:
-        """
-        Extract API version from request
+        """Extract API version from request
         Priority: URL path > Header > Query param > Default
         """
         # 1. Check URL path (e.g., /api/v2/...)
@@ -109,8 +105,7 @@ class VersionedAPI:
 
 
 def versioned_endpoint(versions: list = None, deprecated_in: str = None, removed_in: str = None):
-    """
-    Decorator for versioned endpoints
+    """Decorator for versioned endpoints
 
     Usage:
         @versioned_endpoint(versions=["v1", "v2"])
@@ -153,8 +148,7 @@ def versioned_endpoint(versions: list = None, deprecated_in: str = None, removed
 
 
 class VersionedRouter:
-    """
-    Router that handles multiple API versions
+    """Router that handles multiple API versions
     """
 
     def __init__(self):
@@ -179,8 +173,7 @@ class VersionedRouter:
 
 # Version-specific response transformers
 class ResponseTransformer:
-    """
-    Transform responses based on API version
+    """Transform responses based on API version
     """
 
     @staticmethod
@@ -223,8 +216,7 @@ class ResponseTransformer:
 
 # Middleware for API versioning
 async def api_version_middleware(request: Request, call_next):
-    """
-    Middleware to handle API versioning
+    """Middleware to handle API versioning
     """
     # Get requested version
     version = VersionedAPI.get_version_from_request(request)
@@ -271,14 +263,12 @@ async def api_version_middleware(request: Request, call_next):
 
 # Backward compatibility helpers
 class BackwardCompatibility:
-    """
-    Helpers for maintaining backward compatibility
+    """Helpers for maintaining backward compatibility
     """
 
     @staticmethod
     def deprecated_field(old_name: str, new_name: str):
-        """
-        Mark a field as deprecated
+        """Mark a field as deprecated
         """
 
         def decorator(func):
@@ -293,7 +283,7 @@ class BackwardCompatibility:
                         old_name: {
                             "new_name": new_name,
                             "message": f"Field '{old_name}' is deprecated, use '{new_name}'",
-                        }
+                        },
                     }
 
                 return result
@@ -304,8 +294,7 @@ class BackwardCompatibility:
 
     @staticmethod
     def removed_endpoint(version: str, alternative: str = None):
-        """
-        Mark an endpoint as removed
+        """Mark an endpoint as removed
         """
 
         def decorator(func):
@@ -324,14 +313,12 @@ class BackwardCompatibility:
 
 # Version migration helpers
 class VersionMigration:
-    """
-    Help users migrate between API versions
+    """Help users migrate between API versions
     """
 
     @staticmethod
     def generate_migration_guide(from_version: str, to_version: str) -> dict:
-        """
-        Generate migration guide between versions
+        """Generate migration guide between versions
         """
         guide = {"from_version": from_version, "to_version": to_version, "changes": []}
 

@@ -1,5 +1,4 @@
-"""
-Request ID Middleware for request tracing and debugging.
+"""Request ID Middleware for request tracing and debugging.
 
 This middleware adds a unique request ID to every request,
 which is included in response headers and can be used for log correlation.
@@ -12,8 +11,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 
 class RequestIDMiddleware(BaseHTTPMiddleware):
-    """
-    Middleware that adds a unique request ID to each request.
+    """Middleware that adds a unique request ID to each request.
 
     The request ID is:
     - Generated as a UUID4
@@ -23,8 +21,7 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(self, request: Request, call_next):
-        """
-        Add request ID to request and response.
+        """Add request ID to request and response.
 
         Args:
             request: The incoming HTTP request

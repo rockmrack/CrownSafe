@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Temporary script to comment out legacy router registrations for Crown Safe migration.
+"""Temporary script to comment out legacy router registrations for Crown Safe migration.
 """
 
 import re
@@ -8,7 +7,6 @@ import re
 
 def comment_out_router_blocks(file_path):
     """Comment out the 5 legacy BabyShield router registration blocks."""
-
     with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
 

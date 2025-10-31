@@ -1,5 +1,4 @@
-"""
-Recall ingestion Celery tasks for BabyShield Backend.
+"""Recall ingestion Celery tasks for BabyShield Backend.
 
 This module provides background task processing for regulatory agency recall ingestion.
 """
@@ -24,7 +23,7 @@ class RecallAgent:
                 "agency": agency,
                 "title": "Test Recall",
                 "date": "2025-01-01",
-            }
+            },
         ]
 
     def process_recall(self, recall_data: dict[str, Any]) -> dict[str, Any]:
@@ -56,8 +55,7 @@ except ImportError:
     time_limit=360,
 )
 def ingest_recalls_from_agency_task(self: Task, agency: str, date_range: dict[str, str]) -> dict[str, Any]:
-    """
-    Ingest recalls from a specific regulatory agency.
+    """Ingest recalls from a specific regulatory agency.
 
     Args:
         self: Celery task instance (when bind=True)
@@ -101,8 +99,7 @@ def ingest_recalls_from_agency_task(self: Task, agency: str, date_range: dict[st
 
 @app.task(name="refresh_all_recalls", soft_time_limit=600, time_limit=720)
 def refresh_all_recalls_task() -> dict[str, Any]:
-    """
-    Refresh recalls from all configured agencies.
+    """Refresh recalls from all configured agencies.
 
     Returns:
         Dict with refresh results for all agencies
@@ -123,7 +120,7 @@ def refresh_all_recalls_task() -> dict[str, Any]:
             {
                 "agency": agency,
                 "task_id": str(result.id) if hasattr(result, "id") else "mock-task-id",
-            }
+            },
         )
 
     return {"success": True, "agencies_triggered": len(agencies), "task_ids": results}

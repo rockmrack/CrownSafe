@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test Suite 2: API Endpoints Tests (100 tests)
+"""Test Suite 2: API Endpoints Tests (100 tests)
 Tests all API endpoints, routes, and HTTP responses
 """
 

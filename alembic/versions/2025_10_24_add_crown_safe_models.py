@@ -24,7 +24,6 @@ depends_on = None
 
 def upgrade():
     """Apply Crown Safe schema changes"""
-
     # ============================================
     # CROWN SAFE: Create new tables
     # ============================================
@@ -212,7 +211,6 @@ def upgrade():
 
 def downgrade():
     """Rollback Crown Safe schema changes"""
-
     # Reverse order: recreate baby tables, drop Crown Safe tables
 
     # Recreate is_pregnant column

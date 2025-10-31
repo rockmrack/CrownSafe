@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test the Share Results functionality
+"""Test the Share Results functionality
 """
 
 import os
@@ -19,7 +18,6 @@ from db.models.share_token import ShareToken
 
 def test_share_results():
     """Test the share results functionality"""
-
     print("Testing Share Results Functionality...")
     print("=" * 60)
 

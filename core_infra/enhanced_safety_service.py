@@ -1,5 +1,4 @@
-"""
-Enhanced Safety Service for comprehensive safety reports
+"""Enhanced Safety Service for comprehensive safety reports
 Combines recall data with supplemental data sources
 """
 
@@ -38,7 +37,6 @@ class EnhancedSafetyService:
         include_chemical_data: bool = True,
     ) -> EnhancedSafetyReport:
         """Generate comprehensive safety report with supplemental data"""
-
         start_time = time.time()
         logger.info(f"Generating enhanced safety report for: {product_identifier}")
 
@@ -128,7 +126,7 @@ class EnhancedSafetyService:
             return None
 
     async def _get_cosmetic_data(
-        self, product_identifier: str, product_name: str | None
+        self, product_identifier: str, product_name: str | None,
     ) -> CosmeticDataResponse | None:
         """Get cosmetic data from supplemental sources"""
         try:
@@ -183,7 +181,7 @@ class EnhancedSafetyService:
             return None
 
     async def _get_chemical_data(
-        self, product_identifier: str, product_name: str | None
+        self, product_identifier: str, product_name: str | None,
     ) -> ChemicalDataResponse | None:
         """Get chemical data from supplemental sources"""
         try:

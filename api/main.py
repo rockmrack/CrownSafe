@@ -1,5 +1,4 @@
-"""
-Main entry point for Docker - imports main_crownsafe
+"""Main entry point for Docker - imports main_crownsafe
 """
 
 from api.main_crownsafe import app

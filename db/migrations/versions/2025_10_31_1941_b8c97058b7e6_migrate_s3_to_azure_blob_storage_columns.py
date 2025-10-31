@@ -26,7 +26,6 @@ depends_on = None
 
 def upgrade() -> None:
     """Rename S3 columns to Azure Blob Storage equivalents"""
-
     # scan_history table
     with op.batch_alter_table("scan_history", schema=None) as batch_op:
         batch_op.alter_column("s3_url", new_column_name="blob_url")
@@ -55,7 +54,6 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     """Revert Azure Blob Storage columns back to S3 naming"""
-
     # scan_history table
     with op.batch_alter_table("scan_history", schema=None) as batch_op:
         batch_op.alter_column("blob_url", new_column_name="s3_url")

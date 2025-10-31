@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Run local tests with proper database configuration
+"""Run local tests with proper database configuration
 Sets environment variables for local testing
 """
 

@@ -1,5 +1,4 @@
-"""
-Memory-safe image processing for BabyShield
+"""Memory-safe image processing for BabyShield
 Prevents memory leaks and manages resources properly
 """
 
@@ -44,8 +43,7 @@ def log_memory(func):
 
 
 class MemorySafeImageProcessor:
-    """
-    Memory-safe image processing with automatic cleanup
+    """Memory-safe image processing with automatic cleanup
     """
 
     # Maximum image dimensions to prevent memory explosion
@@ -86,8 +84,7 @@ class MemorySafeImageProcessor:
 
     @contextmanager
     def process_image_safely(self, image_path: str):
-        """
-        Context manager for safe image processing
+        """Context manager for safe image processing
         """
         import cv2
 
@@ -126,8 +123,7 @@ class MemorySafeImageProcessor:
 
     @log_memory
     def process_with_pil(self, image_bytes: bytes) -> dict[str, Any] | None:
-        """
-        Process image with PIL, ensuring memory cleanup
+        """Process image with PIL, ensuring memory cleanup
         """
         from PIL import Image
 
@@ -162,8 +158,7 @@ class MemorySafeImageProcessor:
 
     @log_memory
     def extract_text_ocr(self, image_path: str) -> str | None:
-        """
-        Extract text using OCR with memory management
+        """Extract text using OCR with memory management
         """
         import pytesseract
         from PIL import Image
@@ -200,8 +195,7 @@ class MemorySafeImageProcessor:
 
     @contextmanager
     def temporary_file(self, suffix: str = ".tmp"):
-        """
-        Create a temporary file that's automatically cleaned up
+        """Create a temporary file that's automatically cleaned up
         """
         temp_file = None
         try:
@@ -223,8 +217,7 @@ class MemorySafeImageProcessor:
                     pass  # File might be in use or already deleted
 
     def detect_barcodes_safe(self, image_path: str) -> list:
-        """
-        Detect barcodes with memory safety
+        """Detect barcodes with memory safety
         """
         import cv2
         from pyzbar import pyzbar
@@ -245,7 +238,7 @@ class MemorySafeImageProcessor:
                             "type": barcode.type,
                             "data": barcode.data.decode("utf-8"),
                             "rect": barcode.rect,
-                        }
+                        },
                     )
 
                 # Clean up
@@ -260,8 +253,7 @@ class MemorySafeImageProcessor:
 
 
 class ImageMemoryManager:
-    """
-    Manage memory for batch image processing
+    """Manage memory for batch image processing
     """
 
     def __init__(self, max_memory_mb: int = 500):
@@ -274,8 +266,7 @@ class ImageMemoryManager:
         return current_memory > self.max_memory_mb
 
     def process_batch(self, image_paths: list, process_func: callable) -> list:
-        """
-        Process batch of images with memory management
+        """Process batch of images with memory management
         """
         results = []
         processor = MemorySafeImageProcessor()
@@ -310,8 +301,7 @@ class ImageMemoryManager:
 
 # Memory-safe wrapper for existing functions
 def make_memory_safe(func):
-    """
-    Decorator to make image processing functions memory-safe
+    """Decorator to make image processing functions memory-safe
     """
 
     @wraps(func)
@@ -344,8 +334,7 @@ def make_memory_safe(func):
 
 # Update existing image processor to use memory-safe version
 def patch_image_processor():
-    """
-    Patch existing image processor with memory-safe version
+    """Patch existing image processor with memory-safe version
     """
     try:
         from core_infra import image_processor
@@ -367,8 +356,7 @@ def patch_image_processor():
 
 # Resource monitoring
 class ResourceMonitor:
-    """
-    Monitor resource usage and alert on issues
+    """Monitor resource usage and alert on issues
     """
 
     def __init__(self, alert_memory_mb: int = 1000, alert_cpu_percent: int = 80):

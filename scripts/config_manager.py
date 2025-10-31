@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-BabyShield Configuration Management Utility
+"""BabyShield Configuration Management Utility
 
 This script helps manage configuration files, validate settings,
 and generate secure secrets for production deployment.

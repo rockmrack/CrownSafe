@@ -1,5 +1,4 @@
-"""
-SQLAlchemy model for ingestion run tracking
+"""SQLAlchemy model for ingestion run tracking
 """
 
 from datetime import datetime, timezone
@@ -13,8 +12,7 @@ from core_infra.database import Base  # Use existing Base from project
 
 
 class IngestionRun(Base):
-    """
-    Model for tracking data ingestion runs
+    """Model for tracking data ingestion runs
     """
 
     __tablename__ = "ingestion_runs"

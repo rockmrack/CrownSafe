@@ -37,23 +37,23 @@ def parse_mcp_message(message_text: str) -> dict[str, Any] | None:
                 header = message_dict["mcp_header"]
                 if not header.get("message_type"):
                     logger.error(
-                        f"parse_mcp_message: Missing required field 'message_type' in header. Msg: {message_text[:200]}"
+                        f"parse_mcp_message: Missing required field 'message_type' in header. Msg: {message_text[:200]}",
                     )
                     return None
                 if not header.get("sender_id"):  # Added check for sender_id
                     logger.error(
-                        f"parse_mcp_message: Missing required field 'sender_id' in header. Msg: {message_text[:200]}"
+                        f"parse_mcp_message: Missing required field 'sender_id' in header. Msg: {message_text[:200]}",
                     )
                     return None
                 return message_dict
             else:
                 logger.error(
-                    f"parse_mcp_message: Invalid structure - header/payload not dicts. Msg: {message_text[:200]}"
+                    f"parse_mcp_message: Invalid structure - header/payload not dicts. Msg: {message_text[:200]}",
                 )
                 return None
         else:
             logger.error(
-                f"parse_mcp_message: Parsed JSON lacks basic MCP structure (mcp_header/payload keys). Msg: {message_text[:200]}"  # noqa: E501
+                f"parse_mcp_message: Parsed JSON lacks basic MCP structure (mcp_header/payload keys). Msg: {message_text[:200]}",  # noqa: E501
             )
             return None
     except json.JSONDecodeError:
@@ -102,7 +102,7 @@ def create_mcp_message(
 
         if not isinstance(payload, dict):
             logger.warning(
-                f"Payload for message type '{message_type}' (CorrID: {current_correlation_id}) is not a dict (type: {type(payload)}). Wrapping in 'data' field."  # noqa: E501
+                f"Payload for message type '{message_type}' (CorrID: {current_correlation_id}) is not a dict (type: {type(payload)}). Wrapping in 'data' field.",  # noqa: E501
             )
             message_payload_safe = copy.deepcopy({"data": payload})
         else:
@@ -110,7 +110,7 @@ def create_mcp_message(
 
         message = {"mcp_header": cleaned_header, "payload": message_payload_safe}
         logger.debug(
-            f"Created MCP Message: Type='{message_type}', Sender='{sender_id}', Target='{target_agent_id or target_service}', CorrID='{current_correlation_id}'"  # noqa: E501
+            f"Created MCP Message: Type='{message_type}', Sender='{sender_id}', Target='{target_agent_id or target_service}', CorrID='{current_correlation_id}'",  # noqa: E501
         )
         return message
     except Exception as e:
@@ -142,37 +142,37 @@ def create_mcp_response(
 
         if not isinstance(results, list):  # Ensure results is a list
             logger.warning(
-                f"DISCOVERY_RESPONSE payload 'results' (CorrID: {correlation_id}) is not a list (Type: {type(results)}). Correcting to empty list."  # noqa: E501
+                f"DISCOVERY_RESPONSE payload 'results' (CorrID: {correlation_id}) is not a list (Type: {type(results)}). Correcting to empty list.",  # noqa: E501
             )
             results = []
             payload_copy["results"] = results
 
         current_results_count = len(results)
         logger.info(
-            f"Processing {response_message_type} for Target='{target_agent_id}', CorrID='{correlation_id}': Initial status='{status}', initial results_count={current_results_count}"  # noqa: E501
+            f"Processing {response_message_type} for Target='{target_agent_id}', CorrID='{correlation_id}': Initial status='{status}', initial results_count={current_results_count}",  # noqa: E501
         )
 
         corrected_status = status
         if status == "success" and not results:
             logger.warning(
-                f"Fixing inconsistent DISCOVERY_RESPONSE (CorrID: {correlation_id}): 'success' status with empty results. Changing status to 'not_found'."  # noqa: E501
+                f"Fixing inconsistent DISCOVERY_RESPONSE (CorrID: {correlation_id}): 'success' status with empty results. Changing status to 'not_found'.",  # noqa: E501
             )
             corrected_status = "not_found"
         elif status == "not_found" and results:
             logger.warning(
-                f"Fixing inconsistent DISCOVERY_RESPONSE (CorrID: {correlation_id}): 'not_found' status with {current_results_count} results. Changing status to 'success'."  # noqa: E501
+                f"Fixing inconsistent DISCOVERY_RESPONSE (CorrID: {correlation_id}): 'not_found' status with {current_results_count} results. Changing status to 'success'.",  # noqa: E501
             )
             corrected_status = "success"
         elif not status:  # If status is empty or None
             corrected_status = "success" if results else "not_found"
             logger.warning(
-                f"Fixing DISCOVERY_RESPONSE (CorrID: {correlation_id}): Missing status. Based on results ({current_results_count}), setting status to '{corrected_status}'."  # noqa: E501
+                f"Fixing DISCOVERY_RESPONSE (CorrID: {correlation_id}): Missing status. Based on results ({current_results_count}), setting status to '{corrected_status}'.",  # noqa: E501
             )
 
         if corrected_status != status:  # Only update if changed
             payload_copy["status"] = corrected_status
             logger.info(
-                f"DISCOVERY_RESPONSE (CorrID: {correlation_id}): Status corrected from '{status}' to '{corrected_status}'."  # noqa: E501
+                f"DISCOVERY_RESPONSE (CorrID: {correlation_id}): Status corrected from '{status}' to '{corrected_status}'.",  # noqa: E501
             )
         status = corrected_status  # Use the potentially corrected status for logging
 
@@ -187,7 +187,7 @@ def create_mcp_response(
     )
 
     logger.debug(
-        f"Final response payload for create_mcp_message (CorrID: {correlation_id}): {payload_log_snippet}, results_count={results_count_for_log}, status='{payload_copy.get('status', 'N/A') if isinstance(payload_copy, dict) else 'N/A'}'"  # noqa: E501
+        f"Final response payload for create_mcp_message (CorrID: {correlation_id}): {payload_log_snippet}, results_count={results_count_for_log}, status='{payload_copy.get('status', 'N/A') if isinstance(payload_copy, dict) else 'N/A'}'",  # noqa: E501
     )
 
     if (
@@ -223,13 +223,13 @@ def create_mcp_error_response(
     """Helper to create a standard ERROR or TASK_FAIL response message."""
     if "error_code" not in error_payload or "error_message" not in error_payload:
         logger.warning(
-            f"Creating error response ({error_message_type}) for CorrID '{correlation_id}' without standard error_code/error_message. Adding defaults."  # noqa: E501
+            f"Creating error response ({error_message_type}) for CorrID '{correlation_id}' without standard error_code/error_message. Adding defaults.",  # noqa: E501
         )
         error_payload.setdefault("error_code", "E_UNKNOWN")
         error_payload.setdefault("error_message", "An unspecified error occurred.")
 
     logger.debug(
-        f"Creating error response: Type='{error_message_type}', Sender='{sender_service}', Target='{target_agent_id}', CorrID='{correlation_id}'"  # noqa: E501
+        f"Creating error response: Type='{error_message_type}', Sender='{sender_service}', Target='{target_agent_id}', CorrID='{correlation_id}'",  # noqa: E501
     )
     logger.debug(f"Error payload content for CorrID '{correlation_id}': {error_payload}")
 
@@ -245,8 +245,7 @@ def create_mcp_error_response(
 
 
 def safe_json_serialize(obj: Any, default_msg: str = "Object not serializable") -> str:
-    """
-    Safely serialize an object to JSON, with fallback handling for non-serializable objects.
+    """Safely serialize an object to JSON, with fallback handling for non-serializable objects.
     Returns a JSON string.
     """
     try:

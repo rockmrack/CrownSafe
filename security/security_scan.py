@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Security Scanner for BabyShield
+"""Security Scanner for BabyShield
 Performs comprehensive security analysis of the codebase
 """
 
@@ -71,7 +70,6 @@ class SecurityScanner:
 
     def scan_for_secrets(self) -> list[dict]:
         """Scan codebase for exposed secrets"""
-
         self.print_header("🔍 SECRET SCANNING")
 
         secrets_found = []
@@ -108,7 +106,7 @@ class SecurityScanner:
                                         "preview": match.group()[:50] + "..."
                                         if len(match.group()) > 50
                                         else match.group(),
-                                    }
+                                    },
                                 )
 
                 except Exception:
@@ -129,7 +127,6 @@ class SecurityScanner:
 
     def scan_dependencies(self) -> list[dict]:
         """Scan Python dependencies for vulnerabilities"""
-
         self.print_header("📦 DEPENDENCY SCANNING")
 
         vulnerabilities = []
@@ -171,7 +168,7 @@ class SecurityScanner:
                             "package": req,
                             "issue": f"Potentially outdated: {vulnerable}",
                             "severity": "medium",
-                        }
+                        },
                     )
 
         # Check for packages with known vulnerabilities
@@ -191,7 +188,7 @@ class SecurityScanner:
                         "package": package_name,
                         "issue": high_risk_packages[package_name],
                         "severity": "high",
-                    }
+                    },
                 )
 
         if vulnerabilities:
@@ -206,7 +203,6 @@ class SecurityScanner:
 
     def verify_data_handling(self) -> dict:
         """Verify data handling practices"""
-
         self.print_header("🔐 DATA HANDLING VERIFICATION")
 
         data_checks = {
@@ -281,7 +277,6 @@ class SecurityScanner:
 
     def check_security_configurations(self) -> dict:
         """Check security configurations"""
-
         self.print_header("⚙️ SECURITY CONFIGURATION")
 
         configs = {
@@ -360,7 +355,6 @@ class SecurityScanner:
 
     def check_read_only_db_roles(self) -> bool:
         """Check for read-only database roles"""
-
         self.print_header("👤 DATABASE ROLE VERIFICATION")
 
         # Check for read-only role SQL
@@ -394,7 +388,6 @@ class SecurityScanner:
 
     def check_secret_rotation(self) -> dict:
         """Check secret rotation procedures"""
-
         self.print_header("🔄 SECRET ROTATION VERIFICATION")
 
         rotation_checks = {
@@ -441,7 +434,6 @@ class SecurityScanner:
 
     def generate_recommendations(self) -> list[str]:
         """Generate security recommendations"""
-
         recommendations = []
 
         # Based on findings, generate recommendations
@@ -473,7 +465,6 @@ class SecurityScanner:
 
     def generate_report(self) -> dict:
         """Generate security scan report"""
-
         self.print_header("📋 SECURITY SCAN SUMMARY")
 
         report = {
@@ -522,7 +513,6 @@ class SecurityScanner:
 
     def run_full_scan(self) -> dict:
         """Run complete security scan"""
-
         print("=" * 70)
         print(" 🔒 BABYSHIELD SECURITY SCAN")
         print(f" Time: {datetime.now().isoformat()}")

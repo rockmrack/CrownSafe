@@ -1,5 +1,4 @@
-"""
-Comprehensive Pytest Configuration
+"""Comprehensive Pytest Configuration
 Provides fixtures and test utilities for all test suites
 """
 
@@ -23,8 +22,7 @@ os.environ["JWT_SECRET_KEY"] = "test-jwt-secret"
 
 @pytest.fixture(scope="session")
 def test_database_engine():
-    """
-    Create a test database engine
+    """Create a test database engine
 
     Uses SQLite in-memory database for fast testing
     """
@@ -48,8 +46,7 @@ def test_database_engine():
 
 @pytest.fixture(scope="function")
 def db_session(test_database_engine) -> Generator[Session, None, None]:
-    """
-    Create a new database session for each test
+    """Create a new database session for each test
 
     Automatically rolls back after each test to ensure isolation
     """
@@ -68,8 +65,7 @@ def db_session(test_database_engine) -> Generator[Session, None, None]:
 
 @pytest.fixture(scope="module")
 def test_app():
-    """
-    Create FastAPI test application
+    """Create FastAPI test application
 
     Returns a TestClient for making API requests
     """
@@ -92,8 +88,7 @@ def test_app():
 
 @pytest.fixture
 def test_user(db_session) -> dict:
-    """
-    Create a test user
+    """Create a test user
 
     Returns user data dictionary
     """
@@ -122,8 +117,7 @@ def test_user(db_session) -> dict:
 
 @pytest.fixture
 def test_subscriber(db_session) -> dict:
-    """
-    Create a test user with active subscription
+    """Create a test user with active subscription
     """
     from core_infra.auth import pwd_context
     from core_infra.database import User
@@ -153,8 +147,7 @@ def test_subscriber(db_session) -> dict:
 
 @pytest.fixture
 def test_admin(db_session) -> dict:
-    """
-    Create a test admin user
+    """Create a test admin user
     """
     from core_infra.auth import pwd_context
     from core_infra.database import User
@@ -182,8 +175,7 @@ def test_admin(db_session) -> dict:
 
 @pytest.fixture
 def auth_token(test_user) -> str:
-    """
-    Generate authentication token for test user
+    """Generate authentication token for test user
     """
     from core_infra.auth import create_access_token
 
@@ -193,16 +185,14 @@ def auth_token(test_user) -> str:
 
 @pytest.fixture
 def auth_headers(auth_token) -> dict:
-    """
-    Get authentication headers with Bearer token
+    """Get authentication headers with Bearer token
     """
     return {"Authorization": f"Bearer {auth_token}"}
 
 
 @pytest.fixture
 def test_recall(db_session) -> dict:
-    """
-    Create a test recall record
+    """Create a test recall record
     """
     from core_infra.database import RecallDB
 
@@ -231,8 +221,7 @@ def test_recall(db_session) -> dict:
 
 @pytest.fixture
 def test_barcode_data() -> dict:
-    """
-    Generate test barcode data
+    """Generate test barcode data
     """
     return {
         "valid_upc": "012345678905",
@@ -244,8 +233,7 @@ def test_barcode_data() -> dict:
 
 @pytest.fixture
 def mock_external_api(monkeypatch):
-    """
-    Mock external API calls for testing
+    """Mock external API calls for testing
     """
 
     class MockResponse:
@@ -274,8 +262,7 @@ def mock_external_api(monkeypatch):
 
 @pytest.fixture
 def temp_file():
-    """
-    Create a temporary file for upload testing
+    """Create a temporary file for upload testing
     """
     with tempfile.NamedTemporaryFile(mode="w+b", delete=False, suffix=".jpg") as f:
         # Write some dummy image data

@@ -1,5 +1,4 @@
-"""
-Unit tests for core_infra/upsert_handler.py.
+"""Unit tests for core_infra/upsert_handler.py.
 Tests database UPSERT operations for recalls and subscriptions, including bulk operations and error handling scenarios.
 """
 
@@ -114,7 +113,7 @@ class TestUpsertHandler:
             {"recall_id": "RECALL-001", "product_name": "Product 1"},
             {
                 # Missing recall_id - should fail
-                "product_name": "Product 2"
+                "product_name": "Product 2",
             },
             {"recall_id": "RECALL-003", "product_name": "Product 3"},
         ]
@@ -351,7 +350,7 @@ class TestParameterHandling:
         mock_session.execute.return_value = mock_result
 
         recall_data = {
-            "recall_id": "RECALL-001"
+            "recall_id": "RECALL-001",
             # Missing other fields - should use defaults
         }
 

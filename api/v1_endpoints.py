@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-BabyShield API v1 Endpoints
+"""BabyShield API v1 Endpoints
 Implements versioned API endpoints with backward compatibility
 """
 
@@ -582,12 +581,10 @@ async def search_agency_upstream(agency_code: str, product: str, limit: int = 20
 
 
 async def search_agency_recalls(agency_code: str, product: str, limit: int = 20, cursor: str | None = None) -> dict:
-    """
-    Search recalls for a specific agency with graceful table missing handling
+    """Search recalls for a specific agency with graceful table missing handling
 
     Returns empty results if table doesn't exist, preventing 500 errors
     """
-
     # 🚨 HOTFIX: Check if we should use upstream mode to bypass DB
     if SEARCH_BACKEND_MODE == "upstream":
         logger.info(f"🔄 HOTFIX MODE: Using upstream search for {agency_code} to bypass database issues")

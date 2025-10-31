@@ -24,7 +24,6 @@ depends_on = None
 
 def upgrade():
     """Apply Crown Safe schema changes"""
-
     # Detect database type
     bind = op.get_bind()
     is_sqlite = bind.dialect.name == "sqlite"
@@ -219,7 +218,6 @@ def upgrade():
 
 def downgrade():
     """Rollback Crown Safe schema changes"""
-
     # Reverse order: recreate baby tables, drop Crown Safe tables
 
     # Recreate is_pregnant column

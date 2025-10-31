@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS chat_explanations (
   disclaimer TEXT,
   created_at TEXT
 );
-"""
+""",
 )
 
 con.commit()

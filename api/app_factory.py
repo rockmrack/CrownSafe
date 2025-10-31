@@ -1,5 +1,4 @@
-"""
-FastAPI Application Factory
+"""FastAPI Application Factory
 Creates and configures the BabyShield API application with all middleware and settings
 """
 
@@ -22,8 +21,7 @@ def create_app(
     config: object | None = None,
     enable_docs: bool = True,
 ) -> FastAPI:
-    """
-    Create and configure FastAPI application
+    """Create and configure FastAPI application
 
     Args:
         environment: Application environment (development, staging, production)
@@ -79,7 +77,6 @@ def _configure_logging(app: FastAPI, environment: str) -> None:
 
 def _configure_middleware(app: FastAPI, environment: str, config: object | None) -> None:
     """Configure all application middleware"""
-
     # 1. Security headers and rate limiting
     configure_security_middleware(app, environment=environment)
 
@@ -180,8 +177,7 @@ def _configure_exception_handlers(app: FastAPI) -> None:
 
 
 def register_routers(app: FastAPI) -> None:
-    """
-    Register all API routers
+    """Register all API routers
 
     This function is called from main_crownsafe.py to keep router
     registration visible and easy to modify
@@ -241,8 +237,7 @@ def configure_startup_events(app: FastAPI) -> None:
 
 
 def create_openapi_schema(app: FastAPI) -> dict:
-    """
-    Create custom OpenAPI schema with fixes
+    """Create custom OpenAPI schema with fixes
 
     Returns:
         OpenAPI schema dictionary
@@ -265,7 +260,7 @@ def create_openapi_schema(app: FastAPI) -> dict:
             "type": "http",
             "scheme": "bearer",
             "bearerFormat": "JWT",
-        }
+        },
     }
 
     # Add error response schema

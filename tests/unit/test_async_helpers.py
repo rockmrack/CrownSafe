@@ -1,5 +1,4 @@
-"""
-Unit tests for core_infra/async_helpers.py
+"""Unit tests for core_infra/async_helpers.py
 Tests async HTTP client, batch processing, caching, and task queue functionality
 """
 

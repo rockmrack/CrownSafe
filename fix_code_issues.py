@@ -1,5 +1,4 @@
-"""
-Script to fix all remaining code quality issues in babyshield-backend
+"""Script to fix all remaining code quality issues in babyshield-backend
 Fixes: unused imports, unused loop variables, long lines, exception chaining
 """
 

@@ -14,8 +14,7 @@ AGENT_ID = "hazard_analysis_agent_01"
 
 
 class HazardAnalysisAgent:
-    """
-    A service-oriented agent that waits for hazard analysis tasks.
+    """A service-oriented agent that waits for hazard analysis tasks.
     Like the ProductIdentifierAgent, its logic is called directly by the Router
     in our current architecture.
     """

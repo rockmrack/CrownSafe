@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test suite for pagination and caching functionality (Task 5)
+"""Test suite for pagination and caching functionality (Task 5)
 Tests keyset pagination, snapshot isolation, cursor security, and HTTP caching
 """
 

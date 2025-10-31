@@ -106,7 +106,7 @@ class WebResearchLogic:
         api_key_status = "Yes" if self.ncbi_api_key else "No (Rate limits apply: ~3 req/sec)"
         self.logger.info(
             f"WebResearchLogic initialized for agent {agent_id} (Version 2.0.0 - Targeted Query). "
-            f"API Key Loaded: {api_key_status}, Mock Mode: {self.pubmed_use_mock}, User-Agent: {self.user_agent}"
+            f"API Key Loaded: {api_key_status}, Mock Mode: {self.pubmed_use_mock}, User-Agent: {self.user_agent}",
         )
 
     def _load_environment(self):
@@ -244,14 +244,14 @@ class WebResearchLogic:
                     "mock_data_support",
                 ],
                 "data_sources": ["PubMed/NCBI E-utils"],
-            }
+            },
         ]
 
     def _create_mock_data(
-        self, api_query_term: str, max_results: int, original_input_query: str | None
+        self, api_query_term: str, max_results: int, original_input_query: str | None,
     ) -> SearchResult:
         self.logger.warning(
-            f"PUBMED_MOCK: Returning mock data for API query term: '{api_query_term[:50]}...' (Original input: '{original_input_query[:50] if original_input_query else 'N/A'}')"  # noqa: E501
+            f"PUBMED_MOCK: Returning mock data for API query term: '{api_query_term[:50]}...' (Original input: '{original_input_query[:50] if original_input_query else 'N/A'}')",  # noqa: E501
         )
         mock_articles = [
             PubMedArticle(
@@ -335,14 +335,14 @@ class WebResearchLogic:
                     last_exception = ConnectionRefusedError(f"Connection refused by NCBI: {description} - {e}")
                 else:
                     last_exception = ConnectionError(
-                        f"AIOHTTP ClientConnectionError on attempt {attempt + 1}: {description} - {e}"
+                        f"AIOHTTP ClientConnectionError on attempt {attempt + 1}: {description} - {e}",
                     )
             except aiohttp.ContentTypeError as e:
                 last_exception = ValueError(f"AIOHTTP ContentTypeError on attempt {attempt + 1}: {description} - {e}")
                 raise last_exception  # Non-retryable
             except Exception as e:
                 last_exception = RuntimeError(
-                    f"Unexpected error on attempt {attempt + 1}: {description} - {type(e).__name__} - {e}"
+                    f"Unexpected error on attempt {attempt + 1}: {description} - {type(e).__name__} - {e}",
                 )
 
             self.logger.error(str(last_exception))
@@ -444,7 +444,7 @@ class WebResearchLogic:
                 )
 
             self.logger.info(
-                f"Searching PubMed with API term: '{constructed_api_query_term[:100]}...', max_results: {max_results}"
+                f"Searching PubMed with API term: '{constructed_api_query_term[:100]}...', max_results: {max_results}",
             )
 
             esearch_params = {
@@ -473,12 +473,12 @@ class WebResearchLogic:
 
             if not article_ids:
                 self.logger.info(
-                    f"No PubMed article IDs found for API term: '{constructed_api_query_term}'. Total reported by ESearch: {total_found}"  # noqa: E501
+                    f"No PubMed article IDs found for API term: '{constructed_api_query_term}'. Total reported by ESearch: {total_found}",  # noqa: E501
                 )
                 articles_data = []
             else:
                 self.logger.info(
-                    f"Found {len(article_ids)} PubMed IDs (ESearch total: {total_found}). Fetching details..."
+                    f"Found {len(article_ids)} PubMed IDs (ESearch total: {total_found}). Fetching details...",
                 )
                 # Ensure we only fetch details for the number of IDs up to max_results,
                 # as ESearch might return more IDs in IdList than retmax if usehistory=y is very effective.
@@ -505,7 +505,7 @@ class WebResearchLogic:
 
             search_time_ms = (time.perf_counter_ns() - start_time_ns) // 1_000_000
             self.logger.info(
-                f"Fetched {len(articles_data)} articles in {search_time_ms}ms for API term '{constructed_api_query_term[:50]}...'."  # noqa: E501
+                f"Fetched {len(articles_data)} articles in {search_time_ms}ms for API term '{constructed_api_query_term[:50]}...'.",  # noqa: E501
             )
             return SearchResult(
                 query_used_for_api=constructed_api_query_term,
@@ -629,10 +629,10 @@ class WebResearchLogic:
                 original_input_query = "; ".join(original_input_query_parts)
 
             self.logger.info(
-                f"Performing PubMed search for task {task_id} with API term: '{constructed_api_query[:100]}...', max_results: {max_results_validated}"  # noqa: E501
+                f"Performing PubMed search for task {task_id} with API term: '{constructed_api_query[:100]}...', max_results: {max_results_validated}",  # noqa: E501
             )
             search_result_obj = await self._fetch_pubmed_data(
-                constructed_api_query, max_results_validated, original_input_query
+                constructed_api_query, max_results_validated, original_input_query,
             )
 
             if search_result_obj.error:
@@ -653,7 +653,7 @@ class WebResearchLogic:
                 "result": result_data_dict,
             }
             self.logger.info(
-                f"PubMed search completed for task {task_id}: {len(search_result_obj.articles)} articles found (ESearch total: {search_result_obj.total_found_by_esearch})."  # noqa: E501
+                f"PubMed search completed for task {task_id}: {len(search_result_obj.articles)} articles found (ESearch total: {search_result_obj.total_found_by_esearch}).",  # noqa: E501
             )
             return {
                 "message_type": MessageType.TASK_COMPLETE.value,

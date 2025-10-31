@@ -12,8 +12,7 @@ _lock = threading.Lock()
 
 
 class CircuitBreaker:
-    """
-    Simple in-memory circuit breaker.
+    """Simple in-memory circuit breaker.
     Opens when failures >= threshold within 'window_sec'; stays open for cooldown_sec.
     """
 

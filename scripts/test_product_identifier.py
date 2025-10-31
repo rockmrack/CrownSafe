@@ -58,7 +58,7 @@ async def main():
             else:
                 print("\n" + "=" * 50)
                 print(
-                    f"❌ TEST FAILED: The product name '{product_name}' did not contain the expected fragment '{EXPECTED_PRODUCT_NAME_FRAGMENT}'."  # noqa: E501
+                    f"❌ TEST FAILED: The product name '{product_name}' did not contain the expected fragment '{EXPECTED_PRODUCT_NAME_FRAGMENT}'.",  # noqa: E501
                 )
         else:
             print("\n" + "=" * 50)

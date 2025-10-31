@@ -58,7 +58,7 @@ async def main():
                 "user_id": NON_SUBSCRIBER_ID,
             }
             response_non_subscriber = await client.post(
-                f"{API_BASE_URL}/api/v1/safety-check", json=non_subscriber_payload
+                f"{API_BASE_URL}/api/v1/safety-check", json=non_subscriber_payload,
             )
 
             print("\n" + "=" * 50)
@@ -71,7 +71,7 @@ async def main():
                 print("\n✅✅✅ NON-SUBSCRIBER TEST PASSED: API correctly blocked access with a 403 Forbidden error.")
             else:
                 print(
-                    f"\n❌❌❌ NON-SUBSCRIBER TEST FAILED: Expected status code 403, but got {response_non_subscriber.status_code}."  # noqa: E501
+                    f"\n❌❌❌ NON-SUBSCRIBER TEST FAILED: Expected status code 403, but got {response_non_subscriber.status_code}.",  # noqa: E501
                 )
 
             print("\n" + "#" * 60 + "\n")
@@ -91,7 +91,7 @@ async def main():
                 print("\n✅✅✅ SUBSCRIBER TEST PASSED: API correctly allowed access and the workflow completed.")
             else:
                 print(
-                    f"\n❌❌❌ SUBSCRIBER TEST FAILED: Expected status code 200, but got {response_subscriber.status_code}."  # noqa: E501
+                    f"\n❌❌❌ SUBSCRIBER TEST FAILED: Expected status code 200, but got {response_subscriber.status_code}.",  # noqa: E501
                 )
 
     except httpx.ConnectError:

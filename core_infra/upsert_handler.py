@@ -1,5 +1,4 @@
-"""
-UPSERT Handler for Optimized Database Operations
+"""UPSERT Handler for Optimized Database Operations
 Implements PostgreSQL ON CONFLICT for atomic upsert operations
 """
 
@@ -13,15 +12,13 @@ logger = logging.getLogger(__name__)
 
 
 class UpsertHandler:
-    """
-    Handles UPSERT operations for various tables using PostgreSQL's ON CONFLICT
+    """Handles UPSERT operations for various tables using PostgreSQL's ON CONFLICT
     This provides atomic, single-query insert-or-update operations
     """
 
     @staticmethod
     def upsert_recall(db: Session, recall_data: dict[str, Any]) -> bool:
-        """
-        Perform atomic UPSERT for a single recall record
+        """Perform atomic UPSERT for a single recall record
 
         Args:
             db: Database session
@@ -96,7 +93,7 @@ class UpsertHandler:
                     agency_specific_data = COALESCE(EXCLUDED.agency_specific_data, recalls.agency_specific_data),
                     updated_at = CURRENT_TIMESTAMP
                 RETURNING recall_id, (xmax = 0) AS inserted
-            """
+            """,
             )
 
             # Prepare parameters with defaults
@@ -156,8 +153,7 @@ class UpsertHandler:
 
     @staticmethod
     def bulk_upsert_recalls(db: Session, recalls: list[dict[str, Any]], batch_size: int = 100) -> dict[str, int]:
-        """
-        Perform bulk UPSERT for multiple recalls with batching
+        """Perform bulk UPSERT for multiple recalls with batching
 
         Args:
             db: Database session
@@ -263,7 +259,7 @@ class UpsertHandler:
                         hazard = COALESCE(EXCLUDED.hazard, recalls.hazard),
                         recall_date = COALESCE(EXCLUDED.recall_date, recalls.recall_date),
                         updated_at = CURRENT_TIMESTAMP
-                """
+                """,
                 )
 
                 db.execute(query, params_dict)
@@ -287,8 +283,7 @@ class UpsertHandler:
 
     @staticmethod
     def upsert_subscription(db: Session, subscription_data: dict[str, Any]) -> bool:
-        """
-        Perform atomic UPSERT for subscription records
+        """Perform atomic UPSERT for subscription records
 
         Args:
             db: Database session
@@ -322,7 +317,7 @@ class UpsertHandler:
                     auto_renew = EXCLUDED.auto_renew,
                     updated_at = CURRENT_TIMESTAMP
                 RETURNING id, (xmax = 0) AS inserted
-            """
+            """,
             )
 
             result = db.execute(query, subscription_data)
@@ -331,7 +326,7 @@ class UpsertHandler:
             if row:
                 was_inserted = row[1]
                 logger.debug(
-                    f"{'Inserted' if was_inserted else 'Updated'} subscription for user {subscription_data['user_id']}"
+                    f"{'Inserted' if was_inserted else 'Updated'} subscription for user {subscription_data['user_id']}",
                 )
 
             return True
@@ -342,8 +337,7 @@ class UpsertHandler:
 
 
 class EnhancedUpsertHandler(UpsertHandler):
-    """
-    Enhanced UPSERT handler with additional features
+    """Enhanced UPSERT handler with additional features
     """
 
     @staticmethod
@@ -354,8 +348,7 @@ class EnhancedUpsertHandler(UpsertHandler):
         unique_key: str,
         track_changes: bool = True,
     ) -> bool:
-        """
-        UPSERT with optional change history tracking
+        """UPSERT with optional change history tracking
 
         Args:
             db: Database session
@@ -387,7 +380,7 @@ class EnhancedUpsertHandler(UpsertHandler):
                     {", ".join(update_sets)},
                     updated_at = CURRENT_TIMESTAMP
                 RETURNING {unique_key}, (xmax = 0) AS inserted
-            """
+            """,
             )
 
             result = db.execute(query, data)
@@ -402,7 +395,7 @@ class EnhancedUpsertHandler(UpsertHandler):
                     ) VALUES (
                         :entity_id, :action, :changed_by, CURRENT_TIMESTAMP, :changes
                     )
-                """
+                """,
                 )
 
                 db.execute(

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test script for the Visual Safety Framework implementation
+"""Test script for the Visual Safety Framework implementation
 Tests both Phase 1 (liability mitigation) and Phase 2 (visual suggestions)
 """
 
@@ -103,7 +102,7 @@ async def test_phase2_visual_suggestions():
                         "model_number": "TB-3000",
                         "confidence": 0.45,
                     },
-                ]
+                ],
             )
 
         class MockChoice:

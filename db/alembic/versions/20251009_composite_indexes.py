@@ -16,15 +16,13 @@ depends_on = None
 
 
 def upgrade():
-    """
-    Add composite indexes to improve query performance.
+    """Add composite indexes to improve query performance.
 
     These indexes optimize common query patterns:
     1. Product name + brand + date searches
     2. Barcode/model number lookups
     3. Date-based queries with agency filtering
     """
-
     # Composite index for common recall searches
     # Optimizes queries like: WHERE product_name LIKE '%baby%' AND brand = 'XYZ'
     op.create_index(

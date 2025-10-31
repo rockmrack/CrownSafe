@@ -124,7 +124,7 @@ class PlannerAgentManager:
             # Process through logic - handle both async and sync versions
             try:
                 if hasattr(self.planner_logic, "process_message") and asyncio.iscoroutinefunction(
-                    self.planner_logic.process_message
+                    self.planner_logic.process_message,
                 ):
                     response_from_logic = await self.planner_logic.process_message(message_dict, self.mcp_client)
                 else:
@@ -150,7 +150,7 @@ class PlannerAgentManager:
                                     "payload": task_result_payload,
                                 }
                                 logger.debug(
-                                    f"Task failed with status: {task_result_payload.get('status')}, sending TASK_FAIL"
+                                    f"Task failed with status: {task_result_payload.get('status')}, sending TASK_FAIL",
                                 )
                         else:
                             logger.error(f"Planner logic process_task returned invalid data: {task_result_payload}")
@@ -349,7 +349,7 @@ class PlannerAgentManager:
 
             logger.info(f"PlannerAgent components initialized (Version: {AGENT_VERSION})")
             logger.info(
-                f"Memory augmentation available: {any(cap.get('memory_augmented', False) for cap in capabilities)}"
+                f"Memory augmentation available: {any(cap.get('memory_augmented', False) for cap in capabilities)}",
             )
             logger.info(f"Environment loaded from: {env_source}")
             logger.info(f"MCP Server URL: {base_mcp_server_url}")

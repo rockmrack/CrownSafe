@@ -1,5 +1,4 @@
-"""
-Deep Conversation Endpoint Tests
+"""Deep Conversation Endpoint Tests
 Tests all edge cases, error conditions, and response variations
 """
 
@@ -301,7 +300,7 @@ class TestConversationDeep:
                     "allergies": ["peanuts", "shellfish"],
                     "dietary_restrictions": ["vegetarian"],
                     "baby_age_months": 8,
-                }
+                },
             ),
         )
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Sanity check script to print Celery Beat schedule configuration
+"""Sanity check script to print Celery Beat schedule configuration
 """
 
 from core_infra.risk_ingestion_tasks import celery_app

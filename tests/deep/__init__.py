@@ -1,5 +1,4 @@
-"""
-Deep test package initialization
+"""Deep test package initialization
 Configures environment for comprehensive testing
 """
 

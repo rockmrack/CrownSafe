@@ -1,6 +1,5 @@
 # agents/recall_data_agent/models.py
-"""
-Pydantic models for recall data validation and structure.
+"""Pydantic models for recall data validation and structure.
 Compatible with BabyShield EnhancedRecallDB schema.
 """
 
@@ -11,8 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class Recall(BaseModel):
-    """
-    Pydantic model for validating and structuring recall data.
+    """Pydantic model for validating and structuring recall data.
     Matches EnhancedRecallDB schema from core_infra/enhanced_database_schema.py
     """
 

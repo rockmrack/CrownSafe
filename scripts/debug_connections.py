@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 async def test_mcp_connection():
     """Test if we can connect to MCP Router and check registered agents"""
-
     print("\n🔍 Testing MCP Router Connection...\n")
 
     try:
@@ -62,7 +61,6 @@ async def test_mcp_connection():
 
 async def test_workflow_submission():
     """Test submitting a workflow directly via WebSocket"""
-
     print("\n🔍 Testing Direct Workflow Submission...\n")
 
     try:
@@ -129,7 +127,6 @@ async def test_workflow_submission():
 
 async def check_agent_registrations():
     """Check which agents are registered"""
-
     print("\n🔍 Checking Agent Registrations...\n")
 
     required_agents = [

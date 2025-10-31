@@ -47,7 +47,7 @@ test_formats = [
             "user_goal": "Test authorization",
             "task_type": "prior_authorization",
             "parameters": {"patient_id": "p1", "drug_name": "d1", "insurer_id": "i1"},
-        }
+        },
     },
     # Format 3: Different structure
     {
@@ -55,7 +55,7 @@ test_formats = [
             "user_goal": "Test authorization",
             "task_type": "prior_authorization",
             "parameters": {"patient_id": "p1", "drug_name": "d1", "insurer_id": "i1"},
-        }
+        },
     },
 ]
 

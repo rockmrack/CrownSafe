@@ -1,5 +1,4 @@
-"""
-Comprehensive Celery Task Testing Suite
+"""Comprehensive Celery Task Testing Suite
 
 Tests background workers, async processing, and task queue behavior.
 Covers task execution, retries, timeouts, and error handling.
@@ -42,8 +41,7 @@ class TestCeleryTaskExecution:
         }
 
     def test_recall_ingestion_task_success(self, sample_recall_data):
-        """
-        Test successful recall data ingestion via Celery task
+        """Test successful recall data ingestion via Celery task
 
         Verifies:
         - Task executes without errors
@@ -68,8 +66,7 @@ class TestCeleryTaskExecution:
             pass
 
     def test_recall_ingestion_task_retry_on_network_failure(self, sample_recall_data):
-        """
-        Verify task retries when network fails (exponential backoff)
+        """Verify task retries when network fails (exponential backoff)
 
         Tests:
         - Network timeout triggers retry
@@ -92,8 +89,7 @@ class TestCeleryTaskExecution:
             pass
 
     def test_recall_ingestion_task_max_retries_exceeded(self, sample_recall_data):
-        """
-        Test task failure after max retries exceeded
+        """Test task failure after max retries exceeded
 
         Verifies:
         - Task fails after 3 retry attempts
@@ -116,8 +112,7 @@ class TestCeleryTaskExecution:
             pass
 
     def test_recall_ingestion_task_timeout_handling(self):
-        """
-        Verify task timeout and cleanup after configured duration
+        """Verify task timeout and cleanup after configured duration
 
         Tests:
         - Task timeout after 300 seconds (5 minutes)
@@ -142,8 +137,7 @@ class TestCeleryTaskExecution:
             pass
 
     def test_notification_send_task_batch_processing(self):
-        """
-        Test batch notification sending with rate limiting
+        """Test batch notification sending with rate limiting
 
         Verifies:
         - Processes 100 notifications in batches of 10
@@ -167,8 +161,7 @@ class TestCeleryTaskExecution:
             pass
 
     def test_notification_send_task_partial_failure(self):
-        """
-        Verify graceful handling of partial batch failures
+        """Verify graceful handling of partial batch failures
 
         Tests:
         - Some notifications succeed, some fail
@@ -198,8 +191,7 @@ class TestCeleryTaskExecution:
             pass
 
     def test_report_generation_task_large_dataset(self):
-        """
-        Test PDF report generation with 10,000+ recall records
+        """Test PDF report generation with 10,000+ recall records
 
         Verifies:
         - Task handles large dataset without memory issues
@@ -233,8 +225,7 @@ class TestCeleryTaskExecution:
             pass
 
     def test_report_generation_task_concurrent_requests(self):
-        """
-        Verify concurrent report generation doesn't cause conflicts
+        """Verify concurrent report generation doesn't cause conflicts
 
         Tests:
         - 5 concurrent report generation tasks
@@ -265,8 +256,7 @@ class TestCeleryTaskExecution:
             pass
 
     def test_cache_warming_task_scheduled_execution(self):
-        """
-        Test automatic cache warming on schedule
+        """Test automatic cache warming on schedule
 
         Verifies:
         - Task runs on schedule (every 6 hours)
@@ -289,8 +279,7 @@ class TestCeleryTaskExecution:
             pass
 
     def test_data_export_task_gdpr_compliance(self):
-        """
-        Verify GDPR export task includes all user data
+        """Verify GDPR export task includes all user data
 
         Tests:
         - All tables with user data are included
@@ -319,8 +308,7 @@ class TestCeleryTaskExecution:
             pass
 
     def test_data_deletion_task_cascade_relationships(self):
-        """
-        Test complete user data deletion across all tables
+        """Test complete user data deletion across all tables
 
         Verifies:
         - Cascade delete removes all related records
@@ -349,8 +337,7 @@ class TestCeleryTaskExecution:
             pass
 
     def test_task_result_cleanup_old_entries(self):
-        """
-        Verify automatic cleanup of old task results (>30 days)
+        """Verify automatic cleanup of old task results (>30 days)
 
         Tests:
         - Task results older than 30 days are deleted

@@ -1,5 +1,4 @@
-"""
-Task 14: Monitoring, Metrics, and SLO Implementation
+"""Task 14: Monitoring, Metrics, and SLO Implementation
 Provides Prometheus metrics, health checks, and monitoring endpoints
 """
 
@@ -157,7 +156,7 @@ app_info.info(
         "version": "1.0.0",
         "name": "babyshield-api",
         "environment": os.getenv("ENVIRONMENT", "production"),
-    }
+    },
 )
 
 # ========================= ROUTER =========================
@@ -174,7 +173,6 @@ metrics_router = APIRouter(tags=["Metrics"])
 # This function is kept for reference but not used as middleware
 async def track_metrics(request: Request, call_next):
     """Middleware to track request metrics - should be added at app level"""
-
     # Skip metrics endpoint itself
     if request.url.path == "/metrics":
         return await call_next(request)
@@ -206,7 +204,7 @@ async def track_metrics(request: Request, call_next):
     # Track response size
     if hasattr(response, "headers") and "content-length" in response.headers:
         http_response_size_bytes.labels(method=request.method, endpoint=request.url.path).observe(
-            int(response.headers["content-length"])
+            int(response.headers["content-length"]),
         )
 
     return response
@@ -231,11 +229,9 @@ async def track_metrics(request: Request, call_next):
 
 @router.get("/readyz")
 async def readiness_check():
-    """
-    Readiness check - verifies all dependencies are ready
+    """Readiness check - verifies all dependencies are ready
     Used by Kubernetes readiness probes
     """
-
     checks = {
         "database": False,
         "redis": True,  # default true when cache disabled
@@ -304,8 +300,7 @@ async def readiness_check():
 
 @router.get("/livez")
 async def liveness_check():
-    """
-    Liveness check - minimal check to verify process is alive
+    """Liveness check - minimal check to verify process is alive
     Returns 200 if the service is alive, used for container restarts
     """
     return {"alive": True, "timestamp": datetime.now().isoformat()}
@@ -316,11 +311,9 @@ async def liveness_check():
 
 @metrics_router.get("/metrics", response_class=PlainTextResponse)
 async def get_metrics():
-    """
-    Prometheus metrics endpoint
+    """Prometheus metrics endpoint
     Returns metrics in Prometheus exposition format
     """
-
     # Update system metrics
     memory = psutil.virtual_memory()
     system_memory_usage.set(memory.used)
@@ -492,7 +485,6 @@ class SyntheticProbe:
 
     async def run_probe(self, probe_name: str) -> dict[str, Any]:
         """Run a single synthetic probe"""
-
         if probe_name not in self.probes:
             return {"error": f"Unknown probe: {probe_name}"}
 
@@ -541,7 +533,6 @@ class SyntheticProbe:
 
     async def run_all_probes(self) -> list[dict[str, Any]]:
         """Run all synthetic probes"""
-
         tasks = [self.run_probe(name) for name in self.probes]
         results = await asyncio.gather(*tasks)
 

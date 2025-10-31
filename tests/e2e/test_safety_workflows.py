@@ -103,7 +103,7 @@ def _seed_user(user_id: int, email: str = "user@example.com") -> None:
                 email=email,
                 hashed_password="test-hash",
                 is_subscribed=True,
-            )
+            ),
         )
         session.commit()
     finally:
@@ -147,7 +147,6 @@ def _seed_recall(
 
 def test_barcode_recall_workflow_returns_high_risk(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 1: parent scans a recalled product and receives a high-risk verdict."""
-
     _seed_user(user_id=1)
     _seed_recall(
         recall_id="CPSC-24-0001",
@@ -193,7 +192,6 @@ def test_barcode_recall_workflow_returns_high_risk(client: TestClient, monkeypat
 
 def test_allergy_workflow_flags_family_allergens(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 2: allergy sensitivity agent catches a milk ingredient for a subscriber."""
-
     _seed_user(user_id=2, email="premium@example.com")
     session = SessionLocal()
     try:
@@ -226,7 +224,7 @@ def test_allergy_workflow_flags_family_allergens(client: TestClient, monkeypatch
                 {
                     "member_name": "Avery",
                     "found_allergens": ["milk"],
-                }
+                },
             ],
         }
 
@@ -258,7 +256,6 @@ def test_allergy_workflow_flags_family_allergens(client: TestClient, monkeypatch
 
 def test_visual_low_confidence_returns_inconclusive(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 3: low-confidence visual scan surfaces an inconclusive result."""
-
     _seed_user(user_id=3)
 
     async def failing_run_optimized(user_request: dict[str, Any]) -> dict[str, Any]:
@@ -308,7 +305,6 @@ def test_visual_low_confidence_returns_inconclusive(client: TestClient, monkeypa
 
 def test_scan_camera_model_number_workflow(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 1.2: OCR extracts model number and still reaches the safety check."""
-
     _seed_user(user_id=4)
     _seed_recall(
         recall_id="CPSC-24-0002",
@@ -349,7 +345,6 @@ def test_scan_camera_model_number_workflow(client: TestClient, monkeypatch: pyte
 
 def test_visual_upload_pipeline_completes_analysis(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 2: Upload-photo workflow returns a completed analysis."""
-
     monkeypatch.setattr(
         "api.visual_agent_endpoints.presign_post",
         lambda s3_key, **_: {
@@ -402,7 +397,7 @@ def test_visual_upload_pipeline_completes_analysis(client: TestClient, monkeypat
                 model_number="YM001",
                 upc_code="850016249012",
                 warning_labels=["Battery overheating"],
-            )
+            ),
         )
         session.commit()
     finally:
@@ -419,7 +414,6 @@ def test_visual_upload_pipeline_completes_analysis(client: TestClient, monkeypat
 
 def test_enter_model_number_prioritizes_recall_agent(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 3: Manual model number search skips product identification and hits recall agent."""
-
     _seed_user(user_id=5)
     _seed_recall(
         recall_id="CPSC-24-0003",
@@ -463,7 +457,6 @@ def test_enter_model_number_prioritizes_recall_agent(client: TestClient, monkeyp
 
 def test_manual_barcode_entry_golden_path(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 4: Manual barcode entry follows the golden path workflow."""
-
     _seed_user(user_id=6)
 
     async def fake_run_optimized(user_request: dict[str, Any]) -> dict[str, Any]:
@@ -494,7 +487,6 @@ def test_manual_barcode_entry_golden_path(client: TestClient, monkeypatch: pytes
 
 def test_lot_number_search_returns_precise_recall(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 5: Lot or serial number lookup surfaces specific recall guidance."""
-
     _seed_user(user_id=7)
     _seed_recall(
         recall_id="FDA-24-1001",
@@ -532,7 +524,6 @@ def test_lot_number_search_returns_precise_recall(client: TestClient, monkeypatc
 
 def test_product_name_search_uses_fuzzy_matching(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Scenario 6: Fuzzy name search retrieves the correct recall details."""
-
     _seed_user(user_id=8)
     _seed_recall(
         recall_id="CPSC-24-0004",

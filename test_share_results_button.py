@@ -1,5 +1,4 @@
-"""
-Test "Share Results" Button from Mobile App Screenshot
+"""Test "Share Results" Button from Mobile App Screenshot
 Tests the share functionality for recall results
 """
 
@@ -291,7 +290,7 @@ Complete Share Features:
 - ✅ HTML previews
 
 The 'Share Results' button in your mobile app has full backend support! ✅
-"""
+""",
 )
 
 print("=" * 80)

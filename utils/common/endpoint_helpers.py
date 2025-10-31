@@ -1,5 +1,4 @@
-"""
-Common Endpoint Helpers
+"""Common Endpoint Helpers
 Reduces code duplication across endpoint files
 """
 
@@ -41,8 +40,7 @@ class PaginatedResponse(BaseModel):
 
 
 def success_response(data: Any = None, message: str | None = None, trace_id: str | None = None) -> dict[str, Any]:
-    """
-    Create a standardized success response
+    """Create a standardized success response
 
     Args:
         data: Response data
@@ -62,8 +60,7 @@ def success_response(data: Any = None, message: str | None = None, trace_id: str
 
 
 def error_response(error: str, status_code: int = 500, trace_id: str | None = None) -> dict[str, Any]:
-    """
-    Create a standardized error response
+    """Create a standardized error response
 
     Args:
         error: Error message
@@ -89,8 +86,7 @@ def paginated_response(
     offset: int,
     next_cursor: str | None = None,
 ) -> dict[str, Any]:
-    """
-    Create a standardized paginated response
+    """Create a standardized paginated response
 
     Args:
         items: List of items for current page
@@ -119,8 +115,7 @@ def paginated_response(
 
 
 def get_user_or_404(user_id: int, db: Session) -> User:
-    """
-    Get user by ID or raise 404 error
+    """Get user by ID or raise 404 error
 
     Args:
         user_id: User ID
@@ -139,8 +134,7 @@ def get_user_or_404(user_id: int, db: Session) -> User:
 
 
 def require_subscription(user: User) -> None:
-    """
-    Check if user has active subscription
+    """Check if user has active subscription
 
     Args:
         user: User object
@@ -156,8 +150,7 @@ def require_subscription(user: User) -> None:
 
 
 def require_admin(user: User) -> None:
-    """
-    Check if user is admin
+    """Check if user is admin
 
     Args:
         user: User object
@@ -170,8 +163,7 @@ def require_admin(user: User) -> None:
 
 
 def validate_pagination(limit: int, offset: int, max_limit: int = 100) -> tuple[int, int]:
-    """
-    Validate and normalize pagination parameters
+    """Validate and normalize pagination parameters
 
     Args:
         limit: Requested limit
@@ -198,8 +190,7 @@ def validate_pagination(limit: int, offset: int, max_limit: int = 100) -> tuple[
 
 
 def generate_trace_id(prefix: str = "") -> str:
-    """
-    Generate a unique trace ID for request tracking
+    """Generate a unique trace ID for request tracking
 
     Args:
         prefix: Optional prefix for trace ID
@@ -219,8 +210,7 @@ def log_endpoint_call(
     params: dict[str, Any] | None = None,
     trace_id: str | None = None,
 ) -> None:
-    """
-    Log endpoint call with context
+    """Log endpoint call with context
 
     Args:
         endpoint: Endpoint name
@@ -239,8 +229,7 @@ def log_endpoint_call(
 
 
 def handle_db_error(e: Exception, operation: str = "database operation") -> HTTPException:
-    """
-    Convert database error to HTTP exception
+    """Convert database error to HTTP exception
 
     Args:
         e: Exception that occurred
@@ -271,8 +260,7 @@ def handle_db_error(e: Exception, operation: str = "database operation") -> HTTP
 
 
 def require_feature_flag(flag_name: str, user: User = None) -> None:
-    """
-    Check if feature flag is enabled
+    """Check if feature flag is enabled
 
     Args:
         flag_name: Name of feature flag
@@ -293,8 +281,7 @@ def require_feature_flag(flag_name: str, user: User = None) -> None:
 
 
 class EndpointWrapper:
-    """
-    Wrapper class for common endpoint patterns
+    """Wrapper class for common endpoint patterns
 
     Provides standard error handling, logging, and response formatting
     """
@@ -307,8 +294,7 @@ class EndpointWrapper:
         require_sub: bool = False,
         log_params: bool = True,
     ) -> Callable:
-        """
-        Wrap an endpoint function with common functionality
+        """Wrap an endpoint function with common functionality
 
         Args:
             func: Endpoint function to wrap

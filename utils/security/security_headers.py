@@ -1,5 +1,4 @@
-"""
-Security Headers Middleware
+"""Security Headers Middleware
 Implements OWASP recommended security headers
 """
 
@@ -15,8 +14,7 @@ logger.info("📦 utils.security.security_headers module loaded!")
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """
-    Adds comprehensive security headers to all responses
+    """Adds comprehensive security headers to all responses
 
     Implements OWASP Top 10 security best practices:
     - Content Security Policy (CSP)
@@ -41,7 +39,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         try:
             logger.info("🔧 SecurityHeadersMiddleware __init__ called!")
             logger.info(
-                f"  enable_hsts={enable_hsts}, enable_csp={enable_csp}, enable_frame_options={enable_frame_options}"
+                f"  enable_hsts={enable_hsts}, enable_csp={enable_csp}, enable_frame_options={enable_frame_options}",
             )
             super().__init__(app)
             self.enable_hsts = enable_hsts
@@ -60,8 +58,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
     @staticmethod
     def _default_csp_policy() -> str:
-        """
-        Default Content Security Policy
+        """Default Content Security Policy
 
         This is a strict policy that prevents most XSS attacks.
         Adjust based on your frontend requirements.
@@ -132,8 +129,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
-    """
-    Simple in-memory rate limiting middleware
+    """Simple in-memory rate limiting middleware
 
     For production, use Redis-based rate limiting (slowapi, aiolimiter, etc.)
     """
@@ -221,8 +217,7 @@ class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
 
 
 def configure_security_middleware(app, environment: str = "production"):
-    """
-    Configure all security middleware for the application
+    """Configure all security middleware for the application
 
     Args:
         app: FastAPI application instance

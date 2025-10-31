@@ -1,5 +1,4 @@
-"""
-Health and System Endpoints for App Store Readiness
+"""Health and System Endpoints for App Store Readiness
 """
 
 import os
@@ -16,8 +15,7 @@ API_VERSION = "1.2.0"
 
 @router.get("/healthz")
 async def healthz(request: Request, response: Response) -> dict[str, Any]:
-    """
-    Health check endpoint for monitoring
+    """Health check endpoint for monitoring
     Returns 200 if service is healthy
     """
     # Get once per process, then reuse
@@ -42,8 +40,7 @@ async def healthz(request: Request, response: Response) -> dict[str, Any]:
 
 @router.get("/version")
 async def version_info(request: Request, response: Response) -> dict[str, Any]:
-    """
-    Get API version information
+    """Get API version information
     """
     # Get once per process, then reuse
     v = getattr(request.app.state, "_openapi_version", None)
@@ -67,8 +64,7 @@ async def version_info(request: Request, response: Response) -> dict[str, Any]:
 
 @router.get("/docs")
 async def api_docs_redirect():
-    """
-    Redirect to Swagger UI documentation
+    """Redirect to Swagger UI documentation
     """
     from fastapi.responses import RedirectResponse
 
@@ -77,8 +73,7 @@ async def api_docs_redirect():
 
 @router.get("/redoc")
 async def api_redoc_redirect():
-    """
-    Redirect to ReDoc documentation
+    """Redirect to ReDoc documentation
     """
     from fastapi.responses import RedirectResponse
 
@@ -87,8 +82,7 @@ async def api_redoc_redirect():
 
 @router.get("/openapi.json")
 async def api_openapi_redirect():
-    """
-    Redirect to OpenAPI JSON schema
+    """Redirect to OpenAPI JSON schema
     """
     from fastapi.responses import RedirectResponse
 

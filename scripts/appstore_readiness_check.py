@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-App Store Readiness Check for BabyShield API
+"""App Store Readiness Check for BabyShield API
 Validates API stability, predictability, and documentation for App Store/Play review
 """
 

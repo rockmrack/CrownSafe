@@ -1,5 +1,4 @@
-"""
-Quick script to add is_active column to users table
+"""Quick script to add is_active column to users table
 """
 
 from sqlalchemy import text
@@ -18,8 +17,8 @@ try:
             text(
                 "SELECT column_name, data_type, is_nullable, column_default "
                 "FROM information_schema.columns "
-                "WHERE table_name = 'users' AND column_name = 'is_active'"
-            )
+                "WHERE table_name = 'users' AND column_name = 'is_active'",
+            ),
         )
         row = result.fetchone()
         if row:

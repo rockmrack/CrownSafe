@@ -1,5 +1,4 @@
-"""
-Subscription configuration for mobile IAP
+"""Subscription configuration for mobile IAP
 Centralizes all subscription-related settings
 """
 

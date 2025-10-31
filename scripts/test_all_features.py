@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Master test script that runs all BabyShield API tests
+"""Master test script that runs all BabyShield API tests
 Tests all implemented features to ensure everything is working
 """
 

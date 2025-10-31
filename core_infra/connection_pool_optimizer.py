@@ -14,8 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class ConnectionPoolOptimizer:
-    """
-    High-performance connection pool optimizer for BabyShield's 39-agency database operations.
+    """High-performance connection pool optimizer for BabyShield's 39-agency database operations.
     Implements connection pooling, batch operations, and query optimization.
     """
 
@@ -32,8 +31,7 @@ class ConnectionPoolOptimizer:
 
     @asynccontextmanager
     async def get_optimized_db_session(self):
-        """
-        Get an optimized database session with connection pooling
+        """Get an optimized database session with connection pooling
         """
         from core_infra.database import SessionLocal
 
@@ -58,8 +56,7 @@ class ConnectionPoolOptimizer:
             pass
 
     async def batch_database_operations(self, operations: list[Callable]) -> list[Any]:
-        """
-        Execute multiple database operations in a single optimized batch
+        """Execute multiple database operations in a single optimized batch
         """
         start_time = time.time()
 
@@ -96,8 +93,7 @@ class ConnectionPoolOptimizer:
         model_number: str | None = None,
         product_name: str | None = None,
     ) -> list[dict[str, Any]]:
-        """
-        Ultra-optimized recall search with intelligent query strategy
+        """Ultra-optimized recall search with intelligent query strategy
         """
         # REMOVED FOR CROWN SAFE: Recall search no longer applicable
         # Return empty list for backward compatibility
@@ -118,8 +114,7 @@ class ConnectionPoolOptimizer:
             return []
 
     def get_pooled_agent_instance(self, agent_class, agent_id: str):
-        """
-        Get a pooled agent instance to avoid re-instantiation overhead
+        """Get a pooled agent instance to avoid re-instantiation overhead
         """
         pool_key = f"{agent_class.__name__}_{agent_id}"
 
@@ -131,8 +126,7 @@ class ConnectionPoolOptimizer:
         return self.agent_instance_pool[pool_key]
 
     async def parallel_agent_execution(self, agent_tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """
-        Execute multiple agent tasks in parallel for massive speedup
+        """Execute multiple agent tasks in parallel for massive speedup
         """
         start_time = time.time()
 
@@ -177,11 +171,11 @@ class ConnectionPoolOptimizer:
                     r
                     for r in results
                     if not isinstance(r, Exception) and r.get("result", {}).get("status") == "COMPLETED"
-                ]
+                ],
             )
 
             self.logger.info(
-                f"🚀 Parallel agent execution: {successful}/{len(agent_tasks)} successful in {elapsed:.3f}s"
+                f"🚀 Parallel agent execution: {successful}/{len(agent_tasks)} successful in {elapsed:.3f}s",
             )
 
             return [r for r in results if not isinstance(r, Exception)]
@@ -192,8 +186,7 @@ class ConnectionPoolOptimizer:
             return []
 
     def cleanup_connections(self):
-        """
-        Clean up connection pools and agent instances
+        """Clean up connection pools and agent instances
         """
         try:
             with self.pool_lock:

@@ -1,5 +1,4 @@
-"""
-Enhanced Barcode Scanner with 100% Windows Compatibility
+"""Enhanced Barcode Scanner with 100% Windows Compatibility
 Uses OpenCV as fallback when PyZbar DLLs are not available
 """
 
@@ -89,8 +88,7 @@ class BarcodeResult:
 
 
 class EnhancedBarcodeScanner:
-    """
-    Enhanced barcode scanner with multiple fallback methods
+    """Enhanced barcode scanner with multiple fallback methods
     Guarantees 100% functionality on Windows
     """
 
@@ -117,8 +115,7 @@ class EnhancedBarcodeScanner:
                 self.barcode_detector = None
 
     def scan_image(self, image_data: bytes) -> list[BarcodeResult]:
-        """
-        Scan image for barcodes using best available method
+        """Scan image for barcodes using best available method
 
         Args:
             image_data: Image bytes
@@ -367,8 +364,7 @@ enhanced_scanner = EnhancedBarcodeScanner()
 
 
 def scan_barcode(image_data: bytes) -> list[dict[str, Any]]:
-    """
-    Public API for barcode scanning
+    """Public API for barcode scanning
 
     Args:
         image_data: Image bytes
@@ -391,8 +387,7 @@ def scan_barcode(image_data: bytes) -> list[dict[str, Any]]:
 
 
 def test_scanner_status() -> dict[str, Any]:
-    """
-    Test scanner functionality
+    """Test scanner functionality
 
     Returns:
         Status of all scanning methods

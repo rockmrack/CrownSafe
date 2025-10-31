@@ -1,5 +1,4 @@
-"""
-Stub worker task module for report generation
+"""Stub worker task module for report generation
 
 This is a stub implementation for Phase 1 testing.
 Real implementation to be added later.
@@ -26,8 +25,7 @@ class PDFGenerator:
 
 @app.task(name="generate_report")
 def generate_report_task(report_type, data, user_id):
-    """
-    Generate PDF report
+    """Generate PDF report
 
     Args:
         report_type: Type of report to generate
@@ -53,8 +51,7 @@ def generate_report_task(report_type, data, user_id):
 
 @app.task(name="generate_pdf_report")
 def generate_pdf_report_task(data, output_path):
-    """
-    Generate PDF from data
+    """Generate PDF from data
 
     Args:
         data: Data to include in PDF

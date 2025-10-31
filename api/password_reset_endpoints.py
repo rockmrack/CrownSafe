@@ -1,5 +1,4 @@
-"""
-Password Reset Endpoints - Email-based password reset flow
+"""Password Reset Endpoints - Email-based password reset flow
 """
 
 import hashlib
@@ -65,8 +64,7 @@ class PasswordResetResponse(AppModel):
 
 
 async def send_reset_email(email: str, token: str, user_name: str | None = None):
-    """
-    Send password reset email
+    """Send password reset email
     This is a placeholder - integrate with your email service
     """
     try:
@@ -174,8 +172,7 @@ async def request_password_reset(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """
-    Request a password reset email
+    """Request a password reset email
 
     Always returns success to prevent email enumeration
     """
@@ -226,8 +223,7 @@ async def request_password_reset(
 
 @router.post("/password-reset/confirm", response_model=ApiResponse)
 async def confirm_password_reset(request: PasswordResetConfirm, db: Session = Depends(get_db)):
-    """
-    Confirm password reset with token and new password
+    """Confirm password reset with token and new password
     """
     try:
         from core_infra.database import User
@@ -282,8 +278,7 @@ async def confirm_password_reset(request: PasswordResetConfirm, db: Session = De
 
 @router.post("/password-reset/validate", response_model=ApiResponse)
 async def validate_reset_token(token: str, db: Session = Depends(get_db)):
-    """
-    Validate if a reset token is still valid
+    """Validate if a reset token is still valid
     """
     try:
         # Hash the provided token
@@ -320,8 +315,7 @@ async def complete_password_reset(
     request: PasswordResetComplete = Body(...),
     db: Session = Depends(get_db),
 ):
-    """
-    Complete password reset with token and new password
+    """Complete password reset with token and new password
     """
     try:
         from core_infra.database import User

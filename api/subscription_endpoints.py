@@ -1,5 +1,4 @@
-"""
-Subscription API endpoints for mobile app IAP
+"""Subscription API endpoints for mobile app IAP
 Handles receipt validation and entitlement checks
 """
 
@@ -84,8 +83,7 @@ async def activate_subscription(
     data: ActivateSubscriptionRequest,
     current_user: User = Depends(get_current_user),
 ):
-    """
-    Activate subscription by validating receipt from Apple/Google
+    """Activate subscription by validating receipt from Apple/Google
 
     This endpoint should be called after a successful purchase in the mobile app.
     The app sends the receipt data which we validate with Apple/Google servers.
@@ -119,8 +117,7 @@ async def get_subscription_status(
     user_id: int | None = Query(None, description="User ID (for testing without auth)"),
     current_user: User | None = Depends(lambda: None),
 ):
-    """
-    Get current subscription status for authenticated user or by user_id
+    """Get current subscription status for authenticated user or by user_id
 
     Returns detailed information about the user's subscription including
     plan type, expiry date, and auto-renewal status.
@@ -175,8 +172,7 @@ async def check_entitlement(
     feature: str = Query(..., min_length=3, description="Feature to check entitlement for"),
     db=Depends(get_db_session),
 ):
-    """
-    Quick entitlement check for feature access
+    """Quick entitlement check for feature access
 
     This is a lightweight endpoint for the mobile app to quickly check
     if the user has an active subscription and can access premium features.
@@ -261,8 +257,7 @@ async def check_entitlement(
 
 @router.post("/cancel")
 async def cancel_subscription(request: Request, current_user: User = Depends(get_current_user)):
-    """
-    Cancel subscription (will remain active until expiry)
+    """Cancel subscription (will remain active until expiry)
 
     This marks the subscription as cancelled but it remains active
     until the current period expires.
@@ -295,8 +290,7 @@ async def cancel_subscription(request: Request, current_user: User = Depends(get
 
 @router.get("/history")
 async def get_subscription_history(request: Request, limit: int = 10, current_user: User = Depends(get_current_user)):
-    """
-    Get subscription history for the authenticated user
+    """Get subscription history for the authenticated user
 
     Returns a list of past and current subscriptions.
     """
@@ -328,8 +322,7 @@ async def get_subscription_history_dev(
     sort: str = Query("date", description="Sort by: date, amount, status"),
     order: str = Query("desc", description="Sort order: asc, desc"),
 ):
-    """
-    K-4 History: Dev override version for testing subscription history
+    """K-4 History: Dev override version for testing subscription history
 
     Returns paginated subscription history with date ordering and empty state handling.
     """
@@ -387,8 +380,7 @@ async def get_subscription_history_dev(
 
 @router.get("/products")
 async def get_available_products(request: Request):
-    """
-    Get available subscription products
+    """Get available subscription products
 
     Returns the product IDs and pricing for monthly and annual plans.
     This helps the mobile app display the correct products.
@@ -429,15 +421,14 @@ async def get_available_products(request: Request):
                 "duration_months": 12,
                 "savings": f"${(SubscriptionConfig.MONTHLY_PRICE * 12 - SubscriptionConfig.ANNUAL_PRICE):.2f}",
             },
-        ]
+        ],
     }
 
 
 # Admin endpoints (protected separately)
 @router.get("/admin/metrics", include_in_schema=False)
 async def get_subscription_metrics(request: Request, current_user: User = Depends(get_current_user)):
-    """
-    Get subscription metrics (admin only)
+    """Get subscription metrics (admin only)
 
     Returns analytics data about subscriptions.
     """
@@ -452,8 +443,7 @@ async def get_subscription_metrics(request: Request, current_user: User = Depend
 
 @router.post("/admin/cleanup", include_in_schema=False)
 async def cleanup_expired_subscriptions(request: Request, current_user: User = Depends(get_current_user)):
-    """
-    Clean up expired subscriptions (admin only)
+    """Clean up expired subscriptions (admin only)
 
     Marks expired subscriptions and updates user statuses.
     """
@@ -505,8 +495,7 @@ async def get_subscription_plans(
     order: str = Query("asc", description="Sort order: asc, desc"),
     feature: str | None = Query(None, description="Filter plans by feature"),
 ):
-    """
-    K-1 Products/Plans: Get available subscription plans with stable shape
+    """K-1 Products/Plans: Get available subscription plans with stable shape
 
     Returns pricing list with sorting, feature flags, and stable response shape.
     """

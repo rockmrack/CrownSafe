@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Production Database Initialization Script
+"""Production Database Initialization Script
 Creates necessary tables in the production SQLite database via API
 """
 
@@ -12,7 +11,6 @@ import requests
 
 def init_production_database():
     """Initialize production database by calling the API to create tables"""
-
     base_url = "https://babyshield.cureviax.ai"
 
     print(f"Initializing production database at {base_url}")

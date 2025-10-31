@@ -1,5 +1,4 @@
-"""
-Add is_active column to users table
+"""Add is_active column to users table
 
 Revision ID: 20251012_add_is_active
 Revises: 20251012_user_reports

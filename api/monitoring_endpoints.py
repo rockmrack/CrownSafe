@@ -1,5 +1,4 @@
-"""
-Product Monitoring Management Endpoints
+"""Product Monitoring Management Endpoints
 """
 
 import logging
@@ -159,7 +158,7 @@ async def get_monitored_products(
                 "page": page,
                 "page_size": page_size,
                 "has_more": (offset + page_size) < total,
-            }
+            },
         )
 
     except Exception as e:
@@ -229,7 +228,7 @@ async def update_check_frequency(
             {
                 "message": "Check frequency updated",
                 "next_check": product.next_check.isoformat() + "Z",
-            }
+            },
         )
 
     except Exception as e:
@@ -288,7 +287,7 @@ async def check_product_now(
                 "message": "Product checked",
                 "recalls_found": result.get("recalls_found", 0),
                 "recalls": result.get("recalls", []),
-            }
+            },
         )
 
     except Exception as e:
@@ -353,7 +352,7 @@ async def auto_add_from_scans(
                 "added": added_count,
                 "skipped": skipped_count,
                 "total_scans": len(recent_scans),
-            }
+            },
         )
 
     except Exception as e:

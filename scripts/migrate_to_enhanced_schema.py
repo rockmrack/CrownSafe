@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-🚀 BabyShield Database Migration Script
+"""🚀 BabyShield Database Migration Script
 Migrates from basic RecallDB to Enhanced 39-Agency Schema
 
 This migration adds CRITICAL fields for complete international coverage:

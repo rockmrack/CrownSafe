@@ -1,5 +1,4 @@
-"""
-Azure Storage SAS URL Caching with Redis
+"""Azure Storage SAS URL Caching with Redis
 Enterprise-grade performance optimization for Azure Blob Storage
 
 Features:
@@ -21,8 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class AzureStorageCacheManager:
-    """
-    Redis-based cache manager for Azure Storage SAS URLs
+    """Redis-based cache manager for Azure Storage SAS URLs
     Reduces API calls and improves performance
     """
 
@@ -32,8 +30,7 @@ class AzureStorageCacheManager:
         default_ttl_hours: int = 23,
         key_prefix: str = "azure_sas:",
     ):
-        """
-        Initialize cache manager
+        """Initialize cache manager
 
         Args:
             redis_url: Redis connection URL (e.g., 'redis://localhost:6379/0')
@@ -67,8 +64,7 @@ class AzureStorageCacheManager:
         self.cache_invalidations = 0
 
     def _generate_cache_key(self, blob_name: str, container_name: str, permissions: str = "r") -> str:
-        """
-        Generate deterministic cache key for SAS URL
+        """Generate deterministic cache key for SAS URL
 
         Args:
             blob_name: Blob name
@@ -89,8 +85,7 @@ class AzureStorageCacheManager:
         container_name: str,
         permissions: str = "r",
     ) -> str | None:
-        """
-        Retrieve cached SAS URL from Redis
+        """Retrieve cached SAS URL from Redis
 
         Args:
             blob_name: Blob name
@@ -140,8 +135,7 @@ class AzureStorageCacheManager:
         permissions: str = "r",
         ttl_hours: int | None = None,
     ) -> bool:
-        """
-        Cache SAS URL in Redis with TTL
+        """Cache SAS URL in Redis with TTL
 
         Args:
             blob_name: Blob name
@@ -185,8 +179,7 @@ class AzureStorageCacheManager:
         container_name: str,
         permissions: str | None = None,
     ) -> bool:
-        """
-        Invalidate cached SAS URL (on blob delete/update)
+        """Invalidate cached SAS URL (on blob delete/update)
 
         Args:
             blob_name: Blob name
@@ -228,8 +221,7 @@ class AzureStorageCacheManager:
             return False
 
     def clear_all_cache(self) -> int:
-        """
-        Clear all cached SAS URLs (emergency use only)
+        """Clear all cached SAS URLs (emergency use only)
 
         Returns:
             Number of keys deleted
@@ -252,8 +244,7 @@ class AzureStorageCacheManager:
             return 0
 
     def get_cache_stats(self) -> dict:
-        """
-        Get cache performance statistics
+        """Get cache performance statistics
 
         Returns:
             Dictionary with cache statistics
@@ -284,8 +275,7 @@ azure_storage_cache = None
 
 
 def get_cache_manager(redis_url: str | None = None) -> AzureStorageCacheManager:
-    """
-    Get or create global cache manager instance
+    """Get or create global cache manager instance
 
     Args:
         redis_url: Redis connection URL (optional, uses env var if not provided)

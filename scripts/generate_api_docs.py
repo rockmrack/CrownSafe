@@ -1,5 +1,4 @@
-"""
-API Documentation Enhancement Tool
+"""API Documentation Enhancement Tool
 Automatically generates comprehensive API documentation
 
 Features:
@@ -14,15 +13,13 @@ from typing import Any
 
 
 class APIDocumentationEnhancer:
-    """
-    Enhances FastAPI automatic documentation
+    """Enhances FastAPI automatic documentation
     Adds comprehensive examples and descriptions
     """
 
     @staticmethod
     def get_monitoring_endpoints_docs() -> list[dict[str, Any]]:
-        """
-        Get documentation for monitoring endpoints
+        """Get documentation for monitoring endpoints
 
         Returns:
             List of endpoint documentation objects
@@ -205,8 +202,7 @@ class APIDocumentationEnhancer:
 
     @staticmethod
     def get_api_best_practices() -> dict[str, Any]:
-        """
-        Get API best practices documentation
+        """Get API best practices documentation
 
         Returns:
             Dictionary with best practices

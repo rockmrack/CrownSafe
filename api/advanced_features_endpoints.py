@@ -1,5 +1,4 @@
-"""
-Advanced BabyShield Features API Endpoints
+"""Advanced BabyShield Features API Endpoints
 Provides endpoints for web research, guidelines, and visual recognition
 """
 
@@ -181,8 +180,7 @@ async def research_product_safety(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """
-    Research product safety across the web in real-time.
+    """Research product safety across the web in real-time.
 
     This endpoint:
     1. Searches forums, social media, news for safety issues
@@ -230,7 +228,7 @@ async def research_product_safety(
                     sentiment="negative",
                     verified=False,
                     reported_by_count=47,
-                )
+                ),
             )
             risk_indicators.append("Multiple consumer complaints identified")
             safety_score -= 15
@@ -248,7 +246,7 @@ async def research_product_safety(
                     sentiment="negative",
                     verified=True,
                     reported_by_count=156,
-                )
+                ),
             )
             if len(findings) > 1:
                 risk_indicators.append("Trending safety concern on social media")
@@ -267,7 +265,7 @@ async def research_product_safety(
                     sentiment="positive",
                     verified=False,
                     reported_by_count=12,
-                )
+                ),
             )
             safety_score += 5  # Positive feedback improves score
 
@@ -284,7 +282,7 @@ async def research_product_safety(
                 sentiment="neutral",
                 verified=True,
                 reported_by_count=None,
-            )
+            ),
         )
 
         # Sort findings by relevance
@@ -359,8 +357,7 @@ async def recognize_product_from_image(
     confidence_threshold: float = Query(0.7, ge=0, le=1, description="Minimum confidence"),
     db: Session = Depends(get_db),
 ):
-    """
-    Identify products from images using visual recognition.
+    """Identify products from images using visual recognition.
 
     This endpoint:
     1. Analyzes uploaded product images
@@ -463,7 +460,7 @@ async def recognize_product_from_image(
                         FROM recalls_enhanced 
                         WHERE LOWER(product_name) LIKE LOWER(:product_name)
                         LIMIT 1
-                    """
+                    """,
                     )
                     recall_result = db.execute(
                         recall_query,
@@ -483,7 +480,7 @@ async def recognize_product_from_image(
                         "brand": product_data.get("brand", "Unknown"),
                         "recall_status": recall_status,
                         "recall_reason": recall_reason,
-                    }
+                    },
                 )
             else:
                 # Fallback for failed recognition
@@ -496,7 +493,7 @@ async def recognize_product_from_image(
                         "brand": "Unknown",
                         "recall_status": "UNKNOWN",
                         "recall_reason": "Could not identify product from image",
-                    }
+                    },
                 )
                 confidence = 0.0
 
@@ -533,7 +530,7 @@ async def recognize_product_from_image(
                             "location": defect["location"],
                             "severity": defect["severity"],
                             "confidence": defect["confidence"],
-                        }
+                        },
                     )
 
                 logger.info(f"Real defect detection found {len(detected_defects)} defects")
@@ -593,8 +590,7 @@ async def setup_product_monitoring(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """
-    Set up continuous monitoring for a product.
+    """Set up continuous monitoring for a product.
 
     This endpoint:
     1. Registers product for ongoing monitoring
@@ -663,8 +659,7 @@ async def get_monitoring_status(
     user_id: int = Query(..., description="User ID"),
     db: Session = Depends(get_db),
 ):
-    """
-    Get status of an active monitoring job.
+    """Get status of an active monitoring job.
     """
     try:
         # Validate user
@@ -712,8 +707,7 @@ async def cancel_monitoring(
     user_id: int = Query(..., description="User ID"),
     db: Session = Depends(get_db),
 ):
-    """
-    Cancel an active monitoring job.
+    """Cancel an active monitoring job.
     """
     try:
         # Validate user

@@ -1,5 +1,4 @@
-"""
-Unit tests for core_infra/barcode_scanner_enhanced.py
+"""Unit tests for core_infra/barcode_scanner_enhanced.py
 Tests enhanced barcode scanner with multiple fallback methods
 """
 

@@ -34,8 +34,7 @@ except ImportError:
 
 
 class BabyShieldRouterLogic:
-    """
-    Orchestrates the execution of a BabyShieldPlan by calling other agent logic
+    """Orchestrates the execution of a BabyShieldPlan by calling other agent logic
     classes directly in a dependency-aware manner. Manages the workflow state in-memory.
     """
 
@@ -63,10 +62,9 @@ class BabyShieldRouterLogic:
         )
 
     def _substitute_dependency_placeholders(
-        self, inputs: dict[str, Any], workflow_state: dict[str, Any]
+        self, inputs: dict[str, Any], workflow_state: dict[str, Any],
     ) -> dict[str, Any]:
-        """
-        Replaces placeholders like '.' with actual data
+        """Replaces placeholders like '.' with actual data
         from the results of completed dependency tasks.
         """
         substituted = json.loads(json.dumps(inputs))  # deep copy
@@ -166,7 +164,7 @@ class BabyShieldRouterLogic:
                                 confidence = agent_result.get("confidence", 0.0) if agent_result else 0.0
                                 if confidence < 0.7:
                                     self.logger.warning(
-                                        f"Visual search confidence ({confidence}) is below threshold. Halting workflow."
+                                        f"Visual search confidence ({confidence}) is below threshold. Halting workflow.",
                                     )
                                     wf["status"] = "FAILED"
                                     wf["error_message"] = (
@@ -177,7 +175,7 @@ class BabyShieldRouterLogic:
                                         {
                                             "status": "FAILED",
                                             "error": f"Confidence too low: {confidence:.2f}",
-                                        }
+                                        },
                                     )
                                     wf["failed_tasks"].add(sid)
                                     break

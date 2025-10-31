@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Ultra-Comprehensive Test Suite - 500+ Test Coverage
+"""Ultra-Comprehensive Test Suite - 500+ Test Coverage
 Includes unit, integration, security, performance, and edge case testing
 """
 

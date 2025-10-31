@@ -204,7 +204,7 @@ class WebResearchAgentManager:
         try:
             # Initialize WebResearchLogic
             self.web_research_logic = WebResearchLogic(
-                agent_id=AGENT_ID, version=AGENT_VERSION, logger_instance=logic_logger
+                agent_id=AGENT_ID, version=AGENT_VERSION, logger_instance=logic_logger,
             )
 
             # Get MCP server URL

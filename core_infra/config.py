@@ -1,5 +1,4 @@
-"""
-Centralized configuration management for BabyShield
+"""Centralized configuration management for BabyShield
 Handles environment variables and default values
 """
 

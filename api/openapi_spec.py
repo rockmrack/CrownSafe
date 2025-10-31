@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-OpenAPI specification generator for BabyShield API
+"""OpenAPI specification generator for BabyShield API
 """
 
 from fastapi import FastAPI
@@ -89,7 +88,7 @@ def custom_openapi(app: FastAPI):
                                     "message": "Missing required parameter: product",
                                 },
                             },
-                        }
+                        },
                     },
                 }
 
@@ -106,10 +105,10 @@ def custom_openapi(app: FastAPI):
                         "in": "path",
                         "required": True,
                         "schema": {"type": "string"},
-                    }
+                    },
                 ],
                 "responses": {"200": {"description": "File stream"}},
-            }
+            },
         },
     )
 

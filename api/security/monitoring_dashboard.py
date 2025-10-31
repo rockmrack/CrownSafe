@@ -1,5 +1,4 @@
-"""
-Security Monitoring Dashboard for BabyShield
+"""Security Monitoring Dashboard for BabyShield
 Real-time threat intelligence and attack visualization
 """
 
@@ -67,7 +66,6 @@ def update_security_metrics(
 @router.get("/security/dashboard")
 async def security_dashboard():
     """Real-time security dashboard (HTML)"""
-
     # Calculate security statistics
     total_requests = security_metrics["total_requests"]
     blocked_requests = security_metrics["blocked_requests"]
@@ -190,7 +188,7 @@ async def security_metrics_api():
             "protection_level": "enterprise",
             "last_updated": datetime.fromtimestamp(security_metrics["last_updated"]).isoformat(),
             "threat_level": "low" if security_metrics["blocked_requests"] < 100 else "high",
-        }
+        },
     )
 
 
@@ -204,7 +202,7 @@ async def live_threats():
             "threat_level": "low",  # Would be calculated based on recent activity
             "last_attack": datetime.fromtimestamp(security_metrics["last_updated"]).isoformat(),
             "protection_status": "active",
-        }
+        },
     )
 
 
@@ -220,5 +218,5 @@ async def manual_ip_block(request: Request, ip_address: str):
             "status": "success",
             "message": f"IP {ip_address} added to block list",
             "blocked_at": datetime.utcnow().isoformat(),
-        }
+        },
     )

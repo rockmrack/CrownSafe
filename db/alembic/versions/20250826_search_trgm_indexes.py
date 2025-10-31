@@ -32,13 +32,13 @@ def upgrade():
 
     # Check for recalls_enhanced
     result = connection.execute(
-        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls_enhanced');")
+        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls_enhanced');"),
     )
     has_enhanced = result.scalar()
 
     # Check for recalls
     result = connection.execute(
-        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls');")
+        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls');"),
     )
     has_recalls = result.scalar()
 
@@ -60,7 +60,7 @@ def upgrade():
         f"""
         CREATE INDEX IF NOT EXISTS ix_{table}_product_name_trgm
         ON {table} USING gin (lower(product_name) gin_trgm_ops);
-    """
+    """,
     )
 
     # Brand - commonly searched
@@ -68,7 +68,7 @@ def upgrade():
         f"""
         CREATE INDEX IF NOT EXISTS ix_{table}_brand_trgm
         ON {table} USING gin (lower(brand) gin_trgm_ops);
-    """
+    """,
     )
 
     # Description - for comprehensive search
@@ -76,7 +76,7 @@ def upgrade():
         f"""
         CREATE INDEX IF NOT EXISTS ix_{table}_description_trgm
         ON {table} USING gin (lower(description) gin_trgm_ops);
-    """
+    """,
     )
 
     # Hazard - for safety searches
@@ -84,7 +84,7 @@ def upgrade():
         f"""
         CREATE INDEX IF NOT EXISTS ix_{table}_hazard_trgm
         ON {table} USING gin (lower(hazard) gin_trgm_ops);
-    """
+    """,
     )
 
     # Check if title column exists
@@ -95,8 +95,8 @@ def upgrade():
             SELECT 1 FROM information_schema.columns 
             WHERE table_name = '{table}' AND column_name = 'title'
         );
-    """
-        )
+    """,
+        ),
     )
     has_title = result.scalar()
 
@@ -105,7 +105,7 @@ def upgrade():
             f"""
             CREATE INDEX IF NOT EXISTS ix_{table}_title_trgm
             ON {table} USING gin (lower(title) gin_trgm_ops);
-        """
+        """,
         )
 
     # 3) BTREE indexes for filters and sorting
@@ -116,7 +116,7 @@ def upgrade():
         f"""
         CREATE INDEX IF NOT EXISTS ix_{table}_agency 
         ON {table} (source_agency);
-    """
+    """,
     )
 
     # Date sorting (DESC for most recent first)
@@ -124,7 +124,7 @@ def upgrade():
         f"""
         CREATE INDEX IF NOT EXISTS ix_{table}_recalldate 
         ON {table} (recall_date DESC);
-    """
+    """,
     )
 
     # Composite index for common query pattern
@@ -132,7 +132,7 @@ def upgrade():
         f"""
         CREATE INDEX IF NOT EXISTS ix_{table}_agency_date 
         ON {table} (source_agency, recall_date DESC);
-    """
+    """,
     )
 
     # Check for risk/severity columns
@@ -142,8 +142,8 @@ def upgrade():
         SELECT column_name FROM information_schema.columns 
         WHERE table_name = '{table}' 
         AND column_name IN ('risk_category', 'severity', 'hazard_category');
-    """
-        )
+    """,
+        ),
     )
     risk_columns = [row[0] for row in result]
 
@@ -152,7 +152,7 @@ def upgrade():
             f"""
             CREATE INDEX IF NOT EXISTS ix_{table}_riskcategory 
             ON {table} (risk_category);
-        """
+        """,
         )
 
     if "severity" in risk_columns:
@@ -160,7 +160,7 @@ def upgrade():
             f"""
             CREATE INDEX IF NOT EXISTS ix_{table}_severity 
             ON {table} (severity);
-        """
+        """,
         )
 
     if "hazard_category" in risk_columns:
@@ -168,7 +168,7 @@ def upgrade():
             f"""
             CREATE INDEX IF NOT EXISTS ix_{table}_hazard_category 
             ON {table} (hazard_category);
-        """
+        """,
         )
 
     # UPC index for barcode lookups
@@ -176,7 +176,7 @@ def upgrade():
         f"""
         CREATE INDEX IF NOT EXISTS ix_{table}_upc 
         ON {table} (upc) WHERE upc IS NOT NULL;
-    """
+    """,
     )
 
     # Model number index
@@ -184,7 +184,7 @@ def upgrade():
         f"""
         CREATE INDEX IF NOT EXISTS ix_{table}_model_number 
         ON {table} (model_number) WHERE model_number IS NOT NULL;
-    """
+    """,
     )
 
     # 4) Analyze the table for query planner
@@ -204,12 +204,12 @@ def downgrade():
     connection = op.get_bind()
 
     result = connection.execute(
-        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls_enhanced');")
+        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls_enhanced');"),
     )
     has_enhanced = result.scalar()
 
     result = connection.execute(
-        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls');")
+        text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'recalls');"),
     )
     has_recalls = result.scalar()
 

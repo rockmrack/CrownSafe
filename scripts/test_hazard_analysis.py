@@ -26,7 +26,7 @@ TEST_RECALL_DATA = {
                 "reason": "Small plastic parts found in some batches, posing a choking hazard.",
                 "date": "2025-06-01",
             },
-        ]
+        ],
     },
 }
 # --------------------------

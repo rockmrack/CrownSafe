@@ -28,7 +28,6 @@ identifier_pattern = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 def _is_safe_identifier(name: str, pattern: re.Pattern = identifier_pattern) -> bool:
     """Return True if the provided identifier can be safely interpolated into SQL."""
-
     return bool(pattern.fullmatch(name))
 
 

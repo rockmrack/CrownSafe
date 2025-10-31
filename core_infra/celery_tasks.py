@@ -1,5 +1,4 @@
-"""
-Celery async tasks for Visual Agent image processing
+"""Celery async tasks for Visual Agent image processing
 Handles async job queue with Azure Blob Storage integration and multi-step processing
 """
 
@@ -55,7 +54,7 @@ app.conf.beat_schedule = {
     "purge-legal-retention-daily": {
         "task": "retention.purge_legal_retention",
         "schedule": crontab(minute=15, hour=2),  # 02:15 UTC daily
-    }
+    },
 }
 
 # Initialize Azure Blob Storage client
@@ -75,8 +74,7 @@ class CallbackTask(Task):
 
 @app.task(base=CallbackTask, bind=True, name="process_image")
 def process_image(self, job_id: str) -> dict[str, Any]:
-    """
-    Main image processing task
+    """Main image processing task
 
     Args:
         job_id: Image job ID
@@ -210,8 +208,7 @@ def process_image(self, job_id: str) -> dict[str, Any]:
 
 @app.task(name="virus_scan")
 def virus_scan(job_id: str, image_data: bytes) -> bool:
-    """
-    Scan image for viruses
+    """Scan image for viruses
 
     Note: This is a placeholder. In production, integrate with:
     - ClamAV Lambda layer
@@ -249,8 +246,7 @@ def virus_scan(job_id: str, image_data: bytes) -> bool:
 
 @app.task(name="normalize_image")
 def normalize_image(job_id: str, image_data: bytes) -> bytes:
-    """
-    Normalize image (resize, strip EXIF, convert format)
+    """Normalize image (resize, strip EXIF, convert format)
     """
     logger.info(f"Normalizing image for job {job_id}")
 
@@ -319,7 +315,7 @@ def extract_barcodes(job_id: str, image_data: bytes) -> dict[str, Any]:
                     "lot": result.lot_number,
                     "serial": result.serial_number,
                     "confidence": result.confidence,
-                }
+                },
             )
 
     logger.info(f"Found {len(barcodes)} barcodes in job {job_id}")
@@ -369,7 +365,7 @@ def extract_labels(job_id: str, image_data: bytes) -> dict[str, Any]:
     # Run label extraction
     loop = asyncio.new_event_loop()
     labels_result = loop.run_until_complete(
-        image_processor._extract_labels(image_data, image_processor._auto_select_providers())
+        image_processor._extract_labels(image_data, image_processor._auto_select_providers()),
     )
     loop.close()
 
@@ -541,8 +537,7 @@ def generate_sas_url(container: str, blob_name: str, expiry_hours: int = 1) -> s
 # Safety Hub Tasks
 @app.task(name="tasks.ingest_safety_articles")
 def ingest_safety_articles():
-    """
-    A Celery task that runs daily to fetch and store the latest safety articles.
+    """A Celery task that runs daily to fetch and store the latest safety articles.
     """
     import asyncio
 

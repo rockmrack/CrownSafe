@@ -1,5 +1,4 @@
-"""
-Add is_active column to users table in POSTGRES database
+"""Add is_active column to users table in POSTGRES database
 This script connects to the CORRECT database that production uses.
 """
 
@@ -12,7 +11,6 @@ import psycopg2
 # Production database connection - POSTGRES database (not babyshield_db!)
 def _require_env(var_name: str) -> str:
     """Return the value of the required environment variable."""
-
     value = os.getenv(var_name)
     if not value:
         raise RuntimeError(f"Missing required environment variable: {var_name}")
@@ -52,7 +50,7 @@ def main():
                 WHERE table_name = 'users' 
                 AND table_schema = 'public'
                 AND column_name = 'is_active';
-            """
+            """,
             )
             exists = cur.fetchone()
 
@@ -64,7 +62,7 @@ def main():
                     """
                     ALTER TABLE users 
                     ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT true;
-                """
+                """,
                 )
                 conn.commit()
                 print("✅ Column added successfully!\n")
@@ -76,7 +74,7 @@ def main():
                 FROM information_schema.columns 
                 WHERE table_name = 'users' AND table_schema = 'public'
                 ORDER BY ordinal_position;
-            """
+            """,
             )
             columns = cur.fetchall()
 

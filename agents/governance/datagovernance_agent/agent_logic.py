@@ -12,8 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class DataGovernanceAgentLogic:
-    """
-    Handles data privacy tasks, such as user data deletion, to comply with regulations.
+    """Handles data privacy tasks, such as user data deletion, to comply with regulations.
     """
 
     def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
@@ -22,8 +21,7 @@ class DataGovernanceAgentLogic:
         self.logger.info(f"DataGovernanceAgentLogic initialized for agent {self.agent_id}.")
 
     async def delete_user_data(self, user_id: int) -> bool:
-        """
-        Finds a user in the database and deletes their entire record.
+        """Finds a user in the database and deletes their entire record.
         This is a destructive action and should be handled with care.
         """
         await asyncio.sleep(0.1)  # Simulate I/O delay
@@ -45,8 +43,7 @@ class DataGovernanceAgentLogic:
             return False
 
     async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
-        """
-        Main entry point for the agent.
+        """Main entry point for the agent.
         """
         self.logger.info(f"Received data governance task with inputs: {inputs}")
         action = inputs.get("action")

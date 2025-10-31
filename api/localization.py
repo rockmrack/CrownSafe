@@ -1,5 +1,4 @@
-"""
-Task 13: Localization Support for BabyShield API
+"""Task 13: Localization Support for BabyShield API
 Provides multi-language support with fallback to en-US
 """
 
@@ -256,8 +255,7 @@ TRANSLATIONS = {
 
 
 def parse_accept_language(accept_language: str) -> list[str]:
-    """
-    Parse Accept-Language header and return ordered list of locales
+    """Parse Accept-Language header and return ordered list of locales
     Example: "en-US,en;q=0.9,es;q=0.8" -> ["en-US", "en", "es"]
     """
     if not accept_language:
@@ -278,8 +276,7 @@ def parse_accept_language(accept_language: str) -> list[str]:
 
 
 def get_best_locale(requested_locales: list[str]) -> str:
-    """
-    Find the best matching locale from requested list
+    """Find the best matching locale from requested list
     """
     for locale in requested_locales:
         # Exact match
@@ -297,8 +294,7 @@ def get_best_locale(requested_locales: list[str]) -> str:
 
 
 def translate(key: str, locale: str = "en-US") -> str:
-    """
-    Get translation for a key in specified locale
+    """Get translation for a key in specified locale
     """
     if key not in TRANSLATIONS:
         logger.warning(f"Translation key not found: {key}")
@@ -325,16 +321,14 @@ def translate(key: str, locale: str = "en-US") -> str:
 
 @router.get("/locales", response_model=list[SupportedLocale])
 async def get_supported_locales():
-    """
-    Get list of supported locales with their configuration
+    """Get list of supported locales with their configuration
     """
     return list(SUPPORTED_LOCALES.values())
 
 
 @router.get("/locale/{locale_code}")
 async def get_locale_info(locale_code: str):
-    """
-    Get detailed information about a specific locale
+    """Get detailed information about a specific locale
     """
     if locale_code not in SUPPORTED_LOCALES:
         # Try to find a close match
@@ -349,15 +343,13 @@ async def get_translations(
     keys: list[str] | None = Query(None, description="Specific keys to retrieve"),
     accept_language: str | None = Header(None, alias="Accept-Language"),
 ):
-    """
-    Get translations for specified locale or from Accept-Language header
+    """Get translations for specified locale or from Accept-Language header
 
     Examples:
     - GET /api/v1/i18n/translations?locale=es-ES
     - GET /api/v1/i18n/translations (uses Accept-Language header)
     - GET /api/v1/i18n/translations?keys=app.name&keys=app.tagline
     """
-
     # Determine locale
     if accept_language and not locale:
         requested_locales = parse_accept_language(accept_language)
@@ -386,8 +378,7 @@ async def translate_key(
     locale: str | None = Query("en-US"),
     accept_language: str | None = Header(None, alias="Accept-Language"),
 ):
-    """
-    Translate a single key
+    """Translate a single key
     """
     # Determine locale
     if accept_language and not locale:
@@ -405,8 +396,7 @@ async def translate_batch(
     locale: str | None = Query("en-US"),
     accept_language: str | None = Header(None, alias="Accept-Language"),
 ):
-    """
-    Translate multiple keys at once
+    """Translate multiple keys at once
     """
     # Determine locale
     if accept_language and not locale:
@@ -428,8 +418,7 @@ async def get_accessibility_labels(
     locale: str | None = Query("en-US"),
     accept_language: str | None = Header(None, alias="Accept-Language"),
 ):
-    """
-    Get all accessibility labels for screen readers
+    """Get all accessibility labels for screen readers
     """
     # Determine locale
     if accept_language and not locale:
@@ -447,8 +436,7 @@ async def get_accessibility_labels(
 
 @router.get("/a11y/config")
 async def get_accessibility_config():
-    """
-    Get accessibility configuration for the app
+    """Get accessibility configuration for the app
     """
     return {
         "ok": True,

@@ -19,7 +19,6 @@ depends_on = None
 
 def upgrade() -> None:
     """Add unique constraint for subscription UPSERT operations"""
-
     # Add unique constraint for subscription UPSERT
     # This allows us to use ON CONFLICT (user_id, original_transaction_id)
     op.create_unique_constraint(

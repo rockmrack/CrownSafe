@@ -1,5 +1,4 @@
-"""
-Enhanced Search Service v2 with keyset pagination and snapshot isolation
+"""Enhanced Search Service v2 with keyset pagination and snapshot isolation
 Implements cursor-based pagination without OFFSET for better performance
 """
 
@@ -22,8 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 class SearchServiceV2:
-    """
-    Advanced search service with keyset pagination and snapshot isolation
+    """Advanced search service with keyset pagination and snapshot isolation
     """
 
     def __init__(self, db_session: Session):
@@ -51,13 +49,11 @@ class SearchServiceV2:
         limit: int = 20,
         cursor_token: str | None = None,
     ) -> tuple[str, dict[str, Any], datetime, dict | None]:
-        """
-        Build optimized SQL query with keyset pagination
+        """Build optimized SQL query with keyset pagination
 
         Returns:
             (sql_query, params, as_of_time, cursor_data)
         """
-
         # Parse cursor if provided
         cursor_data = None
         as_of = datetime.now(timezone.utc)
@@ -134,7 +130,7 @@ class SearchServiceV2:
                     f"{table}.manufacturer",
                     f"{table}.model_number",
                     f"{table}.upc",
-                ]
+                ],
             )
 
         # Build WHERE conditions
@@ -191,7 +187,7 @@ class SearchServiceV2:
                 # Only check on PostgreSQL
                 if self.db.bind.dialect.name == "postgresql":
                     trgm_check = self.db.execute(
-                        text("SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')")
+                        text("SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm')"),
                     )
                     has_trgm = trgm_check.scalar()
                 else:
@@ -309,8 +305,7 @@ class SearchServiceV2:
         limit: int = 20,
         next_cursor: str | None = None,
     ) -> dict[str, Any]:
-        """
-        Execute search with cursor-based pagination
+        """Execute search with cursor-based pagination
         """
         try:
             # Build query

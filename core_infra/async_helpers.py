@@ -1,5 +1,4 @@
-"""
-Async helpers for BabyShield
+"""Async helpers for BabyShield
 Prevents timeouts with non-blocking external API calls
 """
 
@@ -16,8 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class AsyncAPIClient:
-    """
-    Async HTTP client with timeout, retry, and error handling
+    """Async HTTP client with timeout, retry, and error handling
     """
 
     def __init__(self, timeout: int = 30, max_retries: int = 3, backoff_factor: float = 1.0):
@@ -37,20 +35,17 @@ class AsyncAPIClient:
             await self.session.close()
 
     async def get(self, url: str, **kwargs) -> dict[str, Any]:
-        """
-        Async GET request with retry logic
+        """Async GET request with retry logic
         """
         return await self._request("GET", url, **kwargs)
 
     async def post(self, url: str, **kwargs) -> dict[str, Any]:
-        """
-        Async POST request with retry logic
+        """Async POST request with retry logic
         """
         return await self._request("POST", url, **kwargs)
 
     async def _request(self, method: str, url: str, **kwargs) -> dict[str, Any]:
-        """
-        Make async request with retry logic
+        """Make async request with retry logic
         """
         if not self.session:
             self.session = aiohttp.ClientSession(timeout=self.timeout)
@@ -96,8 +91,7 @@ class AsyncAPIClient:
 
 
 async def fetch_multiple_apis(urls: list[str], timeout: int = 30) -> list[dict[str, Any] | None]:
-    """
-    Fetch data from multiple APIs concurrently
+    """Fetch data from multiple APIs concurrently
     """
     async with AsyncAPIClient(timeout=timeout) as client:
         tasks = [client.get(url) for url in urls]
@@ -116,8 +110,7 @@ async def fetch_multiple_apis(urls: list[str], timeout: int = 30) -> list[dict[s
 
 
 def async_endpoint(func):
-    """
-    Decorator to convert sync endpoint to async
+    """Decorator to convert sync endpoint to async
     """
 
     @wraps(func)
@@ -134,8 +127,7 @@ def async_endpoint(func):
 
 
 class AsyncBatchProcessor:
-    """
-    Process items in batches asynchronously
+    """Process items in batches asynchronously
     """
 
     def __init__(self, batch_size: int = 10, max_concurrent: int = 5):
@@ -143,8 +135,7 @@ class AsyncBatchProcessor:
         self.semaphore = asyncio.Semaphore(max_concurrent)
 
     async def process(self, items: list[Any], process_func: Callable) -> list[Any]:
-        """
-        Process items in concurrent batches
+        """Process items in concurrent batches
         """
         results = []
 
@@ -158,8 +149,7 @@ class AsyncBatchProcessor:
         return results
 
     async def _process_batch(self, batch: list[Any], process_func: Callable) -> list[Any]:
-        """
-        Process a single batch with concurrency limit
+        """Process a single batch with concurrency limit
         """
 
         async def process_with_semaphore(item):
@@ -176,8 +166,7 @@ class AsyncBatchProcessor:
 
 # Async cache decorator
 def async_cache(ttl: int = 300):
-    """
-    Cache async function results
+    """Cache async function results
     """
     cache = {}
 
@@ -209,22 +198,19 @@ def async_cache(ttl: int = 300):
 
 # Convert blocking operations to async
 class AsyncConverter:
-    """
-    Convert blocking database/API calls to async
+    """Convert blocking database/API calls to async
     """
 
     @staticmethod
     async def run_sync_in_thread(sync_func: Callable, *args, **kwargs):
-        """
-        Run synchronous function in thread pool
+        """Run synchronous function in thread pool
         """
         loop = asyncio.get_event_loop()
         return await loop.run_in_executor(None, sync_func, *args, **kwargs)
 
     @staticmethod
     async def convert_requests_to_async(url: str, method: str = "GET", **kwargs):
-        """
-        Convert requests library call to async
+        """Convert requests library call to async
         """
         async with httpx.AsyncClient() as client:
             response = await client.request(method, url, **kwargs)
@@ -233,8 +219,7 @@ class AsyncConverter:
 
 # Example usage functions
 async def fetch_recalls_async() -> dict[str, Any]:
-    """
-    Example: Fetch recalls from multiple sources concurrently
+    """Example: Fetch recalls from multiple sources concurrently
     """
     urls = [
         "https://api.cpsc.gov/recalls",
@@ -249,8 +234,7 @@ async def fetch_recalls_async() -> dict[str, Any]:
 
 @async_cache(ttl=600)
 async def get_product_data_async(barcode: str) -> dict[str, Any]:
-    """
-    Example: Get product data with caching
+    """Example: Get product data with caching
     """
     async with AsyncAPIClient() as client:
         return await client.get(f"https://api.upcitemdb.com/prod/v1/lookup?upc={barcode}")
@@ -258,8 +242,7 @@ async def get_product_data_async(barcode: str) -> dict[str, Any]:
 
 # Async task queue
 class AsyncTaskQueue:
-    """
-    Simple async task queue for background processing
+    """Simple async task queue for background processing
     """
 
     def __init__(self, max_workers: int = 10):

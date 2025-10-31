@@ -1,5 +1,4 @@
-"""
-Utilities package for API functionality
+"""Utilities package for API functionality
 """
 
 from .cursor import (

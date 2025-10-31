@@ -1,5 +1,4 @@
-"""
-Stub worker task module for GDPR/privacy operations
+"""Stub worker task module for GDPR/privacy operations
 
 This is a stub implementation for Phase 1 testing.
 Real implementation to be added later.
@@ -43,8 +42,7 @@ class DataDeleter:
 
 @app.task(name="export_user_data")
 def export_user_data_task(user_id):
-    """
-    Export all user data for GDPR compliance
+    """Export all user data for GDPR compliance
 
     Args:
         user_id: User identifier
@@ -60,8 +58,7 @@ def export_user_data_task(user_id):
 
 @app.task(name="delete_user_data")
 def delete_user_data_task(user_id):
-    """
-    Delete all user data (GDPR right to be forgotten)
+    """Delete all user data (GDPR right to be forgotten)
 
     Args:
         user_id: User identifier
@@ -77,8 +74,7 @@ def delete_user_data_task(user_id):
 
 @app.task(name="anonymize_user_data")
 def anonymize_user_data_task(user_id):
-    """
-    Anonymize user data for retention compliance
+    """Anonymize user data for retention compliance
 
     Args:
         user_id: User identifier

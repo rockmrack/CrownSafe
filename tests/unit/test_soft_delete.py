@@ -1,5 +1,4 @@
-"""
-Unit tests for core_infra/soft_delete.py
+"""Unit tests for core_infra/soft_delete.py
 Tests soft delete functionality, mixins, query classes, and recycle bin operations
 """
 

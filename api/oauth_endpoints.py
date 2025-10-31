@@ -1,5 +1,4 @@
-"""
-OAuth Authentication Endpoints for Apple and Google Sign-In
+"""OAuth Authentication Endpoints for Apple and Google Sign-In
 Stores only internal user_id and provider subject ID
 """
 
@@ -69,8 +68,7 @@ class AppleOAuth(OAuthProvider):
 
     @staticmethod
     async def verify_token(id_token: str, client_id: str = None) -> dict[str, Any]:
-        """
-        Verify Apple ID token
+        """Verify Apple ID token
         Returns decoded token with 'sub' (subject) and 'email' (if available)
         """
         try:
@@ -117,8 +115,7 @@ class GoogleOAuth(OAuthProvider):
 
     @staticmethod
     async def verify_token(id_token: str, client_id: str = None) -> dict[str, Any]:
-        """
-        Verify Google ID token
+        """Verify Google ID token
         Returns decoded token with 'sub' (subject) and 'email'
         """
         try:
@@ -180,8 +177,7 @@ async def oauth_login(
     db: Session = Depends(get_db),
     user_agent: str | None = Header(None),
 ):
-    """
-    OAuth login with Apple or Google
+    """OAuth login with Apple or Google
 
     This endpoint:
     1. Verifies the provider token
@@ -311,8 +307,7 @@ async def oauth_login(
 
 @router.post("/logout")
 async def oauth_logout(request: Request, user_id: str | None = None, device_id: str | None = None):
-    """
-    OAuth logout
+    """OAuth logout
 
     This endpoint logs out the user and invalidates their session.
     In a production environment, you would also:
@@ -341,8 +336,7 @@ async def oauth_logout(request: Request, user_id: str | None = None, device_id: 
 
 @router.post("/revoke")
 async def revoke_token(request: Request, token: str, token_type: str = "access_token"):
-    """
-    Revoke a specific token
+    """Revoke a specific token
 
     This endpoint allows revoking access or refresh tokens.
     Useful for security purposes or when a device is lost.
@@ -379,8 +373,7 @@ async def revoke_token(request: Request, token: str, token_type: str = "access_t
 
 @router.get("/providers")
 async def get_oauth_providers():
-    """
-    Get list of supported OAuth providers
+    """Get list of supported OAuth providers
     """
     return {
         "ok": True,

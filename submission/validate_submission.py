@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Submission Validation Script
+"""Submission Validation Script
 Performs comprehensive checks before app store submission
 """
 
@@ -51,7 +50,6 @@ class SubmissionValidator:
 
     def validate_api_endpoints(self) -> bool:
         """Validate all API endpoints are functioning"""
-
         self.print_header("API ENDPOINT VALIDATION")
 
         endpoints = [
@@ -98,7 +96,7 @@ class SubmissionValidator:
                             "endpoint": endpoint,
                             "status": "pass",
                             "response_time": response_time,
-                        }
+                        },
                     )
                 else:
                     self.print_result(
@@ -112,7 +110,7 @@ class SubmissionValidator:
                             "endpoint": endpoint,
                             "status": "fail",
                             "error": f"Status {response.status_code}",
-                        }
+                        },
                     )
 
             except Exception as e:
@@ -139,7 +137,6 @@ class SubmissionValidator:
 
     def validate_security_headers(self) -> bool:
         """Check security headers"""
-
         self.print_header("SECURITY HEADERS VALIDATION")
 
         try:
@@ -180,7 +177,6 @@ class SubmissionValidator:
 
     def validate_store_metadata(self) -> bool:
         """Validate store metadata files"""
-
         self.print_header("STORE METADATA VALIDATION")
 
         metadata_files = {
@@ -233,7 +229,6 @@ class SubmissionValidator:
 
     def validate_screenshots(self) -> bool:
         """Validate screenshot assets"""
-
         self.print_header("SCREENSHOT VALIDATION")
 
         screenshot_requirements = {
@@ -295,7 +290,6 @@ class SubmissionValidator:
 
     def validate_app_icons(self) -> bool:
         """Validate app icons"""
-
         self.print_header("APP ICON VALIDATION")
 
         icon_requirements = {
@@ -355,7 +349,6 @@ class SubmissionValidator:
 
     def validate_text_content(self) -> bool:
         """Validate text content for store listings"""
-
         self.print_header("TEXT CONTENT VALIDATION")
 
         text_files = {
@@ -401,7 +394,6 @@ class SubmissionValidator:
 
     def validate_legal_documents(self) -> bool:
         """Validate legal documents are present and accessible"""
-
         self.print_header("LEGAL DOCUMENTS VALIDATION")
 
         legal_urls = {
@@ -436,7 +428,6 @@ class SubmissionValidator:
 
     def run_postman_tests(self) -> bool:
         """Run Postman collection tests"""
-
         self.print_header("POSTMAN COLLECTION TESTS")
 
         collection_path = Path("docs/api/postman/BabyShield_v1.postman_collection.json")
@@ -503,7 +494,6 @@ class SubmissionValidator:
 
     def generate_validation_report(self):
         """Generate validation report for submission"""
-
         report_path = Path("submission/validation_report.json")
         report_path.parent.mkdir(exist_ok=True)
 
@@ -555,7 +545,6 @@ class SubmissionValidator:
 
     def run_all_validations(self) -> bool:
         """Run all validation checks"""
-
         print(f"{Colors.BOLD}{'=' * 70}{Colors.ENDC}")
         print(f"{Colors.BOLD}🚀 APP STORE SUBMISSION PREFLIGHT VALIDATION{Colors.ENDC}")
         print(f"{Colors.BOLD}{'=' * 70}{Colors.ENDC}")

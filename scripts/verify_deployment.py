@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Verify BabyShield API deployment
+"""Verify BabyShield API deployment
 Tests all critical endpoints after deployment
 """
 

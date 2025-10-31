@@ -1,5 +1,4 @@
-"""
-Privacy compliance integration for FastAPI app
+"""Privacy compliance integration for FastAPI app
 Integrates all privacy features from Task 8
 """
 
@@ -12,8 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def setup_privacy_compliance(app: FastAPI):
-    """
-    Integrate all privacy compliance features into the FastAPI app
+    """Integrate all privacy compliance features into the FastAPI app
 
     This includes:
     - User privacy endpoints (GDPR/CCPA rights)
@@ -24,7 +22,6 @@ def setup_privacy_compliance(app: FastAPI):
     Args:
         app: FastAPI application instance
     """
-
     # Import privacy routers
     from api.routes import admin_privacy, privacy
 
@@ -63,8 +60,7 @@ def setup_privacy_compliance(app: FastAPI):
 
 
 def configure_privacy_logging():
-    """
-    Configure logging to mask PII in logs
+    """Configure logging to mask PII in logs
     """
     import logging
 
@@ -94,8 +90,7 @@ def configure_privacy_logging():
 
 
 def get_privacy_config():
-    """
-    Get privacy configuration from environment
+    """Get privacy configuration from environment
 
     Returns:
         Dictionary with privacy configuration
@@ -131,8 +126,7 @@ def get_privacy_config():
 
 
 def validate_privacy_setup():
-    """
-    Validate that privacy features are properly configured
+    """Validate that privacy features are properly configured
 
     Returns:
         Tuple of (is_valid, errors)

@@ -183,7 +183,7 @@ def test_get_or_create_conversation_existing(db_session):
 
 @pytest.mark.skip(
     reason="Test model/real model mismatch - log_message uses real ConversationMessage model "
-    "which has different column types than test model. Works correctly in production PostgreSQL."
+    "which has different column types than test model. Works correctly in production PostgreSQL.",
 )
 def test_log_message(db_session):
     """Test logging a message to a conversation"""
@@ -263,7 +263,7 @@ def test_profile_privacy_defaults(db_session):
 @pytest.mark.skip(
     reason="Test model/real model mismatch - log_message uses real ConversationMessage model. "
     "Validation logic works correctly in production PostgreSQL. "
-    "This test validates the ValueError exceptions are raised for invalid content."
+    "This test validates the ValueError exceptions are raised for invalid content.",
 )
 def test_log_message_content_validation(db_session):
     """Test that log_message validates content structure"""

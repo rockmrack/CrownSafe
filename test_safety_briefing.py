@@ -1,5 +1,4 @@
-"""
-SAFETY BRIEFING / SAFETY UPDATES VERIFICATION
+"""SAFETY BRIEFING / SAFETY UPDATES VERIFICATION
 ==============================================
 
 Tests the "Today's Safety Briefing" feature shown in mobile app:
@@ -229,7 +228,7 @@ for keyword in campaign_keywords[:5]:  # Test first 5
         db.query(EnhancedRecallDB)
         .filter(
             func.lower(EnhancedRecallDB.description).like(f"%{keyword.lower()}%")
-            | func.lower(EnhancedRecallDB.hazard).like(f"%{keyword.lower()}%")
+            | func.lower(EnhancedRecallDB.hazard).like(f"%{keyword.lower()}%"),
         )
         .count()
     )
@@ -242,7 +241,7 @@ for keyword in campaign_keywords[:5]:  # Test first 5
             db.query(EnhancedRecallDB)
             .filter(
                 func.lower(EnhancedRecallDB.description).like(f"%{keyword.lower()}%")
-                | func.lower(EnhancedRecallDB.hazard).like(f"%{keyword.lower()}%")
+                | func.lower(EnhancedRecallDB.hazard).like(f"%{keyword.lower()}%"),
             )
             .first()
         )
@@ -260,7 +259,7 @@ tipover_recalls = (
     .filter(
         func.lower(EnhancedRecallDB.description).like("%tip%over%")
         | func.lower(EnhancedRecallDB.description).like("%tip-over%")
-        | func.lower(EnhancedRecallDB.hazard).like("%tip%over%")
+        | func.lower(EnhancedRecallDB.hazard).like("%tip%over%"),
     )
     .limit(5)
     .all()

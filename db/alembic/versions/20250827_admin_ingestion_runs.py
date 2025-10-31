@@ -1,5 +1,4 @@
-"""
-Create ingestion_runs table for tracking data ingestion jobs
+"""Create ingestion_runs table for tracking data ingestion jobs
 
 Revision ID: 20250827_admin_ingestion_runs
 Revises: 20250826_search_trgm_indexes
@@ -20,7 +19,6 @@ depends_on = None
 
 def upgrade():
     """Create ingestion_runs table and indexes"""
-
     # Detect database dialect
     bind = op.get_bind()
     is_sqlite = bind.dialect.name == "sqlite"
@@ -89,7 +87,7 @@ def upgrade():
             """
             ALTER TABLE ingestion_runs 
             ADD CONSTRAINT check_mode CHECK (mode IN ('delta', 'full', 'incremental'))
-        """
+        """,
         )
 
         op.execute(
@@ -98,13 +96,12 @@ def upgrade():
             ADD CONSTRAINT check_status CHECK (
                 status IN ('queued', 'running', 'success', 'failed', 'cancelled', 'partial')
             )
-        """
+        """,
         )
 
 
 def downgrade():
     """Drop ingestion_runs table and indexes"""
-
     # Drop indexes
     op.drop_index("ix_ingestion_runs_created_at", table_name="ingestion_runs")
     op.drop_index("ix_ingestion_runs_status", table_name="ingestion_runs")

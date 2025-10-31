@@ -1,5 +1,4 @@
-"""
-Middleware package for API observability and security
+"""Middleware package for API observability and security
 """
 
 from .access_log import AccessLogMiddleware

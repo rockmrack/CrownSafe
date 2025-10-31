@@ -1,5 +1,4 @@
-"""
-Crown Safe Database Seeding Script
+"""Crown Safe Database Seeding Script
 Seeds hair products and ingredients for barcode scanning functionality
 """
 
@@ -576,8 +575,7 @@ HAIR_PRODUCTS_DATA = [
 
 
 def seed_ingredients(db: Session) -> int:
-    """
-    Seed ingredient database with safety information
+    """Seed ingredient database with safety information
 
     Returns:
         Number of ingredients inserted
@@ -610,8 +608,7 @@ def seed_ingredients(db: Session) -> int:
 
 
 def seed_hair_products(db: Session) -> int:
-    """
-    Seed hair product database with barcode and ingredient information
+    """Seed hair product database with barcode and ingredient information
 
     Returns:
         Number of products inserted
@@ -642,7 +639,7 @@ def seed_hair_products(db: Session) -> int:
             db.add(product)
             count += 1
             print(
-                f"  ✓ Added: {product_data['brand']} - {product_data['product_name']} (UPC: {product_data['upc_barcode']})"  # noqa: E501
+                f"  ✓ Added: {product_data['brand']} - {product_data['product_name']} (UPC: {product_data['upc_barcode']})",  # noqa: E501
             )
         else:
             print(f"  ⊘ Skipped: {product_data['brand']} - {product_data['product_name']} (already exists)")

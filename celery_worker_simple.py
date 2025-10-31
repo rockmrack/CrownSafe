@@ -1,5 +1,4 @@
-"""
-Simple Celery worker for testing
+"""Simple Celery worker for testing
 Handles missing dependencies gracefully
 """
 

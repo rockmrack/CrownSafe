@@ -1,8 +1,7 @@
 # scripts/setup_and_test.py
 
 #!/usr/bin/env python3
-"""
-Complete setup and test script for BabyShield recall API
+"""Complete setup and test script for BabyShield recall API
 """
 
 import os

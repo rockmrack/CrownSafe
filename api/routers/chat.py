@@ -291,7 +291,6 @@ class SuperSmartLLMClient:
 
     def _generate_smart_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
         """Generate intelligent response based on context"""
-
         # FIXED: Emergency response with proper structure
         if context["is_emergency"]:
             return self._emergency_response(query)
@@ -338,7 +337,7 @@ class SuperSmartLLMClient:
                     "type": "guideline",
                     "source": "American Academy of Pediatrics",
                     "id": "emergency_care",
-                }
+                },
             ],
             "suggested_questions": [],
             "emergency": {
@@ -553,7 +552,6 @@ class SuperSmartLLMClient:
 
     def _general_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
         """Generate general helpful response"""
-
         # Add personalization based on emotion
         emotion_prefix = {
             "anxious": "I understand your concern. Let me help you with clear information.",
@@ -858,7 +856,7 @@ async def chat_explain_result(
                         "emergency": {"level": "critical", "action": "call_911"},
                     },
                     "traceId": trace_id,
-                }
+                },
             )
 
         # Get scan from database
@@ -891,7 +889,7 @@ async def chat_explain_result(
                         ],
                     },
                     "traceId": trace_id,
-                }
+                },
             )
 
     except HTTPException:
@@ -968,7 +966,7 @@ async def chat_conversation(request: Request) -> JSONResponse:
                         "suggested_questions": [],
                     },
                     "traceId": trace_id,
-                }
+                },
             )
 
         # Try to generate response with LLM
@@ -989,7 +987,7 @@ async def chat_conversation(request: Request) -> JSONResponse:
                         "emergency": response.get("emergency"),
                     },
                     "traceId": trace_id,
-                }
+                },
             )
         except Exception as llm_error:
             logger.warning(f"LLM unavailable, using fallback: {llm_error}")
@@ -1009,7 +1007,7 @@ async def chat_conversation(request: Request) -> JSONResponse:
                         "emergency": None,
                     },
                     "traceId": trace_id,
-                }
+                },
             )
 
     except Exception as e:
@@ -1031,7 +1029,7 @@ async def chat_flags(request: Request) -> JSONResponse:
                     "chat_rollout_pct": FEATURE_CHAT_ROLLOUT_PCT,
                 },
                 "traceId": trace_id,
-            }
+            },
         )
 
     except Exception as e:
@@ -1071,7 +1069,7 @@ async def chat_demo(request: Request, user_query: str) -> JSONResponse:
                         "flags": ["demo_mode"],
                     },
                     "traceId": trace_id,
-                }
+                },
             )
 
         response = llm_client.chat_json(user=user_query)
@@ -1101,8 +1099,7 @@ for route in router.routes:
 
 
 def fetch_scan_data(db, scan_id: int):
-    """
-    Fetch scan data by scan ID.
+    """Fetch scan data by scan ID.
     Used by chat endpoints to retrieve scan history.
     """
     try:

@@ -12,8 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class AsyncWorkflowOptimizer:
-    """
-    High-performance async workflow optimizer for BabyShield's 39-agency system.
+    """High-performance async workflow optimizer for BabyShield's 39-agency system.
     Provides parallel processing, connection pooling, and intelligent task management.
     """
 
@@ -23,8 +22,7 @@ class AsyncWorkflowOptimizer:
         self.logger = logger
 
     async def parallel_database_queries(self, queries: list[Callable]) -> list[Any]:
-        """
-        Execute multiple database queries concurrently for massive speedup
+        """Execute multiple database queries concurrently for massive speedup
         """
         start_time = time.time()
 
@@ -45,7 +43,7 @@ class AsyncWorkflowOptimizer:
             # Use DEBUG level to reduce log noise in production
             if self.logger.isEnabledFor(logging.DEBUG):
                 self.logger.debug(
-                    f"⚡ Parallel queries completed: {len(valid_results)}/{len(queries)} successful in {elapsed:.3f}s"
+                    f"⚡ Parallel queries completed: {len(valid_results)}/{len(queries)} successful in {elapsed:.3f}s",
                 )
 
             return valid_results
@@ -55,8 +53,7 @@ class AsyncWorkflowOptimizer:
             return []
 
     async def concurrent_agent_calls(self, agent_tasks: dict[str, Callable]) -> dict[str, Any]:
-        """
-        Execute multiple agent operations concurrently when possible
+        """Execute multiple agent operations concurrently when possible
         """
         start_time = time.time()
 
@@ -80,7 +77,7 @@ class AsyncWorkflowOptimizer:
             # Use DEBUG level to reduce log noise in production
             if self.logger.isEnabledFor(logging.DEBUG):
                 self.logger.debug(
-                    f"🚀 Concurrent agents completed: {successful}/{len(agent_tasks)} successful in {elapsed:.3f}s"
+                    f"🚀 Concurrent agents completed: {successful}/{len(agent_tasks)} successful in {elapsed:.3f}s",
                 )
 
             return results
@@ -90,8 +87,7 @@ class AsyncWorkflowOptimizer:
             return {}
 
     async def optimized_safety_check(self, user_request: dict[str, Any]) -> dict[str, Any]:
-        """
-        Optimized safety check workflow with parallel processing where possible
+        """Optimized safety check workflow with parallel processing where possible
         """
         start_time = time.time()
         workflow_id = f"opt_{int(time.time())}"
@@ -167,7 +163,7 @@ class AsyncWorkflowOptimizer:
                                     "model_number": model_number or "",
                                 },
                             },
-                        ]
+                        ],
                     },
                 }
             else:

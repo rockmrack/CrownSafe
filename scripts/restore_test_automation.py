@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Automated Database Restore Testing
+"""Automated Database Restore Testing
 Performs weekly restore drills and validates data integrity
 """
 
@@ -45,7 +44,6 @@ class RestoreTester:
 
     def get_latest_snapshot(self) -> str | None:
         """Get the most recent automated snapshot"""
-
         try:
             response = self.rds.describe_db_snapshots(
                 DBInstanceIdentifier=self.source_db,
@@ -76,7 +74,6 @@ class RestoreTester:
 
     def create_test_restore(self, snapshot_id: str) -> str | None:
         """Create a test instance from snapshot"""
-
         test_instance_id = f"{self.test_prefix}-{int(time.time())}"
 
         try:
@@ -107,7 +104,6 @@ class RestoreTester:
 
     def wait_for_instance(self, instance_id: str, timeout_minutes: int = 30) -> bool:
         """Wait for instance to be available"""
-
         start_time = time.time()
         timeout_seconds = timeout_minutes * 60
 
@@ -136,7 +132,6 @@ class RestoreTester:
 
     def get_connection_info(self, instance_id: str) -> dict | None:
         """Get connection details for test instance"""
-
         try:
             response = self.rds.describe_db_instances(DBInstanceIdentifier=instance_id)
 
@@ -157,7 +152,6 @@ class RestoreTester:
 
     def validate_restored_data(self, connection_info: dict) -> dict:
         """Validate the restored database"""
-
         validation_results = {
             "tables_exist": False,
             "row_counts": {},
@@ -187,7 +181,7 @@ class RestoreTester:
                 WHERE table_schema = 'public' 
                   AND table_name IN ('users', 'recalls_enhanced', 'subscriptions', 'family_members')
                 ORDER BY table_name
-            """
+            """,
             )
 
             tables = cursor.fetchall()
@@ -211,7 +205,7 @@ class RestoreTester:
                 SELECT MAX(created_at) as latest,
                        NOW() - MAX(created_at) as age
                 FROM recalls_enhanced
-            """
+            """,
             )
 
             result = cursor.fetchone()
@@ -227,7 +221,7 @@ class RestoreTester:
                 FROM family_members fm
                 LEFT JOIN users u ON fm.user_id = u.id
                 WHERE u.id IS NULL
-            """
+            """,
             )
 
             orphaned = cursor.fetchone()[0]
@@ -241,7 +235,7 @@ class RestoreTester:
                 SELECT COUNT(*) 
                 FROM pg_indexes
                 WHERE schemaname = 'public'
-            """
+            """,
             )
 
             index_count = cursor.fetchone()[0]
@@ -255,7 +249,7 @@ class RestoreTester:
                 FROM information_schema.table_constraints
                 WHERE constraint_schema = 'public'
                   AND constraint_type IN ('PRIMARY KEY', 'FOREIGN KEY', 'UNIQUE')
-            """
+            """,
             )
 
             constraint_count = cursor.fetchone()[0]
@@ -274,7 +268,6 @@ class RestoreTester:
 
     def cleanup_test_instance(self, instance_id: str) -> bool:
         """Delete the test instance"""
-
         try:
             logger.info(f"Deleting test instance: {instance_id}")
 
@@ -292,7 +285,6 @@ class RestoreTester:
 
     def send_notification(self, result: RestoreTestResult):
         """Send SNS notification with test results"""
-
         topic_arn = os.environ.get("SNS_TOPIC_ARN")
         if not topic_arn:
             logger.warning("No SNS topic configured")
@@ -340,7 +332,6 @@ Please investigate immediately.
 
     def record_metrics(self, result: RestoreTestResult):
         """Record metrics to CloudWatch"""
-
         try:
             # Success metric
             self.cloudwatch.put_metric_data(
@@ -372,7 +363,7 @@ Please investigate immediately.
                             "Unit": "Count",
                             "Dimensions": [{"Name": "Table", "Value": table}],
                             "Timestamp": datetime.datetime.utcnow(),
-                        }
+                        },
                     ],
                 )
 
@@ -383,7 +374,6 @@ Please investigate immediately.
 
     def run_restore_test(self) -> RestoreTestResult:
         """Run a complete restore test"""
-
         start_time = time.time()
         test_instance_id = None
 
@@ -455,7 +445,6 @@ Please investigate immediately.
 
 def main():
     """Main entry point"""
-
     logger.info("=" * 60)
     logger.info(" AUTOMATED RESTORE TEST STARTING")
     logger.info(f" Time: {datetime.datetime.utcnow().isoformat()}")

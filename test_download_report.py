@@ -1,5 +1,4 @@
-"""
-Test Download Report Functionality
+"""Test Download Report Functionality
 Tests the complete report generation and download workflow
 """
 
@@ -12,13 +11,11 @@ BASE_URL = "http://localhost:8001"  # Change to production URL if testing produc
 
 
 def test_download_report_workflow():
-    """
-    Test complete report download workflow:
+    """Test complete report download workflow:
     1. Generate a report
     2. Get the download URL
     3. Download the PDF
     """
-
     print("=" * 80)
     print("🧪 Testing Download Report Functionality")
     print("=" * 80)

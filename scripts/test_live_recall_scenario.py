@@ -16,8 +16,7 @@ TEST_BARCODE = "850016249012"
 
 
 def validate_response(resp: dict[str, Any]) -> bool:
-    """
-    Validate that:
+    """Validate that:
       - status == COMPLETED
       - data.summary is non-empty string
       - data.risk_level is one of expected levels

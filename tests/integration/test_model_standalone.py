@@ -1,5 +1,4 @@
-"""
-STANDALONE MODEL NUMBER TEST
+"""STANDALONE MODEL NUMBER TEST
 
 This test can be copied to any babyshield-backend directory and run.
 It creates its own test database and validates the model number workflow.
@@ -125,8 +124,7 @@ def setup_test_database():
 
 
 def test_endpoint_accepts_model_number():
-    """
-    TEST 1: Verify endpoint accepts model_number parameter
+    """TEST 1: Verify endpoint accepts model_number parameter
 
     This test validates:
     - POST /api/v1/safety-check endpoint exists
@@ -182,8 +180,7 @@ def test_endpoint_accepts_model_number():
 
 
 def test_user_validation():
-    """
-    TEST 2: Verify user authentication works
+    """TEST 2: Verify user authentication works
 
     This test validates:
     - Invalid user_id is rejected
@@ -214,8 +211,7 @@ def test_user_validation():
 
 
 def test_empty_model_number():
-    """
-    TEST 3: Verify empty input handling
+    """TEST 3: Verify empty input handling
 
     This test validates:
     - Empty model_number is handled appropriately
@@ -248,8 +244,7 @@ def test_empty_model_number():
 
 
 def test_model_number_variations():
-    """
-    TEST 4: Test various model number formats
+    """TEST 4: Test various model number formats
 
     This test validates:
     - Different model number formats accepted

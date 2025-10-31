@@ -57,8 +57,7 @@ task_correlation_id: str | None = None  # Store the correlation ID of the sent t
 
 # --- Message Handling for Controller ---
 async def handle_controller_message(message: dict[str, Any]):
-    """
-    Callback for the controller client to process responses.
+    """Callback for the controller client to process responses.
     Looks for TASK_COMPLETE or TASK_FAIL related to our sent task
     by checking the correlation_id.
     """
@@ -78,24 +77,23 @@ async def handle_controller_message(message: dict[str, Any]):
             task_completion_event.set()  # Signal that the task is done
         elif message_type == "TASK_ACKNOWLEDGE":
             logger.info(
-                f"Received TASK_ACKNOWLEDGE for correlation_id: {correlation_id}, Status: {payload.get('status')}"
+                f"Received TASK_ACKNOWLEDGE for correlation_id: {correlation_id}, Status: {payload.get('status')}",
             )
         elif message_type == "STATUS_UPDATE":
             logger.info(
-                f"Received STATUS_UPDATE for correlation_id: {correlation_id}, Description: {payload.get('status_description')}"  # noqa: E501
+                f"Received STATUS_UPDATE for correlation_id: {correlation_id}, Description: {payload.get('status_description')}",  # noqa: E501
             )
         else:
             logger.debug(f"Received message type {message_type} with matching correlation ID, but not final status.")
     else:
         logger.debug(
-            f"Received message with non-matching correlation ID: {correlation_id} (Expected: {task_correlation_id})"
+            f"Received message with non-matching correlation ID: {correlation_id} (Expected: {task_correlation_id})",
         )
 
 
 # --- Main Test Function ---
 async def run_task_assignment():
-    """
-    Connects as a controller, sends a task, waits for completion or timeout.
+    """Connects as a controller, sends a task, waits for completion or timeout.
     """
     global task_result, task_completion_event, task_correlation_id
     logger.info(f"Instantiating MCPClient for controller: {CONTROLLER_AGENT_ID}")
@@ -133,7 +131,7 @@ async def run_task_assignment():
         )
 
         logger.info(
-            f"Sending TASK_ASSIGN (Subtask ID: {subtask_id_to_send}, Corr ID: {task_correlation_id}) to {TARGET_AGENT_ID}..."  # noqa: E501
+            f"Sending TASK_ASSIGN (Subtask ID: {subtask_id_to_send}, Corr ID: {task_correlation_id}) to {TARGET_AGENT_ID}...",  # noqa: E501
         )
         await client.send_message(task_message)
         logger.info("Task message sent.")

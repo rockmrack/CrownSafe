@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test script for critical backend features implementation
+"""Test script for critical backend features implementation
 Tests all the newly added features to ensure they work correctly
 """
 

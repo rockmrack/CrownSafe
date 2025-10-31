@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Initialize test database with all required tables and migrations.
+"""Initialize test database with all required tables and migrations.
 This script is used in CI/CD to ensure the database is properly set up before running tests.
 """
 
@@ -109,11 +108,11 @@ def init_database():
                     with engine.connect() as conn:
                         conn.execute(text("ALTER TABLE recalls_enhanced ADD COLUMN IF NOT EXISTS severity VARCHAR(50)"))
                         conn.execute(
-                            text("ALTER TABLE recalls_enhanced ADD COLUMN IF NOT EXISTS risk_category VARCHAR(100)")
+                            text("ALTER TABLE recalls_enhanced ADD COLUMN IF NOT EXISTS risk_category VARCHAR(100)"),
                         )
                         conn.execute(text("UPDATE recalls_enhanced SET severity = 'medium' WHERE severity IS NULL"))
                         conn.execute(
-                            text("UPDATE recalls_enhanced SET risk_category = 'general' WHERE risk_category IS NULL")
+                            text("UPDATE recalls_enhanced SET risk_category = 'general' WHERE risk_category IS NULL"),
                         )
                         conn.commit()
                         logger.info("✓ Added missing severity and risk_category columns")

@@ -1,5 +1,4 @@
-"""
-Admin Endpoints - Administrative user management
+"""Admin Endpoints - Administrative user management
 Requires admin role/permissions
 """
 
@@ -35,8 +34,7 @@ class AdminUserListItem(AppModel):
 
 
 def is_admin(current_user) -> bool:
-    """
-    Check if user has admin privileges.
+    """Check if user has admin privileges.
 
     Args:
         current_user: The authenticated user
@@ -66,8 +64,7 @@ async def list_all_users(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Get list of all users (admin only).
+    """Get list of all users (admin only).
 
     Args:
         skip: Number of records to skip
@@ -134,8 +131,7 @@ async def get_user_details(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Get detailed information about a specific user (admin only).
+    """Get detailed information about a specific user (admin only).
 
     Args:
         user_id: The ID of the user to fetch
@@ -196,8 +192,7 @@ async def enable_pg_trgm_extension(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Enable pg_trgm PostgreSQL extension for fuzzy text search (admin only).
+    """Enable pg_trgm PostgreSQL extension for fuzzy text search (admin only).
 
     This endpoint enables the trigram extension and creates GIN indexes
     for optimal search performance.
@@ -247,8 +242,8 @@ async def enable_pg_trgm_extension(
                 FROM pg_indexes 
                 WHERE tablename = 'recalls_enhanced' 
                 AND indexname LIKE '%trgm%'
-            """
-            )
+            """,
+            ),
         )
         existing_indexes = [row[0] for row in idx_check.fetchall()]
 

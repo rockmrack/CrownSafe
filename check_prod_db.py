@@ -1,5 +1,4 @@
-"""
-Check production database schema
+"""Check production database schema
 """
 
 import sys
@@ -23,7 +22,7 @@ try:
         WHERE table_schema='public' 
         AND table_name IN ('recalls', 'recalls_enhanced')
         ORDER BY table_name
-    """
+    """,
     )
     tables = cur.fetchall()
     print(f"Found tables: {[t[0] for t in tables]}")
@@ -38,7 +37,7 @@ try:
             WHERE table_name = 'recalls_enhanced'
             AND column_name IN ('source_agency', 'severity', 'risk_category', 'product_name', 'description')
             ORDER BY column_name
-        """
+        """,
         )
         columns = cur.fetchall()
         for col in columns:
@@ -62,7 +61,7 @@ try:
             FROM recalls_enhanced 
             WHERE source_agency IS NOT NULL 
             LIMIT 10
-        """
+        """,
         )
         agencies = cur.fetchall()
         for agency in agencies:

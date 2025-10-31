@@ -1,5 +1,4 @@
-"""
-Audit logging system for BabyShield
+"""Audit logging system for BabyShield
 Tracks all data changes for compliance and debugging
 """
 
@@ -20,8 +19,7 @@ current_request_id: ContextVar[str | None] = ContextVar("request_id", default=No
 
 
 def get_base():
-    """
-    Lazy import of Base to avoid circular import.
+    """Lazy import of Base to avoid circular import.
     database.py needs to finish initializing before we can import Base.
     """
     from core_infra.database import Base
@@ -30,8 +28,7 @@ def get_base():
 
 
 class AuditLog(get_base()):
-    """
-    Audit log table for tracking all changes
+    """Audit log table for tracking all changes
     """
 
     __tablename__ = "audit_logs"
@@ -53,13 +50,12 @@ class AuditLog(get_base()):
     status_code = Column(Integer, nullable=True)  # Response status
     error = Column(Text, nullable=True)  # Error message if failed
     extra_metadata = Column(
-        "metadata", JSON, nullable=True
+        "metadata", JSON, nullable=True,
     )  # Additional context (renamed to avoid SQLAlchemy reserved attribute)
 
 
 class AuditLogger:
-    """
-    Main audit logging service
+    """Main audit logging service
     """
 
     def __init__(self, db_session: Session = None):
@@ -76,8 +72,7 @@ class AuditLogger:
         metadata: dict = None,
         error: str = None,
     ):
-        """
-        Create an audit log entry
+        """Create an audit log entry
         """
         try:
             # Get context
@@ -122,8 +117,7 @@ class AuditLogger:
             self.logger.error(f"Failed to create audit log: {e}")
 
     def _calculate_diff(self, old: dict, new: dict) -> dict:
-        """
-        Calculate differences between old and new values
+        """Calculate differences between old and new values
         """
         changes = {}
 
@@ -198,8 +192,7 @@ class AuditLogger:
         )
 
     def _serialize_entity(self, entity: Any) -> dict:
-        """
-        Serialize entity to dictionary
+        """Serialize entity to dictionary
         """
         if hasattr(entity, "to_dict"):
             return entity.to_dict()
@@ -221,8 +214,7 @@ class AuditLogger:
 
 # SQLAlchemy event listeners for automatic audit logging
 def setup_audit_listeners(Base, db_session):
-    """
-    Setup automatic audit logging for SQLAlchemy models
+    """Setup automatic audit logging for SQLAlchemy models
     """
     audit_logger = AuditLogger(db_session)
 
@@ -254,8 +246,7 @@ def setup_audit_listeners(Base, db_session):
 
 # Decorators for audit logging
 def audit_action(action: str, entity_type: str = None):
-    """
-    Decorator to audit function calls
+    """Decorator to audit function calls
     """
 
     def decorator(func):
@@ -304,8 +295,7 @@ def audit_action(action: str, entity_type: str = None):
 
 
 def audit_api_endpoint(func):
-    """
-    Decorator for auditing API endpoints
+    """Decorator for auditing API endpoints
     """
 
     @wraps(func)
@@ -353,8 +343,7 @@ def audit_api_endpoint(func):
 
 # Query audit logs
 class AuditQuery:
-    """
-    Query audit logs
+    """Query audit logs
     """
 
     def __init__(self, db_session: Session):
@@ -414,8 +403,7 @@ class AuditQuery:
 
 # Middleware to set audit context
 async def audit_middleware(request, call_next):
-    """
-    Middleware to set audit context for requests
+    """Middleware to set audit context for requests
     """
     import uuid
 

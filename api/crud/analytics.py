@@ -20,8 +20,7 @@ def create_explain_feedback(
     locale: str | None = None,
     jurisdiction_code: str | None = None,
 ) -> int:
-    """
-    Create a new explain feedback record.
+    """Create a new explain feedback record.
 
     Returns the ID of the created record.
     """

@@ -1,5 +1,4 @@
-"""
-Crown Safe Visual Recognition API Endpoints
+"""Crown Safe Visual Recognition API Endpoints
 Image upload, hair product analysis, ingredient extraction, and label recognition
 Adapted from BabyShield's visual recognition system for hair product safety
 """
@@ -224,8 +223,7 @@ def analyze_image_quality(image: Image.Image) -> float:
 
 
 async def perform_ocr(image: Image.Image) -> str:
-    """
-    Perform OCR on product label image
+    """Perform OCR on product label image
     TODO: Integrate with Google Cloud Vision or AWS Textract
     """
     # Placeholder - integrate with actual OCR service
@@ -257,7 +255,7 @@ async def extract_ingredients_from_text(ocr_text: str) -> list[ExtractedIngredie
 
 
 async def match_product_in_database(
-    db: Session, product_name: str | None, brand: str | None
+    db: Session, product_name: str | None, brand: str | None,
 ) -> HairProductModel | None:
     """Match extracted product to database"""
     if not product_name:
@@ -291,7 +289,7 @@ async def analyze_product_safety(ingredients: list[ExtractedIngredient], db: Ses
                     "ingredient": ing.name,
                     "concerns": db_ingredient.safety_concerns,
                     "risk_level": db_ingredient.risk_level or "unknown",
-                }
+                },
             )
             # Reduce safety score based on risk
             if db_ingredient.risk_level == "high":
@@ -344,8 +342,7 @@ async def upload_product_image(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db_session),
 ):
-    """
-    Upload hair product image for analysis
+    """Upload hair product image for analysis
 
     Steps:
     1. Validate image format and size
@@ -418,8 +415,7 @@ async def analyze_product_image(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db_session),
 ):
-    """
-    Analyze hair product image using visual recognition
+    """Analyze hair product image using visual recognition
 
     Process:
     1. Load image (from scan_id, URL, or base64)
@@ -519,8 +515,7 @@ async def verify_product_extraction(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db_session),
 ):
-    """
-    User verification/correction of extracted product data
+    """User verification/correction of extracted product data
     Helps improve OCR accuracy over time
     """
     # TODO: Store verification data for ML training
@@ -528,7 +523,7 @@ async def verify_product_extraction(
         content={
             "status": "verified",
             "message": "Thank you for verification. This helps improve our recognition accuracy.",
-        }
+        },
     )
 
 
@@ -598,7 +593,7 @@ async def get_scan_details(
             "safety_score": scan.safety_score,
             "image_url": scan.image_url,
             "analysis": scan.analysis_results,
-        }
+        },
     )
 
 

@@ -55,11 +55,9 @@ class MemoryManager:
         chroma_db_path: str | None = None,
         collection_name: str | None = None,
     ):
-        """
-        Initialize MemoryManager with ChromaDB and OpenAI embeddings.
+        """Initialize MemoryManager with ChromaDB and OpenAI embeddings.
         FIXED: Proper logger initialization to prevent 'str' object attribute errors.
         """
-
         # FIXED: Robust logger initialization
         if logger_instance is not None:
             # Verify it's actually a logger object with required methods
@@ -72,7 +70,7 @@ class MemoryManager:
             else:
                 # If it's not a proper logger (e.g., string), create a new one
                 print(
-                    f"WARNING: Invalid logger_instance provided (type: {type(logger_instance)}). Creating new logger."
+                    f"WARNING: Invalid logger_instance provided (type: {type(logger_instance)}). Creating new logger.",
                 )
                 self.logger = logging.getLogger(__name__)
         else:
@@ -118,7 +116,7 @@ class MemoryManager:
         try:
             if self.openai_api_key:
                 self.embedding_function = chromadb.utils.embedding_functions.OpenAIEmbeddingFunction(
-                    api_key=self.openai_api_key, model_name="text-embedding-ada-002"
+                    api_key=self.openai_api_key, model_name="text-embedding-ada-002",
                 )
                 self.logger.info("OpenAI EmbeddingFunction initialized with text-embedding-ada-002.")
             else:
@@ -133,7 +131,6 @@ class MemoryManager:
 
     def _initialize_chromadb(self):
         """Initialize ChromaDB client and collection."""
-
         # Create directory if it doesn't exist
         if not os.path.exists(self.db_path):
             try:
@@ -160,7 +157,7 @@ class MemoryManager:
             else:
                 # Use default embedding function
                 self.collection = self.chroma_client.get_or_create_collection(
-                    name=self.collection_name, metadata={"hnsw:space": "cosine"}
+                    name=self.collection_name, metadata={"hnsw:space": "cosine"},
                 )
                 self.logger.info(f"ChromaDB collection '{self.collection_name}' created with default embeddings.")
 
@@ -240,13 +237,13 @@ class MemoryManager:
             return self._safe_json_dumps(current_list)
 
         merged["user_goals_context"] = _aggregate_context_list(
-            "user_goals_context", new_context_metadata.get("user_goal_context")
+            "user_goals_context", new_context_metadata.get("user_goal_context"),
         )
         merged["drug_names_context"] = _aggregate_context_list(
-            "drug_names_context", new_context_metadata.get("drug_name_context")
+            "drug_names_context", new_context_metadata.get("drug_name_context"),
         )
         merged["disease_names_context"] = _aggregate_context_list(
-            "disease_names_context", new_context_metadata.get("disease_name_context")
+            "disease_names_context", new_context_metadata.get("disease_name_context"),
         )
 
         # Update other fields with better data

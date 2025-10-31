@@ -12,8 +12,7 @@ from .config import logger, settings
 
 
 async def authenticate_connection(websocket: WebSocket, agent_id: str) -> bool:
-    """
-    Authenticates an incoming WebSocket connection.
+    """Authenticates an incoming WebSocket connection.
     Placeholder: Currently always returns True.
     Real implementation should verify credentials (e.g., token) passed during handshake.
     """
@@ -47,8 +46,7 @@ async def authenticate_connection(websocket: WebSocket, agent_id: str) -> bool:
 
 
 def decode_jwt_token(token: str) -> dict[str, Any]:
-    """
-    Decodes a JWT token and returns its payload.
+    """Decodes a JWT token and returns its payload.
     Raises jwt.ExpiredSignatureError or jwt.InvalidTokenError on failure.
     """
     try:
@@ -66,8 +64,7 @@ def decode_jwt_token(token: str) -> dict[str, Any]:
 
 
 async def validate_message_authentication(message: dict[str, Any]) -> bool:
-    """
-    Validates the authentication token within an MCP message header.
+    """Validates the authentication token within an MCP message header.
     Placeholder: Currently always returns True.
     """
     # header = message.get("mcp_header", {})

@@ -10,8 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class MobileHotPath:
-    """
-    Ultra-optimized mobile scanning path for sub-100ms responses.
+    """Ultra-optimized mobile scanning path for sub-100ms responses.
     Designed for real-time in-store scanning across 39 international agencies.
     """
 
@@ -30,8 +29,7 @@ class MobileHotPath:
         }
 
     async def ultra_fast_barcode_check(self, barcode: str, user_id: int) -> dict[str, Any]:
-        """
-        Ultra-fast barcode check optimized for <100ms mobile responses
+        """Ultra-fast barcode check optimized for <100ms mobile responses
         """
         start_time = time.time()
 
@@ -48,7 +46,7 @@ class MobileHotPath:
                         "response_time_ms": elapsed_ms,
                         "cache_level": "hot_memory",
                         "optimization": "ultra_fast",
-                    }
+                    },
                 )
                 return result
 
@@ -69,7 +67,7 @@ class MobileHotPath:
                         "response_time_ms": elapsed_ms,
                         "cache_level": "redis",
                         "optimization": "cached",
-                    }
+                    },
                 )
                 return cached_result
 
@@ -109,7 +107,7 @@ class MobileHotPath:
                     "response_time_ms": elapsed_ms,
                     "cache_level": "database",
                     "optimization": "optimized" if elapsed_ms < 200 else "standard",
-                }
+                },
             )
 
             # 🚀 CACHE THE RESULT in both Redis and hot cache
@@ -150,8 +148,7 @@ class MobileHotPath:
             }
 
     async def precompute_popular_products(self, limit: int = 1000) -> int:
-        """
-        Pre-compute safety responses for popular products
+        """Pre-compute safety responses for popular products
         """
         try:
             # REMOVED FOR CROWN SAFE: Recall warmup no longer applicable
@@ -173,8 +170,7 @@ class MobileHotPath:
             return 0
 
     def get_hot_cache_stats(self) -> dict[str, Any]:
-        """
-        Get hot cache performance statistics
+        """Get hot cache performance statistics
         """
         return {
             "hot_cache_size": len(self.hot_cache),
@@ -185,8 +181,7 @@ class MobileHotPath:
         }
 
     def clear_hot_cache(self):
-        """
-        Clear hot cache for memory management
+        """Clear hot cache for memory management
         """
         cache_size = len(self.hot_cache)
         self.hot_cache.clear()

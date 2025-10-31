@@ -20,8 +20,7 @@ SAFETY_KEYWORDS = ["rash", "choking", "hazard", "safety issue", "bad batch", "co
 
 
 class CommunityAlertAgentLogic:
-    """
-    Scrapes web pages to find early, unofficial warnings about product safety.
+    """Scrapes web pages to find early, unofficial warnings about product safety.
     """
 
     def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
@@ -30,8 +29,7 @@ class CommunityAlertAgentLogic:
         self.logger.info(f"CommunityAlertAgentLogic initialized for agent {self.agent_id}.")
 
     async def scrape_and_analyze(self, html_content: str, product_name: str) -> dict[str, Any]:
-        """
-        Parses HTML content and analyzes it for safety keywords related to a product.
+        """Parses HTML content and analyzes it for safety keywords related to a product.
         """
         await asyncio.sleep(0.1)  # Simulate processing time
         self.logger.info(f"Scraping content for mentions of '{product_name}'...")
@@ -56,8 +54,7 @@ class CommunityAlertAgentLogic:
         return {"mentions_found": 1, "risks": found_risks}
 
     async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
-        """
-        Main entry point for the agent.
+        """Main entry point for the agent.
         """
         self.logger.info(f"Received community alert task with inputs: {inputs}")
         html_content = inputs.get("html_content")

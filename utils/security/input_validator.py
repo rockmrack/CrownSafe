@@ -1,5 +1,4 @@
-"""
-Comprehensive Input Validation Middleware
+"""Comprehensive Input Validation Middleware
 Prevents SQL injection, XSS, and other injection attacks
 """
 
@@ -63,8 +62,7 @@ class InputValidator:
 
     @classmethod
     def validate_barcode(cls, barcode: str) -> str:
-        """
-        Validate barcode format
+        """Validate barcode format
 
         Args:
             barcode: Barcode string to validate
@@ -159,8 +157,7 @@ class InputValidator:
 
     @classmethod
     def sanitize_html(cls, text: str) -> str:
-        """
-        Remove HTML tags and dangerous content from text
+        """Remove HTML tags and dangerous content from text
 
         Args:
             text: Text to sanitize
@@ -194,8 +191,7 @@ class InputValidator:
 
     @classmethod
     def validate_pagination(cls, limit: int, offset: int) -> tuple[int, int]:
-        """
-        Validate and normalize pagination parameters
+        """Validate and normalize pagination parameters
 
         Args:
             limit: Maximum number of results
@@ -218,7 +214,7 @@ class InputValidator:
 
     @classmethod
     def validate_date_range(
-        cls, date_from: str | None, date_to: str | None
+        cls, date_from: str | None, date_to: str | None,
     ) -> tuple[str | None, str | None]:
         """Validate date range"""
         if date_from and not re.match(cls.PATTERNS["date"], date_from):
@@ -241,8 +237,7 @@ class SecureRequestValidator:
 
     @classmethod
     async def validate_request(cls, request: Request):
-        """
-        Validate incoming request
+        """Validate incoming request
 
         Raises:
             HTTPException: If request is invalid or dangerous

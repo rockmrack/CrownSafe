@@ -1,5 +1,4 @@
-"""
-Verify Production Database - 131,743 Recalls Check
+"""Verify Production Database - 131,743 Recalls Check
 """
 
 import os

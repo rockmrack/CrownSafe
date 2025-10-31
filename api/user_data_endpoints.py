@@ -1,5 +1,4 @@
-"""
-User Data Export and Deletion Endpoints
+"""User Data Export and Deletion Endpoints
 GDPR/CCPA compliant data handling
 """
 
@@ -79,8 +78,7 @@ def hash_email(email: str) -> str:
 
 
 def get_user_data(user_id: str, db: Session) -> dict[str, Any]:
-    """
-    Gather all user data for export
+    """Gather all user data for export
     In production, this would query all tables containing user data
     """
     # This is a mock implementation
@@ -117,8 +115,7 @@ def get_user_data(user_id: str, db: Session) -> dict[str, Any]:
 
 
 def delete_user_data(user_id: str, db: Session) -> bool:
-    """
-    Delete all user data
+    """Delete all user data
     In production, this would delete from all tables
     """
     try:
@@ -149,8 +146,7 @@ async def export_user_data(
     db: Session = Depends(get_db),
     user_id_header: str | None = Header(None, alias="X-User-ID"),
 ):
-    """
-    Export all user data (GDPR Article 20 - Right to Data Portability)
+    """Export all user data (GDPR Article 20 - Right to Data Portability)
 
     This endpoint allows users to export all their data in a machine-readable format.
     The export includes all data associated with the user account.
@@ -245,8 +241,7 @@ async def delete_user_data_endpoint(
     db: Session = Depends(get_db),
     user_id_header: str | None = Header(None, alias="X-User-ID"),
 ):
-    """
-    Delete all user data (GDPR Article 17 - Right to Erasure)
+    """Delete all user data (GDPR Article 17 - Right to Erasure)
 
     This endpoint allows users to request complete deletion of their data.
     The deletion is permanent and cannot be undone.
@@ -335,8 +330,7 @@ async def delete_user_data_endpoint(
 
 @router.get("/export/status/{request_id}")
 async def get_export_status(request_id: str):
-    """
-    Check status of data export request
+    """Check status of data export request
 
     Returns the current status of a data export request.
     """
@@ -355,8 +349,7 @@ async def get_export_status(request_id: str):
 
 @router.get("/delete/status/{request_id}")
 async def get_deletion_status(request_id: str):
-    """
-    Check status of data deletion request
+    """Check status of data deletion request
 
     Returns the current status of a data deletion request.
     """
@@ -427,8 +420,7 @@ async def download_export(
 
 @privacy_router.get("/summary")
 async def get_privacy_summary(user_id: str | None = Header(None, alias="X-User-ID")):
-    """
-    Get privacy policy summary and user's privacy settings
+    """Get privacy policy summary and user's privacy settings
     """
     try:
         summary = {

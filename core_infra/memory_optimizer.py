@@ -16,8 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class MemoryOptimizer:
-    """
-    Memory optimization for BabyShield's 39-agency system.
+    """Memory optimization for BabyShield's 39-agency system.
     Manages memory usage, object pooling, and garbage collection.
     """
 
@@ -29,8 +28,7 @@ class MemoryOptimizer:
         self.last_gc = time.time()
 
     def get_memory_usage(self) -> dict[str, Any]:
-        """
-        Get current memory usage statistics
+        """Get current memory usage statistics
         """
         try:
             process = psutil.Process(os.getpid())
@@ -52,8 +50,7 @@ class MemoryOptimizer:
             return {"error": str(e)}
 
     def optimize_memory_usage(self) -> dict[str, Any]:
-        """
-        Perform memory optimization including garbage collection
+        """Perform memory optimization including garbage collection
         """
         start_time = time.time()
         before_stats = self.get_memory_usage()
@@ -93,8 +90,7 @@ class MemoryOptimizer:
             return {"error": str(e)}
 
     def should_optimize_memory(self) -> bool:
-        """
-        Determine if memory optimization should be triggered
+        """Determine if memory optimization should be triggered
         """
         try:
             # Check if it's been more than 10 minutes since last GC
@@ -115,8 +111,7 @@ class MemoryOptimizer:
             return False
 
     async def background_memory_optimization(self):
-        """
-        Background task for continuous memory optimization
+        """Background task for continuous memory optimization
         """
         while True:
             try:

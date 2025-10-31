@@ -1,5 +1,4 @@
-"""
-Alembic migration: Add user_reports table for community unsafe product reporting
+"""Alembic migration: Add user_reports table for community unsafe product reporting
 
 Revision ID: add_user_reports_table
 Revises:
@@ -20,7 +19,6 @@ depends_on = None
 
 def upgrade():
     """Add user_reports table for community reporting of unsafe products"""
-
     # Create user_reports table
     op.create_table(
         "user_reports",

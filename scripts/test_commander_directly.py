@@ -31,7 +31,7 @@ test_msg = {
                 "drug_name": "TestDrug",
                 "insurer_id": "TestIns",
             },
-        }
+        },
     },
 }
 

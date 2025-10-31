@@ -1,5 +1,4 @@
-"""
-Admin API routes for ingestion management and monitoring
+"""Admin API routes for ingestion management and monitoring
 """
 
 import logging
@@ -49,8 +48,7 @@ async def trigger_ingestion(
     admin: str = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    """
-    Trigger a new data ingestion job
+    """Trigger a new data ingestion job
 
     Body:
         agency: Agency code (FDA, CPSC, EU_SAFETY_GATE, etc.)
@@ -129,8 +127,7 @@ async def list_ingestion_runs(
     status: str | None = Query(None, description="Filter by status"),
     db: Session = Depends(get_db),
 ):
-    """
-    List recent ingestion runs with optional filtering
+    """List recent ingestion runs with optional filtering
     """
     try:
         # Build query
@@ -177,8 +174,7 @@ async def list_ingestion_runs(
 
 @router.get("/runs/{run_id}")
 async def get_ingestion_run(run_id: str, request: Request, db: Session = Depends(get_db)):
-    """
-    Get details of a specific ingestion run
+    """Get details of a specific ingestion run
     """
     try:
         # Validate UUID
@@ -213,8 +209,7 @@ async def cancel_ingestion_run(
     admin: str = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    """
-    Cancel a running ingestion job
+    """Cancel a running ingestion job
     """
     try:
         # Validate UUID
@@ -258,8 +253,7 @@ async def cancel_ingestion_run(
 
 @router.post("/reindex", dependencies=[Depends(AdminRateLimit.get_reindex_limiter)])
 async def reindex_database(request: Request, admin: str = Depends(require_admin), db: Session = Depends(get_db)):
-    """
-    Reindex database and run VACUUM ANALYZE
+    """Reindex database and run VACUUM ANALYZE
     """
     try:
         logger.info(f"Database reindex initiated by {admin}")
@@ -315,8 +309,7 @@ async def reindex_database(request: Request, admin: str = Depends(require_admin)
 
 @router.get("/freshness")
 async def data_freshness(request: Request, db: Session = Depends(get_db)):
-    """
-    Get data freshness statistics - DEPRECATED FOR CROWN SAFE
+    """Get data freshness statistics - DEPRECATED FOR CROWN SAFE
     """
     # REMOVED FOR CROWN SAFE: EnhancedRecallDB statistics gutted
     # Crown Safe focuses on hair product testing (HairProductModel), not baby recalls
@@ -380,8 +373,7 @@ async def data_freshness(request: Request, db: Session = Depends(get_db)):
 
 @router.get("/stats")
 async def admin_statistics(request: Request, db: Session = Depends(get_db)):
-    """
-    Get comprehensive admin statistics
+    """Get comprehensive admin statistics
     """
     try:
         # Database stats
@@ -399,7 +391,7 @@ async def admin_statistics(request: Request, db: Session = Depends(get_db)):
                 func.sum(func.cast(IngestionRun.status == "success", Integer)).label("success"),
                 func.sum(func.cast(IngestionRun.status == "failed", Integer)).label("failed"),
                 func.avg(func.extract("epoch", IngestionRun.finished_at - IngestionRun.started_at)).label(
-                    "avg_duration"
+                    "avg_duration",
                 ),
             )
             .filter(IngestionRun.created_at >= week_ago)

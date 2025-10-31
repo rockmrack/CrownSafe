@@ -1,5 +1,4 @@
-"""
-Stub worker task module for notifications
+"""Stub worker task module for notifications
 
 This is a stub implementation for Phase 1 testing.
 Real implementation to be added later.
@@ -26,8 +25,7 @@ class FirebaseMessaging:
 
 @app.task(name="send_notification_batch")
 def send_notification_batch_task(notifications):
-    """
-    Send batch of notifications
+    """Send batch of notifications
 
     Args:
         notifications: List of notification dictionaries
@@ -48,8 +46,7 @@ def send_notification_batch_task(notifications):
 
 @app.task(name="send_single_notification")
 def send_single_notification_task(user_id, message, notification_type):
-    """
-    Send single notification to user
+    """Send single notification to user
 
     Args:
         user_id: User identifier

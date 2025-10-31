@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Validate OpenAPI specification
+"""Validate OpenAPI specification
 Ensures the API spec is valid and matches implementation
 """
 

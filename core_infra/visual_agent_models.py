@@ -1,5 +1,4 @@
-"""
-Database models for Visual Agent - Phase 2
+"""Database models for Visual Agent - Phase 2
 Includes image processing jobs, HITL review queue, and extraction results
 """
 

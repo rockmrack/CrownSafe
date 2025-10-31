@@ -1,5 +1,4 @@
-"""
-Performance monitoring system for BabyShield
+"""Performance monitoring system for BabyShield
 Tracks bottlenecks, metrics, and system performance
 """
 
@@ -41,8 +40,7 @@ class PerformanceMetric:
 
 
 class PerformanceMonitor:
-    """
-    Central performance monitoring system
+    """Central performance monitoring system
     """
 
     def __init__(self, enable_memory_profiling: bool = False):
@@ -78,7 +76,7 @@ class PerformanceMonitor:
                 name=f"timer.{name}",
                 value=elapsed * 1000,
                 unit="ms",  # Convert to milliseconds
-            )
+            ),
         )
 
         return elapsed
@@ -141,7 +139,7 @@ class PerformanceMonitor:
                     "file": stat.traceback.format()[0] if stat.traceback else "unknown",
                     "size_mb": stat.size / (1024**2),
                     "count": stat.count,
-                }
+                },
             )
 
         return profile
@@ -187,8 +185,7 @@ monitor = PerformanceMonitor()
 
 # Decorators for performance monitoring
 def monitor_performance(name: str = None):
-    """
-    Decorator to monitor function performance
+    """Decorator to monitor function performance
 
     Usage:
         @monitor_performance("api_call")
@@ -213,7 +210,7 @@ def monitor_performance(name: str = None):
                         value=elapsed,
                         unit="ms",
                         tags={"status": "success"},
-                    )
+                    ),
                 )
 
                 return result
@@ -227,7 +224,7 @@ def monitor_performance(name: str = None):
                         value=elapsed,
                         unit="ms",
                         tags={"status": "error", "error_type": type(e).__name__},
-                    )
+                    ),
                 )
 
                 raise
@@ -246,7 +243,7 @@ def monitor_performance(name: str = None):
                         value=elapsed,
                         unit="ms",
                         tags={"status": "success"},
-                    )
+                    ),
                 )
 
                 return result
@@ -260,7 +257,7 @@ def monitor_performance(name: str = None):
                         value=elapsed,
                         unit="ms",
                         tags={"status": "error", "error_type": type(e).__name__},
-                    )
+                    ),
                 )
 
                 raise
@@ -275,8 +272,7 @@ def monitor_performance(name: str = None):
 
 @contextmanager
 def monitor_block(name: str):
-    """
-    Context manager to monitor a code block
+    """Context manager to monitor a code block
 
     Usage:
         with monitor_block("database_query"):
@@ -294,7 +290,7 @@ def monitor_block(name: str):
                 value=elapsed,
                 unit="ms",
                 tags={"status": "success"},
-            )
+            ),
         )
 
     except Exception as e:
@@ -306,7 +302,7 @@ def monitor_block(name: str):
                 value=elapsed,
                 unit="ms",
                 tags={"status": "error", "error_type": type(e).__name__},
-            )
+            ),
         )
 
         raise
@@ -327,7 +323,7 @@ async def async_monitor_block(name: str):
                 value=elapsed,
                 unit="ms",
                 tags={"status": "success"},
-            )
+            ),
         )
 
     except Exception as e:
@@ -339,7 +335,7 @@ async def async_monitor_block(name: str):
                 value=elapsed,
                 unit="ms",
                 tags={"status": "error", "error_type": type(e).__name__},
-            )
+            ),
         )
 
         raise
@@ -365,7 +361,7 @@ class DatabaseQueryMonitor:
                                 name=f"db_result_size.{query_name}",
                                 value=len(result),
                                 unit="rows",
-                            )
+                            ),
                         )
 
                     return result
@@ -401,7 +397,7 @@ class APIEndpointMonitor:
                         "path": request.url.path,
                         "status": str(response.status_code),
                     },
-                )
+                ),
             )
 
             # Track status codes
@@ -426,7 +422,7 @@ class APIEndpointMonitor:
                         "status": "error",
                         "error_type": type(e).__name__,
                     },
-                )
+                ),
             )
 
             monitor.increment_counter("api.errors")
@@ -457,7 +453,7 @@ class BottleneckDetector:
                             "max_time_ms": max_time,
                             "count": len(metrics),
                             "severity": "high" if max_time > self.threshold_ms * 2 else "medium",
-                        }
+                        },
                     )
 
         return sorted(bottlenecks, key=lambda x: x["max_time_ms"], reverse=True)

@@ -1,5 +1,4 @@
-"""
-Crown Safe - Ingredient Explainer Endpoints
+"""Crown Safe - Ingredient Explainer Endpoints
 Plain-English ingredient explanations for user education
 
 Endpoint:
@@ -100,8 +99,7 @@ async def get_ingredient_explainer(
     hair_type: str | None = Query(None, description="User's hair type for personalized advice"),
     porosity: str | None = Query(None, description="User's porosity for tailored notes"),
 ):
-    """
-    Get plain-English explanation for an ingredient.
+    """Get plain-English explanation for an ingredient.
 
     **Core UX Feature**: Tap any ingredient in a product scan to see this.
 
@@ -251,8 +249,7 @@ async def search_ingredients(
     query: str = Query(..., min_length=2, description="Search query (ingredient name)"),
     limit: int = Query(10, ge=1, le=50, description="Max results to return"),
 ):
-    """
-    Search for ingredients by name.
+    """Search for ingredients by name.
 
     **Use case:** Autocomplete/search when user types ingredient name.
 
@@ -273,7 +270,7 @@ async def search_ingredients(
                 db.query(IngredientModel)
                 .filter(
                     (func.lower(IngredientModel.name).like(search_pattern))
-                    | (func.lower(IngredientModel.inci_name).like(search_pattern))
+                    | (func.lower(IngredientModel.inci_name).like(search_pattern)),
                 )
                 .order_by(IngredientModel.name)
                 .limit(limit)

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-FINAL 100% VERIFICATION TEST FOR BABYSHIELD API
+"""FINAL 100% VERIFICATION TEST FOR BABYSHIELD API
 Tests all implemented endpoints with correct parameters
 """
 

@@ -1,5 +1,4 @@
-"""
-Chat memory CRUD operations - stub implementation for chat router
+"""Chat memory CRUD operations - stub implementation for chat router
 """
 
 import json
@@ -14,7 +13,6 @@ from api.models.chat_memory import Conversation, ConversationMessage, UserProfil
 
 def _get_column_python_type(column) -> type | None:
     """Safely retrieve a column's python_type attribute."""
-
     try:
         return column.property.columns[0].type.python_type
     except (AttributeError, IndexError, NotImplementedError):
@@ -26,7 +24,6 @@ def _normalize_uuid_for_column(
     uuid_value: Union[UUID, str] | None,
 ) -> Union[UUID, str] | None:
     """Normalize UUID values according to the target column type."""
-
     if uuid_value is None:
         return None
 
@@ -248,7 +245,7 @@ def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
 
     # Delete messages first (explicit delete for test compatibility)
     db.query(ConversationMessage).filter(ConversationMessage.conversation_id.in_(conversation_ids)).delete(
-        synchronize_session=False
+        synchronize_session=False,
     )
 
     # Delete conversations with same UUID/String fallback logic

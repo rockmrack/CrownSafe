@@ -1,5 +1,4 @@
-"""
-Configuration file for BabyShield Backend (Python 3.x compatibility)
+"""Configuration file for BabyShield Backend (Python 3.x compatibility)
 This file provides Python 3.x specific configuration settings.
 """
 

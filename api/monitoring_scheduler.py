@@ -1,5 +1,4 @@
-"""
-Product Monitoring Scheduler - 24/7 automated product monitoring
+"""Product Monitoring Scheduler - 24/7 automated product monitoring
 """
 
 import asyncio
@@ -119,7 +118,7 @@ class ProductMonitoringScheduler:
                         if upc_code
                         else MonitoredProduct.product_name == product_name,
                         MonitoredProduct.is_active,
-                    )
+                    ),
                 )
                 .first()
             )
@@ -343,7 +342,7 @@ class ProductMonitoringScheduler:
                     db.commit()
 
             logger.info(
-                f"Monitoring run {run_id} completed: {products_checked} checked, {new_recalls_found} new recalls, {notifications_sent} notifications"  # noqa: E501
+                f"Monitoring run {run_id} completed: {products_checked} checked, {new_recalls_found} new recalls, {notifications_sent} notifications",  # noqa: E501
             )
 
             return {

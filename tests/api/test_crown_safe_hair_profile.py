@@ -1,5 +1,4 @@
-"""
-Crown Safe - Hair Profile Endpoints Tests
+"""Crown Safe - Hair Profile Endpoints Tests
 Tests for POST/GET/PUT/DELETE /api/v1/profiles endpoints
 
 Test Coverage:

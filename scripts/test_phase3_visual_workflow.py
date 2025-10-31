@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test script for Phase 3: Full Visual Workflow Integration
+"""Test script for Phase 3: Full Visual Workflow Integration
 Tests the complete confidence-based visual safety check system
 """
 
@@ -268,7 +267,7 @@ async def test_visual_agent_modes():
                                                     "model_number": "C1",
                                                     "confidence": 0.5,
                                                 },
-                                            ]
+                                            ],
                                         )
 
                                     message = Message()
@@ -287,7 +286,7 @@ async def test_visual_agent_modes():
                                                 "brand": "Brand X",
                                                 "model_number": "X1",
                                                 "confidence": 0.85,
-                                            }
+                                            },
                                         )
 
                                     message = Message()

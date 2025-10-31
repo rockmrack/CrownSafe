@@ -1,5 +1,4 @@
-"""
-Azure Blob Storage Resilience Layer
+"""Azure Blob Storage Resilience Layer
 Provides retry logic, circuit breakers, and error handling for Azure storage operations
 """
 
@@ -31,8 +30,7 @@ class CircuitState(Enum):
 
 
 class CircuitBreaker:
-    """
-    Circuit breaker pattern for Azure Blob Storage operations
+    """Circuit breaker pattern for Azure Blob Storage operations
     Prevents cascading failures by stopping requests when error rate is high
     """
 
@@ -42,8 +40,7 @@ class CircuitBreaker:
         recovery_timeout: int = 60,
         expected_exception: type = AzureError,
     ):
-        """
-        Initialize circuit breaker
+        """Initialize circuit breaker
 
         Args:
             failure_threshold: Number of failures before opening circuit
@@ -59,8 +56,7 @@ class CircuitBreaker:
         self.state = CircuitState.CLOSED
 
     def call(self, func: Callable, *args, **kwargs) -> Any:
-        """
-        Execute function with circuit breaker protection
+        """Execute function with circuit breaker protection
 
         Args:
             func: Function to execute
@@ -79,7 +75,7 @@ class CircuitBreaker:
                 logger.info("Circuit breaker entering HALF_OPEN state - attempting recovery")
             else:
                 raise Exception(
-                    f"Circuit breaker is OPEN. Service unavailable. Will retry after {self.recovery_timeout} seconds."
+                    f"Circuit breaker is OPEN. Service unavailable. Will retry after {self.recovery_timeout} seconds.",
                 )
 
         try:
@@ -113,7 +109,7 @@ class CircuitBreaker:
             self.state = CircuitState.OPEN
             logger.error(
                 f"Circuit breaker OPENED after {self.failure_count} failures. "
-                f"Will attempt recovery in {self.recovery_timeout} seconds."
+                f"Will attempt recovery in {self.recovery_timeout} seconds.",
             )
 
 
@@ -124,8 +120,7 @@ def retry_with_exponential_backoff(
     exponential_base: float = 2.0,
     jitter: bool = True,
 ):
-    """
-    Decorator for retry logic with exponential backoff
+    """Decorator for retry logic with exponential backoff
 
     Args:
         max_retries: Maximum number of retry attempts
@@ -171,7 +166,7 @@ def retry_with_exponential_backoff(
 
                     logger.warning(
                         f"Retry attempt {attempt + 1}/{max_retries} for {func.__name__} "
-                        f"after {delay:.2f}s delay. Error: {str(e)}"
+                        f"after {delay:.2f}s delay. Error: {str(e)}",
                     )
                     time.sleep(delay)
                 except ResourceNotFoundError:
@@ -197,8 +192,7 @@ def retry_with_exponential_backoff(
 
 
 def with_correlation_id(func: Callable) -> Callable:
-    """
-    Decorator to add correlation ID to Azure Blob Storage operations
+    """Decorator to add correlation ID to Azure Blob Storage operations
     Helps track requests across distributed systems
 
     Args:
@@ -251,8 +245,7 @@ def with_correlation_id(func: Callable) -> Callable:
 
 
 def log_azure_error(func: Callable) -> Callable:
-    """
-    Decorator to log Azure-specific errors with detailed context
+    """Decorator to log Azure-specific errors with detailed context
 
     Args:
         func: Function to decorate

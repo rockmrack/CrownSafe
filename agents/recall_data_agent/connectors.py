@@ -1,6 +1,5 @@
 # agents/recall_data_agent/connectors.py
-"""
-Comprehensive 39-Agency Recall Data Connectors
+"""Comprehensive 39-Agency Recall Data Connectors
 Fetches recall data from international regulatory agencies worldwide.
 """
 
@@ -83,7 +82,7 @@ class CPSCConnector:
                                 url=item.get("URL"),
                                 source_agency="CPSC",
                                 country="US",
-                            )
+                            ),
                         )
 
             logger.info(f"Successfully fetched {len(recalls)} CPSC recalls")
@@ -147,7 +146,7 @@ class FDAConnector:
                                         url="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts",
                                         source_agency=f"FDA-{category}",
                                         risk_category=category.lower(),
-                                    )
+                                    ),
                                 )
 
                     except Exception as e:
@@ -205,7 +204,7 @@ class NHTSAConnector:
                                         source_agency="NHTSA",
                                         country="US",
                                         risk_category="vehicle",
-                                    )
+                                    ),
                                 )
 
                     except Exception as e:
@@ -256,7 +255,7 @@ class USDA_FSIS_Connector:
                                 source_agency="USDA-FSIS",
                                 country="US",
                                 risk_category="food",
-                            )
+                            ),
                         )
 
             logger.info(f"Successfully fetched {len(recalls)} USDA FSIS recalls")
@@ -305,7 +304,7 @@ class HealthCanadaConnector:
                                 url=item.get("url"),
                                 source_agency="Health Canada",
                                 country="CA",
-                            )
+                            ),
                         )
 
             logger.info(f"Successfully fetched {len(recalls)} Health Canada recalls")
@@ -386,7 +385,7 @@ class EU_RAPEX_Connector:
                                 country=fields.get("country_of_origin"),
                                 url=fields.get("link"),
                                 source_agency="EU RAPEX",
-                            )
+                            ),
                         )
 
             logger.info(f"Successfully fetched {len(recalls)} EU RAPEX recalls")
@@ -490,7 +489,7 @@ class CommerceCommissionNZConnector:
         logger.info("Fetching recent recalls from NZ Commerce Commission...")
         # Note: Requires web scraping - placeholder implementation
         logger.warning(  # noqa: E501
-            "NZ Commerce Commission connector requires web scraping - not yet implemented"
+            "NZ Commerce Commission connector requires web scraping - not yet implemented",
         )
         return []
 

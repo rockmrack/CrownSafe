@@ -38,8 +38,7 @@ class ExplainFeedbackResponse(BaseModel):
 
 @router.post("/explain-feedback", response_model=ExplainFeedbackResponse)
 def explain_feedback(payload: ExplainFeedbackPayload, request: Request, db: Session = Depends(get_db)):
-    """
-    Record user feedback on explain-result responses.
+    """Record user feedback on explain-result responses.
     Captures thumbs up/down from the mobile UI.
     """
     # Resolve user (optional)
@@ -97,8 +96,7 @@ class AltClickResponse(BaseModel):
 
 @router.post("/alt-click", response_model=AltClickResponse)
 def alt_click(payload: AltClickPayload, request: Request):
-    """
-    Record when a user clicks on an alternative product suggestion.
+    """Record when a user clicks on an alternative product suggestion.
     Lightweight endpoint for usage analytics.
     """
     try:
@@ -124,8 +122,7 @@ class EmergencyOpenResponse(BaseModel):
 
 @router.post("/emergency-open", response_model=EmergencyOpenResponse)
 def emergency_open(request: Request):
-    """
-    Record when a user opens the Emergency Guidance screen.
+    """Record when a user opens the Emergency Guidance screen.
     Lightweight endpoint for usage analytics.
     """
     try:

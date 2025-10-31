@@ -10,7 +10,6 @@ import psycopg2
 # Connection details
 def _require_env(var_name: str) -> str:
     """Return the value of the required environment variable."""
-
     value = os.getenv(var_name)
     if not value:
         raise RuntimeError(f"Missing required environment variable: {var_name}")
@@ -66,7 +65,7 @@ def enable_pg_trgm():
                 f"""
                 CREATE INDEX IF NOT EXISTS {idx_name}
                 ON recalls_enhanced USING gin (lower({column_name}) gin_trgm_ops);
-            """
+            """,
             )
             print(f"  ✅ {idx_name} created")
 

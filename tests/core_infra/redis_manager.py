@@ -80,7 +80,7 @@ async def create_redis_pool(force_new=False) -> ConnectionPool:
                     connection_kwargs["password"] = REDIS_PASSWORD
 
                 logger.debug(
-                    f"Redis connection attempt {attempt + 1} with params: {REDIS_HOST}:{REDIS_PORT} DB={REDIS_DB}"
+                    f"Redis connection attempt {attempt + 1} with params: {REDIS_HOST}:{REDIS_PORT} DB={REDIS_DB}",
                 )
                 _redis_pool = redis.ConnectionPool(**connection_kwargs)
 
@@ -106,7 +106,7 @@ async def create_redis_pool(force_new=False) -> ConnectionPool:
                     logger.critical(f"All Redis connection attempts failed: {e}", exc_info=True)
                     _redis_pool = None
                     raise ConnectionError(
-                        f"Could not connect to Redis after {REDIS_RETRY_ATTEMPTS} attempts: {e}"
+                        f"Could not connect to Redis after {REDIS_RETRY_ATTEMPTS} attempts: {e}",
                     ) from e
             except Exception as e:
                 logger.critical(f"Unexpected error creating Redis pool: {e}", exc_info=True)

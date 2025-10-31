@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test script to verify all 4 product identification methods are working:
+"""Test script to verify all 4 product identification methods are working:
 1. Scan with Camera (barcode endpoint)
 2. Upload a Photo (visual upload/analyze/status endpoints)
 3. Scan Barcode Number (barcode text entry)
@@ -297,7 +296,7 @@ async def main():
    - Payload: {"user_id": 123, "product_name": "Product Name"}
    
 All methods are now supported by the backend!
-"""
+""",
     )
 
     if all_passed:

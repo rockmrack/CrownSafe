@@ -1,5 +1,4 @@
-"""
-COMPREHENSIVE AGENT TEST SUITE
+"""COMPREHENSIVE AGENT TEST SUITE
 Tests all major agents in the BabyShield system
 Date: October 10, 2025
 """
@@ -65,7 +64,7 @@ def _get_skip_reason(error: Exception | None, agent_name: str) -> str:
 
 if not _REPORT_BUILDER_AVAILABLE:
     pytestmark = pytest.mark.skip(  # type: ignore[var-annotated]
-        reason=_get_skip_reason(_REPORT_BUILDER_IMPORT_ERROR, "ReportBuilderAgent")
+        reason=_get_skip_reason(_REPORT_BUILDER_IMPORT_ERROR, "ReportBuilderAgent"),
     )
 
 
@@ -91,7 +90,7 @@ class TestResults:
                 "name": test_name,
                 "status": status,
                 "details": details,
-            }
+            },
         )
 
         if status == "PASSED":
@@ -115,7 +114,7 @@ class TestResults:
             print(f"  Tests Passed: {data['passed']}")
             print(f"  Tests Failed: {data['failed']}")
             print(
-                f"  Success Rate: {data['passed']}/{data['passed'] + data['failed']} ({data['passed'] / (data['passed'] + data['failed']) * 100:.1f}%)"  # noqa: E501
+                f"  Success Rate: {data['passed']}/{data['passed'] + data['failed']} ({data['passed'] / (data['passed'] + data['failed']) * 100:.1f}%)",  # noqa: E501
             )
 
             for test in data["tests"]:
@@ -130,7 +129,7 @@ class TestResults:
         print("\n" + "=" * 80)
         print(f"TOTAL: {total_passed} passed, {total_failed} failed")
         print(
-            f"OVERALL SUCCESS RATE: {total_passed}/{total_passed + total_failed} ({total_passed / (total_passed + total_failed) * 100:.1f}%)"  # noqa: E501
+            f"OVERALL SUCCESS RATE: {total_passed}/{total_passed + total_failed} ({total_passed / (total_passed + total_failed) * 100:.1f}%)",  # noqa: E501
         )
         print("=" * 80)
 
@@ -305,7 +304,7 @@ async def test_chat_agent_process_simple_query():
                 "query": "Is this product safe for babies?",
                 "product_name": "Baby Bottle",
                 "verdict": "SAFE",
-            }
+            },
         )
 
         assert result is not None
@@ -339,7 +338,7 @@ async def test_chat_agent_emergency_detection():
                 "product_name": "Battery",
                 "verdict": "EMERGENCY",
                 "urgent": True,
-            }
+            },
         )
 
         assert result is not None
@@ -392,9 +391,9 @@ def test_report_builder_generate_report():
                         "product_name": "Baby Stroller",
                         "hazard": "Fall risk",
                         "agency": "CPSC",
-                    }
+                    },
                 ],
-            }
+            },
         )
 
         assert result is not None
@@ -482,7 +481,7 @@ async def test_alternatives_agent_find_alternatives():
                 "product_name": "Baby Bottle X",
                 "product_category": "feeding",
                 "unsafe_product": True,
-            }
+            },
         )
 
         assert result is not None

@@ -1,5 +1,4 @@
-"""
-Models package for database ORM
+"""Models package for database ORM
 """
 
 from .incident_report import AgencyNotification, IncidentCluster, IncidentReport

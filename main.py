@@ -1,5 +1,4 @@
-"""
-Root Main Entry Point for Docker Container
+"""Root Main Entry Point for Docker Container
 Issue #32 - Phase 2 Implementation
 """
 

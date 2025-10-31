@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Comprehensive test script for ALL BabyShield API features
+"""Comprehensive test script for ALL BabyShield API features
 Tests Premium, Baby, Advanced, and Compliance features
 """
 

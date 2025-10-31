@@ -1,5 +1,4 @@
-"""
-Enhanced Health Check Endpoints.
+"""Enhanced Health Check Endpoints.
 
 Provides detailed health status for all system components
 including database, cache, and external service dependencies.
@@ -23,8 +22,7 @@ router = APIRouter(tags=["health"])
 @router.get("/health")
 @router.get("/healthz")
 async def basic_health_check():
-    """
-    Basic health check endpoint.
+    """Basic health check endpoint.
 
     Returns:
         Simple OK status for load balancers and monitoring
@@ -34,8 +32,7 @@ async def basic_health_check():
 
 @router.get("/health/detailed")
 async def detailed_health_check(db: Session = Depends(get_db)) -> dict[str, Any]:
-    """
-    Comprehensive health check with component status.
+    """Comprehensive health check with component status.
 
     Checks:
     - Database connectivity and latency
@@ -169,8 +166,7 @@ async def detailed_health_check(db: Session = Depends(get_db)) -> dict[str, Any]
 
 @router.get("/health/ready")
 async def readiness_check(db: Session = Depends(get_db)):
-    """
-    Kubernetes readiness probe.
+    """Kubernetes readiness probe.
 
     Returns 200 if the service is ready to accept traffic,
     503 if not ready yet (e.g., database not connected).
@@ -188,8 +184,7 @@ async def readiness_check(db: Session = Depends(get_db)):
 
 @router.get("/health/live")
 async def liveness_check():
-    """
-    Kubernetes liveness probe.
+    """Kubernetes liveness probe.
 
     Returns 200 if the service is alive (process is running).
     This should never fail unless the process is completely dead.

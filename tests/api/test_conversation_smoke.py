@@ -70,7 +70,7 @@ def test_conversation_allergy(monkeypatch):
             extra={
                 "profile": {"allergies": ["peanut"]},
                 "ingredients": ["sugar", "peanuts", "cocoa"],
-            }
+            },
         ),
     )
     client = TestClient(app)
@@ -97,7 +97,7 @@ def test_conversation_recall_details(monkeypatch):
             extra={
                 "recalls_found": 1,
                 "recalls": [{"id": "123", "agency": "CPSC", "date": "2023-01-01"}],
-            }
+            },
         ),
     )
     client = TestClient(app)
@@ -146,7 +146,7 @@ def test_conversation_ingredient_info(monkeypatch):
             extra={
                 "ingredients": ["milk", "sugar", "vanilla"],
                 "ingredients_notes": "Natural flavoring",
-            }
+            },
         ),
     )
     client = TestClient(app)

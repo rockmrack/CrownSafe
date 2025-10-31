@@ -1,5 +1,4 @@
-"""
-Enhanced Security Middleware for BabyShield
+"""Enhanced Security Middleware for BabyShield
 Bulletproof protection against all known attack vectors
 """
 
@@ -14,8 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class BulletproofSecurityMiddleware:
-    """
-    Enterprise-grade security middleware with AI-powered threat detection
+    """Enterprise-grade security middleware with AI-powered threat detection
     """
 
     def __init__(self):
@@ -206,7 +204,6 @@ class BulletproofSecurityMiddleware:
 
     async def _should_block_immediately(self, request: Request, client_ip: str) -> bool:
         """Immediate blocking checks (fastest path)"""
-
         # 1. IP blacklist
         if client_ip in self.blocked_ips:
             return True

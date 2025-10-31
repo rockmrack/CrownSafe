@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-CI Database Initialization Script
+"""CI Database Initialization Script
 Creates necessary tables for CI smoke tests
 """
 
@@ -11,7 +10,6 @@ from datetime import datetime
 
 def init_ci_database():
     """Initialize database with required tables for CI smoke tests"""
-
     # Use the same database path as production
     db_path = os.environ.get("DATABASE_URL", "sqlite:///./babyshield.db")
     if db_path.startswith("sqlite:///"):
@@ -65,7 +63,7 @@ def init_ci_database():
         search_keywords TEXT,
         agency_specific_data TEXT
     )
-    """
+    """,
     )
 
     # Create legacy recalls table (fallback)
@@ -89,7 +87,7 @@ def init_ci_database():
         remedy TEXT,
         url TEXT
     )
-    """
+    """,
     )
 
     # Create users table (for authentication)
@@ -103,7 +101,7 @@ def init_ci_database():
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
-    """
+    """,
     )
 
     # Create agencies table
@@ -117,7 +115,7 @@ def init_ci_database():
         api_endpoint TEXT,
         is_active BOOLEAN DEFAULT 1
     )
-    """
+    """,
     )
 
     # Insert test data for smoke tests

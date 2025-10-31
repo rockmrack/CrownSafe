@@ -1,5 +1,4 @@
-"""
-COMPREHENSIVE TEST: All Product Identification Methods
+"""COMPREHENSIVE TEST: All Product Identification Methods
 ========================================================
 
 Tests ALL 5 product identification methods from the mobile app:
@@ -385,7 +384,7 @@ print("   • Uses: barcode parameter")
 print("   • Endpoint: POST /api/v1/safety-check")
 print("   • Database Field: upc")
 print(
-    f"   • Available: {db.query(EnhancedRecallDB).filter(EnhancedRecallDB.upc.isnot(None)).count():,} recalls with UPC"
+    f"   • Available: {db.query(EnhancedRecallDB).filter(EnhancedRecallDB.upc.isnot(None)).count():,} recalls with UPC",
 )
 print("   • Routes to: Production PostgreSQL (131,743 recalls)")
 print()

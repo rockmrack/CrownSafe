@@ -1,5 +1,4 @@
-"""
-Integration tests for API endpoints
+"""Integration tests for API endpoints
 Tests complete request/response cycles with database
 """
 
@@ -14,8 +13,7 @@ class TestHealthEndpoints:
     """Test suite for health check endpoints"""
 
     def test_healthz_endpoint_returns_200(self, client):
-        """
-        Test health check endpoint.
+        """Test health check endpoint.
 
         Given: Application is running
         When: GET /healthz
@@ -31,8 +29,7 @@ class TestHealthEndpoints:
         assert response.json()["status"] == "ok"
 
     def test_readyz_endpoint_checks_database(self, client):
-        """
-        Test readiness check includes database.
+        """Test readiness check includes database.
 
         Given: Database is available
         When: GET /readyz
@@ -60,8 +57,7 @@ class TestAuthenticationFlow:
     """Test suite for complete authentication workflow"""
 
     def test_complete_user_registration_and_login_flow(self, client, db_session):
-        """
-        Test complete user registration and login.
+        """Test complete user registration and login.
 
         Given: New user data
         When: Register -> Verify Email -> Login
@@ -84,8 +80,7 @@ class TestAuthenticationFlow:
         assert "access_token" in login_response.json()
 
     def test_user_profile_access_with_authentication(self, client, authenticated_user):
-        """
-        Test accessing protected endpoints with authentication.
+        """Test accessing protected endpoints with authentication.
 
         Given: Valid authentication token
         When: GET /api/v1/user/profile
@@ -106,8 +101,7 @@ class TestBarcodeScanningFlow:
     """Test suite for barcode scanning workflow"""
 
     def test_complete_barcode_scan_and_safety_check_flow(self, client, authenticated_user, sample_barcode_image):
-        """
-        Test complete barcode scan to safety check workflow.
+        """Test complete barcode scan to safety check workflow.
 
         Given: Authenticated user and barcode image
         When: Scan -> Get Product Info -> Check Safety
@@ -137,8 +131,7 @@ class TestSearchFlow:
     """Test suite for search functionality"""
 
     def test_search_product_by_name(self, client, authenticated_user):
-        """
-        Test product search by name.
+        """Test product search by name.
 
         Given: Product name search query
         When: POST /api/v1/search
@@ -153,8 +146,7 @@ class TestSearchFlow:
         assert "results" in response.json()
 
     def test_search_with_pagination(self, client, authenticated_user):
-        """
-        Test search pagination.
+        """Test search pagination.
 
         Given: Search query with pagination
         When: Multiple search requests with offset
@@ -181,8 +173,7 @@ class TestSubscriptionFlow:
     """Test suite for subscription management"""
 
     def test_subscription_upgrade_flow(self, client, authenticated_user):
-        """
-        Test subscription upgrade workflow.
+        """Test subscription upgrade workflow.
 
         Given: Free tier user
         When: Upgrade to premium
@@ -209,8 +200,7 @@ class TestRateLimiting:
     """Test suite for rate limiting"""
 
     def test_rate_limit_exceeded_returns_429(self, client):
-        """
-        Test rate limiting enforcement.
+        """Test rate limiting enforcement.
 
         Given: Multiple rapid requests
         When: Rate limit is exceeded
@@ -230,8 +220,7 @@ class TestErrorHandling:
     """Test suite for error handling"""
 
     def test_404_for_nonexistent_endpoint(self, client):
-        """
-        Test 404 handling for non-existent endpoints.
+        """Test 404 handling for non-existent endpoints.
 
         Given: Request to non-existent endpoint
         When: GET /api/v1/does-not-exist
@@ -242,8 +231,7 @@ class TestErrorHandling:
         assert "error" in response.json()
 
     def test_500_error_returns_generic_message(self, client, monkeypatch):
-        """
-        Test 500 error doesn't leak implementation details.
+        """Test 500 error doesn't leak implementation details.
 
         Given: Internal server error occurs
         When: Error response is sent

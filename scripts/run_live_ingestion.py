@@ -17,8 +17,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(level
 
 
 async def main():
-    """
-    Runs the live data ingestion cycle to populate the database with fresh recalls.
+    """Runs the live data ingestion cycle to populate the database with fresh recalls.
     """
     logger = logging.getLogger(__name__)
     logger.info("--- Starting Live Data Ingestion from All Connectors ---")

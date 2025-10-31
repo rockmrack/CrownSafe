@@ -1,5 +1,4 @@
-"""
-Scan History Model for tracking user product scans
+"""Scan History Model for tracking user product scans
 Used for generating 90-day safety summaries
 """
 

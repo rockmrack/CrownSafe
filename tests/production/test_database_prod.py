@@ -1,5 +1,4 @@
-"""
-Production Database Tests
+"""Production Database Tests
 Testing live production database connectivity, performance, and integrity
 """
 
@@ -176,7 +175,7 @@ class TestProductionDatabase:
         try:
             # Check alembic_version table exists
             result = db.execute(
-                text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'alembic_version')")
+                text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'alembic_version')"),
             )
             has_alembic = result.fetchone()[0]
 
@@ -209,8 +208,8 @@ class TestProductionDatabase:
                     test_value TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
-            """
-                )
+            """,
+                ),
             )
 
             # Insert test data
@@ -377,8 +376,8 @@ class TestProductionDatabaseHealth:
                 SELECT count(*) as conn_count 
                 FROM pg_stat_activity 
                 WHERE datname = current_database()
-            """
-                )
+            """,
+                ),
             )
 
             conn_count = result.fetchone()[0]

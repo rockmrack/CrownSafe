@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Disable baby/recall code in main_crownsafe.py
+"""Disable baby/recall code in main_crownsafe.py
 This script comments out all baby/recall import and router registration lines
 """
 

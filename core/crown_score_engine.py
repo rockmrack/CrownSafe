@@ -1,5 +1,4 @@
-"""
-Crown Score Engine - Enterprise-Grade Hair Product Analysis
+"""Crown Score Engine - Enterprise-Grade Hair Product Analysis
 Scientifically-backed scoring system for Black hair care products (3C-4C)
 
 Version: 1.0.0
@@ -137,8 +136,7 @@ class ScoreBreakdown:
 
 
 class IngredientDatabase:
-    """
-    Enterprise ingredient database with safety ratings and compatibility data
+    """Enterprise ingredient database with safety ratings and compatibility data
     MVP: 200 most common ingredients
     """
 
@@ -196,7 +194,7 @@ class IngredientDatabase:
             safety_level="Avoid",
             effects=["Severe moisture stripping", "Breakage"],
             porosity_adjustments={
-                Porosity.HIGH: -10  # Extra penalty for high porosity
+                Porosity.HIGH: -10,  # Extra penalty for high porosity
             },
             curl_pattern_adjustments={HairType.TYPE_4B: -5, HairType.TYPE_4C: -5},
         ),
@@ -246,7 +244,7 @@ class IngredientDatabase:
             safety_level="Caution",
             effects=["Buildup", "Prevents moisture penetration"],
             porosity_adjustments={
-                Porosity.HIGH: -10  # Worse for high porosity
+                Porosity.HIGH: -10,  # Worse for high porosity
             },
             curl_pattern_adjustments={},
         ),
@@ -258,7 +256,7 @@ class IngredientDatabase:
             safety_level="Caution",
             effects=["Seals out moisture", "Not penetrating"],
             porosity_adjustments={
-                Porosity.LOW: -10  # Worse for low porosity
+                Porosity.LOW: -10,  # Worse for low porosity
             },
             curl_pattern_adjustments={},
         ),
@@ -474,8 +472,7 @@ class IngredientDatabase:
 
 
 class CrownScoreEngine:
-    """
-    Enterprise-grade hair product scoring engine
+    """Enterprise-grade hair product scoring engine
     Analyzes products based on ingredients and user's hair profile
     """
 
@@ -489,8 +486,7 @@ class CrownScoreEngine:
         product_type: ProductType,
         ph_level: float | None = None,
     ) -> tuple[int, ScoreBreakdown, VerdictLevel]:
-        """
-        Calculate Crown Score for a product
+        """Calculate Crown Score for a product
 
         Args:
             ingredients: List of ingredient names
@@ -559,7 +555,7 @@ class CrownScoreEngine:
 
         # Step 4: Product-type specific adjustments
         breakdown.product_type_modifiers = self._calculate_product_type_modifiers(
-            ingredients, product_type, hair_profile
+            ingredients, product_type, hair_profile,
         )
 
         # Step 5: Dangerous combinations
@@ -643,7 +639,7 @@ class CrownScoreEngine:
             return -15  # Damaging
 
     def _calculate_product_type_modifiers(
-        self, ingredients: list[str], product_type: ProductType, hair_profile: HairProfile
+        self, ingredients: list[str], product_type: ProductType, hair_profile: HairProfile,
     ) -> int:
         """Product-type specific score adjustments"""
         modifier = 0

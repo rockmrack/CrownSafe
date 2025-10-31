@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test Suite 5: Integration and Performance Tests (67 tests)
+"""Test Suite 5: Integration and Performance Tests (67 tests)
 Tests end-to-end workflows, performance, and system integration
 This completes the 500 test requirement
 """
@@ -629,7 +628,6 @@ class TestIntegrationAndPerformance:
 
     def test_load_validation_operations(self):
         """Test load on validation operations"""
-
         for _ in range(100):
             email = f"test{_}@test.com"
             assert "@" in email

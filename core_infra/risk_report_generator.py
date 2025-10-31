@@ -1,5 +1,4 @@
-"""
-Risk Assessment Report Generator
+"""Risk Assessment Report Generator
 Produces comprehensive product safety reports with legal disclaimers
 """
 
@@ -141,7 +140,7 @@ class RiskReportGenerator:
     </div>
 </body>
 </html>
-"""
+""",
     )
 
     """
@@ -203,8 +202,7 @@ class RiskReportGenerator:
         company_profile: CompanyComplianceProfile | None,
         format: str = "pdf",
     ) -> dict[str, Any]:
-        """
-        Generate comprehensive risk assessment report
+        """Generate comprehensive risk assessment report
 
         Args:
             product: Product golden record
@@ -258,8 +256,7 @@ class RiskReportGenerator:
         incidents: list[SafetyIncident],
         company_profile: CompanyComplianceProfile | None,
     ) -> dict:
-        """
-        Prepare all data for report generation
+        """Prepare all data for report generation
         """
         data = {
             "report_id": f"RSK-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}",
@@ -317,8 +314,7 @@ class RiskReportGenerator:
         return data
 
     def _generate_pdf_report(self, data: dict) -> BytesIO:
-        """
-        Generate PDF report using ReportLab
+        """Generate PDF report using ReportLab
         """
         buffer = BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=letter)
@@ -393,8 +389,8 @@ class RiskReportGenerator:
                     ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
                     ("BACKGROUND", (0, 1), (-1, -1), risk_color),
                     ("GRID", (0, 0), (-1, -1), 1, colors.black),
-                ]
-            )
+                ],
+            ),
         )
         story.append(risk_table)
         story.append(Spacer(1, 0.3 * inch))
@@ -420,8 +416,8 @@ class RiskReportGenerator:
                     ("ALIGN", (0, 0), (0, -1), "RIGHT"),
                     ("ALIGN", (1, 0), (1, -1), "LEFT"),
                     ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
-                ]
-            )
+                ],
+            ),
         )
         story.append(product_table)
         story.append(Spacer(1, 0.3 * inch))
@@ -478,8 +474,7 @@ class RiskReportGenerator:
         return self.RISK_REPORT_HTML_TEMPLATE.render(**context)
 
     def _generate_json_report(self, data: dict) -> str:
-        """
-        Generate JSON report
+        """Generate JSON report
         """
 
         # Ensure all data is JSON serializable
@@ -493,8 +488,7 @@ class RiskReportGenerator:
         return json.dumps(data, default=serialize, indent=2)
 
     def _summarize_incidents(self, incidents: list[SafetyIncident]) -> str:
-        """
-        Create incident summary text
+        """Create incident summary text
         """
         if not incidents:
             return "No incidents reported."
@@ -527,8 +521,7 @@ class RiskReportGenerator:
         return summary
 
     def _summarize_company(self, company: CompanyComplianceProfile) -> str:
-        """
-        Create company summary text
+        """Create company summary text
         """
         summary = f"Company: {company.company_name}\n"
         summary += f"Total Recalls: {company.total_recalls}\n"
@@ -545,21 +538,20 @@ class RiskReportGenerator:
         return summary
 
     def _generate_recommendations(self, risk_components: RiskScoreComponents) -> list[str]:
-        """
-        Generate actionable recommendations based on risk analysis
+        """Generate actionable recommendations based on risk analysis
         """
         recommendations = []
 
         # Always include verification recommendation
         recommendations.append(
             "VERIFY all information in this report through official sources "
-            "(CPSC.gov, manufacturer website, or retailer)"
+            "(CPSC.gov, manufacturer website, or retailer)",
         )
 
         # Risk level based recommendations
         if risk_components.risk_level == "critical":
             recommendations.append(
-                "IMMEDIATE ACTION REQUIRED: Stop using this product immediately and check for active recalls"
+                "IMMEDIATE ACTION REQUIRED: Stop using this product immediately and check for active recalls",
             )
             recommendations.append("Contact the manufacturer or retailer for remedy information")
         elif risk_components.risk_level == "high":
@@ -570,7 +562,7 @@ class RiskReportGenerator:
         if risk_components.severity_details and risk_components.severity_details.get("total_deaths") > 0:
             recommendations.append(
                 "⚠️ CRITICAL: Deaths have been reported with this product. "
-                "Exercise extreme caution and consider alternatives"
+                "Exercise extreme caution and consider alternatives",
             )
 
         if risk_components.recency_details and risk_components.recency_details.get("incidents_last_3_months") > 0:
@@ -587,8 +579,7 @@ class RiskReportGenerator:
         return recommendations
 
     def _list_data_sources(self, product: ProductGoldenRecord) -> str:
-        """
-        List all data sources used
+        """List all data sources used
         """
         sources = []
 
@@ -606,8 +597,7 @@ class RiskReportGenerator:
         return "\n".join(sources)
 
     def _format_details(self, details: dict) -> str:
-        """
-        Format details dictionary as readable text
+        """Format details dictionary as readable text
         """
         if not details:
             return "No additional details available."
@@ -622,8 +612,7 @@ class RiskReportGenerator:
         return "\n".join(lines) if lines else "No significant details."
 
     def _get_risk_color(self, risk_level: str) -> colors.Color:
-        """
-        Get color for risk level (ReportLab)
+        """Get color for risk level (ReportLab)
         """
         level = risk_level.lower()
         if level == "critical":
@@ -636,8 +625,7 @@ class RiskReportGenerator:
             return colors.HexColor("#689f38")  # Green
 
     def _get_risk_color_hex(self, risk_level: str) -> str:
-        """
-        Get hex color for risk level (HTML)
+        """Get hex color for risk level (HTML)
         """
         level = risk_level.lower()
         if level == "critical":
@@ -650,8 +638,7 @@ class RiskReportGenerator:
             return "#689f38"
 
     def _upload_to_azure_blob(self, content: Any, product_id: str, format: str) -> str:
-        """
-        Upload report to Azure Blob Storage and return SAS URL
+        """Upload report to Azure Blob Storage and return SAS URL
         """
         timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
         blob_name = f"risk-reports/{product_id}/{timestamp}.{format}"

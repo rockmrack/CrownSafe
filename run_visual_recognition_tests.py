@@ -1,5 +1,4 @@
-"""
-COMPREHENSIVE VISUAL RECOGNITION SYSTEM TEST SUITE
+"""COMPREHENSIVE VISUAL RECOGNITION SYSTEM TEST SUITE
 Tests all aspects of the Visual Search Agent and image analysis
 """
 
@@ -195,7 +194,7 @@ def run_tests():
 
         print(f"PASS - Returned {len(suggestions)} suggestions")
         print(
-            f"  Top match: {suggestions[0]['brand']} {suggestions[0]['product_name']} (confidence: {suggestions[0]['confidence']})"  # noqa: E501
+            f"  Top match: {suggestions[0]['brand']} {suggestions[0]['product_name']} (confidence: {suggestions[0]['confidence']})",  # noqa: E501
         )
         tests_passed += 1
         test_results.append(("Suggest Products", True))

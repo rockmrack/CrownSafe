@@ -1,5 +1,4 @@
-"""
-Crown Safe - Ingredient Explainer Tests
+"""Crown Safe - Ingredient Explainer Tests
 Tests for GET /api/v1/ingredients/{name} and /api/v1/ingredients?query=... endpoints
 
 Test Coverage:

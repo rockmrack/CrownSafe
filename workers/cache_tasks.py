@@ -1,5 +1,4 @@
-"""
-Stub worker task module for cache operations
+"""Stub worker task module for cache operations
 
 This is a stub implementation for Phase 1 testing.
 Real implementation to be added later.
@@ -30,8 +29,7 @@ class RedisCache:
 
 @app.task(name="warm_cache")
 def warm_cache_task(cache_keys=None):
-    """
-    Warm up cache with frequently accessed data
+    """Warm up cache with frequently accessed data
 
     Args:
         cache_keys: Optional list of specific keys to warm
@@ -53,8 +51,7 @@ def warm_cache_task(cache_keys=None):
 
 @app.task(name="invalidate_cache")
 def invalidate_cache_task(pattern):
-    """
-    Invalidate cache entries matching pattern
+    """Invalidate cache entries matching pattern
 
     Args:
         pattern: Cache key pattern to invalidate
@@ -73,8 +70,7 @@ def invalidate_cache_task(pattern):
 
 @app.task(name="refresh_cache")
 def refresh_cache_task(cache_key, data_source):
-    """
-    Refresh specific cache entry with fresh data
+    """Refresh specific cache entry with fresh data
 
     Args:
         cache_key: Cache key to refresh

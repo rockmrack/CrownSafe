@@ -1,5 +1,4 @@
-"""
-Comprehensive Database Transaction Testing Suite
+"""Comprehensive Database Transaction Testing Suite
 
 Tests transaction management, concurrency, deadlocks, and data integrity.
 Covers nested transactions, isolation levels, and rollback scenarios.
@@ -75,8 +74,7 @@ class TestDatabaseTransactions:
 
     @skip_on_sqlite
     def test_nested_transaction_rollback(self, db_session, sample_user):
-        """
-        Test nested transaction rollback preserves outer transaction
+        """Test nested transaction rollback preserves outer transaction
 
         Acceptance Criteria:
         - Outer transaction commits successfully
@@ -128,8 +126,7 @@ class TestDatabaseTransactions:
             db_session.close()
 
     def test_concurrent_update_optimistic_locking(self, db_session, sample_user):
-        """
-        Test optimistic locking prevents lost updates
+        """Test optimistic locking prevents lost updates
 
         Acceptance Criteria:
         - Two concurrent updates detected
@@ -169,8 +166,7 @@ class TestDatabaseTransactions:
         assert sample_user.memory_paused in [True, False]
 
     def test_deadlock_detection_and_retry(self, db_session):
-        """
-        Test deadlock detection and automatic retry
+        """Test deadlock detection and automatic retry
 
         Acceptance Criteria:
         - Deadlock detected within 30 seconds
@@ -211,8 +207,7 @@ class TestDatabaseTransactions:
 
     @skip_on_sqlite
     def test_transaction_isolation_read_committed(self, db_session, sample_user):
-        """
-        Test READ COMMITTED isolation level
+        """Test READ COMMITTED isolation level
 
         Acceptance Criteria:
         - Uncommitted changes not visible to other transactions
@@ -246,8 +241,7 @@ class TestDatabaseTransactions:
 
     @skip_on_sqlite
     def test_savepoint_partial_rollback(self, db_session, sample_user):
-        """
-        Test savepoint creation and partial rollback
+        """Test savepoint creation and partial rollback
 
         Acceptance Criteria:
         - Savepoint created successfully
@@ -298,8 +292,7 @@ class TestDatabaseTransactions:
             raise
 
     def test_constraint_violation_rollback(self, db_session, sample_user):
-        """
-        Test automatic rollback on constraint violation
+        """Test automatic rollback on constraint violation
 
         Acceptance Criteria:
         - IntegrityError raised on duplicate key
@@ -338,8 +331,7 @@ class TestDatabaseTransactions:
 
     @skip_on_sqlite
     def test_bulk_insert_transaction_atomicity(self, db_session, sample_user):
-        """
-        Test atomicity of bulk insert operations
+        """Test atomicity of bulk insert operations
 
         Acceptance Criteria:
         - All 1000 records inserted or none
@@ -377,8 +369,7 @@ class TestDatabaseTransactions:
         assert count == 1000, "All messages should be inserted atomically"
 
     def test_long_running_transaction_timeout(self, db_session):
-        """
-        Test long-running transaction timeout
+        """Test long-running transaction timeout
 
         Acceptance Criteria:
         - Transaction exceeding 30 seconds times out
@@ -399,8 +390,7 @@ class TestDatabaseTransactions:
 
     @skip_on_sqlite
     def test_cross_schema_transaction_consistency(self, db_session, sample_user):
-        """
-        Test transaction consistency across multiple schemas
+        """Test transaction consistency across multiple schemas
 
         Acceptance Criteria:
         - Changes to multiple schemas atomic
@@ -451,8 +441,7 @@ class TestConnectionPooling:
     """Test database connection pool management"""
 
     def test_connection_pool_exhaustion_handling(self):
-        """
-        Test graceful handling of connection pool exhaustion
+        """Test graceful handling of connection pool exhaustion
 
         Acceptance Criteria:
         - Pool size limit respected (default 10)
@@ -483,8 +472,7 @@ class TestConnectionPooling:
                 conn.close()
 
     def test_connection_leak_detection(self):
-        """
-        Test detection of connection leaks
+        """Test detection of connection leaks
 
         Acceptance Criteria:
         - Unreleased connections detected

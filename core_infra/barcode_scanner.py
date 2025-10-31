@@ -1,5 +1,4 @@
-"""
-Next-Generation Traceability: Advanced Barcode Scanner Module
+"""Next-Generation Traceability: Advanced Barcode Scanner Module
 Supports QR codes, DataMatrix, GS1, and standard barcodes with lot/serial tracking
 """
 
@@ -115,7 +114,7 @@ class ScanResult:
                     "production_date": self.production_date.isoformat() if self.production_date else None,
                     "batch_code": self.batch_code,
                     "parsed_data": self.parsed_data or {},
-                }
+                },
             )
         else:
             result["error_message"] = self.error_message
@@ -189,8 +188,7 @@ class BarcodeScanner:
         }
 
     async def scan_image(self, image_data: bytes) -> list[ScanResult]:
-        """
-        Scan an image for barcodes
+        """Scan an image for barcodes
 
         Args:
             image_data: Image bytes
@@ -400,8 +398,7 @@ class BarcodeScanner:
         return results
 
     def scan_text(self, barcode_data: str, barcode_type: str = None) -> ScanResult:
-        """
-        Parse barcode text data directly
+        """Parse barcode text data directly
 
         Args:
             barcode_data: Raw barcode string
@@ -414,7 +411,6 @@ class BarcodeScanner:
 
     def _parse_barcode_data(self, data: str, barcode_type: str = None) -> ScanResult:
         """Parse barcode data based on type and format"""
-
         result = ScanResult(success=True, raw_data=data, barcode_type=barcode_type, parsed_data={})
 
         # Check if it's a GS1 formatted barcode
@@ -450,7 +446,6 @@ class BarcodeScanner:
 
     def _parse_gs1_data(self, data: str, result: ScanResult):
         """Parse GS1 formatted data with Application Identifiers"""
-
         # Remove FNC1 characters
         data = data.replace(chr(29), "")
 
@@ -615,7 +610,6 @@ class BarcodeScanner:
 
     def _extract_patterns(self, data: str, result: ScanResult):
         """Extract common patterns from unstructured data"""
-
         # Look for lot numbers
         lot_patterns = [
             r"LOT[:\s#]*([A-Z0-9\-]+)",
@@ -683,8 +677,7 @@ class BarcodeScanner:
         return None
 
     def generate_qr_code(self, data: dict[str, Any]) -> bytes:
-        """
-        Generate a QR code with product data
+        """Generate a QR code with product data
 
         Args:
             data: Dictionary with product information

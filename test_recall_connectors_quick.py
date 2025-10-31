@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Quick test of RecallDataAgent with real API calls (limited to 5 recalls per agency)
+"""Quick test of RecallDataAgent with real API calls (limited to 5 recalls per agency)
 This script tests the actual workflow without requiring a full database setup.
 """
 
@@ -18,7 +17,6 @@ from agents.recall_data_agent.connectors import ConnectorRegistry  # noqa: E402
 
 async def quick_test():
     """Quick test of live recall fetching"""
-
     print("=" * 80)
     print("BABYSHIELD RECALL DATA AGENT - QUICK TEST")
     print("=" * 80)

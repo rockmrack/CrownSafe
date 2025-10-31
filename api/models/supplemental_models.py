@@ -1,5 +1,4 @@
-"""
-Pydantic models for supplemental data and enhanced safety reports
+"""Pydantic models for supplemental data and enhanced safety reports
 """
 
 from datetime import datetime, timezone

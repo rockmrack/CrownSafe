@@ -1,5 +1,4 @@
-"""
-Global error handlers for BabyShield API
+"""Global error handlers for BabyShield API
 Provides consistent error responses and logging
 """
 

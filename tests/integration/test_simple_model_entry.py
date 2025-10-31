@@ -1,5 +1,4 @@
-"""
-SIMPLE TEST: Model Number Entry Workflow
+"""SIMPLE TEST: Model Number Entry Workflow
 
 This test validates the /api/v1/safety-check endpoint responds to model number queries.
 No database setup needed - just tests the API endpoint directly!

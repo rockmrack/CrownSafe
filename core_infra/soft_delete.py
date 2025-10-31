@@ -1,5 +1,4 @@
-"""
-Soft delete functionality for BabyShield
+"""Soft delete functionality for BabyShield
 Enables data recovery and maintains data history
 """
 
@@ -15,8 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class SoftDeleteMixin:
-    """
-    Mixin to add soft delete functionality to any model
+    """Mixin to add soft delete functionality to any model
 
     Usage:
         class User(Base, SoftDeleteMixin):
@@ -40,8 +38,7 @@ class SoftDeleteMixin:
         return Column(Integer, nullable=True)
 
     def soft_delete(self, deleted_by_id: int | None = None):
-        """
-        Soft delete this record
+        """Soft delete this record
         """
         self.is_deleted = True
         self.deleted_at = datetime.utcnow()
@@ -50,8 +47,7 @@ class SoftDeleteMixin:
         logger.info(f"Soft deleted {self.__class__.__name__} id={getattr(self, 'id', 'unknown')}")
 
     def restore(self):
-        """
-        Restore a soft-deleted record
+        """Restore a soft-deleted record
         """
         self.is_deleted = False
         self.deleted_at = None
@@ -60,37 +56,32 @@ class SoftDeleteMixin:
         logger.info(f"Restored {self.__class__.__name__} id={getattr(self, 'id', 'unknown')}")
 
     def hard_delete(self, session: Session):
-        """
-        Permanently delete this record (use with caution!)
+        """Permanently delete this record (use with caution!)
         """
         logger.warning(f"Hard deleting {self.__class__.__name__} id={getattr(self, 'id', 'unknown')}")
         session.delete(self)
 
     @classmethod
     def query_active(cls, session: Session) -> Query:
-        """
-        Query only active (non-deleted) records
+        """Query only active (non-deleted) records
         """
         return session.query(cls).filter(not cls.is_deleted)
 
     @classmethod
     def query_deleted(cls, session: Session) -> Query:
-        """
-        Query only deleted records
+        """Query only deleted records
         """
         return session.query(cls).filter(cls.is_deleted)
 
     @classmethod
     def query_all(cls, session: Session) -> Query:
-        """
-        Query all records including deleted
+        """Query all records including deleted
         """
         return session.query(cls)
 
 
 class SoftDeleteQuery(Query):
-    """
-    Custom query class that automatically filters out soft-deleted records
+    """Custom query class that automatically filters out soft-deleted records
     """
 
     def __init__(self, *args, **kwargs):
@@ -98,21 +89,18 @@ class SoftDeleteQuery(Query):
         self._include_deleted = False
 
     def include_deleted(self) -> "SoftDeleteQuery":
-        """
-        Include soft-deleted records in results
+        """Include soft-deleted records in results
         """
         self._include_deleted = True
         return self
 
     def only_deleted(self) -> "SoftDeleteQuery":
-        """
-        Return only soft-deleted records
+        """Return only soft-deleted records
         """
         return self.filter(self.column_descriptions[0]["type"].is_deleted)
 
     def __iter__(self):
-        """
-        Override iteration to filter soft-deleted by default
+        """Override iteration to filter soft-deleted by default
         """
         if not self._include_deleted:
             # Check if model has soft delete
@@ -123,8 +111,7 @@ class SoftDeleteQuery(Query):
         return super().__iter__()
 
     def all(self):
-        """
-        Override all() to filter soft-deleted by default
+        """Override all() to filter soft-deleted by default
         """
         if not self._include_deleted:
             model = self.column_descriptions[0]["type"]
@@ -134,8 +121,7 @@ class SoftDeleteQuery(Query):
         return super().all()
 
     def first(self):
-        """
-        Override first() to filter soft-deleted by default
+        """Override first() to filter soft-deleted by default
         """
         if not self._include_deleted:
             model = self.column_descriptions[0]["type"]
@@ -145,8 +131,7 @@ class SoftDeleteQuery(Query):
         return super().first()
 
     def one(self):
-        """
-        Override one() to filter soft-deleted by default
+        """Override one() to filter soft-deleted by default
         """
         if not self._include_deleted:
             model = self.column_descriptions[0]["type"]
@@ -156,8 +141,7 @@ class SoftDeleteQuery(Query):
         return super().one()
 
     def count(self):
-        """
-        Override count() to filter soft-deleted by default
+        """Override count() to filter soft-deleted by default
         """
         if not self._include_deleted:
             model = self.column_descriptions[0]["type"]
@@ -168,8 +152,7 @@ class SoftDeleteQuery(Query):
 
 
 def soft_delete_filter(mapper, class_):
-    """
-    Automatically filter out soft-deleted records
+    """Automatically filter out soft-deleted records
     Add this as an event listener to your models
     """
 
@@ -182,16 +165,14 @@ def soft_delete_filter(mapper, class_):
 
 
 class RecycleBin:
-    """
-    Manage soft-deleted records (like a recycle bin)
+    """Manage soft-deleted records (like a recycle bin)
     """
 
     def __init__(self, session: Session):
         self.session = session
 
     def get_deleted_items(self, model: type, limit: int = 100, offset: int = 0) -> list[Any]:
-        """
-        Get deleted items of a specific type
+        """Get deleted items of a specific type
         """
         if not hasattr(model, "is_deleted"):
             raise ValueError(f"{model.__name__} doesn't support soft delete")
@@ -206,8 +187,7 @@ class RecycleBin:
         )
 
     def restore_item(self, item: Any) -> bool:
-        """
-        Restore a soft-deleted item
+        """Restore a soft-deleted item
         """
         if not hasattr(item, "restore"):
             raise ValueError(f"{type(item).__name__} doesn't support restore")
@@ -222,8 +202,7 @@ class RecycleBin:
             return False
 
     def restore_all(self, model: type) -> int:
-        """
-        Restore all deleted items of a type
+        """Restore all deleted items of a type
         """
         if not hasattr(model, "is_deleted"):
             raise ValueError(f"{model.__name__} doesn't support soft delete")
@@ -236,7 +215,7 @@ class RecycleBin:
                     model.is_deleted: False,
                     model.deleted_at: None,
                     model.deleted_by: None,
-                }
+                },
             )
         )
 
@@ -245,8 +224,7 @@ class RecycleBin:
         return count
 
     def empty_trash(self, model: type, older_than_days: int = 30) -> int:
-        """
-        Permanently delete old soft-deleted records
+        """Permanently delete old soft-deleted records
         """
         from datetime import timedelta
 
@@ -269,8 +247,7 @@ class RecycleBin:
         return count
 
     def get_deletion_stats(self) -> dict[str, int]:
-        """
-        Get statistics about deleted records
+        """Get statistics about deleted records
         """
         stats = {}
 
@@ -287,8 +264,7 @@ class RecycleBin:
 
 # Cascade soft delete for relationships
 def cascade_soft_delete(parent: Any, related_attr: str):
-    """
-    Soft delete related records when parent is soft deleted
+    """Soft delete related records when parent is soft deleted
 
     Usage:
         user.soft_delete()
@@ -311,14 +287,12 @@ def cascade_soft_delete(parent: Any, related_attr: str):
 
 # Middleware to track who deleted records
 class DeletionTracker:
-    """
-    Track who is deleting records
+    """Track who is deleting records
     """
 
     @staticmethod
     def track_deletion(session: Session, user_id: int):
-        """
-        Set up tracking for this session
+        """Set up tracking for this session
         """
 
         @event.listens_for(session, "before_flush")

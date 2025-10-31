@@ -1,5 +1,4 @@
-"""
-AWS WAF Rules Configuration for BabyShield
+"""AWS WAF Rules Configuration for BabyShield
 Enterprise-grade Web Application Firewall rules
 """
 
@@ -21,7 +20,7 @@ class WAFRulesGenerator:
                     "RateBasedStatement": {
                         "Limit": 2000,  # 2000 requests per 5 minutes per IP
                         "AggregateKeyType": "IP",
-                    }
+                    },
                 },
                 "Action": {"Block": {}},
                 "VisibilityConfig": {
@@ -43,9 +42,9 @@ class WAFRulesGenerator:
                                 "FieldToMatch": {"UriPath": {}},
                                 "TextTransformations": [{"Priority": 0, "Type": "LOWERCASE"}],
                                 "PositionalConstraint": "STARTS_WITH",
-                            }
+                            },
                         },
-                    }
+                    },
                 },
                 "Action": {"Block": {}},
                 "VisibilityConfig": {
@@ -76,7 +75,7 @@ class WAFRulesGenerator:
                                         {"Priority": 1, "Type": "LOWERCASE"},
                                     ],
                                     "PositionalConstraint": "CONTAINS",
-                                }
+                                },
                             },
                             {
                                 "ByteMatchStatement": {
@@ -87,10 +86,10 @@ class WAFRulesGenerator:
                                         {"Priority": 1, "Type": "LOWERCASE"},
                                     ],
                                     "PositionalConstraint": "CONTAINS",
-                                }
+                                },
                             },
-                        ]
-                    }
+                        ],
+                    },
                 },
                 "Action": {"Block": {}},
                 "VisibilityConfig": {
@@ -116,7 +115,7 @@ class WAFRulesGenerator:
                                         {"Priority": 2, "Type": "LOWERCASE"},
                                     ],
                                     "PositionalConstraint": "CONTAINS",
-                                }
+                                },
                             },
                             {
                                 "ByteMatchStatement": {
@@ -127,10 +126,10 @@ class WAFRulesGenerator:
                                         {"Priority": 1, "Type": "LOWERCASE"},
                                     ],
                                     "PositionalConstraint": "CONTAINS",
-                                }
+                                },
                             },
-                        ]
-                    }
+                        ],
+                    },
                 },
                 "Action": {"Block": {}},
                 "VisibilityConfig": {
@@ -152,7 +151,7 @@ class WAFRulesGenerator:
                                     "FieldToMatch": {"UriPath": {}},
                                     "TextTransformations": [{"Priority": 0, "Type": "URL_DECODE"}],
                                     "PositionalConstraint": "CONTAINS",
-                                }
+                                },
                             },
                             {
                                 "ByteMatchStatement": {
@@ -160,10 +159,10 @@ class WAFRulesGenerator:
                                     "FieldToMatch": {"UriPath": {}},
                                     "TextTransformations": [{"Priority": 0, "Type": "LOWERCASE"}],
                                     "PositionalConstraint": "CONTAINS",
-                                }
+                                },
                             },
-                        ]
-                    }
+                        ],
+                    },
                 },
                 "Action": {"Block": {}},
                 "VisibilityConfig": {
@@ -199,10 +198,10 @@ class WAFRulesGenerator:
                                     "NO",
                                     "DK",
                                     "FI",
-                                ]
-                            }
-                        }
-                    }
+                                ],
+                            },
+                        },
+                    },
                 },
                 "Action": {"Block": {}},
                 "VisibilityConfig": {
@@ -210,7 +209,7 @@ class WAFRulesGenerator:
                     "CloudWatchMetricsEnabled": True,
                     "MetricName": "BabyShieldGeoBlock",
                 },
-            }
+            },
         ]
 
     @staticmethod
@@ -224,7 +223,7 @@ class WAFRulesGenerator:
                     "ManagedRuleGroupStatement": {
                         "VendorName": "AWS",
                         "Name": "AWSManagedRulesAmazonIpReputationList",
-                    }
+                    },
                 },
                 "Action": {"Block": {}},
                 "VisibilityConfig": {
@@ -241,7 +240,7 @@ class WAFRulesGenerator:
                     "ManagedRuleGroupStatement": {
                         "VendorName": "AWS",
                         "Name": "AWSManagedRulesKnownBadInputsRuleSet",
-                    }
+                    },
                 },
                 "Action": {"Block": {}},
                 "VisibilityConfig": {

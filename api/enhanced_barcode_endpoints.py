@@ -1,5 +1,4 @@
-"""
-A-5 Exact/Valid Scan: Enhanced Barcode Scanning Endpoints
+"""A-5 Exact/Valid Scan: Enhanced Barcode Scanning Endpoints
 Provides exact validation and comprehensive error handling
 """
 
@@ -75,10 +74,9 @@ class ValidationTestResponse(BaseModel):
 
 @enhanced_barcode_router.post("/exact-scan", response_model=EnhancedScanResponse)
 async def exact_barcode_scan(
-    request: EnhancedScanRequest, db: Session = Depends(get_db_session)
+    request: EnhancedScanRequest, db: Session = Depends(get_db_session),
 ) -> EnhancedScanResponse:
-    """
-    A-5 Exact/Valid Scan: Perform exact barcode scanning with comprehensive validation
+    """A-5 Exact/Valid Scan: Perform exact barcode scanning with comprehensive validation
 
     This endpoint provides:
     - Exact barcode format validation
@@ -117,14 +115,14 @@ async def exact_barcode_scan(
         # Add validation details if requested
         if request.include_validation_details:
             response_data["validation_details"] = enhanced_barcode_service.validator.get_validation_summary(
-                scan_result.barcode_validation
+                scan_result.barcode_validation,
             )
 
         logger.info(
             f"Enhanced scan completed for user {request.user_id}: "
             f"barcode={scan_result.barcode_validation.normalized_barcode}, "
             f"valid={scan_result.is_valid}, "
-            f"matches={len(scan_result.exact_matches)}"
+            f"matches={len(scan_result.exact_matches)}",
         )
 
         return EnhancedScanResponse(**response_data)
@@ -138,8 +136,7 @@ async def exact_barcode_scan(
 async def validate_barcode_format(
     request: ValidationTestRequest,
 ) -> ValidationTestResponse:
-    """
-    A-5 Exact/Valid Scan: Validate barcode format and type
+    """A-5 Exact/Valid Scan: Validate barcode format and type
 
     This endpoint provides:
     - Format validation
@@ -179,7 +176,7 @@ async def validate_barcode_format(
             f"Barcode validation completed: "
             f"barcode={validation_result.normalized_barcode}, "
             f"type={validation_result.barcode_type.value}, "
-            f"valid={validation_result.is_valid}"
+            f"valid={validation_result.is_valid}",
         )
 
         return ValidationTestResponse(**response_data)
@@ -194,8 +191,7 @@ async def test_barcode_validation(
     barcode: str = Query(..., description="Barcode to test"),
     expected_type: str | None = Query(None, description="Expected barcode type"),
 ) -> dict[str, Any]:
-    """
-    A-5 Exact/Valid Scan: Test endpoint for barcode validation
+    """A-5 Exact/Valid Scan: Test endpoint for barcode validation
 
     Quick test endpoint for validating barcode formats
     """

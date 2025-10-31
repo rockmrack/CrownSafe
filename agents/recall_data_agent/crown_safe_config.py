@@ -1,5 +1,4 @@
-"""
-Crown Safe - Recall Agent Configuration
+"""Crown Safe - Recall Agent Configuration
 Adapts recall_data_agent to filter for hair/cosmetic products only
 
 Changes from BabyShield:
@@ -137,8 +136,7 @@ DEPRIORITIZE_AGENCIES = [
 
 
 def is_crown_safe_recall(recall_title: str, recall_description: str, product_category: str) -> bool:
-    """
-    Determine if a recall is relevant for Crown Safe (hair/cosmetic products).
+    """Determine if a recall is relevant for Crown Safe (hair/cosmetic products).
 
     Args:
         recall_title: Recall title/product name

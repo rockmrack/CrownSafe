@@ -1,5 +1,4 @@
-"""
-Security integration module for Task 6
+"""Security integration module for Task 6
 Wires all security features into the FastAPI app
 """
 
@@ -19,8 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 def setup_security(app: FastAPI):
-    """
-    Configure all security features for the FastAPI app
+    """Configure all security features for the FastAPI app
 
     This function adds all security middleware in the correct order.
     Middleware order matters - they execute in reverse order of addition.
@@ -28,7 +26,6 @@ def setup_security(app: FastAPI):
     Args:
         app: FastAPI application instance
     """
-
     logger.info("Setting up security middleware")
 
     # 1. Size limit middleware (early rejection of large requests)
@@ -65,8 +62,7 @@ def setup_security(app: FastAPI):
 
 
 def get_security_config() -> dict:
-    """
-    Get current security configuration
+    """Get current security configuration
 
     Returns:
         Dictionary with security settings
@@ -86,8 +82,7 @@ def get_security_config() -> dict:
 
 
 def validate_security_config():
-    """
-    Validate security configuration and warn about issues
+    """Validate security configuration and warn about issues
     """
     config = get_security_config()
 
@@ -145,8 +140,7 @@ async def search_advanced(request: SecureAdvancedSearchRequest):
 
 
 class SecurityDefaults:
-    """
-    Default security settings
+    """Default security settings
     """
 
     # Request limits
@@ -177,8 +171,7 @@ class SecurityDefaults:
 
     @classmethod
     def apply_to_env(cls):
-        """
-        Apply defaults to environment if not set
+        """Apply defaults to environment if not set
         """
         defaults = {
             "MAX_REQUEST_BYTES": str(cls.MAX_REQUEST_SIZE),

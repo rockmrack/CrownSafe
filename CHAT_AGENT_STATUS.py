@@ -1,5 +1,4 @@
-"""
-CHAT AGENT VERIFICATION REPORT
+"""CHAT AGENT VERIFICATION REPORT
 Generated: October 25, 2025
 ===============================================================================
 

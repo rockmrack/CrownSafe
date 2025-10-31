@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Emergency pg_trgm enablement script for AWS CloudShell
+"""Emergency pg_trgm enablement script for AWS CloudShell
 Uses direct database connection (works if security group allows CloudShell)
 """
 
@@ -17,7 +16,6 @@ except ImportError:
 
 def _require_env(var_name: str) -> str:
     """Return the value of the required environment variable."""
-
     value = os.getenv(var_name)
     if not value:
         raise RuntimeError(f"Missing required environment variable: {var_name}")

@@ -44,7 +44,6 @@ identifier_pattern = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 def _quote_identifier(name: str) -> str:
     """Return a safely-quoted SQLite identifier."""
-
     if not identifier_pattern.fullmatch(name):
         raise ValueError(f"Unsafe identifier provided: {name}")
     return f'"{name}"'

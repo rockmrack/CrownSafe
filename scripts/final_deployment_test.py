@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-FINAL DEPLOYMENT READINESS TEST - BABYSHIELD API
+"""FINAL DEPLOYMENT READINESS TEST - BABYSHIELD API
 Verifies 100% functionality before deployment
 """
 

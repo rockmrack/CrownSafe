@@ -1,5 +1,4 @@
-"""
-Test monitoring and observability features
+"""Test monitoring and observability features
 """
 
 import pytest

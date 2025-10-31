@@ -1,5 +1,4 @@
-"""
-Admin privacy management routes for DSAR processing
+"""Admin privacy management routes for DSAR processing
 Allows administrators to manage and process privacy requests
 """
 
@@ -30,8 +29,7 @@ router = APIRouter(
 
 
 class UpdatePrivacyRequest(BaseModel):
-    """
-    Model for updating privacy request status
+    """Model for updating privacy request status
     """
 
     status: str = Field(
@@ -41,14 +39,13 @@ class UpdatePrivacyRequest(BaseModel):
     )
     notes: str | None = Field(None, max_length=2000, description="Admin notes about the request")
     rejection_reason: str | None = Field(
-        None, max_length=500, description="Reason for rejection (if status=rejected)"
+        None, max_length=500, description="Reason for rejection (if status=rejected)",
     )
     export_url: str | None = Field(None, description="Export download URL (if status=done for export requests)")
 
 
 class PrivacyRequestFilter(BaseModel):
-    """
-    Filters for privacy request queries
+    """Filters for privacy request queries
     """
 
     kind: str | None = Field(None, pattern="^(export|delete|rectify|access|restrict|object)$")
@@ -82,8 +79,7 @@ async def list_privacy_requests(
     admin: str = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    """
-    List privacy requests with filtering and pagination
+    """List privacy requests with filtering and pagination
 
     Returns privacy requests ordered by submission date (newest first).
     Sensitive data like email addresses are masked.
@@ -109,7 +105,7 @@ async def list_privacy_requests(
                 and_(
                     PrivacyRequest.status.in_(["queued", "verifying", "processing"]),
                     PrivacyRequest.submitted_at < now - timedelta(days=30),  # Basic SLA
-                )
+                ),
             )
 
         # Order by submission date (newest first)
@@ -185,8 +181,7 @@ async def get_privacy_request_details(
     admin: str = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    """
-    Get detailed information about a specific privacy request
+    """Get detailed information about a specific privacy request
 
     By default, PII is masked. Set show_pii=true to see full details.
     """
@@ -245,8 +240,7 @@ async def update_privacy_request_status(
     admin: str = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    """
-    Update the status of a privacy request
+    """Update the status of a privacy request
 
     Allows admins to move requests through the processing pipeline:
     queued → verifying → processing → done/rejected
@@ -361,8 +355,7 @@ async def privacy_request_statistics(
     admin: str = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    """
-    Get privacy request statistics and metrics
+    """Get privacy request statistics and metrics
 
     Provides overview of DSAR requests for compliance reporting.
     """
@@ -405,15 +398,15 @@ async def privacy_request_statistics(
                     func.extract(
                         "epoch",
                         PrivacyRequest.completed_at - PrivacyRequest.submitted_at,
-                    )
-                )
+                    ),
+                ),
             )
             .filter(
                 and_(
                     PrivacyRequest.status == "done",
                     PrivacyRequest.submitted_at >= since_date,
                     PrivacyRequest.completed_at.isnot(None),
-                )
+                ),
             )
             .scalar()
         )
@@ -426,7 +419,7 @@ async def privacy_request_statistics(
                 and_(
                     PrivacyRequest.status.in_(["queued", "verifying", "processing"]),
                     PrivacyRequest.submitted_at < now - timedelta(days=30),
-                )
+                ),
             )
             .scalar()
             or 0
@@ -489,8 +482,7 @@ async def process_privacy_request(
     admin: str = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    """
-    Manually trigger processing of a privacy request
+    """Manually trigger processing of a privacy request
 
     This would typically integrate with background jobs to actually
     export or delete user data.
@@ -572,8 +564,7 @@ async def process_privacy_request(
 
 @router.get("/export-template")
 async def get_export_template(request: Request, admin: str = Depends(require_admin)):
-    """
-    Get template structure for data exports
+    """Get template structure for data exports
 
     Shows the standard format used for GDPR/CCPA data exports.
     """
@@ -593,7 +584,7 @@ async def get_export_template(request: Request, admin: str = Depends(require_adm
                     "subject": "Question about recall",
                     "created_at": "2024-06-01T00:00:00Z",
                     "status": "resolved",
-                }
+                },
             ],
             "api_usage": {
                 "total_requests": 150,

@@ -1,5 +1,4 @@
-"""
-Deep Database Tests
+"""Deep Database Tests
 Comprehensive testing of database operations, connections, and transactions
 """
 

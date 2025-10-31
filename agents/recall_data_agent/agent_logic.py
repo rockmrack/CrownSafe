@@ -1,6 +1,5 @@
 # agents/recall_data_agent/agent_logic.py
-"""
-RecallDataAgent Core Business Logic
+"""RecallDataAgent Core Business Logic
 Handles both live queries (for safety check workflow) and background ingestion.
 Version: 3.0 - Adapted for Crown Safe (Hair/Cosmetic Products)
 """
@@ -27,8 +26,7 @@ from .models import Recall
 
 
 class RecallDataAgentLogic:
-    """
-    Core logic for RecallDataAgent.
+    """Core logic for RecallDataAgent.
 
     Responsibilities:
     1. Query recalls database for product matches (called by RouterAgent)
@@ -37,8 +35,7 @@ class RecallDataAgentLogic:
     """
 
     def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
-        """
-        Initialize RecallDataAgent logic.
+        """Initialize RecallDataAgent logic.
 
         Args:
             agent_id: Unique identifier for this agent instance
@@ -49,12 +46,11 @@ class RecallDataAgentLogic:
         self.connector_registry = ConnectorRegistry()
         self.logger.info(
             f"RecallDataAgentLogic initialized as '{agent_id}' with "
-            f"{len(self.connector_registry.connectors)} connectors."
+            f"{len(self.connector_registry.connectors)} connectors.",
         )
 
     async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
-        """
-        Query database for recalls matching product identifiers.
+        """Query database for recalls matching product identifiers.
 
         This is the main entry point called by RouterAgent during safety check workflow.
         Supports multiple identifier types for comprehensive matching.
@@ -86,7 +82,7 @@ class RecallDataAgentLogic:
         self.logger.info(
             f"[{self.agent_id}] Querying recalls database with: "
             f"name='{product_name}', model='{model_number}', upc='{upc}', "
-            f"brand='{brand}', lot='{lot_number}'"
+            f"brand='{brand}', lot='{lot_number}'",
         )
 
         # Validate inputs
@@ -125,7 +121,7 @@ class RecallDataAgentLogic:
                 if brand and product_name:
                     filters.append(
                         (EnhancedRecallDB.brand.ilike(f"%{brand}%"))
-                        & (EnhancedRecallDB.product_name.ilike(f"%{product_name}%"))
+                        & (EnhancedRecallDB.product_name.ilike(f"%{product_name}%")),
                     )
 
                 # Priority 3: Product name fuzzy matching (lower confidence)
@@ -181,8 +177,7 @@ class RecallDataAgentLogic:
             return {"status": "FAILED", "error": f"Database query failed: {str(e)}"}
 
     async def run_ingestion_cycle(self) -> dict[str, Any]:
-        """
-        Run a full ingestion cycle from all enabled connectors.
+        """Run a full ingestion cycle from all enabled connectors.
 
         This method:
         1. Fetches recalls from all 39+ agencies concurrently
@@ -232,7 +227,7 @@ class RecallDataAgentLogic:
             filtered_count = len(all_recalls) - len(crown_safe_recalls)
             self.logger.info(
                 f"[{self.agent_id}] Filtered to {len(crown_safe_recalls)} Crown Safe relevant recalls "
-                f"(excluded {filtered_count} non-hair/cosmetic products)"
+                f"(excluded {filtered_count} non-hair/cosmetic products)",
             )
 
             if not crown_safe_recalls:
@@ -295,7 +290,7 @@ class RecallDataAgentLogic:
             self.logger.info(
                 f"[{self.agent_id}] Ingestion complete. "
                 f"Upserted: {upserted_count}, Skipped: {skipped_count}, "
-                f"Filtered: {filtered_count}, Duration: {duration:.2f}s"
+                f"Filtered: {filtered_count}, Duration: {duration:.2f}s",
             )
 
             return {
@@ -319,8 +314,7 @@ class RecallDataAgentLogic:
             }
 
     def get_statistics(self) -> dict[str, Any]:
-        """
-        Get recall database statistics.
+        """Get recall database statistics.
 
         Returns:
             Dictionary with database stats (total recalls, by agency, etc.)

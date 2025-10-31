@@ -1,5 +1,4 @@
-"""
-Retry and error recovery mechanisms for BabyShield
+"""Retry and error recovery mechanisms for BabyShield
 Implements exponential backoff, jitter, and intelligent retry strategies
 """
 
@@ -37,8 +36,7 @@ class NonRetryableError(Exception):
 
 
 class RetryConfig:
-    """
-    Configuration for retry behavior
+    """Configuration for retry behavior
     """
 
     def __init__(
@@ -114,8 +112,7 @@ class RetryConfig:
 
 
 class RetryHandler:
-    """
-    Handles retry logic with various strategies
+    """Handles retry logic with various strategies
     """
 
     def __init__(self, config: RetryConfig = None):
@@ -124,8 +121,7 @@ class RetryHandler:
         self.last_exception = None
 
     def retry(self, func: Callable) -> Callable:
-        """
-        Decorator for sync functions with retry
+        """Decorator for sync functions with retry
         """
 
         @wraps(func)
@@ -135,8 +131,7 @@ class RetryHandler:
         return wrapper
 
     def async_retry(self, func: Callable) -> Callable:
-        """
-        Decorator for async functions with retry
+        """Decorator for async functions with retry
         """
 
         @wraps(func)
@@ -250,8 +245,7 @@ def retry(
     backoff: float = 2.0,
     exceptions: tuple = (Exception,),
 ):
-    """
-    Simple retry decorator
+    """Simple retry decorator
 
     Usage:
         @retry(max_attempts=3, delay=1.0, backoff=2.0)
@@ -278,8 +272,7 @@ def retry(
 
 # Advanced retry patterns
 class CircuitBreakerRetry:
-    """
-    Combines circuit breaker with retry logic
+    """Combines circuit breaker with retry logic
     """
 
     def __init__(
@@ -338,18 +331,16 @@ class CircuitBreakerRetry:
 
 
 class BulkRetry:
-    """
-    Retry logic for bulk operations
+    """Retry logic for bulk operations
     """
 
     def __init__(self, config: RetryConfig = None):
         self.config = config or RetryConfig()
 
     async def process_batch_with_retry(
-        self, items: list[Any], process_func: Callable, batch_size: int = 100
+        self, items: list[Any], process_func: Callable, batch_size: int = 100,
     ) -> dict[str, list]:
-        """
-        Process items in batches with retry
+        """Process items in batches with retry
         """
         results = {"success": [], "failed": [], "retried": []}
 
@@ -379,8 +370,7 @@ class BulkRetry:
 
 # Retry with fallback
 class FallbackRetry:
-    """
-    Retry with fallback options
+    """Retry with fallback options
     """
 
     def __init__(self, primary_func: Callable, fallback_funcs: list[Callable]):

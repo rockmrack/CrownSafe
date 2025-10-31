@@ -1,5 +1,4 @@
-"""
-Redis micro-cache for search results
+"""Redis micro-cache for search results
 Provides short-term caching with automatic invalidation
 """
 
@@ -15,13 +14,11 @@ logger = logging.getLogger(__name__)
 
 
 class RedisSearchCache:
-    """
-    Redis-based cache for search results
+    """Redis-based cache for search results
     """
 
     def __init__(self, redis_client: Redis | None = None):
-        """
-        Initialize cache with Redis client
+        """Initialize cache with Redis client
 
         Args:
             redis_client: Existing Redis client or None to create new
@@ -53,8 +50,7 @@ class RedisSearchCache:
             await self.redis.close()
 
     def _make_cache_key(self, filters_hash: str, as_of: str, after_tuple: tuple | None = None) -> str:
-        """
-        Generate cache key for search results
+        """Generate cache key for search results
 
         Args:
             filters_hash: Hash of search filters
@@ -84,8 +80,7 @@ class RedisSearchCache:
         return ":".join(components)
 
     async def get(self, filters_hash: str, as_of: str, after_tuple: tuple | None = None) -> dict[str, Any] | None:
-        """
-        Get cached search results
+        """Get cached search results
 
         Args:
             filters_hash: Hash of search filters
@@ -130,8 +125,7 @@ class RedisSearchCache:
         value: dict[str, Any],
         ttl: int | None = None,
     ) -> bool:
-        """
-        Set cached search results
+        """Set cached search results
 
         Args:
             filters_hash: Hash of search filters
@@ -171,8 +165,7 @@ class RedisSearchCache:
             return False
 
     async def invalidate_all(self):
-        """
-        Invalidate all cached search results by incrementing epoch
+        """Invalidate all cached search results by incrementing epoch
         """
         if not self.enabled or not self.redis:
             return
@@ -189,8 +182,7 @@ class RedisSearchCache:
             logger.warning(f"Cache invalidation error: {e}")
 
     async def invalidate_pattern(self, pattern: str):
-        """
-        Invalidate cache keys matching a pattern
+        """Invalidate cache keys matching a pattern
 
         Args:
             pattern: Redis key pattern (e.g., "search:v1:*:FDA*")
@@ -219,8 +211,7 @@ class RedisSearchCache:
             logger.warning(f"Pattern invalidation error: {e}")
 
     async def get_stats(self) -> dict[str, Any]:
-        """
-        Get cache statistics
+        """Get cache statistics
 
         Returns:
             Dictionary with cache stats
@@ -273,8 +264,7 @@ _cache: RedisSearchCache | None = None
 
 
 async def get_cache() -> RedisSearchCache:
-    """
-    Get global cache instance
+    """Get global cache instance
     """
     global _cache
     if _cache is None:
@@ -284,8 +274,7 @@ async def get_cache() -> RedisSearchCache:
 
 
 async def close_cache():
-    """
-    Close global cache instance
+    """Close global cache instance
     """
     global _cache
     if _cache:

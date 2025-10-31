@@ -1,5 +1,4 @@
-"""
-Crown Safe - Hair Profile Management Endpoints
+"""Crown Safe - Hair Profile Management Endpoints
 Handles user hair profiles for personalized Crown Score calculations
 
 Endpoints:
@@ -62,7 +61,7 @@ class HairProfileCreate(BaseModel):
                 "preferred_brands": ["Shea Moisture", "Mielle"],
                 "avoided_ingredients": ["Mineral Oil", "Petrolatum"],
                 "climate": "dry",
-            }
+            },
         }
 
 
@@ -118,8 +117,7 @@ async def create_hair_profile(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    """
-    Create a new hair profile for the current user.
+    """Create a new hair profile for the current user.
 
     **Note**: Each user can only have one hair profile. Use PUT to update existing profile.
     """
@@ -180,8 +178,7 @@ async def get_hair_profile(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    """
-    Get hair profile for a specific user.
+    """Get hair profile for a specific user.
 
     Users can only access their own profile unless they have admin privileges.
     """
@@ -210,8 +207,7 @@ async def update_hair_profile(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    """
-    Update an existing hair profile.
+    """Update an existing hair profile.
 
     Only updates fields that are provided. Omitted fields remain unchanged.
     """
@@ -268,8 +264,7 @@ async def delete_hair_profile(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    """
-    Delete a hair profile (optional feature).
+    """Delete a hair profile (optional feature).
 
     This is typically used for account deletion or data privacy requests.
     """

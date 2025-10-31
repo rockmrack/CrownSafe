@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Simplified test script for core BabyShield features
+"""Simplified test script for core BabyShield features
 Tests only endpoints that don't require external dependencies
 """
 

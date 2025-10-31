@@ -110,8 +110,7 @@ data_unification = DataUnificationEngine()
 
 @risk_router.get("", response_model=dict)
 async def get_risk_assessment_info():
-    """
-    Get risk assessment service information and available endpoints
+    """Get risk assessment service information and available endpoints
     """
     return {
         "success": True,
@@ -135,8 +134,7 @@ async def get_risk_assessment_info():
 
 @risk_router.post("", response_model=dict)
 async def risk_assessment_root_post():
-    """
-    POST endpoint for root risk assessment path - redirects to proper endpoint
+    """POST endpoint for root risk assessment path - redirects to proper endpoint
     """
     return {
         "success": False,
@@ -158,8 +156,7 @@ async def assess_product_risk(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """
-    Perform comprehensive risk assessment for a product
+    """Perform comprehensive risk assessment for a product
 
     This endpoint:
     1. Searches for or creates a product golden record
@@ -323,8 +320,7 @@ async def assess_by_barcode(
     background_tasks: BackgroundTasks = None,
     db: Session = Depends(get_db),
 ):
-    """
-    Quick risk assessment by barcode scan
+    """Quick risk assessment by barcode scan
     Integrates with Phase 1 barcode scanner
     """
     try:
@@ -351,8 +347,7 @@ async def assess_by_image(
     background_tasks: BackgroundTasks = None,
     db: Session = Depends(get_db),
 ):
-    """
-    Risk assessment from product image
+    """Risk assessment from product image
     Integrates with Phase 2 visual agent
     """
     try:
@@ -398,8 +393,7 @@ async def get_risk_profile(
     include_history: bool = Query(False, description="Include historical risk scores"),
     db: Session = Depends(get_db),
 ):
-    """
-    Get detailed risk profile for a product
+    """Get detailed risk profile for a product
     """
     try:
         # Get product
@@ -462,8 +456,7 @@ async def get_report(
     format: str = Query("pdf", description="Report format: pdf, html, json"),
     db: Session = Depends(get_db),
 ):
-    """
-    Download risk assessment report
+    """Download risk assessment report
     """
     try:
         # Get report record
@@ -502,8 +495,7 @@ async def trigger_data_ingestion(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """
-    Trigger data ingestion from safety sources
+    """Trigger data ingestion from safety sources
     """
     try:
         # Create ingestion job
@@ -544,8 +536,7 @@ async def search_products(
     include_risk: bool = Query(True, description="Include risk scores"),
     db: Session = Depends(get_db),
 ):
-    """
-    Search products with risk information
+    """Search products with risk information
     """
     try:
         # Search products
@@ -593,8 +584,7 @@ async def search_products(
 
 @risk_router.get("/stats")
 async def get_risk_statistics(db: Session = Depends(get_db)):
-    """
-    Get system-wide risk statistics
+    """Get system-wide risk statistics
     """
     try:
         stats = {
@@ -630,7 +620,7 @@ async def get_risk_statistics(db: Session = Depends(get_db)):
                     "product_name": product.product_name,
                     "risk_score": profile.risk_score,
                     "risk_level": profile.risk_level,
-                }
+                },
             )
 
         # Data source statistics
@@ -651,8 +641,7 @@ async def get_risk_statistics(db: Session = Depends(get_db)):
 
 # Helper functions
 async def _find_or_create_product(request: RiskAssessmentRequest, db: Session) -> ProductGoldenRecord | None:
-    """
-    Find existing product or create new golden record
+    """Find existing product or create new golden record
     """
     # Try to find by identifiers
     if request.gtin:
@@ -668,7 +657,7 @@ async def _find_or_create_product(request: RiskAssessmentRequest, db: Session) -
     # Try to find by name and manufacturer
     if request.product_name:
         query = db.query(ProductGoldenRecord).filter(
-            ProductGoldenRecord.product_name.ilike(f"%{request.product_name}%")
+            ProductGoldenRecord.product_name.ilike(f"%{request.product_name}%"),
         )
 
         if request.manufacturer:
@@ -704,8 +693,7 @@ async def _find_or_create_product(request: RiskAssessmentRequest, db: Session) -
 
 
 async def enrich_product_data(product: ProductGoldenRecord, db: Session):
-    """
-    Enrich product data from commercial sources
+    """Enrich product data from commercial sources
     """
     try:
         commercial_connector = CommercialDatabaseConnector()
@@ -743,8 +731,7 @@ async def enrich_product_data(product: ProductGoldenRecord, db: Session):
 
 
 async def refresh_product_data(product_id: str, barcode: str | None = None):
-    """
-    Background task to refresh product data from all sources
+    """Background task to refresh product data from all sources
     """
     logger.info(f"Refreshing data for product {product_id}")
 
@@ -764,8 +751,7 @@ async def ingest_from_source(
     start_date: datetime | None,
     end_date: datetime | None,
 ):
-    """
-    Background task to ingest data from a specific source
+    """Background task to ingest data from a specific source
     """
     logger.info(f"Starting ingestion from {source} for job {job_id}")
 

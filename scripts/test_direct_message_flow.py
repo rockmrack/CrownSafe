@@ -36,9 +36,9 @@ async def test_router_directly():
                         "task_description": "Test task",
                         "inputs": {},
                         "dependencies": [],
-                    }
+                    },
                 ],
-            }
+            },
         },
     }
 

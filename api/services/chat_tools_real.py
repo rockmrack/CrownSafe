@@ -25,8 +25,7 @@ from api.services.evidence import label_to_evidence, recalls_to_evidence
 
 
 def pregnancy_adapter(scan: dict[str, Any]) -> dict[str, Any]:
-    """
-    Adapter for PregnancyProductSafetyAgent that converts between chat format and agent format.
+    """Adapter for PregnancyProductSafetyAgent that converts between chat format and agent format.
     """
     # Create typed input (reserved for future type validation)
     _ = PregnancyCheckIn(
@@ -56,7 +55,7 @@ def pregnancy_adapter(scan: dict[str, Any]) -> dict[str, Any]:
                         f"Contains {ingredient} which may pose pregnancy risks",
                     ),
                     severity=details.get("severity", "moderate"),
-                )
+                ),
             )
 
     # Check for specific flag-based risks
@@ -67,7 +66,7 @@ def pregnancy_adapter(scan: dict[str, Any]) -> dict[str, Any]:
                 code="soft_cheese_pasteurisation",
                 reason="Soft cheese may contain listeria unless pasteurised",
                 severity="moderate",
-            )
+            ),
         )
 
     out = PregnancyCheckOut(
@@ -81,8 +80,7 @@ def pregnancy_adapter(scan: dict[str, Any]) -> dict[str, Any]:
 
 
 def allergy_adapter(scan: dict[str, Any]) -> dict[str, Any]:
-    """
-    Adapter for AllergySensitivityAgent that converts between chat format and agent format.
+    """Adapter for AllergySensitivityAgent that converts between chat format and agent format.
     """
     profile = scan.get("profile") or {}
 
@@ -105,7 +103,7 @@ def allergy_adapter(scan: dict[str, Any]) -> dict[str, Any]:
                     allergen=match.get("allergen", ""),
                     present=bool(match.get("present", False)),
                     evidence=match.get("evidence", "ingredient_list"),
-                )
+                ),
             )
 
     out = AllergyCheckOut(hits=hits, summary=raw_result.get("summary") if raw_result else None)
@@ -114,8 +112,7 @@ def allergy_adapter(scan: dict[str, Any]) -> dict[str, Any]:
 
 
 def _check_pregnancy_safety_from_scan(agent: PregnancyProductSafetyAgent, scan: dict[str, Any]) -> dict[str, Any]:
-    """
-    Helper to check pregnancy safety based on scan data rather than UPC.
+    """Helper to check pregnancy safety based on scan data rather than UPC.
     This is a simplified adapter until we have full ingredient database integration.
     """
     try:
@@ -183,8 +180,7 @@ def _check_pregnancy_safety_from_scan(agent: PregnancyProductSafetyAgent, scan: 
 
 
 def _check_allergy_from_scan(scan: dict[str, Any], profile_allergies: list) -> dict[str, Any]:
-    """
-    Helper to check allergies based on scan data and profile.
+    """Helper to check allergies based on scan data and profile.
     This is a simplified adapter until we have full user profile integration.
     """
     try:
@@ -202,7 +198,7 @@ def _check_allergy_from_scan(scan: dict[str, Any], profile_allergies: list) -> d
                             "allergen": allergen,
                             "present": True,
                             "evidence": "ingredient_list",
-                        }
+                        },
                     )
 
         # Common allergen aliases
@@ -234,7 +230,7 @@ def _check_allergy_from_scan(scan: dict[str, Any], profile_allergies: list) -> d
                                     "allergen": allergen,
                                     "present": True,
                                     "evidence": f"contains_{alias}",
-                                }
+                                },
                             )
 
         # Remove duplicates
@@ -262,8 +258,7 @@ def _check_allergy_from_scan(scan: dict[str, Any], profile_allergies: list) -> d
 
 
 def recall_details_adapter(scan: dict[str, Any]) -> dict[str, Any]:
-    """
-    Adapter for recall lookups using the enhanced RecallDB.
+    """Adapter for recall lookups using the enhanced RecallDB.
     REMOVED FOR CROWN SAFE: Recall lookups no longer applicable (hair products, not baby recalls)
     """
     # Return empty recalls for backward compatibility
@@ -292,8 +287,7 @@ def recall_details_adapter(scan: dict[str, Any]) -> dict[str, Any]:
 
 
 def ingredient_info_adapter(scan: dict[str, Any]) -> dict[str, Any]:
-    """
-    Adapter for ingredient analysis. Uses simple highlighting rules for now.
+    """Adapter for ingredient analysis. Uses simple highlighting rules for now.
     """
     inp = IngredientInfoIn(
         ingredients=[str(x) for x in (scan.get("ingredients") or [])],
@@ -358,8 +352,7 @@ AGE_RULES = {
 
 
 def age_check_adapter(scan: dict[str, Any]) -> dict[str, Any]:
-    """
-    Adapter for age appropriateness checks using safety rules.
+    """Adapter for age appropriateness checks using safety rules.
     """
     inp = AgeCheckIn(
         category=scan.get("category"),
@@ -402,7 +395,6 @@ def age_check_adapter(scan: dict[str, Any]) -> dict[str, Any]:
 
 
 def alternatives_adapter(scan: dict[str, Any]) -> dict[str, Any]:
-    """
-    Adapter for alternatives provider that suggests safer product swaps.
+    """Adapter for alternatives provider that suggests safer product swaps.
     """
     return {"alternatives": get_alternatives(scan)}

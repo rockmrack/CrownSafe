@@ -1,5 +1,4 @@
-"""
-SAFETY REPORTS VERIFICATION
+"""SAFETY REPORTS VERIFICATION
 ============================
 
 Tests the "My Safety Reports" features from mobile app:
@@ -230,7 +229,7 @@ for hazard in hazard_types:
         db.query(EnhancedRecallDB)
         .filter(
             func.lower(EnhancedRecallDB.hazard).like(f"%{hazard}%")
-            | func.lower(EnhancedRecallDB.description).like(f"%{hazard}%")
+            | func.lower(EnhancedRecallDB.description).like(f"%{hazard}%"),
         )
         .count()
     )

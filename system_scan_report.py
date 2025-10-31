@@ -1,5 +1,4 @@
-"""
-Crown Safe System Scan Report
+"""Crown Safe System Scan Report
 Generated: October 24, 2025
 """
 

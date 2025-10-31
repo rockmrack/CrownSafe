@@ -1,5 +1,4 @@
-"""
-Image Processing Module for Visual Agent - Phase 2
+"""Image Processing Module for Visual Agent - Phase 2
 Handles OCR, barcode detection, label extraction with multiple providers
 """
 
@@ -134,8 +133,7 @@ class ExtractionResult:
 
 
 class ImageAnalysisService:
-    """
-    Unified image analysis service with multi-provider support
+    """Unified image analysis service with multi-provider support
     Implements abstraction layer for easy provider switching
     """
 
@@ -145,8 +143,7 @@ class ImageAnalysisService:
         aws_region: str = "us-east-1",
         enable_caching: bool = True,
     ):
-        """
-        Initialize image analysis service
+        """Initialize image analysis service
 
         Args:
             google_credentials_path: Path to Google Cloud credentials JSON
@@ -232,8 +229,7 @@ class ImageAnalysisService:
         providers: list[Provider] = None,
         extract_all: bool = True,
     ) -> ExtractionResult:
-        """
-        Analyze image with specified providers
+        """Analyze image with specified providers
 
         Args:
             image_data: Image bytes
@@ -331,7 +327,7 @@ class ImageAnalysisService:
                             "lot": result.lot_number,
                             "serial": result.serial_number,
                             "confidence": result.confidence,
-                        }
+                        },
                     )
 
             return barcodes
@@ -387,7 +383,7 @@ class ImageAnalysisService:
                     {
                         "text": text.description,
                         "vertices": [(v.x, v.y) for v in text.bounding_poly.vertices],
-                    }
+                    },
                 )
 
             processing_time = int((datetime.now() - start_time).total_seconds() * 1000)
@@ -545,7 +541,7 @@ class ImageAnalysisService:
                 bool(result.brand),
                 bool(result.model_number),
                 bool(result.upc or result.barcodes),
-            ]
+            ],
         )
         completeness = fields_extracted / 4
         scores.append(completeness)
@@ -607,8 +603,7 @@ class ImageAnalysisService:
         pass
 
     def detect_visual_defects(self, pil_image: Image) -> list[dict[str, Any]]:
-        """
-        Detect visual defects using OpenCV computer vision
+        """Detect visual defects using OpenCV computer vision
 
         Args:
             pil_image: PIL Image object
@@ -677,7 +672,7 @@ class ImageAnalysisService:
                                 "severity": "high" if area > 1000 else "medium",
                                 "confidence": min(0.95, 0.3 + (area / 5000)),  # Confidence based on area
                                 "area_pixels": int(area),
-                            }
+                            },
                         )
 
             # 2. Detect missing parts using template matching or color analysis
@@ -711,7 +706,7 @@ class ImageAnalysisService:
                                 "severity": "high",
                                 "confidence": min(0.90, 0.4 + circularity * 0.5),
                                 "area_pixels": int(area),
-                            }
+                            },
                         )
 
             # 3. Detect color anomalies that might indicate damage
@@ -749,7 +744,7 @@ class ImageAnalysisService:
                             "severity": "medium",
                             "confidence": min(0.75, 0.3 + (area / 2000)),
                             "area_pixels": int(area),
-                        }
+                        },
                     )
 
             logger.info(f"Detected {len(defects)} visual defects")

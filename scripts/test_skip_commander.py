@@ -30,9 +30,9 @@ plan_msg = {
                     "task_description": "Test task",
                     "inputs": {},
                     "dependencies": [],
-                }
+                },
             ],
-        }
+        },
     },
 }
 

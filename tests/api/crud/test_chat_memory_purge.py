@@ -172,7 +172,7 @@ def test_mark_erase_requested_existing_profile(db_session):
 
     # Create existing profile
     existing_profile = UserProfileModel(
-        user_id=user_id, consent_personalization=True, allergies=json.dumps(["peanuts"])
+        user_id=user_id, consent_personalization=True, allergies=json.dumps(["peanuts"]),
     )
     db_session.add(existing_profile)
     db_session.commit()

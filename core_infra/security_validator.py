@@ -1,5 +1,4 @@
-"""
-Enterprise Security Validator
+"""Enterprise Security Validator
 Validates security configuration and best practices across the application
 """
 
@@ -12,8 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class SecurityConfigValidator:
-    """
-    Validates security configuration against enterprise best practices
+    """Validates security configuration against enterprise best practices
     """
 
     def __init__(self):
@@ -22,8 +20,7 @@ class SecurityConfigValidator:
         self.passed_checks: list[str] = []
 
     def validate_environment_variables(self) -> dict[str, Any]:
-        """
-        Validate critical environment variables are properly configured
+        """Validate critical environment variables are properly configured
 
         Returns:
             Dict with validation results
@@ -122,14 +119,13 @@ class SecurityConfigValidator:
                     "Rotate secrets every 90 days",
                     "Never commit secrets to git",
                     "Use managed identity where possible",
-                ]
+                ],
             )
 
         return results
 
     def validate_cors_configuration(self) -> dict[str, Any]:
-        """
-        Validate CORS configuration for security
+        """Validate CORS configuration for security
 
         Returns:
             Dict with CORS validation results
@@ -162,8 +158,7 @@ class SecurityConfigValidator:
         return results
 
     def validate_ssl_tls_configuration(self) -> dict[str, Any]:
-        """
-        Validate SSL/TLS configuration
+        """Validate SSL/TLS configuration
 
         Returns:
             Dict with SSL/TLS validation results
@@ -207,8 +202,7 @@ class SecurityConfigValidator:
         return results
 
     def validate_rate_limiting(self) -> dict[str, Any]:
-        """
-        Validate rate limiting configuration
+        """Validate rate limiting configuration
 
         Returns:
             Dict with rate limiting validation results
@@ -244,8 +238,7 @@ class SecurityConfigValidator:
         return results
 
     def validate_logging_configuration(self) -> dict[str, Any]:
-        """
-        Validate logging configuration for security events
+        """Validate logging configuration for security events
 
         Returns:
             Dict with logging validation results
@@ -287,8 +280,7 @@ class SecurityConfigValidator:
         return results
 
     def comprehensive_security_audit(self) -> dict[str, Any]:
-        """
-        Run comprehensive security audit
+        """Run comprehensive security audit
 
         Returns:
             Dict with complete audit results

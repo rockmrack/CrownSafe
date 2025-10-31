@@ -68,7 +68,7 @@ def before_sleep_log(retry_state: RetryCallState):
     logger_to_use = instance_self.logger if instance_self and hasattr(instance_self, "logger") else module_logger
     logger_to_use.warning(
         f"MCPClient ({agent_id_str}): Connection attempt {retry_state.attempt_number}/{max_attempts_for_log} failed. "
-        f"Retrying in {wait_time_for_log:.2f}s. Error: {retry_state.outcome.exception() if retry_state.outcome else 'N/A'}"  # noqa: E501
+        f"Retrying in {wait_time_for_log:.2f}s. Error: {retry_state.outcome.exception() if retry_state.outcome else 'N/A'}",  # noqa: E501
     )
 
 
@@ -112,10 +112,10 @@ class MCPClient:
         self._stop_requested = asyncio.Event()
         self.logger = logging.getLogger(f"MCPClient.{self.agent_id}")
         self.logger.critical(
-            f"MCPClient INSTANCE LOADED (Post-Claude-Review-ClientPy-LogLevel). Agent: {self.agent_id}"
+            f"MCPClient INSTANCE LOADED (Post-Claude-Review-ClientPy-LogLevel). Agent: {self.agent_id}",
         )  # Updated version marker
         self.logger.info(
-            f"MCPClient initialized for agent '{self.agent_name}' (ID: {self.agent_id}, Type: {self.agent_type}) connecting to {self.ws_url}"  # noqa: E501
+            f"MCPClient initialized for agent '{self.agent_name}' (ID: {self.agent_id}, Type: {self.agent_type}) connecting to {self.ws_url}",  # noqa: E501
         )
 
     def is_websocket_open(self) -> bool:
@@ -145,7 +145,7 @@ class MCPClient:
     # The before_sleep_log function now tries to access instance attributes for logging.
     @retry(
         stop=stop_after_attempt(
-            DEFAULT_MAX_CONNECT_ATTEMPTS
+            DEFAULT_MAX_CONNECT_ATTEMPTS,
         ),  # Uses default, not instance specific max_connect_attempts
         wait=wait_fixed(DEFAULT_RECONNECT_DELAY),  # Uses default, not instance specific reconnect_delay
         retry=retry_if_exception_type(
@@ -154,7 +154,7 @@ class MCPClient:
                 ConnectionRefusedError,
                 WebSocketException,
                 WebsocketsInvalidStatus,
-            )
+            ),
         ),
         before_sleep=before_sleep_log,
     )
@@ -186,7 +186,7 @@ class MCPClient:
             else:
                 ws_state_str = str(getattr(self.websocket, "state", "N/A")) if self.websocket else "None"
                 self.logger.error(
-                    f"connect() for {self.agent_id} completed but WebSocket not OPEN. State: {ws_state_str}"
+                    f"connect() for {self.agent_id} completed but WebSocket not OPEN. State: {ws_state_str}",
                 )
                 if self.websocket:
                     await self.websocket.close()
@@ -197,7 +197,7 @@ class MCPClient:
             self._is_connected = False
             self.websocket = None
             self.logger.error(
-                f"Connection attempt to {self.ws_url} for {self.agent_id} timed out after {connect_timeout}s."
+                f"Connection attempt to {self.ws_url} for {self.agent_id} timed out after {connect_timeout}s.",
             )
             raise MCPConnectionError(f"Connection attempt timed out for {self.agent_id}")
         except (
@@ -216,7 +216,7 @@ class MCPClient:
                 raise MCPConnectionError(f"Connection refused: {self.ws_url}") from e
             elif isinstance(e, WebsocketsInvalidStatus):
                 self.logger.error(
-                    f"Server rejected WebSocket for {self.agent_id}: {e.status_code} {e.reason if hasattr(e, 'reason') else 'N/A'}"  # noqa: E501
+                    f"Server rejected WebSocket for {self.agent_id}: {e.status_code} {e.reason if hasattr(e, 'reason') else 'N/A'}",  # noqa: E501
                 )
                 raise MCPConnectionError(f"Server rejected WebSocket connection: {e.status_code}") from e
             elif isinstance(e, WebSocketException):
@@ -306,7 +306,7 @@ class MCPClient:
                 self.logger.debug("Sent PING successfully.")
             else:
                 self.logger.info(
-                    f"Sent message Type='{message.mcp_header.message_type}', Target='{target_agent_id or target_service}', CorrID='{message.mcp_header.correlation_id}' from {self.agent_id}"  # noqa: E501
+                    f"Sent message Type='{message.mcp_header.message_type}', Target='{target_agent_id or target_service}', CorrID='{message.mcp_header.correlation_id}' from {self.agent_id}",  # noqa: E501
                 )
         except WebSocketException as e:
             self.logger.error(f"WebSocket error during send ({self.agent_id}): {e}", exc_info=True)
@@ -321,7 +321,7 @@ class MCPClient:
 
     async def register_self(self):
         self.logger.info(
-            f"Registering {self.agent_id} (Type: {self.agent_type}) with capabilities: {self.capabilities}"
+            f"Registering {self.agent_id} (Type: {self.agent_type}) with capabilities: {self.capabilities}",
         )
         payload = {
             "agent_id": self.agent_id,
@@ -356,7 +356,7 @@ class MCPClient:
             "query_by_capability_list": capabilities_to_query,
         }
         self.logger.info(
-            f"Sending discovery query (CorrID: {correlation_id_for_query}) for {capabilities_to_query} from {self.agent_id}"  # noqa: E501
+            f"Sending discovery query (CorrID: {correlation_id_for_query}) for {capabilities_to_query} from {self.agent_id}",  # noqa: E501
         )
         try:
             await self.send_message(
@@ -395,35 +395,35 @@ class MCPClient:
                     msg_type_for_log = message_data.get("mcp_header", {}).get("message_type", "UNKNOWN_TYPE")
                     corr_id_for_log = message_data.get("mcp_header", {}).get("correlation_id", "NO_CORR_ID")
                     self.logger.info(
-                        f"CLIENT_RECV_JSON_SUCCESS ({self.agent_id}): JSON loaded. Type='{msg_type_for_log}', CorrID='{corr_id_for_log}'"  # noqa: E501
+                        f"CLIENT_RECV_JSON_SUCCESS ({self.agent_id}): JSON loaded. Type='{msg_type_for_log}', CorrID='{corr_id_for_log}'",  # noqa: E501
                     )
 
                     self.logger.debug(
-                        f"CLIENT_RECV_PYDANTIC_VALIDATE_ATTEMPT ({self.agent_id}): Attempting MCPMessage.model_validate..."  # noqa: E501
+                        f"CLIENT_RECV_PYDANTIC_VALIDATE_ATTEMPT ({self.agent_id}): Attempting MCPMessage.model_validate...",  # noqa: E501
                     )
                     validated_message = MCPMessage.model_validate(message_data)
                     self.logger.info(
-                        f"CLIENT_RECV_PYDANTIC_SUCCESS ({self.agent_id}): MCPMessage validated. Type='{validated_message.mcp_header.message_type}', CorrID='{validated_message.mcp_header.correlation_id}'"  # noqa: E501
+                        f"CLIENT_RECV_PYDANTIC_SUCCESS ({self.agent_id}): MCPMessage validated. Type='{validated_message.mcp_header.message_type}', CorrID='{validated_message.mcp_header.correlation_id}'",  # noqa: E501
                     )
 
                     if self.message_handler:
                         self.logger.debug(
-                            f"CLIENT_RECV_INVOKE_HANDLER ({self.agent_id}): Invoking handler for Type='{validated_message.mcp_header.message_type}'..."  # noqa: E501
+                            f"CLIENT_RECV_INVOKE_HANDLER ({self.agent_id}): Invoking handler for Type='{validated_message.mcp_header.message_type}'...",  # noqa: E501
                         )
                         if asyncio.iscoroutinefunction(self.message_handler):
                             asyncio.create_task(self.message_handler(validated_message))
                         else:
                             self.logger.warning(
-                                f"Message handler for {self.agent_id} is synchronous. Consider making it async."
+                                f"Message handler for {self.agent_id} is synchronous. Consider making it async.",
                             )
                             self.message_handler(validated_message)
                     else:
                         self.logger.error(
-                            f"No message handler configured for {self.agent_id} to handle Type='{validated_message.mcp_header.message_type if validated_message else 'N/A'}'."  # noqa: E501
+                            f"No message handler configured for {self.agent_id} to handle Type='{validated_message.mcp_header.message_type if validated_message else 'N/A'}'.",  # noqa: E501
                         )
                 except json.JSONDecodeError as json_err:
                     self.logger.error(
-                        f"CLIENT_RECV_JSON_FAIL ({self.agent_id}): {json_err}. Raw: {str(message_text)[:300]}"
+                        f"CLIENT_RECV_JSON_FAIL ({self.agent_id}): {json_err}. Raw: {str(message_text)[:300]}",
                     )
                 except Exception as validation_or_handler_err:
                     self.logger.error(
@@ -460,7 +460,7 @@ class MCPClient:
                 self._is_connected = False
                 break
         self.logger.info(
-            f"Receive loop ended for {self.agent_id}. Stop: {self._stop_requested.is_set()}, Connected: {self._is_connected}"  # noqa: E501
+            f"Receive loop ended for {self.agent_id}. Stop: {self._stop_requested.is_set()}, Connected: {self._is_connected}",  # noqa: E501
         )
         if not self._stop_requested.is_set() and not self._is_connected:
             self.logger.error(f"Connection lost unexpectedly for {self.agent_id}.")
@@ -494,7 +494,7 @@ class MCPClient:
                 break
             except (MCPConnectionError, MCPError) as e:
                 self.logger.error(
-                    f"Heartbeat send error for {self.agent_id}: {e}. Connection lost?. Stopping heartbeat."
+                    f"Heartbeat send error for {self.agent_id}: {e}. Connection lost?. Stopping heartbeat.",
                 )
                 self._is_connected = False
                 break

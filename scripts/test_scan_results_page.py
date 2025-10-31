@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test the new scan results page implementation
+"""Test the new scan results page implementation
 Verifies legally defensible language and proper formatting
 """
 
@@ -19,7 +18,6 @@ from api.models.scan_results import (
 
 def test_scan_results_page():
     """Test the scan results page generation"""
-
     print("Testing Scan Results Page Implementation...")
     print("=" * 60)
 

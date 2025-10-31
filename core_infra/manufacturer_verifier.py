@@ -1,5 +1,4 @@
-"""
-Manufacturer verifier interface and a mock implementation.
+"""Manufacturer verifier interface and a mock implementation.
 
 The verifier takes unit-level identifiers (gtin, lot, serial, expiry) and
 returns a structured verification result. Real OEM connectors can implement
@@ -40,8 +39,7 @@ class ManufacturerVerifier:
 
 
 class MockManufacturerVerifier(ManufacturerVerifier):
-    """
-    Simple rules for demo/testing:
+    """Simple rules for demo/testing:
     - If serial present and endswith an even digit: verified
     - If serial present and endswith an odd digit: invalid
     - If no serial but lot present: unknown (needs OEM)

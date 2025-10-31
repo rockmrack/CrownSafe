@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Main entry point for BabyShield API
+"""Main entry point for BabyShield API
 This file ensures the correct app is loaded regardless of how it's called
 """
 

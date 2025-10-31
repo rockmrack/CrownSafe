@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-BabyShield Recalls Data Ingestion Script
+"""BabyShield Recalls Data Ingestion Script
 
 This script:
 1. Runs Alembic migration to create recalls_enhanced table if needed
@@ -81,8 +80,8 @@ class RecallDataIngester:
                         SELECT FROM information_schema.tables 
                         WHERE table_name = 'recalls_enhanced'
                     );
-                """
-                    )
+                """,
+                    ),
                 )
                 return result.scalar()
         except Exception as e:
@@ -137,7 +136,7 @@ class RecallDataIngester:
                         getattr(recall_data, "description", ""),
                         getattr(recall_data, "hazard", ""),
                     ],
-                )
+                ),
             )
 
             # Create database record
@@ -209,7 +208,7 @@ class RecallDataIngester:
                     processed_count = counts["inserted"] + counts["updated"]
                     _ = counts["failed"]  # failed_count (reserved for logging)
                     logger.info(
-                        f"📊 {agency_name}: {counts['inserted']} inserted, {counts['updated']} updated, {counts['failed']} failed"  # noqa: E501
+                        f"📊 {agency_name}: {counts['inserted']} inserted, {counts['updated']} updated, {counts['failed']} failed",  # noqa: E501
                     )
 
         except Exception as e:

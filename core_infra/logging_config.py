@@ -1,5 +1,4 @@
-"""
-Structured logging configuration for BabyShield
+"""Structured logging configuration for BabyShield
 Provides consistent logging across the application
 """
 
@@ -93,15 +92,13 @@ def setup_logging(
     log_format: str = "console",
     log_file: str = None,  # "console" or "json"
 ) -> None:
-    """
-    Setup logging configuration for the application
+    """Setup logging configuration for the application
 
     Args:
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         log_format: Format for logs ("console" for development, "json" for production)
         log_file: Optional file path for log output
     """
-
     # Get log level from environment or parameter
     if log_level is None:
         log_level = os.getenv("LOG_LEVEL", "INFO")
@@ -121,7 +118,7 @@ def setup_logging(
                 "level": log_level,
                 "formatter": "console" if log_format == "console" else "json",
                 "stream": "ext://sys.stdout",
-            }
+            },
         },
         "loggers": {
             # Application loggers
@@ -172,8 +169,7 @@ def setup_logging(
 
 
 def get_logger(name: str) -> logging.Logger:
-    """
-    Get a logger instance with the given name
+    """Get a logger instance with the given name
 
     Args:
         name: Logger name (typically __name__)

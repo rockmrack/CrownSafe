@@ -1,5 +1,4 @@
-"""
-Azure Blob Storage Health Check and Monitoring
+"""Azure Blob Storage Health Check and Monitoring
 Enterprise-grade health checks for Azure Blob Storage connectivity and performance
 """
 
@@ -16,8 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class AzureStorageHealthCheck:
-    """
-    Comprehensive health check for Azure Blob Storage
+    """Comprehensive health check for Azure Blob Storage
     Monitors connectivity, performance, and storage capacity
     """
 
@@ -27,8 +25,7 @@ class AzureStorageHealthCheck:
         performance_threshold_ms: float = 5000.0,
         storage_threshold_percent: float = 80.0,
     ):
-        """
-        Initialize health check monitor
+        """Initialize health check monitor
 
         Args:
             storage_client: Azure Blob Storage client instance
@@ -46,8 +43,7 @@ class AzureStorageHealthCheck:
         self.successful_checks = 0
 
     async def check_connectivity(self) -> dict[str, Any]:
-        """
-        Check basic Azure Blob Storage connectivity
+        """Check basic Azure Blob Storage connectivity
 
         Returns:
             Dict with connectivity status and details
@@ -85,8 +81,7 @@ class AzureStorageHealthCheck:
             }
 
     async def check_performance(self) -> dict[str, Any]:
-        """
-        Check Azure Blob Storage performance
+        """Check Azure Blob Storage performance
 
         Returns:
             Dict with performance metrics
@@ -121,8 +116,7 @@ class AzureStorageHealthCheck:
         return metrics
 
     async def check_storage_capacity(self) -> dict[str, Any]:
-        """
-        Check Azure Blob Storage capacity and usage
+        """Check Azure Blob Storage capacity and usage
 
         Note: Requires Azure Storage Account metrics API access
         This is a placeholder for future implementation
@@ -138,8 +132,7 @@ class AzureStorageHealthCheck:
         }
 
     async def comprehensive_health_check(self) -> dict[str, Any]:
-        """
-        Run comprehensive health check with all tests
+        """Run comprehensive health check with all tests
 
         Returns:
             Dict with complete health status
@@ -189,8 +182,7 @@ class AzureStorageHealthCheck:
 
 
 class AzureStorageMetrics:
-    """
-    Collect and track Azure Blob Storage metrics
+    """Collect and track Azure Blob Storage metrics
     """
 
     def __init__(self):
@@ -240,8 +232,7 @@ class AzureStorageMetrics:
         self.error_count += 1
 
     def get_metrics(self) -> dict[str, Any]:
-        """
-        Get current metrics
+        """Get current metrics
 
         Returns:
             Dict with all collected metrics

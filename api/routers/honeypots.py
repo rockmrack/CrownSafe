@@ -1,5 +1,4 @@
-"""
-Honeypot Endpoints for BabyShield Security
+"""Honeypot Endpoints for BabyShield Security
 Trap attackers and gather intelligence on attack patterns
 """
 
@@ -34,7 +33,7 @@ def record_honeypot_hit(request: Request, honeypot_type: str):
         attack_intelligence["patterns"].append(honeypot_type)
 
     logger.warning(
-        f"🕳️ HONEYPOT HIT: {honeypot_type} from {client_ip} (hit #{honeypot_hits[client_ip]}) UA: {user_agent}"
+        f"🕳️ HONEYPOT HIT: {honeypot_type} from {client_ip} (hit #{honeypot_hits[client_ip]}) UA: {user_agent}",
     )
 
     # Auto-block after multiple hits
@@ -71,7 +70,7 @@ def create_convincing_response(honeypot_type: str) -> JSONResponse:
                 "size": "1.2GB",
                 "tables": ["users", "products", "scans"],
                 "download_url": "/admin/download/backup.sql",
-            }
+            },
         },
         "git_config": {
             "core": {
@@ -83,7 +82,7 @@ def create_convincing_response(honeypot_type: str) -> JSONResponse:
                 "origin": {
                     "url": "https://github.com/babyshield/honeypot-repo.git",
                     "fetch": "+refs/heads/*:refs/remotes/origin/*",
-                }
+                },
             },
         },
     }

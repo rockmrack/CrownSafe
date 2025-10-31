@@ -1,5 +1,4 @@
-"""
-SQLAlchemy model for unit-level serial/lot verification records
+"""SQLAlchemy model for unit-level serial/lot verification records
 """
 
 from datetime import datetime
@@ -19,8 +18,7 @@ from core_infra.database import Base
 
 
 class SerialVerification(Base):
-    """
-    Stores results of unit-level authenticity/traceability checks.
+    """Stores results of unit-level authenticity/traceability checks.
 
     A record is created when we parse GS1 data (GTIN, lot, serial, expiry)
     and attempt verification via a manufacturer or registry connector.

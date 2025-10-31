@@ -3,8 +3,7 @@
 # api/crown_safe_endpoints.py
 # Crown Safe - Hair Product Safety Analysis Endpoints
 
-"""
-Crown Safe API Endpoints
+"""Crown Safe API Endpoints
 
 This module provides hair product safety analysis using the Crown Score algorithm.
 Replaces baby product recall checking with personalized hair ingredient analysis
@@ -35,7 +34,7 @@ class ProductAnalysisRequest(BaseModel):
 
     user_id: int = Field(..., description="User ID for personalized analysis", example=1)
     product_name: str = Field(
-        ..., description="Name of the hair product", example="Shea Moisture Curl Enhancing Smoothie"
+        ..., description="Name of the hair product", example="Shea Moisture Curl Enhancing Smoothie",
     )
     ingredients: list[str] = Field(
         ...,
@@ -67,7 +66,7 @@ class HairProfileRequest(BaseModel):
     hair_type: str = Field(..., description="Hair curl pattern", example="4C")
     porosity: str = Field(..., description="Hair porosity level", example="High")
     hair_state: dict | None = Field(
-        None, description="Current hair state", example={"dryness": True, "breakage": False, "shedding": False}
+        None, description="Current hair state", example={"dryness": True, "breakage": False, "shedding": False},
     )
     hair_goals: dict | None = Field(
         None,
@@ -75,7 +74,7 @@ class HairProfileRequest(BaseModel):
         example={"moisture_retention": True, "length_retention": True, "curl_definition": True},
     )
     sensitivities: dict | None = Field(
-        None, description="Known ingredient sensitivities", example={"fragrance": True, "sulfates": True}
+        None, description="Known ingredient sensitivities", example={"fragrance": True, "sulfates": True},
     )
 
 
@@ -102,8 +101,7 @@ class ScanHistoryResponse(BaseModel):
 
 
 async def analyze_product_endpoint(req: ProductAnalysisRequest, db: Session) -> ProductAnalysisResponse:
-    """
-    Analyze a hair product and return personalized Crown Score.
+    """Analyze a hair product and return personalized Crown Score.
 
     This endpoint:
     1. Retrieves user's hair profile
@@ -125,7 +123,7 @@ async def analyze_product_endpoint(req: ProductAnalysisRequest, db: Session) -> 
     start_time = datetime.now()
     logger.info(
         f"Crown Safe product analysis for user_id={req.user_id}, "
-        f"product={req.product_name}, ingredients_count={len(req.ingredients)}"
+        f"product={req.product_name}, ingredients_count={len(req.ingredients)}",
     )
 
     try:
@@ -142,13 +140,13 @@ async def analyze_product_endpoint(req: ProductAnalysisRequest, db: Session) -> 
         hair_profile = get_user_hair_profile(req.user_id)
         if not hair_profile:
             raise HTTPException(
-                status_code=400, detail="Please create a hair profile first. Use POST /api/v1/profile/hair"
+                status_code=400, detail="Please create a hair profile first. Use POST /api/v1/profile/hair",
             )
 
         # 3. Analyze product with Ingredient Analysis Agent
         agent = IngredientAnalysisAgent()
         result = await agent.analyze_product(
-            product_name=req.product_name, ingredients=req.ingredients, hair_profile=hair_profile
+            product_name=req.product_name, ingredients=req.ingredients, hair_profile=hair_profile,
         )
 
         # 4. Save scan to database
@@ -171,7 +169,7 @@ async def analyze_product_endpoint(req: ProductAnalysisRequest, db: Session) -> 
         elapsed_ms = (datetime.now() - start_time).total_seconds() * 1000
         logger.info(
             f"Crown Safe analysis completed in {elapsed_ms:.2f}ms: "
-            f"score={result['crown_score']}, verdict={result['verdict']}"
+            f"score={result['crown_score']}, verdict={result['verdict']}",
         )
 
         return ProductAnalysisResponse(
@@ -202,8 +200,7 @@ async def analyze_product_endpoint(req: ProductAnalysisRequest, db: Session) -> 
 
 
 async def create_hair_profile_endpoint(req: HairProfileRequest, db: Session) -> HairProfileResponse:
-    """
-    Create or update a user's hair profile.
+    """Create or update a user's hair profile.
 
     Hair profiles enable personalized Crown Score calculations based on:
     - Hair type (3C, 4A, 4B, 4C, Mixed)
@@ -267,8 +264,7 @@ async def create_hair_profile_endpoint(req: HairProfileRequest, db: Session) -> 
 
 
 async def get_hair_profile_endpoint(user_id: int, db: Session) -> HairProfileResponse:
-    """
-    Get a user's hair profile.
+    """Get a user's hair profile.
 
     Args:
         user_id: User ID
@@ -292,7 +288,7 @@ async def get_hair_profile_endpoint(user_id: int, db: Session) -> HairProfileRes
         profile = get_user_hair_profile(user_id)
         if not profile:
             raise HTTPException(
-                status_code=404, detail="Hair profile not found. Create one with POST /api/v1/profile/hair"
+                status_code=404, detail="Hair profile not found. Create one with POST /api/v1/profile/hair",
             )
 
         # 3. Return response
@@ -320,8 +316,7 @@ async def get_hair_profile_endpoint(user_id: int, db: Session) -> HairProfileRes
 
 
 async def get_scan_history_endpoint(user_id: int, limit: int = 50, db: Session = None) -> ScanHistoryResponse:
-    """
-    Get user's product scan history.
+    """Get user's product scan history.
 
     Args:
         user_id: User ID
@@ -363,7 +358,7 @@ async def get_scan_history_endpoint(user_id: int, limit: int = 50, db: Session =
                     "scan_date": scan.scan_date.isoformat(),
                     "ingredients_count": len(scan.ingredients_scanned) if scan.ingredients_scanned else 0,
                     "alternatives_count": len(scan.alternatives) if scan.alternatives else 0,
-                }
+                },
             )
 
         return ScanHistoryResponse(status="COMPLETED", scans=scan_list, total_scans=len(scan_list), error=None)

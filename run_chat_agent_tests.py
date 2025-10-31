@@ -1,5 +1,4 @@
-"""
-Quick Chat Agent Test Runner
+"""Quick Chat Agent Test Runner
 Runs essential tests for ChatAgent without Unicode issues
 """
 

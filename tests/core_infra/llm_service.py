@@ -285,7 +285,7 @@ class MockLLMProvider:
                 '"patient_id": "patient-001"' in message_text,
                 '"patient_id":"patient-001"' in message_text,
                 "PA_patient-001" in message_text,
-            ]
+            ],
         )
 
         is_patient_002 = any(
@@ -295,7 +295,7 @@ class MockLLMProvider:
                 '"patient_id": "patient-002"' in message_text,
                 '"patient_id":"patient-002"' in message_text,
                 "PA_patient-002" in message_text,
-            ]
+            ],
         )
 
         is_patient_003 = any(
@@ -305,7 +305,7 @@ class MockLLMProvider:
                 '"patient_id": "patient-003"' in message_text,
                 '"patient_id":"patient-003"' in message_text,
                 "PA_patient-003" in message_text,
-            ]
+            ],
         )
 
         # Extract score if present
@@ -417,7 +417,7 @@ class MockLLMProvider:
 
         # Log what we're returning
         logger.debug(
-            f"MockLLMProvider returning: {template['decision_prediction']} with {template['approval_likelihood_percent']}% likelihood"  # noqa: E501
+            f"MockLLMProvider returning: {template['decision_prediction']} with {template['approval_likelihood_percent']}% likelihood",  # noqa: E501
         )
 
         # Simulate processing time

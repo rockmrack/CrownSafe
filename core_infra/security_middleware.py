@@ -1,5 +1,4 @@
-"""
-Security middleware for BabyShield
+"""Security middleware for BabyShield
 Adds security headers and protections
 """
 
@@ -11,8 +10,7 @@ from fastapi.responses import Response
 
 
 class SecurityHeadersMiddleware:
-    """
-    Add security headers to all responses
+    """Add security headers to all responses
     """
 
     def __init__(self, app, strict_mode: bool = True):
@@ -80,8 +78,7 @@ class SecurityHeadersMiddleware:
 
 
 class CORSSecurityMiddleware:
-    """
-    Secure CORS configuration
+    """Secure CORS configuration
     """
 
     def __init__(self, app, allowed_origins: list = None):
@@ -107,8 +104,7 @@ class CORSSecurityMiddleware:
 
 
 def add_security_headers(app):
-    """
-    Add all security middleware to app
+    """Add all security middleware to app
     """
     import os
 

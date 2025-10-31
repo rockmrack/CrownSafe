@@ -39,7 +39,7 @@ MOCK_NHTSA_RESPONSE = {
             "Summary": "Child seat base separation risk",
             "DefectSummary": "Base attachment mechanism defective",
         },
-    ]
+    ],
 }
 # --------------------------
 

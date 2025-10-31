@@ -1,5 +1,4 @@
-"""
-Authentication Endpoints for BabyShield API
+"""Authentication Endpoints for BabyShield API
 JWT-based authentication system
 """
 
@@ -59,8 +58,7 @@ async def register(
     user_data: UserRegister,
     db: Session = Depends(get_db),  # noqa: B008
 ):
-    """
-    Register a new user
+    """Register a new user
     Limited to 5 registrations per hour per IP
     """
     # Validate passwords match
@@ -111,8 +109,7 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),  # noqa: B008
     db: Session = Depends(get_db),  # noqa: B008
 ):
-    """
-    Login endpoint - returns JWT tokens
+    """Login endpoint - returns JWT tokens
     Accepts form-urlencoded data (application/x-www-form-urlencoded)
     Username field should contain email
 
@@ -177,8 +174,7 @@ async def login(
 
 @router.post("/refresh", response_model=Token)
 async def refresh_token(request: Request, db: Session = Depends(get_db)):  # noqa: B008
-    """
-    Refresh access token using refresh token
+    """Refresh access token using refresh token
     """
     try:
         # Extract refresh_token from JSON body
@@ -226,8 +222,7 @@ async def refresh_token(request: Request, db: Session = Depends(get_db)):  # noq
 async def get_current_user_profile(
     current_user: User = Depends(get_current_active_user),  # noqa: B008
 ):
-    """
-    Get current user profile
+    """Get current user profile
     Requires authentication
     """
     return UserResponse(
@@ -244,8 +239,7 @@ async def update_profile(
     current_user: User = Depends(get_current_active_user),  # noqa: B008
     db: Session = Depends(get_db),  # noqa: B008
 ):
-    """
-    Update current user profile
+    """Update current user profile
     Requires authentication
     """
     # Only allow certain fields to be updated
@@ -279,8 +273,7 @@ async def update_profile(
 
 @router.post("/logout")
 async def logout(current_user: User = Depends(get_current_active_user)):  # noqa: B008
-    """
-    Logout endpoint
+    """Logout endpoint
     In a production system, you might want to blacklist the token
     """
     # In a real implementation, you might want to:
@@ -307,8 +300,7 @@ async def verify_token(
     code: str | None = Query(None, description="Verification code from email"),
     current_user: User | None = Depends(get_current_user),  # noqa: B008
 ):
-    """
-    Verify email or token
+    """Verify email or token
     - If code provided: verify email verification code
     - If no code: verify current token (requires auth)
     """

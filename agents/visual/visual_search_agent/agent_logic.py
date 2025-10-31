@@ -18,8 +18,7 @@ def _is_azure_blob_url(url: str) -> bool:
 
 
 async def _fetch_image_bytes(image_url: str) -> tuple[bytes, str]:
-    """
-    Validate and download image. Returns (bytes, content_type).
+    """Validate and download image. Returns (bytes, content_type).
     Raises ValueError on 4xx/5xx or non-image content.
     """
     import httpx
@@ -55,8 +54,7 @@ async def _fetch_image_bytes(image_url: str) -> tuple[bytes, str]:
 
 
 class VisualSearchAgentLogic:
-    """
-    Uses a multi-modal LLM to identify a product from an image.
+    """Uses a multi-modal LLM to identify a product from an image.
     Phase 3: Provides definitive identification with confidence scoring.
     """
 
@@ -75,8 +73,7 @@ class VisualSearchAgentLogic:
         self.logger.info("VisualSearchAgentLogic initialized.")
 
     async def suggest_products_from_image(self, image_url: str) -> dict[str, Any]:
-        """
-        Analyzes an image and returns a list of potential product matches.
+        """Analyzes an image and returns a list of potential product matches.
         (Kept for backward compatibility with Phase 2 endpoints)
         """
         self.logger.info(f"Analyzing image for product suggestions: {image_url}")
@@ -153,7 +150,7 @@ class VisualSearchAgentLogic:
                             },
                             image_content,
                         ],
-                    }
+                    },
                 ],
                 max_tokens=500,
             )
@@ -215,8 +212,7 @@ class VisualSearchAgentLogic:
             return {"status": "FAILED", "error": "Failed to analyze image."}
 
     async def identify_product_from_image(self, image_url: str) -> dict[str, Any]:
-        """
-        Analyzes an image and returns the single best product match with a confidence score.
+        """Analyzes an image and returns the single best product match with a confidence score.
         Used for Phase 3 full workflow integration.
         """
         self.logger.info(f"Analyzing image for definitive product identification: {image_url}")
@@ -293,7 +289,7 @@ class VisualSearchAgentLogic:
                             },
                             image_content,
                         ],
-                    }
+                    },
                 ],
                 max_tokens=300,
             )

@@ -1,5 +1,4 @@
-"""
-Verify user_reports table was created and test the endpoints
+"""Verify user_reports table was created and test the endpoints
 """
 
 import os
@@ -19,7 +18,7 @@ cur.execute(
         WHERE table_schema = 'public'
         AND table_name = 'user_reports'
     );
-"""
+""",
 )
 table_exists = cur.fetchone()[0]
 
@@ -64,7 +63,7 @@ else:
             reviewed_by INTEGER,
             review_notes TEXT
         );
-    """
+    """,
     )
 
     # Create indexes

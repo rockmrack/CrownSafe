@@ -127,7 +127,7 @@ async def test_router_success():
                     "sender_id": "test_commander",
                 },
                 "payload": {"plan": plan},
-            }
+            },
         )
         await asyncio.sleep(0.5)
 
@@ -151,10 +151,10 @@ async def test_router_success():
                                 "agent_id": f"worker_{caps[0]}",
                                 "capabilities": caps,
                                 "status": "active",
-                            }
+                            },
                         ],
                     },
-                }
+                },
             )
         await asyncio.sleep(0.5)
 
@@ -177,7 +177,7 @@ async def test_router_success():
                         "task_id": task_id,
                         "result": {"status": "success", "data": f"Data for {task_id}"},
                     },
-                }
+                },
             )
             await asyncio.sleep(0.2)
 
@@ -200,7 +200,7 @@ async def test_router_success():
                         "data": "APPROVED - 85% confidence",
                     },
                 },
-            }
+            },
         )
 
         await asyncio.sleep(0.5)

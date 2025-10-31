@@ -1,5 +1,4 @@
-"""
-Strict CORS configuration for production security
+"""Strict CORS configuration for production security
 Only allows specific origins, no wildcards
 """
 
@@ -13,8 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_allowed_origins() -> list[str]:
-    """
-    Get allowed CORS origins from environment
+    """Get allowed CORS origins from environment
 
     Returns:
         List of allowed origin URLs
@@ -48,7 +46,7 @@ def get_allowed_origins() -> list[str]:
                 "http://127.0.0.1:3000",
                 "http://127.0.0.1:3001",
                 "http://127.0.0.1:8080",
-            ]
+            ],
         )
 
     # Remove duplicates while preserving order
@@ -68,8 +66,7 @@ def add_strict_cors(
     allow_credentials: bool = False,
     max_age: int = 600,
 ) -> None:
-    """
-    Add strict CORS configuration to FastAPI app
+    """Add strict CORS configuration to FastAPI app
 
     Args:
         app: FastAPI application
@@ -118,8 +115,7 @@ def add_strict_cors(
 
 
 class CORSConfig:
-    """
-    CORS configuration settings
+    """CORS configuration settings
     """
 
     # Production origins
@@ -152,8 +148,7 @@ class CORSConfig:
 
     @classmethod
     def get_origins_for_environment(cls, environment: str) -> list[str]:
-        """
-        Get appropriate origins based on environment
+        """Get appropriate origins based on environment
 
         Args:
             environment: Environment name (production, staging, development)
@@ -176,8 +171,7 @@ class CORSConfig:
 
     @classmethod
     def validate_origin(cls, origin: str) -> bool:
-        """
-        Validate if an origin is allowed
+        """Validate if an origin is allowed
 
         Args:
             origin: Origin URL to validate
@@ -195,8 +189,7 @@ class CORSConfig:
 
 
 def create_cors_middleware(app: FastAPI):
-    """
-    Factory function to create CORS middleware
+    """Factory function to create CORS middleware
     Alternative to add_strict_cors for more control
     """
     environment = os.getenv("ENVIRONMENT", "production")

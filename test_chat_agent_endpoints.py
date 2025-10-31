@@ -1,5 +1,4 @@
-"""
-Test Chat Agent - All Related Endpoints
+"""Test Chat Agent - All Related Endpoints
 
 Tests all chat agent endpoints in production:
 1. POST /api/v1/chat/conversation - Main chat endpoint

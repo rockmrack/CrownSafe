@@ -78,7 +78,7 @@ if not actual_db_url.startswith("sqlite"):
             "pool_size": int(os.getenv("DB_POOL_SIZE", 10)),
             "max_overflow": int(os.getenv("DB_MAX_OVERFLOW", 20)),
             "pool_timeout": int(os.getenv("DB_POOL_TIMEOUT", 30)),
-        }
+        },
     )
 
 engine = create_engine(actual_db_url, **engine_kwargs)
@@ -232,8 +232,7 @@ def get_db_session(commit_on_exit=True, close_on_exit=True):
 
 # FastAPI Dependency for Database Sessions
 def get_db():
-    """
-    FastAPI dependency for database sessions.
+    """FastAPI dependency for database sessions.
     Use this with Depends() in FastAPI endpoints.
     """
     db = SessionLocal()
@@ -337,7 +336,7 @@ def ensure_test_users():
                     stripe_customer_id = EXCLUDED.stripe_customer_id,
                     hashed_password = EXCLUDED.hashed_password,
                     is_subscribed = EXCLUDED.is_subscribed
-            """
+            """,
             )
         else:
             stmt = text(
@@ -347,7 +346,7 @@ def ensure_test_users():
                 VALUES 
                     (1, 'subscribed@test.com', NULL, 'testhash', 1),
                     (2, 'unsubscribed@test.com', NULL, 'testhash', 0)
-            """
+            """,
             )
 
         try:

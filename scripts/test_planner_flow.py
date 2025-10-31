@@ -52,8 +52,7 @@ task_correlation_id: str | None = None
 
 # --- Message Handling for Controller ---
 async def handle_controller_message(message: dict[str, Any]):
-    """
-    Callback for the controller client to process responses.
+    """Callback for the controller client to process responses.
     Looks for TASK_COMPLETE or TASK_FAIL from the PlannerAgent.
     """
     global task_result, task_completion_event, task_correlation_id
@@ -72,7 +71,7 @@ async def handle_controller_message(message: dict[str, Any]):
             task_completion_event.set()  # Signal that the planning task is done
         elif message_type == "TASK_ACKNOWLEDGE":
             logger.info(
-                f"Received TASK_ACKNOWLEDGE for planning task (CorrID: {correlation_id}), Status: {payload.get('status')}"  # noqa: E501
+                f"Received TASK_ACKNOWLEDGE for planning task (CorrID: {correlation_id}), Status: {payload.get('status')}",  # noqa: E501
             )
         else:
             logger.debug(f"Received other message type {message_type} with matching correlation ID.")
@@ -80,15 +79,14 @@ async def handle_controller_message(message: dict[str, Any]):
         # We might receive messages related to subtasks (like TASK_COMPLETE from WebResearchAgent)
         # routed back to the original sender (this controller). Log them for now.
         logger.debug(
-            f"Received message with non-matching correlation ID: {correlation_id} (Expected: {task_correlation_id}) - Likely subtask result."  # noqa: E501
+            f"Received message with non-matching correlation ID: {correlation_id} (Expected: {task_correlation_id}) - Likely subtask result.",  # noqa: E501
         )
         logger.debug(f"Subtask Result Message: {json.dumps(message, indent=2)}")
 
 
 # --- Main Test Function ---
 async def run_planner_flow():
-    """
-    Connects as a controller, sends a high-level task to the Planner,
+    """Connects as a controller, sends a high-level task to the Planner,
     waits for the Planner's completion (the plan itself).
     """
     global task_result, task_completion_event, task_correlation_id
@@ -128,7 +126,7 @@ async def run_planner_flow():
         )
 
         logger.info(
-            f"Sending TASK_ASSIGN (Subtask ID: {subtask_id_to_send}, Corr ID: {task_correlation_id}) to {TARGET_AGENT_ID}..."  # noqa: E501
+            f"Sending TASK_ASSIGN (Subtask ID: {subtask_id_to_send}, Corr ID: {task_correlation_id}) to {TARGET_AGENT_ID}...",  # noqa: E501
         )
         await client.send_message(task_message)
         logger.info("Planning task message sent.")
@@ -154,7 +152,7 @@ async def run_planner_flow():
 
         except asyncio.TimeoutError:
             logger.error(
-                f"Timeout: Did not receive planner task completion message within {TASK_TIMEOUT_SECONDS} seconds."
+                f"Timeout: Did not receive planner task completion message within {TASK_TIMEOUT_SECONDS} seconds.",
             )
 
     except ConnectionError as e:

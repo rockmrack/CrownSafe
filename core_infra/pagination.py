@@ -1,5 +1,4 @@
-"""
-Pagination utilities for BabyShield
+"""Pagination utilities for BabyShield
 Prevents memory issues with large datasets
 """
 
@@ -75,8 +74,7 @@ class PaginatedResponse(BaseModel, Generic[T]):
 
 
 def paginate_query(query: SQLQuery, params: PaginationParams) -> tuple[list, int]:
-    """
-    Paginate a SQLAlchemy query
+    """Paginate a SQLAlchemy query
     Returns (items, total_count)
     """
     # Get total count before pagination
@@ -89,16 +87,14 @@ def paginate_query(query: SQLQuery, params: PaginationParams) -> tuple[list, int
 
 
 async def paginate_async(query: SQLQuery, params: PaginationParams) -> PaginatedResponse:
-    """
-    Async pagination helper
+    """Async pagination helper
     """
     items, total = paginate_query(query, params)
     return PaginatedResponse.create(items, total, params)
 
 
 class CursorPaginationParams(BaseModel):
-    """
-    Cursor-based pagination for better performance
+    """Cursor-based pagination for better performance
     """
 
     cursor: str | None = Query(None, description="Cursor for next page")
@@ -138,10 +134,9 @@ class CursorPaginatedResponse(BaseModel, Generic[T]):
 
 
 def paginate_with_cursor(
-    query: SQLQuery, params: CursorPaginationParams, id_field: str = "id"
+    query: SQLQuery, params: CursorPaginationParams, id_field: str = "id",
 ) -> tuple[list, str | None]:
-    """
-    Cursor-based pagination for large datasets
+    """Cursor-based pagination for large datasets
     More efficient than offset/limit for deep pagination
     """
     # Decode cursor to get starting point
@@ -173,8 +168,7 @@ def paginate_with_cursor(
 
 
 def paginate_list(items: list[T], params: PaginationParams) -> PaginatedResponse[T]:
-    """
-    Paginate a Python list
+    """Paginate a Python list
     """
     total = len(items)
     start = params.skip
@@ -185,8 +179,7 @@ def paginate_list(items: list[T], params: PaginationParams) -> PaginatedResponse
 
 
 def create_pagination_links(base_url: str, params: PaginationParams, total: int) -> dict[str, str | None]:
-    """
-    Create HATEOAS links for pagination
+    """Create HATEOAS links for pagination
     """
     links = {
         "self": f"{base_url}?skip={params.skip}&limit={params.limit}",
@@ -220,8 +213,7 @@ from fastapi import Depends  # noqa: E402
 
 
 def paginated(model_class):
-    """
-    Decorator to automatically paginate endpoint responses
+    """Decorator to automatically paginate endpoint responses
     """
 
     def decorator(func):

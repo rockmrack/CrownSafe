@@ -1,5 +1,4 @@
-"""
-Test script for UK government agency connectors and endpoints
+"""Test script for UK government agency connectors and endpoints
 Tests all 5 UK agencies: OPSS, FSA, Trading Standards, DVSA, MHRA
 """
 

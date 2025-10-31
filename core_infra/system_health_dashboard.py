@@ -1,5 +1,4 @@
-"""
-Crown Safe System Health Dashboard
+"""Crown Safe System Health Dashboard
 Unified monitoring endpoint for all enterprise health metrics
 
 Features:
@@ -20,8 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class SystemHealthDashboard:
-    """
-    Unified health dashboard for Crown Safe
+    """Unified health dashboard for Crown Safe
     Aggregates metrics from all monitoring subsystems
     """
 
@@ -30,8 +28,7 @@ class SystemHealthDashboard:
         self.startup_time = datetime.utcnow()
 
     def get_comprehensive_health(self) -> dict[str, Any]:
-        """
-        Get comprehensive system health status
+        """Get comprehensive system health status
         Aggregates metrics from all subsystems
 
         Returns:

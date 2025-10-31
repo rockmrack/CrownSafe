@@ -19,7 +19,6 @@ depends_on = None
 
 def upgrade() -> None:
     """Add user_reports table for community reporting of unsafe products."""
-
     # Create user_reports table if it does not already exist
     bind = op.get_bind()
     inspector = sa.inspect(bind)
@@ -74,7 +73,6 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     """Remove user_reports table."""
-
     bind = op.get_bind()
     inspector = sa.inspect(bind)
     if not inspector.has_table("user_reports"):

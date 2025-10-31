@@ -1,5 +1,4 @@
-"""
-Crown Safe - Routine Analysis Tests
+"""Crown Safe - Routine Analysis Tests
 Tests for POST /api/v1/cabinet-audit and /api/v1/routine-check endpoints
 
 Test Coverage:
@@ -107,7 +106,7 @@ def test_cabinet_audit_protein_overload_detected(client, auth_headers):
                 "type": "Conditioner",
                 "ingredients": ["Water", "Cetearyl Alcohol", "Shea Butter"],
             },
-        ]
+        ],
     }
 
     response = client.post("/api/v1/cabinet-audit", json=audit_data, headers=auth_headers)
@@ -148,7 +147,7 @@ def test_cabinet_audit_no_protein_overload(client, auth_headers):
                 "type": "Leave-In",
                 "ingredients": ["Water", "Glycerin", "Shea Butter"],
             },
-        ]
+        ],
     }
 
     response = client.post("/api/v1/cabinet-audit", json=audit_data, headers=auth_headers)
@@ -186,7 +185,7 @@ def test_cabinet_audit_buildup_detected(client, auth_headers):
                 "type": "Shampoo",
                 "ingredients": ["Water", "Cocamidopropyl Betaine", "Glycerin"],
             },
-        ]
+        ],
     }
 
     response = client.post("/api/v1/cabinet-audit", json=audit_data, headers=auth_headers)
@@ -218,7 +217,7 @@ def test_cabinet_audit_no_buildup_with_clarifying(client, auth_headers):
                 "type": "Shampoo",
                 "ingredients": ["Water", "Sodium Lauryl Sulfate", "Citric Acid"],
             },
-        ]
+        ],
     }
 
     response = client.post("/api/v1/cabinet-audit", json=audit_data, headers=auth_headers)
@@ -256,7 +255,7 @@ def test_cabinet_audit_stripping_detected(client, auth_headers):
                 "type": "Conditioner",
                 "ingredients": ["Water", "Cetearyl Alcohol"],
             },
-        ]
+        ],
     }
 
     response = client.post("/api/v1/cabinet-audit", json=audit_data, headers=auth_headers)
@@ -289,7 +288,7 @@ def test_cabinet_audit_moisture_imbalance_detected(client, auth_headers):
                 "ingredients": ["Water", "Cocamidopropyl Betaine"],
             },
             # Missing: deep conditioner, leave-in, moisturizing ingredients
-        ]
+        ],
     }
 
     response = client.post("/api/v1/cabinet-audit", json=audit_data, headers=auth_headers)
@@ -325,7 +324,7 @@ def test_cabinet_audit_calculates_crown_score(client, auth_headers):
                 "type": "Shampoo",
                 "ingredients": ["Water", "Sodium Lauryl Sulfate", "Fragrance", "Parabens"],
             },
-        ]
+        ],
     }
 
     response = client.post("/api/v1/cabinet-audit", json=audit_data, headers=auth_headers)
@@ -359,7 +358,7 @@ def test_cabinet_audit_calculates_average_score(client, auth_headers):
                 "type": "Shampoo",
                 "ingredients": ["Water", "Cocamidopropyl Betaine"],
             },
-        ]
+        ],
     }
 
     response = client.post("/api/v1/cabinet-audit", json=audit_data, headers=auth_headers)
@@ -397,7 +396,7 @@ def test_cabinet_audit_generates_rotation_plan(client, auth_headers):
                 "type": "Leave-In",
                 "ingredients": ["Water", "Glycerin"],
             },
-        ]
+        ],
     }
 
     response = client.post("/api/v1/cabinet-audit", json=audit_data, headers=auth_headers)
@@ -560,7 +559,7 @@ def test_cabinet_audit_empty_products(client, auth_headers):
 def test_cabinet_audit_unauthenticated(client):
     """Test cabinet audit without authentication"""
     audit_data = {
-        "products": [{"name": "Shampoo", "type": "Shampoo", "ingredients": ["Water", "Cocamidopropyl Betaine"]}]
+        "products": [{"name": "Shampoo", "type": "Shampoo", "ingredients": ["Water", "Cocamidopropyl Betaine"]}],
     }
 
     response = client.post("/api/v1/cabinet-audit", json=audit_data)
@@ -602,7 +601,7 @@ def test_cabinet_audit_no_profile(client):
     headers = {"Authorization": f"Bearer {token}"}
 
     audit_data = {
-        "products": [{"name": "Shampoo", "type": "Shampoo", "ingredients": ["Water", "Cocamidopropyl Betaine"]}]
+        "products": [{"name": "Shampoo", "type": "Shampoo", "ingredients": ["Water", "Cocamidopropyl Betaine"]}],
     }
 
     response = client.post("/api/v1/cabinet-audit", json=audit_data, headers=headers)

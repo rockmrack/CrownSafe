@@ -1,5 +1,4 @@
-"""
-Task 16: Security Middleware for BabyShield API
+"""Task 16: Security Middleware for BabyShield API
 Implements IP allowlisting, security headers, and request validation
 """
 
@@ -21,8 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class IPAllowlistMiddleware(BaseHTTPMiddleware):
-    """
-    Middleware to restrict admin endpoints to specific IP addresses
+    """Middleware to restrict admin endpoints to specific IP addresses
     """
 
     def __init__(self, app, admin_paths: list[str] = None, allowed_ips: list[str] = None):
@@ -70,7 +68,6 @@ class IPAllowlistMiddleware(BaseHTTPMiddleware):
 
     def _is_ip_allowed(self, client_ip: str) -> bool:
         """Check if the client IP is in the allowlist"""
-
         # If no allowlist configured, deny all (secure by default)
         if not self.allowed_networks:
             return False
@@ -95,7 +92,6 @@ class IPAllowlistMiddleware(BaseHTTPMiddleware):
 
     def _get_real_ip(self, request: Request) -> str:
         """Get the real client IP, considering proxies"""
-
         # Check X-Forwarded-For header (from load balancer/proxy)
         x_forwarded_for = request.headers.get("X-Forwarded-For")
         if x_forwarded_for:
@@ -112,7 +108,6 @@ class IPAllowlistMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
         """Process the request"""
-
         # Check if this is an admin path
         if self._is_admin_path(request.url.path):
             client_ip = self._get_real_ip(request)
@@ -140,13 +135,11 @@ class IPAllowlistMiddleware(BaseHTTPMiddleware):
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """
-    Middleware to add security headers to all responses
+    """Middleware to add security headers to all responses
     """
 
     async def dispatch(self, request: Request, call_next):
         """Add security headers to response"""
-
         response = await call_next(request)
 
         # Security headers
@@ -180,8 +173,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 class RequestValidationMiddleware(BaseHTTPMiddleware):
-    """
-    Middleware to validate and sanitize incoming requests
+    """Middleware to validate and sanitize incoming requests
     """
 
     def __init__(self, app, max_body_size: int = 10485760):  # 10MB default
@@ -224,7 +216,6 @@ class RequestValidationMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
         """Validate request"""
-
         # Check Content-Length
         content_length = request.headers.get("content-length")
         if content_length and int(content_length) > self.max_body_size:
@@ -260,8 +251,7 @@ class RequestValidationMiddleware(BaseHTTPMiddleware):
 
 
 class APIKeyMiddleware(BaseHTTPMiddleware):
-    """
-    Middleware for API key authentication on specific endpoints
+    """Middleware for API key authentication on specific endpoints
     """
 
     def __init__(self, app, protected_paths: list[str] = None):
@@ -298,7 +288,6 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
         """Check API key if required"""
-
         if self._requires_api_key(request.url.path):
             # Check for API key in header
             api_key = request.headers.get("X-API-Key")
@@ -326,8 +315,7 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
 
 
 class HMACMiddleware(BaseHTTPMiddleware):
-    """
-    Middleware for HMAC request signing validation
+    """Middleware for HMAC request signing validation
     """
 
     def __init__(self, app, protected_paths: list[str] = None):
@@ -342,7 +330,6 @@ class HMACMiddleware(BaseHTTPMiddleware):
 
     def _validate_hmac(self, request_body: bytes, signature: str, timestamp: str) -> bool:
         """Validate HMAC signature"""
-
         # Check timestamp to prevent replay attacks
         try:
             req_timestamp = int(timestamp)
@@ -368,7 +355,6 @@ class HMACMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
         """Validate HMAC if required"""
-
         if self._requires_hmac(request.url.path):
             # Get signature and timestamp from headers
             signature = request.headers.get("X-Signature")
@@ -399,10 +385,8 @@ class HMACMiddleware(BaseHTTPMiddleware):
 
 
 def get_cors_middleware_config():
+    """Get CORS configuration for FastAPI CORSMiddleware
     """
-    Get CORS configuration for FastAPI CORSMiddleware
-    """
-
     # Get allowed origins from environment
     allowed_origins_str = os.environ.get("CORS_ALLOWED_ORIGINS", "")
 

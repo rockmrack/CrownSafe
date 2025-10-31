@@ -1,5 +1,4 @@
-"""
-OpenAI LLM Client implementation for BabyShield chat functionality.
+"""OpenAI LLM Client implementation for BabyShield chat functionality.
 Provides a chat_json method that interfaces with OpenAI's API.
 """
 
@@ -19,13 +18,11 @@ except ImportError:
 
 
 class OpenAILLMClient:
-    """
-    OpenAI client that implements the LLMClient protocol for chat functionality.
+    """OpenAI client that implements the LLMClient protocol for chat functionality.
     """
 
     def __init__(self, api_key: str | None = None):
-        """
-        Initialize the OpenAI client with optimized HTTP settings.
+        """Initialize the OpenAI client with optimized HTTP settings.
 
         Args:
             api_key: OpenAI API key. If None, will try to get from environment.
@@ -57,7 +54,7 @@ class OpenAILLMClient:
                     max_retries=0,  # No retries - fail fast for faster fallback
                 )
                 logging.info(
-                    f"OpenAI client initialized successfully with {OPENAI_TIMEOUT}s timeout, IPv4-only, fast-fail mode"
+                    f"OpenAI client initialized successfully with {OPENAI_TIMEOUT}s timeout, IPv4-only, fast-fail mode",
                 )
             except Exception as e:
                 logging.error(f"Failed to initialize OpenAI client: {e}")
@@ -73,8 +70,7 @@ class OpenAILLMClient:
         response_schema: dict[str, Any] | None = None,
         timeout: float = 30.0,
     ) -> dict[str, Any]:
-        """
-        Send a chat request to OpenAI and get a JSON response.
+        """Send a chat request to OpenAI and get a JSON response.
 
         Args:
             model: OpenAI model to use
@@ -133,8 +129,7 @@ class OpenAILLMClient:
             return self._get_fallback_response()
 
     def _get_fallback_response(self) -> dict[str, Any]:
-        """
-        Get a fallback response when OpenAI is not available.
+        """Get a fallback response when OpenAI is not available.
 
         Returns:
             Dictionary with a basic response structure

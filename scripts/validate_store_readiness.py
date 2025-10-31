@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Validate store readiness against production API
+"""Validate store readiness against production API
 Tests critical endpoints and features required for app store submission
 """
 

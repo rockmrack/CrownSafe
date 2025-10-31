@@ -1,13 +1,11 @@
-"""
-Dev override service for entitlement bypass during QA/testing
+"""Dev override service for entitlement bypass during QA/testing
 """
 
 import os
 
 
 def dev_entitled(user_id: int, feature: str) -> bool:
-    """
-    Check if user/feature combination is entitled via dev override.
+    """Check if user/feature combination is entitled via dev override.
 
     Args:
         user_id: User ID to check

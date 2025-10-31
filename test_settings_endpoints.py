@@ -1,5 +1,4 @@
-"""
-Test Settings Screen Endpoints
+"""Test Settings Screen Endpoints
 Tests all endpoints shown in mobile app Settings screen
 """
 

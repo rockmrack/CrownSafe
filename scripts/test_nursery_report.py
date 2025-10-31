@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test the Quarterly Nursery Report Generation
+"""Test the Quarterly Nursery Report Generation
 """
 
 import os
@@ -19,7 +18,6 @@ from db.models.scan_history import SafetyReport, ScanHistory
 
 def create_nursery_scan_history(db_session, user_id=1):
     """Create sample nursery product scan history for testing"""
-
     print(f"Creating nursery product scan history for user {user_id}...")
 
     # Nursery product samples with categories
@@ -266,7 +264,6 @@ def create_nursery_scan_history(db_session, user_id=1):
 
 def test_quarterly_nursery_report():
     """Test the quarterly nursery report generation"""
-
     print("Testing Quarterly Nursery Report Generation...")
     print("=" * 60)
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Comprehensive deployment verification and fix script
+"""Comprehensive deployment verification and fix script
 """
 
 import sys
@@ -24,7 +23,7 @@ def check_endpoint(path: str, method: str = "GET", data: dict = None) -> tuple[i
             return 0, {"error": "Unsupported method"}
 
         return response.status_code, response.json() if response.headers.get("content-type", "").startswith(
-            "application/json"
+            "application/json",
         ) else {"text": response.text[:200]}
     except requests.exceptions.Timeout:
         return 0, {"error": "Timeout"}

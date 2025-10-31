@@ -1,5 +1,4 @@
-"""
-Crown Safe - Ingredient Analysis Agent
+"""Crown Safe - Ingredient Analysis Agent
 Replaces: recall_data_agent (baby recalls) → ingredient safety analysis
 
 This agent analyzes hair product ingredients using the Crown Score engine
@@ -23,8 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 class IngredientAnalysisAgent:
-    """
-    Intelligent agent for analyzing hair product ingredients
+    """Intelligent agent for analyzing hair product ingredients
 
     Capabilities:
     - Analyze ingredient safety for specific hair types
@@ -44,8 +42,7 @@ class IngredientAnalysisAgent:
         product_type: str,
         ph_level: float | None = None,
     ) -> dict:
-        """
-        Analyze a hair product's ingredients
+        """Analyze a hair product's ingredients
 
         Args:
             ingredients: List of ingredient names
@@ -166,8 +163,7 @@ class IngredientAnalysisAgent:
             return recommendation
 
     async def find_alternatives(self, product_name: str, category: str, min_crown_score: int = 75) -> list[dict]:
-        """
-        Find safer alternative products
+        """Find safer alternative products
 
         Args:
             product_name: Name of the product to replace

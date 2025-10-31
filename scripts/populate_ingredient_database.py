@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Populate ingredient and safety databases with real data
+"""Populate ingredient and safety databases with real data
 This replaces the mock JSON files with comprehensive database tables
 """
 

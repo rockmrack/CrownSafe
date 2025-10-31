@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-scripts/test_model_number_scan.py
+"""scripts/test_model_number_scan.py
 
 End-to-end test script for the Model Number Scanning feature.
 Tests the new model_number parameter in the safety-check API endpoint
@@ -32,8 +31,7 @@ def test_api_endpoint_with_model_number(
     model_number: str | None,
     api_url: str = "http://localhost:8001",
 ) -> dict[str, Any]:
-    """
-    Test the /api/v1/safety-check endpoint with model number parameter.
+    """Test the /api/v1/safety-check endpoint with model number parameter.
 
     Args:
         user_id: User ID for the safety check
@@ -82,8 +80,7 @@ def test_api_endpoint_with_model_number(
 
 
 async def test_direct_database_search(model_number: str) -> dict[str, Any]:
-    """
-    Test direct database search for model number to verify data ingestion worked.
+    """Test direct database search for model number to verify data ingestion worked.
 
     Args:
         model_number: Model number to search for
@@ -139,8 +136,7 @@ async def test_direct_database_search(model_number: str) -> dict[str, Any]:
 
 
 async def test_recall_data_agent_directly(model_number: str) -> dict[str, Any]:
-    """
-    Test the RecallDataAgent directly with model number input.
+    """Test the RecallDataAgent directly with model number input.
 
     Args:
         model_number: Model number to search for
@@ -161,7 +157,7 @@ async def test_recall_data_agent_directly(model_number: str) -> dict[str, Any]:
                 "model_number": model_number,
                 "barcode": "dummy_barcode",  # This should be ignored due to model number priority
                 "product_name": "dummy_product",  # This should be ignored due to model number priority
-            }
+            },
         )
 
         logger.info(f"Agent result: {result}")
@@ -174,8 +170,7 @@ async def test_recall_data_agent_directly(model_number: str) -> dict[str, Any]:
 
 
 def run_comprehensive_test_suite(user_id: int, barcode: str, model_number: str | None = None):
-    """
-    Run comprehensive test suite for model number scanning feature.
+    """Run comprehensive test suite for model number scanning feature.
 
     Args:
         user_id: User ID for API tests

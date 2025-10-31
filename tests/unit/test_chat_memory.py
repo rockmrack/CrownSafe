@@ -1,5 +1,4 @@
-"""
-Unit tests for api/models/chat_memory.py
+"""Unit tests for api/models/chat_memory.py
 Tests chat memory models for user profiles, conversations, and messages
 """
 

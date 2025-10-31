@@ -1,5 +1,4 @@
-"""
-Example unit tests demonstrating proper test structure
+"""Example unit tests demonstrating proper test structure
 This file shows best practices for unit testing in the BabyShield backend
 """
 

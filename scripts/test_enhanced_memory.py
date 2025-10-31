@@ -1,5 +1,4 @@
-"""
-Comprehensive test suite for EnhancedMemoryManager V2.0
+"""Comprehensive test suite for EnhancedMemoryManager V2.0
 """
 
 import asyncio
@@ -21,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 async def test_enhanced_memory():
     """Test all enhanced memory features"""
-
     print("Testing EnhancedMemoryManager V2.0...")
 
     try:
@@ -33,13 +31,13 @@ async def test_enhanced_memory():
             "goal": "Investigate Empagliflozin for Heart Failure treatment",
             "research_data": {
                 "pubmed": {
-                    "content": "Empagliflozin shows significant efficacy in heart failure patients. Clinical trials demonstrate reduced hospitalization."  # noqa: E501
+                    "content": "Empagliflozin shows significant efficacy in heart failure patients. Clinical trials demonstrate reduced hospitalization.",  # noqa: E501
                 },
                 "clinical_trials": {
-                    "content": "Multiple randomized controlled trials confirm Empagliflozin safety and efficacy."
+                    "content": "Multiple randomized controlled trials confirm Empagliflozin safety and efficacy.",
                 },
                 "drug_safety": {
-                    "content": "Empagliflozin has a well-established safety profile with rare adverse events."
+                    "content": "Empagliflozin has a well-established safety profile with rare adverse events.",
                 },
             },
             "timestamp": datetime.now().isoformat(),
@@ -52,11 +50,11 @@ async def test_enhanced_memory():
         print(f"SUCCESS: Standard storage: {results['standard_storage']['status']}")
         print(f"SUCCESS: Temporal analysis: {len(results['temporal_analysis'].get('patterns_detected', []))} patterns")
         print(
-            f"SUCCESS: Contradiction detection: {len(results['contradiction_detection'].get('contradictions_found', []))} contradictions"  # noqa: E501
+            f"SUCCESS: Contradiction detection: {len(results['contradiction_detection'].get('contradictions_found', []))} contradictions",  # noqa: E501
         )
         print(f"SUCCESS: Gap analysis: {len(results['gap_analysis'].get('gaps_identified', []))} gaps")
         print(
-            f"SUCCESS: Cross-workflow insights: {len(results['cross_workflow_insights'].get('insights_generated', []))} insights"  # noqa: E501
+            f"SUCCESS: Cross-workflow insights: {len(results['cross_workflow_insights'].get('insights_generated', []))} insights",  # noqa: E501
         )
 
         # Test enhanced analytics
@@ -91,7 +89,6 @@ async def test_enhanced_memory():
 
 async def test_basic_functionality():
     """Test basic memory functionality"""
-
     print("\n4. Testing basic functionality...")
 
     try:
@@ -120,7 +117,6 @@ async def test_basic_functionality():
 
 async def test_memory_integration():
     """Test integration with existing memory data"""
-
     print("\n5. Testing memory integration...")
 
     try:
@@ -152,7 +148,6 @@ async def test_memory_integration():
 
 async def run_all_tests():
     """Run complete test suite"""
-
     print("Running EnhancedMemoryManager V2.0 Test Suite")
     print("=" * 50)
 

@@ -26,7 +26,7 @@ formats_to_test = [
                     "drug_name": "Metformin",
                     "insurer_id": "TEST-INS",
                 },
-            }
+            },
         },
     },
     # Format 2: Try without wrapper
@@ -55,8 +55,8 @@ formats_to_test = [
                         "drug_name": "Metformin",
                         "insurer_id": "TEST-INS",
                     },
-                }
-            ]
+                },
+            ],
         },
     },
     # Format 4: Try with user_request_pool
@@ -72,8 +72,8 @@ formats_to_test = [
                         "drug_name": "Metformin",
                         "insurer_id": "TEST-INS",
                     },
-                }
-            ]
+                },
+            ],
         },
     },
 ]

@@ -1,5 +1,4 @@
-"""
-Product Ingredients Database Model
+"""Product Ingredients Database Model
 Stores product ingredient data locally for immediate offline access
 """
 

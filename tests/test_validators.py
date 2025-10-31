@@ -1,5 +1,4 @@
-"""
-Unit tests for input validators
+"""Unit tests for input validators
 """
 
 import pytest

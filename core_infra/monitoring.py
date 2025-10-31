@@ -1,5 +1,4 @@
-"""
-Monitoring and Alerting System
+"""Monitoring and Alerting System
 Enterprise monitoring with Prometheus metrics and alerts
 
 Features:
@@ -94,8 +93,7 @@ api_visual_recognition_total = Counter("api_visual_recognition_total", "Total vi
 
 
 class MonitoringManager:
-    """
-    Central monitoring and alerting manager
+    """Central monitoring and alerting manager
     """
 
     def __init__(self):
@@ -103,8 +101,7 @@ class MonitoringManager:
         self.alert_rules = self._define_alert_rules()
 
     def _define_alert_rules(self) -> list[dict]:
-        """
-        Define alert rules and thresholds
+        """Define alert rules and thresholds
         """
         return [
             {
@@ -152,16 +149,14 @@ class MonitoringManager:
         ]
 
     def record_http_request(self, method: str, endpoint: str, status_code: int, duration: float):
-        """
-        Record HTTP request metrics
+        """Record HTTP request metrics
         """
         http_requests_total.labels(method=method, endpoint=endpoint, status_code=status_code).inc()
 
         http_request_duration_seconds.labels(method=method, endpoint=endpoint).observe(duration)
 
     def record_database_query(self, operation: str, duration: float, success: bool):
-        """
-        Record database query metrics
+        """Record database query metrics
         """
         database_query_duration_seconds.labels(operation=operation).observe(duration)
 
@@ -169,8 +164,7 @@ class MonitoringManager:
             database_errors_total.labels(error_type=operation).inc()
 
     def record_cache_access(self, hit: bool):
-        """
-        Record cache access metrics
+        """Record cache access metrics
         """
         if hit:
             cache_hits_total.inc()
@@ -178,47 +172,40 @@ class MonitoringManager:
             cache_misses_total.inc()
 
     def record_blob_upload(self, duration: float, success: bool):
-        """
-        Record Azure Blob upload metrics
+        """Record Azure Blob upload metrics
         """
         status = "success" if success else "failure"
         azure_blob_uploads_total.labels(status=status).inc()
         azure_blob_upload_duration_seconds.observe(duration)
 
     def update_health_score(self, score: int):
-        """
-        Update application health score
+        """Update application health score
         """
         app_health_score.set(score)
 
     def update_uptime(self):
-        """
-        Update application uptime
+        """Update application uptime
         """
         uptime = time.time() - self.start_time
         app_uptime_seconds.set(uptime)
 
     def record_security_failure(self, severity: str):
-        """
-        Record security audit failure
+        """Record security audit failure
         """
         security_audit_failures_total.labels(severity=severity).inc()
 
     def get_metrics(self) -> Response:
-        """
-        Get Prometheus metrics in exposition format
+        """Get Prometheus metrics in exposition format
         """
         return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
     def get_alert_rules(self) -> list[dict]:
-        """
-        Get all alert rules
+        """Get all alert rules
         """
         return self.alert_rules
 
     def check_alerts(self) -> list[dict]:
-        """
-        Check if any alerts should be triggered
+        """Check if any alerts should be triggered
 
         Returns:
             List of active alerts
@@ -240,8 +227,7 @@ _monitoring_manager = None
 
 
 def get_monitoring_manager() -> MonitoringManager:
-    """
-    Get global monitoring manager instance
+    """Get global monitoring manager instance
     """
     global _monitoring_manager
     if _monitoring_manager is None:
@@ -255,8 +241,7 @@ def get_monitoring_manager() -> MonitoringManager:
 
 
 async def monitoring_middleware(request, call_next):
-    """
-    FastAPI middleware for automatic request monitoring
+    """FastAPI middleware for automatic request monitoring
     """
     start_time = time.time()
 
@@ -279,7 +264,7 @@ async def monitoring_middleware(request, call_next):
         duration = time.time() - start_time
         monitoring = get_monitoring_manager()
         monitoring.record_http_request(
-            method=request.method, endpoint=request.url.path, status_code=500, duration=duration
+            method=request.method, endpoint=request.url.path, status_code=500, duration=duration,
         )
         raise
 

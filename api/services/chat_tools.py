@@ -1,5 +1,4 @@
-"""
-Chat tools service - stub implementation for chat router
+"""Chat tools service - stub implementation for chat router
 """
 
 from typing import Any
@@ -9,7 +8,6 @@ from sqlalchemy.orm import Session
 
 def run_tool_for_intent(intent: str, db: Session, scan_data: dict[str, Any]) -> dict[str, Any]:
     """Run appropriate tool based on intent"""
-
     # Simple stub responses based on intent
     if intent == "recall_check":
         return {
@@ -24,8 +22,8 @@ def run_tool_for_intent(intent: str, db: Session, scan_data: dict[str, Any]) -> 
                 "items": [
                     {"name": "Similar Product A", "safety_rating": "A"},
                     {"name": "Similar Product B", "safety_rating": "A+"},
-                ]
-            }
+                ],
+            },
         }
 
     elif intent == "safety_guidance":
@@ -34,7 +32,7 @@ def run_tool_for_intent(intent: str, db: Session, scan_data: dict[str, Any]) -> 
                 "Check product label for age recommendations",
                 "Inspect for small parts if toy",
                 "Verify expiration date if consumable",
-            ]
+            ],
         }
 
     else:

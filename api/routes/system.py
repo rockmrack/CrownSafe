@@ -1,5 +1,4 @@
-"""
-System health and readiness endpoints
+"""System health and readiness endpoints
 Provides health checks for monitoring and orchestration
 """
 
@@ -19,8 +18,7 @@ router = APIRouter()
 
 @router.get("/api/v1/healthz")
 async def healthz(response: Response) -> dict[str, Any]:
-    """
-    Basic health check endpoint
+    """Basic health check endpoint
     Returns 200 if the service is running
 
     Used for:
@@ -40,8 +38,7 @@ async def healthz(response: Response) -> dict[str, Any]:
 
 @router.get("/api/v1/readyz")
 async def readyz(response: Response) -> JSONResponse:
-    """
-    Readiness check endpoint
+    """Readiness check endpoint
     Checks all critical dependencies
 
     Returns:
@@ -105,8 +102,7 @@ async def readyz(response: Response) -> JSONResponse:
 
 @router.get("/api/v1/status")
 async def status(response: Response) -> dict[str, Any]:
-    """
-    Detailed status endpoint
+    """Detailed status endpoint
     Provides comprehensive system information
     """
     import platform

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Verification script to confirm all fixes are in place
+"""Verification script to confirm all fixes are in place
 Run this locally to verify the setup before CI runs
 """
 

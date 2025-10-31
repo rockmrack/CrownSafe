@@ -23,7 +23,7 @@ async def forward_message(
     msg_type = hdr.get("message_type", "UNKNOWN_TYPE")
 
     logger.info(
-        f"FORWARDING MSG [{label}]: Type='{msg_type}', OriginalSender='{hdr.get('sender_id', 'UNKNOWN')}', Target='{target_agent_id}', CorrID='{corr_id}'"  # noqa: E501
+        f"FORWARDING MSG [{label}]: Type='{msg_type}', OriginalSender='{hdr.get('sender_id', 'UNKNOWN')}', Target='{target_agent_id}', CorrID='{corr_id}'",  # noqa: E501
     )
 
     message_content_snippet = "Could not serialize for logging"
@@ -39,7 +39,7 @@ async def forward_message(
 
     if not ws:
         logger.warning(
-            f"FORWARDING MSG [{label}]: No active WebSocket connection for target '{target_agent_id}'. Cannot deliver."
+            f"FORWARDING MSG [{label}]: No active WebSocket connection for target '{target_agent_id}'. Cannot deliver.",
         )
         return False
 
@@ -57,7 +57,6 @@ async def forward_message(
 
 async def handle_message(agent_id: str, message_text: str, websocket: WebSocket):
     """Handles incoming messages, parses them, and routes them appropriately."""
-
     # --- ADDED CRITICAL LOG (GPT Suggestion B) ---
     # Attempt to parse for logging details, but log raw snippet regardless
     log_snippet_critical = message_text[:300] + "..." if len(message_text) > 300 else message_text
@@ -77,17 +76,17 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             corr_id_log = header_for_log.get("correlation_id", "N/A")
     except json.JSONDecodeError:
         logger.warning(
-            f"MCP_ROUTER_RAW_RECV: Could not parse JSON for detailed critical log from '{agent_id}'. Raw: {log_snippet_critical}"  # noqa: E501
+            f"MCP_ROUTER_RAW_RECV: Could not parse JSON for detailed critical log from '{agent_id}'. Raw: {log_snippet_critical}",  # noqa: E501
         )
     except Exception:  # Catch any other error during this pre-logging parse
         logger.warning(
-            f"MCP_ROUTER_RAW_RECV: Error during pre-logging parse from '{agent_id}'. Raw: {log_snippet_critical}"
+            f"MCP_ROUTER_RAW_RECV: Error during pre-logging parse from '{agent_id}'. Raw: {log_snippet_critical}",
         )
 
     logger.critical(
         f"MCP_ROUTER_RAW_RECV: From PathAgentID='{agent_id}', ApparentSender='{sender_log}', "
         f"MsgType='{msg_type_log}', TargetAgent='{target_agent_log}', TargetService='{target_service_log}', "
-        f"CorrID='{corr_id_log}'. Raw Snippet: {log_snippet_critical}"
+        f"CorrID='{corr_id_log}'. Raw Snippet: {log_snippet_critical}",
     )
     # --- END ADDED CRITICAL LOG ---
 
@@ -108,7 +107,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
 
         if header_sender_id != agent_id:  # Path agent_id must match sender_id in header
             logger.error(
-                f"ROUTER: Sender ID mismatch in message from connection '{agent_id}': Header sender_id is '{header_sender_id}'. Rejecting message."  # noqa: E501
+                f"ROUTER: Sender ID mismatch in message from connection '{agent_id}': Header sender_id is '{header_sender_id}'. Rejecting message.",  # noqa: E501
             )
             # Optionally send an error back to the client
             err_resp = create_mcp_error_response(
@@ -133,13 +132,13 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             target_commander_id = None
             all_connected_agents = list(state.get_all_connections().keys())
             logger.debug(
-                f"ROUTER: Searching for CommanderAgent among: {all_connected_agents} for PROCESS_USER_REQUEST from '{agent_id}'"  # noqa: E501
+                f"ROUTER: Searching for CommanderAgent among: {all_connected_agents} for PROCESS_USER_REQUEST from '{agent_id}'",  # noqa: E501
             )
             for connected_agent_id_str in all_connected_agents:
                 if "commander_agent" in connected_agent_id_str.lower():  # More specific check
                     target_commander_id = connected_agent_id_str
                     logger.info(
-                        f"ROUTER: Found CommanderAgent '{target_commander_id}' to handle PROCESS_USER_REQUEST from '{agent_id}'"  # noqa: E501
+                        f"ROUTER: Found CommanderAgent '{target_commander_id}' to handle PROCESS_USER_REQUEST from '{agent_id}'",  # noqa: E501
                     )
                     break
 
@@ -176,7 +175,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
         target_agent_id_for_task = hdr.get("target_agent_id")
         if mtype == "TASK_ASSIGN":  # This is for agent-to-agent task assignment
             logger.info(
-                f"ROUTER HANDLE: TASK_ASSIGN from='{agent_id}' to='{target_agent_id_for_task}', CorrID='{corr}'"
+                f"ROUTER HANDLE: TASK_ASSIGN from='{agent_id}' to='{target_agent_id_for_task}', CorrID='{corr}'",
             )
             if not target_agent_id_for_task:
                 err_resp = create_mcp_error_response(
@@ -213,11 +212,11 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
         ):  # TASK_ACK was removed from this group as it's usually server->client
             original_requester = target_agent_id_for_task
             logger.info(
-                f"ROUTER HANDLE: {mtype} from='{agent_id}' routing to original_requester='{original_requester}', CorrID='{corr}'"  # noqa: E501
+                f"ROUTER HANDLE: {mtype} from='{agent_id}' routing to original_requester='{original_requester}', CorrID='{corr}'",  # noqa: E501
             )
             if not original_requester:
                 logger.warning(
-                    f"ROUTER: No target_agent_id (original_requester_id) on {mtype} from '{agent_id}'; dropping."
+                    f"ROUTER: No target_agent_id (original_requester_id) on {mtype} from '{agent_id}'; dropping.",
                 )
                 return
             # The sender_id for forward_message should be the original sender (agent_id from path)
@@ -247,7 +246,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             return
 
         logger.warning(
-            f"ROUTER HANDLE: Unhandled message_type='{mtype}', TargetService='{target_svc}', From='{agent_id}', CorrID='{corr}'"  # noqa: E501
+            f"ROUTER HANDLE: Unhandled message_type='{mtype}', TargetService='{target_svc}', From='{agent_id}', CorrID='{corr}'",  # noqa: E501
         )
         err_resp = create_mcp_error_response(
             sender_id="MCP_ROUTER",

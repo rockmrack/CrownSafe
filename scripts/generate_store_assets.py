@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-BabyShield Store Asset Generator & Validator
+"""BabyShield Store Asset Generator & Validator
 Creates placeholder assets and validates existing ones for app store submission
 """
 
@@ -466,7 +465,7 @@ DESIGN GUIDELINES:
    • Compress images (keep under 1MB for icons)
    • Use proper color profiles (sRGB)
    • Test in store preview tools
-        """
+        """,
         )
 
 

@@ -318,7 +318,7 @@ class DrugClassPatternTester:
             # Query with correct drug names
             results = self.memory.collection.query(
                 query_texts=[
-                    "SGLT2 inhibitor canagliflozin empagliflozin sotagliflozin dapagliflozin cardiovascular outcomes"
+                    "SGLT2 inhibitor canagliflozin empagliflozin sotagliflozin dapagliflozin cardiovascular outcomes",
                 ],
                 n_results=50,
                 include=["metadatas", "documents"],
@@ -357,7 +357,7 @@ class DrugClassPatternTester:
                             "reference_count": metadata.get("reference_count", 1),
                             "source_type": metadata.get("source_type", "unknown"),
                             "workflows": metadata.get("referenced_in_workflows", []),
-                        }
+                        },
                     )
 
             return sglt2_docs
@@ -438,14 +438,14 @@ class DrugClassPatternTester:
                         self.print_info(f"  Recommended strategy: {strategy}")
                         self.print_info(f"  Knowledge gaps: {len(gaps) if isinstance(gaps, list) else gaps}")
                         self.print_info(
-                            f"  Priority areas: {len(priorities) if isinstance(priorities, list) else priorities}"
+                            f"  Priority areas: {len(priorities) if isinstance(priorities, list) else priorities}",
                         )
                         self.print_info(
-                            f"  Related documents found: {len(related_docs) if isinstance(related_docs, list) else related_docs}"  # noqa: E501
+                            f"  Related documents found: {len(related_docs) if isinstance(related_docs, list) else related_docs}",  # noqa: E501
                         )
                         self.print_info(f"  Similar drugs identified: {similar_drugs}")
                         self.print_info(
-                            f"  Cross-workflow opportunities: {len(cross_workflow_ops) if isinstance(cross_workflow_ops, list) else cross_workflow_ops}"  # noqa: E501
+                            f"  Cross-workflow opportunities: {len(cross_workflow_ops) if isinstance(cross_workflow_ops, list) else cross_workflow_ops}",  # noqa: E501
                         )
 
                         # Check existing evidence recognition
@@ -478,17 +478,17 @@ class DrugClassPatternTester:
                         elif strategy == "focused":
                             self.print_info("GOOD: System recommends focused strategy")
                             self.print_info(
-                                "  [CHECK] This suggests some class recognition even without explicit evidence count"
+                                "  [CHECK] This suggests some class recognition even without explicit evidence count",
                             )
                         elif strategy == "comprehensive" and total_existing > 0:
                             self.print_warning(
-                                "MIXED: System found existing evidence but still recommends comprehensive strategy"
+                                "MIXED: System found existing evidence but still recommends comprehensive strategy",
                             )
                             self.print_info("  [?] This may indicate conservative approach or threshold issues")
                         elif strategy == "unknown":
                             self.print_error("ISSUE: System returned 'unknown' strategy")
                             self.print_info(
-                                "  [X] This suggests get_enhanced_research_recommendations may have failed internally"
+                                "  [X] This suggests get_enhanced_research_recommendations may have failed internally",
                             )
                             self.print_info("  [X] Need to debug the method's internal logic")
                         else:
@@ -587,17 +587,17 @@ class DrugClassPatternTester:
                 self.print_debug(f"  Query {i + 1}: '{query}'")
 
                 results = self.memory.collection.query(
-                    query_texts=[query], n_results=5, include=["metadatas", "distances"]
+                    query_texts=[query], n_results=5, include=["metadatas", "distances"],
                 )
 
                 if results and results["metadatas"] and results["metadatas"][0]:
                     for j, (metadata, distance) in enumerate(
-                        zip(results["metadatas"][0], results["distances"][0], strict=False)
+                        zip(results["metadatas"][0], results["distances"][0], strict=False),
                     ):
                         drug_context = metadata.get("drug_names_context", [])
                         source = metadata.get("source_type", "unknown")
                         self.print_debug(
-                            f"    Result {j + 1}: distance={distance:.3f}, source={source}, drugs={drug_context}"
+                            f"    Result {j + 1}: distance={distance:.3f}, source={source}, drugs={drug_context}",
                         )
                 else:
                     self.print_debug("    No results found")
@@ -611,7 +611,7 @@ class DrugClassPatternTester:
             # Search for related content with correct drug names
             results = self.memory.collection.query(
                 query_texts=[
-                    "SGLT2 inhibitor Ertugliflozin heart failure cardiovascular outcomes sodium glucose cotransporter"
+                    "SGLT2 inhibitor Ertugliflozin heart failure cardiovascular outcomes sodium glucose cotransporter",
                 ],
                 n_results=20,
                 include=["metadatas", "documents", "distances"],
@@ -647,14 +647,14 @@ class DrugClassPatternTester:
                                 "metadata": metadata,
                                 "distance": distances[i] if i < len(distances) else 999,
                                 "drugs": drug_context,
-                            }
+                            },
                         )
 
                     # Show top results
                     if i < 5:
                         distance = distances[i] if i < len(distances) else "N/A"
                         self.print_info(
-                            f"  Result {i + 1} (distance: {distance:.3f}): {metadata.get('source_type', 'unknown')}"
+                            f"  Result {i + 1} (distance: {distance:.3f}): {metadata.get('source_type', 'unknown')}",
                         )
                         self.print_info(f"    Drugs: {drug_context}")
 
@@ -703,7 +703,7 @@ class DrugClassPatternTester:
             # Query for class-level evidence with correct drug names
             results = self.memory.collection.query(
                 query_texts=[
-                    "SGLT2 inhibitors cardiovascular outcomes heart failure class effect meta-analysis comparative effectiveness"  # noqa: E501
+                    "SGLT2 inhibitors cardiovascular outcomes heart failure class effect meta-analysis comparative effectiveness",  # noqa: E501
                 ],
                 n_results=30,
                 include=["metadatas", "documents"],
@@ -765,7 +765,7 @@ class DrugClassPatternTester:
                                 "id": metadata.get("canonical_id", "unknown")[:30],
                                 "drugs": sglt2_in_doc,
                                 "source": metadata.get("source_type", "unknown"),
-                            }
+                            },
                         )
 
             # Get unique SGLT2 drugs
@@ -775,7 +775,7 @@ class DrugClassPatternTester:
                     unique_sglt2_drugs.add(drug_list)
 
             self.print_success(
-                f"SGLT2 drug diversity: {len(unique_sglt2_drugs)} unique drugs: {sorted(list(unique_sglt2_drugs))}"
+                f"SGLT2 drug diversity: {len(unique_sglt2_drugs)} unique drugs: {sorted(list(unique_sglt2_drugs))}",
             )
             self.print_success(f"Multi-SGLT2 documents: {multi_sglt2_docs_count}/{sglt2_class_docs}")  # FIXED
             self.print_success(f"Class-level SGLT2 documents: {sglt2_class_docs}/{len(metadatas)}")
@@ -791,7 +791,7 @@ class DrugClassPatternTester:
 
             comp_results = self.memory.collection.query(
                 query_texts=[
-                    "Canagliflozin Dapagliflozin Empagliflozin Sotagliflozin comparative effectiveness cardiovascular outcomes head to head"  # noqa: E501
+                    "Canagliflozin Dapagliflozin Empagliflozin Sotagliflozin comparative effectiveness cardiovascular outcomes head to head",  # noqa: E501
                 ],
                 n_results=10,
                 include=["metadatas"],
@@ -825,14 +825,14 @@ class DrugClassPatternTester:
                                 "id": metadata.get("canonical_id", "unknown")[:30],
                                 "drugs": sglt2_drugs_in_doc,
                                 "source": metadata.get("source_type", "unknown"),
-                            }
+                            },
                         )
 
                 if comp_examples:
                     self.print_info("Examples of comparative evidence:")
                     for i, example in enumerate(comp_examples[:3]):
                         self.print_info(
-                            f"  {i + 1}. {example['id']}... ({example['source']}): compares {example['drugs']}"
+                            f"  {i + 1}. {example['id']}... ({example['source']}): compares {example['drugs']}",
                         )
 
             # Return corrected results
@@ -1002,7 +1002,7 @@ class DrugClassPatternTester:
             # Display comprehensive analysis
             self.print_success("\nSGLT2 KNOWLEDGE BASE SUMMARY:")
             self.print_info(
-                f"  Total SGLT2 documents: {sglt2_stats['total_sglt2_docs']}/{total_docs} ({sglt2_stats['total_sglt2_docs'] / total_docs * 100:.1f}%)"  # noqa: E501
+                f"  Total SGLT2 documents: {sglt2_stats['total_sglt2_docs']}/{total_docs} ({sglt2_stats['total_sglt2_docs'] / total_docs * 100:.1f}%)",  # noqa: E501
             )
 
             self.print_info("\n  Documents by drug:")
@@ -1133,7 +1133,7 @@ class DrugClassPatternTester:
             self.print_info("  [CHECK] This proves the underlying data and similarity is working perfectly")
         else:
             self.print_error(
-                f"CRITICAL: get_enhanced_research_recommendations returned '{predicted_strategy if predicted_strategy != 'update' else 'unknown'}' strategy"  # noqa: E501
+                f"CRITICAL: get_enhanced_research_recommendations returned '{predicted_strategy if predicted_strategy != 'update' else 'unknown'}' strategy",  # noqa: E501
             )
             self.print_info("  [X] Method is not leveraging the excellent similarity results")
             self.print_info("  [X] All internal arrays are empty despite rich knowledge base")
@@ -1151,7 +1151,7 @@ class DrugClassPatternTester:
         self.print_error("PRIMARY ISSUE: get_enhanced_research_recommendations() Implementation")
         self.print_info("Evidence from your logs:")
         self.print_info(
-            "  1. Raw response shows all empty arrays: {'priority_research': [], 'gap_addressing': [], ...}"
+            "  1. Raw response shows all empty arrays: {'priority_research': [], 'gap_addressing': [], ...}",
         )
         self.print_info("  2. Manual similarity search works perfectly (20/20 SGLT2 matches)")
         self.print_info("  3. Database has excellent cross-drug evidence")

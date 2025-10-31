@@ -165,8 +165,7 @@ def delete_account(
     current_user=Depends(get_current_active_user),
     token: str = Depends(oauth2_scheme),
 ):
-    """
-    Delete current user account and all associated data.
+    """Delete current user account and all associated data.
 
     This endpoint meets Apple's in-app account deletion requirements.
     Returns 204 No Content on success.

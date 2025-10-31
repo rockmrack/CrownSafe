@@ -1,5 +1,4 @@
-"""
-User-Agent blocking middleware
+"""User-Agent blocking middleware
 Blocks requests from known malicious scanners and bots
 """
 
@@ -15,8 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class UserAgentBlocker(BaseHTTPMiddleware):
-    """
-    Middleware to block requests from suspicious user agents
+    """Middleware to block requests from suspicious user agents
     """
 
     # Known malicious scanner patterns
@@ -60,8 +58,7 @@ class UserAgentBlocker(BaseHTTPMiddleware):
         block_empty_ua: bool = False,
         case_sensitive: bool = False,
     ):
-        """
-        Initialize UA blocker
+        """Initialize UA blocker
 
         Args:
             app: ASGI application
@@ -92,8 +89,7 @@ class UserAgentBlocker(BaseHTTPMiddleware):
         logger.info(f"UA blocker configured with {len(self.blocked_patterns)} blocked patterns")
 
     async def dispatch(self, request: Request, call_next):
-        """
-        Check user agent and block if suspicious
+        """Check user agent and block if suspicious
         """
         # Get user agent
         user_agent = request.headers.get("user-agent", "").strip()
@@ -156,8 +152,7 @@ class UserAgentBlocker(BaseHTTPMiddleware):
         return await call_next(request)
 
     def _is_suspicious_ua(self, user_agent: str) -> bool:
-        """
-        Check for additional suspicious patterns
+        """Check for additional suspicious patterns
 
         Args:
             user_agent: User agent string
@@ -199,8 +194,7 @@ class UserAgentBlocker(BaseHTTPMiddleware):
         return False
 
     def _forbidden_response(self, trace_id: str | None, message: str) -> JSONResponse:
-        """
-        Create forbidden response
+        """Create forbidden response
 
         Args:
             trace_id: Request trace ID
@@ -224,8 +218,7 @@ class UserAgentBlocker(BaseHTTPMiddleware):
 
 
 class SmartUserAgentFilter(UserAgentBlocker):
-    """
-    Advanced UA filter with ML-based detection (future enhancement)
+    """Advanced UA filter with ML-based detection (future enhancement)
     """
 
     def __init__(self, app, **kwargs):
@@ -234,8 +227,7 @@ class SmartUserAgentFilter(UserAgentBlocker):
         self.suspicious_score_threshold = 0.7
 
     def calculate_suspicion_score(self, user_agent: str) -> float:
-        """
-        Calculate suspicion score for a user agent
+        """Calculate suspicion score for a user agent
 
         Args:
             user_agent: User agent string

@@ -1,5 +1,4 @@
-"""
-Recall Alert System
+"""Recall Alert System
 Monitors agencies for new recalls and pushes alerts to affected users
 """
 
@@ -36,8 +35,7 @@ recall_alert_router = APIRouter(prefix="/api/v1/recall-alerts", tags=["recall-al
 
 @recall_alert_router.post("/test-alert-dev", response_model=dict)
 async def send_test_recall_alert_dev(request: dict):
-    """
-    DEV OVERRIDE: Send test recall alert without database dependencies
+    """DEV OVERRIDE: Send test recall alert without database dependencies
     """
     try:
         # Simulate recall alert
@@ -66,8 +64,7 @@ async def send_test_recall_alert_dev(request: dict):
 
 @recall_alert_router.get("/check-now-dev", response_model=dict)
 async def check_recalls_now_dev():
-    """
-    DEV OVERRIDE: Check for recalls without database dependencies
+    """DEV OVERRIDE: Check for recalls without database dependencies
     """
     try:
         # Simulate recall check
@@ -107,8 +104,7 @@ async def check_recalls_now_dev():
 
 @recall_alert_router.get("/preferences-dev", response_model=dict)
 async def get_alert_preferences_dev():
-    """
-    DEV OVERRIDE: Get alert preferences without database dependencies
+    """DEV OVERRIDE: Get alert preferences without database dependencies
     """
     try:
         # Return default preferences for dev/testing
@@ -137,8 +133,7 @@ async def get_alert_preferences_dev():
 
 @recall_alert_router.post("/preferences-dev", response_model=dict)
 async def update_alert_preferences_dev(request: dict):
-    """
-    DEV OVERRIDE: Update alert preferences without database dependencies
+    """DEV OVERRIDE: Update alert preferences without database dependencies
     """
     try:
         # Simulate preferences update
@@ -158,8 +153,7 @@ async def update_alert_preferences_dev(request: dict):
 
 @recall_alert_router.get("/history-dev/{user_id}", response_model=dict)
 async def get_alert_history_dev(user_id: int):
-    """
-    DEV OVERRIDE: Get alert history without database dependencies
+    """DEV OVERRIDE: Get alert history without database dependencies
     """
     try:
         # Mock alert history
@@ -236,10 +230,9 @@ class RecallAlertService:
 
     @classmethod
     async def check_agency_for_new_recalls(
-        cls, agency: str, last_check_time: datetime, db: Session
+        cls, agency: str, last_check_time: datetime, db: Session,
     ) -> RecallCheckResult:
         """Check a specific agency for new recalls since last check"""
-
         new_recalls = []
 
         try:
@@ -271,7 +264,7 @@ class RecallAlertService:
                                             "remedy": recall.get("Remedies", [{}])[0].get("Name"),
                                             "date": recall.get("RecallDate"),
                                             "agency": "CPSC",
-                                        }
+                                        },
                                     )
                     except Exception as e:
                         logger.error(f"Error checking CPSC: {e}")
@@ -291,7 +284,6 @@ class RecallAlertService:
     @classmethod
     async def find_affected_users(cls, recall: dict[str, Any], db: Session) -> list[int]:
         """Find users who have scanned products affected by this recall"""
-
         affected_user_ids = []
 
         try:
@@ -305,7 +297,7 @@ class RecallAlertService:
                     or_(
                         func.lower(ScanHistory.product_name).contains(product_name),
                         func.lower(ScanHistory.brand).contains(product_name.split()[0] if product_name else ""),
-                    )
+                    ),
                 )
                 .distinct(ScanHistory.user_id)
                 .all()
@@ -320,9 +312,9 @@ class RecallAlertService:
                     or_(
                         func.lower(MonitoredProduct.product_name).contains(product_name),
                         func.lower(MonitoredProduct.brand_name).contains(
-                            product_name.split()[0] if product_name else ""
+                            product_name.split()[0] if product_name else "",
                         ),
-                    )
+                    ),
                 )
                 .distinct(MonitoredProduct.user_id)
                 .all()
@@ -340,7 +332,6 @@ class RecallAlertService:
     @classmethod
     async def send_recall_alert(cls, user_id: int, recall: dict[str, Any], db: Session) -> bool:
         """Send recall alert to a specific user"""
-
         try:
             # Get user's devices
             devices = db.query(DeviceToken).filter(DeviceToken.user_id == user_id, DeviceToken.is_active).all()
@@ -408,7 +399,6 @@ class RecallAlertService:
     @classmethod
     def _determine_severity(cls, recall: dict[str, Any]) -> str:
         """Determine severity level of a recall"""
-
         hazard = recall.get("hazard", "").lower()
 
         # Critical severity keywords
@@ -431,8 +421,7 @@ class RecallAlertService:
 
 # @celery_app.task(name="check_all_agencies_for_recalls")  # Commented out - celery not available
 async def check_all_agencies_for_recalls():
-    """
-    Background task that checks all agencies for new recalls.
+    """Background task that checks all agencies for new recalls.
     Used with FastAPI BackgroundTasks (supports async functions).
 
     NOTE: If Celery is re-enabled in the future, this function will need to be
@@ -504,8 +493,7 @@ async def check_all_agencies_for_recalls():
 
 # @celery_app.task(name="send_daily_recall_digest")  # Commented out - celery not available
 def send_daily_recall_digest():
-    """
-    Send daily digest of recalls to users who prefer daily updates
+    """Send daily digest of recalls to users who prefer daily updates
     """
     logger.info("Sending daily recall digest...")
 
@@ -539,7 +527,6 @@ def send_daily_recall_digest():
 @recall_alert_router.post("/test-alert")
 async def test_recall_alert(user_id: int, product_name: str, db: Session = Depends(get_db)):
     """Test endpoint to trigger a recall alert for a user"""
-
     mock_recall = {
         "recall_id": f"TEST_{datetime.utcnow().timestamp()}",
         "product_name": product_name,
@@ -559,7 +546,6 @@ async def test_recall_alert(user_id: int, product_name: str, db: Session = Depen
 @recall_alert_router.get("/check-now")
 async def check_recalls_now(background_tasks: BackgroundTasks):
     """Manually trigger a recall check across all agencies"""
-
     background_tasks.add_task(check_all_agencies_for_recalls)
 
     return {"success": True, "message": "Recall check initiated in background"}
@@ -571,7 +557,6 @@ async def get_alert_preferences(
     db: Session = Depends(get_db),
 ):
     """Get user's recall alert preferences"""
-
     try:
         # For now, return default preferences since we don't have a preferences table yet
         # In production, this would query the user preferences table
@@ -599,7 +584,6 @@ async def get_alert_preferences(
 @recall_alert_router.post("/preferences")
 async def update_alert_preferences(preferences: UserAlertPreference, db: Session = Depends(get_db)):
     """Update user's recall alert preferences"""
-
     # Store preferences in database
     # Implementation would update user preferences table
 
@@ -613,7 +597,6 @@ async def update_alert_preferences(preferences: UserAlertPreference, db: Session
 @recall_alert_router.get("/history/{user_id}")
 async def get_alert_history(user_id: int, limit: int = 50, db: Session = Depends(get_db)):
     """Get user's recall alert history"""
-
     try:
         # Try to use NotificationHistory if available
         alerts = (

@@ -1,5 +1,4 @@
-"""
-User privacy API routes for GDPR/CCPA compliance
+"""User privacy API routes for GDPR/CCPA compliance
 Handles data export, deletion, and privacy information requests
 """
 
@@ -36,8 +35,7 @@ dsar_limiter = RateLimiter(times=5, seconds=3600)
 
 
 class DSARRequest(BaseModel):
-    """
-    Data Subject Access Request model
+    """Data Subject Access Request model
     """
 
     email: EmailStr = Field(..., description="User email for export/delete")
@@ -63,8 +61,7 @@ class DSARRequest(BaseModel):
 
 
 class DSARResponse(BaseModel):
-    """
-    Standard DSAR response model
+    """Standard DSAR response model
     """
 
     ok: bool = True
@@ -76,8 +73,7 @@ class DSARResponse(BaseModel):
 
 
 def create_response(data: dict, request: Request, status_code: int = 200) -> JSONResponse:
-    """
-    Create standard JSON response with trace ID
+    """Create standard JSON response with trace ID
 
     Args:
         data: Response data
@@ -105,8 +101,7 @@ async def request_data_export(
     user_agent: str | None = Header(None),
     db: Session = Depends(get_db),
 ):
-    """
-    Request export of all user data
+    """Request export of all user data
 
     This endpoint allows users to request a copy of all their personal data
     in compliance with GDPR Article 15 (Right of Access) and CCPA.
@@ -128,7 +123,7 @@ async def request_data_export(
                     PrivacyRequest.email_hash == email_hash(body.email),
                     PrivacyRequest.kind == "export",
                     PrivacyRequest.status.in_(["queued", "verifying", "processing"]),
-                )
+                ),
             )
             .first()
         )
@@ -194,8 +189,7 @@ async def request_data_deletion(
     user_agent: str | None = Header(None),
     db: Session = Depends(get_db),
 ):
-    """
-    Request deletion of all user data
+    """Request deletion of all user data
 
     This endpoint allows users to request deletion of all their personal data
     in compliance with GDPR Article 17 (Right to Erasure) and CCPA.
@@ -217,7 +211,7 @@ async def request_data_deletion(
                     PrivacyRequest.email_hash == email_hash(body.email),
                     PrivacyRequest.kind == "delete",
                     PrivacyRequest.status.in_(["queued", "verifying", "processing"]),
-                )
+                ),
             )
             .first()
         )
@@ -280,8 +274,7 @@ async def request_data_deletion(
 
 @router.get("/privacy/summary")
 async def privacy_summary(request: Request):
-    """
-    Get privacy policy summary and links
+    """Get privacy policy summary and links
 
     Returns key privacy information including DPO contact, retention periods,
     and links to legal documents.
@@ -339,8 +332,7 @@ async def privacy_summary(request: Request):
 
 @router.post("/privacy/verify/{token}")
 async def verify_privacy_request(token: str, request: Request, db: Session = Depends(get_db)):
-    """
-    Verify a privacy request via email token
+    """Verify a privacy request via email token
 
     This endpoint is used to verify DSAR requests sent via email verification links.
     """
@@ -398,8 +390,7 @@ async def verify_privacy_request(token: str, request: Request, db: Session = Dep
 
 @router.get("/privacy/status/{request_id}")
 async def check_request_status(request_id: str, request: Request, db: Session = Depends(get_db)):
-    """
-    Check status of a privacy request
+    """Check status of a privacy request
 
     Users can check the status of their DSAR request using the request ID.
     """
@@ -458,8 +449,7 @@ async def check_request_status(request_id: str, request: Request, db: Session = 
 
 @router.post("/data/rectify", dependencies=[Depends(dsar_limiter)])
 async def request_data_rectification(request: Request, body: DSARRequest, db: Session = Depends(get_db)):
-    """
-    Request rectification of inaccurate data (GDPR Article 16)
+    """Request rectification of inaccurate data (GDPR Article 16)
     """
     # Similar implementation to export/delete
     # Would create a "rectify" type request
@@ -468,8 +458,7 @@ async def request_data_rectification(request: Request, body: DSARRequest, db: Se
 
 @router.post("/data/restrict", dependencies=[Depends(dsar_limiter)])
 async def request_processing_restriction(request: Request, body: DSARRequest, db: Session = Depends(get_db)):
-    """
-    Request restriction of processing (GDPR Article 18)
+    """Request restriction of processing (GDPR Article 18)
     """
     return create_response(
         format_dsar_response("restrict", "queued", body.jurisdiction or "other"),
@@ -479,8 +468,7 @@ async def request_processing_restriction(request: Request, body: DSARRequest, db
 
 @router.post("/data/object", dependencies=[Depends(dsar_limiter)])
 async def object_to_processing(request: Request, body: DSARRequest, db: Session = Depends(get_db)):
-    """
-    Object to data processing (GDPR Article 21)
+    """Object to data processing (GDPR Article 21)
     """
     return create_response(format_dsar_response("object", "queued", body.jurisdiction or "other"), request)
 

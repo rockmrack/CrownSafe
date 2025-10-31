@@ -1,5 +1,4 @@
-"""
-Next-Generation Traceability API Endpoints
+"""Next-Generation Traceability API Endpoints
 Barcode, QR Code, and DataMatrix scanning with precise recall matching
 """
 
@@ -100,8 +99,7 @@ class ScanResponse(BaseModel):
 
 # Helper Functions
 def check_recall_database(scan_result: ScanResult, db: Session) -> RecallCheckResult:
-    """
-    Check scanned product against recall database
+    """Check scanned product against recall database
     REMOVED FOR CROWN SAFE: Recall checking no longer applicable (hair products, not baby recalls)
 
     Args:
@@ -111,7 +109,6 @@ def check_recall_database(scan_result: ScanResult, db: Session) -> RecallCheckRe
     Returns:
         Recall check result with matching recalls
     """
-
     # Return empty recall check for backward compatibility
     recall_check = RecallCheckResult(
         recall_found=False,
@@ -208,8 +205,7 @@ def _persist_verification(
 # API Endpoints
 @barcode_router.post("/barcode", response_model=ApiResponse)
 async def scan_barcode_text(request: BarcodeScanRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """
-    Scan and parse text barcode data
+    """Scan and parse text barcode data
 
     Supports standard barcodes, QR codes, and GS1 formatted data.
     Automatically extracts GTIN, lot numbers, serial numbers, and dates.
@@ -251,8 +247,7 @@ async def scan_image(
     file: UploadFile = File(..., description="Image file to scan"),
     db: Session = Depends(get_db_session),
 ) -> ApiResponse:
-    """
-    Scan an image for barcodes, QR codes, and DataMatrix codes
+    """Scan an image for barcodes, QR codes, and DataMatrix codes
 
     Supports multiple barcode detection in a single image.
     Automatically preprocesses images for better detection.
@@ -305,8 +300,7 @@ async def scan_image(
 
 @barcode_router.post("/qr", response_model=ApiResponse)
 async def scan_qr_code(request: BarcodeScanRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """
-    Specialized QR code scanning with enhanced parsing
+    """Specialized QR code scanning with enhanced parsing
 
     Supports JSON payloads, URLs, and GS1 Digital Links.
     Extracts structured data for precise recall matching.
@@ -346,8 +340,7 @@ async def scan_qr_code(request: BarcodeScanRequest, db: Session = Depends(get_db
 
 @barcode_router.post("/datamatrix", response_model=ApiResponse)
 async def scan_datamatrix(request: ImageScanRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """
-    Scan DataMatrix 2D barcodes
+    """Scan DataMatrix 2D barcodes
 
     Common in pharmaceuticals and medical devices.
     Supports GS1 DataMatrix with full AI parsing.
@@ -398,8 +391,7 @@ async def parse_gs1_data(
     gs1_data: str = Body(..., description="GS1 formatted string with AIs"),
     db: Session = Depends(get_db_session),
 ) -> ApiResponse:
-    """
-    Parse GS1-128 or GS1 DataMatrix formatted data
+    """Parse GS1-128 or GS1 DataMatrix formatted data
 
     Extracts all Application Identifiers (AIs) including:
     - GTIN (01)
@@ -450,8 +442,7 @@ class VerifyRequest(BaseModel):
 
 @barcode_router.post("/verify", response_model=ApiResponse)
 async def verify_unit(request: VerifyRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """
-    Verify a unit (GTIN/lot/serial/expiry) with a pluggable manufacturer connector.
+    """Verify a unit (GTIN/lot/serial/expiry) with a pluggable manufacturer connector.
     Always persists a verification record for audit.
     """
     try:
@@ -497,8 +488,7 @@ async def verify_unit(request: VerifyRequest, db: Session = Depends(get_db_sessi
 
 @barcode_router.post("/generate-qr")
 async def generate_qr_code(request: QRGenerateRequest) -> Response:
-    """
-    Generate a QR code with product information
+    """Generate a QR code with product information
 
     Creates a QR code containing structured product data
     that can be scanned for recall checking.
@@ -544,8 +534,7 @@ async def generate_qr_code(request: QRGenerateRequest) -> Response:
 
 @mobile_scan_router.post("/results", response_model=ScanResultsPage)
 async def get_scan_results_page(request: BarcodeScanRequest, db: Session = Depends(get_db_session)) -> ScanResultsPage:
-    """
-    Get formatted scan results for mobile display
+    """Get formatted scan results for mobile display
 
     Returns a properly structured results page with:
     - Legally defensible verdict language
@@ -652,8 +641,7 @@ async def barcode_scan_with_file(
     file: UploadFile = File(..., description="Image file to scan for barcodes"),
     db: Session = Depends(get_db_session),
 ) -> ApiResponse:
-    """
-    Scan barcode from uploaded image file with security validation.
+    """Scan barcode from uploaded image file with security validation.
 
     This endpoint validates:
     - File type (must be image: jpg, jpeg, png, gif, bmp, webp)

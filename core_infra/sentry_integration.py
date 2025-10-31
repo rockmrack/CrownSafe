@@ -1,5 +1,4 @@
-"""
-Sentry Error Tracking Integration.
+"""Sentry Error Tracking Integration.
 
 This module initializes Sentry for error tracking and performance monitoring.
 It integrates with FastAPI and SQLAlchemy to capture errors and slow queries.
@@ -17,8 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def init_sentry():
-    """
-    Initialize Sentry error tracking.
+    """Initialize Sentry error tracking.
 
     Configuration is done via environment variables:
     - SENTRY_DSN: Sentry project DSN (required)
@@ -76,7 +74,7 @@ def init_sentry():
 
         logger.info(
             f"✅ Sentry error tracking initialized "
-            f"(env={environment}, release={release[:8]}, traces={traces_sample_rate})"
+            f"(env={environment}, release={release[:8]}, traces={traces_sample_rate})",
         )
         return True
 
@@ -86,8 +84,7 @@ def init_sentry():
 
 
 def scrub_sensitive_data(event, hint):
-    """
-    Scrub sensitive data from Sentry events before sending.
+    """Scrub sensitive data from Sentry events before sending.
 
     Args:
         event: The Sentry event dict
@@ -116,8 +113,7 @@ def scrub_sensitive_data(event, hint):
 
 
 def capture_exception(error: Exception, context: dict = None):
-    """
-    Manually capture an exception and send to Sentry.
+    """Manually capture an exception and send to Sentry.
 
     Args:
         error: The exception to capture
@@ -133,8 +129,7 @@ def capture_exception(error: Exception, context: dict = None):
 
 
 def capture_message(message: str, level: str = "info", context: dict = None):
-    """
-    Manually capture a message and send to Sentry.
+    """Manually capture a message and send to Sentry.
 
     Args:
         message: The message to capture

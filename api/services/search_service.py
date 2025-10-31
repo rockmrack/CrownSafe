@@ -1,5 +1,4 @@
-"""
-Enhanced Search Service with pg_trgm fuzzy matching, keyword AND logic, and deterministic sorting
+"""Enhanced Search Service with pg_trgm fuzzy matching, keyword AND logic, and deterministic sorting
 """
 
 import logging
@@ -13,8 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class SearchService:
-    """
-    Advanced search service using PostgreSQL pg_trgm for fuzzy matching
+    """Advanced search service using PostgreSQL pg_trgm for fuzzy matching
     """
 
     def __init__(self, db_session: Session):
@@ -42,13 +40,11 @@ class SearchService:
         offset: int = 0,
         cursor_data: dict[str, Any] | None = None,
     ) -> tuple[str, dict[str, Any], bool]:
-        """
-        Build optimized SQL query using pg_trgm for fuzzy search
+        """Build optimized SQL query using pg_trgm for fuzzy search
 
         Returns:
             (sql_query, params, use_scoring)
         """
-
         # Determine which table to use (portable check)
         from sqlalchemy import inspect
 
@@ -86,7 +82,7 @@ class SearchService:
                     f"{table}.manufacturer",
                     f"{table}.model_number",
                     f"{table}.upc",
-                ]
+                ],
             )
 
         # Start building WHERE conditions
@@ -221,7 +217,7 @@ class SearchService:
                 [
                     f"COALESCE({table}.recall_date, '1900-01-01') DESC",
                     f"{table}.recall_id ASC",
-                ]
+                ],
             )
 
         # Handle cursor-based pagination
@@ -238,7 +234,7 @@ class SearchService:
                     f"""
                     ({table}.recall_date < :cursor_date) OR 
                     ({table}.recall_date = :cursor_date AND {table}.recall_id > :cursor_id)
-                """
+                """,
                 )
                 params["cursor_date"] = last_date
                 params["cursor_id"] = last_id
@@ -284,8 +280,7 @@ class SearchService:
         offset: int | None = None,
         cursor: str | None = None,
     ) -> dict[str, Any]:
-        """
-        Execute search with fuzzy matching and return results
+        """Execute search with fuzzy matching and return results
         """
         try:
             # Handle cursor-based pagination
@@ -311,7 +306,7 @@ class SearchService:
                 actual_offset = 0
 
             logger.info(
-                f"Search parameters: offset={offset}, cursor={cursor}, actual_offset={actual_offset}, limit={limit}, use_cursor={use_cursor_pagination}"  # noqa: E501
+                f"Search parameters: offset={offset}, cursor={cursor}, actual_offset={actual_offset}, limit={limit}, use_cursor={use_cursor_pagination}",  # noqa: E501
             )
 
             # Build the query

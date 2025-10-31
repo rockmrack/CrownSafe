@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test script for the Incident Reporting System
+"""Test script for the Incident Reporting System
 Tests the "Report Unsafe Product" feature
 """
 
@@ -63,7 +62,6 @@ TEST_INCIDENTS = [
 
 async def test_submit_incident(incident_data):
     """Test submitting an incident report"""
-
     async with httpx.AsyncClient() as client:
         # Prepare form data
         form_data = {
@@ -95,7 +93,6 @@ async def test_submit_incident(incident_data):
 
 async def test_check_clusters():
     """Test checking for incident clusters"""
-
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(f"{BASE_URL}/api/v1/incidents/clusters", params={"min_incidents": 2})
@@ -128,7 +125,6 @@ async def test_check_clusters():
 
 async def test_get_statistics():
     """Test getting incident statistics"""
-
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(f"{BASE_URL}/api/v1/incidents/stats", params={"days": 7})
@@ -165,7 +161,6 @@ async def test_get_statistics():
 
 async def test_report_page():
     """Test accessing the report page"""
-
     async with httpx.AsyncClient() as client:
         try:
             # Test main report page
@@ -191,7 +186,6 @@ async def test_report_page():
 
 async def main():
     """Run all tests"""
-
     print("=" * 60)
     print("🚨 TESTING INCIDENT REPORTING SYSTEM")
     print("=" * 60)

@@ -29,8 +29,7 @@ class CustomJsonEncoder(json.JSONEncoder):
 
 
 class BabyShieldCacheManager:
-    """
-    High-performance Redis cache manager optimized for BabyShield's 39-agency recall system.
+    """High-performance Redis cache manager optimized for BabyShield's 39-agency recall system.
     Provides intelligent caching strategies for maximum speed with data freshness.
     """
 
@@ -254,8 +253,7 @@ def delete_cached(cache_type: str, identifier: str, **kwargs) -> bool:
 
 
 def invalidate_pattern(pattern: str) -> int:
-    """
-    Invalidate multiple cache keys matching a Redis pattern.
+    """Invalidate multiple cache keys matching a Redis pattern.
 
     This is a module-level convenience function that delegates to the
     BabyShieldCacheManager instance.

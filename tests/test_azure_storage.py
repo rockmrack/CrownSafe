@@ -1,5 +1,4 @@
-"""
-Comprehensive tests for Azure Blob Storage client
+"""Comprehensive tests for Azure Blob Storage client
 Tests upload, download, deletion, and SAS URL generation
 """
 
@@ -321,8 +320,7 @@ class TestAzureStorageErrorHandling:
 
 
 class TestAzureStorageIntegration:
-    """
-    Integration tests (requires Azurite or actual Azure Storage)
+    """Integration tests (requires Azurite or actual Azure Storage)
     Skip by default, run with: pytest -m integration
     """
 

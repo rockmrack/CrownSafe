@@ -1,5 +1,4 @@
-"""
-COMPREHENSIVE AGENT TEST SUITE - ALL BABYSHIELD AGENTS
+"""COMPREHENSIVE AGENT TEST SUITE - ALL BABYSHIELD AGENTS
 Tests all major agents in the BabyShield system
 Date: October 10, 2025
 
@@ -45,7 +44,7 @@ print("=" * 80 + "\n")
 
 if not _REPORT_BUILDER_AVAILABLE:
     pytestmark = pytest.mark.skip(  # type: ignore[var-annotated]
-        reason=(f"ReportBuilderAgent dependencies unavailable: {_REPORT_BUILDER_IMPORT_ERROR}")
+        reason=(f"ReportBuilderAgent dependencies unavailable: {_REPORT_BUILDER_IMPORT_ERROR}"),
     )
 
 
@@ -279,7 +278,7 @@ def test_report_builder_generate_report():
                 "product_name": "Baby Stroller",
                 "hazard": "Fall risk",
                 "agency": "CPSC",
-            }
+            },
         ],
         "report_type": "baby_safety",
     }
@@ -359,7 +358,7 @@ async def test_alternatives_agent_process_task():
             "product_name": "Baby Bottle X",
             "product_category": "feeding",
             "unsafe_product": True,
-        }
+        },
     )
 
     assert result is not None
@@ -413,7 +412,7 @@ async def test_workflow_recall_to_report():
             "upc": "070470003795",
             "recalls": [],
             "report_type": "baby_safety",
-        }
+        },
     )
 
     assert recall_result is not None
@@ -483,7 +482,7 @@ if __name__ == "__main__":
             "--tb=short",
             "-s",  # Show print statements
             "--asyncio-mode=auto",
-        ]
+        ],
     )
 
     sys.exit(exit_code)

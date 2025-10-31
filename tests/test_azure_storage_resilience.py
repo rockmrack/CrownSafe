@@ -1,5 +1,4 @@
-"""
-Comprehensive tests for Azure storage resilience layer
+"""Comprehensive tests for Azure storage resilience layer
 Tests circuit breaker, retry logic, correlation IDs, and error handling
 """
 

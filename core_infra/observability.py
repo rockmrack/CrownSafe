@@ -1,5 +1,4 @@
-"""
-Observability and Tracing Configuration
+"""Observability and Tracing Configuration
 Distributed tracing with OpenTelemetry and Azure Application Insights
 
 Features:
@@ -25,8 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class ObservabilityManager:
-    """
-    Manages observability, tracing, and instrumentation
+    """Manages observability, tracing, and instrumentation
     """
 
     def __init__(self, service_name: str = "crownsafe-api"):
@@ -35,8 +33,7 @@ class ObservabilityManager:
         self.tracer = None
 
     def initialize(self, endpoint: str = None):
-        """
-        Initialize OpenTelemetry tracing
+        """Initialize OpenTelemetry tracing
 
         Args:
             endpoint: OTLP collector endpoint
@@ -62,8 +59,7 @@ class ObservabilityManager:
             logger.error(f"Failed to initialize observability: {e}")
 
     def instrument_fastapi(self, app):
-        """
-        Instrument FastAPI application
+        """Instrument FastAPI application
 
         Args:
             app: FastAPI application instance
@@ -75,8 +71,7 @@ class ObservabilityManager:
             logger.error(f"FastAPI instrumentation failed: {e}")
 
     def instrument_sqlalchemy(self, engine):
-        """
-        Instrument SQLAlchemy database engine
+        """Instrument SQLAlchemy database engine
 
         Args:
             engine: SQLAlchemy engine
@@ -88,8 +83,7 @@ class ObservabilityManager:
             logger.error(f"SQLAlchemy instrumentation failed: {e}")
 
     def instrument_redis(self):
-        """
-        Instrument Redis client
+        """Instrument Redis client
         """
         try:
             RedisInstrumentor().instrument()
@@ -98,8 +92,7 @@ class ObservabilityManager:
             logger.error(f"Redis instrumentation failed: {e}")
 
     def instrument_requests(self):
-        """
-        Instrument HTTP requests library
+        """Instrument HTTP requests library
         """
         try:
             RequestsInstrumentor().instrument()
@@ -108,8 +101,7 @@ class ObservabilityManager:
             logger.error(f"Requests instrumentation failed: {e}")
 
     def create_span(self, name: str, attributes: dict[str, str] = None):
-        """
-        Create a custom span for tracing
+        """Create a custom span for tracing
 
         Args:
             name: Span name
@@ -133,8 +125,7 @@ class ObservabilityManager:
 
 
 class AzureMonitorIntegration:
-    """
-    Integration with Azure Application Insights
+    """Integration with Azure Application Insights
     """
 
     def __init__(self, connection_string: str = None):
@@ -142,8 +133,7 @@ class AzureMonitorIntegration:
         self.client = None
 
     def initialize(self):
-        """
-        Initialize Azure Application Insights
+        """Initialize Azure Application Insights
         """
         if not self.connection_string:
             logger.warning("Azure Monitor connection string not configured")
@@ -166,8 +156,7 @@ class AzureMonitorIntegration:
             logger.error(f"Azure Monitor initialization failed: {e}")
 
     def log_custom_event(self, event_name: str, properties: dict = None):
-        """
-        Log custom event to Application Insights
+        """Log custom event to Application Insights
 
         Args:
             event_name: Event name
@@ -180,8 +169,7 @@ class AzureMonitorIntegration:
             logger.error(f"Failed to log custom event: {e}")
 
     def log_custom_metric(self, metric_name: str, value: float, properties: dict = None):
-        """
-        Log custom metric to Application Insights
+        """Log custom metric to Application Insights
 
         Args:
             metric_name: Metric name
@@ -203,8 +191,7 @@ _observability_manager = None
 
 
 def get_observability_manager() -> ObservabilityManager:
-    """
-    Get global observability manager instance
+    """Get global observability manager instance
     """
     global _observability_manager
     if _observability_manager is None:

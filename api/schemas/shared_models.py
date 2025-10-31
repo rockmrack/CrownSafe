@@ -1,5 +1,4 @@
-"""
-Shared Pydantic Models
+"""Shared Pydantic Models
 Reduces duplication of model definitions across endpoint files
 """
 
@@ -359,5 +358,5 @@ class HealthCheckResponse(BaseModel):
             "database": "unknown",
             "cache": "unknown",
             "external_apis": "unknown",
-        }
+        },
     )

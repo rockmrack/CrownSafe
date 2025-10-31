@@ -23,7 +23,7 @@ if os.path.exists(env_path):
     bootstrap_logger.info(f"Loaded .env from: {env_path}")
 else:
     bootstrap_logger.warning(
-        f".env file not found at {env_path}. Service may rely on environment variables being set externally."
+        f".env file not found at {env_path}. Service may rely on environment variables being set externally.",
     )
 
 # --- Local Module Imports ---
@@ -55,7 +55,7 @@ async def lifespan(app: FastAPI):
             logger.info("Lifespan: In-memory agent registry cleared via agent_registry.clear().")
         else:
             logger.warning(
-                "Lifespan: Agent registry not found or not a dict in discovery module. Cannot clear/initialize."
+                "Lifespan: Agent registry not found or not a dict in discovery module. Cannot clear/initialize.",
             )
 
         # Clear any existing connections from a previous unclean shutdown
@@ -84,7 +84,7 @@ async def lifespan(app: FastAPI):
             logger.info("Lifespan: All active WebSocket connections closed.")
         else:
             logger.info(
-                "Lifespan: state.close_all_connections not found or not callable. Manual connection cleanup might be needed if connections persist."  # noqa: E501
+                "Lifespan: state.close_all_connections not found or not callable. Manual connection cleanup might be needed if connections persist.",  # noqa: E501
             )
 
         logger.info("Lifespan: Resource cleanup during shutdown completed.")
@@ -130,7 +130,7 @@ async def websocket_endpoint(websocket: WebSocket, agent_id: str):
         or not callable(handle_message)
     ):
         app_logger.critical(
-            "CRITICAL: state module or handle_message function is not properly initialized/imported. WebSocket endpoint cannot function."  # noqa: E501
+            "CRITICAL: state module or handle_message function is not properly initialized/imported. WebSocket endpoint cannot function.",  # noqa: E501
         )
         await websocket.accept()
         await websocket.close(code=1011, reason="Server configuration error.")
@@ -143,13 +143,13 @@ async def websocket_endpoint(websocket: WebSocket, agent_id: str):
     connection_added = state.add_connection(agent_id, websocket)
     if not connection_added:
         app_logger.warning(
-            f"Failed to add connection for agent '{agent_id}', invalid agent_id or other error. Closing."
+            f"Failed to add connection for agent '{agent_id}', invalid agent_id or other error. Closing.",
         )
         await websocket.close(code=1008, reason="Failed to register connection.")
         return
 
     app_logger.info(
-        f"WebSocket for agent '{agent_id}' accepted and added. Total connections: {len(state.get_all_connections())}"
+        f"WebSocket for agent '{agent_id}' accepted and added. Total connections: {len(state.get_all_connections())}",
     )
 
     try:
@@ -159,7 +159,7 @@ async def websocket_endpoint(websocket: WebSocket, agent_id: str):
             await handle_message(agent_id, message_text, websocket)
     except WebSocketDisconnect as e:
         app_logger.info(
-            f"Agent '{agent_id}' disconnected (Code: {e.code}, Reason: '{e.reason if e.reason else 'N/A'}')."
+            f"Agent '{agent_id}' disconnected (Code: {e.code}, Reason: '{e.reason if e.reason else 'N/A'}').",
         )
     except Exception as e:
         app_logger.error(
@@ -171,18 +171,18 @@ async def websocket_endpoint(websocket: WebSocket, agent_id: str):
                 await websocket.close(code=1011, reason="Internal server error")
             except RuntimeError:
                 app_logger.warning(
-                    f"RuntimeError attempting to close WebSocket for '{agent_id}', likely already closed."
+                    f"RuntimeError attempting to close WebSocket for '{agent_id}', likely already closed.",
                 )
     finally:
         # FIXED: Properly handle return value
         removed = state.remove_connection(agent_id)
         if removed:
             app_logger.info(
-                f"Connection for '{agent_id}' cleanly removed. Total connections: {len(state.get_all_connections())}"
+                f"Connection for '{agent_id}' cleanly removed. Total connections: {len(state.get_all_connections())}",
             )
         else:
             app_logger.info(
-                f"Attempted to remove connection for '{agent_id}', but it was not found. Total connections: {len(state.get_all_connections())}"  # noqa: E501
+                f"Attempted to remove connection for '{agent_id}', but it was not found. Total connections: {len(state.get_all_connections())}",  # noqa: E501
             )
 
 
@@ -231,7 +231,7 @@ if __name__ == "__main__":
     run_reload = False  # PERMANENTLY DISABLED HOT-RELOAD
 
     main_execution_logger.info(
-        f"Uvicorn configured to run on host='{run_host}', port={run_port}, log_level='{run_log_level}', reload={run_reload}"  # noqa: E501
+        f"Uvicorn configured to run on host='{run_host}', port={run_port}, log_level='{run_log_level}', reload={run_reload}",  # noqa: E501
     )
 
     uvicorn.run(

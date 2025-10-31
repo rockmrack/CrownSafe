@@ -1,5 +1,4 @@
-"""
-Database models for Proactive Consumer Product Safety Risk Assessment Framework
+"""Database models for Proactive Consumer Product Safety Risk Assessment Framework
 Implements golden records, risk profiles, and data source tracking
 """
 
@@ -53,8 +52,7 @@ class RiskSeverity(Enum):
 
 
 class ProductGoldenRecord(Base):
-    """
-    Unified product record - the single source of truth
+    """Unified product record - the single source of truth
     Consolidates data from all sources through entity resolution
     """
 
@@ -119,8 +117,7 @@ class ProductGoldenRecord(Base):
 
 
 class ProductRiskProfile(Base):
-    """
-    Dynamic risk assessment profile for each product
+    """Dynamic risk assessment profile for each product
     Continuously updated based on new data
     """
 
@@ -176,8 +173,7 @@ class ProductRiskProfile(Base):
 
 
 class ProductDataSource(Base):
-    """
-    Tracks all data sources for a product
+    """Tracks all data sources for a product
     Maintains provenance and update history
     """
 
@@ -213,8 +209,7 @@ class ProductDataSource(Base):
 
 
 class SafetyIncident(Base):
-    """
-    Individual safety incidents linked to products
+    """Individual safety incidents linked to products
     From CPSC NEISS, Clearinghouse, EU Safety Gate, etc.
     """
 
@@ -270,8 +265,7 @@ class SafetyIncident(Base):
 
 
 class CompanyComplianceProfile(Base):
-    """
-    Company/manufacturer compliance history
+    """Company/manufacturer compliance history
     Used for risk scoring based on company track record
     """
 
@@ -311,8 +305,7 @@ class CompanyComplianceProfile(Base):
 
 
 class RiskAssessmentReport(Base):
-    """
-    Generated risk assessment reports
+    """Generated risk assessment reports
     Includes all analysis, scores, and disclaimers
     """
 
@@ -363,8 +356,7 @@ class RiskAssessmentReport(Base):
 
 
 class DataIngestionJob(Base):
-    """
-    Tracks data ingestion jobs from various sources
+    """Tracks data ingestion jobs from various sources
     """
 
     __tablename__ = "data_ingestion_jobs"

@@ -297,7 +297,6 @@ class MemoryPlannerAnalyzer:
         time_window_minutes: int = 60,
     ) -> Path | None:
         """Find the most appropriate log file for analysis with advanced scoring"""
-
         # If specific log path provided, validate and use it when safe
         if specific_log_path:
             direct_candidate = self._resolve_if_safe(Path(specific_log_path))
@@ -340,7 +339,7 @@ class MemoryPlannerAnalyzer:
                     f"{agent_type}*{drug_lower}*.log",
                     f"{agent_type}_{drug_abbrev}_*.log",
                     f"{agent_type}*{drug_abbrev}*.log",
-                ]
+                ],
             )
 
         # Add workflow-specific patterns if available
@@ -349,7 +348,7 @@ class MemoryPlannerAnalyzer:
                 [
                     f"{agent_type}*{workflow_id[:8]}*.log",
                     f"{agent_type}*{workflow_id}*.log",
-                ]
+                ],
             )
 
         # Generic patterns (fallback)
@@ -358,7 +357,7 @@ class MemoryPlannerAnalyzer:
                 f"{agent_type}_*.log",
                 f"{agent_type}*.log",
                 f"*{agent_type}*.log",
-            ]
+            ],
         )
 
         # Collect all matching files
@@ -531,7 +530,7 @@ class MemoryPlannerAnalyzer:
 
                         extracted_drug = extracted_entities.get("primary_drug") or extracted_entities.get("drug_name")
                         extracted_disease = extracted_entities.get("primary_disease") or extracted_entities.get(
-                            "disease_name"
+                            "disease_name",
                         )
 
                         if drug_name and extracted_drug:
@@ -539,13 +538,13 @@ class MemoryPlannerAnalyzer:
                                 analysis["entities_extracted"] = extracted_entities
                                 print(
                                     "[OK] Found matching entity extraction: "
-                                    f"Drug={extracted_drug}, Disease={extracted_disease}"
+                                    f"Drug={extracted_drug}, Disease={extracted_disease}",
                                 )
                                 entity_found = True
                                 break
                             print(
                                 "[INFO] Found entity extraction for different drug: "
-                                f"{extracted_drug} (looking for {drug_name})"
+                                f"{extracted_drug} (looking for {drug_name})",
                             )
                         elif not drug_name:
                             analysis["entities_extracted"] = extracted_entities
@@ -697,7 +696,7 @@ class MemoryPlannerAnalyzer:
                             if drug_name and plan_drug:
                                 if plan_drug.lower() != drug_name.lower():
                                     print(
-                                        f"[INFO] Found plan for different drug: {plan_drug} (looking for {drug_name})"
+                                        f"[INFO] Found plan for different drug: {plan_drug} (looking for {drug_name})",
                                     )
                                     continue
 
@@ -731,7 +730,7 @@ class MemoryPlannerAnalyzer:
         # Final validation
         if drug_name and analysis.get("entities_extracted"):
             extracted_drug = analysis["entities_extracted"].get("primary_drug") or analysis["entities_extracted"].get(
-                "drug_name"
+                "drug_name",
             )
             if extracted_drug and extracted_drug.lower() != drug_name.lower():
                 print("\n[CRITICAL WARNING] Drug mismatch detected!")
@@ -833,7 +832,7 @@ class MemoryPlannerAnalyzer:
 
         for primary_name, alt_name, patterns, data_key, api_key in worker_configs:
             worker_log = self._find_best_log_file(primary_name, drug_name, workflow_id) or self._find_best_log_file(
-                alt_name, drug_name, workflow_id
+                alt_name, drug_name, workflow_id,
             )
 
             if worker_log:
@@ -977,12 +976,12 @@ class MemoryPlannerAnalyzer:
                                 "drugs": drug_context,
                                 "workflows": workflows,
                                 "source_type": metadata.get("source_type", "unknown"),
-                            }
+                            },
                         )
 
                 # Calculate new vs updated
                 analysis["new_documents"] = len(
-                    [m for m in drug_docs["metadatas"] if len(m.get("referenced_in_workflows", [])) == 1]
+                    [m for m in drug_docs["metadatas"] if len(m.get("referenced_in_workflows", [])) == 1],
                 )
                 analysis["updated_documents"] = len(drug_docs["metadatas"]) - analysis["new_documents"]
 
@@ -1076,11 +1075,11 @@ class MemoryPlannerAnalyzer:
         planner = self.analysis_results.get("planner_performance", {})
         if not planner:
             recommendations.append(
-                (f"No planner logs found - ensure logs are retained and check log directory: {self.logs_dir}")
+                (f"No planner logs found - ensure logs are retained and check log directory: {self.logs_dir}"),
             )
         elif planner.get("fallback_used"):
             recommendations.append(
-                ("Consider improving GPT-4 prompt reliability or implementing better fallback handling")
+                ("Consider improving GPT-4 prompt reliability or implementing better fallback handling"),
             )
 
         if planner.get("enhanced_features_used"):
@@ -1092,10 +1091,10 @@ class MemoryPlannerAnalyzer:
             if drug_name and extracted_drug.lower() != drug_name.lower():
                 recommendations.append(
                     "[CRITICAL] Analysis may be for wrong drug: "
-                    f"extracted '{extracted_drug}' but expected '{drug_name}'"
+                    f"extracted '{extracted_drug}' but expected '{drug_name}'",
                 )
                 recommendations.append(
-                    ("[ACTION] Verify log selection or use --planner-log to specify the correct log file")
+                    ("[ACTION] Verify log selection or use --planner-log to specify the correct log file"),
                 )
 
         # Check log selection confidence
@@ -1106,7 +1105,7 @@ class MemoryPlannerAnalyzer:
             if score < 30:
                 recommendations.append(
                     "[WARNING] Low confidence in log selection "
-                    f"(score: {score:.1f}). Consider using --planner-log parameter"
+                    f"(score: {score:.1f}). Consider using --planner-log parameter",
                 )
 
         # Based on strategy
@@ -1130,11 +1129,11 @@ class MemoryPlannerAnalyzer:
             if total_docs > 30 and strategy == "comprehensive":
                 recommendations.append(
                     "Consider using 'focused' or 'update' strategy for SGLT2 "
-                    f"inhibitors (already have {total_docs} docs)"
+                    f"inhibitors (already have {total_docs} docs)",
                 )
             elif strategy in ["focused", "update"]:
                 recommendations.append(
-                    (f"[OK] Good strategy choice! Using '{strategy}' strategy for well-studied drug class")
+                    (f"[OK] Good strategy choice! Using '{strategy}' strategy for well-studied drug class"),
                 )
 
         # Based on workflow efficiency
@@ -1174,7 +1173,7 @@ class MemoryPlannerAnalyzer:
                 "sotagliflozin",
             ]:
                 recommendations.append(
-                    ("Next: Test a different drug class (e.g., Lisinopril) - should trigger 'comprehensive' strategy")
+                    ("Next: Test a different drug class (e.g., Lisinopril) - should trigger 'comprehensive' strategy"),
                 )
 
         # Log naming recommendations
@@ -1397,7 +1396,7 @@ Examples:
             planner_log=args.planner_log,
             router_log=args.router_log,
             commander_log=args.commander_log,
-        )
+        ),
     )
 
 

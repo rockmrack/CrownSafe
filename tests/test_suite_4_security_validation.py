@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test Suite 4: Security and Validation Tests (100 tests)
+"""Test Suite 4: Security and Validation Tests (100 tests)
 Tests authentication, authorization, input validation, and security measures
 """
 

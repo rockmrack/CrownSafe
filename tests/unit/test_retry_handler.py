@@ -1,5 +1,4 @@
-"""
-Unit tests for core_infra/retry_handler.py
+"""Unit tests for core_infra/retry_handler.py
 Tests retry logic, strategies, circuit breaker, and bulk operations
 """
 
@@ -328,7 +327,7 @@ class TestRetryHandler:
                 on_retry=on_retry,
                 on_failure=on_failure,
                 on_success=on_success,
-            )
+            ),
         )
 
         def test_func():

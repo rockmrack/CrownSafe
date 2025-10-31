@@ -1,5 +1,4 @@
-"""
-Create privacy_requests table
+"""Create privacy_requests table
 
 Revision ID: 20250827_privacy_requests
 Revises: 20250827_admin_ingestion_runs
@@ -20,7 +19,6 @@ depends_on = None
 
 def upgrade():
     """Create privacy_requests table for GDPR/CCPA compliance"""
-
     # Detect database dialect
     bind = op.get_bind()
     is_sqlite = bind.dialect.name == "sqlite"
@@ -52,7 +50,7 @@ def upgrade():
         sa.Column("email", sa.String(320), nullable=False),  # Max email length per RFC
         sa.Column("email_hash", sa.String(64), nullable=False),  # SHA-256 hash for searching
         sa.Column(
-            "status", sa.String(16), nullable=False, server_default="queued"
+            "status", sa.String(16), nullable=False, server_default="queued",
         ),  # queued|verifying|processing|done|rejected|expired
         sa.Column(
             "submitted_at",
@@ -91,7 +89,7 @@ def upgrade():
             ADD CONSTRAINT check_kind CHECK (
                 kind IN ('export', 'delete', 'rectify', 'access', 'restrict', 'object')
             )
-        """
+        """,
         )
 
         op.execute(
@@ -100,7 +98,7 @@ def upgrade():
             ADD CONSTRAINT check_status CHECK (
                 status IN ('queued', 'verifying', 'processing', 'done', 'rejected', 'expired', 'cancelled')
             )
-        """
+        """,
         )
 
         op.execute(
@@ -110,7 +108,7 @@ def upgrade():
                 jurisdiction IS NULL OR 
                 jurisdiction IN ('gdpr', 'ccpa', 'pipeda', 'lgpd', 'appi', 'uk_gdpr', 'other')
             )
-        """
+        """,
         )
 
         op.execute(
@@ -120,13 +118,12 @@ def upgrade():
                 source IS NULL OR 
                 source IN ('ios', 'android', 'web', 'email', 'api', 'admin')
             )
-        """
+        """,
         )
 
 
 def downgrade():
     """Drop privacy_requests table and indexes"""
-
     # Drop indexes
     op.drop_index("ix_privacy_kind_status", table_name="privacy_requests")
     op.drop_index("ix_privacy_submitted_at", table_name="privacy_requests")

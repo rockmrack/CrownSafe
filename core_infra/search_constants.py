@@ -1,5 +1,4 @@
-"""
-Shared constants for search services
+"""Shared constants for search services
 """
 
 # Empty query placeholder for when no recall tables exist

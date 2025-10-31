@@ -1,5 +1,4 @@
-"""
-Crown Safe Barcode Scanning API Endpoints
+"""Crown Safe Barcode Scanning API Endpoints
 Scan hair product barcodes and analyze ingredients for 3C-4C hair safety
 """
 
@@ -80,7 +79,7 @@ class BarcodeScanResponse(BaseModel):
     crown_score: CrownScoreBreakdown
     recommendations: list[str] = Field(default_factory=list, description="Personalized recommendations")
     similar_products: list[dict[str, Any]] = Field(
-        default_factory=list, description="Better alternatives if score is low"
+        default_factory=list, description="Better alternatives if score is low",
     )
     scan_timestamp: str
 
@@ -96,8 +95,7 @@ class ApiResponse(BaseModel):
 
 # Helper Functions
 def lookup_product_in_database(barcode: str, db: Session) -> HairProductModel | None:
-    """
-    Look up hair product by UPC barcode in database
+    """Look up hair product by UPC barcode in database
 
     Args:
         barcode: UPC/EAN barcode
@@ -124,8 +122,7 @@ def lookup_product_in_database(barcode: str, db: Session) -> HairProductModel | 
 
 
 async def extract_ingredients_from_image(image_data: bytes, product_name: str | None = None) -> list[str]:
-    """
-    Extract ingredient list from product image using OCR
+    """Extract ingredient list from product image using OCR
 
     Args:
         image_data: Raw image bytes
@@ -145,10 +142,9 @@ async def extract_ingredients_from_image(image_data: bytes, product_name: str | 
 
 
 def calculate_crown_score_from_product(
-    product: HairProductModel, hair_profile: HairProfileModel | None
+    product: HairProductModel, hair_profile: HairProfileModel | None,
 ) -> dict[str, Any]:
-    """
-    Calculate Crown Score for a product using user's hair profile
+    """Calculate Crown Score for a product using user's hair profile
 
     Args:
         product: Hair product model
@@ -190,8 +186,7 @@ def calculate_crown_score_from_product(
 
 
 def generate_recommendations(crown_score: int, verdict: str, product: HairProductModel) -> list[str]:
-    """
-    Generate personalized recommendations based on Crown Score
+    """Generate personalized recommendations based on Crown Score
 
     Args:
         crown_score: Total Crown Score (0-100)
@@ -205,7 +200,7 @@ def generate_recommendations(crown_score: int, verdict: str, product: HairProduc
 
     if verdict == "UNSAFE":
         recommendations.append(
-            f"⚠️ This product scored {crown_score}/100 and contains harmful ingredients for 3C-4C hair."
+            f"⚠️ This product scored {crown_score}/100 and contains harmful ingredients for 3C-4C hair.",
         )
         recommendations.append("We strongly recommend avoiding this product and choosing a safer alternative.")
         recommendations.append("Check our 'Excellent Match' products for better options.")
@@ -225,8 +220,7 @@ def generate_recommendations(crown_score: int, verdict: str, product: HairProduc
 
 
 def find_similar_products(product: HairProductModel, crown_score: int, db: Session) -> list[dict[str, Any]]:
-    """
-    Find similar products with better Crown Scores
+    """Find similar products with better Crown Scores
 
     Args:
         product: Current product
@@ -272,8 +266,7 @@ def find_similar_products(product: HairProductModel, crown_score: int, db: Sessi
 # API Endpoints
 @crown_barcode_router.post("/scan", response_model=ApiResponse)
 async def scan_hair_product_barcode(request: BarcodeScanRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """
-    Scan hair product barcode and analyze ingredients with Crown Score
+    """Scan hair product barcode and analyze ingredients with Crown Score
 
     Workflow:
     1. Look up product in Crown Safe database by UPC barcode
@@ -343,7 +336,7 @@ async def scan_hair_product_barcode(request: BarcodeScanRequest, db: Session = D
             db.commit()
             db.refresh(scan_record)
             logger.info(
-                f"Saved scan record: scan_id={scan_id}, product_id={product.id}, score={score_result['total_score']}"
+                f"Saved scan record: scan_id={scan_id}, product_id={product.id}, score={score_result['total_score']}",
             )
         except Exception as save_error:
             logger.error(f"Failed to save scan record: {save_error}")
@@ -421,8 +414,7 @@ async def scan_hair_product_image(
     file: UploadFile = File(..., description="Product image with barcode"),
     db: Session = Depends(get_db_session),
 ) -> ApiResponse:
-    """
-    Scan hair product image to extract barcode and analyze
+    """Scan hair product image to extract barcode and analyze
 
     Workflow:
     1. Validate image file
@@ -507,8 +499,7 @@ async def scan_hair_product_image(
 
 @crown_barcode_router.get("/product/{barcode}", response_model=ApiResponse)
 async def get_product_by_barcode(barcode: str, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """
-    Look up product information by UPC barcode (no analysis)
+    """Look up product information by UPC barcode (no analysis)
 
     Use this endpoint to check if a product exists in the Crown Safe database
     before performing a full scan and analysis.

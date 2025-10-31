@@ -30,9 +30,9 @@ task_assign_msg = {
                     "task_description": "Test task",
                     "inputs": {},
                     "dependencies": [],
-                }
+                },
             ],
-        }
+        },
     },
 }
 

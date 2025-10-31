@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS barcode_scans (
   created_at TEXT,
   raw_json TEXT
 )
-"""
+""",
 )
 
 # chat explanations storage (all TEXT for SQLite friendliness)
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS chat_explanations (
   disclaimer TEXT,
   created_at TEXT
 )
-"""
+""",
 )
 
 con.commit()

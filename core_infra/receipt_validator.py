@@ -1,5 +1,4 @@
-"""
-Receipt validation for Apple App Store and Google Play
+"""Receipt validation for Apple App Store and Google Play
 Validates receipts and creates/updates subscriptions
 """
 
@@ -50,8 +49,7 @@ class AppleReceiptValidator:
         self.verify_url = SubscriptionConfig.get_apple_verify_url()
 
     async def validate(self, receipt_data: str) -> tuple[bool, dict | None]:
-        """
-        Validate Apple receipt
+        """Validate Apple receipt
         Returns: (is_valid, receipt_info)
         """
         try:
@@ -163,12 +161,12 @@ class GoogleReceiptValidator:
                 logger.error("Receipt validation enabled but Google service account key not configured")
                 if os.getenv("ENVIRONMENT") == "production":
                     raise RuntimeError(
-                        "Receipt validation enabled in production but Google service account key missing"
+                        "Receipt validation enabled in production but Google service account key missing",
                     )
                 return None
 
             credentials = service_account.Credentials.from_service_account_file(
-                key_path, scopes=["https://www.googleapis.com/auth/androidpublisher"]
+                key_path, scopes=["https://www.googleapis.com/auth/androidpublisher"],
             )
 
             return build("androidpublisher", "v3", credentials=credentials)
@@ -177,8 +175,7 @@ class GoogleReceiptValidator:
             return None
 
     async def validate(self, purchase_token: str, product_id: str) -> tuple[bool, dict | None]:
-        """
-        Validate Google Play receipt
+        """Validate Google Play receipt
         Returns: (is_valid, receipt_info)
         """
         try:
@@ -243,8 +240,7 @@ class ReceiptValidationService:
         receipt_data: str,
         product_id: str | None = None,
     ) -> dict:
-        """
-        Validate receipt and activate subscription
+        """Validate receipt and activate subscription
 
         Args:
             user_id: User ID

@@ -77,7 +77,7 @@ async def main():
             print("\n" + "=" * 50)
             if not db_was_updated:
                 print(
-                    "❌ TEST FAILED: The agent did not correctly update the user's is_pregnant status in the database."
+                    "❌ TEST FAILED: The agent did not correctly update the user's is_pregnant status in the database.",
                 )
             else:
                 print(f"❌ TEST FAILED: The agent returned a FAILED status. Error: {result.get('error')}")

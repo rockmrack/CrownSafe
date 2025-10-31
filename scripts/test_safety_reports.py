@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test the 90-Day Safety Summary Report Generation
+"""Test the 90-Day Safety Summary Report Generation
 """
 
 import os
@@ -19,7 +18,6 @@ from db.models.scan_history import SafetyReport, ScanHistory
 
 def create_test_scan_history(db_session, user_id=1):
     """Create sample scan history for testing"""
-
     print(f"Creating test scan history for user {user_id}...")
 
     # Product samples with varying risk levels
@@ -146,7 +144,6 @@ def create_test_scan_history(db_session, user_id=1):
 
 def test_90_day_report():
     """Test the 90-day safety summary generation"""
-
     print("Testing 90-Day Safety Summary Report Generation...")
     print("=" * 60)
 
@@ -265,7 +262,7 @@ def test_90_day_report():
                     "unique_products": unique_products,
                     "recalls_found": recalls_found,
                     "safety_score": round(safety_score, 1),
-                }
+                },
             },
         )
         db.add(report)

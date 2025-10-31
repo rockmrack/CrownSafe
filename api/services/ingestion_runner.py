@@ -13,8 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class IngestionRunner:
-    """
-    Manages the lifecycle of data ingestion runs, recording their status in the database.
+    """Manages the lifecycle of data ingestion runs, recording their status in the database.
     """
 
     def __init__(self, db_session: Session, config: Config = None):
@@ -22,8 +21,7 @@ class IngestionRunner:
         self.config = config or Config()
 
     def start_run(self, source: IngestionSource, run_name: str | None = None) -> IngestionRun:
-        """
-        Records the start of an ingestion run.
+        """Records the start of an ingestion run.
         """
         logger.info(f"Starting new ingestion run for source: {source.value}")
         ingestion_run = IngestionRun(
@@ -46,8 +44,7 @@ class IngestionRunner:
         errors: int = 0,
         details: str | None = None,
     ) -> IngestionRun:
-        """
-        Records the completion or failure of an ingestion run.
+        """Records the completion or failure of an ingestion run.
         """
         logger.info(f"Ending ingestion run {run.id} with status: {status.value}")
         run.finished_at = datetime.now(timezone.utc)
@@ -63,8 +60,7 @@ class IngestionRunner:
 
 
 def main():
-    """
-    Example usage of the IngestionRunner.
+    """Example usage of the IngestionRunner.
     """
     config = Config()
     with get_db_session() as db_session:

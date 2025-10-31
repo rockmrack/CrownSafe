@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-S3 Backup Export Manager
+"""S3 Backup Export Manager
 Exports RDS snapshots to S3 for long-term storage and compliance
 """
 
@@ -67,10 +66,9 @@ class S3BackupExporter:
         return sts.get_caller_identity()["Account"]
 
     def export_latest_snapshot(
-        self, db_instance: str = "babyshield-prod", tables: list[str] | None = None
+        self, db_instance: str = "babyshield-prod", tables: list[str] | None = None,
     ) -> str | None:
         """Export the latest automated snapshot to S3"""
-
         try:
             # Get latest snapshot
             snapshot = self._get_latest_snapshot(db_instance)
@@ -121,7 +119,6 @@ class S3BackupExporter:
 
     def _get_latest_snapshot(self, db_instance: str) -> dict | None:
         """Get the most recent automated snapshot"""
-
         try:
             response = self.rds.describe_db_snapshots(
                 DBInstanceIdentifier=db_instance,
@@ -147,7 +144,6 @@ class S3BackupExporter:
 
     def monitor_export(self, task_id: str) -> ExportTask:
         """Monitor an export task"""
-
         try:
             response = self.rds.describe_export_tasks(ExportTaskIdentifier=task_id)
 
@@ -177,10 +173,9 @@ class S3BackupExporter:
             return None
 
     def wait_for_export(
-        self, task_id: str, timeout_minutes: int = 120, poll_interval: int = 60
+        self, task_id: str, timeout_minutes: int = 120, poll_interval: int = 60,
     ) -> tuple[bool, ExportTask]:
         """Wait for export to complete"""
-
         start_time = time.time()
         timeout_seconds = timeout_minutes * 60
 
@@ -217,7 +212,6 @@ class S3BackupExporter:
 
     def verify_export(self, task: ExportTask) -> bool:
         """Verify exported files in S3"""
-
         try:
             # Parse S3 location
             bucket, prefix = task.s3_location.replace("s3://", "").split("/", 1)
@@ -267,7 +261,6 @@ class S3BackupExporter:
 
     def cleanup_old_exports(self, days_to_keep: int = 30) -> int:
         """Clean up old exports from S3"""
-
         try:
             cutoff_date = datetime.datetime.now() - datetime.timedelta(days=days_to_keep)
 
@@ -305,7 +298,6 @@ class S3BackupExporter:
 
     def _delete_objects(self, objects: list[dict]):
         """Delete objects from S3"""
-
         if not objects:
             return
 
@@ -321,7 +313,6 @@ class S3BackupExporter:
 
     def get_export_statistics(self) -> dict:
         """Get export statistics"""
-
         try:
             # Get recent exports
             response = self.rds.describe_export_tasks(MaxRecords=20)
@@ -364,7 +355,7 @@ class S3BackupExporter:
                         "progress": task.get("PercentProgress", 0),
                         "size_gb": task.get("TotalExtractedDataInGB", 0),
                         "start_time": task.get("TaskStartTime").isoformat() if task.get("TaskStartTime") else None,
-                    }
+                    },
                 )
 
             # Calculate average duration
@@ -379,7 +370,6 @@ class S3BackupExporter:
 
     def _record_export_started(self):
         """Record export started metric"""
-
         try:
             self.cloudwatch.put_metric_data(
                 Namespace="BabyShield/Backups",
@@ -389,7 +379,7 @@ class S3BackupExporter:
                         "Value": 1,
                         "Unit": "Count",
                         "Timestamp": datetime.datetime.utcnow(),
-                    }
+                    },
                 ],
             )
         except Exception as e:
@@ -397,7 +387,6 @@ class S3BackupExporter:
 
     def _record_export_success(self, task: ExportTask):
         """Record successful export metrics"""
-
         try:
             # Calculate duration
             duration_minutes = 0
@@ -432,7 +421,6 @@ class S3BackupExporter:
 
     def _record_export_failed(self):
         """Record failed export metric"""
-
         try:
             self.cloudwatch.put_metric_data(
                 Namespace="BabyShield/Backups",
@@ -442,7 +430,7 @@ class S3BackupExporter:
                         "Value": 1,
                         "Unit": "Count",
                         "Timestamp": datetime.datetime.utcnow(),
-                    }
+                    },
                 ],
             )
         except Exception as e:
@@ -451,7 +439,6 @@ class S3BackupExporter:
 
 def main():
     """Main entry point for scheduled exports"""
-
     logger.info("=" * 60)
     logger.info(" S3 BACKUP EXPORT")
     logger.info(f" Time: {datetime.datetime.utcnow().isoformat()}")

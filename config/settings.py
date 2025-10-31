@@ -1,5 +1,4 @@
-"""
-Configuration settings for Crown Safe Backend
+"""Configuration settings for Crown Safe Backend
 Handles environment-specific configuration with validation
 """
 
@@ -51,10 +50,10 @@ class Settings(BaseSettings):
 
         # Debug logging
         logging.info(
-            f"[DEBUG] BEFORE: environment={environment}, is_production={is_production}, database_url={database_url}"
+            f"[DEBUG] BEFORE: environment={environment}, is_production={is_production}, database_url={database_url}",
         )
         logging.info(
-            f"[DEBUG] DB_*: username={values.get('db_username')}, host={values.get('db_host')}, port={values.get('db_port')}, name={values.get('db_name')}"  # noqa: E501
+            f"[DEBUG] DB_*: username={values.get('db_username')}, host={values.get('db_host')}, port={values.get('db_port')}, name={values.get('db_name')}",  # noqa: E501
         )
 
         # If we have individual DB components, ALWAYS use them (even if database_url is set to SQLite)
@@ -65,7 +64,7 @@ class Settings(BaseSettings):
                 values.get("db_host"),
                 values.get("db_port"),
                 values.get("db_name"),
-            ]
+            ],
         ):
             username = values["db_username"]
             password = values["db_password"]
@@ -94,7 +93,7 @@ class Settings(BaseSettings):
             values["database_url"] = database_url
             logging.warning(
                 "No DATABASE_URL provided - using SQLite (development only). "
-                "Production requires postgresql+psycopg://..."
+                "Production requires postgresql+psycopg://...",
             )
 
         logging.info(f"[DEBUG] AFTER: database_url={database_url}")

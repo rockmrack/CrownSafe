@@ -100,7 +100,7 @@ def seed_database():
         test_recall = db.query(RecallDB).filter_by(upc="037000488786").first()
         if test_recall:
             logger.info(
-                f"✅ Test recall found: ID={test_recall.recall_id}, UPC={test_recall.upc}, Product={test_recall.product_name}"  # noqa: E501
+                f"✅ Test recall found: ID={test_recall.recall_id}, UPC={test_recall.upc}, Product={test_recall.product_name}",  # noqa: E501
             )
         else:
             logger.error("❌ Test recall NOT found in database!")

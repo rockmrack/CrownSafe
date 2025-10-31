@@ -1,5 +1,4 @@
-"""
-Crown Safe Database Models
+"""Crown Safe Database Models
 Hair product safety database for Black hair care (3C-4C)
 
 Version: 1.0.0

@@ -90,7 +90,7 @@ class TestExplainFeedbackEndpoint:
     def test_explain_feedback_missing_scan_id(self):
         """Test validation error for missing scan_id"""
         payload = {
-            "helpful": True
+            "helpful": True,
             # Missing scan_id
         }
 
@@ -103,7 +103,7 @@ class TestExplainFeedbackEndpoint:
     def test_explain_feedback_missing_helpful(self):
         """Test validation error for missing helpful field"""
         payload = {
-            "scan_id": "test_scan_789"
+            "scan_id": "test_scan_789",
             # Missing helpful
         }
 

@@ -1,5 +1,4 @@
-"""
-In-App Feedback API Endpoints
+"""In-App Feedback API Endpoints
 Handles user feedback submission and routing to support mailbox
 """
 
@@ -118,7 +117,7 @@ class FeedbackRequest(BaseModel):
                 "user_name": "Jane Doe",
                 "app_version": "1.0.0",
                 "device_info": "iPhone 14, iOS 17.2",
-            }
+            },
         }
 
 
@@ -155,7 +154,6 @@ class TicketStatus(BaseModel):
 
 def determine_priority(feedback: FeedbackRequest) -> Priority:
     """Determine ticket priority based on feedback content"""
-
     # P0 - Critical issues
     if feedback.type == FeedbackType.SECURITY_ISSUE:
         return Priority.P0_CRITICAL
@@ -191,7 +189,6 @@ def determine_priority(feedback: FeedbackRequest) -> Priority:
 
 def get_response_time(priority: Priority) -> str:
     """Get expected response time based on priority"""
-
     response_times = {
         Priority.P0_CRITICAL: "within 1 hour",
         Priority.P1_HIGH: "within 2 hours",
@@ -204,7 +201,6 @@ def get_response_time(priority: Priority) -> str:
 
 def generate_ticket_id() -> tuple[str, int]:
     """Generate unique ticket ID and number"""
-
     # Generate unique ID
     ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
 
@@ -217,10 +213,9 @@ def generate_ticket_id() -> tuple[str, int]:
 
 
 async def send_email_notification(
-    feedback: FeedbackRequest, ticket_id: str, ticket_number: int, priority: Priority
+    feedback: FeedbackRequest, ticket_id: str, ticket_number: int, priority: Priority,
 ) -> bool:
     """Send email notification to support mailbox"""
-
     try:
         # Determine recipient based on priority/type
         if priority == Priority.P0_CRITICAL:
@@ -326,7 +321,6 @@ async def send_auto_reply(
     subject: str,
 ) -> bool:
     """Send automatic reply to user"""
-
     if not user_email or not SUPPORT_CONFIG["auto_reply"]:
         return False
 
@@ -380,7 +374,6 @@ For urgent issues, call 1-800-BABY-SAFE.
 
 def track_feedback_metrics(feedback: FeedbackRequest, priority: Priority):
     """Track feedback metrics for analytics"""
-
     if not SUPPORT_CONFIG["track_metrics"]:
         return
 
@@ -410,12 +403,10 @@ def track_feedback_metrics(feedback: FeedbackRequest, priority: Priority):
 
 @router.post("/submit", response_model=FeedbackResponse)
 async def submit_feedback(feedback: FeedbackRequest, background_tasks: BackgroundTasks, request: Request):
-    """
-    Submit user feedback
+    """Submit user feedback
 
     Creates a support ticket and sends notification to support team.
     """
-
     try:
         # Generate ticket details
         ticket_id, ticket_number = generate_ticket_id()
@@ -477,12 +468,10 @@ async def submit_feedback(feedback: FeedbackRequest, background_tasks: Backgroun
 
 @router.get("/ticket/{ticket_number}", response_model=TicketStatus)
 async def get_ticket_status(ticket_number: int):
-    """
-    Get ticket status
+    """Get ticket status
 
     Check the status of a submitted feedback ticket.
     """
-
     # In production, this would query the database
     # Mock response for now
 
@@ -502,12 +491,10 @@ async def get_ticket_status(ticket_number: int):
 
 @router.post("/ticket/{ticket_number}/satisfy")
 async def mark_satisfaction(ticket_number: int, satisfied: bool = True, comments: str | None = None):
-    """
-    Mark customer satisfaction
+    """Mark customer satisfaction
 
     Allow customers to indicate if their issue was resolved satisfactorily.
     """
-
     # In production, update database
 
     return {
@@ -520,12 +507,10 @@ async def mark_satisfaction(ticket_number: int, satisfied: bool = True, comments
 
 @router.get("/categories")
 async def get_feedback_categories():
-    """
-    Get available feedback categories
+    """Get available feedback categories
 
     Returns list of feedback types and their descriptions.
     """
-
     categories = [
         {
             "type": "bug_report",
@@ -571,7 +556,6 @@ async def get_feedback_categories():
 @router.get("/health")
 async def health_check():
     """Health check for feedback service"""
-
     # Check SMTP connection
     smtp_ok = bool(SMTP_CONFIG["password"])
 
@@ -590,12 +574,10 @@ async def health_check():
 
 @router.get("/admin/stats")
 async def get_support_stats():
-    """
-    Get support statistics
+    """Get support statistics
 
     Returns metrics about feedback submissions (admin only).
     """
-
     # In production, this would query real data
     # Mock data for demonstration
 
@@ -623,12 +605,10 @@ async def bulk_update_tickets(
     assigned_to: str | None = None,
     priority: Priority | None = None,
 ):
-    """
-    Bulk update tickets
+    """Bulk update tickets
 
     Update multiple tickets at once (admin only).
     """
-
     updates = {}
     if status:
         updates["status"] = status

@@ -1,5 +1,4 @@
-"""
-Visual Agent API Endpoints - Phase 2
+"""Visual Agent API Endpoints - Phase 2
 Image upload, analysis, MFV, and HITL review queue
 """
 
@@ -138,8 +137,7 @@ async def request_image_upload(
     user_id: int = Query(..., description="User ID"),
     db: Session = Depends(get_db_session),
 ) -> ApiResponse:
-    """
-    Request presigned URL for image upload
+    """Request presigned URL for image upload
 
     Returns presigned S3 URL for direct client upload
     """
@@ -185,8 +183,7 @@ async def request_image_upload(
 
 @visual_router.post("/analyze", response_model=ApiResponse)
 async def analyze_image(request: ImageAnalysisRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """
-    Start image analysis with optional MFV
+    """Start image analysis with optional MFV
 
     Triggers async processing and returns initial status
     """
@@ -367,8 +364,7 @@ async def get_job_status(job_id: str, db: Session = Depends(get_db_session)) -> 
 
 @visual_router.post("/mfv/confirm", response_model=ApiResponse)
 async def confirm_mfv(request: MFVConfirmationRequest, db: Session = Depends(get_db_session)) -> ApiResponse:
-    """
-    Confirm multi-factor verification
+    """Confirm multi-factor verification
 
     User confirms or corrects extracted product details
     """
@@ -518,7 +514,7 @@ async def claim_review(review_id: int, request: Request, db: Session = Depends(g
                 "action": "claimed",
                 "by": reviewer_email,
                 "at": datetime.utcnow().isoformat(),
-            }
+            },
         )
 
         db.commit()
@@ -607,7 +603,7 @@ async def resolve_review(review_id: int, action: ReviewAction, db: Session = Dep
                 "by": review.reviewed_by,
                 "at": datetime.utcnow().isoformat(),
                 "notes": action.notes,
-            }
+            },
         )
 
         db.commit()
@@ -630,10 +626,9 @@ async def resolve_review(review_id: int, action: ReviewAction, db: Session = Dep
 
 # Helper functions
 def _generate_safety_message(
-    job: ImageJob, extraction: ImageExtraction | None, always_qualified: bool = False
+    job: ImageJob, extraction: ImageExtraction | None, always_qualified: bool = False,
 ) -> str:
-    """
-    Generate safety message following legal requirements
+    """Generate safety message following legal requirements
     Never says "safe" - only "no recalls found"
     """
     if job.status == JobStatus.FAILED:
@@ -688,8 +683,7 @@ def _fuzzy_match(str1: str | None, str2: str | None) -> bool:
 
 @visual_router.post("/search", response_model=ApiResponse)
 async def visual_search(request: ImageAnalysisRequest, db: Session = Depends(get_db_session)):
-    """
-    Visual search endpoint for product recognition and safety checking
+    """Visual search endpoint for product recognition and safety checking
     """
     try:
         # Validate input
@@ -736,7 +730,7 @@ async def visual_search(request: ImageAnalysisRequest, db: Session = Depends(get
                         FROM recalls_enhanced 
                         WHERE LOWER(product_name) LIKE LOWER(:product_name)
                         LIMIT 1
-                    """
+                    """,
                     )
                     result_count = db.execute(
                         recall_query,

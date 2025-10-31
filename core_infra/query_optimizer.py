@@ -1,5 +1,4 @@
-"""
-Query optimization utilities for BabyShield
+"""Query optimization utilities for BabyShield
 Prevents N+1 queries and improves database performance
 """
 
@@ -28,14 +27,12 @@ logger = logging.getLogger(__name__)
 
 
 class QueryOptimizer:
-    """
-    Optimize database queries to prevent N+1 problems
+    """Optimize database queries to prevent N+1 problems
     """
 
     @staticmethod
     def eager_load_relationships(query: Query, *relationships) -> Query:
-        """
-        Eager load relationships to prevent N+1 queries
+        """Eager load relationships to prevent N+1 queries
 
         Example:
             # Without optimization: 1 + N queries
@@ -61,8 +58,7 @@ class QueryOptimizer:
 
     @staticmethod
     def batch_load(db: Session, model: type, ids: list[int], batch_size: int = 100) -> dict[int, Any]:
-        """
-        Load multiple records in batches instead of one by one
+        """Load multiple records in batches instead of one by one
 
         Example:
             # Without optimization: N queries
@@ -85,8 +81,7 @@ class QueryOptimizer:
 
     @staticmethod
     def optimized_count(query: Query) -> int:
-        """
-        Optimized count that doesn't load all records
+        """Optimized count that doesn't load all records
 
         Example:
             # Inefficient
@@ -103,8 +98,7 @@ class QueryOptimizer:
 
     @staticmethod
     def exists_check(db: Session, model: type, **filters) -> bool:
-        """
-        Check if record exists without loading it
+        """Check if record exists without loading it
 
         Example:
             # Inefficient
@@ -120,8 +114,7 @@ class QueryOptimizer:
 
     @staticmethod
     def bulk_insert(db: Session, records: list[dict], model: type):
-        """
-        Bulk insert records efficiently
+        """Bulk insert records efficiently
 
         Example:
             # Inefficient: N queries
@@ -137,8 +130,7 @@ class QueryOptimizer:
 
     @staticmethod
     def bulk_update(db: Session, updates: list[dict], model: type):
-        """
-        Bulk update records efficiently
+        """Bulk update records efficiently
 
         updates should be list of dicts with 'id' field
         """
@@ -147,8 +139,7 @@ class QueryOptimizer:
 
 
 def optimize_query(query_func):
-    """
-    Decorator to automatically optimize queries
+    """Decorator to automatically optimize queries
     """
 
     @wraps(query_func)
@@ -169,8 +160,7 @@ def optimize_query(query_func):
 
 
 class QueryCache:
-    """
-    Simple query result caching
+    """Simple query result caching
     """
 
     def __init__(self, ttl: int = 60):
@@ -178,8 +168,7 @@ class QueryCache:
         self.ttl = ttl
 
     def get_or_fetch(self, key: str, fetch_func: callable):
-        """
-        Get from cache or fetch from database
+        """Get from cache or fetch from database
         """
         if key in self.cache:
             value, timestamp = self.cache[key]
@@ -192,8 +181,7 @@ class QueryCache:
         return value
 
     def invalidate(self, key: str = None):
-        """
-        Invalidate cache entries
+        """Invalidate cache entries
         """
         if key:
             self.cache.pop(key, None)
@@ -203,14 +191,12 @@ class QueryCache:
 
 # Prevent N+1 in common patterns
 class OptimizedQueries:
-    """
-    Pre-optimized common query patterns
+    """Pre-optimized common query patterns
     """
 
     @staticmethod
     def get_user_with_all_data(db: Session, user_id: int):
-        """
-        Get user with all related data in one query
+        """Get user with all related data in one query
         """
         return (
             db.query(User)
@@ -225,15 +211,13 @@ class OptimizedQueries:
 
     @staticmethod
     def get_recalls_with_details(db: Session, limit: int = 100):
-        """
-        Get recalls with all details efficiently
+        """Get recalls with all details efficiently
         """
         return db.query(Recall).options(selectinload("images"), selectinload("incidents")).limit(limit).all()
 
     @staticmethod
     def search_products_optimized(db: Session, search_term: str, limit: int = 50):
-        """
-        Optimized product search
+        """Optimized product search
         """
         # Use index-friendly query
         return (
@@ -242,7 +226,7 @@ class OptimizedQueries:
                 or_(
                     Product.name.ilike(f"%{search_term}%"),
                     Product.brand.ilike(f"%{search_term}%"),
-                )
+                ),
             )
             .options(joinedload("risk_profile"), selectinload("recalls"))
             .limit(limit)
@@ -252,8 +236,7 @@ class OptimizedQueries:
 
 @contextmanager
 def query_profiler(name: str = "Query"):
-    """
-    Profile query execution time
+    """Profile query execution time
     """
     start = time.time()
     try:
@@ -267,8 +250,7 @@ def query_profiler(name: str = "Query"):
 
 
 class LazyLoader:
-    """
-    Lazy loading for expensive operations
+    """Lazy loading for expensive operations
     """
 
     def __init__(self, loader_func):
@@ -290,8 +272,7 @@ class LazyLoader:
 
 # Query optimization middleware
 async def query_optimization_middleware(request, call_next):
-    """
-    Middleware to track and optimize queries per request
+    """Middleware to track and optimize queries per request
     """
     # Track queries for this request
     request.state.query_count = 0
@@ -304,7 +285,7 @@ async def query_optimization_middleware(request, call_next):
     if request.state.query_count > 20:
         logger.warning(
             f"High query count: {request.state.query_count} queries "
-            f"in {request.state.query_time:.2f}s for {request.url.path}"
+            f"in {request.state.query_time:.2f}s for {request.url.path}",
         )
 
     return response
@@ -312,8 +293,7 @@ async def query_optimization_middleware(request, call_next):
 
 # Example optimizations for existing code
 def optimize_recall_search(db: Session, barcode: str):
-    """
-    Optimized recall search
+    """Optimized recall search
     """
     # Original (N+1 problem):
     # recalls = db.query(Recall).filter_by(barcode=barcode).all()
@@ -336,8 +316,7 @@ def optimize_recall_search(db: Session, barcode: str):
 
 
 def optimize_user_dashboard(db: Session, user_id: int):
-    """
-    Optimized user dashboard data loading
+    """Optimized user dashboard data loading
     """
     with query_profiler("User Dashboard"):
         # Load everything in one query
@@ -358,8 +337,7 @@ def optimize_user_dashboard(db: Session, user_id: int):
 
 # Batch operations for better performance
 class BatchProcessor:
-    """
-    Process database operations in batches
+    """Process database operations in batches
     """
 
     def __init__(self, db: Session, batch_size: int = 100):

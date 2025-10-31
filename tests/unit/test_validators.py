@@ -1,5 +1,4 @@
-"""
-Unit tests for input validators
+"""Unit tests for input validators
 Tests email, barcode, user ID, and other input validation
 
 ⚠️ WARNING: These tests are currently STUBS and need implementation.
@@ -20,8 +19,7 @@ class TestInputValidators:
     """Test suite for input validation functions"""
 
     def test_validate_email_with_valid_email_returns_email(self):
-        """
-        Test email validation with valid email.
+        """Test email validation with valid email.
 
         Given: Valid email address
         When: validate_email is called
@@ -32,8 +30,7 @@ class TestInputValidators:
         pass
 
     def test_validate_email_with_invalid_format_raises_error(self):
-        """
-        Test email validation with invalid format.
+        """Test email validation with invalid format.
 
         Given: Invalid email format
         When: validate_email is called
@@ -44,8 +41,7 @@ class TestInputValidators:
         pass
 
     def test_validate_email_with_dangerous_characters_raises_error(self):
-        """
-        Test email validation rejects injection attempts.
+        """Test email validation rejects injection attempts.
 
         Given: Email with SQL/XSS characters
         When: validate_email is called
@@ -56,8 +52,7 @@ class TestInputValidators:
         pass
 
     def test_validate_barcode_with_valid_upc_returns_barcode(self):
-        """
-        Test barcode validation with valid UPC.
+        """Test barcode validation with valid UPC.
 
         Given: Valid UPC barcode
         When: validate_barcode is called
@@ -68,8 +63,7 @@ class TestInputValidators:
         pass
 
     def test_validate_barcode_with_invalid_characters_raises_error(self):
-        """
-        Test barcode validation rejects invalid characters.
+        """Test barcode validation rejects invalid characters.
 
         Given: Barcode with letters or special chars
         When: validate_barcode is called
@@ -80,8 +74,7 @@ class TestInputValidators:
         pass
 
     def test_validate_user_id_with_positive_integer_returns_id(self):
-        """
-        Test user ID validation with valid ID.
+        """Test user ID validation with valid ID.
 
         Given: Positive integer user ID
         When: validate_user_id is called
@@ -92,8 +85,7 @@ class TestInputValidators:
         pass
 
     def test_validate_user_id_with_zero_raises_error(self):
-        """
-        Test user ID validation rejects zero.
+        """Test user ID validation rejects zero.
 
         Given: User ID of 0
         When: validate_user_id is called
@@ -104,8 +96,7 @@ class TestInputValidators:
         pass
 
     def test_validate_user_id_with_negative_raises_error(self):
-        """
-        Test user ID validation rejects negative numbers.
+        """Test user ID validation rejects negative numbers.
 
         Given: Negative user ID
         When: validate_user_id is called
@@ -116,8 +107,7 @@ class TestInputValidators:
         pass
 
     def test_sanitize_input_removes_html_tags(self):
-        """
-        Test input sanitization removes HTML.
+        """Test input sanitization removes HTML.
 
         Given: Input with HTML tags
         When: sanitize_input is called
@@ -128,8 +118,7 @@ class TestInputValidators:
         pass
 
     def test_sanitize_input_removes_script_tags(self):
-        """
-        Test input sanitization removes script tags.
+        """Test input sanitization removes script tags.
 
         Given: Input with <script> tags
         When: sanitize_input is called
@@ -140,8 +129,7 @@ class TestInputValidators:
         pass
 
     def test_validate_search_query_with_valid_query_returns_query(self):
-        """
-        Test search query validation.
+        """Test search query validation.
 
         Given: Valid search query
         When: validate_search_query is called
@@ -152,8 +140,7 @@ class TestInputValidators:
         pass
 
     def test_validate_search_query_with_sql_injection_raises_error(self):
-        """
-        Test search query validation blocks SQL injection.
+        """Test search query validation blocks SQL injection.
 
         Given: Query with SQL injection attempt
         When: validate_search_query is called
@@ -164,8 +151,7 @@ class TestInputValidators:
         pass
 
     def test_validate_product_name_with_valid_name_returns_name(self):
-        """
-        Test product name validation.
+        """Test product name validation.
 
         Given: Valid product name
         When: validate_product_name is called
@@ -176,8 +162,7 @@ class TestInputValidators:
         pass
 
     def test_validate_product_name_with_excessive_length_raises_error(self):
-        """
-        Test product name validation length limit.
+        """Test product name validation length limit.
 
         Given: Product name > 200 characters
         When: validate_product_name is called
@@ -192,8 +177,7 @@ class TestPydanticModels:
     """Test suite for Pydantic model validation"""
 
     def test_barcode_scan_request_with_valid_data_creates_model(self):
-        """
-        Test BarcodeScanRequest model validation.
+        """Test BarcodeScanRequest model validation.
 
         Given: Valid barcode scan request data
         When: Model is instantiated
@@ -204,8 +188,7 @@ class TestPydanticModels:
         pass
 
     def test_barcode_scan_request_with_missing_required_field_raises_error(self):
-        """
-        Test BarcodeScanRequest requires all fields.
+        """Test BarcodeScanRequest requires all fields.
 
         Given: Request data missing required field
         When: Model is instantiated
@@ -216,8 +199,7 @@ class TestPydanticModels:
         pass
 
     def test_product_search_request_with_valid_data_creates_model(self):
-        """
-        Test ProductSearchRequest model validation.
+        """Test ProductSearchRequest model validation.
 
         Given: Valid search request data
         When: Model is instantiated
@@ -228,8 +210,7 @@ class TestPydanticModels:
         pass
 
     def test_api_response_model_includes_all_fields(self):
-        """
-        Test ApiResponse model structure.
+        """Test ApiResponse model structure.
 
         Given: Response data
         When: ApiResponse model is created

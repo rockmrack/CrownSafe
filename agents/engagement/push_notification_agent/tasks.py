@@ -7,8 +7,7 @@ logger = logging.getLogger(__name__)
 
 @celery_app.task(name="send_push_notification")
 def send_push_notification_task(user_device_token: str, title: str, message: str):
-    """
-    This is the background task that sends a push notification.
+    """This is the background task that sends a push notification.
     In a real system, this would contain the logic to call Firebase Cloud Messaging (FCM)
     or Apple Push Notification service (APNs).
     """

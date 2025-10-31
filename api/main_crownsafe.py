@@ -671,8 +671,7 @@ async def add_trace_id_header(request: Request, call_next) -> Response:
 # Add comprehensive OWASP security headers to ALL responses
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next) -> Response:
-    """
-    Add OWASP-recommended security headers to all responses.
+    """Add OWASP-recommended security headers to all responses.
 
     Implements:
     - Content Security Policy (CSP) - XSS protection
@@ -1001,8 +1000,7 @@ def get_safety_hub_articles(
     featured_only: bool = Query(False, description="Show only featured articles"),
     sort: str = Query("recent", pattern="^(recent|oldest|title)$", description="Sort order"),
 ) -> JSONResponse:
-    """
-    Returns a paginated list of safety articles with filtering and caching support.
+    """Returns a paginated list of safety articles with filtering and caching support.
     Features: pagination, categories, language filter, no PII, cache headers.
     """
     import json
@@ -1765,7 +1763,6 @@ def on_startup() -> None:
 @app.on_event("shutdown")
 async def shutdown_event() -> None:
     """Clean shutdown of database connections"""
-
     try:
         # Dispose of the engine connection pool
         engine.dispose()
@@ -1800,8 +1797,7 @@ async def healthz_api_alias() -> dict[str, str]:
 
 @app.get("/api/v1/public/endpoint", tags=["public"], operation_id="public_test_endpoint")
 async def public_test_endpoint() -> dict[str, str]:
-    """
-    Public test endpoint for rate limiting and security testing.
+    """Public test endpoint for rate limiting and security testing.
     This endpoint does not require authentication.
     """
     return {
@@ -1877,8 +1873,8 @@ def debug_db_info():
                 FROM information_schema.columns 
                 WHERE table_name = 'users' AND table_schema = 'public'
                 ORDER BY ordinal_position
-            """
-                )
+            """,
+                ),
             )
             columns = [
                 {
@@ -1938,8 +1934,7 @@ async def get_openapi():
 
 @app.get("/cache/stats", tags=["system"])
 async def cache_stats():
-    """
-    Get Redis cache performance statistics for 39-agency system
+    """Get Redis cache performance statistics for 39-agency system
     """
     try:
         stats = get_cache_stats()
@@ -1959,8 +1954,7 @@ async def cache_stats():
 
 @app.post("/cache/warm", tags=["system"])
 async def warm_cache():
-    """
-    Manually trigger intelligent cache warming for 39-agency system
+    """Manually trigger intelligent cache warming for 39-agency system
     """
     try:
         result = await warm_cache_now()
@@ -2083,7 +2077,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                 "lot_number": getattr(req, "lot_number", None),
                 "product_name": req.product_name,
                 "image_url": req.image_url,
-            }
+            },
         )
         logger.info(f"Optimized workflow result: {result}")
 
@@ -2110,7 +2104,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
                     "lot_number": getattr(req, "lot_number", None),
                     "product_name": req.product_name,
                     "image_url": req.image_url,
-                }
+                },
             )
             logger.info(f"Fallback workflow result: {result}")
 
@@ -2268,7 +2262,6 @@ async def suggest_product_from_image(request: dict[str, Any]):
     VisualSearchAgent, and returns suggestion results while explicitly avoiding
     safety claims.
     """
-
     # Accept multiple input types
     image_url = request.get("image_url")
     image_id = request.get("image_id")
@@ -2377,11 +2370,9 @@ async def autocomplete_products(
     limit: int = Query(10, ge=1, le=25, description="Max suggestions to return"),
     domain: str | None = Query(None, description="Filter by domain (e.g., 'haircare')"),
 ):
-    """
-    Lightning-fast auto-complete for product names across 3,218+ recalls from 39 agencies
+    """Lightning-fast auto-complete for product names across 3,218+ recalls from 39 agencies
     Optimized for real-time typing with intelligent matching and domain filtering
     """
-
     try:
         # REMOVED FOR CROWN SAFE: RecallDB model no longer exists (replaced with HairProductModel)
         # from core_infra.database import RecallDB
@@ -2443,11 +2434,9 @@ async def autocomplete_brands(
     q: str = Query(..., min_length=1, description="Brand search query"),
     limit: int = Query(8, ge=1, le=15, description="Max brand suggestions"),
 ):
-    """
-    Brand auto-complete across 39 international agencies with 3,218+ real recalls
+    """Brand auto-complete across 39 international agencies with 3,218+ real recalls
     Includes canonicalization and UTF-8 encoding fixes
     """
-
     try:
         # REMOVED FOR CROWN SAFE: RecallDB model no longer exists (replaced with HairProductModel)
         # from core_infra.database import RecallDB
@@ -2503,15 +2492,13 @@ async def autocomplete_brands(
 
 @app.post("/api/v1/search/advanced", tags=["search"])
 async def advanced_search(request: Request):
-    """
-    Advanced recall search with fuzzy matching, keyword AND logic, and deterministic sorting
+    """Advanced recall search with fuzzy matching, keyword AND logic, and deterministic sorting
     Features:
     - pg_trgm fuzzy text search
     - Exact ID lookup
     - Keyword AND logic
     - Deterministic sorting (score -> date -> id)
     """
-
     trace_id = f"trace_{uuid.uuid4().hex[:16]}_{int(datetime.now().timestamp())}"
 
     # Import search service
@@ -2762,10 +2749,8 @@ async def advanced_search(request: Request):
 
 @app.post("/api/v1/search/bulk", tags=["search"])
 async def bulk_search(req: BulkSearchRequest):
+    """Bulk barcode safety check - check multiple products at once
     """
-    Bulk barcode safety check - check multiple products at once
-    """
-
     logger.info(
         "Bulk search request for %s barcodes by user %s",
         len(req.barcodes),
@@ -2815,8 +2800,7 @@ async def bulk_search(req: BulkSearchRequest):
     tags=["analytics"],
 )
 async def recall_analytics():
-    """
-    Get comprehensive analytics across all 39 international agencies
+    """Get comprehensive analytics across all 39 international agencies
     """
     try:
         # REMOVED FOR CROWN SAFE: RecallDB model no longer exists (replaced with HairProductModel)
@@ -2847,8 +2831,7 @@ async def recall_analytics():
 
 @app.get("/api/v1/analytics/counts", tags=["analytics"])
 async def analytics_counts():
-    """
-    Live counts for frontend display: total recalls and per-agency breakdown.
+    """Live counts for frontend display: total recalls and per-agency breakdown.
     """
     try:
         # REMOVED FOR CROWN SAFE: RecallDB model no longer exists (replaced with HairProductModel)
@@ -2876,10 +2859,8 @@ async def analytics_counts():
 
 @app.get("/api/v1/monitoring/agencies", tags=["monitoring"])
 async def agency_health_check():
+    """Monitor health status of all 39 international recall agencies
     """
-    Monitor health status of all 39 international recall agencies
-    """
-
     try:
         # REMOVED FOR CROWN SAFE: Baby product recall agency monitoring replaced
         # This function previously monitored 39 international baby product recall agencies
@@ -2904,10 +2885,8 @@ async def agency_health_check():
 
 @app.get("/api/v1/monitoring/system", tags=["monitoring"])
 async def system_health():
+    """Comprehensive system health check for Crown Safe
     """
-    Comprehensive system health check for Crown Safe
-    """
-
     try:
         # Check database health
         db_healthy = True
@@ -2970,8 +2949,7 @@ async def system_health():
 
 @app.get("/api/v1/monitoring/azure-storage", tags=["monitoring"])
 async def azure_storage_health():
-    """
-    Check Azure Blob Storage health and performance
+    """Check Azure Blob Storage health and performance
     Enterprise-grade monitoring for cloud storage
     """
     try:
@@ -3000,8 +2978,7 @@ async def azure_storage_health():
 
 @app.get("/api/v1/monitoring/azure-storage/metrics", tags=["monitoring"])
 async def azure_storage_metrics():
-    """
-    Get Azure Blob Storage performance metrics
+    """Get Azure Blob Storage performance metrics
     """
     try:
         from core_infra.azure_storage_health import azure_storage_metrics
@@ -3023,8 +3000,7 @@ async def azure_storage_metrics():
 
 @app.get("/api/v1/monitoring/security-audit", tags=["monitoring"])
 async def security_audit():
-    """
-    Comprehensive security configuration audit
+    """Comprehensive security configuration audit
     Enterprise-grade security validation
     """
     try:
@@ -3050,8 +3026,7 @@ async def security_audit():
 
 @app.get("/api/v1/monitoring/azure-cache-stats", tags=["monitoring"])
 async def azure_cache_stats():
-    """
-    Azure Storage cache performance statistics
+    """Azure Storage cache performance statistics
     Redis-based SAS URL caching metrics
     """
     try:
@@ -3082,8 +3057,7 @@ async def azure_cache_stats():
 
 @app.get("/api/v1/monitoring/system-health-dashboard", tags=["monitoring"])
 async def system_health_dashboard_endpoint():
-    """
-    Comprehensive system health dashboard
+    """Comprehensive system health dashboard
     Aggregates all subsystem health metrics and provides overall health score
     """
     try:
@@ -3144,10 +3118,8 @@ class NotificationResponse(BaseModel):
     tags=["notifications"],
 )
 async def setup_notifications(req: NotificationRequest):
+    """Set up real-time notifications for specific products across 39 agencies
     """
-    Set up real-time notifications for specific products across 39 agencies
-    """
-
     logger.info(
         "Setting up notifications for user %s, %s products",
         req.user_id,
@@ -3190,8 +3162,7 @@ async def setup_notifications(req: NotificationRequest):
 
 @app.get("/api/v1/notifications/{notification_id}", tags=["notifications"])
 async def get_notification_status(notification_id: str):
-    """
-    Get status of notification setup
+    """Get status of notification setup
     """
     try:
         from core_infra.cache_manager import get_cached
@@ -3240,8 +3211,7 @@ class MobileScanResponse(BaseModel):
 
 @app.post("/api/v1/mobile/scan", response_model=MobileScanResponse, tags=["mobile"])
 async def mobile_scan(req: MobileScanRequest):
-    """
-    Mobile-optimized barcode scanning with ultra-fast response across 39 agencies
+    """Mobile-optimized barcode scanning with ultra-fast response across 39 agencies
     Designed for real-time scanning in stores
     """
     start_time = datetime.now()
@@ -3302,7 +3272,7 @@ async def mobile_scan(req: MobileScanRequest):
                 result_data = data
 
         safety_level = str(
-            result_data.get("safety_level") or result_data.get("risk_level") or result_data.get("level") or "SAFE"
+            result_data.get("safety_level") or result_data.get("risk_level") or result_data.get("level") or "SAFE",
         ).upper()
 
         if not result_data:
@@ -3354,8 +3324,7 @@ def to_gtin14(code: str) -> str:
 
 
 async def ultra_fast_check(barcode: str, user_id: int) -> dict:
-    """
-    Ultra-fast barcode check with validation and mock recall data
+    """Ultra-fast barcode check with validation and mock recall data
     """
     import time
 
@@ -3396,11 +3365,9 @@ async def mobile_instant_check(
     user_id_alt: int | None = Query(None, alias="user-id", description="User ID (alternative)"),
     x_user_id: int | None = Header(None, alias="X-User-Id", description="User ID (header)"),
 ):
-    """
-    ULTRA-FAST mobile endpoint using hot path optimization
+    """ULTRA-FAST mobile endpoint using hot path optimization
     Target: <100ms responses for real-time scanning across 39 agencies
     """
-
     # Resolve user_id from multiple sources (robust to redirect issues)
     uid = user_id or user_id_alt or x_user_id
     if uid is None:
@@ -3448,11 +3415,9 @@ async def mobile_quick_check(
     user_id_alt: int | None = Query(None, alias="user-id", description="User ID (alternative)"),
     x_user_id: int | None = Header(None, alias="X-User-Id", description="User ID (header)"),
 ):
-    """
-    OPTIMIZED mobile endpoint with enhanced caching
+    """OPTIMIZED mobile endpoint with enhanced caching
     Backward compatible but now much faster with optimizations
     """
-
     start_time = datetime.now()
 
     # Resolve user_id from multiple sources (robust to redirect issues)
@@ -3494,8 +3459,7 @@ async def mobile_quick_check(
 
 @app.get("/mobile/stats", tags=["mobile"])
 async def mobile_performance_stats():
-    """
-    Get mobile hot path performance statistics
+    """Get mobile hot path performance statistics
     """
     try:
         mobile_stats = get_mobile_stats()
@@ -3524,8 +3488,7 @@ async def mobile_performance_stats():
 
 @app.post("/api/v1/report-unsafe-product", tags=["safety-reports"], status_code=201)
 async def report_unsafe_product(request: Request):
-    """
-    Community Safety Reporting: Report Unsafe Products
+    """Community Safety Reporting: Report Unsafe Products
 
     Allows users to report dangerous products that may not yet be in the official
     recall database. This helps protect the community by identifying potential hazards early.
@@ -3663,8 +3626,7 @@ async def get_user_reports(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
 ):
-    """
-    Get all safety reports submitted by a specific user
+    """Get all safety reports submitted by a specific user
 
     **Parameters:**
     - user_id: User ID
@@ -3709,10 +3671,8 @@ async def get_user_reports(
 
 @app.post("/system/fix-upc-data", tags=["system"])
 async def fix_upc_data():
+    """CRITICAL FIX: Enhance existing recalls with UPC data for proper barcode scanning
     """
-    CRITICAL FIX: Enhance existing recalls with UPC data for proper barcode scanning
-    """
-
     logger.info("Starting critical UPC data enhancement...")
 
     # Crown Safe no longer maintains the legacy RecallDB table, so this endpoint
@@ -3742,8 +3702,7 @@ async def fix_upc_data():
 )
 @limiter.limit("30 per minute")
 async def analyze_product(req: ProductAnalysisRequest, request: Request):
-    """
-    Analyze a hair product and return personalized Crown Score.
+    """Analyze a hair product and return personalized Crown Score.
 
     This endpoint provides comprehensive hair product safety analysis using the
     Crown Score algorithm (0-100 points) based on:
@@ -3772,8 +3731,7 @@ async def analyze_product(req: ProductAnalysisRequest, request: Request):
 )
 @limiter.limit("10 per minute")
 async def create_hair_profile(req: HairProfileRequest, request: Request):
-    """
-    Create or update a user's hair profile for personalized analysis.
+    """Create or update a user's hair profile for personalized analysis.
 
     Hair profile includes:
     - Hair type: 3C, 4A, 4B, 4C, Mixed
@@ -3809,8 +3767,7 @@ async def get_hair_profile(user_id: int, request: Request):
 )
 @limiter.limit("60 per minute")
 async def get_scan_history(request: Request, user_id: int, limit: int = 50):
-    """
-    Get user's product scan history.
+    """Get user's product scan history.
 
     Returns up to `limit` most recent scans with Crown Scores and verdicts.
     """

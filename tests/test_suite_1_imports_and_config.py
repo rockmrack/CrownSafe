@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test Suite 1: Imports and Configuration Tests (100 tests)
+"""Test Suite 1: Imports and Configuration Tests (100 tests)
 Tests all module imports, configuration loading, and environment setup
 """
 

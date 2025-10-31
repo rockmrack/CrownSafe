@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Enable pg_trgm extension on production database.
+"""Enable pg_trgm extension on production database.
 Run this script from within the ECS container or a machine with DB access.
 """
 
@@ -77,7 +76,7 @@ def enable_pg_trgm():
                     f"""
                     CREATE INDEX IF NOT EXISTS "{idx_name}" 
                     ON "{table}" USING gin ("{column}" gin_trgm_ops);
-                """
+                """,
                 )
                 conn.commit()
                 print(f"   ✅ {idx_name} created")

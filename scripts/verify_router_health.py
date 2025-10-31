@@ -64,7 +64,7 @@ def check_router_health():
                         "status": data.get("status", "UNKNOWN"),
                         "has_workflow_id": "workflow_id" in data,
                         "workflow_id_value": data.get("workflow_id", "MISSING"),
-                    }
+                    },
                 )
             except (json.JSONDecodeError, TypeError):
                 pass  # Could not parse workflow data
@@ -72,7 +72,7 @@ def check_router_health():
         for wf in recent_workflows:
             status_icon = "✅" if wf["has_workflow_id"] and wf["workflow_id_value"] != "N/A" else "❌"
             print(
-                f"   {status_icon} {wf['id'][:8]}... - Status: {wf['status']}, workflow_id: {wf['workflow_id_value']}"
+                f"   {status_icon} {wf['id'][:8]}... - Status: {wf['status']}, workflow_id: {wf['workflow_id_value']}",
             )
 
     # 3. Test workflow creation
@@ -97,9 +97,9 @@ def check_router_health():
                         "task_description": "Test task",
                         "inputs": {},
                         "dependencies": [],
-                    }
+                    },
                 ],
-            }
+            },
         },
     }
 

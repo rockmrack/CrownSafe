@@ -1,5 +1,4 @@
-"""
-FastAPI Logging Middleware - Issue #32
+"""FastAPI Logging Middleware - Issue #32
 """
 
 import time

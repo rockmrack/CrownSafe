@@ -1,6 +1,5 @@
 # sqlite_jsonb_shim.py
-"""
-Local dev helper: if DATABASE_URL uses sqlite, map SQLAlchemy's JSONB to JSON
+"""Local dev helper: if DATABASE_URL uses sqlite, map SQLAlchemy's JSONB to JSON
 so SQLite can create tables. No effect on Postgres/ECS.
 """
 

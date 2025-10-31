@@ -1,5 +1,4 @@
-"""
-Configuration file for BabyShield Backend
+"""Configuration file for BabyShield Backend
 This file provides basic configuration settings.
 """
 

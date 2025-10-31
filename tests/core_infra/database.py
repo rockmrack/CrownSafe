@@ -354,7 +354,7 @@ def ensure_test_users():
                     hashed_password = EXCLUDED.hashed_password,
                     is_subscribed = EXCLUDED.is_subscribed,
                     is_pregnant = EXCLUDED.is_pregnant
-            """
+            """,
             )
         else:
             stmt = text(
@@ -363,7 +363,7 @@ def ensure_test_users():
                 VALUES 
                     (1, 'subscribed@test.com', NULL, 'testhash', 1, 1),
                     (2, 'unsubscribed@test.com', NULL, 'testhash', 0, 0)
-            """
+            """,
             )
 
         try:
@@ -456,7 +456,7 @@ def get_family_allergies(user_id: int):
                     "member_id": member.id,
                     "name": member.name,
                     "allergies": [allergy.allergen for allergy in member.allergies],
-                }
+                },
             )
         return result
 

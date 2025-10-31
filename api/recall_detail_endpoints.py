@@ -1,5 +1,4 @@
-"""
-Recall Detail Endpoints for Individual Recall Lookup
+"""Recall Detail Endpoints for Individual Recall Lookup
 """
 
 import logging
@@ -19,8 +18,7 @@ logger = logging.getLogger(__name__)
 
 @router.get("/recall/{recall_id:path}")
 async def get_recall_detail(recall_id: str, request: Request, response: Response) -> dict[str, Any]:
-    """
-    Get detailed information for a specific recall by ID
+    """Get detailed information for a specific recall by ID
 
     Args:
         recall_id: The unique recall identifier (may include slashes, e.g., RAPEX-A11/00023/23)
@@ -118,7 +116,7 @@ async def get_recall_detail(recall_id: str, request: Request, response: Response
                 WHERE recall_id = :recall_id
                 
                 LIMIT 1
-            """
+            """,
             )
 
             result = db.execute(query, {"recall_id": decoded_recall_id}).fetchone()

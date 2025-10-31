@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test script for Legal Compliance API endpoints
+"""Test script for Legal Compliance API endpoints
 Tests COPPA, Children's Code, GDPR, and legal content management
 """
 

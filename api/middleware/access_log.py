@@ -1,5 +1,4 @@
-"""
-Access Log Middleware for structured request logging
+"""Access Log Middleware for structured request logging
 Logs all requests with correlation IDs and metrics
 """
 
@@ -14,13 +13,11 @@ access_logger = logging.getLogger("access")
 
 
 class AccessLogMiddleware(BaseHTTPMiddleware):
-    """
-    Middleware to log all HTTP requests with structured data
+    """Middleware to log all HTTP requests with structured data
     """
 
     async def dispatch(self, request: Request, call_next):
-        """
-        Log request details with correlation ID
+        """Log request details with correlation ID
         """
         # Track timing
         start_time = time.perf_counter()

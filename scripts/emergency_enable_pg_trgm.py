@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-EMERGENCY: Enable pg_trgm extension directly on production database
+"""EMERGENCY: Enable pg_trgm extension directly on production database
 This bypasses the application startup code
 """
 
@@ -94,7 +93,7 @@ try:
         WHERE tablename = 'recalls_enhanced' 
         AND indexname LIKE '%trgm%'
         ORDER BY indexname;
-    """
+    """,
     )
     indexes = cursor.fetchall()
 

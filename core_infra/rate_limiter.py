@@ -1,5 +1,4 @@
-"""
-Rate Limiting for BabyShield API
+"""Rate Limiting for BabyShield API
 Prevents API abuse and ensures fair usage
 """
 
@@ -18,8 +17,7 @@ REDIS_URL = os.getenv("RATE_LIMIT_REDIS_URL") or os.getenv("REDIS_URL")
 
 
 def get_identifier(request: Request) -> str:
-    """
-    Get identifier for rate limiting
+    """Get identifier for rate limiting
     Uses IP address or authenticated user ID
     """
     # Try to get authenticated user first
@@ -107,8 +105,7 @@ def ip_limit():
 
 # Dynamic rate limiting based on user tier (optional)
 def get_user_rate_limit(request: Request) -> str:
-    """
-    Get rate limit based on user tier
+    """Get rate limit based on user tier
     Can be extended to support different user tiers
     """
     if hasattr(request.state, "user") and request.state.user:

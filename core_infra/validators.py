@@ -1,5 +1,4 @@
-"""
-Input validation and sanitization for BabyShield
+"""Input validation and sanitization for BabyShield
 Prevents SQL injection, XSS, and invalid data
 """
 
@@ -20,8 +19,7 @@ BARCODE_PATTERNS = {
 
 
 def validate_barcode(barcode: str) -> str:
-    """
-    Validate barcode format
+    """Validate barcode format
     Prevents SQL injection by ensuring only numbers
     """
     if not barcode:
@@ -52,8 +50,7 @@ def validate_barcode(barcode: str) -> str:
 
 
 def validate_model_number(model: str) -> str:
-    """
-    Validate model number
+    """Validate model number
     Allows alphanumeric with some special chars
     """
     if not model:
@@ -74,8 +71,7 @@ def validate_model_number(model: str) -> str:
 
 
 def sanitize_html(text: str) -> str:
-    """
-    Sanitize HTML to prevent XSS attacks.
+    """Sanitize HTML to prevent XSS attacks.
     Removes dangerous tags, attributes, and JavaScript URIs.
     """
     import re
@@ -114,8 +110,7 @@ def sanitize_html(text: str) -> str:
 
 
 def validate_email(email: str) -> str:
-    """
-    Validate email format
+    """Validate email format
     """
     # Basic email regex
     email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
@@ -131,8 +126,7 @@ def validate_email(email: str) -> str:
 
 
 def validate_pagination(skip: int, limit: int) -> tuple[int, int]:
-    """
-    Validate pagination parameters
+    """Validate pagination parameters
     """
     # Ensure non-negative
     if skip < 0:
@@ -152,8 +146,7 @@ def validate_pagination(skip: int, limit: int) -> tuple[int, int]:
 
 
 def validate_id(id_value: Any) -> int:
-    """
-    Validate database ID
+    """Validate database ID
     """
     try:
         id_int = int(id_value)
@@ -165,8 +158,7 @@ def validate_id(id_value: Any) -> int:
 
 
 def validate_search_query(query: str) -> str:
-    """
-    Validate and sanitize search queries to prevent SQL injection.
+    """Validate and sanitize search queries to prevent SQL injection.
     Raises ValueError if dangerous patterns detected.
     Truncates queries that are too long.
     """
@@ -223,8 +215,7 @@ def validate_search_query(query: str) -> str:
 
 
 def validate_file_upload(filename: str, content_type: str, size: int) -> bool:
-    """
-    Validate file upload
+    """Validate file upload
     """
     # Allowed file extensions
     ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".pdf"}
@@ -250,8 +241,7 @@ def validate_file_upload(filename: str, content_type: str, size: int) -> bool:
 
 
 def sanitize_filename(filename: str) -> str:
-    """
-    Sanitize filename to prevent path traversal
+    """Sanitize filename to prevent path traversal
     """
     import os
 
@@ -337,8 +327,7 @@ class ValidatedSearchRequest(BaseModel):
 
 # SQL injection prevention helper
 def safe_sql_identifier(identifier: str) -> str:
-    """
-    Validate SQL identifier (table/column name)
+    """Validate SQL identifier (table/column name)
     """
     if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", identifier):
         raise ValueError(f"Invalid SQL identifier: {identifier}")
@@ -365,8 +354,7 @@ def safe_sql_identifier(identifier: str) -> str:
 
 # XSS prevention for JSON responses
 def sanitize_dict(data: dict) -> dict:
-    """
-    Recursively sanitize dictionary values
+    """Recursively sanitize dictionary values
     """
     cleaned = {}
     for key, value in data.items():

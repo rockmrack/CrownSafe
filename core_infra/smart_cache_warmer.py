@@ -13,8 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class SmartCacheWarmer:
-    """
-    Intelligent cache warming system for BabyShield's 39-agency recall database.
+    """Intelligent cache warming system for BabyShield's 39-agency recall database.
     Pre-loads popular products and anticipates user queries for maximum cache hit rates.
     """
 
@@ -36,8 +35,7 @@ class SmartCacheWarmer:
         }
 
     async def analyze_popular_products(self) -> dict[str, list[str]]:
-        """
-        Analyze 3,218+ recalls to identify most popular products and brands for cache warming
+        """Analyze 3,218+ recalls to identify most popular products and brands for cache warming
         """
         start_time = time.time()
 
@@ -69,8 +67,7 @@ class SmartCacheWarmer:
             return {"products": [], "brands": []}
 
     async def warm_cache_for_products(self, products: list[str]) -> int:
-        """
-        Pre-warm cache for popular products with optimized batch operations
+        """Pre-warm cache for popular products with optimized batch operations
         """
         start_time = time.time()
         successful_warming = 0
@@ -119,7 +116,7 @@ class SmartCacheWarmer:
 
             elapsed = time.time() - start_time
             self.logger.info(
-                f"🔥 Cache warming: {successful_warming}/{len(products)} products warmed in {elapsed:.3f}s"
+                f"🔥 Cache warming: {successful_warming}/{len(products)} products warmed in {elapsed:.3f}s",
             )
 
             return successful_warming
@@ -129,8 +126,7 @@ class SmartCacheWarmer:
             return 0
 
     async def warm_cache_for_autocomplete(self, products: list[str], brands: list[str]) -> int:
-        """
-        Pre-warm autocomplete cache for instant typing responses
+        """Pre-warm autocomplete cache for instant typing responses
         """
         try:
             # Pre-generate common autocomplete queries
@@ -176,8 +172,7 @@ class SmartCacheWarmer:
             return 0
 
     async def start_intelligent_cache_warming(self) -> dict[str, Any]:
-        """
-        Start intelligent cache warming process for maximum performance
+        """Start intelligent cache warming process for maximum performance
         """
         if self.warming_active:
             self.logger.info("Cache warming already in progress...")
@@ -198,7 +193,7 @@ class SmartCacheWarmer:
 
             # Step 3: Warm autocomplete cache
             autocomplete_warming = await self.warm_cache_for_autocomplete(
-                popular_data["products"], popular_data["brands"]
+                popular_data["products"], popular_data["brands"],
             )
 
             # Update tracking
@@ -220,7 +215,7 @@ class SmartCacheWarmer:
             }
 
             self.logger.info(
-                f"✅ Cache warming complete: {product_warming} products + {autocomplete_warming} autocomplete queries in {elapsed:.3f}s"  # noqa: E501
+                f"✅ Cache warming complete: {product_warming} products + {autocomplete_warming} autocomplete queries in {elapsed:.3f}s",  # noqa: E501
             )
 
             return result
@@ -234,8 +229,7 @@ class SmartCacheWarmer:
                 self.warming_active = False
 
     def should_refresh_cache(self) -> bool:
-        """
-        Determine if cache should be refreshed based on time and usage patterns
+        """Determine if cache should be refreshed based on time and usage patterns
         """
         if not self.last_warming:
             return True
@@ -244,8 +238,7 @@ class SmartCacheWarmer:
         return elapsed > self.config["warming_interval"]
 
     async def background_cache_refresh(self):
-        """
-        Background task for continuous cache optimization
+        """Background task for continuous cache optimization
         """
         while True:
             try:

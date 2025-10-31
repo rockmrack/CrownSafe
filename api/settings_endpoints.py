@@ -1,5 +1,4 @@
-"""
-App Settings Endpoints for BabyShield
+"""App Settings Endpoints for BabyShield
 Includes Crashlytics toggle and other app preferences
 """
 
@@ -92,8 +91,7 @@ async def get_settings(
     user_id: str | None = Header(None, alias="X-User-ID"),
     device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
-    """
-    Get current app settings
+    """Get current app settings
 
     Returns all app settings for the user/device.
     If no user_id is provided, uses device_id or returns defaults.
@@ -121,8 +119,7 @@ async def update_settings(
     user_id: str | None = Header(None, alias="X-User-ID"),
     device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
-    """
-    Update app settings
+    """Update app settings
 
     Allows partial updates to app settings.
     Only provided fields will be updated.
@@ -157,8 +154,7 @@ async def toggle_crashlytics(
     toggle_request: CrashlyticsToggleRequest,
     user_agent: str | None = Header(None),
 ):
-    """
-    Toggle Crashlytics crash reporting
+    """Toggle Crashlytics crash reporting
 
     This endpoint specifically handles enabling/disabling Crashlytics.
     Default is OFF to respect user privacy.
@@ -216,8 +212,7 @@ async def get_crashlytics_status(
     user_id: str | None = Header(None, alias="X-User-ID"),
     device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
-    """
-    Get current Crashlytics status
+    """Get current Crashlytics status
 
     Returns whether Crashlytics is enabled for this user/device.
     """
@@ -249,8 +244,7 @@ async def reset_settings(
     user_id: str | None = Header(None, alias="X-User-ID"),
     device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
-    """
-    Reset all settings to defaults
+    """Reset all settings to defaults
 
     This will reset all app settings to their default values.
     Crashlytics will be disabled by default.
@@ -277,8 +271,7 @@ async def reset_settings(
 
 @router.get("/retry-policy")
 async def get_retry_policy():
-    """
-    Get recommended retry policy for failed requests
+    """Get recommended retry policy for failed requests
 
     This helps the app implement proper retry logic with exponential backoff.
     """

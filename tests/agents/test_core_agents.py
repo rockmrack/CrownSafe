@@ -1,5 +1,4 @@
-"""
-COMPREHENSIVE AGENT TEST SUITE - CORE AGENTS
+"""COMPREHENSIVE AGENT TEST SUITE - CORE AGENTS
 Tests all critical agents in the BabyShield system
 Date: October 10, 2025
 
@@ -177,7 +176,7 @@ async def test_9_alternatives_agent_process_task():
             "product_name": "Baby Bottle X",
             "product_category": "feeding",
             "unsafe_product": True,
-        }
+        },
     )
 
     assert result is not None
@@ -240,7 +239,7 @@ async def test_12_recall_agent_with_alternatives():
             "product_name": "Baby Bottle",
             "product_category": "feeding",
             "unsafe_product": True,
-        }
+        },
     )
 
     assert recall_result is not None
@@ -379,7 +378,7 @@ if __name__ == "__main__":
             "--asyncio-mode=auto",
             "-m",
             "not stress",  # Skip stress tests by default
-        ]
+        ],
     )
 
     sys.exit(exit_code)

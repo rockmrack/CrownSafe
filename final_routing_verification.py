@@ -1,5 +1,4 @@
-"""
-DATABASE ROUTING VERIFICATION - All User Queries Lead to Production PostgreSQL
+"""DATABASE ROUTING VERIFICATION - All User Queries Lead to Production PostgreSQL
 ===============================================================================
 
 Verifies that every user query path (API endpoints, agents, direct DB)

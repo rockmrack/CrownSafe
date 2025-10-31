@@ -1,5 +1,4 @@
-"""
-SQLAlchemy model for user_reports table
+"""SQLAlchemy model for user_reports table
 """
 
 from sqlalchemy import JSON, Column, Date, DateTime, Integer, String, Text
@@ -9,8 +8,7 @@ from core_infra.database import Base
 
 
 class UserReport(Base):
-    """
-    Model for community-reported unsafe products
+    """Model for community-reported unsafe products
 
     Allows users to report dangerous products that may not yet be in
     the official recall database, helping to keep the community safe.

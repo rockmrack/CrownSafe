@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Comment out RecallDB imports in main_crownsafe.py
+"""Comment out RecallDB imports in main_crownsafe.py
 Handles UTF-8 encoding properly
 """
 
@@ -9,7 +8,6 @@ import sys
 
 def comment_out_imports():
     """Comment out all RecallDB imports in main_crownsafe.py"""
-
     file_path = "api/main_crownsafe.py"
 
     # Target line numbers (1-indexed from grep results)

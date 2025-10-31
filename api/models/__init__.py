@@ -1,5 +1,4 @@
-"""
-API models package for request/response validation
+"""API models package for request/response validation
 """
 
 from .search_validation import (

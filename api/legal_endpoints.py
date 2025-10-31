@@ -1,5 +1,4 @@
-"""
-Task 15: Legal & Privacy API Endpoints
+"""Task 15: Legal & Privacy API Endpoints
 Provides access to legal documents and privacy controls
 """
 
@@ -119,8 +118,7 @@ LEGAL_DOCUMENTS = {
 
 
 def get_document_content(doc_id: str, format: str = "markdown") -> tuple[str, str]:
-    """
-    Get legal document content
+    """Get legal document content
     Returns: (content, content_type)
     """
     if doc_id not in LEGAL_DOCUMENTS:
@@ -188,7 +186,6 @@ def get_document_content(doc_id: str, format: str = "markdown") -> tuple[str, st
 
 def generate_template_content(doc_id: str, doc_info: dict) -> str:
     """Generate template content for missing documents"""
-
     if doc_id == "privacy":
         return """# Privacy Policy
 
@@ -247,7 +244,6 @@ def calculate_content_hash(content: str) -> str:
 @router.get("/", response_model=list[LegalDocument])
 async def list_legal_documents(language: str | None = "en"):
     """Get list of all legal documents with metadata"""
-
     documents = []
     for doc_id, doc_info in LEGAL_DOCUMENTS.items():
         content, _ = get_document_content(doc_id)
@@ -262,7 +258,7 @@ async def list_legal_documents(language: str | None = "en"):
                 language=language,
                 url=f"/legal/{doc_id}",
                 content_hash=calculate_content_hash(content),
-            )
+            ),
         )
 
     return documents
@@ -270,13 +266,11 @@ async def list_legal_documents(language: str | None = "en"):
 
 @router.get("/{document_id}")
 async def get_legal_document(document_id: str, format: str | None = "html", language: str | None = "en"):
-    """
-    Get a specific legal document
+    """Get a specific legal document
 
     Formats: html, markdown, plain
     Documents: privacy, terms, dpa, cookies
     """
-
     try:
         content, content_type = get_document_content(document_id, format)
 
@@ -304,7 +298,6 @@ async def get_legal_document(document_id: str, format: str | None = "html", lang
 @router.get("/privacy/summary", response_model=dict[str, Any])
 async def get_privacy_summary(user_id: str | None = Header(None, alias="X-User-ID")):
     """Get privacy policy summary and user's privacy settings"""
-
     summary = {
         "ok": True,
         "summary": {
@@ -384,7 +377,6 @@ async def update_privacy_consent(
     request: Request = None,
 ):
     """Update user's privacy consent settings"""
-
     # Validate user
     if not user_id or user_id != consent.user_id:
         raise HTTPException(status_code=403, detail="Unauthorized")
@@ -422,7 +414,6 @@ async def update_privacy_consent(
 @router.post("/privacy/request-data")
 async def request_data_export(user_id: str = Header(..., alias="X-User-ID")):
     """Request a copy of user's data (GDPR Article 15)"""
-
     request_id = hashlib.sha256(f"{user_id}{datetime.now()}".encode()).hexdigest()[:12]
 
     return {
@@ -439,7 +430,6 @@ async def request_data_export(user_id: str = Header(..., alias="X-User-ID")):
 @router.post("/privacy/delete-data")
 async def request_data_deletion(deletion: DataDeletionRequest, user_id: str = Header(..., alias="X-User-ID")):
     """Request deletion of user's data (GDPR Article 17)"""
-
     # Validate user
     if user_id != deletion.user_id:
         raise HTTPException(status_code=403, detail="Unauthorized")
@@ -473,7 +463,6 @@ async def request_data_deletion(deletion: DataDeletionRequest, user_id: str = He
 @router.get("/compliance/status")
 async def get_compliance_status():
     """Get current compliance status and certifications"""
-
     return {
         "ok": True,
         "compliance": {
@@ -525,7 +514,6 @@ async def get_compliance_status():
 @router.get("/agreements/{user_id}")
 async def get_user_agreements(user_id: str, requesting_user: str = Header(..., alias="X-User-ID")):
     """Get user's legal agreement history"""
-
     # Users can only view their own agreements
     if user_id != requesting_user:
         raise HTTPException(status_code=403, detail="Unauthorized")
@@ -561,7 +549,6 @@ async def accept_legal_agreement(
     request: Request = None,
 ):
     """Accept a legal agreement"""
-
     # Validate user
     if user_id != agreement.user_id:
         raise HTTPException(status_code=403, detail="Unauthorized")
@@ -597,7 +584,6 @@ async def accept_legal_agreement(
 @router.get("/cookies/preferences")
 async def get_cookie_preferences(session_id: str | None = Header(None, alias="X-Session-ID")):
     """Get cookie preferences (web only)"""
-
     return {
         "ok": True,
         "cookies_used": {
@@ -658,5 +644,5 @@ async def get_data_deletion_policy():
                 "timeline": "Data deletion requests are processed within 30 days",
                 "verification": "We will verify your identity before processing the request",
             },
-        }
+        },
     )

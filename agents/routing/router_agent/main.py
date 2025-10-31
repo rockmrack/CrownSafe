@@ -169,7 +169,7 @@ class RouterAgentManager:
             )
 
             self.router_logic = RouterLogic(  # RouterLogic needs the mcp_client to send its own messages
-                agent_id=AGENT_ID, mcp_client=self.mcp_client, logger=logic_logger
+                agent_id=AGENT_ID, mcp_client=self.mcp_client, logger=logic_logger,
             )
 
             logger.info(f"RouterAgent components initialized (Version: {AGENT_VERSION})")
@@ -204,7 +204,7 @@ class RouterAgentManager:
                         ValueError,
                     ) as e:  # Added ValueError
                         logger.warning(
-                            f"Cannot add signal handler for {signal.Signals(sig).name} on this system: {e}. Use Ctrl+C if available."  # noqa: E501
+                            f"Cannot add signal handler for {signal.Signals(sig).name} on this system: {e}. Use Ctrl+C if available.",  # noqa: E501
                         )
                 else:
                     logger.warning(f"Signal {sig_name} not available on this platform.")

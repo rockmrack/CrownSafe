@@ -1,5 +1,4 @@
-"""
-User Dashboard & Statistics Endpoints
+"""User Dashboard & Statistics Endpoints
 """
 
 import logging
@@ -190,7 +189,7 @@ async def get_activity_timeline(
                 "total_scans": sum(a["scans"] for a in activities),
                 "total_recalls": sum(a["recalls_found"] for a in activities),
                 "total_notifications": sum(a["notifications"] for a in activities),
-            }
+            },
         )
 
     except Exception as e:
@@ -242,7 +241,7 @@ async def get_product_categories(current_user=Depends(get_current_active_user), 
         for cat, count in sorted(categories.items(), key=lambda x: x[1], reverse=True):
             percentage = (count / total * 100) if total > 0 else 0
             category_stats.append(
-                ProductCategory(category=cat, count=count, percentage=round(percentage, 1)).model_dump()
+                ProductCategory(category=cat, count=count, percentage=round(percentage, 1)).model_dump(),
             )
 
         return ok({"categories": category_stats[:10], "total_products": total})  # Top 10 categories
@@ -287,7 +286,7 @@ async def get_safety_insights(current_user=Depends(get_current_active_user), db:
                             f"products to stay safer."
                         ),
                         "priority": "medium",
-                    }
+                    },
                 )
 
         # Check scan frequency
@@ -307,7 +306,7 @@ async def get_safety_insights(current_user=Depends(get_current_active_user), db:
                             f"Regular scanning helps identify new products."
                         ),
                         "priority": "low",
-                    }
+                    },
                 )
 
         # Check for unread notifications
@@ -328,7 +327,7 @@ async def get_safety_insights(current_user=Depends(get_current_active_user), db:
                     "title": "Unread Recall Alerts",
                     "message": (f"You have {unread} unread recall notifications. Check them immediately for safety."),
                     "priority": "high",
-                }
+                },
             )
 
         # Check for recalled products
@@ -349,7 +348,7 @@ async def get_safety_insights(current_user=Depends(get_current_active_user), db:
                     "title": "Active Recalls",
                     "message": (f"{recalled} of your monitored products have active recalls. Review and take action."),
                     "priority": "high",
-                }
+                },
             )
 
         # Positive reinforcement
@@ -360,7 +359,7 @@ async def get_safety_insights(current_user=Depends(get_current_active_user), db:
                     "title": "Great Job!",
                     "message": ("All your monitored products are currently safe. Keep up the good monitoring!"),
                     "priority": "low",
-                }
+                },
             )
 
         return ok({"insights": insights, "generated_at": datetime.utcnow().isoformat() + "Z"})
@@ -445,7 +444,7 @@ async def get_user_achievements(current_user=Depends(get_current_active_user), d
                         "icon": "🔍",
                         "unlocked": True,
                         "date": None,  # Would need to track when unlocked
-                    }
+                    },
                 )
 
         # Monitoring achievements
@@ -463,7 +462,7 @@ async def get_user_achievements(current_user=Depends(get_current_active_user), d
                     "description": "Monitoring 5+ products",
                     "icon": "🛡️",
                     "unlocked": True,
-                }
+                },
             )
 
         if monitored >= 20:
@@ -474,7 +473,7 @@ async def get_user_achievements(current_user=Depends(get_current_active_user), d
                     "description": "Monitoring 20+ products",
                     "icon": "🦸",
                     "unlocked": True,
-                }
+                },
             )
 
         # Safety achievements
@@ -496,7 +495,7 @@ async def get_user_achievements(current_user=Depends(get_current_active_user), d
                     "description": "Handled your first recall alert",
                     "icon": "⚠️",
                     "unlocked": True,
-                }
+                },
             )
 
         # Streak achievements
@@ -527,7 +526,7 @@ async def get_user_achievements(current_user=Depends(get_current_active_user), d
                     "description": "7-day scanning streak",
                     "icon": "🔥",
                     "unlocked": True,
-                }
+                },
             )
 
         if streak >= 30:
@@ -538,7 +537,7 @@ async def get_user_achievements(current_user=Depends(get_current_active_user), d
                     "description": "30-day scanning streak",
                     "icon": "🏆",
                     "unlocked": True,
-                }
+                },
             )
 
         return ok(
@@ -546,7 +545,7 @@ async def get_user_achievements(current_user=Depends(get_current_active_user), d
                 "achievements": achievements,
                 "total_unlocked": len(achievements),
                 "current_streak": streak,
-            }
+            },
         )
 
     except Exception as e:

@@ -1,6 +1,5 @@
 # core_infra/__init__.py
-"""
-Core Infrastructure Package for BabyShield Backend
+"""Core Infrastructure Package for BabyShield Backend
 This package provides essential infrastructure components.
 """
 

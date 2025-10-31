@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test script for the Safety Hub feature
+"""Test script for the Safety Hub feature
 Tests article ingestion and API endpoint
 """
 
@@ -175,7 +174,6 @@ def test_mock_articles():
 
 async def main():
     """Run all tests"""
-
     print("=" * 60)
     print("🏥 TESTING SAFETY HUB FEATURE")
     print("=" * 60)

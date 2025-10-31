@@ -1,5 +1,4 @@
-"""
-API endpoints for supplemental data and enhanced safety reports
+"""API endpoints for supplemental data and enhanced safety reports
 """
 
 import logging
@@ -27,8 +26,7 @@ async def get_enhanced_safety_report(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """
-    Generate comprehensive safety report with supplemental data
+    """Generate comprehensive safety report with supplemental data
 
     Combines recall data with:
     - Food: USDA FoodData Central, Edamam nutritional data
@@ -65,8 +63,7 @@ async def get_food_data(
     product_name: str | None = Query(None, description="Product name for better search results"),
     db: Session = Depends(get_db),
 ):
-    """
-    Get comprehensive food data from USDA and Edamam
+    """Get comprehensive food data from USDA and Edamam
 
     Returns nutritional information, ingredients, allergens, and safety scores
     """
@@ -100,8 +97,7 @@ async def get_cosmetic_data(
     product_name: str | None = Query(None, description="Product name for better search results"),
     db: Session = Depends(get_db),
 ):
-    """
-    Get cosmetic data from EU CosIng database
+    """Get cosmetic data from EU CosIng database
 
     Returns ingredient information, regulatory status, and safety assessments
     """
@@ -142,8 +138,7 @@ async def get_chemical_data(
     product_name: str | None = Query(None, description="Product name for better search results"),
     db: Session = Depends(get_db),
 ):
-    """
-    Get chemical safety data from OSHA and ATSDR
+    """Get chemical safety data from OSHA and ATSDR
 
     Returns safety limits, health effects, and exposure guidelines
     """
@@ -173,8 +168,7 @@ async def get_chemical_data(
 
 @router.get("/data-sources", response_model=dict)
 async def get_available_data_sources():
-    """
-    Get list of available supplemental data sources and their status
+    """Get list of available supplemental data sources and their status
     """
     try:
         sources = {
@@ -195,7 +189,7 @@ async def get_available_data_sources():
                     "enabled": enhanced_safety_service.supplemental_service.cosing_client.enabled,
                     "description": "EU CosIng Database - Cosmetic ingredients and regulations",
                     "api_required": False,
-                }
+                },
             },
             "chemicals": {
                 "osha": {
@@ -220,8 +214,7 @@ async def get_available_data_sources():
 
 @router.get("/health", response_model=dict)
 async def supplemental_data_health():
-    """
-    Health check for supplemental data services
+    """Health check for supplemental data services
     """
     try:
         health_status = {
@@ -249,8 +242,7 @@ async def supplemental_data_health():
 
 @router.get("/test-simple", response_model=dict)
 async def test_simple():
-    """
-    Simple test endpoint that doesn't use any services
+    """Simple test endpoint that doesn't use any services
     """
     try:
         logger.info("Testing simple endpoint...")
@@ -262,8 +254,7 @@ async def test_simple():
 
 @router.get("/test-cosmetic-simple", response_model=dict)
 async def test_cosmetic_simple():
-    """
-    Simple test to create a CosmeticDataResponse directly
+    """Simple test to create a CosmeticDataResponse directly
     """
     try:
         from api.models.supplemental_models import (
@@ -302,8 +293,7 @@ async def test_cosmetic_simple():
 
 @router.get("/test-dataclass", response_model=dict)
 async def test_dataclass():
-    """
-    Test creating CosmeticData dataclass directly
+    """Test creating CosmeticData dataclass directly
     """
     try:
         from core_infra.supplemental_data_service import CosmeticData
@@ -327,8 +317,7 @@ async def test_dataclass():
 
 @router.get("/test-post-endpoint", response_model=dict)
 async def test_post_endpoint():
-    """
-    Test the POST safety-report endpoint with a GET request for easier testing
+    """Test the POST safety-report endpoint with a GET request for easier testing
     """
     try:
         from api.models.supplemental_models import SupplementalDataRequest
@@ -378,8 +367,7 @@ async def test_post_endpoint():
 
 @router.get("/test-cache-clear", response_model=dict)
 async def test_cache_clear():
-    """
-    Test the cache clear endpoint functionality
+    """Test the cache clear endpoint functionality
     """
     try:
         from api.barcode_bridge import barcode_cache
@@ -411,8 +399,7 @@ async def test_cache_clear():
 
 @router.get("/test-cosmetic", response_model=dict)
 async def test_cosmetic_data():
-    """
-    Simple test endpoint for cosmetic data
+    """Simple test endpoint for cosmetic data
     """
     try:
         logger.info("Testing cosmetic data service...")
@@ -453,7 +440,7 @@ async def test_cosmetic_data():
                     "ingredients": cosmetic_data.ingredients,
                     "source": cosmetic_data.source,
                 },
-            }
+            },
         )
 
     except Exception as e:

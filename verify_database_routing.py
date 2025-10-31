@@ -1,5 +1,4 @@
-"""
-COMPREHENSIVE DATABASE ROUTING VERIFICATION
+"""COMPREHENSIVE DATABASE ROUTING VERIFICATION
 ============================================
 
 This script verifies that ALL user query paths route to production database

@@ -1,5 +1,4 @@
-"""
-Integration test for manual model number entry workflow.
+"""Integration test for manual model number entry workflow.
 
 This test validates the complete workflow using a test database with seeded data.
 No production database access required!
@@ -78,8 +77,7 @@ def test_db():
 
 @pytest.mark.integration
 def test_model_number_entry_with_known_model(test_db):
-    """
-    Test manual model number entry for a product WITH a recall.
+    """Test manual model number entry for a product WITH a recall.
 
     Workflow:
     1. User enters model number "SBM-100"
@@ -141,8 +139,7 @@ def test_model_number_entry_with_known_model(test_db):
 
 @pytest.mark.integration
 def test_model_number_entry_without_recall(test_db):
-    """
-    Test manual model number entry for a product WITHOUT a recall.
+    """Test manual model number entry for a product WITHOUT a recall.
 
     Workflow:
     1. User enters model number "SAFE-MODEL-123"

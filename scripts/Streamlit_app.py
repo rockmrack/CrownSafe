@@ -294,7 +294,7 @@ class UnifiedMemoryManager:
 
         try:
             self.collection = self.chroma_client.get_or_create_collection(
-                name="cureviax_unified_memory", metadata={"hnsw:space": "cosine"}
+                name="cureviax_unified_memory", metadata={"hnsw:space": "cosine"},
             )
             return True
         except Exception as e:
@@ -386,7 +386,7 @@ class UnifiedMemoryManager:
                             "session_id": self.session_id,
                             "tokens": message.tokens,
                             "has_attachments": len(message.attachments) > 0,
-                        }
+                        },
                     ],
                     ids=[message.id],
                 )
@@ -442,7 +442,7 @@ class UnifiedMemoryManager:
                                 "model": msg_data.get("model", ""),
                                 "timestamp": timestamp,
                                 "tokens": int(msg_data.get("tokens", 0)),
-                            }
+                            },
                         )
 
             except Exception as e:
@@ -466,7 +466,7 @@ class UnifiedMemoryManager:
                                 "id": metadata.get("id"),
                                 "content": doc,
                                 "relevance_score": 1.0 / (i + 1),
-                            }
+                            },
                         )
             except Exception as e:
                 st.error(f"ChromaDB search error: {e}")
@@ -650,7 +650,7 @@ class UnifiedMemoryManager:
                     summary_parts.append(f"- {decision}")
 
             summary_parts.append(
-                "\nProject: Building an advanced healthcare AI platform with persistent memory, multi-agent architecture, and multi-model support."  # noqa: E501
+                "\nProject: Building an advanced healthcare AI platform with persistent memory, multi-agent architecture, and multi-model support.",  # noqa: E501
             )
 
             summary = "\n".join(summary_parts)
@@ -920,7 +920,7 @@ Reference our previous discussions and maintain continuity.""",
                         {
                             "role": "user",
                             "content": context if attempt == 0 else self._request_completion(full_response, "Claude"),
-                        }
+                        },
                     ],
                 )
 
@@ -1219,7 +1219,7 @@ def export_conversation_to_pdf(messages: list[Message]) -> bytes:
                 Paragraph(
                     f"<b>{model_name}</b> - {msg.timestamp.strftime('%H:%M')}",
                     role_style,
-                )
+                ),
             )
 
         content_style = ParagraphStyle(
@@ -1587,7 +1587,7 @@ with col1:
                         "model": msg.model,
                         "timestamp": msg.timestamp.isoformat(),
                         "attachments": len(msg.attachments),
-                    }
+                    },
                 )
 
             st.download_button(
@@ -1625,7 +1625,7 @@ with col3:
         - Session ID in URL
         - Smart context management
         - Semantic search via ChromaDB
-        """
+        """,
         )
 
 # Optional dependency info

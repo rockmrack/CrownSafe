@@ -1,5 +1,4 @@
-"""
-Graceful shutdown handler for BabyShield
+"""Graceful shutdown handler for BabyShield
 Ensures clean shutdown without data loss
 """
 
@@ -17,8 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class GracefulShutdownHandler:
-    """
-    Manages graceful shutdown of the application
+    """Manages graceful shutdown of the application
     """
 
     def __init__(self, timeout: int = 30):
@@ -31,8 +29,7 @@ class GracefulShutdownHandler:
         self._original_sigterm = None
 
     def register_cleanup(self, task: Callable):
-        """
-        Register a cleanup task to run on shutdown
+        """Register a cleanup task to run on shutdown
         """
         self.cleanup_tasks.append(task)
         logger.info(f"Registered cleanup task: {task.__name__}")
@@ -57,8 +54,7 @@ class GracefulShutdownHandler:
             self.decrement_active_requests()
 
     def signal_handler(self, signum, frame):
-        """
-        Handle shutdown signals
+        """Handle shutdown signals
         """
         signal_name = signal.Signals(signum).name
         logger.info(f"Received signal {signal_name}, initiating graceful shutdown...")
@@ -70,8 +66,7 @@ class GracefulShutdownHandler:
         threading.Thread(target=self._shutdown, daemon=False).start()
 
     def _shutdown(self):
-        """
-        Perform graceful shutdown
+        """Perform graceful shutdown
         """
         start_time = time.time()
 
@@ -110,8 +105,7 @@ class GracefulShutdownHandler:
         sys.exit(0)
 
     def _close_resources(self):
-        """
-        Close all resources
+        """Close all resources
         """
         try:
             # Close database connections
@@ -140,8 +134,7 @@ class GracefulShutdownHandler:
             logger.error(f"  Error stopping Celery: {e}")
 
     def install(self):
-        """
-        Install signal handlers
+        """Install signal handlers
         """
         # Store original handlers
         self._original_sigint = signal.signal(signal.SIGINT, self.signal_handler)
@@ -150,8 +143,7 @@ class GracefulShutdownHandler:
         logger.info("✅ Graceful shutdown handler installed")
 
     def uninstall(self):
-        """
-        Restore original signal handlers
+        """Restore original signal handlers
         """
         if self._original_sigint:
             signal.signal(signal.SIGINT, self._original_sigint)
@@ -165,8 +157,7 @@ shutdown_handler = GracefulShutdownHandler()
 
 # Middleware for tracking requests
 async def request_tracking_middleware(request, call_next):
-    """
-    Track active requests for graceful shutdown
+    """Track active requests for graceful shutdown
     """
     with shutdown_handler.track_request():
         # Check if shutting down
@@ -238,8 +229,7 @@ shutdown_handler.register_cleanup(save_application_state)
 
 # FastAPI integration
 def setup_graceful_shutdown(app):
-    """
-    Setup graceful shutdown for FastAPI app
+    """Setup graceful shutdown for FastAPI app
     """
 
     @app.on_event("startup")
@@ -265,8 +255,7 @@ def setup_graceful_shutdown(app):
 
 # Celery integration
 def setup_celery_graceful_shutdown(celery_app):
-    """
-    Setup graceful shutdown for Celery workers
+    """Setup graceful shutdown for Celery workers
     """
     from celery.signals import worker_shutdown, worker_shutting_down
 
@@ -303,8 +292,7 @@ def setup_celery_graceful_shutdown(celery_app):
 # Context manager for graceful operations
 @contextmanager
 def graceful_operation(name: str, timeout: int = 10):
-    """
-    Context manager for operations that need graceful handling
+    """Context manager for operations that need graceful handling
     """
     if shutdown_handler.shutdown_event.is_set():
         raise RuntimeError(f"Cannot start {name}: shutdown in progress")
@@ -324,8 +312,7 @@ def graceful_operation(name: str, timeout: int = 10):
 
 # Recovery on startup
 def check_previous_shutdown():
-    """
-    Check if previous shutdown was clean
+    """Check if previous shutdown was clean
     """
     import json
     import os

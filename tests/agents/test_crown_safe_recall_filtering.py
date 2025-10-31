@@ -1,5 +1,4 @@
-"""
-Crown Safe - Recall Agent Filtering Tests
+"""Crown Safe - Recall Agent Filtering Tests
 Tests for Crown Safe recall filtering functionality
 
 Test Coverage:

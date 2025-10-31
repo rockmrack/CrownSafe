@@ -311,11 +311,11 @@ def format_pubmed_articles(pubmed_data):
             journal = escape_html(a.get("journal", "N/A"))
             pub_date = escape_html(a.get("publication_date", "N/A"))
             out.append(
-                f"<tr><td>{pmid_html}</td><td>{title}</td><td>{authors}</td><td>{journal} ({pub_date})</td></tr>"
+                f"<tr><td>{pmid_html}</td><td>{title}</td><td>{authors}</td><td>{journal} ({pub_date})</td></tr>",
             )
             if a.get("abstract"):
                 out.append(
-                    f'<tr><td colspan="4"><div style="font-size:9pt;"><b>Abstract:</b> {escape_html(a["abstract"])}</div></td></tr>'  # noqa: E501
+                    f'<tr><td colspan="4"><div style="font-size:9pt;"><b>Abstract:</b> {escape_html(a["abstract"])}</div></td></tr>',  # noqa: E501
                 )
     out.append("</tbody></table>")
     return "\n".join(out)
@@ -343,7 +343,7 @@ def format_clinical_trials(trials_data):
             condition = escape_html(tr.get("condition", "N/A"))
             intervention = escape_html(tr.get("intervention", "N/A"))
             out.append(
-                f"<tr><td>{nct_html}</td><td>{title}</td><td>{status}</td><td>{condition}</td><td>{intervention}</td></tr>"
+                f"<tr><td>{nct_html}</td><td>{title}</td><td>{status}</td><td>{condition}</td><td>{intervention}</td></tr>",
             )
     out.append("</tbody></table>")
     return "\n".join(out)
@@ -358,7 +358,7 @@ def format_adverse_events(safety_data, chart_path=None):
         out.append("<p>No adverse event data available.</p>")
     else:
         out.append(
-            "<table border='1' style='font-size:10pt;'><thead><tr><th>Adverse Event</th><th>Report Count</th></tr></thead><tbody>"  # noqa: E501
+            "<table border='1' style='font-size:10pt;'><thead><tr><th>Adverse Event</th><th>Report Count</th></tr></thead><tbody>",  # noqa: E501
         )
         for r in top_reactions:
             rname = escape_html(r.get("term", r.get("reaction", "N/A")))
@@ -380,7 +380,7 @@ def format_references(pubmed_data, trials_data):
             title = escape_html(a.get("title", "N/A"))
             if pmid and pmid != "N/A":
                 refs.append(
-                    f'<li>PubMed: <a href="https://pubmed.ncbi.nlm.nih.gov/{pmid}/">{title} (PMID: {pmid})</a></li>'
+                    f'<li>PubMed: <a href="https://pubmed.ncbi.nlm.nih.gov/{pmid}/">{title} (PMID: {pmid})</a></li>',
                 )
     if trials_data and isinstance(trials_data, dict):
         for t in trials_data.get("trials_data", []):
@@ -481,7 +481,7 @@ class ReportBuilderAgentLogic:
                     "error_handling",
                     "prior_authorization_summary",
                 ],
-            }
+            },
         ]
 
     def _convert_html_to_pdf(self, html_content: str, pdf_filepath: str) -> bool:
@@ -659,8 +659,7 @@ class ReportBuilderAgentLogic:
         return {"score": score, "level": level}
 
     def _build_product_safety_report(self, data: dict, workflow_id: str | None = None) -> dict:
-        """
-        Build BabyShield Product Safety Report (Level 1). Expects a pre-aggregated 'data' dict
+        """Build BabyShield Product Safety Report (Level 1). Expects a pre-aggregated 'data' dict
         with keys: product, recalls, personalized, community, manufacturer, hazards.
         This method renders the product_safety_report.html template to PDF.
         """
@@ -818,8 +817,7 @@ class ReportBuilderAgentLogic:
             return {"status": "error", "message": str(e)}
 
     def _build_nursery_quarterly_report(self, data: dict, workflow_id: str | None = None) -> dict:
-        """
-        Build Nursery Quarterly Report over multiple products.
+        """Build Nursery Quarterly Report over multiple products.
         Expects data: { products: [ {product, recalls, personalized, community, manufacturer, hazards}, ... ] }
         """
         try:
@@ -882,7 +880,7 @@ class ReportBuilderAgentLogic:
                             "final_assessment": final_assessment,
                             "summary": summary,
                         },
-                    }
+                    },
                 )
 
             # Collect all unique data sources from all products
@@ -1028,8 +1026,7 @@ class ReportBuilderAgentLogic:
             return self._build_default_research_report(report_data)
 
     def _extract_data_from_dependency_result(self, dep_result: Any, expected_key: str) -> dict[str, Any]:
-        """
-        Enhanced extraction logic that handles various formats of dependency results.
+        """Enhanced extraction logic that handles various formats of dependency results.
         This is more flexible and can handle nested structures.
         """
         if not dep_result:
@@ -1247,7 +1244,7 @@ a {{ color: #2561b1; text-decoration: none; }}
                         "report_type": report_type,
                         "report_data": report_data,
                         "workflow_id": workflow_id,
-                    }
+                    },
                 )
 
                 response_payload = {
@@ -1327,7 +1324,7 @@ a {{ color: #2561b1; text-decoration: none; }}
             ]:
                 if key in dependency_results:
                     drug_safety_data_from_deps = self._extract_data_from_dependency_result(
-                        dependency_results[key], "safety"
+                        dependency_results[key], "safety",
                     )
                     if drug_safety_data_from_deps:
                         self.logger.info(f"Found safety data under key: {key}")

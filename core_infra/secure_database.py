@@ -1,5 +1,4 @@
-"""
-Task 16: Secure Database Connection with Read-Only User
+"""Task 16: Secure Database Connection with Read-Only User
 Implements separate connections for read and write operations
 """
 
@@ -20,15 +19,13 @@ logger = logging.getLogger(__name__)
 
 
 def get_database_url(mode: str = "readonly") -> str:
-    """
-    Get database URL based on operation mode
+    """Get database URL based on operation mode
 
     Modes:
     - readonly: For SELECT queries (default)
     - write: For INSERT, UPDATE, DELETE
     - admin: For migrations and DDL
     """
-
     base_url = os.environ.get("DATABASE_URL", "")
 
     if mode == "readonly":
@@ -93,10 +90,8 @@ ADMIN_POOL_SETTINGS = {
 
 
 def create_secure_engine(mode: str = "readonly") -> Engine:
+    """Create a secure SQLAlchemy engine with appropriate settings
     """
-    Create a secure SQLAlchemy engine with appropriate settings
-    """
-
     database_url = get_database_url(mode)
 
     if not database_url:
@@ -106,7 +101,7 @@ def create_secure_engine(mode: str = "readonly") -> Engine:
     if mode == "readonly":
         pool_settings = READONLY_POOL_SETTINGS
         connect_args = {
-            "options": "-c default_transaction_read_only=on -c statement_timeout=30000"  # 30s timeout
+            "options": "-c default_transaction_read_only=on -c statement_timeout=30000",  # 30s timeout
         }
     elif mode == "write":
         pool_settings = WRITE_POOL_SETTINGS
@@ -221,8 +216,7 @@ AdminSessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=db_engin
 
 @contextmanager
 def get_readonly_session() -> Generator[Session, None, None]:
-    """
-    Context manager for readonly database sessions
+    """Context manager for readonly database sessions
     Use for all SELECT queries
     """
     session = ReadOnlySessionLocal()
@@ -239,8 +233,7 @@ def get_readonly_session() -> Generator[Session, None, None]:
 
 @contextmanager
 def get_write_session() -> Generator[Session, None, None]:
-    """
-    Context manager for write database sessions
+    """Context manager for write database sessions
     Use for INSERT, UPDATE, DELETE operations
     """
     session = WriteSessionLocal()
@@ -257,8 +250,7 @@ def get_write_session() -> Generator[Session, None, None]:
 
 @contextmanager
 def get_admin_session() -> Generator[Session, None, None]:
-    """
-    Context manager for admin database sessions
+    """Context manager for admin database sessions
     Use for DDL operations and migrations only
     """
     session = AdminSessionLocal()
@@ -277,24 +269,21 @@ def get_admin_session() -> Generator[Session, None, None]:
 
 
 def get_db_readonly() -> Generator[Session, None, None]:
-    """
-    FastAPI dependency for readonly database sessions
+    """FastAPI dependency for readonly database sessions
     """
     with get_readonly_session() as session:
         yield session
 
 
 def get_db_write() -> Generator[Session, None, None]:
-    """
-    FastAPI dependency for write database sessions
+    """FastAPI dependency for write database sessions
     """
     with get_write_session() as session:
         yield session
 
 
 def get_db_admin() -> Generator[Session, None, None]:
-    """
-    FastAPI dependency for admin database sessions
+    """FastAPI dependency for admin database sessions
     """
     with get_admin_session() as session:
         yield session
@@ -339,10 +328,8 @@ class SecureQuery:
 
 
 def migrate_to_secure_database():
+    """Migrate existing code to use secure database connections
     """
-    Migrate existing code to use secure database connections
-    """
-
     print("Migrating to secure database configuration...")
 
     # Test connections

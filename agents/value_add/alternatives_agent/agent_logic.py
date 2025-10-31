@@ -27,14 +27,13 @@ SAFE_PRODUCTS_DB = {
             "product_name": "Fisher-Price Rock-a-Stack",
             "upc": "0887961820120",
             "reason": "Classic, non-toxic, and age-appropriate.",
-        }
+        },
     ],
 }
 
 
 class AlternativesAgentLogic:
-    """
-    Suggests safer alternative products based on the category of a recalled item.
+    """Suggests safer alternative products based on the category of a recalled item.
     """
 
     def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
@@ -54,8 +53,7 @@ class AlternativesAgentLogic:
         return []  # Return an empty list if no matching category is found
 
     async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
-        """
-        Main entry point for the agent.
+        """Main entry point for the agent.
         """
         self.logger.info(f"Received task to find alternatives with inputs: {inputs}")
         product_category = inputs.get("product_category")

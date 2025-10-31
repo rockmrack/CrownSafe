@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test script for Task 4 - Observability features
+"""Test script for Task 4 - Observability features
 Validates correlation IDs, rate limits, metrics, and error handling
 """
 
@@ -272,8 +271,7 @@ class ObservabilityTester:
 
 
 def test_rate_limit_stress(base_url: str = BASE_URL):
-    """
-    Stress test for rate limiting
+    """Stress test for rate limiting
     Makes many requests to verify rate limiting works
     """
     print("\n🔥 Rate Limit Stress Test")

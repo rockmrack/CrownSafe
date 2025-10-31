@@ -36,7 +36,7 @@ class MockProductIdentifierLogic:
                     "upc": TEST_BARCODE_RISKY_PRODUCT,
                     "ingredients": ["Water", "Glycerin", "Salicylic Acid", "Ceramides"],
                 },
-            }
+            },
         )
 
 
@@ -47,7 +47,7 @@ class MockRecallDataAgentLogic:
             return_value={
                 "status": "COMPLETED",
                 "result": {"recalls_found": 0, "recalls": []},
-            }
+            },
         )
 
 
@@ -58,7 +58,7 @@ class MockHazardAnalysisLogic:
             return_value={
                 "status": "COMPLETED",
                 "result": {"summary": "Analysis complete.", "risk_level": "Low"},
-            }
+            },
         )
 
 
@@ -74,7 +74,7 @@ class MockPregnancyCheckLogic:
                     "recommendations": "Avoid Salicylic Acid during pregnancy.",
                     "detailed_analysis": "Salicylic Acid is not recommended during pregnancy.",
                 },
-            }
+            },
         )
 
 
@@ -106,7 +106,7 @@ async def run_pregnancy_test():
                 "agent_type": "query_recalls_by_product",
                 "agent_capability_required": "query_recalls_by_product",
                 "inputs": {
-                    "product_name": "{step1_identify_product.result.product_name}"
+                    "product_name": "{step1_identify_product.result.product_name}",
                 },  # Changed from 'input' to 'inputs'
                 "output_map": {"recalls_found": "recalls_found", "recalls": "recalls"},
                 "dependencies": ["step1_identify_product"],

@@ -63,7 +63,7 @@ def test_childrenscode_compliance_logic():
     print("      Issues Found:")
     for issue in result["issues"]:
         print(
-            f"      - Setting '{issue['setting']}' is '{issue['current_value']}', should be '{issue['required_default']}'"  # noqa: E501
+            f"      - Setting '{issue['setting']}' is '{issue['current_value']}', should be '{issue['required_default']}'",  # noqa: E501
         )
 
     print("\n--- All tests passed successfully! ChildrensCode_ComplianceAgent is working correctly. ---")

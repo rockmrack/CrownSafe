@@ -63,8 +63,7 @@ except ImportError:
 
 
 def substitute_placeholders(obj: Any, params: dict[str, Any]) -> Any:
-    """
-    Recursively substitutes placeholders like {{{key}}} in a nested object.
+    """Recursively substitutes placeholders like {{{key}}} in a nested object.
     UPDATED to handle triple-brace syntax and None values properly.
     """
     if isinstance(obj, str):
@@ -93,8 +92,7 @@ def substitute_placeholders(obj: Any, params: dict[str, Any]) -> Any:
 
 
 class BabyShieldPlannerLogic:
-    """
-    Generates a static, step-by-step execution plan for the BabyShield
+    """Generates a static, step-by-step execution plan for the BabyShield
     "Safety Check" workflow by loading and populating a predefined JSON template.
     """
 
@@ -129,8 +127,7 @@ class BabyShieldPlannerLogic:
                 self.logger.error(f"Failed to load template {template_file}: {e}")
 
     def _generate_plan_from_template(self, template_name: str, task_payload: dict[str, Any]) -> dict[str, Any]:
-        """
-        Generates a structured plan by loading a JSON template and substituting placeholders.
+        """Generates a structured plan by loading a JSON template and substituting placeholders.
         """
         self.logger.info(f"Generating plan from template '{template_name}'...")
 
@@ -215,8 +212,7 @@ class BabyShieldPlannerLogic:
             raise
 
     def process_task(self, task_data: dict[str, Any]) -> dict[str, Any]:
-        """
-        Main entry point for the agent. It receives a task and returns a completed plan.
+        """Main entry point for the agent. It receives a task and returns a completed plan.
         """
         self.logger.info(f"Planner agent received task: {task_data}")
         try:

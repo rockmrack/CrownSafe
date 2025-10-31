@@ -1,5 +1,4 @@
-"""
-Complete Settings Screen Verification - ALL Screenshots
+"""Complete Settings Screen Verification - ALL Screenshots
 Tests ALL endpoints shown in both Settings screen views
 """
 

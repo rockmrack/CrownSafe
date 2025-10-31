@@ -1,5 +1,4 @@
-"""
-Enhanced Notification Endpoints - Push notifications, history, and device management
+"""Enhanced Notification Endpoints - Push notifications, history, and device management
 """
 
 import logging
@@ -208,7 +207,7 @@ async def send_push_notification(
         # Platform-specific config
         if platform == "ios":
             message.apns = messaging.APNSConfig(
-                payload=messaging.APNSPayload(aps=messaging.Aps(badge=1, sound="default"))
+                payload=messaging.APNSPayload(aps=messaging.Aps(badge=1, sound="default")),
             )
         elif platform == "android":
             message.android = messaging.AndroidConfig(
@@ -272,8 +271,7 @@ async def register_device(
 
 @router.post("/device/register-dev", response_model=ApiResponse)
 async def register_device_dev(request: RegisterDeviceRequest):
-    """
-    DEV OVERRIDE: Register device without authentication/database dependencies
+    """DEV OVERRIDE: Register device without authentication/database dependencies
     """
     try:
         # Simulate device registration
@@ -286,7 +284,7 @@ async def register_device_dev(request: RegisterDeviceRequest):
                 "token": request.token,
                 "platform": request.platform,
                 "registered_at": datetime.utcnow().isoformat(),
-            }
+            },
         )
 
     except Exception as e:
@@ -296,8 +294,7 @@ async def register_device_dev(request: RegisterDeviceRequest):
 
 @router.get("/devices-dev", response_model=ApiResponse)
 async def get_devices_dev():
-    """
-    DEV OVERRIDE: Get devices without authentication/database dependencies
+    """DEV OVERRIDE: Get devices without authentication/database dependencies
     """
     try:
         # Mock device data
@@ -335,8 +332,7 @@ async def get_devices_dev():
 
 @router.delete("/device-dev/{token}", response_model=ApiResponse)
 async def unregister_device_dev(token: str):
-    """
-    DEV OVERRIDE: Unregister device without authentication/database dependencies
+    """DEV OVERRIDE: Unregister device without authentication/database dependencies
     """
     try:
         # Simulate device unregistration
@@ -344,7 +340,7 @@ async def unregister_device_dev(token: str):
             {
                 "message": f"Device with token {token[:8]}... unregistered successfully (dev override)",
                 "unregistered_at": datetime.utcnow().isoformat(),
-            }
+            },
         )
 
     except Exception as e:
@@ -354,8 +350,7 @@ async def unregister_device_dev(token: str):
 
 @router.get("/history-dev", response_model=ApiResponse)
 async def get_notification_history_dev():
-    """
-    DEV OVERRIDE: Get notification history without authentication/database dependencies
+    """DEV OVERRIDE: Get notification history without authentication/database dependencies
     """
     try:
         # Mock notification history
@@ -385,7 +380,7 @@ async def get_notification_history_dev():
                 "notifications": mock_notifications,
                 "total_count": len(mock_notifications),
                 "unread_count": len([n for n in mock_notifications if not n["read"]]),
-            }
+            },
         )
 
     except Exception as e:
@@ -395,8 +390,7 @@ async def get_notification_history_dev():
 
 @router.put("/preferences-dev", response_model=ApiResponse)
 async def update_preferences_dev(request: dict):
-    """
-    DEV OVERRIDE: Update notification preferences without authentication/database dependencies
+    """DEV OVERRIDE: Update notification preferences without authentication/database dependencies
     """
     try:
         # Simulate preferences update
@@ -405,7 +399,7 @@ async def update_preferences_dev(request: dict):
                 "message": "Notification preferences updated successfully (dev override)",
                 "preferences": request,
                 "updated_at": datetime.utcnow().isoformat(),
-            }
+            },
         )
 
     except Exception as e:
@@ -415,8 +409,7 @@ async def update_preferences_dev(request: dict):
 
 @router.post("/test-dev", response_model=ApiResponse)
 async def send_test_notification_dev(request: dict):
-    """
-    DEV OVERRIDE: Send test notification without authentication/database dependencies
+    """DEV OVERRIDE: Send test notification without authentication/database dependencies
     """
     try:
         # Simulate test notification
@@ -431,7 +424,7 @@ async def send_test_notification_dev(request: dict):
                 "sent_at": datetime.utcnow().isoformat(),
                 "devices_targeted": 2,
                 "delivery_status": "success",
-            }
+            },
         )
 
     except Exception as e:
@@ -550,7 +543,7 @@ async def get_notification_history(
                 "page": page,
                 "page_size": page_size,
                 "has_more": (offset + page_size) < total,
-            }
+            },
         )
 
     except Exception as e:
@@ -632,7 +625,7 @@ async def update_notification_preferences(
             {
                 "message": "Preferences updated successfully",
                 "devices_updated": len(devices),
-            }
+            },
         )
 
     except Exception as e:
@@ -683,7 +676,7 @@ async def send_test_notification(
                 "message": f"Test notification sent to {sent_count}/{len(devices)} devices",
                 "devices_count": len(devices),
                 "sent_count": sent_count,
-            }
+            },
         )
 
     except Exception as e:

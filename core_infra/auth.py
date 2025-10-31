@@ -1,5 +1,4 @@
-"""
-JWT Authentication for BabyShield API
+"""JWT Authentication for BabyShield API
 Production-ready authentication system
 """
 
@@ -83,7 +82,7 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
             "type": "access",
             "auth_time": int(time.time()),
             "jti": uuid.uuid4().hex,
-        }
+        },
     )
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt

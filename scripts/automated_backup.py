@@ -1,5 +1,4 @@
-"""
-Automated Backup and Disaster Recovery
+"""Automated Backup and Disaster Recovery
 Enterprise-grade backup system for Crown Safe
 
 Features:
@@ -19,8 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class BackupManager:
-    """
-    Automated backup and recovery manager
+    """Automated backup and recovery manager
     Handles database backups to Azure Blob Storage
     """
 
@@ -29,8 +27,7 @@ class BackupManager:
         database_url: str | None = None,
         backup_container: str = "crownsafe-backups",
     ):
-        """
-        Initialize backup manager
+        """Initialize backup manager
 
         Args:
             database_url: PostgreSQL connection URL
@@ -43,8 +40,7 @@ class BackupManager:
             raise ValueError("DATABASE_URL not configured")
 
     def create_backup(self, backup_type: str = "full", compression: bool = True) -> dict:
-        """
-        Create database backup
+        """Create database backup
 
         Args:
             backup_type: 'full' or 'incremental'
@@ -157,8 +153,7 @@ class BackupManager:
             }
 
     def _upload_to_azure(self, local_path: str, blob_name: str) -> dict:
-        """
-        Upload backup to Azure Blob Storage
+        """Upload backup to Azure Blob Storage
 
         Args:
             local_path: Local file path
@@ -197,8 +192,7 @@ class BackupManager:
             return {"success": False, "error": str(e)}
 
     def list_backups(self, limit: int = 50) -> list:
-        """
-        List available backups in Azure
+        """List available backups in Azure
 
         Args:
             limit: Maximum number of backups to list
@@ -221,7 +215,7 @@ class BackupManager:
                         "size_bytes": blob["size"],
                         "size_mb": round(blob["size"] / 1024 / 1024, 2),
                         "last_modified": blob["last_modified"].isoformat(),
-                    }
+                    },
                 )
 
             return sorted(backups, key=lambda x: x["last_modified"], reverse=True)
@@ -231,8 +225,7 @@ class BackupManager:
             return []
 
     def cleanup_old_backups(self, retention_days: int = 30) -> dict:
-        """
-        Delete backups older than retention period
+        """Delete backups older than retention period
 
         Args:
             retention_days: Number of days to retain backups
@@ -259,7 +252,7 @@ class BackupManager:
                     deleted_size += blob["size"]
 
             logger.info(
-                f"Cleanup complete: {deleted_count} backups deleted ({deleted_size / 1024 / 1024:.2f} MB freed)"
+                f"Cleanup complete: {deleted_count} backups deleted ({deleted_size / 1024 / 1024:.2f} MB freed)",
             )
 
             return {

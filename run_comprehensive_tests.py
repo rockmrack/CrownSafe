@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Comprehensive Test Suite Runner for BabyShield Backend
+"""Comprehensive Test Suite Runner for BabyShield Backend
 Runs all possible tests with detailed reporting and coverage analysis
 """
 
@@ -68,7 +67,6 @@ class ComprehensiveTestRunner:
 
     def run_all_tests(self):
         """Run comprehensive test suite"""
-
         test_suites = [
             # 1. Unit Tests (All test files)
             {
@@ -246,7 +244,6 @@ class ComprehensiveTestRunner:
 
     def generate_report(self, passed, failed, total):
         """Generate comprehensive test report"""
-
         print("\n" + "=" * 80)
         print("COMPREHENSIVE TEST REPORT")
         print("=" * 80 + "\n")

@@ -1,5 +1,4 @@
-"""
-Subscription models for mobile app IAP (Apple/Google)
+"""Subscription models for mobile app IAP (Apple/Google)
 Supports monthly ($7.99) and annual ($79.99) plans
 """
 
@@ -51,8 +50,7 @@ class PaymentProvider(enum.Enum):
 
 
 class Subscription(Base):
-    """
-    Subscription model for mobile app IAP
+    """Subscription model for mobile app IAP
     Tracks user subscriptions from Apple App Store and Google Play
     """
 
@@ -137,8 +135,7 @@ class Subscription(Base):
 
 
 class ReceiptValidation(Base):
-    """
-    Track receipt validation attempts for audit and debugging
+    """Track receipt validation attempts for audit and debugging
     """
 
     __tablename__ = "receipt_validations"

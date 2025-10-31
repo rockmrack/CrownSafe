@@ -1,5 +1,4 @@
-"""
-Azure Blob Storage Connection Pool Manager
+"""Azure Blob Storage Connection Pool Manager
 Enterprise-grade connection pooling for optimal performance
 
 Features:
@@ -21,8 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class AzureBlobConnectionPool:
-    """
-    Connection pool manager for Azure Blob Storage
+    """Connection pool manager for Azure Blob Storage
     Maintains a pool of reusable BlobServiceClient instances
     """
 
@@ -33,8 +31,7 @@ class AzureBlobConnectionPool:
         account_key: str | None = None,
         pool_size: int = 10,
     ):
-        """
-        Initialize connection pool
+        """Initialize connection pool
 
         Args:
             connection_string: Azure Storage connection string
@@ -74,7 +71,7 @@ class AzureBlobConnectionPool:
                             "created_at": datetime.utcnow(),
                             "last_used": datetime.utcnow(),
                             "use_count": 0,
-                        }
+                        },
                     )
                     self.connections_created += 1
 
@@ -94,8 +91,7 @@ class AzureBlobConnectionPool:
             return None
 
     def acquire(self) -> BlobServiceClient | None:
-        """
-        Acquire a connection from the pool
+        """Acquire a connection from the pool
 
         Returns:
             BlobServiceClient instance or None if pool exhausted
@@ -117,7 +113,7 @@ class AzureBlobConnectionPool:
                 self.pool_exhaustion_count += 1
                 logger.warning(
                     f"Connection pool exhausted "
-                    f"(in_use: {len(self._in_use)}, exhaustions: {self.pool_exhaustion_count})"
+                    f"(in_use: {len(self._in_use)}, exhaustions: {self.pool_exhaustion_count})",
                 )
 
                 # Create new connection on-demand
@@ -130,8 +126,7 @@ class AzureBlobConnectionPool:
                 return None
 
     def release(self, client: BlobServiceClient):
-        """
-        Release a connection back to the pool
+        """Release a connection back to the pool
 
         Args:
             client: BlobServiceClient to release
@@ -153,7 +148,7 @@ class AzureBlobConnectionPool:
                             "created_at": datetime.utcnow(),
                             "last_used": datetime.utcnow(),
                             "use_count": 0,
-                        }
+                        },
                     )
                     logger.debug(f"Released connection to pool (pool: {len(self._pool)}, in_use: {len(self._in_use)})")
                 else:
@@ -164,8 +159,7 @@ class AzureBlobConnectionPool:
                         logger.warning(f"Error closing connection: {e}")
 
     def get_stats(self) -> dict:
-        """
-        Get connection pool statistics
+        """Get connection pool statistics
 
         Returns:
             Dictionary with pool statistics
@@ -212,8 +206,7 @@ def get_connection_pool(
     account_key: str | None = None,
     pool_size: int = 10,
 ) -> AzureBlobConnectionPool:
-    """
-    Get or create global connection pool instance
+    """Get or create global connection pool instance
 
     Args:
         connection_string: Azure Storage connection string

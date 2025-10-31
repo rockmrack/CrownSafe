@@ -1,6 +1,5 @@
 # agents/governance/legalcontent_agent/agent_logic.py
-"""
-LegalContentAgentLogic v1.1
+"""LegalContentAgentLogic v1.1
 
 Reads full text of legal documents (e.g., TOS, Privacy Policy) from disk
 and returns them as part of the agent result payload.

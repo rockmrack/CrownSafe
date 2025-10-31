@@ -1,5 +1,4 @@
-"""
-COMPLETE MODEL NUMBER TEST
+"""COMPLETE MODEL NUMBER TEST
 
 This test creates the necessary database tables and test data,
 then tests the model number entry workflow end-to-end.
@@ -147,8 +146,7 @@ def setup_test_database():
 
 
 def test_model_number_with_recall():
-    """
-    Test model number entry for a recalled product.
+    """Test model number entry for a recalled product.
 
     Expected: System finds recalls matching "ABC-123" in product name.
     """
@@ -197,8 +195,7 @@ def test_model_number_with_recall():
 
 
 def test_model_number_without_recall():
-    """
-    Test model number entry for a safe product (no recall).
+    """Test model number entry for a safe product (no recall).
 
     Expected: System returns LOW risk or no recalls found.
     """

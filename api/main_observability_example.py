@@ -1,5 +1,4 @@
-"""
-Example of how to integrate observability into main_crownsafe.py
+"""Example of how to integrate observability into main_crownsafe.py
 This shows the minimal changes needed to add all Task 4 features
 """
 
@@ -34,8 +33,7 @@ from api.routes import system
 
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
-    """
-    Manage application lifecycle
+    """Manage application lifecycle
     """
     # Startup
     import logging
@@ -67,10 +65,8 @@ async def app_lifespan(app: FastAPI):
 
 
 def create_app_with_observability() -> FastAPI:
+    """Create FastAPI app with all observability features
     """
-    Create FastAPI app with all observability features
-    """
-
     # 1. Setup JSON logging FIRST
     setup_json_logging(os.getenv("LOG_LEVEL", "INFO"))
 

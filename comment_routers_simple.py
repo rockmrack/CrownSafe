@@ -25,35 +25,35 @@ def comment_routers():
         # Check for start of blocks to comment
         if "# Include Recall Alert System" in line and "REMOVED FOR CROWN SAFE" not in line:
             new_lines.append(
-                "# REMOVED FOR CROWN SAFE: Recall Alert System is BabyShield-specific (baby product recalls)\n"
+                "# REMOVED FOR CROWN SAFE: Recall Alert System is BabyShield-specific (baby product recalls)\n",
             )
             new_lines.append("# " + line)
             in_recall_alert_block = True
             continue
         elif "# Include Recall Search System" in line and "REMOVED FOR CROWN SAFE" not in line:
             new_lines.append(
-                "# REMOVED FOR CROWN SAFE: Recall Search System is BabyShield-specific (baby product recalls)\n"
+                "# REMOVED FOR CROWN SAFE: Recall Search System is BabyShield-specific (baby product recalls)\n",
             )
             new_lines.append("# " + line)
             in_recall_search_block = True
             continue
         elif "# Include recall detail endpoints" in line and "REMOVED FOR CROWN SAFE" not in line:
             new_lines.append(
-                "# REMOVED FOR CROWN SAFE: Recall Detail endpoints are BabyShield-specific (baby product recalls)\n"
+                "# REMOVED FOR CROWN SAFE: Recall Detail endpoints are BabyShield-specific (baby product recalls)\n",
             )
             new_lines.append("# " + line)
             in_recall_detail_block = True
             continue
         elif "# Include Premium Features" in line and "REMOVED FOR CROWN SAFE" not in line:
             new_lines.append(
-                "# REMOVED FOR CROWN SAFE: Premium Features are BabyShield-specific (pregnancy & baby allergy checking)\n"  # noqa: E501
+                "# REMOVED FOR CROWN SAFE: Premium Features are BabyShield-specific (pregnancy & baby allergy checking)\n",  # noqa: E501
             )
             new_lines.append("# " + line)
             in_premium_block = True
             continue
         elif "# Include Baby Safety Features" in line and "REMOVED FOR CROWN SAFE" not in line:
             new_lines.append(
-                "# REMOVED FOR CROWN SAFE: Baby Safety Features are BabyShield-specific (family members, pregnancy tracking)\n"  # noqa: E501
+                "# REMOVED FOR CROWN SAFE: Baby Safety Features are BabyShield-specific (family members, pregnancy tracking)\n",  # noqa: E501
             )
             new_lines.append("# " + line)
             in_baby_block = True
@@ -61,7 +61,7 @@ def comment_routers():
 
         # If we're in a block, comment out lines until we hit a blank line followed by another block
         if any(
-            [in_recall_alert_block, in_recall_search_block, in_recall_detail_block, in_premium_block, in_baby_block]
+            [in_recall_alert_block, in_recall_search_block, in_recall_detail_block, in_premium_block, in_baby_block],
         ):
             # Check if this is the end of the block (next comment or blank line + comment)
             if line.strip().startswith("#") and not line.strip().startswith("# ") and line.strip() != "#":

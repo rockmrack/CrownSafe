@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test suite for admin tools (Task 7)
+"""Test suite for admin tools (Task 7)
 Tests ingestion management, reindexing, and data freshness endpoints
 """
 

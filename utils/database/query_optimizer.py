@@ -1,5 +1,4 @@
-"""
-Database Query Optimizer
+"""Database Query Optimizer
 Provides utilities for optimizing database queries and preventing N+1 problems
 """
 
@@ -22,8 +21,7 @@ class QueryPerformanceMonitor:
     """Monitor and log slow database queries"""
 
     def __init__(self, slow_query_threshold: float = 1.0):
-        """
-        Initialize query monitor
+        """Initialize query monitor
 
         Args:
             slow_query_threshold: Threshold in seconds for slow query warnings
@@ -59,8 +57,7 @@ query_monitor = QueryPerformanceMonitor()
 
 
 def setup_query_logging(engine: Engine, echo_slow_only: bool = True):
-    """
-    Setup query logging for SQLAlchemy engine
+    """Setup query logging for SQLAlchemy engine
 
     Args:
         engine: SQLAlchemy engine
@@ -92,8 +89,7 @@ class OptimizedQuery(Generic[T]):
         self._eager_load_relationships = []
 
     def eager_load(self, *relationships) -> "OptimizedQuery[T]":
-        """
-        Add eager loading for relationships to prevent N+1 queries
+        """Add eager loading for relationships to prevent N+1 queries
 
         Args:
             *relationships: Relationship attributes to eager load
@@ -106,8 +102,7 @@ class OptimizedQuery(Generic[T]):
         return self
 
     def select_in_load(self, *relationships) -> "OptimizedQuery[T]":
-        """
-        Add select-in eager loading (better for one-to-many)
+        """Add select-in eager loading (better for one-to-many)
 
         Args:
             *relationships: Relationship attributes to eager load
@@ -120,8 +115,7 @@ class OptimizedQuery(Generic[T]):
         return self
 
     def paginate(self, limit: int, offset: int) -> "OptimizedQuery[T]":
-        """
-        Add pagination
+        """Add pagination
 
         Args:
             limit: Maximum number of results
@@ -134,8 +128,7 @@ class OptimizedQuery(Generic[T]):
         return self
 
     def filter_by(self, **kwargs) -> "OptimizedQuery[T]":
-        """
-        Add filters
+        """Add filters
 
         Args:
             **kwargs: Filter conditions
@@ -147,8 +140,7 @@ class OptimizedQuery(Generic[T]):
         return self
 
     def order_by(self, *args) -> "OptimizedQuery[T]":
-        """
-        Add ordering
+        """Add ordering
 
         Args:
             *args: Order by columns
@@ -177,8 +169,7 @@ class OptimizedQuery(Generic[T]):
 
 
 def optimize_query(query: Query) -> OptimizedQuery:
-    """
-    Wrap a SQLAlchemy query with optimization utilities
+    """Wrap a SQLAlchemy query with optimization utilities
 
     Args:
         query: SQLAlchemy query object
@@ -191,8 +182,7 @@ def optimize_query(query: Query) -> OptimizedQuery:
 
 @contextmanager
 def track_queries():
-    """
-    Context manager to track queries within a block
+    """Context manager to track queries within a block
 
     Example:
         with track_queries() as tracker:
@@ -208,8 +198,7 @@ def track_queries():
 
 
 def batch_load(db: Session, model: type, ids: list[int], batch_size: int = 100) -> list[Any]:
-    """
-    Load multiple records by ID in batches to prevent large IN clauses
+    """Load multiple records by ID in batches to prevent large IN clauses
 
     Args:
         db: Database session
@@ -231,8 +220,7 @@ def batch_load(db: Session, model: type, ids: list[int], batch_size: int = 100) 
 
 
 def cached_query(cache_key: str, ttl: int = 300):
-    """
-    Decorator to cache query results
+    """Decorator to cache query results
 
     Args:
         cache_key: Cache key prefix
@@ -259,8 +247,7 @@ class BulkOperationHelper:
 
     @staticmethod
     def bulk_insert(db: Session, model: type, records: list[dict], batch_size: int = 1000):
-        """
-        Insert multiple records efficiently
+        """Insert multiple records efficiently
 
         Args:
             db: Database session
@@ -276,8 +263,7 @@ class BulkOperationHelper:
 
     @staticmethod
     def bulk_update(db: Session, model: type, records: list[dict], batch_size: int = 1000):
-        """
-        Update multiple records efficiently
+        """Update multiple records efficiently
 
         Args:
             db: Database session
@@ -296,8 +282,7 @@ class BulkOperationHelper:
 
 
 def get_user_with_subscriptions(db: Session, user_id: int):
-    """
-    Get user with subscription data (optimized)
+    """Get user with subscription data (optimized)
 
     Example of preventing N+1 queries
     """
@@ -312,8 +297,7 @@ def get_user_with_subscriptions(db: Session, user_id: int):
 
 
 def get_recalls_with_products(db: Session, limit: int = 20, offset: int = 0, filters: dict | None = None):
-    """
-    Get recalls with related product data (optimized)
+    """Get recalls with related product data (optimized)
 
     Example of efficient pagination and eager loading
     """
@@ -332,8 +316,7 @@ def get_recalls_with_products(db: Session, limit: int = 20, offset: int = 0, fil
 
 
 def search_with_count(db: Session, query: Query, limit: int, offset: int) -> tuple[list[Any], int]:
-    """
-    Execute query with pagination and return results + total count
+    """Execute query with pagination and return results + total count
 
     Optimized to execute count and data query efficiently
 
@@ -359,8 +342,7 @@ def search_with_count(db: Session, query: Query, limit: int, offset: int) -> tup
 
 
 def suggest_indexes(db: Session, model: type) -> list[str]:
-    """
-    Suggest database indexes based on common query patterns
+    """Suggest database indexes based on common query patterns
 
     Args:
         db: Database session

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-BabyShield Pre-Submission Validator
+"""BabyShield Pre-Submission Validator
 Comprehensive validation before app store submission
 """
 

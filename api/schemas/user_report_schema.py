@@ -1,5 +1,4 @@
-"""
-Pydantic schemas for user report endpoints
+"""Pydantic schemas for user report endpoints
 """
 
 from datetime import date, datetime
@@ -64,7 +63,7 @@ class ReportUnsafeProductRequest(BaseModel):
                 "incident_date": "2025-10-01",
                 "incident_description": "The crib mattress support suddenly collapsed...",
                 "reporter_email": "concerned.parent@example.com",
-            }
+            },
         }
 
 
@@ -86,7 +85,7 @@ class ReportUnsafeProductResponse(BaseModel):
                     "Our safety team will review your report within 24-48 hours."
                 ),
                 "created_at": "2025-10-11T14:30:00Z",
-            }
+            },
         }
 
 
@@ -134,5 +133,5 @@ class UpdateReportStatusRequest(BaseModel):
             "example": {
                 "status": "VERIFIED",
                 "review_notes": "Confirmed with manufacturer. Product added to recall database.",
-            }
+            },
         }

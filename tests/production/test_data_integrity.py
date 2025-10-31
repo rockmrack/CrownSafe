@@ -1,5 +1,4 @@
-"""
-Test data integrity and consistency
+"""Test data integrity and consistency
 """
 
 import pytest

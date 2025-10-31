@@ -233,7 +233,7 @@ class MemoryValidationSuite:
             # Test 3: Recency weighting
             self.print_info("Testing recency weighting...")
             recency_results = await self.memory.retrieve_similar_documents(
-                query_text="diabetes treatment", n_results=3, recency_weight=0.3
+                query_text="diabetes treatment", n_results=3, recency_weight=0.3,
             )
 
             if recency_results and "adjusted_distance" in recency_results[0]:
@@ -296,7 +296,7 @@ class MemoryValidationSuite:
                 safety_count = len(evidence.get("safety", []))
 
                 self.print_success(
-                    f"Evidence found - PubMed: {pubmed_count}, Trials: {trials_count}, Safety: {safety_count}"
+                    f"Evidence found - PubMed: {pubmed_count}, Trials: {trials_count}, Safety: {safety_count}",
                 )
 
                 if pubmed_count == 0 and trials_count == 0:
@@ -375,7 +375,7 @@ class MemoryValidationSuite:
             self.print_success("Analytics generated successfully")
             self.print_info(f"  Total documents: {analytics['total_documents']}")
             self.print_info(
-                f"  High-quality documents: {analytics['quality_metrics'].get('high_quality_documents', 0)}"
+                f"  High-quality documents: {analytics['quality_metrics'].get('high_quality_documents', 0)}",
             )
             self.print_info(f"  Drug patterns found: {len(analytics['drug_class_patterns'])}")
             self.print_info(f"  Cross-workflow evidence: {len(analytics.get('cross_workflow_evidence', []))}")

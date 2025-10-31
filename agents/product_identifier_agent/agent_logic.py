@@ -21,8 +21,7 @@ API_BASE_URL = "https://api.upcitemdb.com/prod/trial/lookup"
 
 
 class ProductIdentifierLogic:
-    """
-    Handles the logic for identifying a product by barcode via UPCitemdb's trial API.
+    """Handles the logic for identifying a product by barcode via UPCitemdb's trial API.
     Falls back to the in-memory RecallDB if the API call fails (for test scenarios).
     """
 
@@ -39,16 +38,15 @@ class ProductIdentifierLogic:
 
         if USE_TRIAL_UPCITEMDB:
             self.logger.info(
-                f"ProductIdentifierLogic initialized for agent {self.agent_id}. Using UPCitemdb trial endpoint."
+                f"ProductIdentifierLogic initialized for agent {self.agent_id}. Using UPCitemdb trial endpoint.",
             )
         else:
             self.logger.info(
-                f"ProductIdentifierLogic initialized for agent {self.agent_id}. UPCitemdb trial endpoint disabled."
+                f"ProductIdentifierLogic initialized for agent {self.agent_id}. UPCitemdb trial endpoint disabled.",
             )
 
     async def _lookup_barcode_api(self, barcode: str) -> dict[str, Any] | None:
-        """
-        Performs a live lookup of a barcode using the UPCitemdb free trial API.
+        """Performs a live lookup of a barcode using the UPCitemdb free trial API.
         Returns product details dict on success, or None on any failure.
         """
         self.logger.info(f"Performing live UPCitemdb lookup for barcode: {barcode}")
@@ -98,8 +96,7 @@ class ProductIdentifierLogic:
             return None
 
     async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
-        """
-        Main entry point. Expects inputs {"barcode": str, "image_url": Optional[str]}.
+        """Main entry point. Expects inputs {"barcode": str, "image_url": Optional[str]}.
         Returns a dict with "status" and either "result" or "error".
         """
         self.logger.info(f"Received task inputs: {inputs}")

@@ -21,7 +21,6 @@ depends_on = None
 
 def upgrade() -> None:
     """Create the recalls_enhanced table with comprehensive schema"""
-
     bind = op.get_bind()
     if bind.dialect.name != "postgresql":
         print("Skipping Postgres-only migration on", bind.dialect.name)
@@ -36,8 +35,8 @@ def upgrade() -> None:
             SELECT FROM information_schema.tables 
             WHERE table_name = 'recalls_enhanced'
         );
-    """
-        )
+    """,
+        ),
     ).scalar()
 
     if table_exists:
@@ -165,8 +164,8 @@ def upgrade() -> None:
             COALESCE(model_number, '') || ' ' || 
             COALESCE(description, '')
         ))
-    """
-        )
+    """,
+        ),
     )
 
     # Create trigram indexes for LIKE searches (requires pg_trgm extension)
@@ -174,16 +173,16 @@ def upgrade() -> None:
         op.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm"))
         op.execute(
             text(
-                "CREATE INDEX idx_recalls_enhanced_product_name_trgm ON recalls_enhanced USING gin (product_name gin_trgm_ops)"  # noqa: E501
-            )
+                "CREATE INDEX idx_recalls_enhanced_product_name_trgm ON recalls_enhanced USING gin (product_name gin_trgm_ops)",  # noqa: E501
+            ),
         )
         op.execute(
-            text("CREATE INDEX idx_recalls_enhanced_brand_trgm ON recalls_enhanced USING gin (brand gin_trgm_ops)")
+            text("CREATE INDEX idx_recalls_enhanced_brand_trgm ON recalls_enhanced USING gin (brand gin_trgm_ops)"),
         )
         op.execute(
             text(
-                "CREATE INDEX idx_recalls_enhanced_model_trgm ON recalls_enhanced USING gin (model_number gin_trgm_ops)"
-            )
+                "CREATE INDEX idx_recalls_enhanced_model_trgm ON recalls_enhanced USING gin (model_number gin_trgm_ops)",
+            ),
         )
         print("Created trigram indexes for fuzzy search optimization")
     except Exception as e:

@@ -1,5 +1,4 @@
-"""
-Safety Reports API Endpoints
+"""Safety Reports API Endpoints
 Generate comprehensive safety summaries for users
 """
 
@@ -114,8 +113,7 @@ async def generate_safety_report(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """
-    Generate a comprehensive safety report for a user
+    """Generate a comprehensive safety report for a user
 
     This is the main report generation endpoint that handles all report types.
     """
@@ -145,8 +143,7 @@ async def generate_safety_report(
 
 @safety_reports_router.post("/generate-90-day-dev", response_model=ApiResponse)
 async def generate_90_day_report_dev(request: SafetyReportRequest) -> ApiResponse:
-    """
-    Dev override version of 90-day report generation for testing
+    """Dev override version of 90-day report generation for testing
     """
     try:
         # Check dev override for premium features
@@ -190,8 +187,7 @@ async def generate_90_day_report(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ) -> ApiResponse:
-    """
-    Generate a comprehensive 90-day safety summary report
+    """Generate a comprehensive 90-day safety summary report
 
     Includes:
     - All products scanned in the last 90 days
@@ -212,7 +208,7 @@ async def generate_90_day_report(
                     ScanHistory.user_id == request.user_id,
                     ScanHistory.scan_timestamp >= start_date,
                     ScanHistory.scan_timestamp <= end_date,
-                )
+                ),
             )
             .order_by(desc(ScanHistory.scan_timestamp))
             .all()
@@ -314,7 +310,7 @@ async def generate_90_day_report(
                     risk_level=risk_level,
                     recalls_found=group["recalls_found"],
                     verdict=scans[-1].verdict or "No Recalls Found",
-                )
+                ),
             )
 
         # Sort products by risk level and scan count
@@ -416,8 +412,7 @@ async def get_user_reports_dev(
     sort: str = "created_at",
     order: str = "desc",
 ) -> ApiResponse:
-    """
-    Dev override version of my-reports endpoint for testing
+    """Dev override version of my-reports endpoint for testing
     """
     try:
         # Mock report data for testing
@@ -474,8 +469,7 @@ async def get_user_reports_dev(
 
 @safety_reports_router.get("/my-reports", response_model=ApiResponse)
 async def get_my_reports(user_id: int, limit: int = 10, db: Session = Depends(get_db)) -> ApiResponse:
-    """
-    Get list of user's generated safety reports
+    """Get list of user's generated safety reports
     """
     try:
         reports = (
@@ -498,7 +492,7 @@ async def get_my_reports(user_id: int, limit: int = 10, db: Session = Depends(ge
                     "total_scans": report.total_scans,
                     "recalls_found": report.recalls_found,
                     "pdf_available": bool(report.pdf_path or report.s3_url),
-                }
+                },
             )
 
         return ApiResponse(success=True, data={"reports": report_list, "total": len(report_list)})
@@ -510,8 +504,7 @@ async def get_my_reports(user_id: int, limit: int = 10, db: Session = Depends(ge
 
 @safety_reports_router.get("/report-dev/{report_id}", response_model=ApiResponse)
 async def get_report_details_dev(report_id: str, user_id: int) -> ApiResponse:
-    """
-    Dev override version of report details endpoint for testing
+    """Dev override version of report details endpoint for testing
     """
     try:
         # Mock report details
@@ -540,7 +533,7 @@ async def get_report_details_dev(report_id: str, user_id: int) -> ApiResponse:
                     "scan_count": 5,
                     "risk_level": "low",
                     "last_scan": "2024-01-14T15:30:00Z",
-                }
+                },
             ],
         }
 
@@ -563,8 +556,7 @@ async def get_report_details_dev(report_id: str, user_id: int) -> ApiResponse:
 
 @safety_reports_router.get("/report/{report_id}", response_model=ApiResponse)
 async def get_report_details(report_id: str, db: Session = Depends(get_db)) -> ApiResponse:
-    """
-    Get detailed information about a specific safety report
+    """Get detailed information about a specific safety report
     """
     try:
         report = db.query(SafetyReport).filter(SafetyReport.report_id == report_id).first()
@@ -600,8 +592,7 @@ async def get_report_details(report_id: str, db: Session = Depends(get_db)) -> A
 
 @safety_reports_router.post("/track-scan", response_model=ApiResponse)
 async def track_scan(scan_data: dict[str, Any], db: Session = Depends(get_db)) -> ApiResponse:
-    """
-    Track a product scan in user's history
+    """Track a product scan in user's history
     Called after each scan to build history for reports
     """
     try:
@@ -654,8 +645,7 @@ async def track_scan(scan_data: dict[str, Any], db: Session = Depends(get_db)) -
 async def generate_quarterly_nursery_report_dev(
     request: SafetyReportRequest,
 ) -> ApiResponse:
-    """
-    Dev override version of quarterly nursery report generation for testing
+    """Dev override version of quarterly nursery report generation for testing
     """
     try:
         # Check dev override for premium features
@@ -702,8 +692,7 @@ async def generate_quarterly_nursery_report(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ) -> ApiResponse:
-    """
-    Generate a comprehensive quarterly nursery safety audit report
+    """Generate a comprehensive quarterly nursery safety audit report
 
     Provides:
     - Complete inventory of nursery products
@@ -726,7 +715,7 @@ async def generate_quarterly_nursery_report(
                     ScanHistory.user_id == request.user_id,
                     ScanHistory.scan_timestamp >= start_date,
                     ScanHistory.scan_timestamp <= end_date,
-                )
+                ),
             )
             .order_by(desc(ScanHistory.scan_timestamp))
             .all()
@@ -927,7 +916,7 @@ async def generate_quarterly_nursery_report(
                                 risk_level=risk_level,
                                 recalls_found=product_group["recalls_found"],
                                 verdict=scans[-1].verdict or "No Recalls Found",
-                            )
+                            ),
                         )
 
                 category_summaries.append(
@@ -937,7 +926,7 @@ async def generate_quarterly_nursery_report(
                         high_risk_count=category_data["high_risk"],
                         recall_count=category_data["recalls"],
                         products=cat_products[:5],  # Top 5 products per category
-                    )
+                    ),
                 )
 
         # Generate report ID
@@ -987,7 +976,7 @@ async def generate_quarterly_nursery_report(
                             },
                         }
                         for p in list(product_groups.values())[:20]
-                    ]
+                    ],
                 }
 
                 result = report_agent._build_nursery_quarterly_report(report_data, workflow_id=report_id)

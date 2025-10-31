@@ -7,8 +7,7 @@ from pydantic import BaseModel, Field
 
 
 class Recall(BaseModel):
-    """
-    Pydantic model for validating and structuring recall data.
+    """Pydantic model for validating and structuring recall data.
     Used for API input/output and for validating data from external connectors.
     """
 

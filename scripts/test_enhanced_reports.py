@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test the enhanced report generation with the new improvements:
+"""Test the enhanced report generation with the new improvements:
 1. Data Sources Checked section
 2. Actionable QR codes linking to live web version
 3. Conditional section visibility based on risk level
@@ -18,7 +17,6 @@ from agents.reporting.report_builder_agent.agent_logic import ReportBuilderAgent
 
 def test_product_safety_report():
     """Test enhanced product safety report generation"""
-
     print("Testing Enhanced Product Safety Report Generation...")
 
     # Initialize the report builder
@@ -140,7 +138,7 @@ def test_product_safety_report():
                 "manufacturer": high_risk_data["manufacturer"],
                 "personalized": high_risk_data["personalized"],
             },
-        ]
+        ],
     }
 
     result = report_builder._build_nursery_quarterly_report(quarterly_data, f"WF_{uuid.uuid4().hex[:8]}")

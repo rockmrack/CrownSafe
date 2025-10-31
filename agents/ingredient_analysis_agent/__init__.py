@@ -1,5 +1,4 @@
-"""
-Ingredient Analysis Agent
+"""Ingredient Analysis Agent
 Analyzes hair product ingredients for safety and compatibility
 """
 

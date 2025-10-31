@@ -1,5 +1,4 @@
-"""
-File Upload Security Testing Suite
+"""File Upload Security Testing Suite
 
 Tests file upload operations including size limits, timeouts, and security.
 Covers large file handling, malicious file detection, and resource management.
@@ -40,8 +39,7 @@ class TestFileUploadSecurity:
         return create_file
 
     def test_large_file_upload_timeout(self, mock_upload_file):
-        """
-        Test large file upload timeout handling
+        """Test large file upload timeout handling
 
         Acceptance Criteria:
         - Files > 10MB trigger timeout after 60 seconds
@@ -70,8 +68,7 @@ class TestFileUploadSecurity:
             # raise HTTPException(status_code=408, detail="Upload timeout")
 
     def test_file_size_limit_enforcement(self, mock_upload_file):
-        """
-        Test file size limits are enforced
+        """Test file size limits are enforced
 
         Acceptance Criteria:
         - Files > 10MB rejected
@@ -96,8 +93,7 @@ class TestFileUploadSecurity:
         #     raise HTTPException(status_code=413, detail="File too large")
 
     def test_malicious_file_type_detection(self, mock_upload_file):
-        """
-        Test detection of potentially malicious file types
+        """Test detection of potentially malicious file types
 
         Acceptance Criteria:
         - Executable files rejected (.exe, .sh, .bat)
@@ -128,8 +124,7 @@ class TestFileUploadSecurity:
             assert content_type not in allowed_types, f"{content_type} should not be in allowed types"
 
     def test_concurrent_file_uploads(self, mock_upload_file):
-        """
-        Test handling of concurrent file uploads
+        """Test handling of concurrent file uploads
 
         Acceptance Criteria:
         - System handles 10 concurrent uploads
@@ -156,8 +151,7 @@ class TestFileUploadSecurity:
         assert all(r["status"] == "success" for r in upload_results)
 
     def test_file_upload_virus_scan(self, mock_upload_file):
-        """
-        Test virus scanning of uploaded files
+        """Test virus scanning of uploaded files
 
         Acceptance Criteria:
         - All uploads scanned before storage
@@ -184,8 +178,7 @@ class TestFileUploadSecurity:
         assert scan_result["threats_found"] == 0
 
     def test_file_upload_storage_path_traversal_prevention(self, mock_upload_file):
-        """
-        Test prevention of path traversal attacks
+        """Test prevention of path traversal attacks
 
         Acceptance Criteria:
         - Filenames with ../ rejected
@@ -212,8 +205,7 @@ class TestFileUploadSecurity:
             # assert ".." not in safe_filename
 
     def test_file_upload_memory_efficient_processing(self, mock_upload_file):
-        """
-        Test memory-efficient streaming for large files
+        """Test memory-efficient streaming for large files
 
         Acceptance Criteria:
         - Large files processed in chunks
@@ -241,8 +233,7 @@ class TestFileUploadSecurity:
         assert chunks_processed > 0, "File should be processed in chunks"
 
     def test_file_upload_cleanup_on_error(self, mock_upload_file):
-        """
-        Test cleanup of partial uploads on error
+        """Test cleanup of partial uploads on error
 
         Acceptance Criteria:
         - Failed uploads cleaned up
@@ -273,8 +264,7 @@ class TestFileUploadValidation:
     """Test file upload validation and sanitization"""
 
     def test_filename_sanitization(self):
-        """
-        Test filename sanitization
+        """Test filename sanitization
 
         Acceptance Criteria:
         - Special characters removed
@@ -297,8 +287,7 @@ class TestFileUploadValidation:
             pass
 
     def test_content_type_validation(self):
-        """
-        Test content-type validation
+        """Test content-type validation
 
         Acceptance Criteria:
         - Content-type matches file extension

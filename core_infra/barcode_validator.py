@@ -1,5 +1,4 @@
-"""
-A-5 Exact/Valid Scan: Comprehensive Barcode Validation Service
+"""A-5 Exact/Valid Scan: Comprehensive Barcode Validation Service
 Provides exact validation, format checking, and error handling for barcode scanning
 """
 
@@ -84,8 +83,7 @@ class BarcodeValidator:
         }
 
     def validate_barcode(self, barcode: str) -> BarcodeValidationResult:
-        """
-        Comprehensive barcode validation
+        """Comprehensive barcode validation
 
         Args:
             barcode: Raw barcode string to validate

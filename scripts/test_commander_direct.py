@@ -12,7 +12,6 @@ async def message_handler(message: MCPMessage):
 
 async def test_commander_direct():
     """Test sending directly to commander"""
-
     client = MCPClient(
         agent_id="test_direct_client",
         agent_name="Test Direct Client",

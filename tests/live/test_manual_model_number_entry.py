@@ -1,5 +1,4 @@
-"""
-LIVE INTEGRATION TEST: Manual Model Number Entry
+"""LIVE INTEGRATION TEST: Manual Model Number Entry
 Tests the complete flow when a user manually enters a model number.
 
 This test:
@@ -43,8 +42,7 @@ client = TestClient(app)
 
 
 def get_production_session():
-    """
-    Create a session connected to the PRODUCTION PostgreSQL database.
+    """Create a session connected to the PRODUCTION PostgreSQL database.
 
     Returns:
         Session: SQLAlchemy session for production database
@@ -57,7 +55,7 @@ def get_production_session():
     if not prod_url or prod_url.startswith("sqlite"):
         pytest.skip(
             "Live test requires production PostgreSQL database. "
-            "Set PROD_DATABASE_URL environment variable to your PostgreSQL connection string."
+            "Set PROD_DATABASE_URL environment variable to your PostgreSQL connection string.",
         )
 
     # Create engine for production database
@@ -72,8 +70,7 @@ def get_production_session():
 
 
 def get_real_model_number_from_db():
-    """
-    Query the production database to find an actual model number with a recall.
+    """Query the production database to find an actual model number with a recall.
 
     Returns:
         dict: Model number, product name, brand, and recall ID from database
@@ -104,8 +101,7 @@ def get_real_model_number_from_db():
 @pytest.mark.live
 @pytest.mark.integration
 def test_manual_model_number_entry_with_recall():
-    """
-    TEST 1: Manual model number entry - Product WITH recall
+    """TEST 1: Manual model number entry - Product WITH recall
 
     User enters a model number that HAS an active recall in the database.
     Expected: System finds the recall and returns HIGH risk level with details.
@@ -213,8 +209,7 @@ def test_manual_model_number_entry_with_recall():
 @pytest.mark.live
 @pytest.mark.integration
 def test_manual_model_number_entry_no_recall():
-    """
-    TEST 2: Manual model number entry - Product WITHOUT recall
+    """TEST 2: Manual model number entry - Product WITHOUT recall
 
     User enters a model number that DOES NOT have a recall.
     Expected: System returns SAFE status with no recalls found.
@@ -292,8 +287,7 @@ def test_manual_model_number_entry_no_recall():
 @pytest.mark.live
 @pytest.mark.integration
 def test_manual_model_number_with_additional_context():
-    """
-    TEST 3: Manual model number with product name context
+    """TEST 3: Manual model number with product name context
 
     User enters both model number AND product name for better matching.
     Expected: System uses both fields for more accurate recall matching.

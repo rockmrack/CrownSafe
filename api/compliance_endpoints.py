@@ -1,5 +1,4 @@
-"""
-Legal Compliance API Endpoints
+"""Legal Compliance API Endpoints
 Provides endpoints for COPPA, Children's Code, GDPR, and legal content management
 Critical for app store approval and regulatory compliance
 """
@@ -233,8 +232,7 @@ class ConsentUpdateResponse(BaseModel):
 
 @router.post("/coppa/verify-age", response_model=AgeVerificationResponse)
 async def verify_user_age(request: AgeVerificationRequest, db: Session = Depends(get_db)):
-    """
-    Verify user age for COPPA compliance.
+    """Verify user age for COPPA compliance.
 
     This endpoint:
     1. Calculates user age from birthdate
@@ -285,7 +283,7 @@ async def verify_user_age(request: AgeVerificationRequest, db: Session = Depends
                     "Cannot share data with third parties",
                     "Must use age-appropriate content",
                     "Cannot use behavioral advertising",
-                ]
+                ],
             )
 
         if gdpr_child:
@@ -295,7 +293,7 @@ async def verify_user_age(request: AgeVerificationRequest, db: Session = Depends
                     "Clear and child-friendly privacy notices",
                     "Parental controls must be available",
                     "Data minimization enforced",
-                ]
+                ],
             )
 
         return AgeVerificationResponse(
@@ -321,8 +319,7 @@ async def submit_parental_consent(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """
-    Submit and verify parental consent for COPPA.
+    """Submit and verify parental consent for COPPA.
 
     Verification methods:
     1. Credit card verification ($0.50 charge)
@@ -377,8 +374,7 @@ async def submit_parental_consent(
 
 @router.get("/coppa/consent-status/{user_id}")
 async def get_consent_status(user_id: int, db: Session = Depends(get_db)):
-    """
-    Check COPPA consent status for a user.
+    """Check COPPA consent status for a user.
     """
     try:
         # In production, fetch from database
@@ -412,8 +408,7 @@ async def get_consent_status(user_id: int, db: Session = Depends(get_db)):
 
 @router.post("/childrens-code/assess", response_model=ChildrenCodeAssessmentResponse)
 async def assess_childrens_code_compliance(request: ChildrenCodeAssessmentRequest, db: Session = Depends(get_db)):
-    """
-    Assess compliance with Age Appropriate Design Code (Children's Code).
+    """Assess compliance with Age Appropriate Design Code (Children's Code).
 
     Checks against 15 standards including:
     1. Best interests of the child
@@ -449,7 +444,7 @@ async def assess_childrens_code_compliance(request: ChildrenCodeAssessmentReques
                     "Parental controls must be enabled",
                     "Data collection must be minimized",
                     "Clear, child-friendly privacy information required",
-                ]
+                ],
             )
 
             if request.third_party_sharing:
@@ -471,7 +466,7 @@ async def assess_childrens_code_compliance(request: ChildrenCodeAssessmentReques
                     "Implement time limits and break reminders",
                     "Avoid dark patterns and manipulative design",
                     "Provide easy account deletion options",
-                ]
+                ],
             )
 
         elif request.age < 16:
@@ -481,7 +476,7 @@ async def assess_childrens_code_compliance(request: ChildrenCodeAssessmentReques
                     "Limited data sharing options",
                     "Parental visibility into account activity",
                     "Regular privacy reminders",
-                ]
+                ],
             )
 
             if DataCategory.BIOMETRIC in request.data_collected:
@@ -493,7 +488,7 @@ async def assess_childrens_code_compliance(request: ChildrenCodeAssessmentReques
                     "Educational content about privacy",
                     "Easy-to-use privacy controls",
                     "Regular consent renewals",
-                ]
+                ],
             )
 
         # Determine privacy settings
@@ -532,8 +527,7 @@ async def submit_data_request(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """
-    Submit GDPR data request (access, deletion, portability, etc.).
+    """Submit GDPR data request (access, deletion, portability, etc.).
 
     Handles:
     - Right to access (Article 15)
@@ -601,8 +595,7 @@ async def get_request_status(
     user_id: int = Query(..., description="User ID"),
     db: Session = Depends(get_db),
 ):
-    """
-    Check status of a GDPR data request.
+    """Check status of a GDPR data request.
     """
     try:
         # In production, fetch from database
@@ -625,8 +618,7 @@ async def get_request_status(
 
 @router.post("/gdpr/retention-policy", response_model=DataRetentionPolicyResponse)
 async def set_retention_policy(request: DataRetentionPolicyRequest, db: Session = Depends(get_db)):
-    """
-    Set data retention policies for user data.
+    """Set data retention policies for user data.
 
     Allows users to control how long their data is retained.
     """
@@ -695,8 +687,7 @@ async def set_retention_policy(request: DataRetentionPolicyRequest, db: Session 
 
 @router.post("/legal/document", response_model=LegalDocumentResponse)
 async def get_legal_document(request: LegalDocumentRequest, db: Session = Depends(get_db)):
-    """
-    Get legal documents (ToS, Privacy Policy, etc.) with age-appropriate versions.
+    """Get legal documents (ToS, Privacy Policy, etc.) with age-appropriate versions.
     """
     try:
         logger.info(f"Fetching {request.document_type} document")
@@ -783,8 +774,7 @@ async def get_legal_document(request: LegalDocumentRequest, db: Session = Depend
 
 @router.post("/legal/consent/update", response_model=ConsentUpdateResponse)
 async def update_user_consent(request: ConsentUpdateRequest, db: Session = Depends(get_db)):
-    """
-    Update user consent preferences.
+    """Update user consent preferences.
     """
     try:
         logger.info(f"Updating consent for user {request.user_id}")
@@ -827,8 +817,7 @@ async def get_privacy_dashboard(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    """
-    Get comprehensive privacy dashboard for a user.
+    """Get comprehensive privacy dashboard for a user.
 
     Shows all privacy settings, consents, and compliance status.
     """
@@ -878,7 +867,7 @@ async def get_privacy_dashboard(
                     "type": "access",
                     "date": datetime.now() - timedelta(days=60),
                     "status": "completed",
-                }
+                },
             ],
             "retention_policies": {
                 "personal_data": "1 year",

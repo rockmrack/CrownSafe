@@ -1,5 +1,4 @@
-"""
-Test API contracts and backward compatibility
+"""Test API contracts and backward compatibility
 """
 
 import pytest

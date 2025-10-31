@@ -1,5 +1,4 @@
-"""
-Scan Results Models for Post-Scan Results Page
+"""Scan Results Models for Post-Scan Results Page
 Ensures legally defensible language and transparent reporting
 """
 
@@ -36,7 +35,7 @@ class BarcodeDetectionResult(BaseModel):
                 "format": "ean13",
                 "confidence": 99.0,
                 "quality_badge": "Best Quality: 014292998228 (ean13)",
-            }
+            },
         },
     }
 
@@ -53,7 +52,7 @@ class ProductSummary(BaseModel):
                 "barcode": "014292998228",
                 "model_number": "SM-2024",
                 "upc_gtin": "014292998228",
-            }
+            },
         },
     }
 
@@ -74,7 +73,7 @@ class SafetyCheckStatus(BaseModel):
                 "agencies_checked": "39+ (No recalls found)",
                 "check_timestamp": "2025-01-08T12:00:00Z",
                 "database_version": "v2025.01.08",
-            }
+            },
         },
     }
 
@@ -118,7 +117,7 @@ class ScanResultsPage(BaseModel):
         default_factory=lambda: {
             "download_pdf": "/api/v1/reports/generate",
             "view_details": "/api/v1/products/details",
-        }
+        },
     )
 
     # Metadata
@@ -159,7 +158,7 @@ class ScanResultsPage(BaseModel):
                 "scan_id": "scan_1234567890",
                 "scan_timestamp": "2025-01-08T12:00:00Z",
                 "scan_type": "barcode",
-            }
+            },
         },
     }
 
@@ -169,8 +168,7 @@ def create_scan_results(
     recall_check: dict[str, Any] | None = None,
     barcode_info: dict[str, Any] | None = None,
 ) -> ScanResultsPage:
-    """
-    Create a properly formatted scan results page response
+    """Create a properly formatted scan results page response
 
     Args:
         scan_data: Raw scan data from scanner
@@ -180,7 +178,6 @@ def create_scan_results(
     Returns:
         ScanResultsPage with legally defensible language
     """
-
     # Determine verdict based on recall check
     if recall_check and recall_check.get("recall_found"):
         verdict = VerdictType.RECALL_FOUND
@@ -239,7 +236,7 @@ def create_scan_results(
                     remedy=r.get("remedy", ""),
                     severity=r.get("severity", "medium"),
                     match_confidence=r.get("match_confidence", 0.9),
-                )
+                ),
             )
 
     return ScanResultsPage(

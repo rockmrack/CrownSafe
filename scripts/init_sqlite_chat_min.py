@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS conversation_logs (
     meta_json TEXT,
     created_at TEXT
 );
-"""
+""",
 )
 
 con.commit()

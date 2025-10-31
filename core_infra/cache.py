@@ -1,5 +1,4 @@
-"""
-Query Result Caching Module.
+"""Query Result Caching Module.
 
 This module provides caching decorators and utilities for expensive database queries.
 Uses in-memory TTL caches to reduce database load for frequently accessed data.
@@ -30,8 +29,7 @@ agency_cache = TTLCache(maxsize=50, ttl=3600)
 
 
 def generate_cache_key(*args, **kwargs) -> str:
-    """
-    Generate a cache key from function arguments.
+    """Generate a cache key from function arguments.
 
     Args:
         *args: Positional arguments
@@ -59,8 +57,7 @@ def generate_cache_key(*args, **kwargs) -> str:
 
 
 def cached_query(cache: TTLCache, key_func: Callable = None):
-    """
-    Decorator to cache query results.
+    """Decorator to cache query results.
 
     Args:
         cache: The TTL cache to use
@@ -104,8 +101,7 @@ def cached_query(cache: TTLCache, key_func: Callable = None):
 
 
 def get_cache_stats(cache: TTLCache) -> dict:
-    """
-    Get statistics about a cache.
+    """Get statistics about a cache.
 
     Args:
         cache: The TTL cache to inspect
@@ -122,8 +118,7 @@ def get_cache_stats(cache: TTLCache) -> dict:
 
 
 def clear_cache(cache: TTLCache):
-    """
-    Clear all entries from a cache.
+    """Clear all entries from a cache.
 
     Args:
         cache: The TTL cache to clear
@@ -172,8 +167,7 @@ def cache_agency_query(func: Callable) -> Callable:
 
 @cache_recall_query
 def get_recalls_by_barcode_cached(barcode: str, db):
-    """
-    REMOVED FOR CROWN SAFE: Recall functionality no longer applicable.
+    """REMOVED FOR CROWN SAFE: Recall functionality no longer applicable.
     This function is deprecated and returns empty list.
     """
     # from core_infra.database import RecallDB
@@ -183,8 +177,7 @@ def get_recalls_by_barcode_cached(barcode: str, db):
 
 @cache_safety_query
 def get_product_safety_score_cached(product_id: int, db):
-    """
-    Get product safety score with caching.
+    """Get product safety score with caching.
 
     Example of how to cache expensive safety calculations.
     """
@@ -196,8 +189,7 @@ def get_product_safety_score_cached(product_id: int, db):
 
 
 def get_all_cache_stats() -> dict:
-    """
-    Get statistics for all caches.
+    """Get statistics for all caches.
 
     Returns:
         Dict with stats for each cache

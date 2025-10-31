@@ -1,5 +1,4 @@
-"""
-Supplemental Data Service for BabyShield
+"""Supplemental Data Service for BabyShield
 Integrates authoritative data sources beyond recalls for comprehensive safety reports
 """
 
@@ -157,8 +156,8 @@ class EdamamClient:
                                 "quantity": 100,
                                 "measureURI": "http://www.edamam.com/ontologies/edamam.owl#Measure_gram",
                                 "foodId": food_id,
-                            }
-                        ]
+                            },
+                        ],
                     },
                     timeout=10.0,
                 )
@@ -197,7 +196,7 @@ class CosIngClient:
                     "functions": ["mock-function"],
                     "restrictions": [],
                     "safety_assessment": "mock-assessment",
-                }
+                },
             ]
         except Exception as e:
             logger.error(f"CosIng API error: {e}")

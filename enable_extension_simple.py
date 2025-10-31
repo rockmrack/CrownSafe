@@ -7,7 +7,7 @@ print("Enabling pg_trgm extension...")
 database_url = os.getenv("DATABASE_URL")
 if not database_url:
     raise RuntimeError(
-        "DATABASE_URL environment variable is not set. Please set it to your PostgreSQL connection string."
+        "DATABASE_URL environment variable is not set. Please set it to your PostgreSQL connection string.",
     )
 conn = psycopg2.connect(
     database_url,

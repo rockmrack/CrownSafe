@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS recalls_enhanced (
   url TEXT,
   search_keywords TEXT,
   agency_specific_data TEXT
-)"""
+)""",
 )
 
 # 2) report_records (for metadata the API writes)
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS report_records (
   report_type TEXT,
   storage_path TEXT,
   created_at TEXT
-)"""
+)""",
 )
 
 # Seed one simple recall if table is empty

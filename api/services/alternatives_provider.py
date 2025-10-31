@@ -7,8 +7,7 @@ from api.services.evidence import label_to_evidence, regulatory_to_evidence
 
 
 def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeItem]:
-    """
-    Rules-based alternatives engine. Returns safer product suggestions based on
+    """Rules-based alternatives engine. Returns safer product suggestions based on
     scan data, flags, and user profile.
     """
     items: list[AlternativeItem] = []
@@ -27,7 +26,7 @@ def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeIte
                 tags=["pasteurised", "pregnancy"],
                 pregnancy_safe=True,
                 evidence=label_to_evidence("pasteurisation"),
-            )
+            ),
         )
         items.append(
             AlternativeItem(
@@ -37,7 +36,7 @@ def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeIte
                 tags=["pregnancy"],
                 pregnancy_safe=True,
                 evidence=regulatory_to_evidence("FDA", "Pregnancy food safety guidelines"),
-            )
+            ),
         )
 
     # Peanut allergy: suggest nut-free alternatives
@@ -50,7 +49,7 @@ def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeIte
                 tags=["peanut-free", "allergy"],
                 allergy_safe_for=["peanut"],
                 evidence=label_to_evidence("allergen statement"),
-            )
+            ),
         )
         items.append(
             AlternativeItem(
@@ -60,7 +59,7 @@ def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeIte
                 tags=["peanut-free", "allergy", "spread"],
                 allergy_safe_for=["peanut"],
                 evidence=label_to_evidence("facility information"),
-            )
+            ),
         )
 
     # Tree nut allergies
@@ -73,7 +72,7 @@ def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeIte
                 tags=["nut-free", "allergy"],
                 allergy_safe_for=["tree_nut", "almond", "walnut", "cashew"],
                 evidence=label_to_evidence("allergen manufacturing statement"),
-            )
+            ),
         )
 
     # Sleep products: flat/firm surfaces
@@ -86,7 +85,7 @@ def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeIte
                 tags=["flat-sleep", "safe-sleep"],
                 age_min_months=0,
                 evidence=regulatory_to_evidence("CPSC", "Safe sleep guidelines"),
-            )
+            ),
         )
         items.append(
             AlternativeItem(
@@ -96,7 +95,7 @@ def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeIte
                 tags=["flat-sleep", "portable", "cpsc-approved"],
                 age_min_months=0,
                 evidence=regulatory_to_evidence("CPSC", "Bassinet safety standard"),
-            )
+            ),
         )
 
     # Small parts / choking hazards: age-appropriate alternatives
@@ -110,7 +109,7 @@ def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeIte
                     tags=["no-small-parts", "age-appropriate"],
                     age_min_months=0,
                     evidence=regulatory_to_evidence("CPSC", "Small parts test guidelines"),
-                )
+                ),
             )
 
         items.append(
@@ -121,7 +120,7 @@ def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeIte
                 tags=["soft", "no-small-parts"],
                 age_min_months=0,
                 evidence=label_to_evidence("age recommendation"),
-            )
+            ),
         )
 
     # Cosmetic ingredients: pregnancy-safe alternatives
@@ -134,7 +133,7 @@ def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeIte
                 tags=["pregnancy-safe", "skincare"],
                 pregnancy_safe=True,
                 evidence=regulatory_to_evidence("FDA", "Cosmetic ingredient safety"),
-            )
+            ),
         )
 
     # High-mercury fish: low-mercury alternatives
@@ -147,7 +146,7 @@ def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeIte
                 tags=["low-mercury", "pregnancy-safe", "omega-3"],
                 pregnancy_safe=True,
                 evidence=regulatory_to_evidence("FDA", "Fish consumption guidelines"),
-            )
+            ),
         )
 
     # Raw/unpasteurized dairy: pasteurized alternatives
@@ -160,7 +159,7 @@ def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeIte
                 tags=["pasteurized", "pregnancy-safe"],
                 pregnancy_safe=True,
                 evidence=label_to_evidence("pasteurization statement"),
-            )
+            ),
         )
 
     # Limit to top 3 most relevant alternatives
@@ -168,8 +167,7 @@ def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeIte
 
 
 def get_alternatives(scan: dict[str, Any]) -> dict[str, Any]:
-    """
-    Get safer product alternatives based on scan data and user profile.
+    """Get safer product alternatives based on scan data and user profile.
     Returns AlternativesOut schema with up to 3 suggestions.
     """
     import os

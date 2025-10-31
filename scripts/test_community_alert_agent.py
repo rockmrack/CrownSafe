@@ -61,7 +61,7 @@ async def main():
             if len(risks_found) >= 4:
                 print("\n" + "=" * 50)
                 print(
-                    f"✅✅✅ TEST PASSED: Agent successfully scraped the page and found {len(risks_found)} risk keywords."  # noqa: E501
+                    f"✅✅✅ TEST PASSED: Agent successfully scraped the page and found {len(risks_found)} risk keywords.",  # noqa: E501
                 )
             else:
                 print("\n" + "=" * 50)

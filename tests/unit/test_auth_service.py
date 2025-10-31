@@ -1,5 +1,4 @@
-"""
-Unit tests for authentication service
+"""Unit tests for authentication service
 Tests JWT token generation, validation, and user authentication
 """
 
@@ -12,8 +11,7 @@ class TestAuthService:
     """Test suite for authentication service"""
 
     def test_create_access_token_with_valid_data_returns_token(self):
-        """
-        Test that create_access_token generates a valid JWT token.
+        """Test that create_access_token generates a valid JWT token.
 
         Given: Valid user ID and email
         When: create_access_token is called
@@ -23,8 +21,7 @@ class TestAuthService:
         pass
 
     def test_create_access_token_with_expiration_sets_correct_exp(self):
-        """
-        Test that token expiration is set correctly.
+        """Test that token expiration is set correctly.
 
         Given: User data and custom expiration time
         When: Token is created
@@ -33,8 +30,7 @@ class TestAuthService:
         pass
 
     def test_decode_token_with_valid_token_returns_payload(self):
-        """
-        Test that valid tokens are decoded correctly.
+        """Test that valid tokens are decoded correctly.
 
         Given: Valid JWT token
         When: decode_token is called
@@ -43,8 +39,7 @@ class TestAuthService:
         pass
 
     def test_decode_token_with_expired_token_raises_exception(self):
-        """
-        Test that expired tokens are rejected.
+        """Test that expired tokens are rejected.
 
         Given: Expired JWT token
         When: decode_token is called
@@ -53,8 +48,7 @@ class TestAuthService:
         pass
 
     def test_decode_token_with_invalid_token_raises_exception(self):
-        """
-        Test that invalid tokens are rejected.
+        """Test that invalid tokens are rejected.
 
         Given: Malformed JWT token
         When: decode_token is called
@@ -63,8 +57,7 @@ class TestAuthService:
         pass
 
     def test_hash_password_returns_bcrypt_hash(self):
-        """
-        Test that passwords are properly hashed.
+        """Test that passwords are properly hashed.
 
         Given: Plain text password
         When: hash_password is called
@@ -73,8 +66,7 @@ class TestAuthService:
         pass
 
     def test_verify_password_with_correct_password_returns_true(self):
-        """
-        Test password verification with correct password.
+        """Test password verification with correct password.
 
         Given: Plain password and matching hash
         When: verify_password is called
@@ -83,8 +75,7 @@ class TestAuthService:
         pass
 
     def test_verify_password_with_incorrect_password_returns_false(self):
-        """
-        Test password verification with incorrect password.
+        """Test password verification with incorrect password.
 
         Given: Plain password and non-matching hash
         When: verify_password is called
@@ -93,8 +84,7 @@ class TestAuthService:
         pass
 
     def test_create_refresh_token_with_valid_data_returns_token(self):
-        """
-        Test refresh token generation.
+        """Test refresh token generation.
 
         Given: Valid user data
         When: create_refresh_token is called
@@ -103,8 +93,7 @@ class TestAuthService:
         pass
 
     def test_validate_token_permissions_with_valid_permissions_returns_true(self):
-        """
-        Test that token permissions are validated correctly.
+        """Test that token permissions are validated correctly.
 
         Given: Token with specific permissions
         When: Permission is checked
@@ -117,8 +106,7 @@ class TestAuthenticationEndpoints:
     """Test suite for authentication API endpoints"""
 
     def test_register_with_valid_data_creates_user(self):
-        """
-        Test user registration with valid data.
+        """Test user registration with valid data.
 
         Given: Valid registration data
         When: POST /api/v1/auth/register
@@ -127,8 +115,7 @@ class TestAuthenticationEndpoints:
         pass
 
     def test_register_with_duplicate_email_returns_409(self):
-        """
-        Test registration with existing email.
+        """Test registration with existing email.
 
         Given: Email already registered
         When: POST /api/v1/auth/register
@@ -137,8 +124,7 @@ class TestAuthenticationEndpoints:
         pass
 
     def test_register_with_weak_password_returns_400(self):
-        """
-        Test registration with weak password.
+        """Test registration with weak password.
 
         Given: Password not meeting requirements
         When: POST /api/v1/auth/register
@@ -147,8 +133,7 @@ class TestAuthenticationEndpoints:
         pass
 
     def test_login_with_valid_credentials_returns_tokens(self):
-        """
-        Test login with correct credentials.
+        """Test login with correct credentials.
 
         Given: Valid email and password
         When: POST /api/v1/auth/token
@@ -157,8 +142,7 @@ class TestAuthenticationEndpoints:
         pass
 
     def test_login_with_invalid_credentials_returns_401(self):
-        """
-        Test login with incorrect password.
+        """Test login with incorrect password.
 
         Given: Valid email but wrong password
         When: POST /api/v1/auth/token
@@ -167,8 +151,7 @@ class TestAuthenticationEndpoints:
         pass
 
     def test_refresh_token_with_valid_token_returns_new_access_token(self):
-        """
-        Test token refresh endpoint.
+        """Test token refresh endpoint.
 
         Given: Valid refresh token
         When: POST /api/v1/auth/refresh
@@ -177,8 +160,7 @@ class TestAuthenticationEndpoints:
         pass
 
     def test_protected_endpoint_without_token_returns_401(self):
-        """
-        Test protected endpoint access without authentication.
+        """Test protected endpoint access without authentication.
 
         Given: No authentication token
         When: GET /api/v1/user/profile
@@ -187,8 +169,7 @@ class TestAuthenticationEndpoints:
         pass
 
     def test_protected_endpoint_with_valid_token_returns_data(self):
-        """
-        Test protected endpoint access with valid token.
+        """Test protected endpoint access with valid token.
 
         Given: Valid authentication token
         When: GET /api/v1/user/profile

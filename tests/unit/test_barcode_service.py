@@ -1,5 +1,4 @@
-"""
-Unit tests for barcode scanning service
+"""Unit tests for barcode scanning service
 Tests barcode detection, validation, and processing
 
 ⚠️ WARNING: These tests are currently STUBS and need implementation.
@@ -20,8 +19,7 @@ class TestBarcodeScanner:
     """Test suite for barcode scanner service"""
 
     def test_scan_barcode_with_valid_image_returns_barcode(self):
-        """
-        Test barcode scanning with valid image containing barcode.
+        """Test barcode scanning with valid image containing barcode.
 
         Given: Image with valid barcode
         When: scan_barcode is called
@@ -32,8 +30,7 @@ class TestBarcodeScanner:
         pass
 
     def test_scan_barcode_with_no_barcode_returns_none(self):
-        """
-        Test scanning image without barcode.
+        """Test scanning image without barcode.
 
         Given: Image without barcode
         When: scan_barcode is called
@@ -44,8 +41,7 @@ class TestBarcodeScanner:
         pass
 
     def test_scan_barcode_with_multiple_barcodes_returns_all(self):
-        """
-        Test scanning image with multiple barcodes.
+        """Test scanning image with multiple barcodes.
 
         Given: Image with multiple barcodes
         When: scan_barcode is called
@@ -56,8 +52,7 @@ class TestBarcodeScanner:
         pass
 
     def test_validate_barcode_with_valid_upc_returns_true(self):
-        """
-        Test barcode validation with valid UPC.
+        """Test barcode validation with valid UPC.
 
         Given: Valid UPC barcode
         When: validate_barcode is called
@@ -68,8 +63,7 @@ class TestBarcodeScanner:
         pass
 
     def test_validate_barcode_with_invalid_checksum_returns_false(self):
-        """
-        Test barcode validation with invalid checksum.
+        """Test barcode validation with invalid checksum.
 
         Given: Barcode with wrong checksum
         When: validate_barcode is called
@@ -80,8 +74,7 @@ class TestBarcodeScanner:
         pass
 
     def test_detect_barcode_type_with_upc_returns_upc_type(self):
-        """
-        Test barcode type detection.
+        """Test barcode type detection.
 
         Given: UPC barcode
         When: detect_barcode_type is called
@@ -92,8 +85,7 @@ class TestBarcodeScanner:
         pass
 
     def test_scan_with_poor_image_quality_handles_gracefully(self):
-        """
-        Test scanning with low quality image.
+        """Test scanning with low quality image.
 
         Given: Blurry or low resolution image
         When: scan_barcode is called
@@ -104,8 +96,7 @@ class TestBarcodeScanner:
         pass
 
     def test_scan_with_rotated_image_detects_barcode(self):
-        """
-        Test barcode detection with rotated image.
+        """Test barcode detection with rotated image.
 
         Given: Image rotated at various angles
         When: scan_barcode is called
@@ -120,8 +111,7 @@ class TestBarcodeValidator:
     """Test suite for barcode validation"""
 
     def test_validate_upc_with_valid_12_digit_returns_true(self):
-        """
-        Test UPC validation with valid 12-digit code.
+        """Test UPC validation with valid 12-digit code.
 
         Given: Valid 12-digit UPC
         When: validate_upc is called
@@ -132,8 +122,7 @@ class TestBarcodeValidator:
         pass
 
     def test_validate_ean_with_valid_13_digit_returns_true(self):
-        """
-        Test EAN validation with valid 13-digit code.
+        """Test EAN validation with valid 13-digit code.
 
         Given: Valid 13-digit EAN
         When: validate_ean is called
@@ -144,8 +133,7 @@ class TestBarcodeValidator:
         pass
 
     def test_calculate_checksum_returns_correct_digit(self):
-        """
-        Test checksum calculation.
+        """Test checksum calculation.
 
         Given: Barcode without checksum
         When: calculate_checksum is called
@@ -156,8 +144,7 @@ class TestBarcodeValidator:
         pass
 
     def test_normalize_barcode_removes_spaces(self):
-        """
-        Test barcode normalization.
+        """Test barcode normalization.
 
         Given: Barcode with spaces
         When: normalize_barcode is called
@@ -172,8 +159,7 @@ class TestBarcodeEndpoints:
     """Test suite for barcode API endpoints"""
 
     def test_scan_endpoint_with_valid_image_returns_200(self):
-        """
-        Test barcode scan endpoint with valid image.
+        """Test barcode scan endpoint with valid image.
 
         Given: Valid image upload
         When: POST /api/v1/scan
@@ -184,8 +170,7 @@ class TestBarcodeEndpoints:
         pass
 
     def test_scan_endpoint_with_invalid_file_returns_400(self):
-        """
-        Test scan endpoint with non-image file.
+        """Test scan endpoint with non-image file.
 
         Given: Non-image file upload
         When: POST /api/v1/scan
@@ -196,8 +181,7 @@ class TestBarcodeEndpoints:
         pass
 
     def test_scan_endpoint_with_large_file_returns_413(self):
-        """
-        Test scan endpoint with file exceeding size limit.
+        """Test scan endpoint with file exceeding size limit.
 
         Given: Image file > 10MB
         When: POST /api/v1/scan
@@ -208,8 +192,7 @@ class TestBarcodeEndpoints:
         pass
 
     def test_scan_result_includes_product_safety_info(self):
-        """
-        Test that scan results include safety information.
+        """Test that scan results include safety information.
 
         Given: Scanned barcode matches product in database
         When: Scan completes

@@ -1,5 +1,4 @@
-"""
-Test Report Unsafe Product endpoint
+"""Test Report Unsafe Product endpoint
 """
 
 import pytest
@@ -7,7 +6,6 @@ import pytest
 
 def test_report_unsafe_product_minimal_fields(client):
     """Test reporting unsafe product with minimal required fields"""
-
     payload = {
         "user_id": 12345,
         "product_name": "Dangerous Baby Crib",
@@ -26,7 +24,6 @@ def test_report_unsafe_product_minimal_fields(client):
 
 def test_report_unsafe_product_full_fields(client):
     """Test reporting unsafe product with all optional fields"""
-
     payload = {
         "user_id": 12345,
         "product_name": "Baby Dream Crib Model XL-2000",
@@ -56,7 +53,6 @@ def test_report_unsafe_product_full_fields(client):
 
 def test_report_unsafe_product_missing_required_fields(client):
     """Test that missing required fields returns 422"""
-
     payload = {
         "user_id": 12345,
         "product_name": "Test Product",
@@ -69,7 +65,6 @@ def test_report_unsafe_product_missing_required_fields(client):
 
 def test_report_unsafe_product_invalid_severity(client):
     """Test that invalid severity returns 422"""
-
     payload = {
         "user_id": 12345,
         "product_name": "Test Product",
@@ -83,7 +78,6 @@ def test_report_unsafe_product_invalid_severity(client):
 
 def test_report_unsafe_product_too_many_photos(client):
     """Test that more than 10 photos returns 422"""
-
     payload = {
         "user_id": 12345,
         "product_name": "Test Product",
@@ -97,7 +91,6 @@ def test_report_unsafe_product_too_many_photos(client):
 
 def test_get_user_reports(client):
     """Test retrieving user reports"""
-
     # First, create a report
     payload = {
         "user_id": 12345,
@@ -120,7 +113,6 @@ def test_get_user_reports(client):
 
 def test_get_user_reports_with_status_filter(client):
     """Test retrieving user reports with status filter"""
-
     response = client.get("/api/v1/user-reports/12345?status=PENDING")
 
     assert response.status_code == 200
@@ -131,7 +123,6 @@ def test_get_user_reports_with_status_filter(client):
 
 def test_get_user_reports_with_pagination(client):
     """Test retrieving user reports with pagination"""
-
     response = client.get("/api/v1/user-reports/12345?limit=10&offset=0")
 
     assert response.status_code == 200
@@ -144,7 +135,6 @@ def test_get_user_reports_with_pagination(client):
 
 def test_get_user_reports_empty(client):
     """Test retrieving reports for user with no reports"""
-
     response = client.get("/api/v1/user-reports/99999999")
 
     assert response.status_code == 200
@@ -156,7 +146,6 @@ def test_get_user_reports_empty(client):
 @pytest.mark.skip(reason="Rate limiting test - run manually to avoid CI delays")
 def test_report_unsafe_product_rate_limiting(client):
     """Test that rate limiting prevents spam (10 reports per hour)"""
-
     base_payload = {
         "user_id": 12345,
         "product_name": "Test Product",

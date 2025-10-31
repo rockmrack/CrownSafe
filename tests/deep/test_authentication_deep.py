@@ -1,5 +1,4 @@
-"""
-Deep Authentication Tests
+"""Deep Authentication Tests
 Comprehensive testing of auth flows, token validation, and security
 """
 

@@ -125,7 +125,7 @@ async def debug_router():
                 "task_description": "Task 1",
                 "inputs": {},
                 "dependencies": [],
-            }
+            },
         ],
     }
 
@@ -170,7 +170,7 @@ async def debug_router():
                 "sender_id": "commander",
             },
             "payload": {"plan": plan},
-        }
+        },
     )
 
     await asyncio.sleep(0.5)
@@ -193,10 +193,10 @@ async def debug_router():
                             "agent_id": "worker_cap1",
                             "capabilities": ["cap1"],
                             "status": "active",
-                        }
+                        },
                     ],
                 },
-            }
+            },
         )
 
     await asyncio.sleep(0.5)

@@ -1,5 +1,4 @@
-"""
-Authentication utilities for BabyShield API.
+"""Authentication utilities for BabyShield API.
 Provides current user context for authenticated requests.
 """
 
@@ -20,8 +19,7 @@ current_user: User | None = None
 
 
 def get_current_user() -> User | None:
-    """
-    Get the current authenticated user.
+    """Get the current authenticated user.
 
     In production, this would extract user info from JWT token or session.
     For now, returns None to indicate no authentication.
@@ -36,8 +34,7 @@ def get_current_user() -> User | None:
 
 
 def set_current_user(user: User | None) -> None:
-    """
-    Set the current user context (for testing/development).
+    """Set the current user context (for testing/development).
 
     Args:
         user: User object to set as current user
@@ -55,8 +52,7 @@ def clear_current_user() -> None:
 
 
 def require_auth() -> User:
-    """
-    Require authentication and return the current user.
+    """Require authentication and return the current user.
 
     Returns:
         Current user object

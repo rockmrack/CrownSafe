@@ -1,5 +1,4 @@
-"""
-Admin authentication for secure admin endpoints
+"""Admin authentication for secure admin endpoints
 Uses API key authentication with rate limiting
 """
 
@@ -35,8 +34,7 @@ api_key_header = APIKeyHeader(name="X-Admin-Key", auto_error=False)
 
 
 async def require_admin(request: Request, x_admin_key: str | None = Depends(api_key_header)) -> str:
-    """
-    Require admin authentication via API key
+    """Require admin authentication via API key
 
     Args:
         request: FastAPI request object
@@ -112,8 +110,7 @@ async def require_admin(request: Request, x_admin_key: str | None = Depends(api_
 
 
 async def optional_admin(request: Request, x_admin_key: str | None = Depends(api_key_header)) -> str | None:
-    """
-    Optional admin authentication
+    """Optional admin authentication
     Returns admin identifier if authenticated, None otherwise
 
     Args:
@@ -135,8 +132,7 @@ async def optional_admin(request: Request, x_admin_key: str | None = Depends(api
 
 
 class AdminRateLimit:
-    """
-    Special rate limits for admin endpoints
+    """Special rate limits for admin endpoints
     """
 
     # Admin endpoints have lower rate limits for security
@@ -167,8 +163,7 @@ class AdminRateLimit:
 
 
 def validate_admin_key(key: str) -> bool:
-    """
-    Validate an admin key format
+    """Validate an admin key format
 
     Args:
         key: API key to validate
@@ -188,8 +183,7 @@ def validate_admin_key(key: str) -> bool:
 
 
 def generate_admin_key() -> str:
-    """
-    Generate a secure admin API key
+    """Generate a secure admin API key
 
     Returns:
         Random 64-character API key

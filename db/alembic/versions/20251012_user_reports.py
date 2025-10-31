@@ -1,5 +1,4 @@
-"""
-Add user_reports table for community unsafe product reporting
+"""Add user_reports table for community unsafe product reporting
 
 Revision ID: 20251012_user_reports
 Revises: bcef138c88a2
@@ -20,7 +19,6 @@ depends_on = None
 
 def upgrade():
     """Add user_reports table for community reporting of unsafe products"""
-
     # Create user_reports table
     op.create_table(
         "user_reports",

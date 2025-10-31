@@ -1,5 +1,4 @@
-"""
-S3 upload helper utilities
+"""S3 upload helper utilities
 Generates region-correct presigned POST URLs for client-side uploads
 """
 
@@ -11,7 +10,7 @@ from botocore.config import Config
 # Bucket configuration
 BUCKET = os.getenv("S3_UPLOAD_BUCKET") or os.getenv("S3_BUCKET", "babyshield-images")
 CFG_REGION = os.getenv("S3_UPLOAD_BUCKET_REGION") or os.getenv(
-    "S3_BUCKET_REGION", "us-east-1"
+    "S3_BUCKET_REGION", "us-east-1",
 )  # Fixed: S3 bucket is in us-east-1
 
 

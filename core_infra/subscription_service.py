@@ -1,5 +1,4 @@
-"""
-Subscription service for entitlement checks and management
+"""Subscription service for entitlement checks and management
 """
 
 import logging
@@ -24,8 +23,7 @@ class SubscriptionService:
 
     @staticmethod
     def _dev_entitlement_override(user_id: int, feature: str = None) -> dict | None:
-        """
-        DEV/QA only: allow entitlements via env without touching DB.
+        """DEV/QA only: allow entitlements via env without touching DB.
         ENTITLEMENTS_ALLOW_ALL: "1|true|yes" -> grant everything
         ENTITLEMENTS_ALLOWLIST: "67,123"      -> user_id allow-list
         ENTITLEMENTS_FEATURES:  "safety.check,safety.comprehensive" -> feature scope (empty = all)
@@ -51,8 +49,7 @@ class SubscriptionService:
 
     @staticmethod
     def is_active(user_id: int, db: Session | None = None, feature: str = None) -> bool:
-        """
-        Check if user has an active subscription
+        """Check if user has an active subscription
 
         Args:
             user_id: User ID to check
@@ -85,7 +82,7 @@ class SubscriptionService:
                     Subscription.user_id == user_id,
                     Subscription.status == SubscriptionStatus.ACTIVE,
                     Subscription.expires_at > datetime.utcnow(),
-                )
+                ),
             )
             .order_by(Subscription.expires_at.desc())
             .first()
@@ -102,7 +99,7 @@ class SubscriptionService:
                     Subscription.user_id == user_id,
                     Subscription.status == SubscriptionStatus.ACTIVE,
                     Subscription.expires_at <= datetime.utcnow(),
-                )
+                ),
             )
             .all()
         )
@@ -123,8 +120,7 @@ class SubscriptionService:
 
     @staticmethod
     def get_active_subscription(user_id: int) -> dict | None:
-        """
-        Get user's active subscription details
+        """Get user's active subscription details
 
         Args:
             user_id: User ID
@@ -140,7 +136,7 @@ class SubscriptionService:
                         Subscription.user_id == user_id,
                         Subscription.status == SubscriptionStatus.ACTIVE,
                         Subscription.expires_at > datetime.utcnow(),
-                    )
+                    ),
                 )
                 .order_by(Subscription.expires_at.desc())
                 .first()
@@ -153,8 +149,7 @@ class SubscriptionService:
 
     @staticmethod
     def get_subscription_status(user_id: int) -> dict:
-        """
-        Get detailed subscription status for user
+        """Get detailed subscription status for user
 
         Args:
             user_id: User ID
@@ -171,7 +166,7 @@ class SubscriptionService:
                         Subscription.user_id == user_id,
                         Subscription.status == SubscriptionStatus.ACTIVE,
                         Subscription.expires_at > datetime.utcnow(),
-                    )
+                    ),
                 )
                 .order_by(Subscription.expires_at.desc())
                 .first()
@@ -203,7 +198,7 @@ class SubscriptionService:
                                 Subscription.expires_at <= datetime.utcnow(),
                             ),
                         ),
-                    )
+                    ),
                 )
                 .order_by(Subscription.expires_at.desc())
                 .first()
@@ -223,8 +218,7 @@ class SubscriptionService:
 
     @staticmethod
     def cancel_subscription(user_id: int) -> dict:
-        """
-        Cancel user's subscription (will remain active until expiry)
+        """Cancel user's subscription (will remain active until expiry)
 
         Args:
             user_id: User ID
@@ -240,7 +234,7 @@ class SubscriptionService:
                         Subscription.user_id == user_id,
                         Subscription.status == SubscriptionStatus.ACTIVE,
                         Subscription.expires_at > datetime.utcnow(),
-                    )
+                    ),
                 )
                 .first()
             )
@@ -262,8 +256,7 @@ class SubscriptionService:
 
     @staticmethod
     def get_subscription_history(user_id: int, limit: int = 10) -> list[dict]:
-        """
-        Get user's subscription history
+        """Get user's subscription history
 
         Args:
             user_id: User ID
@@ -285,8 +278,7 @@ class SubscriptionService:
 
     @staticmethod
     def check_expiring_soon(days_threshold: int = 3) -> list[dict]:
-        """
-        Find subscriptions expiring soon
+        """Find subscriptions expiring soon
 
         Args:
             days_threshold: Days before expiry to check
@@ -305,7 +297,7 @@ class SubscriptionService:
                         Subscription.expires_at > datetime.utcnow(),
                         Subscription.expires_at <= threshold_date,
                         not Subscription.auto_renew,  # Only non-auto-renewing
-                    )
+                    ),
                 )
                 .all()
             )
@@ -323,8 +315,7 @@ class SubscriptionService:
 
     @staticmethod
     def cleanup_expired_subscriptions() -> int:
-        """
-        Clean up expired subscriptions (mark as expired and update users)
+        """Clean up expired subscriptions (mark as expired and update users)
 
         Returns:
             Number of subscriptions cleaned up
@@ -337,7 +328,7 @@ class SubscriptionService:
                     and_(
                         Subscription.status == SubscriptionStatus.ACTIVE,
                         Subscription.expires_at <= datetime.utcnow(),
-                    )
+                    ),
                 )
                 .all()
             )
@@ -362,7 +353,7 @@ class SubscriptionService:
                                 Subscription.user_id == user_id,
                                 Subscription.status == SubscriptionStatus.ACTIVE,
                                 Subscription.expires_at > datetime.utcnow(),
-                            )
+                            ),
                         )
                         .first()
                         is not None
@@ -380,8 +371,7 @@ class SubscriptionService:
 
     @staticmethod
     def get_subscription_metrics() -> dict:
-        """
-        Get subscription metrics for analytics
+        """Get subscription metrics for analytics
 
         Returns:
             Dict with subscription metrics
@@ -396,7 +386,7 @@ class SubscriptionService:
                     and_(
                         Subscription.status == SubscriptionStatus.ACTIVE,
                         Subscription.expires_at > now,
-                    )
+                    ),
                 )
                 .count()
             )
@@ -409,7 +399,7 @@ class SubscriptionService:
                         Subscription.status == SubscriptionStatus.ACTIVE,
                         Subscription.expires_at > now,
                         Subscription.plan == SubscriptionPlan.MONTHLY,
-                    )
+                    ),
                 )
                 .count()
             )
@@ -421,7 +411,7 @@ class SubscriptionService:
                         Subscription.status == SubscriptionStatus.ACTIVE,
                         Subscription.expires_at > now,
                         Subscription.plan == SubscriptionPlan.ANNUAL,
-                    )
+                    ),
                 )
                 .count()
             )
@@ -434,7 +424,7 @@ class SubscriptionService:
                         Subscription.status == SubscriptionStatus.ACTIVE,
                         Subscription.expires_at > now,
                         Subscription.cancelled_at.isnot(None),
-                    )
+                    ),
                 )
                 .count()
             )

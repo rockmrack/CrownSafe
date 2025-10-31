@@ -16,8 +16,7 @@ FAMILY_TIER_PRICE_ID = "price_1RmzVqGvt4HMLy3kEwtI8AtZ"  # Replace with your act
 
 
 class MonetizationAgentLogic:
-    """
-    Manages user monetization, Stripe integration, and subscription state.
+    """Manages user monetization, Stripe integration, and subscription state.
     """
 
     def __init__(self, agent_id: str):
@@ -28,8 +27,7 @@ class MonetizationAgentLogic:
         self.logger.info("MonetizationAgentLogic initialized.")
 
     def create_stripe_customer(self, user_id: int) -> dict[str, Any]:
-        """
-        Ensure the user is a Stripe customer; if not, create and persist the Stripe customer_id.
+        """Ensure the user is a Stripe customer; if not, create and persist the Stripe customer_id.
         """
         self.logger.info(f"Creating Stripe customer for user_id: {user_id}")
         try:
@@ -59,8 +57,7 @@ class MonetizationAgentLogic:
             }
 
     def create_subscription_checkout_session(self, user_id: int, tier: str) -> dict[str, Any]:
-        """
-        Creates a Stripe Checkout session for the user's subscription tier.
+        """Creates a Stripe Checkout session for the user's subscription tier.
         """
         self.logger.info(f"Creating checkout session for user_id: {user_id}, tier: {tier}")
         price_id = None
@@ -107,8 +104,7 @@ class MonetizationAgentLogic:
             }
 
     def get_user_subscription_status(self, user_id: int) -> dict[str, Any]:
-        """
-        Return the subscription status for the user.
+        """Return the subscription status for the user.
         """
         self.logger.info(f"Checking subscription status for user_id: {user_id}")
         try:
@@ -139,8 +135,7 @@ class MonetizationAgentLogic:
             }
 
     def cancel_user_subscription(self, user_id: int) -> dict[str, Any]:
-        """
-        Cancels the user's active Stripe subscription.
+        """Cancels the user's active Stripe subscription.
         """
         self.logger.info(f"Attempting to cancel subscription for user_id: {user_id}")
         try:
@@ -162,8 +157,7 @@ class MonetizationAgentLogic:
 
     # Helper for onboarding/UX flows (optional)
     def get_or_create_customer_and_checkout(self, user_id: int, tier: str) -> dict[str, Any]:
-        """
-        Ensure Stripe customer exists, then create a checkout session (one call UX).
+        """Ensure Stripe customer exists, then create a checkout session (one call UX).
         """
         cust = self.create_stripe_customer(user_id)
         if cust.get("status") != "success":

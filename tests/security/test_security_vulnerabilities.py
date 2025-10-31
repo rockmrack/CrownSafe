@@ -1,5 +1,4 @@
-"""
-Security vulnerability tests
+"""Security vulnerability tests
 Tests for OWASP Top 10 vulnerabilities and security best practices
 """
 
@@ -8,8 +7,7 @@ class TestSQLInjection:
     """Test suite for SQL injection protection"""
 
     def test_search_with_sql_injection_attempt_blocked(self, client, auth_token):
-        """
-        Test SQL injection protection in search.
+        """Test SQL injection protection in search.
 
         Given: Search query with SQL injection attempt
         When: POST /api/v1/recalls (query endpoint that exists)
@@ -42,8 +40,7 @@ class TestSQLInjection:
                 assert "UNION SELECT" not in str(data).upper()
 
     def test_user_input_with_sql_injection_sanitized(self, client):
-        """
-        Test user input sanitization.
+        """Test user input sanitization.
 
         Given: Registration with SQL injection in email
         When: POST /api/v1/auth/register
@@ -63,8 +60,7 @@ class TestXSSProtection:
     """Test suite for XSS protection"""
 
     def test_product_name_with_script_tag_sanitized(self, client, auth_token):
-        """
-        Test XSS protection in product names.
+        """Test XSS protection in product names.
 
         Given: Product name with <script> tag
         When: Product is created/updated
@@ -85,8 +81,7 @@ class TestXSSProtection:
                 assert "<script>" not in response.json().get("name", "")
 
     def test_response_headers_prevent_xss(self, client):
-        """
-        Test security headers are set.
+        """Test security headers are set.
 
         Given: Any request
         When: Response is sent
@@ -102,8 +97,7 @@ class TestAuthentication:
     """Test suite for authentication security"""
 
     def test_protected_endpoint_without_auth_returns_401(self, client):
-        """
-        Test authentication requirement.
+        """Test authentication requirement.
 
         Given: No authentication token
         When: GET /api/v1/user/scan-history
@@ -113,8 +107,7 @@ class TestAuthentication:
         assert response.status_code == 401
 
     def test_expired_token_rejected(self, client, expired_token):
-        """
-        Test expired token handling.
+        """Test expired token handling.
 
         Given: Expired JWT token
         When: Request with expired token
@@ -125,8 +118,7 @@ class TestAuthentication:
         assert response.status_code == 401
 
     def test_tampered_token_rejected(self, client, auth_token):
-        """
-        Test token tampering detection.
+        """Test token tampering detection.
 
         Given: Modified JWT token
         When: Request with tampered token
@@ -138,8 +130,7 @@ class TestAuthentication:
         assert response.status_code == 401
 
     def test_brute_force_protection_active(self, client):
-        """
-        Test brute force protection.
+        """Test brute force protection.
 
         Given: Multiple failed login attempts
         When: Threshold is exceeded
@@ -164,8 +155,7 @@ class TestAuthorization:
     """Test suite for authorization security"""
 
     def test_user_cannot_access_other_users_data(self, client, user1_token, user2_id):
-        """
-        Test authorization boundaries.
+        """Test authorization boundaries.
 
         Given: User 1 token
         When: Attempt to access User 2 data
@@ -176,8 +166,7 @@ class TestAuthorization:
         assert response.status_code == 403
 
     def test_regular_user_cannot_access_admin_endpoints(self, client, regular_user_token):
-        """
-        Test admin endpoint protection.
+        """Test admin endpoint protection.
 
         Given: Regular user token
         When: Attempt to access admin endpoint
@@ -192,8 +181,7 @@ class TestCSRFProtection:
     """Test suite for CSRF protection"""
 
     def test_state_changing_requests_require_csrf_token(self, client):
-        """
-        Test CSRF protection on POST/PUT/DELETE.
+        """Test CSRF protection on POST/PUT/DELETE.
 
         Given: Request without CSRF token
         When: POST /api/v1/user/profile
@@ -207,8 +195,7 @@ class TestRateLimiting:
     """Test suite for rate limiting security"""
 
     def test_api_rate_limit_per_user_enforced(self, client, auth_token):
-        """
-        Test per-user rate limiting.
+        """Test per-user rate limiting.
 
         Given: Authenticated user
         When: Rate limit is exceeded
@@ -226,8 +213,7 @@ class TestRateLimiting:
         assert response.status_code in [200, 429]
 
     def test_ip_based_rate_limiting_for_public_endpoints(self, client):
-        """
-        Test IP-based rate limiting.
+        """Test IP-based rate limiting.
 
         Given: Multiple requests from same IP
         When: Rate limit is exceeded
@@ -245,8 +231,7 @@ class TestInputValidation:
     """Test suite for input validation security"""
 
     def test_file_upload_validates_file_type(self, client, auth_token):
-        """
-        Test file upload type validation.
+        """Test file upload type validation.
 
         Given: Non-image file
         When: Upload to scan endpoint
@@ -260,8 +245,7 @@ class TestInputValidation:
         assert response.status_code in [400, 404, 422]
 
     def test_file_upload_validates_file_size(self, client, auth_token):
-        """
-        Test file size limit.
+        """Test file size limit.
 
         Given: File exceeding size limit
         When: Upload to scan endpoint
@@ -280,8 +264,7 @@ class TestSecurityHeaders:
     """Test suite for security headers"""
 
     def test_hsts_header_present(self, client):
-        """
-        Test HSTS header in production.
+        """Test HSTS header in production.
 
         Given: Request to any endpoint
         When: Response is sent
@@ -293,8 +276,7 @@ class TestSecurityHeaders:
         pass
 
     def test_content_security_policy_configured(self, client):
-        """
-        Test CSP header configuration.
+        """Test CSP header configuration.
 
         Given: Request to any endpoint
         When: Response is sent

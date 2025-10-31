@@ -23,7 +23,7 @@ def purge_legal_retention():
                 """
             DELETE FROM device_push_tokens
             WHERE user_id IN (SELECT id FROM "user" WHERE deleted_at IS NOT NULL AND deleted_at < :cutoff)
-        """
+        """,
             ),
             {"cutoff": cutoff_legal},
         )
@@ -35,7 +35,7 @@ def purge_legal_retention():
             DELETE FROM user_sessions
             WHERE user_id IN (SELECT id FROM "user" WHERE deleted_at IS NOT NULL AND deleted_at < :cutoff)
                OR updated_at < :old
-        """
+        """,
             ),
             {"cutoff": cutoff_legal, "old": now - timedelta(days=30)},
         )
@@ -46,7 +46,7 @@ def purge_legal_retention():
                 """
             DELETE FROM refresh_tokens
             WHERE user_id IN (SELECT id FROM "user" WHERE deleted_at IS NOT NULL AND deleted_at < :cutoff)
-        """
+        """,
             ),
             {"cutoff": cutoff_legal},
         )
@@ -57,7 +57,7 @@ def purge_legal_retention():
                 """
             DELETE FROM account_deletion_audit
             WHERE created_at < :cutoff_audit
-        """
+        """,
             ),
             {"cutoff_audit": cutoff_audit},
         )

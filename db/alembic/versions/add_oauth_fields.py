@@ -21,7 +21,6 @@ depends_on = None
 
 def upgrade():
     """Add OAuth provider fields to users table"""
-
     # Add provider_id column (hashed provider + subject)
     op.add_column(
         "users",
@@ -49,7 +48,6 @@ def upgrade():
 
 def downgrade():
     """Remove OAuth fields from users table"""
-
     # Drop index
     op.drop_index("ix_users_provider_id", "users")
 

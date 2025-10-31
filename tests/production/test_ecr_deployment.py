@@ -1,5 +1,4 @@
-"""
-Production deployment validation tests
+"""Production deployment validation tests
 Run these against the deployed ECR image
 """
 

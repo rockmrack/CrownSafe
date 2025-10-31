@@ -1,5 +1,4 @@
-"""
-Recall Search API Endpoints
+"""Recall Search API Endpoints
 Provides searchable, paginated access to recall data
 """
 
@@ -143,8 +142,7 @@ def list_recalls(
     ),
     db: Session = Depends(get_db),
 ):
-    """
-    Search and list recalls with filtering and pagination
+    """Search and list recalls with filtering and pagination
 
     Supports free text search across product name, brand, description, hazard, and category.
     Also supports filtering by agency, country, category, hazard type, and date range.
@@ -206,8 +204,7 @@ def search_recalls_dev(
     offset: int | None = Query(None, ge=0, description="Number of results to skip (offset pagination)"),
     cursor: str | None = Query(None, description="Cursor for pagination (cursor-based pagination)"),
 ):
-    """
-    DEV OVERRIDE: Search recalls without database dependencies
+    """DEV OVERRIDE: Search recalls without database dependencies
     """
     try:
         # Mock recall data
@@ -350,8 +347,7 @@ def search_recalls_dev(
 
 @router.get("/stats-dev", response_model=dict)
 def get_recall_stats_dev():
-    """
-    DEV OVERRIDE: Get recall statistics without database dependencies
+    """DEV OVERRIDE: Get recall statistics without database dependencies
     """
     try:
         # Mock statistics
@@ -382,8 +378,7 @@ def get_recall_stats_dev():
 
 @router.get("/stats", response_model=dict)
 def get_recall_stats(db: Session = Depends(get_db)):
-    """
-    Get recall statistics and counts
+    """Get recall statistics and counts
     CROWN SAFE: Returns empty stats - baby product recalls not available
     """
     return {

@@ -1,5 +1,4 @@
-"""
-Deep Integration Tests
+"""Deep Integration Tests
 Testing cross-component integration and complex workflows
 """
 

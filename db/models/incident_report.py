@@ -1,5 +1,4 @@
-"""
-Incident Report Model for Crowdsourced Safety Reporting
+"""Incident Report Model for Crowdsourced Safety Reporting
 """
 
 import enum

@@ -1,5 +1,4 @@
-"""
-Scan History Endpoints - Shows users their past scans
+"""Scan History Endpoints - Shows users their past scans
 """
 
 import logging
@@ -59,8 +58,7 @@ async def get_scan_history(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Get user's scan history with pagination and filters
+    """Get user's scan history with pagination and filters
 
     Returns:
     - List of past scans with product info and recall status
@@ -150,8 +148,7 @@ async def get_scan_details(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Get detailed information about a specific scan
+    """Get detailed information about a specific scan
 
     Returns:
     - Full scan details including extraction results
@@ -220,8 +217,7 @@ async def delete_scan(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Delete a scan from history
+    """Delete a scan from history
 
     Note: This soft-deletes by marking status, actual data retained for compliance
     """
@@ -246,8 +242,7 @@ async def delete_scan(
 
 @router.get("/scan-statistics", response_model=ApiResponse)
 async def get_scan_statistics(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
-    """
-    Get user's scanning statistics
+    """Get user's scanning statistics
 
     Returns:
     - Total scans
@@ -345,8 +340,7 @@ class UserProfileUpdateRequest(AppModel):
 
 @router.get("/profile", response_model=ApiResponse)
 async def get_user_profile(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
-    """
-    Get current user's profile information.
+    """Get current user's profile information.
 
     Returns:
         User profile data including account details and preferences
@@ -385,8 +379,7 @@ async def update_user_profile(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Update current user's profile information.
+    """Update current user's profile information.
 
     Args:
         profile_update: Profile fields to update
@@ -443,8 +436,7 @@ async def get_other_user_profile(
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Attempt to get another user's profile.
+    """Attempt to get another user's profile.
     This endpoint is intentionally restricted to test authorization boundaries.
 
     Args:

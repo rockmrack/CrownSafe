@@ -24,7 +24,7 @@ class MockRecallDataAgentLogic:
             return_value={
                 "status": "COMPLETED",
                 "result": {"recalls_found": 1, "summary": "Found one recall."},
-            }
+            },
         )
 
 
@@ -32,8 +32,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 
 def convert_sets_to_lists(obj):
-    """
-    Recursively convert all sets in a dict or list to lists for JSON serialization.
+    """Recursively convert all sets in a dict or list to lists for JSON serialization.
     """
     if isinstance(obj, dict):
         return {k: convert_sets_to_lists(v) for k, v in obj.items()}
@@ -60,7 +59,7 @@ async def main():
                 "agent_capability_required": "query_recalls_by_product",
                 "inputs": {"product_name": "Test Product", "upc": "123"},
                 "dependencies": [],
-            }
+            },
         ],
     }
     logger.info("Step 1: Created a simplified one-step plan.")

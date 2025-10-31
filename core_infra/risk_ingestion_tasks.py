@@ -1,5 +1,4 @@
-"""
-Celery tasks for Risk Assessment data ingestion and processing
+"""Celery tasks for Risk Assessment data ingestion and processing
 Orchestrates data collection from multiple sources
 """
 
@@ -75,8 +74,7 @@ celery_app.conf.beat_schedule = {
 
 @celery_app.task(name="risk_ingestion_tasks.sync_all_agencies")
 def sync_all_agencies(days_back: int = 3):
-    """
-    Sync recalls from ALL supported agencies (every 3 days)
+    """Sync recalls from ALL supported agencies (every 3 days)
 
     This is the main scheduled task that refreshes the entire recalls database.
     - Fetches new recalls from all 39 international regulatory agencies
@@ -130,7 +128,7 @@ def sync_all_agencies(days_back: int = 3):
                         "processed": processed,
                         "created": created,
                         "updated": updated,
-                    }
+                    },
                 )
                 logger.info(f"  ✅ {agency_name}: {processed} processed, {created} new, {updated} updated")
             else:
@@ -139,7 +137,7 @@ def sync_all_agencies(days_back: int = 3):
                         "agency": agency_name,
                         "status": "failed",
                         "error": "Unexpected result format",
-                    }
+                    },
                 )
                 logger.warning(f"  ⚠️ {agency_name}: Failed")
 
@@ -149,7 +147,7 @@ def sync_all_agencies(days_back: int = 3):
 
     logger.info(
         f"🎉 ALL AGENCIES sync complete: {total_processed} total processed, "
-        f"{total_created} new, {total_updated} updated"
+        f"{total_created} new, {total_updated} updated",
     )
 
     return {
@@ -165,8 +163,7 @@ def sync_all_agencies(days_back: int = 3):
 
 @celery_app.task(name="risk_ingestion_tasks.sync_cpsc_data")
 def sync_cpsc_data(days_back: int = 7, job_id: str | None = None):
-    """
-    Sync data from CPSC sources
+    """Sync data from CPSC sources
     """
     logger.info(f"Starting CPSC sync for last {days_back} days")
 
@@ -263,8 +260,7 @@ def sync_cpsc_data(days_back: int = 7, job_id: str | None = None):
 
 @celery_app.task(name="risk_ingestion_tasks.sync_eu_safety_gate")
 def sync_eu_safety_gate(days_back: int = 30):
-    """
-    Sync data from EU Safety Gate
+    """Sync data from EU Safety Gate
     """
     logger.info(f"Starting EU Safety Gate sync for last {days_back} days")
 
@@ -322,8 +318,7 @@ def sync_eu_safety_gate(days_back: int = 30):
 
 @celery_app.task(name="risk_ingestion_tasks.recalculate_affected_products")
 def recalculate_affected_products(days_back: int = 7):
-    """
-    Recalculate risk scores for recently updated products
+    """Recalculate risk scores for recently updated products
     """
     logger.info(f"Recalculating risk scores for products updated in last {days_back} days")
 
@@ -398,7 +393,7 @@ def recalculate_affected_products(days_back: int = 7):
                 {
                     "date": datetime.utcnow().isoformat(),
                     "score": risk_components.total_score,
-                }
+                },
             )
 
             # Keep last 90 days of history
@@ -407,7 +402,7 @@ def recalculate_affected_products(days_back: int = 7):
 
             risk_profile.trend_data = historical
             risk_profile.risk_trend = risk_engine.calculate_trend(
-                [(datetime.fromisoformat(h["date"]), h["score"]) for h in historical]
+                [(datetime.fromisoformat(h["date"]), h["score"]) for h in historical],
             )
 
             # Check if needs review
@@ -432,8 +427,7 @@ def recalculate_affected_products(days_back: int = 7):
 
 @celery_app.task(name="risk_ingestion_tasks.recalculate_high_risk_scores")
 def recalculate_high_risk_scores():
-    """
-    Hourly recalculation of high-risk products
+    """Hourly recalculation of high-risk products
     """
     logger.info("Recalculating high-risk product scores")
 
@@ -478,7 +472,7 @@ def recalculate_high_risk_scores():
                         "old_score": old_score,
                         "new_score": new_score,
                         "change": new_score - old_score,
-                    }
+                    },
                 )
 
             # Update profile
@@ -507,8 +501,7 @@ def recalculate_high_risk_scores():
 
 @celery_app.task(name="risk_ingestion_tasks.update_company_compliance")
 def update_company_compliance():
-    """
-    Update company compliance profiles daily
+    """Update company compliance profiles daily
     """
     logger.info("Updating company compliance profiles")
 
@@ -594,8 +587,7 @@ def update_company_compliance():
 
 @celery_app.task(name="risk_ingestion_tasks.send_risk_alerts")
 def send_risk_alerts(alerts: list[dict]):
-    """
-    Send alerts for significant risk changes
+    """Send alerts for significant risk changes
     """
     logger.info(f"Sending {len(alerts)} risk alerts")
 
@@ -605,7 +597,7 @@ def send_risk_alerts(alerts: list[dict]):
         logger.warning(
             f"RISK ALERT: {alert['product']} changed from "
             f"{alert['old_score']:.1f} to {alert['new_score']:.1f} "
-            f"(change: {alert['change']:+.1f})"
+            f"(change: {alert['change']:+.1f})",
         )
 
     return {"alerts_sent": len(alerts)}
@@ -613,8 +605,7 @@ def send_risk_alerts(alerts: list[dict]):
 
 @celery_app.task(name="risk_ingestion_tasks.enrich_product_from_barcode")
 def enrich_product_from_barcode(product_id: str, barcode: str):
-    """
-    Enrich product data using barcode (integrates with Phase 1)
+    """Enrich product data using barcode (integrates with Phase 1)
     """
     logger.info(f"Enriching product {product_id} with barcode {barcode}")
 
@@ -661,8 +652,7 @@ def enrich_product_from_barcode(product_id: str, barcode: str):
 
 # Helper functions
 def _find_or_create_product_from_record(record: SafetyDataRecord, db: Session) -> ProductGoldenRecord | None:
-    """
-    Find or create product from safety data record
+    """Find or create product from safety data record
     """
     # Try to find by identifiers
     product = None
@@ -699,8 +689,7 @@ def _find_or_create_product_from_record(record: SafetyDataRecord, db: Session) -
 
 
 def _create_incident_from_record(record: SafetyDataRecord, product_id: str, db: Session) -> SafetyIncident | None:
-    """
-    Create safety incident from record
+    """Create safety incident from record
     """
     # Check if incident already exists
     existing = (
@@ -731,8 +720,7 @@ def _create_incident_from_record(record: SafetyDataRecord, product_id: str, db: 
 
 
 def _update_product_data_source(product_id: str, record: SafetyDataRecord, db: Session):
-    """
-    Update product data source record
+    """Update product data source record
     """
     # Check if source exists
     existing = (

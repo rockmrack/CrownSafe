@@ -43,7 +43,7 @@ for i, test in enumerate(test_cases):
                     "diagnosis": test["disease"],
                     "patient_age": 45,
                 },
-            }
+            },
         },
     }
 

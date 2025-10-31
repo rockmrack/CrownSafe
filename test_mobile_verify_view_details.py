@@ -1,5 +1,4 @@
-"""
-Test Mobile App Buttons: "Verify Now" and "View Details"
+"""Test Mobile App Buttons: "Verify Now" and "View Details"
 Tests the endpoints shown in the mobile app screenshot
 """
 
@@ -217,7 +216,7 @@ Mobile App Buttons Status:
    - Returns: PDF file
 
 All three buttons in your mobile app have working backend endpoints! ✅
-"""
+""",
 )
 
 print("=" * 80)

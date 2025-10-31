@@ -1,5 +1,4 @@
-"""
-Deep Performance Tests
+"""Deep Performance Tests
 Testing response times, throughput, and resource usage
 """
 

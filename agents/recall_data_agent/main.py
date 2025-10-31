@@ -1,6 +1,5 @@
 # agents/recall_data_agent/main.py
-"""
-RecallDataAgent Entry Point
+"""RecallDataAgent Entry Point
 Can be run standalone for manual ingestion or scheduled via Celery/cron.
 """
 
@@ -27,8 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 async def run_manual_ingestion():
-    """
-    Run a manual ingestion cycle.
+    """Run a manual ingestion cycle.
     This can be triggered by:
     - Cron job: python agents/recall_data_agent/main.py
     - Celery task: celery worker runs this
@@ -87,8 +85,7 @@ async def run_manual_ingestion():
 
 
 async def test_query_mode():
-    """
-    Test mode: Query for a specific product.
+    """Test mode: Query for a specific product.
     Usage: python agents/recall_data_agent/main.py --test
     """
     logger.info("=" * 80)

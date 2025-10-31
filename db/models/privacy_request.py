@@ -1,5 +1,4 @@
-"""
-SQLAlchemy model for privacy request (DSAR) tracking
+"""SQLAlchemy model for privacy request (DSAR) tracking
 """
 
 import hashlib
@@ -15,8 +14,7 @@ from core_infra.database import Base  # Use existing Base from project
 
 
 class PrivacyRequest(Base):
-    """
-    Model for tracking privacy requests (Data Subject Access Requests)
+    """Model for tracking privacy requests (Data Subject Access Requests)
     Compliant with GDPR, CCPA, and other privacy regulations
     """
 
@@ -82,8 +80,7 @@ class PrivacyRequest(Base):
         return f"<PrivacyRequest(id={self.id}, kind={self.kind}, email_hash={self.email_hash[:8]}..., status={self.status})>"  # noqa: E501
 
     def to_dict(self, include_pii: bool = False) -> dict[str, Any]:
-        """
-        Convert to dictionary for JSON serialization
+        """Convert to dictionary for JSON serialization
 
         Args:
             include_pii: Whether to include personally identifiable information
@@ -165,8 +162,7 @@ class PrivacyRequest(Base):
 
     @classmethod
     def hash_email(cls, email: str) -> str:
-        """
-        Generate SHA-256 hash of normalized email
+        """Generate SHA-256 hash of normalized email
 
         Args:
             email: Email address to hash
@@ -179,8 +175,7 @@ class PrivacyRequest(Base):
 
     @classmethod
     def generate_verification_token(cls) -> str:
-        """
-        Generate secure verification token
+        """Generate secure verification token
 
         Returns:
             URL-safe token
@@ -194,8 +189,7 @@ class PrivacyRequest(Base):
         self.verification_token = None  # Clear token after use
 
     def set_completed(self, export_url: str | None = None, expiry_days: int = 7):
-        """
-        Mark request as completed
+        """Mark request as completed
 
         Args:
             export_url: URL for data export download
@@ -209,8 +203,7 @@ class PrivacyRequest(Base):
             self.expires_at = datetime.now(timezone.utc) + timedelta(days=expiry_days)
 
     def set_rejected(self, reason: str):
-        """
-        Mark request as rejected
+        """Mark request as rejected
 
         Args:
             reason: Reason for rejection
@@ -236,8 +229,7 @@ class PrivacyRequest(Base):
         user_agent: str | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> "PrivacyRequest":
-        """
-        Factory method to create a new privacy request
+        """Factory method to create a new privacy request
 
         Args:
             kind: Type of request (export, delete, etc.)

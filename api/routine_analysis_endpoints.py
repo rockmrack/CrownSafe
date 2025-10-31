@@ -1,5 +1,4 @@
-"""
-Crown Safe - Routine Analysis Endpoints
+"""Crown Safe - Routine Analysis Endpoints
 Batch product analysis and interaction warnings
 
 Endpoints:
@@ -83,7 +82,7 @@ class CabinetAuditRequest(BaseModel):
                     },
                 ],
                 "user_id": 1,
-            }
+            },
         }
 
 
@@ -330,8 +329,7 @@ async def cabinet_audit(
     db: Session = Depends(get_db),  # noqa: B008
     current_user=Depends(get_current_user),  # noqa: B008
 ):
-    """
-    Analyze entire hair product routine for issues.
+    """Analyze entire hair product routine for issues.
 
     **Crown Safe Differentiator**: Batch analysis across all products.
 
@@ -432,7 +430,7 @@ async def cabinet_audit(
                     frequency="daily",
                     products=daily_products[:2],
                     purpose="Daily moisture retention",
-                )
+                ),
             )
 
         # Weekly: deep conditioner
@@ -447,7 +445,7 @@ async def cabinet_audit(
                     frequency="weekly",
                     products=weekly_products,
                     purpose="Deep conditioning treatment",
-                )
+                ),
             )
 
         # Generate summary
@@ -470,7 +468,7 @@ async def cabinet_audit(
 
         logger.info(
             f"✅ Cabinet audit complete: {len(request.products)} products, "
-            f"avg score {avg_score:.0f}, {len(issues)} issues"
+            f"avg score {avg_score:.0f}, {len(issues)} issues",
         )
 
         return CabinetAuditResponse(
@@ -496,8 +494,7 @@ async def cabinet_audit(
 
 @router.post("/routine-check", response_model=RoutineCheckResponse)
 async def routine_check(request: RoutineCheckRequest):
-    """
-    Check if two products have problematic interactions.
+    """Check if two products have problematic interactions.
 
     **Use case**: "Can I use this leave-in with this gel?"
 
@@ -513,7 +510,7 @@ async def routine_check(request: RoutineCheckRequest):
         # Combine ingredient lists for analysis
         all_ingredients = set(
             [ing.lower() for ing in request.product_1_ingredients]
-            + [ing.lower() for ing in request.product_2_ingredients]
+            + [ing.lower() for ing in request.product_2_ingredients],
         )
 
         # Check for silicone build-up
@@ -525,7 +522,7 @@ async def routine_check(request: RoutineCheckRequest):
                     severity="medium",
                     description="Both products contain silicones, which can layer and cause build-up.",
                     recommendation="Use a clarifying shampoo weekly to prevent coating.",
-                )
+                ),
             )
 
         # Check for protein + sulfate (over-stripping)
@@ -541,7 +538,7 @@ async def routine_check(request: RoutineCheckRequest):
                     severity="high",
                     description="Harsh sulfates strip protein treatments, wasting product and causing dryness.",
                     recommendation="Use sulfate-free shampoo after protein treatments.",
-                )
+                ),
             )
 
         # Check for incompatible bases (oil + water-based gel)
@@ -557,7 +554,7 @@ async def routine_check(request: RoutineCheckRequest):
                     severity="low",
                     description="Oil-based product may repel water-based gel, reducing effectiveness.",
                     recommendation="Apply water-based products first, then seal with oils.",
-                )
+                ),
             )
 
         # Determine if combination is safe

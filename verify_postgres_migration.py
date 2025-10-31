@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-PostgreSQL Migration Verification Script
+"""PostgreSQL Migration Verification Script
 
 Tests database connectivity and validates migration success.
 Run this after setting DATABASE_URL to verify PostgreSQL setup.

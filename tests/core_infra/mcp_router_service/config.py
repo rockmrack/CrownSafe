@@ -8,20 +8,19 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    """
-    Configuration settings for the MCP Router Service.
+    """Configuration settings for the MCP Router Service.
     Reads settings from environment variables or a .env file.
     """
 
     SERVICE_NAME: str = "MCP_Router_Service"
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
-        default="INFO", description="Logging level for the service"
+        default="INFO", description="Logging level for the service",
     )
 
     # --- Network Settings ---
     HOST: str = Field(default="0.0.0.0", description="Host address to bind the service")
     PORT: int = Field(
-        default=8001, description="Port to bind the service"
+        default=8001, description="Port to bind the service",
     )  # Using a different port than the agent server (8003)
 
     # --- Router Settings ---

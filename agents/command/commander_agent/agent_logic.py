@@ -26,7 +26,7 @@ except ImportError:
                             "agent_capability_required": "query_recalls_by_product",
                             "inputs": {"product_name": "Test Product", "upc": "123"},
                             "dependencies": [],
-                        }
+                        },
                     ],
                 },
             }
@@ -49,8 +49,7 @@ except ImportError:
 
 
 class CrownSafeCommanderLogic:
-    """
-    The main entry point for the Crown Safe "Safety Check" workflow.
+    """The main entry point for the Crown Safe "Safety Check" workflow.
     It orchestrates the Planner and Router to execute a full safety check in-memory
     within a single API request lifecycle.
     """
@@ -60,8 +59,7 @@ class CrownSafeCommanderLogic:
         agent_id: str = "commander_001",
         logger_instance: logging.Logger | None = None,
     ):
-        """
-        Initializes the Commander and the orchestration agents it controls.
+        """Initializes the Commander and the orchestration agents it controls.
         """
         self.agent_id = agent_id
         self.logger = logger_instance or logging.getLogger(__name__)
@@ -70,8 +68,7 @@ class CrownSafeCommanderLogic:
         self.logger.info("CrownSafeCommanderLogic initialized. It now directly controls the Planner and Router.")
 
     async def start_safety_check_workflow(self, user_request: dict[str, Any]) -> dict[str, Any]:
-        """
-        The primary method that executes the entire end-to-end safety check.
+        """The primary method that executes the entire end-to-end safety check.
 
         Args:
             user_request: A dictionary containing the product identifier,
@@ -159,7 +156,7 @@ class CrownSafeCommanderLogic:
             # This happens if a product isn't identified or no recalls are found.
             if router_result.get("status") == "COMPLETED" and (not final_result or not final_result.get("risk_level")):
                 self.logger.warning(
-                    "Workflow completed but resulted in an inconclusive analysis. Returning an 'UNKNOWN' status."
+                    "Workflow completed but resulted in an inconclusive analysis. Returning an 'UNKNOWN' status.",
                 )
                 return {
                     "status": "INCONCLUSIVE",

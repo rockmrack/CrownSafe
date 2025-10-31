@@ -10,8 +10,7 @@ from core_infra.database import Base
 
 
 class EnhancedRecallDB(Base):
-    """
-    🌍 COMPREHENSIVE 39-AGENCY RECALL SCHEMA
+    """🌍 COMPREHENSIVE 39-AGENCY RECALL SCHEMA
     Supports ALL identifier types used by international recall agencies
     """
 

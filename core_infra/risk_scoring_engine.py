@@ -1,5 +1,4 @@
-"""
-Dynamic Risk Scoring Engine for Product Safety Assessment
+"""Dynamic Risk Scoring Engine for Product Safety Assessment
 Implements weighted scoring model based on CPSC penalty factors
 """
 
@@ -54,14 +53,12 @@ class RiskScoreComponents:
 
 
 class RiskScoringEngine:
-    """
-    Core risk scoring engine
+    """Core risk scoring engine
     Calculates dynamic risk scores based on multiple weighted factors
     """
 
     def __init__(self, custom_weights: dict[RiskFactor, float] | None = None):
-        """
-        Initialize with optional custom weights
+        """Initialize with optional custom weights
         Weights must sum to 1.0
         """
         self.weights = custom_weights or {factor: factor.value for factor in RiskFactor}
@@ -110,8 +107,7 @@ class RiskScoringEngine:
         company_profile: CompanyComplianceProfile | None,
         db: Session,
     ) -> RiskScoreComponents:
-        """
-        Calculate comprehensive risk score for a product
+        """Calculate comprehensive risk score for a product
 
         Args:
             product: Product golden record
@@ -173,10 +169,9 @@ class RiskScoringEngine:
         return components
 
     def _calculate_severity_score(
-        self, product: ProductGoldenRecord, incidents: list[SafetyIncident]
+        self, product: ProductGoldenRecord, incidents: list[SafetyIncident],
     ) -> tuple[float, dict]:
-        """
-        Calculate severity score based on injuries, deaths, and hazard types
+        """Calculate severity score based on injuries, deaths, and hazard types
         Returns score 0-100 and details dictionary
         """
         score = 0.0
@@ -229,10 +224,9 @@ class RiskScoringEngine:
         return score, details
 
     def _calculate_recency_score(
-        self, product: ProductGoldenRecord, incidents: list[SafetyIncident], db: Session
+        self, product: ProductGoldenRecord, incidents: list[SafetyIncident], db: Session,
     ) -> tuple[float, dict]:
-        """
-        Calculate recency score based on how recent incidents/recalls are
+        """Calculate recency score based on how recent incidents/recalls are
         More recent = higher risk
         """
         score = 0.0
@@ -289,8 +283,7 @@ class RiskScoringEngine:
         return score, details
 
     def _calculate_volume_score(self, product: ProductGoldenRecord, db: Session) -> tuple[float, dict]:
-        """
-        Calculate volume score based on units affected
+        """Calculate volume score based on units affected
         More units = higher risk
         """
         score = 0.0
@@ -335,10 +328,9 @@ class RiskScoringEngine:
         return score, details
 
     def _calculate_violation_score(
-        self, product: ProductGoldenRecord, incidents: list[SafetyIncident], db: Session
+        self, product: ProductGoldenRecord, incidents: list[SafetyIncident], db: Session,
     ) -> tuple[float, dict]:
-        """
-        Calculate violation score based on type and severity of violations
+        """Calculate violation score based on type and severity of violations
         """
         score = 0.0
         details = {
@@ -390,8 +382,7 @@ class RiskScoringEngine:
         return score, details
 
     def _calculate_compliance_score(self, company_profile: CompanyComplianceProfile) -> tuple[float, dict]:
-        """
-        Calculate compliance score based on company history
+        """Calculate compliance score based on company history
         Poor compliance = higher risk
         """
         score = 0.0
@@ -433,8 +424,7 @@ class RiskScoringEngine:
         return score, details
 
     def _determine_risk_level(self, total_score: float) -> str:
-        """
-        Determine risk level based on total score
+        """Determine risk level based on total score
         """
         if total_score >= 75:
             return "critical"
@@ -451,8 +441,7 @@ class RiskScoringEngine:
         incidents: list[SafetyIncident],
         company_profile: CompanyComplianceProfile | None,
     ) -> float:
-        """
-        Calculate confidence in the risk score based on data completeness
+        """Calculate confidence in the risk score based on data completeness
         """
         confidence = 0.0
 
@@ -486,8 +475,7 @@ class RiskScoringEngine:
         return min(confidence, 1.0)
 
     def calculate_trend(self, historical_scores: list[tuple[datetime, float]]) -> str:
-        """
-        Calculate risk trend from historical scores
+        """Calculate risk trend from historical scores
         Returns: "increasing", "stable", or "decreasing"
         """
         if len(historical_scores) < 2:
@@ -516,8 +504,7 @@ class RiskScoringEngine:
             return "stable"
 
     def generate_risk_narrative(self, components: RiskScoreComponents) -> str:
-        """
-        Generate human-readable risk narrative
+        """Generate human-readable risk narrative
         """
         narrative = []
 

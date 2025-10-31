@@ -14,8 +14,7 @@ AGENT_ID = "product_identifier_agent_01"
 
 
 class ProductIdentifierAgent:
-    """
-    A service-oriented agent that waits for product identification tasks.
+    """A service-oriented agent that waits for product identification tasks.
     In a real distributed system, this 'start' method would connect to a message
     queue (like RabbitMQ or Kafka) and listen for 'TASK_ASSIGN' messages.
     For our monolithic app, the logic is called directly by the Router.

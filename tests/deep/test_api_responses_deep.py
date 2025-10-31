@@ -1,5 +1,4 @@
-"""
-Deep API Response Tests
+"""Deep API Response Tests
 Comprehensive testing of API response formats, headers, and error handling
 """
 

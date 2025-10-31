@@ -33,14 +33,14 @@ try:
         except ImportError:
             print(
                 "[RunAgent] Warning: 'python-dotenv' not installed. Cannot load .env file "
-                "explicitly. Relying on automatic loading by libraries."
+                "explicitly. Relying on automatic loading by libraries.",
             )
         except Exception as load_e:
             print(f"[RunAgent] Error loading .env file: {load_e}")
     else:
         print(
             "[RunAgent] Note: .env file not found at "
-            f"{dotenv_path}, environment variables should be set manually if needed."
+            f"{dotenv_path}, environment variables should be set manually if needed.",
         )
 
 except Exception as e:
@@ -63,7 +63,6 @@ MODULE_PATH_PATTERN = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9
 
 def validate_module_path(module_path: str) -> str:
     """Validate the supplied module path against a strict allow-list and pattern."""
-
     if not MODULE_PATH_PATTERN.fullmatch(module_path):
         raise ValueError("Module path must be a dot-separated Python identifier (e.g., agents.example.main).")
 
@@ -120,7 +119,7 @@ async def start_agent(module_path: str):
             exc_info=True,
         )
         logger.critical(
-            "Ensure the module path is correct and all dependencies (like langchain-openai) are installed in the venv."
+            "Ensure the module path is correct and all dependencies (like langchain-openai) are installed in the venv.",
         )
     except AttributeError as e:
         logger.critical(f"Error accessing main() function in {module_path}: {e}", exc_info=True)

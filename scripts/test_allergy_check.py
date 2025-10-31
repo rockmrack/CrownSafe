@@ -42,7 +42,7 @@ class MockProductIdentifierLogic:
                         "Vitamin C",
                     ],
                 },
-            }
+            },
         )
 
 
@@ -52,7 +52,7 @@ class MockRecallDataAgentLogic:
             return_value={
                 "status": "COMPLETED",
                 "result": {"recalls_found": 0, "recalls": []},
-            }
+            },
         )
 
 
@@ -62,7 +62,7 @@ class MockAllergySensitivityLogic:
             return_value={
                 "status": "COMPLETED",
                 "result": {"allergens_found": 1, "allergens": ["milk"]},
-            }
+            },
         )
 
 
@@ -72,7 +72,7 @@ class MockHazardAnalysisLogic:
             return_value={
                 "status": "COMPLETED",
                 "result": {"summary": "Analysis complete.", "risk_level": "Low"},
-            }
+            },
         )
 
 

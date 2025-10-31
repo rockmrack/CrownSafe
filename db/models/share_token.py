@@ -1,5 +1,4 @@
-"""
-Share Token Model for secure result sharing
+"""Share Token Model for secure result sharing
 """
 
 import secrets

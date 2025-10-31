@@ -1,5 +1,4 @@
-"""
-Migration script to upgrade from MemoryManager MVP-1.4 to EnhancedMemoryManager V2.0
+"""Migration script to upgrade from MemoryManager MVP-1.4 to EnhancedMemoryManager V2.0
 FIXED: ChromaDB v0.6.0 API compatibility
 """
 
@@ -40,7 +39,6 @@ logger = logging.getLogger(__name__)
 
 def check_file_paths():
     """Check if the required files exist and show their paths"""
-
     print("Checking file paths...")
     print(f"Project root: {project_root}")
     print(f"Current working directory: {os.getcwd()}")
@@ -88,7 +86,6 @@ def get_collection_names_safe(chroma_client) -> list:
 
 def test_basic_memory_manager():
     """Test if basic MemoryManager works before trying enhanced version"""
-
     logger.info("Testing basic MemoryManager first...")
 
     try:
@@ -124,7 +121,6 @@ def test_basic_memory_manager():
 
 def migrate_memory_system():
     """Migrate from MVP-1.4 to EnhancedMemoryManager V2.0"""
-
     if not IMPORTS_SUCCESS:
         logger.error("Cannot proceed with migration - import failures")
         return False
@@ -279,7 +275,6 @@ def migrate_memory_system():
 
 def verify_migration():
     """Verify migration was successful"""
-
     if not IMPORTS_SUCCESS:
         logger.error("Cannot verify migration - import failures")
         return False
@@ -355,7 +350,6 @@ def verify_migration():
 
 def cleanup_old_backups(keep_count=3):
     """Clean up old backup directories, keeping only the most recent ones"""
-
     try:
         # Change to project root
         original_cwd = os.getcwd()
@@ -390,7 +384,6 @@ def cleanup_old_backups(keep_count=3):
 
 def simple_enhanced_test():
     """Simple test to verify EnhancedMemoryManager can be imported and basic methods work"""
-
     if not IMPORTS_SUCCESS:
         logger.error("Cannot run enhanced test - import failures")
         return False

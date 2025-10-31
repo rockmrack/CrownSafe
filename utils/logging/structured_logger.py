@@ -1,5 +1,4 @@
-"""
-Structured Logging Module for BabyShield Backend
+"""Structured Logging Module for BabyShield Backend
 Issue #32 - Phase 2 Implementation
 """
 

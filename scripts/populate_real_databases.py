@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Populate Real Product and Safety Databases
+"""Populate Real Product and Safety Databases
 Replaces mock JSON files with comprehensive local database for immediate results
 """
 

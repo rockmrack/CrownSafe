@@ -23,8 +23,7 @@ LLM_MODEL = "gpt-4o"  # Updated to the latest model
 
 
 class HazardAnalysisLogic:
-    """
-    Handles the logic for analyzing product hazards from recall data by calling an LLM.
+    """Handles the logic for analyzing product hazards from recall data by calling an LLM.
     """
 
     def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
@@ -73,8 +72,7 @@ advised to stop using this product immediately.", "risk_level": "High"}}
 """
 
     async def _query_llm(self, prompt: str) -> dict[str, Any] | None:
-        """
-        Queries the OpenAI API for analysis using an async HTTPX client with no proxy support.
+        """Queries the OpenAI API for analysis using an async HTTPX client with no proxy support.
         """
         self.logger.info(f"Querying {LLM_MODEL} for hazard analysis…")
         try:
@@ -103,8 +101,7 @@ advised to stop using this product immediately.", "risk_level": "High"}}
             return None
 
     async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
-        """
-        Main entry point for the agent. It receives recall data from the Router
+        """Main entry point for the agent. It receives recall data from the Router
         and returns either a safe default or the LLM analysis.
         """
         self.logger.info(f"Received task with inputs: {inputs}")
@@ -150,7 +147,7 @@ advised to stop using this product immediately.", "risk_level": "High"}}
                     warning_text = f"⚠️ Warning: This product was identified from a photo with {int(visual_confidence * 100)}% confidence. Please verify the model number on the product to ensure this information is accurate for your specific item. "  # noqa: E501
                     analysis["summary"] = warning_text + analysis.get("summary", "")
                     self.logger.info(
-                        f"Prepended medium-confidence warning to the final summary (confidence: {visual_confidence})"
+                        f"Prepended medium-confidence warning to the final summary (confidence: {visual_confidence})",
                     )
                 # --- END OF NEW CONDITIONAL WARNING LOGIC ---
                 return {

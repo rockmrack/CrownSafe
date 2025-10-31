@@ -20,8 +20,7 @@ class EmergencyNotice(BaseModel):
 
 
 class ExplanationResponse(BaseModel):
-    """
-    Structured output for the 'Explain This Result' feature.
+    """Structured output for the 'Explain This Result' feature.
     Keep this minimal for Phase 0; expand in Phase 1.
     """
 
@@ -71,8 +70,7 @@ Intent = Literal[
 
 
 class LLMClient(Protocol):
-    """
-    Minimal LLM protocol so we can inject any provider.
+    """Minimal LLM protocol so we can inject any provider.
     Your existing OpenAI client can adapt to this easily.
     Implementations should raise on non-2xx or parse failures.
     """
@@ -198,8 +196,7 @@ _ROUTER_JSON_SCHEMA = {
 
 
 class ChatAgentLogic:
-    """
-    Phase 0 Synthesizer.
+    """Phase 0 Synthesizer.
     - Accepts completed scan JSON.
     - Produces strictly structured JSON (ExplanationResponse).
     """
@@ -209,8 +206,7 @@ class ChatAgentLogic:
         self.model = model
 
     def synthesize_result(self, scan_data: dict[str, Any]) -> dict[str, Any]:
-        """
-        Turn final scan_data into parent-friendly, structured output.
+        """Turn final scan_data into parent-friendly, structured output.
 
         Args:
             scan_data: The full, completed scan result (dict) fetched by scan_id.
@@ -252,8 +248,7 @@ class ChatAgentLogic:
         return validated
 
     def classify_intent(self, query: str | None) -> Intent:
-        """
-        Fast heuristic pass, then cheap LLM fallback.
+        """Fast heuristic pass, then cheap LLM fallback.
         Returns one of the fixed intents or 'unclear_intent'.
         """
         q = (query or "").lower()

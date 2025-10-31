@@ -95,7 +95,7 @@ class WorkflowMonitor:
                     "sender": sender,
                     "type": "FAIL",
                     "error": message.payload.get("error_message", "Unknown error"),
-                }
+                },
             )
             logger.error(f"Task failed from {sender}: {message.payload.get('error_message')}")
 
@@ -117,7 +117,7 @@ async def run_test():
         {
             "name": "test_controller_initiate_request",
             "description": "Sends initial user requests for testing workflows.",
-        }
+        },
     ]
 
     try:
@@ -195,7 +195,7 @@ async def run_test():
         logger.info("\n" + "=" * 60)
         logger.info("WORKFLOW SUMMARY:")
         logger.info(
-            f"Status: {'COMPLETED' if monitor.workflow_complete else 'FAILED' if monitor.workflow_failed else 'TIMEOUT'}"  # noqa: E501
+            f"Status: {'COMPLETED' if monitor.workflow_complete else 'FAILED' if monitor.workflow_failed else 'TIMEOUT'}",  # noqa: E501
         )
         logger.info(f"Duration: {(datetime.now() - start_time).total_seconds():.1f} seconds")
         logger.info(f"Task Updates: {len(monitor.task_updates)}")

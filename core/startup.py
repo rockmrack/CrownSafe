@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Production startup script for BabyShield API
+"""Production startup script for BabyShield API
 Handles environment setup and graceful degradation
 """
 
@@ -26,7 +25,7 @@ def log_feature_status():
     # Barcode Features
     datamatrix_enabled = os.getenv("ENABLE_DATAMATRIX", "false").lower() == "true"
     logger.info(
-        f"  📊 DataMatrix Barcodes: {'✅ Enabled' if datamatrix_enabled else '❌ Disabled (requires pylibdmtx + system libs)'}"  # noqa: E501
+        f"  📊 DataMatrix Barcodes: {'✅ Enabled' if datamatrix_enabled else '❌ Disabled (requires pylibdmtx + system libs)'}",  # noqa: E501
     )
 
     # Receipt Validation
@@ -47,7 +46,6 @@ def log_feature_status():
 
 def check_environment():
     """Check and set required environment variables"""
-
     # Set defaults for critical environment variables
     defaults = {
         "API_HOST": "0.0.0.0",

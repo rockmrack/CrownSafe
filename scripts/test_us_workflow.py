@@ -12,8 +12,7 @@ API_BASE_URL = "http://localhost:8000"  # The API is now running inside Docker, 
 
 
 def run_us_mvp_test():
-    """
-    Tests the full US-focused MVP workflow by making a live API call
+    """Tests the full US-focused MVP workflow by making a live API call
     to the containerized backend stack.
 
     Prerequisite: The entire backend must be running via `docker-compose up --build`.

@@ -1,5 +1,4 @@
-"""
-Premium Features API Endpoints
+"""Premium Features API Endpoints
 Provides endpoints for pregnancy safety and allergy checking features
 """
 
@@ -123,8 +122,7 @@ async def check_pregnancy_safety(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Check if a product is safe for pregnant women.
+    """Check if a product is safe for pregnant women.
 
     This endpoint:
     1. Identifies the product from barcode or name
@@ -164,11 +162,11 @@ async def check_pregnancy_safety(
             for alert in result["alerts"]:
                 if alert.get("risk_level") == "High":
                     recommendations.append(
-                        f"AVOID: {alert['ingredient']} - {alert.get('reason', 'High risk during pregnancy')}"
+                        f"AVOID: {alert['ingredient']} - {alert.get('reason', 'High risk during pregnancy')}",
                     )
                 elif alert.get("risk_level") == "Moderate":
                     recommendations.append(
-                        f"CAUTION: {alert['ingredient']} - {alert.get('reason', 'Use with caution')}"
+                        f"CAUTION: {alert['ingredient']} - {alert.get('reason', 'Use with caution')}",
                     )
             recommendations.append("Consult your healthcare provider before using this product.")
         else:
@@ -213,8 +211,7 @@ async def check_product_allergies(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Check if a product contains allergens for any family member.
+    """Check if a product contains allergens for any family member.
 
     This endpoint:
     1. Retrieves family member allergy profiles
@@ -268,7 +265,7 @@ async def check_product_allergies(
                                 "member_name": member_name,
                                 "allergens_found": alert.get("found_allergens", []),
                                 "risk_level": alert.get("risk_level", "high"),
-                            }
+                            },
                         )
 
                 # Remaining members are safe
@@ -306,8 +303,7 @@ async def check_product_allergies(
 
 @router.get("/family/members", response_model=list[FamilyMemberResponse])
 async def get_family_members(user_id: int = Query(..., description="User ID"), db: Session = Depends(get_db)):
-    """
-    Get all family members and their allergy profiles.
+    """Get all family members and their allergy profiles.
     """
     try:
         user = db.query(User).filter(User.id == user_id).first()
@@ -330,7 +326,7 @@ async def get_family_members(user_id: int = Query(..., description="User ID"), d
                     dietary_restrictions=[],  # Not stored in DB yet
                     age=None,  # Not stored in DB yet
                     created_at=datetime.now(),
-                )
+                ),
             )
 
         return members
@@ -348,8 +344,7 @@ async def add_family_member(
     member: FamilyMemberRequest = Body(...),
     db: Session = Depends(get_db),
 ):
-    """
-    Add a new family member with their allergy profile.
+    """Add a new family member with their allergy profile.
     """
     try:
         user = db.query(User).filter(User.id == user_id).first()
@@ -392,8 +387,7 @@ async def update_family_member(
     member: FamilyMemberRequest = Body(...),
     db: Session = Depends(get_db),
 ):
-    """
-    Update a family member's allergy profile.
+    """Update a family member's allergy profile.
     """
     try:
         # Verify user owns this family member
@@ -443,8 +437,7 @@ async def delete_family_member(
     user_id: int = Query(..., description="User ID"),
     db: Session = Depends(get_db),
 ):
-    """
-    Remove a family member from the user's family.
+    """Remove a family member from the user's family.
     """
     try:
         # Verify user owns this family member
@@ -483,8 +476,7 @@ async def delete_family_member(
 
 @router.post("/pregnancy/check-dev")
 async def check_pregnancy_safety_dev(payload: PregnancyCheckRequest, db: Session = Depends(get_db)):
-    """
-    Dev override version of pregnancy safety check - no authentication required
+    """Dev override version of pregnancy safety check - no authentication required
     """
     try:
         # Check dev override for premium features
@@ -505,7 +497,7 @@ async def check_pregnancy_safety_dev(payload: PregnancyCheckRequest, db: Session
 
         # Perform pregnancy safety check
         result = pregnancy_agent.check_product_safety(
-            payload.barcode or payload.product_name or "unknown", payload.trimester
+            payload.barcode or payload.product_name or "unknown", payload.trimester,
         )
 
         return PregnancyCheckResponse(
@@ -527,8 +519,7 @@ async def check_pregnancy_safety_dev(payload: PregnancyCheckRequest, db: Session
 
 @router.post("/allergy/check-dev")
 async def check_allergy_safety_dev(payload: AllergyCheckRequest, db: Session = Depends(get_db)):
-    """
-    Dev override version of allergy safety check - no authentication required
+    """Dev override version of allergy safety check - no authentication required
     """
     try:
         # Check dev override for premium features
@@ -546,7 +537,7 @@ async def check_allergy_safety_dev(payload: AllergyCheckRequest, db: Session = D
 
         # Perform allergy safety check
         result = allergy_agent.check_product_for_family(
-            payload.user_id or 0, payload.barcode or payload.product_name or "unknown"
+            payload.user_id or 0, payload.barcode or payload.product_name or "unknown",
         )
 
         return AllergyCheckResponse(
@@ -573,8 +564,7 @@ async def check_allergy_safety_dev(payload: AllergyCheckRequest, db: Session = D
 
 @router.post("/safety/comprehensive")
 async def comprehensive_safety_check(request: CombinedSafetyCheckRequest, db: Session = Depends(get_db)):
-    """
-    Perform a comprehensive safety check including recalls, pregnancy, and allergies.
+    """Perform a comprehensive safety check including recalls, pregnancy, and allergies.
 
     This endpoint combines multiple safety checks into one response.
     """
@@ -623,7 +613,7 @@ async def comprehensive_safety_check(request: CombinedSafetyCheckRequest, db: Se
                     if alert.get("risk_level") == "High":
                         response["overall_safety"] = "UNSAFE"
                         response["recommendations"].append(
-                            f"PREGNANCY WARNING: Avoid {alert['ingredient']} - {alert.get('reason', 'High risk')}"
+                            f"PREGNANCY WARNING: Avoid {alert['ingredient']} - {alert.get('reason', 'High risk')}",
                         )
 
         # Allergy check
@@ -640,7 +630,7 @@ async def comprehensive_safety_check(request: CombinedSafetyCheckRequest, db: Se
 
                 for alert in allergy_result.get("alerts", []):
                     response["recommendations"].append(
-                        f"ALLERGY WARNING for {alert['member_name']}: Contains {', '.join(alert.get('found_allergens', []))}"  # noqa: E501
+                        f"ALLERGY WARNING for {alert['member_name']}: Contains {', '.join(alert.get('found_allergens', []))}",  # noqa: E501
                     )
 
         # Add general recommendation

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test suite for privacy endpoints (Task 8)
+"""Test suite for privacy endpoints (Task 8)
 Tests GDPR/CCPA compliance features and privacy management
 """
 

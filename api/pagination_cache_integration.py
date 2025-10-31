@@ -1,5 +1,4 @@
-"""
-Integration module for pagination and caching features (Task 5)
+"""Integration module for pagination and caching features (Task 5)
 Shows how to wire cursor pagination and HTTP caching into existing endpoints
 """
 
@@ -30,8 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 def setup_pagination_cache(app: FastAPI):
-    """
-    Configure pagination and caching for the FastAPI app
+    """Configure pagination and caching for the FastAPI app
 
     Args:
         app: FastAPI application instance
@@ -54,14 +52,12 @@ def setup_pagination_cache(app: FastAPI):
 
 
 def create_search_endpoint_v2(app: FastAPI):
-    """
-    Create enhanced search endpoint with cursor pagination and caching
+    """Create enhanced search endpoint with cursor pagination and caching
     """
 
     @app.post("/api/v2/search/advanced")
     async def search_advanced_v2(request: Request, payload: dict[str, Any], db: Session = Depends(get_db)):
-        """
-        Enhanced search with cursor pagination and HTTP caching
+        """Enhanced search with cursor pagination and HTTP caching
 
         Features:
         - Opaque, signed cursor tokens
@@ -175,17 +171,14 @@ def create_search_endpoint_v2(app: FastAPI):
 
 
 def enhance_recall_detail_endpoint(app: FastAPI):
+    """Enhance recall detail endpoint with HTTP caching
     """
-    Enhance recall detail endpoint with HTTP caching
-    """
-
     # Get the existing endpoint and wrap it
     # Or define a new one:
 
     @app.get("/api/v2/recall/{recall_id}")
     async def get_recall_detail_v2(recall_id: str, request: Request, db: Session = Depends(get_db)):
-        """
-        Get recall detail with HTTP caching support
+        """Get recall detail with HTTP caching support
 
         Features:
         - ETag based on ID + last_updated

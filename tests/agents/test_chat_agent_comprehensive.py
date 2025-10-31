@@ -1,5 +1,4 @@
-"""
-COMPREHENSIVE CHAT AGENT TEST SUITE
+"""COMPREHENSIVE CHAT AGENT TEST SUITE
 Tests all possible scenarios for the BabyShield ChatAgent
 Date: October 10, 2025
 
@@ -187,7 +186,7 @@ class MockLLMClient:
                         "source": "CPSC",
                         "id": "REC-001",
                         "url": "https://cpsc.gov",
-                    }
+                    },
                 ],
                 "suggested_questions": ["Is my product recalled?", "What should I do?"],
             }
@@ -1086,7 +1085,7 @@ if __name__ == "__main__":
             "--asyncio-mode=auto",
             "-m",
             "unit or integration",
-        ]
+        ],
     )
 
     sys.exit(exit_code)

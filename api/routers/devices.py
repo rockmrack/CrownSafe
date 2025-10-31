@@ -28,8 +28,7 @@ def unregister_device(
     db: Session = Depends(get_db_session),
     user=Depends(get_current_active_user),
 ):
-    """
-    Unregister device push token for the current user.
+    """Unregister device push token for the current user.
 
     This endpoint is called before account deletion to clean up
     push notification tokens and device associations.

@@ -1,5 +1,4 @@
-"""
-Legacy pydantic base - now imports from core.schemas.base
+"""Legacy pydantic base - now imports from core.schemas.base
 Maintained for backward compatibility
 """
 
