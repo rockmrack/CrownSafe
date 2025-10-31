@@ -83,7 +83,7 @@ def get_user_data(user_id: str, db: Session) -> dict[str, Any]:
     """
     # This is a mock implementation
     # In production, query all relevant tables
-    user_data = {
+    return {
         "user_id": user_id,
         "export_timestamp": datetime.now(UTC).isoformat(),
         "data_categories": {
@@ -111,7 +111,6 @@ def get_user_data(user_id: str, db: Session) -> dict[str, Any]:
         },
     }
 
-    return user_data
 
 
 def delete_user_data(user_id: str, db: Session) -> bool:

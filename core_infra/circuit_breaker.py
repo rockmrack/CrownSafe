@@ -192,8 +192,7 @@ def resilient_operation(service_name: str, max_attempts: int = 3, fallback=None)
         # First apply retry
         retried_func = with_retry(max_attempts=max_attempts)(func)
         # Then apply circuit breaker
-        protected_func = with_circuit_breaker(service_name, fallback=fallback)(retried_func)
-        return protected_func
+        return with_circuit_breaker(service_name, fallback=fallback)(retried_func)
 
     return decorator
 

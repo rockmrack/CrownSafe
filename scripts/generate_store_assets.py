@@ -305,10 +305,10 @@ DESIGN GUIDELINES:
     <p>Generated: """
             + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             + """</p>
-    
+
     <div class="platform">
         <h2>📱 iOS Assets</h2>
-        
+
         <h3>App Icon</h3>
         <div class="asset-item">
             <div class="asset-placeholder">
@@ -318,7 +318,7 @@ DESIGN GUIDELINES:
             <div class="asset-name">AppIcon1024.png</div>
             <div class="status placeholder">Placeholder</div>
         </div>
-        
+
         <h3>Screenshots</h3>
         <div class="asset-grid">
             <div class="asset-item">
@@ -347,10 +347,10 @@ DESIGN GUIDELINES:
             </div>
         </div>
     </div>
-    
+
     <div class="platform">
         <h2>🤖 Android Assets</h2>
-        
+
         <h3>App Icon</h3>
         <div class="asset-item">
             <div class="asset-placeholder">
@@ -360,7 +360,7 @@ DESIGN GUIDELINES:
             <div class="asset-name">Icon512.png</div>
             <div class="status placeholder">Placeholder</div>
         </div>
-        
+
         <h3>Feature Graphic</h3>
         <div class="asset-item">
             <div class="asset-placeholder">
@@ -370,7 +370,7 @@ DESIGN GUIDELINES:
             <div class="asset-name">play-feature-1024x500.png</div>
             <div class="status placeholder">Placeholder</div>
         </div>
-        
+
         <h3>Screenshots</h3>
         <div class="asset-grid">
             <div class="asset-item">
@@ -391,7 +391,7 @@ DESIGN GUIDELINES:
             </div>
         </div>
     </div>
-    
+
     <div class="platform">
         <h2>✅ Asset Checklist</h2>
         <div class="checklist">

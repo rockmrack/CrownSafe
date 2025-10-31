@@ -652,8 +652,7 @@ async def security_middleware(request: Request, call_next) -> Response:
             },
         )
 
-    response = await call_next(request)
-    return response
+    return await call_next(request)
 
 
 # ===== TRACE ID MIDDLEWARE =====
@@ -1097,7 +1096,7 @@ def get_safety_hub_articles(
         etag = f'"{content_hash}"'
 
         # Create response with cache headers
-        response = Response(
+        return Response(
             content=json.dumps(response_data),
             media_type="application/json",
             headers={
@@ -1107,7 +1106,6 @@ def get_safety_hub_articles(
             },
         )
 
-        return response
 
     except Exception as e:
         logger.error(f"Failed to fetch safety articles: {e}", exc_info=True)

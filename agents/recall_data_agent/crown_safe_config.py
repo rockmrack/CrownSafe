@@ -192,7 +192,7 @@ from agents.recall_data_agent.crown_safe_config import is_crown_safe_recall
 
 def query_recalls(self, product_name: str):
     results = self._database_query(product_name)
-    
+
     # Filter for Crown Safe relevance
     filtered_results = [
         r for r in results
@@ -202,7 +202,7 @@ def query_recalls(self, product_name: str):
             r.get("category", "")
         )
     ]
-    
+
     return filtered_results
 ```
 """

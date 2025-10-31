@@ -159,8 +159,7 @@ def get_firebase_app():
 
         # Check if already initialized
         try:
-            app = firebase_admin.get_app()
-            return app
+            return firebase_admin.get_app()
         except ValueError:
             pass
 

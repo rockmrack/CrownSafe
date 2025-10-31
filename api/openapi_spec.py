@@ -15,24 +15,24 @@ def custom_openapi(app: FastAPI):
         version="1.0.0",
         description="""
         BabyShield API provides access to product safety and recall information from multiple international agencies.
-        
+
         ## Authentication
         Currently, all endpoints are public and do not require authentication in staging environment.
-        
+
         ## Response Format
         All responses follow a consistent envelope format:
         - Success: `{ "success": true, "data": <payload> }`
         - Error: `{ "success": false, "error": { "code": "<ERROR_CODE>", "message": "<description>" } }`
-        
+
         ## Error Codes
         - `BAD_REQUEST`: Invalid request parameters
         - `NOT_FOUND`: Resource not found
         - `UPSTREAM_TIMEOUT`: External agency API timeout
         - `INTERNAL_ERROR`: Internal server error
-        
+
         ## Pagination
         Search endpoints support pagination using `cursor` parameter. Include the `nextCursor` from the response to fetch the next page.  # noqa: E501
-        
+
         ## Rate Limiting
         No rate limiting is currently enforced in staging environment.
         """,

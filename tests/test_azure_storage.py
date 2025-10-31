@@ -35,8 +35,7 @@ def azure_client(mock_blob_service_client):
             "AZURE_STORAGE_CONTAINER": "test-container",
         },
     ):
-        client = AzureBlobStorageClient()
-        return client
+        return AzureBlobStorageClient()
 
 
 class TestAzureBlobStorageClient:

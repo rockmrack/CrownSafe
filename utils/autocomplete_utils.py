@@ -67,9 +67,8 @@ def normalize_query(query: str) -> str:
     query = re.sub(r"[^a-z0-9\s\-]+", " ", query)
 
     # Collapse multiple spaces
-    query = re.sub(r"\s+", " ", query).strip()
+    return re.sub(r"\s+", " ", query).strip()
 
-    return query
 
 
 def canonicalize_brand(brand: str) -> str:
@@ -99,9 +98,8 @@ def clean_product_name(name: str) -> str:
     cleaned = name.replace("®", "").replace("™", "")
 
     # Remove extra whitespace
-    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    return re.sub(r"\s+", " ", cleaned).strip()
 
-    return cleaned
 
 
 def calculate_suggestion_score(

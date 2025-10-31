@@ -158,8 +158,7 @@ async def request_tracking_middleware(request, call_next):
 
             return JSONResponse(status_code=503, content={"error": "Server is shutting down"})
 
-        response = await call_next(request)
-        return response
+        return await call_next(request)
 
 
 # Cleanup tasks

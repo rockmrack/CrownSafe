@@ -137,9 +137,8 @@ class MemorySafeImageProcessor:
                 img.thumbnail((self.MAX_WIDTH, self.MAX_HEIGHT), Image.Resampling.LANCZOS)
 
             # Process image (example)
-            result = {"format": img.format, "size": img.size, "mode": img.mode}
+            return {"format": img.format, "size": img.size, "mode": img.mode}
 
-            return result
 
         finally:
             # Clean up PIL image
@@ -175,9 +174,8 @@ class MemorySafeImageProcessor:
                 img.thumbnail((2048, 2048), Image.Resampling.LANCZOS)
 
             # Extract text
-            text = pytesseract.image_to_string(img)
+            return pytesseract.image_to_string(img)
 
-            return text
 
         except Exception as e:
             logger.exception(f"OCR error: {e}")

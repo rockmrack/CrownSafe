@@ -527,9 +527,8 @@ class SecurityScanner:
         self.generate_recommendations()
 
         # Generate report
-        report = self.generate_report()
+        return self.generate_report()
 
-        return report
 
 
 def main() -> int:

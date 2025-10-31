@@ -71,13 +71,13 @@ class RiskReportGenerator:
         <h1>PRODUCT SAFETY RISK ASSESSMENT</h1>
         <p>Report ID: {{ report_id }} | Generated: {{ generated_at }}</p>
     </div>
-    
+
     <div class="disclaimer">
         <h2>⚠️ CRITICAL DISCLAIMERS</h2>
         <p><strong>{{ disclaimers.general }}</strong></p>
         <p>{{ disclaimers.ai_limitations }}</p>
     </div>
-    
+
     <div class="section">
         <h2>Risk Summary</h2>
         <div class="risk-score risk-{{ risk_summary.level|lower }}">
@@ -87,7 +87,7 @@ class RiskReportGenerator:
         <p>Confidence: {{ risk_summary.confidence }}</p>
         <p>Trend: {{ risk_summary.trend }}</p>
     </div>
-    
+
     <div class="section">
         <h2>Product Information</h2>
         <table>
@@ -98,7 +98,7 @@ class RiskReportGenerator:
             <tr><th>GTIN/UPC</th><td>{{ product.gtin or product.upc or 'N/A' }}</td></tr>
         </table>
     </div>
-    
+
     <div class="section">
         <h2>Risk Factor Analysis</h2>
         {% for factor_name, factor_data in risk_factors.items() %}
@@ -115,14 +115,14 @@ class RiskReportGenerator:
         </div>
         {% endfor %}
     </div>
-    
+
     {% if incidents %}
     <div class="section">
         <h2>Incident Summary</h2>
         <p>{{ incidents }}</p>
     </div>
     {% endif %}
-    
+
     <div class="section">
         <h2>Recommendations</h2>
         <ol>
@@ -131,7 +131,7 @@ class RiskReportGenerator:
             {% endfor %}
         </ol>
     </div>
-    
+
     <div class="disclaimer">
         <h2>Legal Disclaimers</h2>
         {% for key, disclaimer in disclaimers.items() %}
@@ -235,7 +235,7 @@ class RiskReportGenerator:
         report_url = self._upload_to_azure_blob(report_content, product.id, format)
 
         # Create report record
-        report_record = {
+        return {
             "product_id": product.id,
             "report_type": "full",
             "generated_at": datetime.now(UTC),
@@ -247,7 +247,6 @@ class RiskReportGenerator:
             "status": "published",
         }
 
-        return report_record
 
     def _prepare_report_data(
         self,
@@ -258,7 +257,7 @@ class RiskReportGenerator:
         company_profile: CompanyComplianceProfile | None,
     ) -> dict:
         """Prepare all data for report generation."""
-        data = {
+        return {
             "report_id": f"RSK-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}",
             "generated_at": datetime.now(UTC).isoformat(),
             "product": {
@@ -311,7 +310,6 @@ class RiskReportGenerator:
             "disclaimers": self.disclaimers,
         }
 
-        return data
 
     def _generate_pdf_report(self, data: dict) -> BytesIO:
         """Generate PDF report using ReportLab."""

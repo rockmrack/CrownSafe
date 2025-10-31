@@ -706,8 +706,7 @@ class LLMClient:
 
         # Provider-specific request handling
         if self.config.provider == LLMProvider.OPENAI and self._async_provider:
-            response = await self._async_provider.chat.completions.create(**params)
-            return response
+            return await self._async_provider.chat.completions.create(**params)
         if self.config.provider == LLMProvider.ANTHROPIC and self._async_provider:
             # Convert to Anthropic format
             anthropic_params = self._convert_to_anthropic_format(params)

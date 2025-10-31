@@ -71,8 +71,7 @@ class TransactionManager:
         for attempt in range(self.max_retries):
             try:
                 with transaction(self.db) as session:
-                    result = func(session, *args, **kwargs)
-                    return result
+                    return func(session, *args, **kwargs)
             except SQLAlchemyError as e:
                 last_exception = e
                 logger.warning(f"Transaction attempt {attempt + 1} failed: {e!s}")

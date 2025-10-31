@@ -774,9 +774,8 @@ def redact_pii(text: str) -> str:
     text = re.sub(r"\b\d{3}-\d{2}-\d{4}\b", "[SSN]", text)
 
     # Credit card
-    text = re.sub(r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b", "[CARD]", text)
+    return re.sub(r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b", "[CARD]", text)
 
-    return text
 
 
 # Singleton instance

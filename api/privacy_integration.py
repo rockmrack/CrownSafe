@@ -75,9 +75,8 @@ def configure_privacy_logging() -> None:
             msg = super().format(record)
 
             # Mask PII in the message
-            masked_msg = mask_pii(msg)
+            return mask_pii(msg)
 
-            return masked_msg
 
     # Apply to all handlers
     root_logger = logging.getLogger()

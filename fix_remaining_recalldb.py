@@ -53,7 +53,7 @@ def fix_fix_upc_data() -> bool:
     new_code = """try:
         # REMOVED FOR CROWN SAFE: RecallDB model no longer exists (replaced with HairProductModel)
         # from core_infra.database import RecallDB
-        
+
         # REMOVED FOR CROWN SAFE: Baby product recall UPC enhancement replaced
         # This function previously enhanced baby product recalls with UPC barcodes
         # TODO: Implement Crown Safe hair product barcode system using HairProductModel

@@ -293,7 +293,7 @@ def optimize_recall_search(db: Session, barcode: str):
     #     print(recall.manufacturer)  # N additional queries
 
     # Optimized (1 query):
-    recalls = (
+    return (
         db.query(Recall)
         .options(
             joinedload("manufacturer"),
@@ -304,14 +304,13 @@ def optimize_recall_search(db: Session, barcode: str):
         .all()
     )
 
-    return recalls
 
 
 def optimize_user_dashboard(db: Session, user_id: int):
     """Optimized user dashboard data loading."""
     with query_profiler("User Dashboard"):
         # Load everything in one query
-        user = (
+        return (
             db.query(User)
             .options(
                 selectinload("family_members").selectinload("allergies"),
@@ -323,7 +322,6 @@ def optimize_user_dashboard(db: Session, user_id: int):
             .first()
         )
 
-        return user
 
 
 # Batch operations for better performance

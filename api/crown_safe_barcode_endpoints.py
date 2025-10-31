@@ -110,13 +110,12 @@ def lookup_product_in_database(barcode: str, db: Session) -> HairProductModel | 
         normalized_barcode = barcode.replace("-", "").lstrip("0")
 
         # Search for exact match or normalized match
-        product = (
+        return (
             db.query(HairProductModel)
             .filter((HairProductModel.upc_barcode == barcode) | (HairProductModel.upc_barcode == normalized_barcode))
             .first()
         )
 
-        return product
     except Exception as e:
         logger.exception(f"Error looking up product in database: {e}")
         return None
@@ -180,9 +179,8 @@ def calculate_crown_score_from_product(
             }
 
         # Calculate score
-        result = engine.calculate_crown_score(product_data, hair_data)
+        return engine.calculate_crown_score(product_data, hair_data)
 
-        return result
     except Exception as e:
         logger.exception(f"Error calculating Crown Score: {e}")
         raise

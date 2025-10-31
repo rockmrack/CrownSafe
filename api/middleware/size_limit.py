@@ -139,9 +139,8 @@ class SizeLimitMiddleware(BaseHTTPMiddleware):
             )
 
         # Process request normally
-        response = await call_next(request)
+        return await call_next(request)
 
-        return response
 
 
 class ConfigurableSizeLimits:

@@ -18,8 +18,7 @@ TASK_NAME = "chat.cleanup.purge_user_history"
 def _run_purge(user_id: UUID) -> int:
     db = SessionLocal()
     try:
-        deleted = purge_conversations_for_user(db, user_id)
-        return deleted
+        return purge_conversations_for_user(db, user_id)
     finally:
         db.close()
 

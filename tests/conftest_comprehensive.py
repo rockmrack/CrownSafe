@@ -82,8 +82,7 @@ def test_app():
     # Don't override for now - use actual implementation
     # app.dependency_overrides[get_db] = override_get_db
 
-    client = TestClient(app)
-    return client
+    return TestClient(app)
 
 
 @pytest.fixture
@@ -176,8 +175,7 @@ def auth_token(test_user) -> str:
     """Generate authentication token for test user."""
     from core_infra.auth import create_access_token
 
-    token = create_access_token(data={"sub": str(test_user["id"]), "email": test_user["email"]})
-    return token
+    return create_access_token(data={"sub": str(test_user["id"]), "email": test_user["email"]})
 
 
 @pytest.fixture

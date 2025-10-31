@@ -200,13 +200,12 @@ class MonitoringManager:
             List of active alerts
 
         """
-        active_alerts = []
+        return []
 
         # This would integrate with actual metrics collection
         # For now, returns empty list
         # In production, query Prometheus/Azure Monitor for metrics
 
-        return active_alerts
 
 
 # ====================

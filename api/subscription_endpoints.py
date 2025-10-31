@@ -436,9 +436,8 @@ async def get_subscription_metrics(request: Request, current_user: User = Depend
     if not getattr(current_user, "is_admin", False):
         raise HTTPException(status_code=403, detail="Admin access required")
 
-    metrics = SubscriptionService.get_subscription_metrics()
+    return SubscriptionService.get_subscription_metrics()
 
-    return metrics
 
 
 @router.post("/admin/cleanup", include_in_schema=False)

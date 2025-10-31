@@ -185,9 +185,8 @@ class BarcodeValidator:
         cleaned = re.sub(r"[\s\-\.]", "", barcode.strip())
 
         # Remove common prefixes/suffixes
-        cleaned = re.sub(r"^(UPC|EAN|GTIN|GS1)[\s\-]*", "", cleaned, flags=re.IGNORECASE)
+        return re.sub(r"^(UPC|EAN|GTIN|GS1)[\s\-]*", "", cleaned, flags=re.IGNORECASE)
 
-        return cleaned
 
     def _detect_barcode_type(self, barcode: str) -> BarcodeType:
         """Detect barcode type based on format and length."""

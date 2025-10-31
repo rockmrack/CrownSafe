@@ -9,8 +9,7 @@ import redis
 def check_all_redis_keys(pattern="*"):
     """Check all Redis keys matching pattern."""
     r = redis.Redis(host="localhost", port=6379, decode_responses=True)
-    keys = r.keys(pattern)
-    return keys
+    return r.keys(pattern)
 
 
 def monitor_redis_for_workflow(workflow_id, duration=30):

@@ -70,7 +70,7 @@ def check_headers(url: str) -> dict[str, bool]:
         response = requests.get(url, timeout=10)
         headers = response.headers
 
-        checks = {
+        return {
             "X-Content-Type-Options": "nosniff" in headers.get("X-Content-Type-Options", ""),
             "X-Frame-Options": headers.get("X-Frame-Options", "") in ["DENY", "SAMEORIGIN"],
             "Strict-Transport-Security": "max-age=" in headers.get("Strict-Transport-Security", ""),
@@ -78,7 +78,6 @@ def check_headers(url: str) -> dict[str, bool]:
             "Server": bool(headers.get("Server")),
         }
 
-        return checks
     except Exception:
         return {}
 

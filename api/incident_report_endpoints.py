@@ -130,7 +130,7 @@ class IncidentAnalyzer:
         cutoff_date = datetime.now(UTC) - timedelta(days=days_back)
 
         # Search for similar product and incident type
-        similar = (
+        return (
             db.query(IncidentReport)
             .filter(
                 and_(
@@ -148,7 +148,6 @@ class IncidentAnalyzer:
             .all()
         )
 
-        return similar
 
     @classmethod
     def _find_or_create_cluster(

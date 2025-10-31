@@ -154,7 +154,7 @@ class S3BackupExporter:
             task = response["ExportTasks"][0]
 
             # Parse task details
-            export_task = ExportTask(
+            return ExportTask(
                 task_id=task["ExportTaskIdentifier"],
                 source_arn=task["SourceArn"],
                 s3_location=f"s3://{task['S3Bucket']}/{task['S3Prefix']}",
@@ -166,7 +166,6 @@ class S3BackupExporter:
                 failure_reason=task.get("FailureCause"),
             )
 
-            return export_task
 
         except Exception as e:
             logger.exception(f"Error monitoring export: {e}")

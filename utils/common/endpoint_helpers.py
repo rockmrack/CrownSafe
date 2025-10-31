@@ -208,8 +208,7 @@ def generate_trace_id(prefix: str = "") -> str:
     """
     import uuid
 
-    trace_id = f"{prefix}{uuid.uuid4().hex[:12]}"
-    return trace_id
+    return f"{prefix}{uuid.uuid4().hex[:12]}"
 
 
 def log_endpoint_call(

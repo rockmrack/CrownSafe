@@ -309,7 +309,7 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
         cascade_soft_delete(user, 'family_members')
         db.commit()
         return {"message": "User deleted"}
-    
+
 @app.post("/users/{user_id}/restore")
 def restore_user(user_id: int, db: Session = Depends(get_db)):
     # Include deleted records in query

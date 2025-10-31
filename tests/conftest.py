@@ -87,8 +87,7 @@ def auth_token(test_user):
     try:
         from core_infra.auth import create_access_token
 
-        token = create_access_token(data={"sub": str(test_user.id), "email": test_user.email})
-        return token
+        return create_access_token(data={"sub": str(test_user.id), "email": test_user.email})
     except ImportError:
         # If auth module not available, return a mock token
         return "mock_token_for_testing"
@@ -100,8 +99,7 @@ def valid_token():
     try:
         from core_infra.auth import create_access_token
 
-        token = create_access_token(data={"sub": "999999", "email": "test_security@example.com"})
-        return token
+        return create_access_token(data={"sub": "999999", "email": "test_security@example.com"})
     except Exception:
         # Return a mock token if anything fails
         return "mock_token_for_testing"
@@ -116,11 +114,10 @@ def expired_token():
         from core_infra.auth import create_access_token
 
         # Create token that expired 1 hour ago
-        token = create_access_token(
+        return create_access_token(
             data={"sub": "999", "email": "expired@example.com"},
             expires_delta=timedelta(hours=-1),
         )
-        return token
     except Exception:
         return "expired_mock_token"
 
@@ -131,8 +128,7 @@ def user1_token(test_user):
     try:
         from core_infra.auth import create_access_token
 
-        token = create_access_token(data={"sub": str(test_user.id), "email": test_user.email})
-        return token
+        return create_access_token(data={"sub": str(test_user.id), "email": test_user.email})
     except Exception:
         return "user1_mock_token"
 
@@ -149,8 +145,7 @@ def regular_user_token():
     try:
         from core_infra.auth import create_access_token
 
-        token = create_access_token(data={"sub": "222222", "email": "regular@example.com", "is_admin": False})
-        return token
+        return create_access_token(data={"sub": "222222", "email": "regular@example.com", "is_admin": False})
     except Exception:
         return "regular_user_mock_token"
 

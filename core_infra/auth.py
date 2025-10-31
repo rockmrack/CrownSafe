@@ -84,8 +84,7 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
             "jti": uuid.uuid4().hex,
         },
     )
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
 def create_refresh_token(data: dict[str, Any]) -> str:
@@ -93,15 +92,13 @@ def create_refresh_token(data: dict[str, Any]) -> str:
     to_encode = data.copy()
     expire = datetime.now(UTC) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     to_encode.update({"exp": expire, "type": "refresh"})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
 def decode_token(token: str) -> dict[str, Any]:
     """Decode and verify a JWT token."""
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
+        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except JWTError as e:
         logger.exception(f"JWT decode failed: {e}")
         return None

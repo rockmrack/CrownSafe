@@ -33,7 +33,7 @@ class APIDocumentationEnhancer:
                 "description": """
                 Aggregates health metrics from all subsystems and provides
                 an overall system health score (0-100).
-                
+
                 Returns HTTP 503 if system is in critical/warning state.
                 Returns HTTP 200 if system is healthy or degraded.
                 """,
@@ -98,7 +98,7 @@ class APIDocumentationEnhancer:
                 "description": """
                 Performs comprehensive security configuration validation
                 across 5 categories with risk scoring.
-                
+
                 Returns HTTP 200 if all checks pass.
                 Returns HTTP 500 if security issues detected.
                 """,
@@ -154,7 +154,7 @@ class APIDocumentationEnhancer:
                 "summary": "Azure Storage Health Check",
                 "description": """
                 Checks Azure Blob Storage connectivity and performance.
-                
+
                 Returns HTTP 200 if storage is healthy.
                 Returns HTTP 503 if storage has issues.
                 """,
@@ -183,7 +183,7 @@ class APIDocumentationEnhancer:
                 "summary": "Azure Storage Cache Performance",
                 "description": """
                 Returns performance statistics for Redis-based SAS URL caching.
-                
+
                 Shows cache hit rate, total requests, and efficiency metrics.
                 """,
                 "response_example": {

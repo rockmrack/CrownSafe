@@ -117,7 +117,7 @@ async def security_dashboard():
                 <p>Real-time threat monitoring and attack intelligence</p>
                 <button class="refresh" onclick="refreshDashboard()">🔄 Refresh</button>
             </div>
-            
+
             <div class="metrics">
                 <div class="metric-card">
                     <div class="metric-value threat-low">{total_requests:,}</div>
@@ -136,19 +136,19 @@ async def security_dashboard():
                     <div class="metric-label">Attacking IPs</div>
                 </div>
             </div>
-            
+
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="table">
                     <div class="table-header">🎯 Top Attacking IPs</div>
                     {"".join(f'<div class="table-row"><span class="status-indicator status-danger"></span>{ip} ({count} attacks)</div>' for ip, count in top_ips)}  # noqa: E501
                 </div>
-                
+
                 <div class="table">
                     <div class="table-header">⚔️ Attack Types</div>
                     {"".join(f'<div class="table-row"><span class="status-indicator status-warning"></span>{attack} ({count} attempts)</div>' for attack, count in top_attacks)}  # noqa: E501
                 </div>
             </div>
-            
+
             <div class="table" style="margin-top: 20px;">
                 <div class="table-header">📊 Threat Score Distribution</div>
                 <div class="table-row">
@@ -164,7 +164,7 @@ async def security_dashboard():
                     <span class="status-indicator status-safe"></span>Low (0-49): {security_metrics["threat_score_distribution"]["low"]} requests  # noqa: E501
                 </div>
             </div>
-            
+
             <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px; font-size: 0.9em; color: #6b7280;">  # noqa: E501
                 <strong>Security Status:</strong>
                 <span class="status-indicator status-safe"></span>

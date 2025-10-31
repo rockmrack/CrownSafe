@@ -202,8 +202,7 @@ def extract_image_from_base64(base64_data: str) -> Image.Image:
 
         # Decode base64
         image_bytes = base64.b64decode(base64_data)
-        image = Image.open(io.BytesIO(image_bytes))
-        return image
+        return Image.open(io.BytesIO(image_bytes))
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to decode image: {e!s}")
 

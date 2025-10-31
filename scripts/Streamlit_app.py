@@ -66,7 +66,7 @@ st.markdown(
     .stApp {
         background-color: #f8f9fa;
     }
-    
+
     .conversation-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
@@ -74,37 +74,37 @@ st.markdown(
         border-radius: 0.5rem;
         margin-bottom: 1rem;
     }
-    
+
     .chat-message {
         padding: 1rem;
         border-radius: 0.5rem;
         margin-bottom: 0.75rem;
         border-left: 4px solid transparent;
     }
-    
+
     .user-message {
         background-color: #e3f2fd;
         border-left-color: #2196f3;
         margin-left: 2rem;
     }
-    
+
     .assistant-message {
         background-color: #f5f5f5;
         margin-right: 2rem;
     }
-    
+
     .claude-message {
         border-left-color: #8b5cf6;
     }
-    
+
     .gemini-message {
         border-left-color: #3b82f6;
     }
-    
+
     .gpt-message {
         border-left-color: #10b981;
     }
-    
+
     .model-badge {
         display: inline-block;
         padding: 0.25rem 0.75rem;
@@ -113,22 +113,22 @@ st.markdown(
         font-weight: 600;
         margin-bottom: 0.5rem;
     }
-    
+
     .claude-badge {
         background-color: #8b5cf6;
         color: white;
     }
-    
+
     .gemini-badge {
         background-color: #3b82f6;
         color: white;
     }
-    
+
     .gpt-badge {
         background-color: #10b981;
         color: white;
     }
-    
+
     .code-container {
         background-color: #1e1e1e;
         border: 2px solid #4a4a4a;
@@ -136,7 +136,7 @@ st.markdown(
         margin: 1rem 0;
         overflow: hidden;
     }
-    
+
     .code-header {
         background-color: #2d2d2d;
         padding: 0.5rem 1rem;
@@ -147,19 +147,19 @@ st.markdown(
         font-size: 0.9rem;
         color: #ffffff;
     }
-    
+
     .code-language {
         font-weight: bold;
         color: #61dafb;
     }
-    
+
     .file-preview {
         background-color: #f0f0f0;
         padding: 1rem;
         border-radius: 0.5rem;
         margin: 0.5rem 0;
     }
-    
+
     .status-indicator {
         display: inline-block;
         width: 8px;
@@ -167,15 +167,15 @@ st.markdown(
         border-radius: 50%;
         margin-right: 5px;
     }
-    
+
     .status-online {
         background-color: #10b981;
     }
-    
+
     .status-offline {
         background-color: #ef4444;
     }
-    
+
     .active-model {
         background-color: #e8f4f8;
         border: 2px solid #667eea;
@@ -1613,12 +1613,12 @@ with col3:
         - Uses ONLY claude-opus-4-20250514
         - Memory system working
         - Full conversation history
-        
+
         **🔧 Available Models:**
         - Claude 4 Opus (200K context)
         - Gemini 1.5 Pro (1M context)
         - GPT-4 variants (128K context)
-        
+
         **💾 Memory Features:**
         - Persistent conversation history
         - Session ID in URL

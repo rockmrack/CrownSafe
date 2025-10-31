@@ -447,7 +447,7 @@ class EnhancedMemoryManager(MemoryManager):
                 confidence = 0.6
 
             # Create pattern
-            pattern = TemporalPattern(
+            return TemporalPattern(
                 pattern_id=f"temporal_{entity}_{current_time.strftime('%Y%m%d')}",
                 entity=entity,
                 timeframe="recent" if len(sorted_months) <= 6 else "historical",
@@ -459,7 +459,6 @@ class EnhancedMemoryManager(MemoryManager):
                 supporting_evidence=[doc["content"][:200] for doc in historical_docs[:3]],
             )
 
-            return pattern
 
         except Exception as e:
             self.logger.exception(f"Failed to detect temporal pattern for {entity}: {e}")
@@ -1050,8 +1049,7 @@ class EnhancedMemoryManager(MemoryManager):
                                 outcome_patterns[outcome] += 1
 
             # Return outcomes mentioned for multiple drugs
-            common_outcomes = [outcome for outcome, count in outcome_patterns.items() if count >= len(drugs) * 0.5]
-            return common_outcomes
+            return [outcome for outcome, count in outcome_patterns.items() if count >= len(drugs) * 0.5]
 
         except Exception as e:
             self.logger.exception(f"Failed to find common outcomes: {e}")
@@ -1084,10 +1082,9 @@ class EnhancedMemoryManager(MemoryManager):
                             if indication in doc_lower:
                                 indication_patterns[indication] += 1
 
-            common_indications = [
+            return [
                 indication for indication, count in indication_patterns.items() if count >= len(drugs) * 0.5
             ]
-            return common_indications
 
         except Exception as e:
             self.logger.exception(f"Failed to find common indications: {e}")
@@ -1166,7 +1163,7 @@ class EnhancedMemoryManager(MemoryManager):
             base_analytics = self.get_document_usage_analytics()
 
             # Add enhanced analytics
-            enhanced_analytics = {
+            return {
                 "base_analytics": base_analytics,
                 "temporal_patterns": {
                     "total_patterns": len(self.temporal_patterns),
@@ -1218,7 +1215,6 @@ class EnhancedMemoryManager(MemoryManager):
                 },
             }
 
-            return enhanced_analytics
 
         except Exception as e:
             self.logger.exception(f"Failed to get enhanced analytics: {e}")

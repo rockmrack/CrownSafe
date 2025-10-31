@@ -435,8 +435,7 @@ def create_hair_profile(
 def get_user_hair_profile(user_id: int):
     """Get the hair profile for a user."""
     with get_db_session() as db:
-        profile = db.query(HairProfileModel).filter_by(user_id=user_id).first()
-        return profile
+        return db.query(HairProfileModel).filter_by(user_id=user_id).first()
 
 
 # -------------------------------------------------------------------

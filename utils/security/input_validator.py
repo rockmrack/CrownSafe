@@ -136,9 +136,8 @@ class InputValidator:
             raise ValueError("Product name contains invalid content")
 
         # Remove any HTML tags
-        name = re.sub(r"<[^>]+>", "", name)
+        return re.sub(r"<[^>]+>", "", name)
 
-        return name
 
     @classmethod
     def validate_search_query(cls, query: str) -> str:
@@ -177,9 +176,8 @@ class InputValidator:
         text = re.sub(r"<script[^>]*>.*?</script>", "", text, flags=re.IGNORECASE | re.DOTALL)
 
         # Remove inline event handlers
-        text = re.sub(r'on\w+\s*=\s*["\'].*?["\']', "", text, flags=re.IGNORECASE)
+        return re.sub(r'on\w+\s*=\s*["\'].*?["\']', "", text, flags=re.IGNORECASE)
 
-        return text
 
     @classmethod
     def _contains_dangerous_pattern(cls, text: str) -> bool:

@@ -163,5 +163,4 @@ async def add_user_to_request(request: Request, call_next):
     if not hasattr(request.state, "user"):
         request.state.user = None
 
-    response = await call_next(request)
-    return response
+    return await call_next(request)

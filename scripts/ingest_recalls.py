@@ -140,7 +140,7 @@ class RecallDataIngester:
             )
 
             # Create database record
-            record = {
+            return {
                 "recall_id": recall_data.recall_id,
                 "source_agency": recall_data.source_agency,
                 "product_name": recall_data.product_name,
@@ -181,7 +181,6 @@ class RecallDataIngester:
                 "agency_specific_data": getattr(recall_data, "agency_specific_data", None),
             }
 
-            return record
 
         except Exception as e:
             logger.exception(f"Error converting recall to database record: {e}")

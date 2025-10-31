@@ -88,9 +88,9 @@ async def get_recall_detail(recall_id: str, request: Request, response: Response
                     'enhanced' as table_source
                 FROM recalls_enhanced
                 WHERE recall_id = :recall_id
-                
+
                 UNION ALL
-                
+
                 SELECT
                     recall_id as id,
                     product_name as "productName",
@@ -114,7 +114,7 @@ async def get_recall_detail(recall_id: str, request: Request, response: Response
                     'legacy' as table_source
                 FROM recalls
                 WHERE recall_id = :recall_id
-                
+
                 LIMIT 1
             """,
             )

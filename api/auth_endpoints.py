@@ -144,12 +144,11 @@ async def login(
         #     "access_token", access_token, httponly=True, secure=True, samesite="lax"
         # )
 
-        payload = {
+        return {
             "access_token": access_token,
             "refresh_token": refresh_token,
             "token_type": "bearer",
         }
-        return payload
 
     except (OperationalError, SQLAlchemyError) as e:
         logger.exception("DB error during login")

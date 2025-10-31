@@ -425,8 +425,7 @@ celery_app = Celery("monitoring", broker=REDIS_URL, backend=REDIS_URL)
 def run_product_monitoring():
     """Celery task to run product monitoring."""
     loop = asyncio.get_event_loop()
-    result = loop.run_until_complete(ProductMonitoringScheduler.run_monitoring_cycle())
-    return result
+    return loop.run_until_complete(ProductMonitoringScheduler.run_monitoring_cycle())
 
 
 @celery_app.task(name="auto_add_products")

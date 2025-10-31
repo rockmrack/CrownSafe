@@ -315,8 +315,7 @@ class SecureQuery:
     def execute_admin(query: str, params: dict | None = None) -> Any:
         """Execute an admin query (DDL)."""
         with get_admin_session() as session:
-            result = session.execute(query, params or {})
-            return result
+            return session.execute(query, params or {})
 
 
 # ========================= MIGRATION HELPER =========================
@@ -395,7 +394,7 @@ async def create_user(
 # def update_risk_scores():
 #     # RecallDB removed - Crown Safe uses hair product safety scoring
 #     pass
-        
+
         session.commit()
 """
 

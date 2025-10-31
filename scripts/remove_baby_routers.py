@@ -19,9 +19,8 @@ def remove_router_blocks(content):
 
     # Pattern 4: Remove Baby Safety Features block
     pattern4 = r"# Include Baby Safety Features.*?\ntry:.*?except \(ImportError, FileNotFoundError\) as e:.*?# Continue without baby features.*?\n\n"  # noqa: E501
-    content = re.sub(pattern4, "", content, flags=re.DOTALL)
+    return re.sub(pattern4, "", content, flags=re.DOTALL)
 
-    return content
 
 
 if __name__ == "__main__":

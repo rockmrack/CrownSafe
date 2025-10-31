@@ -11,24 +11,22 @@ def fix_unused_loop_variables(content):
     # Pattern: for i in range(...):
     content = re.sub(r"(\s+for\s+)([a-z_][a-z0-9_]*)\s+(in\s+range\([^)]+\):)", r"\1_\2 \3", content)
     # Pattern: for i, var in enumerate(...):
-    content = re.sub(
+    return re.sub(
         r"(\s+for\s+)([a-z_][a-z0-9_]*),\s*([a-z_][a-z0-9_]*)\s+(in\s+enumerate)",
         r"\1\2, _\3 \4",
         content,
     )
-    return content
 
 
 def fix_long_comment_line(content):
     """Fix the specific long line in auth_endpoints.py."""
-    content = content.replace(
+    return content.replace(
         '        # response.set_cookie("access_token", access_token, httponly=True, secure=True, samesite="lax")',
         "        # response.set_cookie(\n"
         '        #     "access_token", access_token, httponly=True,\n'
         '        #     secure=True, samesite="lax"\n'
         "        # )",
     )
-    return content
 
 
 def fix_exception_chaining(content):
@@ -44,8 +42,7 @@ def fix_exception_chaining(content):
             return f"{prefix}{raise_stmt.rstrip()} from None"
         return match.group(0)
 
-    content = re.sub(pattern, add_from_none, content, flags=re.DOTALL)
-    return content
+    return re.sub(pattern, add_from_none, content, flags=re.DOTALL)
 
 
 def remove_unused_imports(file_path, unused_imports) -> None:

@@ -7,7 +7,7 @@ Provides endpoints for product risk analysis, report generation, and data ingest
 
 import asyncio  # noqa: E402
 import logging  # noqa: E402
-from datetime import datetime, timedelta  # noqa: E402, timezone
+from datetime import datetime, timedelta, timezone  # noqa: E402
 from typing import Any  # noqa: E402
 
 from fastapi import (  # noqa: E402

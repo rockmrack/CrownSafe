@@ -281,20 +281,20 @@ async def main():
 1. SCAN WITH CAMERA:
    - Endpoint: POST /api/v1/safety-check
    - Payload: {"user_id": 123, "barcode": "SCANNED_CODE"}
-   
+
 2. UPLOAD A PHOTO:
    - Simple: POST /api/v1/visual/suggest-product
    - Payload: {"image_url": "https://..."}
    - OR Full workflow with /visual/upload, S3, /visual/analyze
-   
+
 3. SCAN BARCODE NUMBER:
    - Endpoint: POST /api/v1/safety-check
    - Payload: {"user_id": 123, "barcode": "TYPED_BARCODE"}
-   
+
 4. SEARCH BY NAME:
    - Endpoint: POST /api/v1/safety-check
    - Payload: {"user_id": 123, "product_name": "Product Name"}
-   
+
 All methods are now supported by the backend!
 """,
     )

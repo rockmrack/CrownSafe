@@ -126,8 +126,7 @@ class IPAllowlistMiddleware(BaseHTTPMiddleware):
             logger.info(f"Allowed admin access from IP: {client_ip} to path: {request.url.path}")
 
         # Process the request
-        response = await call_next(request)
-        return response
+        return await call_next(request)
 
 
 # ========================= SECURITY HEADERS MIDDLEWARE =========================
@@ -240,8 +239,7 @@ class RequestValidationMiddleware(BaseHTTPMiddleware):
                 )
 
         # Process request
-        response = await call_next(request)
-        return response
+        return await call_next(request)
 
 
 # ========================= API KEY AUTHENTICATION =========================
@@ -303,8 +301,7 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
                     headers={"WWW-Authenticate": "ApiKey"},
                 )
 
-        response = await call_next(request)
-        return response
+        return await call_next(request)
 
 
 # ========================= HMAC REQUEST SIGNING =========================
@@ -372,8 +369,7 @@ class HMACMiddleware(BaseHTTPMiddleware):
                     content={"error": "Invalid signature"},
                 )
 
-        response = await call_next(request)
-        return response
+        return await call_next(request)
 
 
 # ========================= CORS SECURITY =========================

@@ -1,5 +1,7 @@
 # RossNetAgents/core_infra/mcp_router_service/auth.py
 
+import datetime
+from datetime import timezone
 from typing import Any
 
 import jwt  # PyJWT library, install with: pip install pyjwt
@@ -50,8 +52,7 @@ def decode_jwt_token(token: str) -> dict[str, Any]:
     Raises jwt.ExpiredSignatureError or jwt.InvalidTokenError on failure.
     """
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
-        return payload
+        return jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
     except jwt.ExpiredSignatureError:
         logger.warning("JWT decode failed: Token has expired.")
         raise
@@ -96,7 +97,6 @@ async def validate_message_authentication(message: dict[str, Any]) -> bool:
 # DO NOT use this simplistic generation in production. Use a proper identity provider.
 def generate_test_jwt(agent_id: str) -> str:
     """Generates a simple JWT for testing purposes."""
-    import datetime
 
     payload = {
         "sub": agent_id,
@@ -105,5 +105,4 @@ def generate_test_jwt(agent_id: str) -> str:
         "iss": settings.SERVICE_NAME,  # Issuer
         # Add other claims like scope ('scp') if needed
     }
-    token = jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
-    return token
+    return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)

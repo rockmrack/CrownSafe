@@ -404,7 +404,7 @@ def format_disclaimer() -> str:
 
 
 def format_metadata(agent_id, version, dt_str, workflow_id, pdf_path, pubmed, trials):
-    meta = f"""
+    return f"""
     <a name="metadata"></a>
     <h1>Report Metadata & Version</h1>
     <ul style="font-size:9pt;">
@@ -417,7 +417,6 @@ def format_metadata(agent_id, version, dt_str, workflow_id, pdf_path, pubmed, tr
         <li><b>Clinical trials included:</b> {len(trials.get("trials_data", [])) if trials else 0}</li>
     </ul>
     """
-    return meta
 
 
 class ReportBuilderAgentLogic:

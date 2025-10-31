@@ -266,12 +266,12 @@ from core_infra.encryption import EncryptedString, EncryptedJSON, HashedString
 
 class User(Base):
     __tablename__ = "users"
-    
+
     id = Column(Integer, primary_key=True)
     email = Column(EncryptedString)  # Encrypted email
     email_hash = Column(HashedString)  # For searching
     personal_data = Column(EncryptedJSON)  # Encrypted JSON
-    
+
     def set_email(self, email: str):
         self.email = email
         self.email_hash = email  # Will be hashed automatically

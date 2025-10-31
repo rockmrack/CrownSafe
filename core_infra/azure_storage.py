@@ -188,7 +188,7 @@ class AzureBlobStorageClient:
         loop = asyncio.get_event_loop()
 
         # Run sync upload in thread pool to avoid blocking
-        result = await loop.run_in_executor(
+        return await loop.run_in_executor(
             _upload_executor,
             self.upload_file,
             file_data,
@@ -198,7 +198,6 @@ class AzureBlobStorageClient:
             metadata,
         )
 
-        return result
 
     @retry_with_exponential_backoff(max_retries=3, base_delay=1.0)
     @log_azure_error

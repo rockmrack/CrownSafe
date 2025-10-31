@@ -1320,15 +1320,15 @@ def main() -> None:
 Examples:
   # Basic analysis
   python analyze_memory_planner_test.py --drug Sotagliflozin
-  
+
   # With workflow ID
     python analyze_memory_planner_test.py --drug Empagliflozin \
             --workflow 687839be-3d1a-47ef-aa90-a246c7eabae6
-  
+
   # With specific log files
     python analyze_memory_planner_test.py --drug Sotagliflozin \
             --planner-log planner_agent_Sota_FRESH.log
-  
+
   # With full paths
     python analyze_memory_planner_test.py -d Canagliflozin \
             --planner-log "C:\\logs\\planner_agent_Cana.log"

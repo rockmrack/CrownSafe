@@ -98,16 +98,16 @@ async def send_reset_email(email: str, token: str, user_name: str | None = None)
         # Email body
         text = f"""
         Hello {user_name or "User"},
-        
+
         You requested to reset your password for your Crown Safe account.
-        
+
         Click the link below to reset your password:
         {reset_url}
-        
+
         This link will expire in 1 hour.
-        
+
         If you didn't request this, please ignore this email.
-        
+
         Best regards,
         The Crown Safe Team
         """

@@ -50,8 +50,7 @@ def decode_jwt_token(token: str) -> dict[str, Any]:
     Raises jwt.ExpiredSignatureError or jwt.InvalidTokenError on failure.
     """
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
-        return payload
+        return jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
     except jwt.ExpiredSignatureError:
         logger.warning("JWT decode failed: Token has expired.")
         raise
@@ -105,5 +104,4 @@ def generate_test_jwt(agent_id: str) -> str:
         "iss": settings.SERVICE_NAME,  # Issuer
         # Add other claims like scope ('scp') if needed
     }
-    token = jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
-    return token
+    return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
