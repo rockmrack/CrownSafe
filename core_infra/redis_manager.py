@@ -196,7 +196,8 @@ async def _test_redis_connection():
         # GET operation
         value = await redis_conn.get(test_key)
         print(f"GET command successful. Value: {value}")
-        assert value == test_value, "Retrieved value doesn't match what was set!"
+        if value != test_value:
+            raise ValueError(f"Retrieved value doesn't match! Expected: {test_value}, Got: {value}")
 
         # DELETE operation
         await redis_conn.delete(test_key)

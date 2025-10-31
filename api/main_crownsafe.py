@@ -13,7 +13,7 @@ import traceback
 import uuid
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, cast
+from typing import Any, Literal, cast
 
 from fastapi import FastAPI, Header, HTTPException, Query, Request, Response
 from fastapi import Path as FastAPIPath
@@ -36,7 +36,7 @@ from starlette.responses import JSONResponse as StarletteJSONResponse
 _orig_getaddrinfo = socket.getaddrinfo
 
 
-def _ipv4_only(host: str, port: int, *args, **kwargs):
+def _ipv4_only(host: str, port: int, *args, **kwargs) -> list:
     """Force IPv4 resolution to avoid IPv6 DNS timeout issues."""
     results = _orig_getaddrinfo(host, port, *args, **kwargs)
     ipv4_only = [item for item in results if item[0] == socket.AF_INET]
@@ -178,7 +178,7 @@ try:
     from core_infra.cache_manager import get_cache_stats
 except ImportError:
 
-    def get_cache_stats() -> Dict[str, Any]:
+    def get_cache_stats() -> dict[str, Any]:
         return {"status": "disabled", "reason": "cache manager unavailable"}
 
     if not _in_test_env:
@@ -252,7 +252,7 @@ def _coerce_bool(value: Any, default: bool = False) -> bool:
     return default
 
 
-def _coerce_list(value: Any) -> Optional[List[str]]:
+def _coerce_list(value: Any) -> list[str] | None:
     if value is None:
         return None
     if isinstance(value, list):
@@ -279,28 +279,28 @@ class SafetyCheckRequest(AppModel):
         json_schema_extra={"examples": [1]},
         description="Authenticated Crown Safe user ID",
     )
-    barcode: Optional[str] = Field(
+    barcode: str | None = Field(
         None,
         json_schema_extra={"examples": ["012345678905"]},
         pattern=r"^\d{8,14}$",
         description="UPC/EAN barcode for direct lookup",
     )
-    model_number: Optional[str] = Field(
+    model_number: str | None = Field(
         None,
         json_schema_extra={"examples": ["HC-2000X"]},
         description="Manufacturer model number",
     )
-    lot_number: Optional[str] = Field(
+    lot_number: str | None = Field(
         None,
         json_schema_extra={"examples": ["LOT2023-05-A"]},
         description="Lot or batch identifier",
     )
-    product_name: Optional[str] = Field(
+    product_name: str | None = Field(
         None,
         json_schema_extra={"examples": ["Moisturizing Shampoo"]},
         description="Product name for text-based search",
     )
-    image_url: Optional[str] = Field(
+    image_url: str | None = Field(
         None,
         json_schema_extra={"examples": ["https://example.com/product.jpg"]},
         description="Image URL for visual recognition fallback",
@@ -311,9 +311,9 @@ class SafetyCheckResponse(BaseModel):
     model_config = {"protected_namespaces": ()}
 
     status: str = Field(..., json_schema_extra={"examples": ["COMPLETED"]})
-    data: Optional[Dict[str, Any]] = Field(None, json_schema_extra={"examples": [{}]})
-    error: Optional[str] = Field(None, json_schema_extra={"examples": [None]})
-    alternatives: Optional[List[Dict[str, Any]]] = Field(
+    data: dict[str, Any] | None = Field(None, json_schema_extra={"examples": [{}]})
+    error: str | None = Field(None, json_schema_extra={"examples": [None]})
+    alternatives: list[dict[str, Any]] | None = Field(
         None,
         description="Suggested safer alternatives when a hazard is detected",
     )
@@ -337,32 +337,23 @@ class UserOut(BaseModel):
 class AdvancedSearchRequest(BaseModel):
     model_config = {"protected_namespaces": ()}
 
-    query: Optional[str] = Field(None, description="Search term covering product name, brand, or hazard")
-    product: Optional[str] = Field(None, description="Alias for query when clients use 'product'")
-    id: Optional[str] = Field(None, description="Exact record identifier lookup")
-    keywords: Optional[List[str]] = Field(None, description="List of AND keywords that must all match")
-    agencies: Optional[List[str]] = Field(None, description="Filter by specific regulatory agencies")
-    agency: Optional[str] = Field(None, description="Single-agency filter (converted into agencies list)")
-    date_from: Optional[date] = Field(None, description="Publication date from (YYYY-MM-DD)")
-    date_to: Optional[date] = Field(None, description="Publication date to (YYYY-MM-DD)")
-    risk_level: Optional[str] = Field(None, description="Filter by risk level label")
-    severity: Optional[Literal["low", "medium", "high", "critical"]] = Field(None, description="Alias for risk_level")
-    product_category: Optional[str] = Field(None, description="Filter by product category")
-    riskCategory: Optional[
-        Literal[
-            "drug",
-            "device",
-            "food",
-            "cosmetic",
-            "supplement",
-            "toy",
-            "baby_product",
-            "other",
-        ]
-    ] = Field(None, description="Alias for product_category")
+    query: str | None = Field(None, description="Search term covering product name, brand, or hazard")
+    product: str | None = Field(None, description="Alias for query when clients use 'product'")
+    id: str | None = Field(None, description="Exact record identifier lookup")
+    keywords: list[str] | None = Field(None, description="List of AND keywords that must all match")
+    agencies: list[str] | None = Field(None, description="Filter by specific regulatory agencies")
+    agency: str | None = Field(None, description="Single-agency filter (converted into agencies list)")
+    date_from: date | None = Field(None, description="Publication date from (YYYY-MM-DD)")
+    date_to: date | None = Field(None, description="Publication date to (YYYY-MM-DD)")
+    risk_level: str | None = Field(None, description="Filter by risk level label")
+    severity: Literal["low", "medium", "high", "critical"] | None = Field(None, description="Alias for risk_level")
+    product_category: str | None = Field(None, description="Filter by product category")
+    riskCategory: Literal["drug", "device", "food", "cosmetic", "supplement", "toy", "baby_product", "other"] | None = (
+        Field(None, description="Alias for product_category")
+    )
     limit: int = Field(20, ge=1, le=50, description="Maximum number of results to return")
-    offset: Optional[int] = Field(None, ge=0, description="Offset for classic pagination")
-    nextCursor: Optional[str] = Field(None, description="Opaque cursor for pagination")
+    offset: int | None = Field(None, ge=0, description="Offset for classic pagination")
+    nextCursor: str | None = Field(None, description="Opaque cursor for pagination")
 
     @model_validator(mode="after")
     def validate_search_term(self):
@@ -391,7 +382,7 @@ class AdvancedSearchRequest(BaseModel):
 class BulkSearchRequest(BaseModel):
     model_config = {"protected_namespaces": ()}
 
-    barcodes: List[str] = Field(..., min_length=1, max_length=50, description="List of barcodes to evaluate")
+    barcodes: list[str] = Field(..., min_length=1, max_length=50, description="List of barcodes to evaluate")
     user_id: int = Field(..., description="User ID performing the bulk check")
 
 
@@ -401,9 +392,9 @@ class RecallAnalyticsResponse(BaseModel):
     total_recalls: int
     agencies_active: int
     recent_recalls: int
-    top_hazards: List[Dict[str, Any]]
-    top_agencies: List[Dict[str, Any]]
-    safety_trends: Dict[str, Any]
+    top_hazards: list[dict[str, Any]]
+    top_agencies: list[dict[str, Any]]
+    safety_trends: dict[str, Any]
 
 
 app = FastAPI(
@@ -496,7 +487,7 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 
 @app.get("/favicon.ico", include_in_schema=False)
-async def favicon_ico():
+async def favicon_ico() -> FileResponse:
     svg_path = STATIC_DIR / "favicon.svg"
     ico_path = STATIC_DIR / "favicon.ico"
     if svg_path.exists():
@@ -507,7 +498,7 @@ async def favicon_ico():
 
 
 @app.get("/favicon.svg", include_in_schema=False)
-async def favicon_svg():
+async def favicon_svg() -> FileResponse:
     svg_path = STATIC_DIR / "favicon.svg"
     if svg_path.exists():
         return FileResponse(str(svg_path), media_type="image/svg+xml")
@@ -540,31 +531,31 @@ class HealthCheckWrapper:
         await self.app(scope, receive, send)
 
 
-async def version():
+async def version() -> JSONResponse:
     return JSONResponse(status_code=405, content={"error": "Method Not Allowed"})
 
 
 @app.get("/vendor/{path:path}", include_in_schema=False)
 @app.post("/vendor/{path:path}", include_in_schema=False)
-async def block_vendor_attacks():
+async def block_vendor_attacks() -> JSONResponse:
     return JSONResponse(status_code=403, content={"error": "Forbidden"})
 
 
 @app.get("/index.php", include_in_schema=False)
 @app.post("/index.php", include_in_schema=False)
-async def block_index_php():
+async def block_index_php() -> JSONResponse:
     return JSONResponse(status_code=403, content={"error": "Forbidden"})
 
 
 @app.get("/public/index.php", include_in_schema=False)
 @app.post("/public/index.php", include_in_schema=False)
-async def block_public_index_php():
+async def block_public_index_php() -> JSONResponse:
     return JSONResponse(status_code=403, content={"error": "Forbidden"})
 
 
 # Security middleware to block malicious requests
 @app.middleware("http")
-async def security_middleware(request: Request, call_next):
+async def security_middleware(request: Request, call_next) -> Response:
     # CRITICAL: Always allow health checks to pass through
     if request.url.path in ["/healthz", "/health", "/readyz", "/metrics"]:
         return await call_next(request)
@@ -668,7 +659,7 @@ async def security_middleware(request: Request, call_next):
 # ===== TRACE ID MIDDLEWARE =====
 # Add X-Trace-Id header to all responses for request tracking
 @app.middleware("http")
-async def add_trace_id_header(request: Request, call_next):
+async def add_trace_id_header(request: Request, call_next) -> Response:
     """Add X-Trace-Id header to all responses for request tracking and debugging."""
     trace_id = getattr(request.state, "trace_id", str(uuid.uuid4()))
     response = await call_next(request)
@@ -679,7 +670,7 @@ async def add_trace_id_header(request: Request, call_next):
 # ===== PHASE 2: SECURITY HEADERS (DECORATOR PATTERN) =====
 # Add comprehensive OWASP security headers to ALL responses
 @app.middleware("http")
-async def add_security_headers(request: Request, call_next):
+async def add_security_headers(request: Request, call_next) -> Response:
     """
     Add OWASP-recommended security headers to all responses.
 
@@ -800,8 +791,8 @@ async def add_security_headers(request: Request, call_next):
 #     logger.info("PII encryption middleware added")
 # except Exception as e:
 #     logger.warning(f"Could not add PII encryption middleware: {e}")
-commander_agent: Optional[CrownSafeCommanderLogic] = None
-visual_search_agent: Optional[VisualSearchAgentLogic] = None
+commander_agent: CrownSafeCommanderLogic | None = None
+visual_search_agent: VisualSearchAgentLogic | None = None
 
 # Import deprecated auth endpoints FIRST (to take precedence)
 try:
@@ -1005,11 +996,11 @@ except Exception as e:
 def get_safety_hub_articles(
     limit: int = Query(20, ge=1, le=100, description="Number of articles per page"),
     offset: int = Query(0, ge=0, description="Number of articles to skip"),
-    category: Optional[str] = Query(None, description="Filter by article category"),
-    language: Optional[str] = Query("en", description="Language filter (en, es, fr, etc.)"),
+    category: str | None = Query(None, description="Filter by article category"),
+    language: str | None = Query("en", description="Language filter (en, es, fr, etc.)"),
     featured_only: bool = Query(False, description="Show only featured articles"),
     sort: str = Query("recent", pattern="^(recent|oldest|title)$", description="Sort order"),
-):
+) -> JSONResponse:
     """
     Returns a paginated list of safety articles with filtering and caching support.
     Features: pagination, categories, language filter, no PII, cache headers.
@@ -1425,7 +1416,7 @@ except Exception as e:
 try:
     from api.openapi_spec import custom_openapi
 
-    def _custom_openapi() -> Dict[str, Any]:
+    def _custom_openapi() -> dict[str, Any]:
         return custom_openapi(cast(FastAPI, _original_app))
 
     _original_app.openapi = _custom_openapi  # type: ignore[assignment]
@@ -1438,7 +1429,7 @@ except Exception as e:
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request, exc):
+async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
     """Handle validation errors with our standard error envelope"""
     trace_id = f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
 
@@ -1483,7 +1474,7 @@ async def validation_exception_handler(request, exc):
 
 
 @app.exception_handler(json.JSONDecodeError)
-async def json_decode_exception_handler(request, exc):
+async def json_decode_exception_handler(request: Request, exc: json.JSONDecodeError) -> JSONResponse:
     """Handle JSON decode errors with our standard error envelope"""
     trace_id = f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
 
@@ -1503,7 +1494,7 @@ async def json_decode_exception_handler(request, exc):
 
 
 @app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request, exc):
+async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
     """Handle HTTP exceptions with our standard error envelope"""
     trace_id = f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
 
@@ -1551,7 +1542,7 @@ async def http_exception_handler(request, exc):
 
 
 @app.exception_handler(Exception)
-async def general_exception_handler(request, exc):
+async def general_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Handle all unhandled exceptions with our standard error envelope"""
     trace_id = f"trace_{int(datetime.now().timestamp())}_{request.url.path.replace('/', '_')}"
 
@@ -1577,7 +1568,7 @@ _agents_initialized = False
 
 
 @app.on_event("startup")
-def on_startup():
+def on_startup() -> None:
     global commander_agent, visual_search_agent, _agents_initialized
 
     logger.info(f"Starting Crown Safe API in {ENVIRONMENT.upper()} environment...")
@@ -1772,7 +1763,7 @@ def on_startup():
 
 
 @app.on_event("shutdown")
-async def shutdown_event():
+async def shutdown_event() -> None:
     """Clean shutdown of database connections"""
 
     try:
@@ -1785,7 +1776,7 @@ async def shutdown_event():
 
 # Homepage and health check endpoints
 @app.get("/", tags=["system"], include_in_schema=False)
-async def root():
+async def root() -> FileResponse:
     """Serve Crown Safe homepage"""
     homepage_path = STATIC_DIR / "index.html"
     if homepage_path.exists():
@@ -1802,13 +1793,13 @@ def health_check():
 
 @app.get("/api/healthz", tags=["system"], include_in_schema=False)
 @app.get("/api/v1/healthz", tags=["system"], include_in_schema=False)
-async def healthz_api_alias() -> Dict[str, str]:
+async def healthz_api_alias() -> dict[str, str]:
     """API-prefixed health aliases for load balancers and clients"""
     return {"status": "ok"}
 
 
 @app.get("/api/v1/public/endpoint", tags=["public"], operation_id="public_test_endpoint")
-async def public_test_endpoint() -> Dict[str, str]:
+async def public_test_endpoint() -> dict[str, str]:
     """
     Public test endpoint for rate limiting and security testing.
     This endpoint does not require authentication.
@@ -1822,7 +1813,7 @@ async def public_test_endpoint() -> Dict[str, str]:
 
 @app.get("/api/health", tags=["system"], include_in_schema=False)
 @app.get("/api/v1/health", tags=["system"], include_in_schema=False)
-async def health_api_alias() -> Dict[str, str]:
+async def health_api_alias() -> dict[str, str]:
     """API-prefixed health aliases returning minimal payload"""
     return {"status": "ok"}
 
@@ -2270,7 +2261,7 @@ async def safety_check(req: SafetyCheckRequest, request: Request):
 
 # Visual Product Suggestion Endpoint (Phase 2 - Safe suggestion mode)
 @app.post("/api/v1/visual/suggest-product", tags=["visual"])
-async def suggest_product_from_image(request: Dict[str, Any]):
+async def suggest_product_from_image(request: dict[str, Any]):
     """Return visual suggestions without recall guarantees.
 
     Accepts image_url, image_id, or image_base64, routes request through the
@@ -2384,7 +2375,7 @@ def create_user(req: UserCreateRequest):
 async def autocomplete_products(
     q: str = Query(..., min_length=1, description="Search query (min 1 character)"),
     limit: int = Query(10, ge=1, le=25, description="Max suggestions to return"),
-    domain: Optional[str] = Query(None, description="Filter by domain (e.g., 'haircare')"),
+    domain: str | None = Query(None, description="Filter by domain (e.g., 'haircare')"),
 ):
     """
     Lightning-fast auto-complete for product names across 3,218+ recalls from 39 agencies
@@ -3128,11 +3119,11 @@ class NotificationRequest(BaseModel):
     model_config = {"protected_namespaces": ()}
 
     user_id: int = Field(..., description="User ID to set up notifications")
-    product_identifiers: List[str] = Field(
+    product_identifiers: list[str] = Field(
         ...,
         description="List of barcodes/model numbers to monitor",
     )
-    notification_types: List[str] = Field(
+    notification_types: list[str] = Field(
         default_factory=lambda: ["email"],
         description="Types: email, sms, push",
     )
@@ -3232,7 +3223,7 @@ class MobileScanRequest(BaseModel):
 
     user_id: int = Field(..., description="User ID")
     barcode: str = Field(..., description="Scanned barcode")
-    location: Optional[str] = Field(None, description="User location for regional prioritization")
+    location: str | None = Field(None, description="User location for regional prioritization")
     quick_scan: bool = Field(True, description="Fast response mode for mobile")
 
 
@@ -3243,7 +3234,7 @@ class MobileScanResponse(BaseModel):
     safety_level: str  # "SAFE", "CAUTION", "DANGER"
     summary: str
     agencies_checked: int
-    response_time_ms: Optional[int]
+    response_time_ms: int | None
     cache_hit: bool
 
 
@@ -3304,7 +3295,7 @@ async def mobile_scan(req: MobileScanRequest):
 
         response_time = int((datetime.now() - start_time).total_seconds() * 1000)
 
-        result_data: Dict[str, Any] = {}
+        result_data: dict[str, Any] = {}
         if isinstance(result, dict):
             data = result.get("data")
             if isinstance(data, dict):
@@ -3328,7 +3319,7 @@ async def mobile_scan(req: MobileScanRequest):
         agencies_checked = result_data.get("agencies_checked", AGENCY_COUNT)
 
         cache_metadata = result.get("metadata") if isinstance(result, dict) else None
-        cache_hit_flag: Optional[bool] = None
+        cache_hit_flag: bool | None = None
         if isinstance(cache_metadata, dict):
             cache_hit_flag = cache_metadata.get("cache_hit")
 
@@ -3401,9 +3392,9 @@ async def ultra_fast_check(barcode: str, user_id: int) -> dict:
 @app.get("/api/v1/mobile/instant-check/{barcode}", tags=["mobile"])
 async def mobile_instant_check(
     barcode: str = FastAPIPath(..., min_length=8, description="Barcode to check"),
-    user_id: Optional[int] = Query(None, alias="user_id", description="User ID"),
-    user_id_alt: Optional[int] = Query(None, alias="user-id", description="User ID (alternative)"),
-    x_user_id: Optional[int] = Header(None, alias="X-User-Id", description="User ID (header)"),
+    user_id: int | None = Query(None, alias="user_id", description="User ID"),
+    user_id_alt: int | None = Query(None, alias="user-id", description="User ID (alternative)"),
+    x_user_id: int | None = Header(None, alias="X-User-Id", description="User ID (header)"),
 ):
     """
     ULTRA-FAST mobile endpoint using hot path optimization
@@ -3453,9 +3444,9 @@ async def mobile_instant_check(
 @app.get("/api/v1/mobile/quick-check/{barcode}", tags=["mobile"])
 async def mobile_quick_check(
     barcode: str = FastAPIPath(..., min_length=8, description="Barcode to check"),
-    user_id: Optional[int] = Query(None, alias="user_id", description="User ID"),
-    user_id_alt: Optional[int] = Query(None, alias="user-id", description="User ID (alternative)"),
-    x_user_id: Optional[int] = Header(None, alias="X-User-Id", description="User ID (header)"),
+    user_id: int | None = Query(None, alias="user_id", description="User ID"),
+    user_id_alt: int | None = Query(None, alias="user-id", description="User ID (alternative)"),
+    x_user_id: int | None = Header(None, alias="X-User-Id", description="User ID (header)"),
 ):
     """
     OPTIMIZED mobile endpoint with enhanced caching
@@ -3668,7 +3659,7 @@ async def report_unsafe_product(request: Request):
 @app.get("/api/v1/user-reports/{user_id}", tags=["safety-reports"])
 async def get_user_reports(
     user_id: int,
-    status: Optional[str] = Query(None, description="Filter by status"),
+    status: str | None = Query(None, description="Filter by status"),
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
 ):
