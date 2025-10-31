@@ -3,10 +3,11 @@
 Verify Task 11 deployment is successful
 """
 
-import requests
 import json
-from datetime import datetime
 import time
+from datetime import datetime
+
+import requests
 
 BASE_URL = "https://babyshield.cureviax.ai"
 

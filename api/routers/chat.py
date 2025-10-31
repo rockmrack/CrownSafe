@@ -1,53 +1,53 @@
 # api/routers/chat_fixed.py
 # COMPLETELY FIXED VERSION WITH ALL 30+ ERRORS RESOLVED
 from __future__ import annotations
-from uuid import uuid4
-import logging
+
 import json
+import logging
 import random
 from datetime import datetime
-from typing import Dict, Any, List, Optional, Literal
-from time import perf_counter, monotonic
+from time import monotonic, perf_counter
+from typing import Any, Dict, List, Literal, Optional
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, ValidationError
 from sqlalchemy.orm import Session
 
-from core.chat_budget import (
-    TOTAL_BUDGET_SEC,
-    ROUTER_TIMEOUT_SEC,
-    TOOL_TIMEOUT_SEC,
-    SYNTH_TIMEOUT_SEC,
-)
-from core.resilience import breaker, call_with_timeout
-from core.feature_flags import (
-    chat_enabled_for,
-    FEATURE_CHAT_ENABLED,
-    FEATURE_CHAT_ROLLOUT_PCT,
-)
-from core.metrics import (
-    inc_req,
-    obs_total,
-    obs_tool,
-    obs_synth,
-    inc_fallback,
-    inc_blocked,
-    inc_alternatives_shown,
-    inc_unclear,
-    inc_emergency,
-)
-
+from agents.chat.chat_agent.agent_logic import ChatAgentLogic, ExplanationResponse
 from api.crud.chat_memory import (
-    get_profile,
     get_or_create_conversation,
+    get_profile,
     log_message,
-    upsert_profile,
     mark_erase_requested,
     purge_conversations_for_user,
+    upsert_profile,
 )
 from api.services.chat_tools import run_tool_for_intent
-from agents.chat.chat_agent.agent_logic import ChatAgentLogic, ExplanationResponse
+from core.chat_budget import (
+    ROUTER_TIMEOUT_SEC,
+    SYNTH_TIMEOUT_SEC,
+    TOOL_TIMEOUT_SEC,
+    TOTAL_BUDGET_SEC,
+)
+from core.feature_flags import (
+    FEATURE_CHAT_ENABLED,
+    FEATURE_CHAT_ROLLOUT_PCT,
+    chat_enabled_for,
+)
+from core.metrics import (
+    inc_alternatives_shown,
+    inc_blocked,
+    inc_emergency,
+    inc_fallback,
+    inc_req,
+    inc_unclear,
+    obs_synth,
+    obs_tool,
+    obs_total,
+)
+from core.resilience import breaker, call_with_timeout
 from core_infra.database import get_db
 
 router = APIRouter()

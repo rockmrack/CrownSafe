@@ -3,19 +3,20 @@ Circuit Breaker Pattern for BabyShield API
 Prevents cascade failures and provides graceful degradation
 """
 
-from pybreaker import CircuitBreaker, CircuitBreakerError
-from typing import Callable, Any, Optional, Dict
-from functools import wraps
+import asyncio
 import logging
 import time
-import asyncio
+from functools import wraps
+from typing import Any, Callable, Dict, Optional
+
+import redis
+from pybreaker import CircuitBreaker, CircuitBreakerError
 from tenacity import (
     retry,
+    retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
-    retry_if_exception_type,
 )
-import redis
 
 logger = logging.getLogger(__name__)
 

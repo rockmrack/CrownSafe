@@ -4,16 +4,9 @@ Integrates comprehensive validation with exact product matching
 """
 
 import logging
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
 from datetime import datetime
-
-from core_infra.barcode_validator import (
-    barcode_validator,
-    BarcodeValidationResult,
-    BarcodeType,
-)
-from core_infra.database import get_db_session
+from typing import Any, Dict, List, Optional, Tuple
 
 # REMOVED FOR CROWN SAFE: RecallDB barcode scanning no longer applicable
 # try:
@@ -21,8 +14,13 @@ from core_infra.database import get_db_session
 # except ImportError:
 #     # Fallback for different database models
 #     from data_models.recall import RecallDB
-
-from core_infra.barcode_scanner import scanner, ScanResult
+from core_infra.barcode_scanner import ScanResult, scanner
+from core_infra.barcode_validator import (
+    BarcodeType,
+    BarcodeValidationResult,
+    barcode_validator,
+)
+from core_infra.database import get_db_session
 
 logger = logging.getLogger(__name__)
 

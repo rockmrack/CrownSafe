@@ -2,28 +2,29 @@
 # CureViaX™ Builder Console - FINAL FIXED VERSION
 # Version: 6.0-FINAL
 
-import streamlit as st
-import redis
-import chromadb
-from chromadb.config import Settings
-import anthropic
-import google.generativeai as genai
-import openai
 import asyncio
-import json
-import pandas as pd
-from datetime import datetime
-import time
-from dataclasses import dataclass, field
-from enum import Enum
-import uuid
-import os
-import tiktoken
-from typing import Dict, List, Optional, Any, Tuple
-import io
-import re
 import base64
 import hashlib
+import io
+import json
+import os
+import re
+import time
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
+
+import anthropic
+import chromadb
+import google.generativeai as genai
+import openai
+import pandas as pd
+import redis
+import streamlit as st
+import tiktoken
+from chromadb.config import Settings
 from PIL import Image
 
 # Optional PDF support
@@ -45,11 +46,11 @@ except ImportError:
 
 # Optional PDF export
 try:
-    from reportlab.lib.pagesizes import letter
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.units import inch
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
     from reportlab.lib.enums import TA_JUSTIFY
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+    from reportlab.lib.units import inch
+    from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer
 
     PDF_EXPORT_SUPPORT = True
 except ImportError:

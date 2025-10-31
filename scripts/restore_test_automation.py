@@ -4,16 +4,17 @@ Automated Database Restore Testing
 Performs weekly restore drills and validates data integrity
 """
 
-import boto3
-import psycopg2
-import time
 import datetime
 import json
+import logging
 import os
 import sys
-from typing import Dict, List, Tuple, Optional
+import time
 from dataclasses import dataclass
-import logging
+from typing import Dict, List, Optional, Tuple
+
+import boto3
+import psycopg2
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")

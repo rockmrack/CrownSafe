@@ -3,9 +3,10 @@ Simple Celery worker for testing
 Handles missing dependencies gracefully
 """
 
-from celery import Celery
 import os
 import time
+
+from celery import Celery
 
 # Create Celery app
 app = Celery(

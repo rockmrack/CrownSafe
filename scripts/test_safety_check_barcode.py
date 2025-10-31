@@ -4,12 +4,12 @@
 import os
 
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
-import sys
-import os
 import asyncio
-import logging
-import json
 import datetime
+import json
+import logging
+import os
+import sys
 
 # --- Add project root to Python's path ---
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -17,8 +17,7 @@ sys.path.insert(0, project_root)
 # -----------------------------------------
 
 from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
-from core_infra.database import Base, engine, SessionLocal, RecallDB
-
+from core_infra.database import Base, RecallDB, SessionLocal, engine
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 

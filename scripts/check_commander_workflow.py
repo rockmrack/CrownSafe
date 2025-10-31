@@ -1,7 +1,8 @@
 # scripts/check_commander_workflow.py
 
-import redis
 import json
+
+import redis
 
 # Connect to Redis
 r = redis.Redis(host="localhost", port=6379, decode_responses=True)

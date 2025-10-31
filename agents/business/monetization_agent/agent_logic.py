@@ -2,10 +2,11 @@
 
 import logging
 import os
-import stripe
-from typing import Dict, Any
+from typing import Any, Dict
 
-from core_infra.database import get_db_session, User
+import stripe
+
+from core_infra.database import User, get_db_session
 
 logger = logging.getLogger(__name__)
 

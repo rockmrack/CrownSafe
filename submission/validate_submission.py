@@ -4,17 +4,18 @@ Submission Validation Script
 Performs comprehensive checks before app store submission
 """
 
-import os
-import sys
-import json
-import requests
 import hashlib
-import subprocess
-import time
-from pathlib import Path
-from typing import Dict, List, Tuple, Optional
-from datetime import datetime
+import json
+import os
 import re
+import subprocess
+import sys
+import time
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
+import requests
 
 
 # ANSI colors for output

@@ -4,9 +4,10 @@ Test Suite 3: Database and Models Tests (100 tests)
 Tests database connections, models, queries, and data integrity
 """
 
-import pytest
-import sys
 import os
+import sys
+
+import pytest
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -27,8 +28,9 @@ class TestDatabaseAndModels:
 
     def test_database_connection(self):
         """Test database connection"""
-        from core_infra.database import engine
         from sqlalchemy import text
+
+        from core_infra.database import engine
 
         try:
             with engine.connect() as conn:
@@ -62,6 +64,7 @@ class TestDatabaseAndModels:
     def test_database_url_configured(self):
         """Test database URL is configured"""
         import os
+
         from dotenv import load_dotenv
 
         load_dotenv()
@@ -579,8 +582,9 @@ class TestDatabaseAndModels:
 
     def test_query_with_and(self):
         """Test query with AND clause"""
-        from core_infra.database import RecallDB, get_db_session
         from sqlalchemy import and_
+
+        from core_infra.database import RecallDB, get_db_session
 
         try:
             with get_db_session() as session:
@@ -593,8 +597,9 @@ class TestDatabaseAndModels:
 
     def test_query_with_or(self):
         """Test query with OR clause"""
-        from core_infra.database import RecallDB, get_db_session
         from sqlalchemy import or_
+
+        from core_infra.database import RecallDB, get_db_session
 
         try:
             with get_db_session() as session:
@@ -616,8 +621,9 @@ class TestDatabaseAndModels:
 
     def test_query_group_by(self):
         """Test query with group by"""
-        from core_infra.database import RecallDB, get_db_session
         from sqlalchemy import func
+
+        from core_infra.database import RecallDB, get_db_session
 
         try:
             with get_db_session() as session:

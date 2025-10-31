@@ -7,21 +7,21 @@ from uuid import UUID, uuid4
 # Third-party imports
 import pytest
 from sqlalchemy import (
-    create_engine,
-    Column,
-    String,
+    BigInteger,
     Boolean,
+    Column,
     Date,
     DateTime,
     ForeignKey,
-    BigInteger,
     SmallInteger,
+    String,
     Text,
+    create_engine,
 )
-from sqlalchemy.orm import sessionmaker, declarative_base, relationship
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 # Local imports
-from api.crud.chat_memory import upsert_profile, get_or_create_conversation, log_message
+from api.crud.chat_memory import get_or_create_conversation, log_message, upsert_profile
 
 # Create test-specific models for SQLite compatibility
 TestBase = declarative_base()

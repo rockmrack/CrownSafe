@@ -1,9 +1,11 @@
-import pytest
 from unittest.mock import MagicMock, patch
-from fastapi.testclient import TestClient
-from api.main_crownsafe import app
-from api.routers.chat import looks_emergency, build_suggested_questions, EMERGENCY_TERMS
 from uuid import uuid4
+
+import pytest
+from fastapi.testclient import TestClient
+
+from api.main_crownsafe import app
+from api.routers.chat import EMERGENCY_TERMS, build_suggested_questions, looks_emergency
 
 
 class TestEmergencyDetection:

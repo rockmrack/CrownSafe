@@ -3,11 +3,13 @@ Deep Database Tests
 Comprehensive testing of database operations, connections, and transactions
 """
 
+import os
+
 import pytest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
-from core_infra.database import get_db, Base
-import os
+
+from core_infra.database import Base, get_db
 
 
 class TestDatabaseDeep:

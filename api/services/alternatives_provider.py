@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import Dict, Any, List
+
+from typing import Any, Dict, List
+
 from api.schemas.alternatives import AlternativeItem, AlternativesOut
 from api.services.evidence import label_to_evidence, regulatory_to_evidence
 

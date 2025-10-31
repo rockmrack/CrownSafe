@@ -1,10 +1,11 @@
 # scripts/monitor_workflow.py
 
 import asyncio
-import redis.asyncio as aioredis
 import json
 import time
 from datetime import datetime
+
+import redis.asyncio as aioredis
 
 
 async def monitor_workflow(workflow_id: str):

@@ -5,8 +5,8 @@ FIXED: ChromaDB v0.6.0 API compatibility
 
 import logging
 import os
-import sys
 import shutil
+import sys
 import traceback
 from datetime import datetime
 from pathlib import Path
@@ -19,8 +19,8 @@ import chromadb
 
 # Import with correct paths
 try:
-    from core_infra.memory_manager import MemoryManager
     from core_infra.enhanced_memory_manager import EnhancedMemoryManager
+    from core_infra.memory_manager import MemoryManager
 
     IMPORTS_SUCCESS = True
 except ImportError as e:
@@ -28,8 +28,8 @@ except ImportError as e:
     print("Trying alternative import paths...")
     try:
         sys.path.insert(0, os.path.join(project_root, "core_infra"))
-        from memory_manager import MemoryManager
         from enhanced_memory_manager import EnhancedMemoryManager
+        from memory_manager import MemoryManager
 
         IMPORTS_SUCCESS = True
     except ImportError as e2:

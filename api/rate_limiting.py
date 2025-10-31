@@ -3,15 +3,16 @@ Rate limiting configuration and handlers
 Uses Redis for distributed rate limiting across instances
 """
 
-import os
 import logging
+import os
+from contextlib import asynccontextmanager
 from typing import Optional
-from redis.asyncio import Redis
+
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter
-from contextlib import asynccontextmanager
+from redis.asyncio import Redis
 
 logger = logging.getLogger("app")
 

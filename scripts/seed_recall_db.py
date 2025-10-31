@@ -1,6 +1,6 @@
-import sys
-import os
 import logging
+import os
+import sys
 from datetime import date
 
 # --- Add project root to Python's path ---
@@ -8,7 +8,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
-from core_infra.database import SessionLocal, RecallDB, Base, engine
+from core_infra.database import Base, RecallDB, SessionLocal, engine
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)

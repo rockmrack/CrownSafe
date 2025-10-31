@@ -1,8 +1,9 @@
 # scripts/check_services.py
 
 import socket
-import requests
+
 import redis
+import requests
 
 
 def check_port(host, port, service_name):

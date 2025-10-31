@@ -2,12 +2,13 @@
 # Version: 1.0-BABYSHIELD (Mixpanel Implementation)
 # Description: Handles sending analytics events to Mixpanel.
 
+import asyncio
 import logging
 import os
-import asyncio
-from typing import Dict, Any, Optional
-from mixpanel import Mixpanel
+from typing import Any, Dict, Optional
+
 from dotenv import load_dotenv
+from mixpanel import Mixpanel
 
 # Load environment variables from .env file
 load_dotenv()

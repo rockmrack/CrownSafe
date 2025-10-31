@@ -4,11 +4,11 @@ Test script for the Safety Hub feature
 Tests article ingestion and API endpoint
 """
 
-import sys
-import os
-import json
 import asyncio
-from datetime import datetime, date
+import json
+import os
+import sys
+from datetime import date, datetime
 
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -17,10 +17,11 @@ import httpx
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-# Import required modules
-from core_infra.database import SafetyArticle, Base, get_db
-from core_infra.safety_data_connectors import CPSCDataConnector
 from core_infra.celery_tasks import ingest_safety_articles
+
+# Import required modules
+from core_infra.database import Base, SafetyArticle, get_db
+from core_infra.safety_data_connectors import CPSCDataConnector
 
 # Test configuration
 BASE_URL = "http://localhost:8000"

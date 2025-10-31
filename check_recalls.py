@@ -8,7 +8,7 @@ import os
 os.environ["TEST_MODE"] = "true"
 os.environ["DATABASE_URL"] = "sqlite:///./babyshield_dev.db"
 
-from core_infra.database import SessionLocal, Base, engine
+from core_infra.database import Base, SessionLocal, engine
 
 print("=" * 70)
 print("Recalled Products Database Check")

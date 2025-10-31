@@ -1,13 +1,13 @@
 # scripts/debug_router_trace.py
 
 import asyncio
-import logging
-import sys
-import json
-import uuid
-from pathlib import Path
 import functools
 import inspect
+import json
+import logging
+import sys
+import uuid
+from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent

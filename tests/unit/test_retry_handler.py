@@ -3,20 +3,22 @@ Unit tests for core_infra/retry_handler.py
 Tests retry logic, strategies, circuit breaker, and bulk operations
 """
 
-import pytest
 import asyncio
 import time
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
+
 from core_infra.retry_handler import (
-    RetryStrategy,
-    RetryableError,
+    BulkRetry,
+    CircuitBreakerRetry,
+    FallbackRetry,
     NonRetryableError,
+    RetryableError,
     RetryConfig,
     RetryHandler,
+    RetryStrategy,
     retry,
-    CircuitBreakerRetry,
-    BulkRetry,
-    FallbackRetry,
 )
 
 

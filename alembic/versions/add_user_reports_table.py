@@ -6,9 +6,10 @@ Revises:
 Create Date: 2025-10-12 15:45:00.000000
 """
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "add_user_reports_table"

@@ -18,7 +18,7 @@ print()
 # Test 1: Import core database module
 print("Test 1: Import core_infra.database...")
 try:
-    from core_infra.database import engine, SessionLocal, Base, get_db
+    from core_infra.database import Base, SessionLocal, engine, get_db
 
     print("✅ PASS - Database module imported successfully")
 except Exception as e:

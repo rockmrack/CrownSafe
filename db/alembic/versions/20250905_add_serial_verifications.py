@@ -5,10 +5,10 @@ Revises: 20250904_add_report_records
 Create Date: 2025-09-08 00:00:00
 """
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "20250905_add_serial_verifications"

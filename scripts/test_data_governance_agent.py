@@ -1,10 +1,10 @@
 # scripts/test_data_governance_agent.py
 
-import sys
-import os
 import asyncio
-import logging
 import json
+import logging
+import os
+import sys
 
 # --- Add project root to Python's path ---
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -14,11 +14,11 @@ sys.path.insert(0, project_root)
 from agents.governance.datagovernance_agent.agent_logic import DataGovernanceAgentLogic
 from core_infra.database import (
     Base,
-    engine,
     SessionLocal,
     User,
     create_tables,
     drop_tables,
+    engine,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

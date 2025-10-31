@@ -1,11 +1,12 @@
 # scripts/test_subscription_paywall.py
 # Test Scenario 5 (Corrected): Subscription Paywall
 
-import sys
-import os
 import asyncio
-import logging
 import json
+import logging
+import os
+import sys
+
 import httpx
 
 # --- Add project root to Python's path ---
@@ -15,11 +16,11 @@ sys.path.insert(0, project_root)
 
 from core_infra.database import (
     Base,
-    engine,
     SessionLocal,
     User,
     create_tables,
     drop_tables,
+    engine,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

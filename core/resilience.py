@@ -1,9 +1,11 @@
 # core/resilience.py
 from __future__ import annotations
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
-from time import monotonic
-from typing import Callable, Any, Dict, Optional
+
 import threading
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FuturesTimeout
+from time import monotonic
+from typing import Any, Callable, Dict, Optional
 
 _EXEC = ThreadPoolExecutor(max_workers=32)
 _lock = threading.Lock()

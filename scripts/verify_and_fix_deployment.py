@@ -3,10 +3,11 @@
 Comprehensive deployment verification and fix script
 """
 
-import requests
 import json
 import sys
 from typing import Dict, List, Tuple
+
+import requests
 
 BASE_URL = "https://babyshield.cureviax.ai"
 

@@ -7,12 +7,12 @@ from typing import Optional
 
 from sqlalchemy import (
     Column,
-    Integer,
-    String,
     Date,
     DateTime,
-    Text,
     Index,
+    Integer,
+    String,
+    Text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 

@@ -3,15 +3,15 @@ Configuration settings for Crown Safe Backend
 Handles environment-specific configuration with validation
 """
 
-import os
 import logging
+import os
 from typing import Optional
 
 try:
     from pydantic_settings import BaseSettings
 except ImportError:
     from pydantic import BaseSettings
-from pydantic import validator, root_validator, Field
+from pydantic import Field, root_validator, validator
 
 
 class Settings(BaseSettings):

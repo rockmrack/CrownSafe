@@ -7,13 +7,14 @@ Tests the new model_number parameter in the safety-check API endpoint
 and verifies that model numbers are prioritized over barcodes for recall matching.
 """
 
-import os
-import sys
+import argparse
 import asyncio
 import logging
+import os
+import sys
+from typing import Any, Dict, Optional
+
 import requests
-import argparse
-from typing import Dict, Any, Optional
 
 # Add project root to path
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -91,7 +92,7 @@ async def test_direct_database_search(model_number: str) -> Dict[str, Any]:
         Dictionary containing search results
     """
     try:
-        from core_infra.database import get_db_session, RecallDB
+        from core_infra.database import RecallDB, get_db_session
 
         logger.info(f"Testing direct database search for model number: {model_number}")
 

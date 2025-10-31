@@ -3,18 +3,20 @@ Unit tests for core_infra/soft_delete.py
 Tests soft delete functionality, mixins, query classes, and recycle bin operations
 """
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime, timedelta
-from sqlalchemy import Column, Integer, String, DateTime, Boolean
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
+from sqlalchemy import Boolean, Column, DateTime, Integer, String
 from sqlalchemy.orm import Session
+
 from core_infra.soft_delete import (
+    DeletionTracker,
+    RecycleBin,
     SoftDeleteMixin,
     SoftDeleteQuery,
-    soft_delete_filter,
-    RecycleBin,
     cascade_soft_delete,
-    DeletionTracker,
+    soft_delete_filter,
 )
 
 

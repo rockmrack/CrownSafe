@@ -1,11 +1,12 @@
 # scripts/run_live_http_test.py
 
 import asyncio
-import httpx
 import json
 import logging
 import os
 import sys
+
+import httpx
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -23,7 +24,7 @@ TEST_USER_ID = 1
 
 async def verify_database_before_test():
     """Verify the database has our test data before making API call"""
-    from core_infra.database import SessionLocal, RecallDB, DATABASE_URL
+    from core_infra.database import DATABASE_URL, RecallDB, SessionLocal
 
     logger = logging.getLogger(__name__)
     logger.info(f"Verifying database at: {DATABASE_URL}")

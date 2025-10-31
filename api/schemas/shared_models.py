@@ -3,19 +3,19 @@ Shared Pydantic Models
 Reduces duplication of model definitions across endpoint files
 """
 
-from typing import Optional, List, Dict, Any
-from datetime import datetime, date
-from pydantic import BaseModel, Field, EmailStr, field_validator
+from datetime import date, datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from utils.security.input_validator import (
     InputValidator,
     validate_barcode_field,
     validate_email_field,
-    validate_user_id_field,
     validate_product_name_field,
+    validate_user_id_field,
 )
-
 
 # ============================================================================
 # ENUMS

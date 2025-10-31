@@ -3,13 +3,14 @@
 Lint JSON/YAML files and validate links in documentation
 """
 
-import os
-import sys
 import json
+import os
 import re
+import sys
 import time
-import yaml
+
 import requests
+import yaml
 
 ROOT = os.path.dirname(os.path.dirname(__file__))
 

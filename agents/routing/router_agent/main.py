@@ -3,11 +3,12 @@
 # Addresses: TypeError in process_message call
 
 import asyncio
+import logging
 import os
 import signal
 import sys
-import logging
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
+
 from dotenv import load_dotenv
 
 # Ensure project root is in sys.path for core_infra imports
@@ -17,7 +18,8 @@ if project_root_main not in sys.path:
 
 try:
     from core_infra.mcp_client_library.client import MCPClient
-    from core_infra.mcp_client_library.models import MCPMessage, MCPHeader
+    from core_infra.mcp_client_library.models import MCPHeader, MCPMessage
+
     from core_infra.mcp_client_library.exceptions import MCPConnectionError, MCPError
 except ImportError as e:
     print(f"CRITICAL_ERROR_ROUTER_MAIN: Failed to import core_infra: {e}")

@@ -3,8 +3,9 @@ Test "Share Results" Button from Mobile App Screenshot
 Tests the share functionality for recall results
 """
 
-import requests
 import json
+
+import requests
 
 BASE_URL = "https://babyshield.cureviax.ai"
 

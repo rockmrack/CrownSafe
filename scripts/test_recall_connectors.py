@@ -1,12 +1,13 @@
 # scripts/test_recall_connectors_live.py
 
-import os
 import asyncio
-import logging
 import json
+import logging
+import os
+
 from dotenv import load_dotenv
 
-from agents.recall_data_agent.connectors import FDAConnector, EURapexConnector
+from agents.recall_data_agent.connectors import EURapexConnector, FDAConnector
 
 # Load your .env (must contain FDA_API_KEY and OPENDATASOFT_API_KEY)
 load_dotenv()

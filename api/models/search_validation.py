@@ -3,10 +3,11 @@ Search request validation with strict limits
 Enforces bounded inputs for security and performance
 """
 
-from typing import List, Optional, Literal
-from datetime import date, datetime
-from pydantic import BaseModel, Field, field_validator, model_validator, constr, conlist
 import re
+from datetime import date, datetime
+from typing import List, Literal, Optional
+
+from pydantic import BaseModel, Field, conlist, constr, field_validator, model_validator
 
 # Type aliases for constrained strings
 Str128 = constr(strip_whitespace=True, min_length=1, max_length=128)

@@ -1,6 +1,8 @@
 import os
 import uuid
+
 from fastapi.testclient import TestClient
+
 from api.main_crownsafe import app
 
 # Env (local SQLite)

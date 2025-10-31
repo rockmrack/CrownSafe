@@ -1,6 +1,8 @@
+from unittest.mock import MagicMock, patch
+
 import pytest  # type: ignore
-from unittest.mock import patch, MagicMock
-from core.metrics import inc_unclear, inc_emergency, CHAT_UNCLEAR, CHAT_EMERG
+
+from core.metrics import CHAT_EMERG, CHAT_UNCLEAR, inc_emergency, inc_unclear
 
 
 class TestEmergencyMetrics:

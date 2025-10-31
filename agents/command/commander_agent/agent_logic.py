@@ -3,7 +3,7 @@
 import asyncio
 import logging
 import traceback
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 # Adjust imports to your actual folder structure:
 try:
@@ -107,7 +107,7 @@ class CrownSafeCommanderLogic:
 
                 # --------- ADD DB FALLBACK HERE -----------
                 try:
-                    from core_infra.database import SessionLocal, RecallDB
+                    from core_infra.database import RecallDB, SessionLocal
 
                     db = SessionLocal()
 

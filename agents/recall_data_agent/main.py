@@ -6,8 +6,8 @@ Can be run standalone for manual ingestion or scheduled via Celery/cron.
 
 import asyncio
 import logging
-import sys
 import os
+import sys
 from datetime import datetime
 
 # Add project root to path

@@ -6,6 +6,7 @@ which is included in response headers and can be used for log correlation.
 """
 
 import uuid
+
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 

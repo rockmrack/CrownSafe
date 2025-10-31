@@ -1,5 +1,6 @@
-from celery import Celery
 import os
+
+from celery import Celery
 
 # Get the Redis host from environment variables, defaulting to localhost
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")

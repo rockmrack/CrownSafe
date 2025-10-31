@@ -79,7 +79,7 @@ def init_database():
                 logger.warning(f"Could not enable pg_trgm extension: {e}")
 
         # Import models to ensure they're registered
-        from core_infra.database import Base, User, FamilyMember
+        from core_infra.database import Base, FamilyMember, User
         from core_infra.enhanced_database_schema import EnhancedRecallDB
 
         # Create all tables

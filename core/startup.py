@@ -4,9 +4,9 @@ Production startup script for BabyShield API
 Handles environment setup and graceful degradation
 """
 
+import logging
 import os
 import sys
-import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

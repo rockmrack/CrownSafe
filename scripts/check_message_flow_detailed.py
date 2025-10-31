@@ -1,8 +1,9 @@
 # scripts/check_message_flow_detailed.py
 
-import redis
 import json
 import time
+
+import redis
 
 r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 

@@ -1,11 +1,12 @@
 # scripts/test_direct_message_flow.py
 
-import redis
-import json
-import uuid
 import asyncio
+import json
 import time
+import uuid
 from datetime import datetime
+
+import redis
 
 
 async def test_router_directly():

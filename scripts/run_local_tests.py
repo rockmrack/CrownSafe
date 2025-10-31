@@ -4,11 +4,11 @@ Run local tests with proper database configuration
 Sets environment variables for local testing
 """
 
+import asyncio
 import os
+import subprocess
 import sys
 import time
-import subprocess
-import asyncio
 from pathlib import Path
 
 

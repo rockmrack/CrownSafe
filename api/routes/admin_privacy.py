@@ -4,21 +4,21 @@ Allows administrators to manage and process privacy requests
 """
 
 import logging
-from typing import Optional, List
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
+from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Request, Query
+from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import select, update, func, and_, or_
+from sqlalchemy import and_, func, or_, select, update
 from sqlalchemy.orm import Session
 
-from api.security.admin_auth import require_admin
 from api.errors import APIError
+from api.security.admin_auth import require_admin
+from api.utils.privacy import PrivacyDataExporter, mask_email
 from core_infra.database import get_db
 from db.models.privacy_request import PrivacyRequest
-from api.utils.privacy import mask_email, PrivacyDataExporter
 
 logger = logging.getLogger(__name__)
 

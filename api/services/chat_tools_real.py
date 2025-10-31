@@ -1,28 +1,31 @@
 from __future__ import annotations
-from typing import Dict, Any
-from api.schemas.tools import (
-    PregnancyCheckIn,
-    PregnancyCheckOut,
-    RiskItem,
-    AllergyCheckIn,
-    AllergyCheckOut,
-    AllergyHit,
-    RecallDetailsIn,
-    RecallDetailsOut,
-    RecallRecord,
-    IngredientInfoIn,
-    IngredientInfoOut,
-    AgeCheckIn,
-    AgeCheckOut,
-)
-from api.services.evidence import recalls_to_evidence, label_to_evidence
-from api.services.alternatives_provider import get_alternatives
+
+from typing import Any, Dict
+
+from agents.premium.allergy_sensitivity_agent.main import AllergySensitivityAgent
 
 # Import your existing agents
 from agents.premium.pregnancy_product_safety_agent.main import (
     PregnancyProductSafetyAgent,
 )
-from agents.premium.allergy_sensitivity_agent.main import AllergySensitivityAgent
+
+from api.schemas.tools import (
+    AgeCheckIn,
+    AgeCheckOut,
+    AllergyCheckIn,
+    AllergyCheckOut,
+    AllergyHit,
+    IngredientInfoIn,
+    IngredientInfoOut,
+    PregnancyCheckIn,
+    PregnancyCheckOut,
+    RecallDetailsIn,
+    RecallDetailsOut,
+    RecallRecord,
+    RiskItem,
+)
+from api.services.alternatives_provider import get_alternatives
+from api.services.evidence import label_to_evidence, recalls_to_evidence
 
 
 def pregnancy_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:

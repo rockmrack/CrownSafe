@@ -8,9 +8,9 @@ COPILOT AUDIT FIX: Replace runtime schema modifications with proper migrations
 This migration adds columns that were previously being added at runtime by ensure_user_columns()
 """
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "202410_04_002"

@@ -4,9 +4,10 @@ EMERGENCY: Enable pg_trgm extension directly on production database
 This bypasses the application startup code
 """
 
-import psycopg2
-import sys
 import os
+import sys
+
+import psycopg2
 
 # Get DATABASE_URL from environment or use direct connection
 DATABASE_URL = os.getenv(

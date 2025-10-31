@@ -3,6 +3,7 @@ Verify user_reports table was created and test the endpoints
 """
 
 import os
+
 import psycopg
 
 # Connect to production database

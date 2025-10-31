@@ -12,13 +12,14 @@ if PROJECT_ROOT not in sys.path:
 
 # ─── 1) Imports ─────────────────────────────────────────────────────────────────
 import asyncio
-import logging
 import json
-from unittest.mock import patch, AsyncMock
+import logging
+from unittest.mock import AsyncMock, patch
+
 from sqlalchemy import text
 
-from core_infra.database import Base, engine, SessionLocal, User, FamilyMember, Allergy
 from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
+from core_infra.database import Allergy, Base, FamilyMember, SessionLocal, User, engine
 
 # ─── 2) Configuration & Mocks ─────────────────────────────────────────────────
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")

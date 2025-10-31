@@ -1,7 +1,8 @@
 # scripts/check_workflow_details.py
 
-import redis
 import json
+
+import redis
 
 r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 

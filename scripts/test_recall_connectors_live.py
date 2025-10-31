@@ -1,19 +1,20 @@
+import asyncio
+import json
+import logging
 import os
 import sys
-import asyncio
-import logging
-import json
+
 from dotenv import load_dotenv
 
 # Ensure project root is on sys.path so "import agents…" works
 sys.path.insert(0, os.getcwd())
 
 from agents.recall_data_agent.connectors import (
-    FDAConnector,
     CPSCConnector,
     EURapexConnector,
-    UKOPSSConnector,
+    FDAConnector,
     NHTSAConnector,
+    UKOPSSConnector,
     USDAFSISConnector,
 )
 

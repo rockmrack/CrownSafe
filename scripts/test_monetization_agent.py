@@ -1,11 +1,11 @@
 # scripts/test_monetization_agent.py
 
-import sys
-import os
 import asyncio
-import logging
 import json
-from unittest.mock import patch, MagicMock
+import logging
+import os
+import sys
+from unittest.mock import MagicMock, patch
 
 # --- Add project root to Python's path ---
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -13,8 +13,8 @@ sys.path.insert(0, project_root)
 # -----------------------------------------
 
 # We need to set up a test database BEFORE we import the agent logic
-from core_infra.database import Base, engine, SessionLocal, User
 from agents.business.monetization_agent.agent_logic import MonetizationAgentLogic
+from core_infra.database import Base, SessionLocal, User, engine
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 

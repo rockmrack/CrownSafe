@@ -1,9 +1,9 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import api.routers.chat as chat_router
 from fastapi.testclient import TestClient
 
+import api.routers.chat as chat_router
 from api.main_crownsafe import app
 
 

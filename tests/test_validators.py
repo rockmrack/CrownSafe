@@ -3,11 +3,12 @@ Unit tests for input validators
 """
 
 import pytest
+
 from core_infra.validators import (
+    sanitize_html,
     validate_barcode,
     validate_email,
     validate_model_number,
-    sanitize_html,
     validate_pagination,
     validate_search_query,
 )

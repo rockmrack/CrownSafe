@@ -1,5 +1,6 @@
+from typing import Any, Optional
+
 from fastapi import APIRouter, HTTPException, Request
-from typing import Optional, Any
 
 router = APIRouter(prefix="/api/v1", tags=["account-legacy"])
 

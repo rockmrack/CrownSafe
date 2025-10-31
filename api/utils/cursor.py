@@ -4,13 +4,13 @@ Uses HMAC-SHA256 for signing to prevent tampering
 """
 
 import base64
-import hmac
 import hashlib
+import hmac
 import json
-import time
 import os
-from typing import Any, Dict, Optional
+import time
 from datetime import datetime, timezone
+from typing import Any, Dict, Optional
 
 
 def _b64u_encode(data: bytes) -> str:

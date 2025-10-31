@@ -3,19 +3,20 @@ Task 16: Security Middleware for BabyShield API
 Implements IP allowlisting, security headers, and request validation
 """
 
-import os
-import time
-import logging
-import ipaddress
 import hashlib
 import hmac
-from typing import Optional, List, Set, Callable
+import ipaddress
+import logging
+import os
+import secrets
+import time
 from datetime import datetime, timedelta
-from fastapi import Request, Response, HTTPException, status
+from typing import Callable, List, Optional, Set
+
+from fastapi import HTTPException, Request, Response, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
-import secrets
 
 logger = logging.getLogger(__name__)
 

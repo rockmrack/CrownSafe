@@ -3,11 +3,12 @@ Security middleware for BabyShield
 Adds security headers and protections
 """
 
-from fastapi import Request
-from fastapi.responses import Response
 import hashlib
 import secrets
 from typing import Callable
+
+from fastapi import Request
+from fastapi.responses import Response
 
 
 class SecurityHeadersMiddleware:
@@ -110,8 +111,9 @@ def add_security_headers(app):
     """
     Add all security middleware to app
     """
-    from fastapi.middleware.trustedhost import TrustedHostMiddleware
     import os
+
+    from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
     # Add trusted host middleware
     allowed_hosts = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")

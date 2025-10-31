@@ -5,13 +5,13 @@ Provides utilities for optimizing database queries and preventing N+1 problems
 
 import logging
 import time
-from typing import List, Optional, Any, TypeVar, Generic
-from functools import wraps
 from contextlib import contextmanager
+from functools import wraps
+from typing import Any, Generic, List, Optional, TypeVar
 
 from sqlalchemy import event, text
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import Session, Query, joinedload, selectinload, subqueryload
+from sqlalchemy.orm import Query, Session, joinedload, selectinload, subqueryload
 from sqlalchemy.orm.query import Query as QueryType
 
 logger = logging.getLogger(__name__)

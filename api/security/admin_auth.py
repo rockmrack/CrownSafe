@@ -3,13 +3,15 @@ Admin authentication for secure admin endpoints
 Uses API key authentication with rate limiting
 """
 
-import os
 import hashlib
 import hmac
 import logging
+import os
 from typing import Optional
-from fastapi import Header, HTTPException, Depends, Request
+
+from fastapi import Depends, Header, HTTPException, Request
 from fastapi.security import APIKeyHeader
+
 from api.errors import APIError
 
 logger = logging.getLogger(__name__)

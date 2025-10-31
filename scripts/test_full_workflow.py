@@ -1,8 +1,9 @@
 # scripts/test_full_workflow.py
 
-import requests
-import time
 import json
+import time
+
+import requests
 
 print("🚀 Full Workflow Test\n")
 

@@ -2,31 +2,31 @@
 Product Monitoring Scheduler - 24/7 automated product monitoring
 """
 
-import logging
 import asyncio
+import logging
 from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional
-from sqlalchemy.orm import Session
+from typing import Any, Dict, List, Optional
+
 from sqlalchemy import (
+    JSON,
+    Boolean,
     Column,
+    DateTime,
+    ForeignKey,
     Integer,
     String,
-    DateTime,
-    Boolean,
-    JSON,
-    ForeignKey,
     Text,
     and_,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Session, relationship
 
-from core_infra.database import get_db_session, Base  # RecallDB removed - Crown Safe uses HairProductModel
-from core_infra.visual_agent_models import ImageExtraction, ImageJob
 from api.notification_endpoints import (
+    DeviceToken,
     NotificationHistory,
     send_push_notification,
-    DeviceToken,
 )
+from core_infra.database import Base, get_db_session  # RecallDB removed - Crown Safe uses HairProductModel
+from core_infra.visual_agent_models import ImageExtraction, ImageJob
 
 logger = logging.getLogger(__name__)
 
@@ -415,8 +415,9 @@ class ProductMonitoringScheduler:
 
 
 # Celery task for scheduled monitoring
-from celery import Celery
 import os
+
+from celery import Celery
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 celery_app = Celery("monitoring", broker=REDIS_URL, backend=REDIS_URL)

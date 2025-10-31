@@ -4,9 +4,10 @@ Test Suite 2: API Endpoints Tests (100 tests)
 Tests all API endpoints, routes, and HTTP responses
 """
 
-import pytest
-import sys
 import os
+import sys
+
+import pytest
 from fastapi.testclient import TestClient
 
 # Add project root to path

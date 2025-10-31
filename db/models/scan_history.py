@@ -3,19 +3,21 @@ Scan History Model for tracking user product scans
 Used for generating 90-day safety summaries
 """
 
+from datetime import datetime
+
 from sqlalchemy import (
+    JSON,
+    Boolean,
     Column,
-    Integer,
-    String,
     DateTime,
     Float,
-    Boolean,
-    Text,
     ForeignKey,
-    JSON,
+    Integer,
+    String,
+    Text,
 )
 from sqlalchemy.orm import relationship
-from datetime import datetime
+
 from core_infra.database import Base
 
 

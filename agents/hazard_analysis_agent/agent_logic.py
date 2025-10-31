@@ -2,11 +2,11 @@
 # Version: 1.5-BABYSHIELD (Live OpenAI API Implementation, Test-Compatible)
 # Description: Analyzes recall data using a live call to the OpenAI GPT-4o model.
 
+import json
 import logging
 import os
-import json
-from typing import Dict, Any, Optional, List
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 import httpx
 from dotenv import load_dotenv

@@ -5,19 +5,20 @@ Product Monitoring Management Endpoints
 import logging
 from datetime import datetime, timedelta
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, desc
 
-from core_infra.database import get_db
-from core_infra.auth import get_current_active_user
-from api.schemas.common import ApiResponse, ok, fail
-from api.pydantic_base import AppModel
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from sqlalchemy import and_, desc
+from sqlalchemy.orm import Session
+
 from api.monitoring_scheduler import (
     MonitoredProduct,
     MonitoringRun,
     ProductMonitoringScheduler,
 )
+from api.pydantic_base import AppModel
+from api.schemas.common import ApiResponse, fail, ok
+from core_infra.auth import get_current_active_user
+from core_infra.database import get_db
 
 logger = logging.getLogger(__name__)
 
@@ -304,7 +305,7 @@ async def auto_add_from_scans(
 ):
     """Automatically add products from recent scans to monitoring"""
     try:
-        from core_infra.visual_agent_models import ImageJob, ImageExtraction, JobStatus
+        from core_infra.visual_agent_models import ImageExtraction, ImageJob, JobStatus
 
         # Get user's recent completed scans
         recent_scans = (

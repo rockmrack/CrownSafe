@@ -5,11 +5,12 @@ All errors follow the same JSON structure with correlation IDs
 
 import logging
 from typing import Any, Dict, List, Optional
-from fastapi import Request, HTTPException
-from fastapi.responses import JSONResponse
+
+from fastapi import HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.responses import JSONResponse
 from pydantic import ValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 logger = logging.getLogger("app")
 

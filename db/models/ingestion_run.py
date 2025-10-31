@@ -3,10 +3,12 @@ SQLAlchemy model for ingestion run tracking
 """
 
 from datetime import datetime, timezone
-from typing import Optional, Dict, Any
-from sqlalchemy import Column, String, DateTime, Integer, Text, CheckConstraint
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from typing import Any, Dict, Optional
+
+from sqlalchemy import CheckConstraint, Column, DateTime, Integer, String, Text
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.sql import func
+
 from core_infra.database import Base  # Use existing Base from project
 
 

@@ -3,11 +3,13 @@ Deep Performance Tests
 Testing response times, throughput, and resource usage
 """
 
-import pytest
-from fastapi.testclient import TestClient
-from api.main_crownsafe import app
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import pytest
+from fastapi.testclient import TestClient
+
+from api.main_crownsafe import app
 
 
 class TestPerformanceDeep:

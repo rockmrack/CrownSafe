@@ -4,11 +4,12 @@ Validate OpenAPI specification
 Ensures the API spec is valid and matches implementation
 """
 
+import json
 import os
 import sys
-import yaml
-import json
 from pathlib import Path
+
+import yaml
 
 
 def validate_openapi_spec():

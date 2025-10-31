@@ -1,9 +1,10 @@
 # scripts/clear_and_test.py
 
+import json
+import time
+
 import redis
 import requests
-import time
-import json
 
 r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 

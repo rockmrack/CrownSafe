@@ -4,21 +4,22 @@ Provides endpoints for COPPA, Children's Code, GDPR, and legal content managemen
 Critical for app store approval and regulatory compliance
 """
 
-import logging
-import json
-import uuid
 import hashlib
-from typing import Optional, List, Dict, Any
-from datetime import datetime, timedelta, date
-from fastapi import APIRouter, HTTPException, Depends, Query, Body, BackgroundTasks
-from fastapi.responses import JSONResponse, HTMLResponse
-from pydantic import BaseModel, Field, EmailStr, validator
-from sqlalchemy.orm import Session
-from enum import Enum
+import json
+import logging
 import secrets
+import uuid
+from datetime import date, datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
-from core_infra.database import get_db, User
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, Query
+from fastapi.responses import HTMLResponse, JSONResponse
+from pydantic import BaseModel, EmailStr, Field, validator
+from sqlalchemy.orm import Session
+
 from core_infra.auth import get_current_active_user
+from core_infra.database import User, get_db
 
 logger = logging.getLogger(__name__)
 

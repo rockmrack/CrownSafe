@@ -1,14 +1,15 @@
 # C:\Users\rossd\Downloads\RossNetAgents\core_infra\redis_manager.py
 # Utility for managing asynchronous Redis connections.
 
-import os
-import redis.asyncio as redis  # Import the async redis client
-from redis.asyncio.connection import ConnectionPool
-import logging
-import time
 import asyncio
-from dotenv import load_dotenv
+import logging
+import os
+import time
 from typing import Optional
+
+import redis.asyncio as redis  # Import the async redis client
+from dotenv import load_dotenv
+from redis.asyncio.connection import ConnectionPool
 
 # Load environment variables from .env file at the project root
 try:

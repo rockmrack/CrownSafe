@@ -8,11 +8,12 @@ Author: BabyShield Backend Team
 Date: October 11, 2025
 """
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock
-from fastapi import UploadFile, HTTPException
-from io import BytesIO
 import time
+from io import BytesIO
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
+from fastapi import HTTPException, UploadFile
 
 
 @pytest.mark.api

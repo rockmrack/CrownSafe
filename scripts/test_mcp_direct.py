@@ -1,9 +1,10 @@
 # scripts/test_mcp_direct.py
 
 import asyncio
-import aiohttp
 import json
 import logging
+
+import aiohttp
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

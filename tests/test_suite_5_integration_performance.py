@@ -5,10 +5,11 @@ Tests end-to-end workflows, performance, and system integration
 This completes the 500 test requirement
 """
 
-import pytest
-import sys
 import os
+import sys
 import time
+
+import pytest
 from fastapi.testclient import TestClient
 
 # Add project root to path
@@ -50,8 +51,9 @@ class TestIntegrationAndPerformance:
 
     def test_memory_usage_stable(self):
         """Test memory usage remains stable"""
-        import psutil
         import os
+
+        import psutil
 
         process = psutil.Process(os.getpid())
         mem_before = process.memory_info().rss

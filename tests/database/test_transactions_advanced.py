@@ -9,18 +9,19 @@ Date: October 10, 2025
 """
 
 import os
-import pytest
-from unittest.mock import Mock, patch, MagicMock
-from sqlalchemy.exc import IntegrityError, OperationalError
-from sqlalchemy.orm import Session
-from sqlalchemy import text
-from datetime import datetime
 import threading
 import time
 import uuid
+from datetime import datetime
+from unittest.mock import MagicMock, Mock, patch
 
-from core_infra.database import SessionLocal, get_db, engine, Base
-from api.models.chat_memory import UserProfile, Conversation, ConversationMessage
+import pytest
+from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError, OperationalError
+from sqlalchemy.orm import Session
+
+from api.models.chat_memory import Conversation, ConversationMessage, UserProfile
+from core_infra.database import Base, SessionLocal, engine, get_db
 
 
 # Helper to check if using SQLite
@@ -46,9 +47,9 @@ class TestDatabaseTransactions:
         """Create a fresh database session for testing"""
         # Import models to register them with Base
         from api.models.chat_memory import (
-            UserProfile,
             Conversation,
             ConversationMessage,
+            UserProfile,
         )
 
         # Create only the tables we need for testing (not all tables in Base)

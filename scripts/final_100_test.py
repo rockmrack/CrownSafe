@@ -1,6 +1,7 @@
-import requests
-from datetime import datetime
 import random
+from datetime import datetime
+
+import requests
 
 BASE_URL = "http://localhost:8001"
 

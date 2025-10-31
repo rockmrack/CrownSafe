@@ -3,15 +3,15 @@ Comprehensive Pytest Configuration
 Provides fixtures and test utilities for all test suites
 """
 
-import pytest
 import os
 import tempfile
-from typing import Generator
 from datetime import datetime, timedelta
+from typing import Generator
 
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 # Set test environment
@@ -98,8 +98,8 @@ def test_user(db_session) -> dict:
 
     Returns user data dictionary
     """
-    from core_infra.database import User
     from core_infra.auth import pwd_context
+    from core_infra.database import User
 
     user = User(
         email="test@example.com",
@@ -126,8 +126,8 @@ def test_subscriber(db_session) -> dict:
     """
     Create a test user with active subscription
     """
-    from core_infra.database import User
     from core_infra.auth import pwd_context
+    from core_infra.database import User
 
     user = User(
         email="subscriber@example.com",
@@ -157,8 +157,8 @@ def test_admin(db_session) -> dict:
     """
     Create a test admin user
     """
-    from core_infra.database import User
     from core_infra.auth import pwd_context
+    from core_infra.database import User
 
     user = User(
         email="admin@example.com",

@@ -30,11 +30,12 @@ print("  • Safety Campaigns")
 print("  • View All Safety Updates")
 print()
 
+from fastapi.testclient import TestClient
+from sqlalchemy import desc, func
+
+from api.main_crownsafe import app
 from core_infra.database import SessionLocal, engine
 from core_infra.enhanced_database_schema import EnhancedRecallDB
-from fastapi.testclient import TestClient
-from api.main_crownsafe import app
-from sqlalchemy import func, desc
 
 # Verify database connection
 print("=" * 80)

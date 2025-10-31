@@ -33,8 +33,8 @@ print()
 print("TEST 2: Database Connection")
 print("-" * 80)
 try:
-    import sqlite3
     import os
+    import sqlite3
 
     db_path = r"C:\Users\rossd\AppData\Local\Temp\babyshield_dev.db"
     if os.path.exists(db_path):

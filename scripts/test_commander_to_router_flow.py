@@ -2,9 +2,10 @@
 
 import asyncio
 import json
-import redis
 import uuid
 from datetime import datetime
+
+import redis
 
 
 async def test_flow():

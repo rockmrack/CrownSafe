@@ -3,13 +3,13 @@ Structured logging configuration for BabyShield
 Provides consistent logging across the application
 """
 
+import json
 import logging
 import logging.config
-import json
+import os
 import sys
 from datetime import datetime
-from typing import Dict, Any
-import os
+from typing import Any, Dict
 
 
 class StructuredFormatter(logging.Formatter):

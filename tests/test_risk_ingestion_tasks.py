@@ -1,8 +1,8 @@
 """Tests for core_infra/risk_ingestion_tasks.py"""
 
 import unittest
-from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime
+from unittest.mock import MagicMock, Mock, patch
 
 
 class MockSafetyDataRecord:

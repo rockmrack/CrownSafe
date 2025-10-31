@@ -3,22 +3,25 @@ Database models for Visual Agent - Phase 2
 Includes image processing jobs, HITL review queue, and extraction results
 """
 
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Float,
-    DateTime,
-    Text,
-    JSON,
-    Boolean,
-    Enum as SQLEnum,
-    ForeignKey,
-)
-from sqlalchemy.orm import relationship
-from datetime import datetime
 import enum
 import uuid
+from datetime import datetime
+
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
+from sqlalchemy import (
+    Enum as SQLEnum,
+)
+from sqlalchemy.orm import relationship
 
 # Import Base from the main database module
 from core_infra.database import Base

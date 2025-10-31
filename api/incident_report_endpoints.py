@@ -6,24 +6,28 @@ Handles crowdsourced safety incident reporting
 import asyncio
 import logging
 import uuid
-from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
 from fastapi import (
     APIRouter,
-    HTTPException,
+    BackgroundTasks,
     Depends,
-    UploadFile,
     File,
     Form,
-    BackgroundTasks,
+    HTTPException,
     Request,
+    UploadFile,
 )
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel, Field
+from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session
-from sqlalchemy import func, and_, or_
 
+from api.schemas.common import ApiResponse
 from core_infra.database import SessionLocal, get_db
+from core_infra.rate_limiter import limiter
+from core_infra.s3_uploads import upload_file
 from db.models.incident_report import (
     AgencyNotification,
     IncidentCluster,
@@ -32,9 +36,6 @@ from db.models.incident_report import (
     IncidentType,
     SeverityLevel,
 )
-from core_infra.s3_uploads import upload_file
-from api.schemas.common import ApiResponse
-from core_infra.rate_limiter import limiter
 
 # from models import NotificationHistory  # Not used in this module
 

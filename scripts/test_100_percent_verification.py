@@ -4,10 +4,11 @@ FINAL 100% VERIFICATION TEST FOR BABYSHIELD API
 Tests all implemented endpoints with correct parameters
 """
 
-import requests
-import json
 import base64
+import json
 from datetime import datetime
+
+import requests
 
 BASE_URL = "http://localhost:8001"
 

@@ -1,18 +1,21 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from sqlalchemy import text
-from typing import Optional
 import logging
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 # Import existing dependencies
 try:
-    from core_infra.database import get_db_session
     from core_infra.auth import get_current_active_user
+    from core_infra.database import get_db_session
 except ImportError:
     # Fallback imports if structure is different
     from api.deps import (
-        get_db as get_db_session,
         get_current_user as get_current_active_user,
+    )
+    from api.deps import (
+        get_db as get_db_session,
     )
 
 logger = logging.getLogger(__name__)

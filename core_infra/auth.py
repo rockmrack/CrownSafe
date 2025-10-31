@@ -3,19 +3,21 @@ JWT Authentication for BabyShield API
 Production-ready authentication system
 """
 
-import os
 import logging
+import os
+import secrets
 from datetime import datetime, timedelta
-from typing import Optional, Dict, Any
-from jose import JWTError, jwt
-from passlib.context import CryptContext
+from typing import Any, Dict, Optional
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
+from jose import JWTError, jwt
+from passlib.context import CryptContext
 from passlib.exc import UnknownHashError
-from core_infra.database import get_db, User
-import secrets
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
+
+from core_infra.database import User, get_db
 
 logger = logging.getLogger(__name__)
 

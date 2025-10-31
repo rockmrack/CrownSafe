@@ -21,17 +21,16 @@ import ast
 import asyncio
 from datetime import datetime
 from typing import Any, Dict
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
 from agents.chat.chat_agent.agent_logic import (
     ChatAgentLogic,
-    EvidenceItem,
     EmergencyNotice,
+    EvidenceItem,
     ExplanationResponse,
 )
-
 
 print("\n" + "=" * 80)
 print("COMPREHENSIVE CHAT AGENT TEST SUITE")

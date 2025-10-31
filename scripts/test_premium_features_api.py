@@ -5,9 +5,10 @@ Tests both direct endpoints and integration with main safety check
 """
 
 import asyncio
-import httpx
 import json
 from datetime import datetime
+
+import httpx
 
 # API base URL - adjust as needed
 BASE_URL = "http://localhost:8001"  # Local testing

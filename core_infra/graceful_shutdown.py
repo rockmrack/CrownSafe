@@ -3,15 +3,15 @@ Graceful shutdown handler for BabyShield
 Ensures clean shutdown without data loss
 """
 
+import asyncio
+import logging
+import os
 import signal
 import sys
-import os
-import asyncio
 import threading
 import time
-import logging
-from typing import List, Callable, Any
 from contextlib import contextmanager
+from typing import Any, Callable, List
 
 logger = logging.getLogger(__name__)
 
@@ -182,8 +182,8 @@ async def request_tracking_middleware(request, call_next):
 # Cleanup tasks
 def cleanup_temp_files():
     """Clean up temporary files"""
-    import tempfile
     import shutil
+    import tempfile
 
     temp_dir = tempfile.gettempdir()
     logger.info(f"  Cleaning temp files in {temp_dir}")

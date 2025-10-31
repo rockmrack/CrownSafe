@@ -1,6 +1,7 @@
 import subprocess
-import redis
 import time
+
+import redis
 
 # 1. Kill all agent processes
 print("Killing all agents...")

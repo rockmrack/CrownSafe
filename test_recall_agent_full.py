@@ -17,11 +17,11 @@ print("[TEST 1] Testing RecallDataAgent imports...")
 try:
     from agents.recall_data_agent.agent_logic import RecallDataAgentLogic
     from agents.recall_data_agent.connectors import (
+        ACCCConnector,
         CPSCConnector,
         FDAConnector,
-        NHTSAConnector,
         HealthCanadaConnector,
-        ACCCConnector,
+        NHTSAConnector,
         UK_OPSS_Connector,
     )
     from agents.recall_data_agent.models import (

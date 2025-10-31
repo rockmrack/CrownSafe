@@ -1,9 +1,10 @@
-from logging.config import fileConfig
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-from alembic import context
 import os
 import sys
+from logging.config import fileConfig
+
+from sqlalchemy import engine_from_config, pool
+
+from alembic import context
 
 # Add project root to Python path (two levels up from db/migrations/)
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -13,59 +14,58 @@ if project_root not in sys.path:
 # Import your models - ALL models must be imported for alembic to detect them
 # These imports are intentionally "unused" but required for Alembic autogenerate
 # ruff: noqa: F401
-from core_infra.enhanced_database_schema import Base
-from core_infra.database import User
+from api.models.user_report import UserReport
 
 # CROWN SAFE: Import hair product safety models
 from core_infra.crown_safe_models import (
-    HairProfileModel,
-    HairProductModel,
-    IngredientModel,
-    ProductScanModel,
-    ProductReviewModel,
     BrandCertificationModel,
-    SalonAccountModel,
+    HairProductModel,
+    HairProfileModel,
+    IngredientModel,
     MarketInsightModel,
+    ProductReviewModel,
+    ProductScanModel,
+    SalonAccountModel,
 )
+from core_infra.database import User
+from core_infra.enhanced_database_schema import Base
 
-# LEGACY BABY CODE: FamilyMember and Allergy models removed
-# from core_infra.database import FamilyMember, Allergy
-
-# Import incident reporting models
-from db.models.incident_report import (
-    IncidentReport,
-    IncidentCluster,
-    AgencyNotification,
+# Import risk assessment models
+from core_infra.risk_assessment_models import (
+    CompanyComplianceProfile,
+    DataIngestionJob,
+    ProductDataSource,
+    ProductGoldenRecord,
+    ProductRiskProfile,
+    RiskAssessmentReport,
+    SafetyIncident,
 )
 
 # Import visual agent models
 from core_infra.visual_agent_models import (
-    ImageJob,
-    ImageExtraction,
-    ReviewQueue,
-    MFVSession,
     ImageAnalysisCache,
+    ImageExtraction,
+    ImageJob,
+    MFVSession,
+    ReviewQueue,
 )
+
+# LEGACY BABY CODE: FamilyMember and Allergy models removed
+# from core_infra.database import FamilyMember, Allergy
+# Import incident reporting models
+from db.models.incident_report import (
+    AgencyNotification,
+    IncidentCluster,
+    IncidentReport,
+)
+from db.models.ingestion_run import IngestionRun
+from db.models.privacy_request import PrivacyRequest
+from db.models.report_record import ReportRecord
 
 # Import other db models
-from db.models.scan_history import ScanHistory, SafetyReport
-from db.models.share_token import ShareToken
+from db.models.scan_history import SafetyReport, ScanHistory
 from db.models.serial_verification import SerialVerification
-from db.models.report_record import ReportRecord
-from db.models.privacy_request import PrivacyRequest
-from db.models.ingestion_run import IngestionRun
-from api.models.user_report import UserReport
-
-# Import risk assessment models
-from core_infra.risk_assessment_models import (
-    ProductGoldenRecord,
-    ProductRiskProfile,
-    ProductDataSource,
-    SafetyIncident,
-    CompanyComplianceProfile,
-    RiskAssessmentReport,
-    DataIngestionJob,
-)
+from db.models.share_token import ShareToken
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

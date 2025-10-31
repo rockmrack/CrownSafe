@@ -1,6 +1,8 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
-from core.metrics import inc_req, obs_total, obs_tool, obs_synth
+
+from core.metrics import inc_req, obs_synth, obs_tool, obs_total
 
 
 class TestMetricsWithPrometheus:

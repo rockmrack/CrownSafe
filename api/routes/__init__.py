@@ -2,8 +2,7 @@
 Routes package for API endpoints
 """
 
-from . import system
-from . import admin
+from . import admin, system
 
 __all__ = [
     "system",

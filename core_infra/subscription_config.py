@@ -5,6 +5,7 @@ Centralizes all subscription-related settings
 
 import os
 from typing import Dict, Optional
+
 from dotenv import load_dotenv
 
 load_dotenv()

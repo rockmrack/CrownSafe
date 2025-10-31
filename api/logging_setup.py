@@ -3,8 +3,8 @@ Structured JSON logging configuration for production
 Provides consistent JSON log format for all application logs
 """
 
-import logging
 import json
+import logging
 import sys
 import time
 import traceback

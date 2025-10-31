@@ -1,9 +1,9 @@
 # init_sqlite_scan_history.py
-import os
-import sys
-import sqlite3
 import argparse
 import datetime
+import os
+import sqlite3
+import sys
 
 DB = os.path.abspath("dev.db")
 

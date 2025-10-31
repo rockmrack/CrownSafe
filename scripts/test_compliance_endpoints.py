@@ -5,9 +5,10 @@ Tests COPPA, Children's Code, GDPR, and legal content management
 """
 
 import asyncio
-import httpx
 import json
-from datetime import datetime, date
+from datetime import date, datetime
+
+import httpx
 
 # API base URL - adjust as needed
 BASE_URL = "http://localhost:8001"  # Local testing

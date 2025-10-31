@@ -1,8 +1,10 @@
 # core_infra/tasks.py
 
-import logging
 import asyncio
-from .celery_app import celery_app
+import logging
+
+# --- END OF FIX ---
+from agents.business.metrics_agent.agent_logic import MetricsAgentLogic
 
 # --- START OF FIX ---
 # Corrected the import path to match your directory structure: agents/engagement/push_notification_agent
@@ -10,10 +12,8 @@ from agents.engagement.push_notification_agent.agent_logic import (
     PushNotificationAgentLogic,
 )
 
-# --- END OF FIX ---
-
-from agents.business.metrics_agent.agent_logic import MetricsAgentLogic
-from .database import get_db_session, User
+from .celery_app import celery_app
+from .database import User, get_db_session
 
 logger = logging.getLogger(__name__)
 

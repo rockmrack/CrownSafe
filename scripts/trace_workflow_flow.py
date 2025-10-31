@@ -1,9 +1,10 @@
 # scripts/trace_workflow_flow.py
 
-import redis
+import asyncio
 import json
 import time
-import asyncio
+
+import redis
 
 
 async def trace_workflow(workflow_id: str):

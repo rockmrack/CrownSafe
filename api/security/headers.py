@@ -4,7 +4,8 @@ Adds comprehensive security headers to all responses
 """
 
 import logging
-from typing import Optional, Dict
+from typing import Dict, Optional
+
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response

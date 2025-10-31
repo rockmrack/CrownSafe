@@ -3,13 +3,14 @@ Structured Logging Module for BabyShield Backend
 Issue #32 - Phase 2 Implementation
 """
 
-import sys
 import json
+import sys
 from pathlib import Path
 from typing import Any, Dict
-from loguru import logger
-from fastapi import Request
+
 import structlog
+from fastapi import Request
+from loguru import logger
 
 
 # Configure structured logging

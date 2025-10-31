@@ -4,10 +4,10 @@ Generates region-correct presigned POST URLs for client-side uploads
 """
 
 import os
-import boto3
-from botocore.config import Config
 from typing import Dict, Optional
 
+import boto3
+from botocore.config import Config
 
 # Bucket configuration
 BUCKET = os.getenv("S3_UPLOAD_BUCKET") or os.getenv("S3_BUCKET", "babyshield-images")

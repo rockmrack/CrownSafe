@@ -1,18 +1,18 @@
 # report_builder_agent_01/logic.py
 # Version: 2.1-PA-ENHANCED - Enhanced with Prior Authorization report capability
 
-import logging
-import json
-import sys
-from typing import Dict, Any, List, Optional
-from datetime import datetime, timezone
-import os
 import base64
+import json
+import logging
+import os
+import sys
 import uuid
-from enum import Enum
-from dataclasses import asdict
 from collections import Counter
+from dataclasses import asdict
+from datetime import datetime, timezone
+from enum import Enum
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 try:
     import markdown
@@ -46,7 +46,8 @@ except (
 
 try:
     # Optional high-fidelity HTML renderer
-    from weasyprint import HTML as WEASY_HTML, CSS as WEASY_CSS  # type: ignore
+    from weasyprint import CSS as WEASY_CSS
+    from weasyprint import HTML as WEASY_HTML  # type: ignore
 
     WEASYPRINT_AVAILABLE = True
 except Exception:
@@ -97,7 +98,7 @@ FALLBACK_VERSION = get_fallback_version()
 # Try to derive version from package metadata, fallback to constant
 try:
     # Python 3.8+
-    from importlib.metadata import version, PackageNotFoundError
+    from importlib.metadata import PackageNotFoundError, version
 
     DEFAULT_REPORT_BUILDER_VERSION = version("report_builder_agent")
 except (ImportError, PackageNotFoundError):
@@ -514,8 +515,8 @@ class ReportBuilderAgentLogic:
             # 3) Fallback: generate a valid PDF using ReportLab (no HTML rendering)
             if not os.path.exists(pdf_filepath):
                 try:
-                    from reportlab.pdfgen import canvas
                     from reportlab.lib.pagesizes import A4
+                    from reportlab.pdfgen import canvas
                 except Exception as imp_err:
                     self.logger.error(f"PDF fallback unavailable (reportlab import failed): {imp_err}")
                     return False

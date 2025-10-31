@@ -6,20 +6,20 @@ Combines recall data with supplemental data sources
 import asyncio
 import logging
 import time
-from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from core_infra.supplemental_data_service import supplemental_data_service
-from core_infra.database import get_db
 from api.models.supplemental_models import (
+    ChemicalDataResponse,
+    ChemicalSafetyLimits,
+    CosmeticDataResponse,
+    CosmeticIngredient,
     EnhancedSafetyReport,
     FoodDataResponse,
-    CosmeticDataResponse,
-    ChemicalDataResponse,
     NutritionalInfo,
-    CosmeticIngredient,
-    ChemicalSafetyLimits,
 )
+from core_infra.database import get_db
+from core_infra.supplemental_data_service import supplemental_data_service
 
 logger = logging.getLogger(__name__)
 

@@ -2,9 +2,9 @@
 
 import asyncio
 import logging
-import sys
 import os
-from typing import Dict, Any
+import sys
+from typing import Any, Dict
 
 # --- Adjust Python Path ---
 # Add the parent directory (RossNetAgents) to the Python path
@@ -16,7 +16,8 @@ sys.path.insert(0, parent_dir)
 # --- Imports ---
 # Now import from the client library
 from core_infra.mcp_client_library.client import MCPClient
-from core_infra.mcp_client_library.exceptions import MCPClientError, ConnectionError
+
+from core_infra.mcp_client_library.exceptions import ConnectionError, MCPClientError
 
 # --- Configuration ---
 # Configure basic logging for the script

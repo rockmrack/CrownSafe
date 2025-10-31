@@ -6,9 +6,10 @@ Create Date: 2025-01-26
 
 """
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy import text
+
+from alembic import op
 
 # revision identifiers
 revision = "20250826_search_trgm"

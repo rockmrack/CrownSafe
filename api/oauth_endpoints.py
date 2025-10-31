@@ -3,22 +3,23 @@ OAuth Authentication Endpoints for Apple and Google Sign-In
 Stores only internal user_id and provider subject ID
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Header
-from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
-from sqlalchemy import and_
-from typing import Optional, Dict, Any
-from datetime import datetime, timedelta
+import hashlib
+import json
 import logging
+import uuid
+from datetime import datetime, timedelta
+from typing import Any, Dict, Optional
+
 import httpx
 import jwt
-import json
-import hashlib
-import uuid
-from pydantic import BaseModel, Field, EmailStr
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, EmailStr, Field
+from sqlalchemy import and_
+from sqlalchemy.orm import Session
 
-from core_infra.database import get_db, User
 from core_infra.auth import create_access_token, create_refresh_token
+from core_infra.database import User, get_db
 
 logger = logging.getLogger(__name__)
 

@@ -5,18 +5,19 @@ Task 12: Enhanced Barcode Scan → Result Bridge
 Implements intelligent UPC/EAN matching with fallback search and caching
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Header, BackgroundTasks, Query
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func, text
-from typing import Optional, Dict, Any, List, Tuple
-from datetime import datetime, timedelta, timezone
-import logging
-import json
 import hashlib
+import json
+import logging
 import re
 from collections import OrderedDict
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional, Tuple
+
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Query
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
+from sqlalchemy import and_, func, or_, text
+from sqlalchemy.orm import Session
 
 try:
     from core_infra.database import get_db as get_db_session  # RecallDB removed - Crown Safe uses HairProductModel

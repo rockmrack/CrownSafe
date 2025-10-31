@@ -3,8 +3,9 @@ Security integration module for Task 6
 Wires all security features into the FastAPI app
 """
 
-import os
 import logging
+import os
+
 from fastapi import FastAPI
 from starlette.middleware.gzip import GZipMiddleware
 

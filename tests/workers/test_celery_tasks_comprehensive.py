@@ -8,17 +8,20 @@ Author: BabyShield Backend Team
 Date: October 10, 2025
 """
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock, call
-from celery.exceptions import Retry, TimeLimitExceeded, SoftTimeLimitExceeded
-from datetime import datetime, timedelta
-import time
 import json
+import time
+from datetime import datetime, timedelta
+from unittest.mock import MagicMock, Mock, call, patch
 from uuid import uuid4
+
+import pytest
+from celery.exceptions import Retry, SoftTimeLimitExceeded, TimeLimitExceeded
+
+from core_infra.celery_tasks import app as celery_app
+from core_infra.celery_tasks import process_image
 
 # Import actual Celery tasks
 from workers.chat_cleanup import purge_user_history_task
-from core_infra.celery_tasks import process_image, app as celery_app
 
 
 @pytest.mark.workers

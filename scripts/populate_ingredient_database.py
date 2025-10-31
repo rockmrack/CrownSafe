@@ -4,20 +4,21 @@ Populate ingredient and safety databases with real data
 This replaces the mock JSON files with comprehensive database tables
 """
 
-import sys
-import os
 import json
 import logging
+import os
+import sys
 from datetime import datetime
 from pathlib import Path
 
 # Add the project root to Python path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from core_infra.database import get_db_session
-from db.models.product_ingredients import ProductIngredient, IngredientSafety
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import IntegrityError
+
+from core_infra.database import get_db_session
+from db.models.product_ingredients import IngredientSafety, ProductIngredient
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -330,8 +331,8 @@ def main():
 
     try:
         # Create tables if they don't exist
-        from db.models.product_ingredients import ProductIngredient, IngredientSafety
-        from core_infra.database import engine, Base
+        from core_infra.database import Base, engine
+        from db.models.product_ingredients import IngredientSafety, ProductIngredient
 
         Base.metadata.create_all(bind=engine)
 

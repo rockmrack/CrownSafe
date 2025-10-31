@@ -1,19 +1,21 @@
-from datetime import datetime, timedelta
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
-from sqlalchemy import text
-from typing import Optional
 import logging
-import time
 import os
+import time
+from datetime import datetime, timedelta
+from typing import Optional
+
 import redis
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+
+from api.pydantic_base import AppModel
+from core_infra.auth import SECRET_KEY, decode_token, get_current_active_user
 
 # Import existing dependencies
 from core_infra.database import get_db
-from core_infra.auth import get_current_active_user, decode_token, SECRET_KEY
-from api.pydantic_base import AppModel
 from db.models.account_deletion_audit import AccountDeletionAudit
 
 # OAuth2 scheme for token extraction

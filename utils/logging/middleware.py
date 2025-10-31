@@ -3,6 +3,7 @@ FastAPI Logging Middleware - Issue #32
 """
 
 import time
+
 from fastapi import Request, Response
 
 # Import BaseHTTPMiddleware with proper fallback
@@ -13,7 +14,7 @@ try:
     from starlette.middleware.base import BaseHTTPMiddleware
 except ImportError:
     from fastapi.middleware.base import BaseHTTPMiddleware
-from utils.logging.structured_logger import log_request, log_error, log_performance
+from utils.logging.structured_logger import log_error, log_performance, log_request
 
 
 class LoggingMiddleware(BaseHTTPMiddleware):

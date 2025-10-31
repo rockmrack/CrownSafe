@@ -4,13 +4,14 @@ Integrates authoritative data sources beyond recalls for comprehensive safety re
 """
 
 import asyncio
+import json
 import logging
 import os
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import httpx
-import json
 
 logger = logging.getLogger(__name__)
 

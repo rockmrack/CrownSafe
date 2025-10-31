@@ -5,10 +5,11 @@ Tests Premium, Baby, Advanced, and Compliance features
 """
 
 import asyncio
-import httpx
 import json
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
+
+import httpx
 
 # API base URL
 BASE_URL = "http://localhost:8001"

@@ -5,10 +5,11 @@ Ensures every request has a unique trace ID for debugging and monitoring
 
 import time
 import uuid
+
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.types import ASGIApp, Receive, Scope, Send
 from starlette.requests import Request
 from starlette.responses import Response
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 
 class CorrelationIdMiddleware(BaseHTTPMiddleware):

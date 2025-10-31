@@ -5,11 +5,11 @@ Tracks all data changes for compliance and debugging
 
 import json
 import logging
+import traceback
 from contextvars import ContextVar
 from datetime import datetime
 from functools import wraps
 from typing import Any, Dict, List, Optional
-import traceback
 
 from sqlalchemy import JSON, Column, DateTime, Integer, String, Text, event
 from sqlalchemy.orm import Session

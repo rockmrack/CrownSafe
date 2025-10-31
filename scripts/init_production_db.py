@@ -4,10 +4,11 @@ Production Database Initialization Script
 Creates necessary tables in the production SQLite database via API
 """
 
-import requests
 import json
-import time
 import sys
+import time
+
+import requests
 
 
 def init_production_database():

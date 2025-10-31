@@ -1,8 +1,9 @@
 from unittest.mock import Mock
+
 from agents.chat.chat_agent.agent_logic import (
     ChatAgentLogic,
-    ExplanationResponse,
     EvidenceItem,
+    ExplanationResponse,
 )
 
 

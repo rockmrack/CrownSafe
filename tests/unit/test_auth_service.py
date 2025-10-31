@@ -3,10 +3,11 @@ Unit tests for authentication service
 Tests JWT token generation, validation, and user authentication
 """
 
-import pytest
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
+
 import jwt
+import pytest
 
 # These tests will be implemented based on your actual auth service
 # This is a comprehensive template for enterprise-grade auth testing

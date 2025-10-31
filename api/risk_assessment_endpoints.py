@@ -5,48 +5,49 @@ Risk Assessment API Endpoints
 Provides endpoints for product risk analysis, report generation, and data ingestion
 """
 
-import os
-import logging
-from typing import Optional, List, Dict, Any
-from datetime import datetime, timedelta
-from fastapi import (
-    APIRouter,
-    HTTPException,
-    Depends,
-    Query,
-    BackgroundTasks,
-    File,
-    UploadFile,
-)
-from fastapi.responses import JSONResponse, FileResponse
-from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func
 import asyncio
 import json
+import logging
+import os
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from core_infra.database import get_db
-from core_infra.risk_assessment_models import (
-    ProductGoldenRecord,
-    ProductRiskProfile,
-    SafetyIncident,
-    CompanyComplianceProfile,
-    RiskAssessmentReport,
-    DataIngestionJob,
-    ProductDataSource,
-    DataSource,
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    HTTPException,
+    Query,
+    UploadFile,
 )
-from core_infra.risk_scoring_engine import RiskScoringEngine, RiskScoreComponents
-from core_infra.risk_report_generator import RiskReportGenerator
-from core_infra.safety_data_connectors import (
-    CPSCDataConnector,
-    EUSafetyGateConnector,
-    CommercialDatabaseConnector,
-    DataUnificationEngine,
-    SafetyDataRecord,
-)
+from fastapi.responses import FileResponse, JSONResponse
+from pydantic import BaseModel, Field
+from sqlalchemy import and_, func, or_
+from sqlalchemy.orm import Session
+
 from core_infra.barcode_scanner import BarcodeScanner
 from core_infra.celery_tasks import process_image
+from core_infra.database import get_db
+from core_infra.risk_assessment_models import (
+    CompanyComplianceProfile,
+    DataIngestionJob,
+    DataSource,
+    ProductDataSource,
+    ProductGoldenRecord,
+    ProductRiskProfile,
+    RiskAssessmentReport,
+    SafetyIncident,
+)
+from core_infra.risk_report_generator import RiskReportGenerator
+from core_infra.risk_scoring_engine import RiskScoreComponents, RiskScoringEngine
+from core_infra.safety_data_connectors import (
+    CommercialDatabaseConnector,
+    CPSCDataConnector,
+    DataUnificationEngine,
+    EUSafetyGateConnector,
+    SafetyDataRecord,
+)
 
 logger = logging.getLogger(__name__)
 

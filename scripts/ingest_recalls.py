@@ -13,12 +13,12 @@ Usage:
     python -m scripts.ingest_recalls --agencies FDA,CPSC
 """
 
-import asyncio
-import sys
-import os
 import argparse
+import asyncio
 import logging
-from datetime import datetime, date, timedelta
+import os
+import sys
+from datetime import date, datetime, timedelta
 from typing import List, Optional
 
 # Add project root to path
@@ -27,19 +27,21 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 # Import project modules
-from core_infra.database import get_db_session, engine
-from core_infra.enhanced_database_schema import EnhancedRecallDB
+import subprocess
+
+from alembic.config import Config
+from sqlalchemy import create_engine, text
+from sqlalchemy.exc import IntegrityError
+
 from agents.recall_data_agent.connectors import (
     CPSCConnector,
+    EURAPEXConnector,
     FDAConnector,
     NHTSAConnector,
-    EURAPEXConnector,
 )
-from sqlalchemy import text, create_engine
-from sqlalchemy.exc import IntegrityError
 from alembic import command
-from alembic.config import Config
-import subprocess
+from core_infra.database import engine, get_db_session
+from core_infra.enhanced_database_schema import EnhancedRecallDB
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

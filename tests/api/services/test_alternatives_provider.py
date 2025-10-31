@@ -1,7 +1,9 @@
-import pytest
 import os
 from unittest.mock import patch
-from api.services.alternatives_provider import get_alternatives, _rules
+
+import pytest
+
+from api.services.alternatives_provider import _rules, get_alternatives
 
 
 class TestAlternativesProvider:

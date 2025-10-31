@@ -3,8 +3,9 @@ Test Settings Screen Endpoints
 Tests all endpoints shown in mobile app Settings screen
 """
 
-import requests
 import json
+
+import requests
 
 BASE_URL = "https://babyshield.cureviax.ai"
 

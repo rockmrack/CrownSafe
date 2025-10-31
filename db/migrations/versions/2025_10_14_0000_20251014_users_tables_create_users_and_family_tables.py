@@ -7,8 +7,9 @@ Create Date: 2025-10-14
 Creates the foundational users table and family_members/allergies tables.
 """
 
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 
 # revision identifiers, used by Alembic
 revision = "20251014_users_tables"

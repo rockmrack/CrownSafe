@@ -6,9 +6,7 @@ This package provides essential infrastructure components.
 
 # Make submodules available for imports
 # This allows: from core_infra.cache_manager import get_cache_stats
-from . import cache_manager
-from . import database
-from . import sqlite_jsonb_shim
+from . import cache_manager, database, sqlite_jsonb_shim
 
 # Optional modules - import if available
 # Only add to __all__ if successfully imported

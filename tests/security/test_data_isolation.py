@@ -8,16 +8,17 @@ Author: BabyShield Backend Team
 Date: October 10, 2025
 """
 
+import uuid
+from datetime import datetime
+from unittest.mock import MagicMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, MagicMock
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from core_infra.database import SessionLocal, Base, engine
-from api.models.chat_memory import UserProfile, Conversation, ConversationMessage
 from api.auth_endpoints import get_current_user
-from datetime import datetime
-import uuid
+from api.models.chat_memory import Conversation, ConversationMessage, UserProfile
+from core_infra.database import Base, SessionLocal, engine
 
 
 @pytest.mark.security
@@ -30,9 +31,9 @@ class TestMultiTenancyDataIsolation:
         """Create a fresh database session for testing"""
         # Import models to register them with Base
         from api.models.chat_memory import (
-            UserProfile,
             Conversation,
             ConversationMessage,
+            UserProfile,
         )
 
         # Create only the tables we need for testing (not all tables in Base)
@@ -124,6 +125,7 @@ class TestMultiTenancyDataIsolation:
         - 403 Forbidden if attempting to access others' data
         """
         from fastapi.testclient import TestClient
+
         from api.main_crownsafe import app
 
         client = TestClient(app)

@@ -4,9 +4,10 @@ Test Suite 1: Imports and Configuration Tests (100 tests)
 Tests all module imports, configuration loading, and environment setup
 """
 
-import pytest
-import sys
 import os
+import sys
+
+import pytest
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -464,8 +465,9 @@ class TestImportsAndConfiguration:
     def test_datetime_in_router(self):
         """Verify datetime is imported in router.py (BUG FIX)"""
         try:
-            from agents.routing import router
             import inspect
+
+            from agents.routing import router
 
             source = inspect.getsource(router)
             assert "datetime" in source or "from datetime import" in source
@@ -622,7 +624,7 @@ class TestImportsAndConfiguration:
 
     def test_import_typing(self):
         """Test typing module import"""
-        from typing import Optional, List, Dict
+        from typing import Dict, List, Optional
 
         assert Optional is not None
         assert List is not None

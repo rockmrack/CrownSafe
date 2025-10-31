@@ -1,6 +1,6 @@
-import re
-import pathlib
 import glob
+import pathlib
+import re
 
 paths = [pathlib.Path(p) for p in glob.glob("api/**/*.py", recursive=True)]
 

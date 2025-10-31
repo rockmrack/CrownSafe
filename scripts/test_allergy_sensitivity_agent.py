@@ -9,14 +9,15 @@ sys.path.insert(0, str(project_root))
 from agents.premium.allergy_sensitivity_agent.agent_logic import (
     AllergySensitivityAgentLogic,
 )
+from core_infra.auth.auth_manager import create_user
+
 from core_infra.database import (
-    get_db_session,
-    create_tables,
-    User,
     Family,
     FamilyMember,
+    User,
+    create_tables,
+    get_db_session,
 )
-from core_infra.auth.auth_manager import create_user
 
 logging.basicConfig(level=logging.INFO)
 

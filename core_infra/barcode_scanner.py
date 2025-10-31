@@ -3,25 +3,24 @@ Next-Generation Traceability: Advanced Barcode Scanner Module
 Supports QR codes, DataMatrix, GS1, and standard barcodes with lot/serial tracking
 """
 
-import re
+import base64
 import json
 import logging
 import os
-from typing import Dict, List, Optional, Any, Tuple
-from datetime import datetime, date
-from enum import Enum
+import re
 from dataclasses import dataclass
-import base64
+from datetime import date, datetime
+from enum import Enum
 from io import BytesIO
+from typing import Any, Dict, List, Optional, Tuple
 
 # Core barcode libraries
 PYZBAR_AVAILABLE = False
 try:
-    from pyzbar import pyzbar
-    from pyzbar.pyzbar import ZBarSymbol
-
     # Test if pyzbar actually works (Windows DLL check)
     import numpy as np
+    from pyzbar import pyzbar
+    from pyzbar.pyzbar import ZBarSymbol
 
     test_img = np.zeros((10, 10), dtype=np.uint8)
     pyzbar.decode(test_img)
@@ -59,8 +58,8 @@ except ImportError:
     OPENCV_AVAILABLE = False
     logging.warning("OpenCV not installed. Image preprocessing disabled.")
 
-from PIL import Image
 import qrcode
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 

@@ -4,17 +4,18 @@ Test script for critical backend features implementation
 Tests all the newly added features to ensure they work correctly
 """
 
+import json
 import os
 import sys
-import json
 import time
 from datetime import datetime, timedelta
-from typing import Dict, Any
+from typing import Any, Dict
 
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi.testclient import TestClient
+
 from api.main_crownsafe import app
 from core_infra.database import get_db_session
 

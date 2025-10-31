@@ -3,15 +3,15 @@ Recall Search API Endpoints
 Provides searchable, paginated access to recall data
 """
 
-from datetime import date
-from typing import List, Optional
-import unicodedata
 import base64
 import json
+import unicodedata
+from datetime import date
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
-from sqlalchemy import or_, and_, desc, asc, func, select
+from sqlalchemy import and_, asc, desc, func, or_, select
 from sqlalchemy.orm import Session
 
 # CROWN SAFE: RecallDB model removed - replaced with HairProductModel

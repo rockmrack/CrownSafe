@@ -3,19 +3,21 @@ Crown Safe Database Seeding Script
 Seeds hair products and ingredients for barcode scanning functionality
 """
 
-import sys
 import os
+import sys
 
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from datetime import datetime
+
 from sqlalchemy.orm import Session
-from core_infra.database import SessionLocal, User  # Import User for relationship resolution
+
 from core_infra.crown_safe_models import (
     HairProductModel,
     IngredientModel,
 )
+from core_infra.database import SessionLocal, User  # Import User for relationship resolution
 
 # Ingredient Database (200 ingredients)
 INGREDIENTS_DATA = [

@@ -1,6 +1,8 @@
-import pytest
 import time
 from unittest.mock import patch
+
+import pytest
+
 from core.resilience import CircuitBreaker, call_with_timeout
 
 

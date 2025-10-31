@@ -3,15 +3,16 @@ Task 16: Secure Database Connection with Read-Only User
 Implements separate connections for read and write operations
 """
 
-import os
 import logging
-from typing import Optional, Generator, Any
+import os
+import time
 from contextlib import contextmanager
+from typing import Any, Generator, Optional
+
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import NullPool, QueuePool
-import time
 
 logger = logging.getLogger(__name__)
 

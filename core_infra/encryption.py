@@ -3,16 +3,17 @@ PII Encryption for BabyShield
 Protects sensitive user data with AES encryption
 """
 
-import os
 import base64
+import hashlib
 import json
+import os
+import secrets
 from typing import Any, Optional
+
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from sqlalchemy.types import TypeDecorator, String, Text
-import hashlib
-import secrets
+from sqlalchemy.types import String, Text, TypeDecorator
 
 # Get or generate encryption key
 ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY")

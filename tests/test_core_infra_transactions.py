@@ -1,10 +1,12 @@
 """Tests for core_infra/transactions.py"""
 
 import unittest
-from unittest.mock import Mock, MagicMock, patch, call
-from sqlalchemy.orm import Session
+from unittest.mock import MagicMock, Mock, call, patch
+
 from sqlalchemy.exc import SQLAlchemyError
-from core_infra.transactions import TransactionManager, OptimisticLock, bulk_operation
+from sqlalchemy.orm import Session
+
+from core_infra.transactions import OptimisticLock, TransactionManager, bulk_operation
 
 
 class TestTransactionManager(unittest.TestCase):

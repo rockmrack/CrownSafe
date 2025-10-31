@@ -13,8 +13,8 @@ def client():
     os.environ["TEST_MODE"] = "true"
 
     # Import after setting environment
-    from core_infra.database import Base, SessionLocal, engine
     from api.models.user_report import UserReport
+    from core_infra.database import Base, SessionLocal, engine
 
     # Ensure the user_reports table exists for sqlite-backed tests
     Base.metadata.create_all(bind=engine, tables=[UserReport.__table__])
@@ -42,8 +42,9 @@ def db_session():
 @pytest.fixture
 def test_user(db_session):
     """Create a test user for authentication tests"""
-    from core_infra.database import User
     from passlib.context import CryptContext
+
+    from core_infra.database import User
 
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -111,8 +112,9 @@ def valid_token():
 def expired_token():
     """Generate an expired authentication token"""
     try:
-        from core_infra.auth import create_access_token
         from datetime import timedelta
+
+        from core_infra.auth import create_access_token
 
         # Create token that expired 1 hour ago
         token = create_access_token(

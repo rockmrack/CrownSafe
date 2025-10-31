@@ -3,11 +3,13 @@ Deep Conversation Endpoint Tests
 Tests all edge cases, error conditions, and response variations
 """
 
+import os
+
 import pytest
 from fastapi.testclient import TestClient
+
 from api.main_crownsafe import app
 from api.routers import chat as chat_router
-import os
 
 # Enable chat feature for tests
 os.environ["BS_FEATURE_CHAT_ENABLED"] = "true"

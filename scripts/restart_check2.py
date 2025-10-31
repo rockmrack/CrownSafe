@@ -1,7 +1,8 @@
-import subprocess
-import redis
-import time
 import os
+import subprocess
+import time
+
+import redis
 
 # 1. Kill specific agent processes (not all Python)
 print("Killing agents...")

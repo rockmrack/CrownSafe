@@ -3,21 +3,24 @@ Subscription models for mobile app IAP (Apple/Google)
 Supports monthly ($7.99) and annual ($79.99) plans
 """
 
+import enum
+import uuid
+from datetime import datetime, timedelta
+
 from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Float,
-    DateTime,
     Boolean,
+    Column,
+    DateTime,
+    Float,
     ForeignKey,
     Index,
+    Integer,
+    String,
+)
+from sqlalchemy import (
     Enum as SQLEnum,
 )
 from sqlalchemy.orm import relationship
-from datetime import datetime, timedelta
-import enum
-import uuid
 
 # Import Base from the main database module
 from core_infra.database import Base

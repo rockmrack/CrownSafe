@@ -1,6 +1,6 @@
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 revision = "20250904_add_report_records"
 down_revision = "20250827_privacy_requests"

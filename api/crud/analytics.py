@@ -1,6 +1,8 @@
-from sqlalchemy.orm import Session
+from typing import Optional, Union
 from uuid import UUID
-from typing import Union, Optional
+
+from sqlalchemy.orm import Session
+
 from api.models.analytics import ExplainFeedback
 
 

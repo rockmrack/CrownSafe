@@ -3,18 +3,19 @@
 Test the Quarterly Nursery Report Generation
 """
 
-import sys
-import os
 import json
-from datetime import datetime, timedelta
+import os
 import random
+import sys
+from datetime import datetime, timedelta
 
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import MetaData, create_engine
 from sqlalchemy.orm import sessionmaker
-from db.models.scan_history import ScanHistory, SafetyReport
+
+from db.models.scan_history import SafetyReport, ScanHistory
 
 
 def create_nursery_scan_history(db_session, user_id=1):

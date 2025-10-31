@@ -21,8 +21,8 @@ def test_chat_agent():
     try:
         from agents.chat.chat_agent.agent_logic import (
             ChatAgentLogic,
-            EvidenceItem,
             EmergencyNotice,
+            EvidenceItem,
             ExplanationResponse,
         )
 

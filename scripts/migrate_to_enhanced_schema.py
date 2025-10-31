@@ -13,28 +13,29 @@ This migration adds CRITICAL fields for complete international coverage:
 Run with: python scripts/migrate_to_enhanced_schema.py
 """
 
+import logging
 import os
 import sys
-import logging
 from datetime import datetime
+
+from dotenv import load_dotenv
 from sqlalchemy import (
-    create_engine,
-    text,
-    inspect,
+    JSON,
     Column,
+    Date,
     Integer,
     String,
-    Date,
     Text,
-    JSON,
+    create_engine,
+    inspect,
+    text,
 )
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
 
 # Add the project root to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core_infra.database import engine, SessionLocal, RecallDB, Base
+from core_infra.database import Base, RecallDB, SessionLocal, engine
 from core_infra.enhanced_database_schema import EnhancedRecallDB
 
 # Setup logging

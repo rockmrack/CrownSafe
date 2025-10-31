@@ -4,14 +4,15 @@ Security limits test suite for Task 6
 Tests request size limits, CORS, compression, input validation, and abuse protection
 """
 
+import base64
+import gzip
+import json
 import os
 import sys
-import json
-import gzip
 import time
-import base64
+from typing import Any, Dict, Optional
+
 import requests
-from typing import Dict, Any, Optional
 
 # Test configuration
 BASE_URL = os.getenv("BABYSHIELD_BASE_URL", "http://localhost:8000")

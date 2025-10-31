@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-import requests
 import json
 import logging
 from typing import Any, Dict
+
+import requests
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)

@@ -5,12 +5,13 @@ This module initializes Sentry for error tracking and performance monitoring.
 It integrates with FastAPI and SQLAlchemy to capture errors and slow queries.
 """
 
-import os
 import logging
+import os
+
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
-from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
 logger = logging.getLogger(__name__)
 

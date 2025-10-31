@@ -4,21 +4,21 @@ Test the new scan results page implementation
 Verifies legally defensible language and proper formatting
 """
 
-import sys
-import os
 import json
+import os
+import sys
 from datetime import datetime
 
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from api.models.scan_results import (
-    ScanResultsPage,
-    create_scan_results,
-    VerdictType,
     BarcodeDetectionResult,
     ProductSummary,
     SafetyCheckStatus,
+    ScanResultsPage,
+    VerdictType,
+    create_scan_results,
 )
 
 

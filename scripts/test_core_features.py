@@ -5,9 +5,10 @@ Tests only endpoints that don't require external dependencies
 """
 
 import asyncio
-import httpx
 import json
 from datetime import datetime
+
+import httpx
 
 # API base URL
 BASE_URL = "http://localhost:8001"

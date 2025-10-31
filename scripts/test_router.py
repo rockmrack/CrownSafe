@@ -1,10 +1,10 @@
 # scripts/test_router.py
 
-import sys
-import os
 import asyncio
-import logging
 import json
+import logging
+import os
+import sys
 from unittest.mock import AsyncMock
 
 # --- FIX: Add project root to Python's path ---

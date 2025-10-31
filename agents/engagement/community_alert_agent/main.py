@@ -1,8 +1,10 @@
 import asyncio
 import logging
-import schedule
 import time
 from threading import Thread
+
+import schedule
+
 from .agent_logic import CommunityAlertAgentLogic
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

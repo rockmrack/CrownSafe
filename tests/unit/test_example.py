@@ -3,9 +3,10 @@ Example unit tests demonstrating proper test structure
 This file shows best practices for unit testing in the BabyShield backend
 """
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime, timedelta
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 
 @pytest.mark.unit

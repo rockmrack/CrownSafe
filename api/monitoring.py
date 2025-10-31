@@ -3,31 +3,32 @@ Task 14: Monitoring, Metrics, and SLO Implementation
 Provides Prometheus metrics, health checks, and monitoring endpoints
 """
 
-from fastapi import APIRouter, Response, Request, Depends, HTTPException
-from fastapi.responses import PlainTextResponse, JSONResponse
+import asyncio
+import json
+import logging
+import os
+import time
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
+import httpx
+import psutil
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi.responses import JSONResponse, PlainTextResponse
 from prometheus_client import (
-    Counter,
-    Histogram,
-    Gauge,
-    Summary,
-    Info,
-    generate_latest,
     CONTENT_TYPE_LATEST,
+    Counter,
+    Gauge,
+    Histogram,
+    Info,
+    Summary,
+    generate_latest,
     multiprocess,
     push_to_gateway,
 )
 from prometheus_client.core import CollectorRegistry
-from typing import Optional, Dict, Any, List
-from datetime import datetime, timedelta
-import time
-import asyncio
-import logging
-import psutil
-import os
-from sqlalchemy.orm import Session
 from sqlalchemy import text
-import httpx
-import json
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

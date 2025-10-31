@@ -1,9 +1,10 @@
 # scripts/check_commander_health.py
 
-import redis
 import json
 import time
 import uuid
+
+import redis
 
 
 def check_commander():

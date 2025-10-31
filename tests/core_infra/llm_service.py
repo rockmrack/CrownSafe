@@ -1,20 +1,21 @@
-import os
-import logging
-from typing import Optional, Dict, Any, List, Union, Callable
-from dataclasses import dataclass, field
-from enum import Enum
 import asyncio
-from functools import lru_cache
-import time
-from dotenv import load_dotenv
-import json
-import hashlib
-from datetime import datetime, timezone
-import threading
-from collections import deque
-import traceback
 import concurrent.futures
+import hashlib
+import json
+import logging
+import os
 import re
+import threading
+import time
+import traceback
+from collections import deque
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from enum import Enum
+from functools import lru_cache
+from typing import Any, Callable, Dict, List, Optional, Union
+
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 AVAILABLE_PROVIDERS = {}
 
 try:
-    from openai import OpenAI, AsyncOpenAI
+    from openai import AsyncOpenAI, OpenAI
 
     AVAILABLE_PROVIDERS["openai"] = "new"
     logger.info("OpenAI library (v1.0+) available")

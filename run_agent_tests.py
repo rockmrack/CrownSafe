@@ -73,8 +73,8 @@ def main():
         from agents.recall_data_agent.connectors import (
             CPSCConnector,
             FDAConnector,
-            NHTSAConnector,
             HealthCanadaConnector,
+            NHTSAConnector,
         )
 
         connectors = [

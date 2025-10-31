@@ -3,14 +3,14 @@ OpenAI LLM Client implementation for BabyShield chat functionality.
 Provides a chat_json method that interfaces with OpenAI's API.
 """
 
-import os
 import json
-from typing import Dict, Any, Optional
 import logging
+import os
+from typing import Any, Dict, Optional
 
 try:
-    import openai
     import httpx
+    import openai
 
     OPENAI_AVAILABLE = True
 except ImportError:

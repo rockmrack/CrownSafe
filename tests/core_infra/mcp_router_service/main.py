@@ -2,16 +2,16 @@
 # CORRECTED: Fixed WebSocket connection bugs causing policy violations
 
 import asyncio
-import signal
 import logging
 import os
+import signal
 import sys
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Depends
-from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from fastapi import Depends, FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
 
 # --- Environment & Path Setup ---
 project_root_main_py = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -30,9 +30,8 @@ else:
 
 # --- Local Module Imports ---
 try:
+    from . import discovery, state
     from .config import logger, settings
-    from . import state
-    from . import discovery
     from .router import handle_message
 
     bootstrap_logger.info("Successfully imported local modules (config, state, discovery, router).")

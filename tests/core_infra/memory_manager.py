@@ -2,14 +2,14 @@
 # Version: MVP-1.4 (Production-Ready with Advanced Retrieval & Analytics)
 # FIXED: Logger initialization issue - ensures proper logger object handling
 
+import json
 import logging
 import os
-import json
-import uuid
-from datetime import datetime, timezone, timedelta
-from typing import Dict, Any, List, Optional, Set, Union, Tuple
-from collections import defaultdict, Counter
 import statistics
+import uuid
+from collections import Counter, defaultdict
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 import chromadb
 from chromadb.utils import embedding_functions

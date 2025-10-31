@@ -1,8 +1,9 @@
 # scripts/test_api_quick.py
 
-import requests
 import json
 import time
+
+import requests
 
 # Test the API
 url = "http://localhost:8000/api/v1/prior-auth/predict"

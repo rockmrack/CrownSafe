@@ -5,10 +5,11 @@ Improved search functionality for better recall matching
 Handles compound searches, partial matches, and brand-product combinations
 """
 
-from sqlalchemy import or_, and_, func
-from typing import List, Optional
-import re
 import logging
+import re
+from typing import List, Optional
+
+from sqlalchemy import and_, func, or_
 
 logger = logging.getLogger(__name__)
 

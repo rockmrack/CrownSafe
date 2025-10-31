@@ -1,11 +1,11 @@
 # C:\Users\rossd\Downloads\RossNetAgents\core_infra\mcp_router_service\utils.py
 # Step 74: Integrated improvements based on Claude's suggestions - FIXED
 
+import copy  # For deepcopy
 import json
 import uuid
-import copy  # For deepcopy
 from datetime import datetime, timezone  # Ensure timezone is imported
-from typing import Dict, Any, Optional, Union  # Added Union for safe_json_serialize
+from typing import Any, Dict, Optional, Union  # Added Union for safe_json_serialize
 
 # Attempt to import logger from config, fallback to basic logging
 try:

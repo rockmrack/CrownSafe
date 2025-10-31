@@ -3,11 +3,12 @@ UPSERT Handler for Optimized Database Operations
 Implements PostgreSQL ON CONFLICT for atomic upsert operations
 """
 
-from typing import Dict, List, Optional, Any
+import logging
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-from datetime import datetime
-import logging
 
 logger = logging.getLogger(__name__)
 

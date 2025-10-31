@@ -1,10 +1,11 @@
 # scripts/debug_workflow_flow.py
 
-import redis
+import asyncio
 import json
 import time
-import asyncio
 from datetime import datetime
+
+import redis
 
 
 def check_all_redis_keys(pattern="*"):

@@ -1,10 +1,11 @@
 # scripts/debug_connections.py
 
 import asyncio
-import websockets
 import json
 import logging
 from datetime import datetime
+
+import websockets
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)

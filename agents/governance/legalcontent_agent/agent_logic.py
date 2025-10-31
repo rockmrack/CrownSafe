@@ -6,10 +6,10 @@ Reads full text of legal documents (e.g., TOS, Privacy Policy) from disk
 and returns them as part of the agent result payload.
 """
 
-import os
 import asyncio
 import logging
-from typing import Dict, Any, Optional
+import os
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 

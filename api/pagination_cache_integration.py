@@ -5,29 +5,31 @@ Integration module for pagination and caching features (Task 5)
 Shows how to wire cursor pagination and HTTP caching into existing endpoints
 """
 
-import os
 import logging
-from typing import Optional, Dict, Any
+import os
 from datetime import datetime, timezone
-from fastapi import FastAPI, Request, Response, HTTPException, Depends
+from typing import Any, Dict, Optional
+
+from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
+from api.services.search_service_v2 import SearchServiceV2
 from api.utils import (
-    hash_filters,
-    verify_cursor,
-    create_search_cursor,
     CacheableResponse,
+    add_cache_headers,
+    check_if_modified_since,
+    check_if_none_match,
+    create_not_modified_response,
+    create_search_cursor,
+    hash_filters,
     make_detail_etag,
     make_search_etag,
-    check_if_none_match,
-    check_if_modified_since,
-    create_not_modified_response,
-    add_cache_headers,
+    verify_cursor,
 )
-from api.utils.redis_cache import get_cache, RedisSearchCache
-from api.services.search_service_v2 import SearchServiceV2
+from api.utils.redis_cache import RedisSearchCache, get_cache
 from core_infra.database import get_db
+
 # from core_infra.enhanced_database_schema import EnhancedRecallDB  # REMOVED FOR CROWN SAFE
 
 logger = logging.getLogger(__name__)

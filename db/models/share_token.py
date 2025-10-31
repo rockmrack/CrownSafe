@@ -2,19 +2,21 @@
 Share Token Model for secure result sharing
 """
 
+import secrets
+from datetime import datetime, timedelta
+
 from sqlalchemy import (
+    JSON,
+    Boolean,
     Column,
+    DateTime,
+    ForeignKey,
     Integer,
     String,
-    DateTime,
-    Boolean,
     Text,
-    ForeignKey,
-    JSON,
 )
-from datetime import datetime, timedelta
+
 from core_infra.database import Base
-import secrets
 
 
 class ShareToken(Base):

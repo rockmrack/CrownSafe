@@ -1,12 +1,12 @@
 # scripts/test_metrics_agent.py
 
 
-import sys
-import os
 import asyncio
-import logging
 import json
-from unittest.mock import patch, MagicMock
+import logging
+import os
+import sys
+from unittest.mock import MagicMock, patch
 
 # --- Add project root to Python's path ---
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

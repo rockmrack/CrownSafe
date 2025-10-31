@@ -3,34 +3,35 @@ Celery tasks for Risk Assessment data ingestion and processing
 Orchestrates data collection from multiple sources
 """
 
-import os
-import logging
-from typing import List, Dict, Any, Optional
-from datetime import datetime, timedelta
-from celery import Celery, group, chain
-from celery.schedules import crontab
 import asyncio
+import logging
+import os
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
+from celery import Celery, chain, group
+from celery.schedules import crontab
 from sqlalchemy.orm import Session
+
+from core_infra.barcode_scanner import BarcodeScanner
 from core_infra.database import SessionLocal
 from core_infra.risk_assessment_models import (
+    CompanyComplianceProfile,
+    DataIngestionJob,
+    DataSource,
+    ProductDataSource,
     ProductGoldenRecord,
     ProductRiskProfile,
     SafetyIncident,
-    CompanyComplianceProfile,
-    DataIngestionJob,
-    ProductDataSource,
-    DataSource,
-)
-from core_infra.safety_data_connectors import (
-    CPSCDataConnector,
-    EUSafetyGateConnector,
-    CommercialDatabaseConnector,
-    DataUnificationEngine,
-    SafetyDataRecord,
 )
 from core_infra.risk_scoring_engine import RiskScoringEngine
-from core_infra.barcode_scanner import BarcodeScanner
+from core_infra.safety_data_connectors import (
+    CommercialDatabaseConnector,
+    CPSCDataConnector,
+    DataUnificationEngine,
+    EUSafetyGateConnector,
+    SafetyDataRecord,
+)
 
 logger = logging.getLogger(__name__)
 

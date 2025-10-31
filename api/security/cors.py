@@ -3,9 +3,10 @@ Strict CORS configuration for production security
 Only allows specific origins, no wildcards
 """
 
-import os
 import logging
+import os
 from typing import List, Optional
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 

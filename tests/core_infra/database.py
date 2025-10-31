@@ -2,27 +2,28 @@
 # Version 5.2 – Single subscription model with family profiles and allergies
 
 import os
+from contextlib import contextmanager
 from datetime import date
+
 from dotenv import load_dotenv
 from sqlalchemy import (
-    create_engine,
+    Boolean,
     Column,
+    Date,
+    ForeignKey,  # Added for relationships
     Integer,
     String,
-    Date,
     Text,
-    Boolean,
-    text,
+    create_engine,
     inspect,
-    ForeignKey,  # Added for relationships
+    text,
 )
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import (
-    sessionmaker,
     declarative_base,
     relationship,
+    sessionmaker,
 )  # Added relationship
-from sqlalchemy.exc import IntegrityError
-from contextlib import contextmanager
 
 # -------------------------------------------------------------------
 # Load environment variables

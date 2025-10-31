@@ -3,12 +3,13 @@ Comprehensive Input Validation Middleware
 Prevents SQL injection, XSS, and other injection attacks
 """
 
-import re
 import logging
-from typing import Any, Dict, Optional, List
-from fastapi import Request, HTTPException, status
-from pydantic import BaseModel, validator, Field
+import re
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+from fastapi import HTTPException, Request, status
+from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)
 

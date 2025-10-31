@@ -2,8 +2,8 @@
 Simple RecallDataAgent Test - Tests core functionality
 """
 
-import sys
 import asyncio
+import sys
 from datetime import datetime
 
 print("=" * 80)
@@ -100,8 +100,9 @@ except Exception as e:
 # Test 7: Test Recall model validation
 print("\n[TEST 7] Testing Recall model validation...")
 try:
-    from agents.recall_data_agent.models import Recall
     from datetime import date
+
+    from agents.recall_data_agent.models import Recall
 
     # Create a test recall object
     test_recall = Recall(

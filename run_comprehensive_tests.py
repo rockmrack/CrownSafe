@@ -4,10 +4,10 @@ Comprehensive Test Suite Runner for BabyShield Backend
 Runs all possible tests with detailed reporting and coverage analysis
 """
 
+import json
+import os
 import subprocess
 import sys
-import os
-import json
 from datetime import datetime
 from pathlib import Path
 

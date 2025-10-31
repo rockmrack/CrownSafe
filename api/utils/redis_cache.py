@@ -3,13 +3,14 @@ Redis micro-cache for search results
 Provides short-term caching with automatic invalidation
 """
 
-import json
 import hashlib
+import json
 import logging
-from typing import Any, Dict, Optional, Union
-from datetime import datetime, timedelta
-from redis.asyncio import Redis
 import os
+from datetime import datetime, timedelta
+from typing import Any, Dict, Optional, Union
+
+from redis.asyncio import Redis
 
 logger = logging.getLogger(__name__)
 

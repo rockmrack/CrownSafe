@@ -2,9 +2,10 @@
 Pydantic models for supplemental data and enhanced safety reports
 """
 
-from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
 
 
 class NutritionalInfo(BaseModel):

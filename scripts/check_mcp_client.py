@@ -1,14 +1,15 @@
 # scripts/check_mcp_client.py
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.abspath("."))
 
 # Import and inspect MCPClient
 try:
-    from core_infra.mcp_client_library.client import MCPClient
     import inspect
+
+    from core_infra.mcp_client_library.client import MCPClient
 
     print("MCPClient constructor signature:")
     print(inspect.signature(MCPClient.__init__))

@@ -4,13 +4,14 @@ Prevents API abuse and ensures fair usage
 """
 
 import os
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
+from typing import Optional
+
+import redis
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
-import redis
-from typing import Optional
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 # Get Redis URL from environment (prefer RATE_LIMIT_REDIS_URL)
 # Fallback to in-memory storage when not provided or unreachable

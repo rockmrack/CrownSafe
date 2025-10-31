@@ -3,20 +3,22 @@ Safety Reports API Endpoints
 Generate comprehensive safety summaries for users
 """
 
-from typing import Optional, List, Dict, Any
-from datetime import datetime, timedelta
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
-from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, func, desc
-import uuid
 import logging
+import uuid
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-# REMOVED FOR CROWN SAFE: RecallDB no longer applicable (hair products, not baby recalls)
-from core_infra.database import get_db, User
-from db.models.scan_history import ScanHistory, SafetyReport
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from pydantic import BaseModel, Field
+from sqlalchemy import and_, desc, func
+from sqlalchemy.orm import Session
+
 from agents.reporting.report_builder_agent.agent_logic import ReportBuilderAgentLogic
 from api.schemas.common import ApiResponse
+
+# REMOVED FOR CROWN SAFE: RecallDB no longer applicable (hair products, not baby recalls)
+from core_infra.database import User, get_db
+from db.models.scan_history import SafetyReport, ScanHistory
 
 logger = logging.getLogger(__name__)
 

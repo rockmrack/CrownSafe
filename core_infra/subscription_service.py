@@ -5,16 +5,16 @@ Subscription service for entitlement checks and management
 import logging
 import os
 from datetime import datetime, timedelta
-from typing import Optional, Dict, List
+from typing import Dict, List, Optional
 
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 
-from core_infra.database import get_db_session, User
+from core_infra.database import User, get_db_session
 from core_infra.subscription_models import (
     Subscription,
-    SubscriptionStatus,
     SubscriptionPlan,
+    SubscriptionStatus,
 )
 
 logger = logging.getLogger(__name__)

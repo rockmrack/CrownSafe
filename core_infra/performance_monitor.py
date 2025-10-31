@@ -3,20 +3,21 @@ Performance monitoring system for BabyShield
 Tracks bottlenecks, metrics, and system performance
 """
 
-import time
 import asyncio
-import psutil
 import gc
+import json
+import logging
+import threading
+import time
 import tracemalloc
-from typing import Dict, Any, Optional, List, Callable
-from contextlib import contextmanager, asynccontextmanager
+from collections import defaultdict, deque
+from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from collections import defaultdict, deque
-import logging
-import json
 from functools import wraps
-import threading
+from typing import Any, Callable, Dict, List, Optional
+
+import psutil
 
 logger = logging.getLogger(__name__)
 

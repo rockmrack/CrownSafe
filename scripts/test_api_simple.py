@@ -1,7 +1,8 @@
 # scripts/test_api_simple.py
 
-import requests
 import json
+
+import requests
 
 url = "http://localhost:8000/api/v1/prior-auth/predict"
 data = {"patient_id": "test-001", "drug_name": "Metformin", "insurer_id": "UHC"}

@@ -2,8 +2,9 @@
 Check production database schema
 """
 
-import psycopg2
 import sys
+
+import psycopg2
 
 # Production database connection
 conn_string = "postgresql://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/postgres"

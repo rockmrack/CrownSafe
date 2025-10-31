@@ -1,16 +1,16 @@
 # scripts/test_recall_data_agent.py
 
-import sys
-import os
 import asyncio
-import logging
 import json
+import logging
+import os
+import sys
 from typing import List
 from unittest.mock import patch
 
 # Color support
 try:
-    from colorama import init, Fore, Style
+    from colorama import Fore, Style, init
 
     init(autoreset=True)
 except ImportError:
@@ -30,9 +30,9 @@ sys.path.insert(0, project_root)
 # -----------------------------------------
 
 # Import DB setup and agent logic
-from core_infra.database import Base, engine
 from agents.recall_data_agent.agent_logic import RecallDataAgentLogic
 from agents.recall_data_agent.models import Recall
+from core_infra.database import Base, engine
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

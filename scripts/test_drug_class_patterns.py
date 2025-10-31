@@ -2,13 +2,14 @@
 # Version: 4.2-UNICODE-FIXED (Fixed Unicode encoding issues and improved analysis)
 # Complete testing script for drug class pattern recognition with proper encoding
 
-import os
-import sys
 import asyncio
 import json
 import logging
+import os
+import sys
 from datetime import datetime
-from typing import Dict, Any, List, Optional, Set, Union
+from typing import Any, Dict, List, Optional, Set, Union
+
 from dotenv import load_dotenv
 
 # Fix Unicode encoding for Windows console

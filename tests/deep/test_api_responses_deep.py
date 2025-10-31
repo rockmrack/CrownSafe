@@ -3,10 +3,12 @@ Deep API Response Tests
 Comprehensive testing of API response formats, headers, and error handling
 """
 
+import json
+
 import pytest
 from fastapi.testclient import TestClient
+
 from api.main_crownsafe import app
-import json
 
 
 class TestAPIResponsesDeep:

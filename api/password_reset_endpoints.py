@@ -2,20 +2,21 @@
 Password Reset Endpoints - Email-based password reset flow
 """
 
+import hashlib
 import logging
 import secrets
-import hashlib
 from datetime import datetime, timedelta
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query, Body
-from sqlalchemy.orm import Session
-from sqlalchemy import Column, String, DateTime, ForeignKey, Integer
-from pydantic import EmailStr
 
-from core_infra.database import get_db, Base
-from core_infra.auth import get_password_hash
-from api.schemas.common import ApiResponse, ok, fail
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, Query
+from pydantic import EmailStr
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy.orm import Session
+
 from api.pydantic_base import AppModel
+from api.schemas.common import ApiResponse, fail, ok
+from core_infra.auth import get_password_hash
+from core_infra.database import Base, get_db
 
 logger = logging.getLogger(__name__)
 
@@ -70,10 +71,11 @@ async def send_reset_email(email: str, token: str, user_name: Optional[str] = No
     This is a placeholder - integrate with your email service
     """
     try:
-        import aiosmtplib
-        from email.mime.text import MIMEText
-        from email.mime.multipart import MIMEMultipart
         import os
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+
+        import aiosmtplib
 
         # Email configuration from environment
         smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")

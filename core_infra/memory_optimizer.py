@@ -5,12 +5,13 @@
 import asyncio
 import gc
 import logging
+import os
 import threading
 import time
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 from weakref import WeakValueDictionary
+
 import psutil
-import os
 
 logger = logging.getLogger(__name__)
 

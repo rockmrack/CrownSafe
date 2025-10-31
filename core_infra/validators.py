@@ -3,11 +3,12 @@ Input validation and sanitization for BabyShield
 Prevents SQL injection, XSS, and invalid data
 """
 
-import re
-from typing import Optional, Any
-from pydantic import BaseModel, field_validator, EmailStr
 import html
+import re
+from typing import Any, Optional
+
 import bleach
+from pydantic import BaseModel, EmailStr, field_validator
 
 # Barcode patterns
 BARCODE_PATTERNS = {

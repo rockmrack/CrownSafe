@@ -1,5 +1,6 @@
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
+
 from core_infra.database import User
 
 # Use passlib for robust password hashing

@@ -4,19 +4,20 @@ Provides exact validation and comprehensive error handling
 """
 
 import logging
-from typing import Dict, List, Optional, Any
 from datetime import datetime
-from fastapi import APIRouter, HTTPException, Query, Depends
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
+from api.services.dev_override import dev_entitled
+from core_infra.barcode_validator import BarcodeType, ValidationResult
 from core_infra.database import get_db_session
 from core_infra.enhanced_barcode_service import (
-    enhanced_barcode_service,
     ExactScanResult,
+    enhanced_barcode_service,
 )
-from core_infra.barcode_validator import BarcodeType, ValidationResult
-from api.services.dev_override import dev_entitled
 
 logger = logging.getLogger(__name__)
 

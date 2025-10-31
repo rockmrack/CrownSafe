@@ -1,9 +1,10 @@
 # data_models/recall.py
 # Version 2.0 - Pure Pydantic Schema
 
-from pydantic import BaseModel, Field
-from typing import Optional
 from datetime import date
+from typing import Optional
+
+from pydantic import BaseModel, Field
 
 
 class Recall(BaseModel):

@@ -4,14 +4,15 @@ import logging
 
 # Import live connectors directly
 from agents.recall_data_agent.connectors.cpsc import CPSCConnector
-from agents.recall_data_agent.connectors.fda import FDAConnector
-from agents.recall_data_agent.connectors.rapex import EURapexConnector
-from agents.recall_data_agent.connectors.opss import UKOPSSConnector
 from agents.recall_data_agent.connectors.cpso import SGCPSoConnector
+from agents.recall_data_agent.connectors.fda import FDAConnector
+from agents.recall_data_agent.connectors.opss import UKOPSSConnector
+from agents.recall_data_agent.connectors.rapex import EURapexConnector
+
+from agents.hazard_analysis_agent.agent_logic import HazardAnalysisLogic
 
 # Import product and hazard analysis logic
 from agents.product_identifier_agent.agent_logic import ProductIdentifierLogic
-from agents.hazard_analysis_agent.agent_logic import HazardAnalysisLogic
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("test_live_direct")

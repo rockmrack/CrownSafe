@@ -3,9 +3,11 @@ Product Ingredients Database Model
 Stores product ingredient data locally for immediate offline access
 """
 
-from sqlalchemy import Column, Integer, String, Text, JSON, DateTime, Boolean, Index
-from sqlalchemy.orm import relationship
 from datetime import datetime
+
+from sqlalchemy import JSON, Boolean, Column, DateTime, Index, Integer, String, Text
+from sqlalchemy.orm import relationship
+
 from core_infra.database import Base
 
 

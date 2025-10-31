@@ -3,32 +3,33 @@ Advanced BabyShield Features API Endpoints
 Provides endpoints for web research, guidelines, and visual recognition
 """
 
-import logging
-import json
-import uuid
-import base64
 import asyncio
+import base64
+import hashlib
+import json
+import logging
 import os
-from typing import Optional, List, Dict, Any
+import uuid
 from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 from fastapi import (
     APIRouter,
-    HTTPException,
-    Depends,
-    Query,
-    Body,
-    File,
-    UploadFile,
     BackgroundTasks,
+    Body,
+    Depends,
+    File,
+    HTTPException,
+    Query,
+    UploadFile,
 )
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, HttpUrl
 from sqlalchemy.orm import Session
-from pathlib import Path
-import hashlib
 
 # REMOVED FOR CROWN SAFE: RecallDB no longer applicable (hair products, not baby recalls)
-from core_infra.database import get_db, User
+from core_infra.database import User, get_db
 
 # Define logger first
 logger = logging.getLogger(__name__)
@@ -407,8 +408,9 @@ async def recognize_product_from_image(
 
         try:
             # Create image processing job
-            from core_infra.visual_agent_models import ImageJob, JobStatus
             import uuid
+
+            from core_infra.visual_agent_models import ImageJob, JobStatus
 
             job_id = str(uuid.uuid4())
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -514,9 +516,11 @@ async def recognize_product_from_image(
         if check_for_defects and confidence > confidence_threshold:
             # Use real defect detection
             try:
-                from core_infra.image_processor import ImageAnalysisService
-                from PIL import Image
                 import io
+
+                from PIL import Image
+
+                from core_infra.image_processor import ImageAnalysisService
 
                 # Convert image data back to PIL Image for defect detection
                 pil_image = Image.open(io.BytesIO(image_data))

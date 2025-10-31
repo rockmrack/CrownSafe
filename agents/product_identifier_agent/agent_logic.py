@@ -4,14 +4,14 @@
 #              If the live lookup fails (e.g. HTTP 400), falls back to the in-memory
 #              RecallDB for test scenarios.
 
-import logging
 import json
+import logging
 import os
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 import aiohttp
 
-from core_infra.database import get_db_session, RecallDB  # in-memory test DB model
+from core_infra.database import RecallDB, get_db_session  # in-memory test DB model
 
 logger = logging.getLogger(__name__)
 

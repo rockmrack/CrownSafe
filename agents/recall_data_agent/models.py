@@ -4,9 +4,10 @@ Pydantic models for recall data validation and structure.
 Compatible with BabyShield EnhancedRecallDB schema.
 """
 
-from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional, List, Dict, Any
 from datetime import date
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Recall(BaseModel):

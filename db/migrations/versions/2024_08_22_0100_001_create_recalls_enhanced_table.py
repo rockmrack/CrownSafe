@@ -6,10 +6,11 @@ Create Date: 2024-08-22 01:00:00.000000
 
 """
 
-from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy import text
+from sqlalchemy.dialects.postgresql import JSON, UUID
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "001"

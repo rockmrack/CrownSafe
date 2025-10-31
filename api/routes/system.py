@@ -3,13 +3,14 @@ System health and readiness endpoints
 Provides health checks for monitoring and orchestration
 """
 
+import logging
 import os
-from typing import Dict, Any
+from typing import Any, Dict
+
 from fastapi import APIRouter, Response
 from fastapi.responses import JSONResponse
-from sqlalchemy import text
 from redis.asyncio import Redis
-import logging
+from sqlalchemy import text
 
 logger = logging.getLogger("app")
 
@@ -109,8 +110,9 @@ async def status(response: Response) -> Dict[str, Any]:
     Provides comprehensive system information
     """
     import platform
-    import psutil
     from datetime import datetime
+
+    import psutil
 
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
 

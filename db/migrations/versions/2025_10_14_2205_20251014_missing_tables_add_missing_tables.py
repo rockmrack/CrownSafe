@@ -7,9 +7,10 @@ Create Date: 2025-10-14
 This migration adds all tables that were defined in models but missing from migrations.
 """
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+
+from alembic import op
 
 # revision identifiers, used by Alembic
 revision = "20251014_missing_tables"

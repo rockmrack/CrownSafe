@@ -1,10 +1,10 @@
 # scripts/test_community_alert_agent.py
 
-import sys
-import os
 import asyncio
-import logging
 import json
+import logging
+import os
+import sys
 
 # --- Add project root to Python's path ---
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

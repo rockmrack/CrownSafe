@@ -1,7 +1,7 @@
-import sqlite3
-import os
-import json
 import datetime
+import json
+import os
+import sqlite3
 
 db = os.path.abspath("dev.db")
 scan_id = r"barcode_2c69d21d"

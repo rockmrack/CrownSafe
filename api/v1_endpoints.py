@@ -6,26 +6,28 @@ BabyShield API v1 Endpoints
 Implements versioned API endpoints with backward compatibility
 """
 
-import uuid
 import logging
-from typing import Optional, List, Dict, Any
-from datetime import datetime
-from fastapi import APIRouter, Query, HTTPException, Request
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+import os
 
 # Import database and recall logic
 import sys
-import os
+import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from core_infra.database import get_db_session  # RecallDB removed - Crown Safe uses HairProductModel
 from sqlalchemy import and_, or_, text
 from sqlalchemy.exc import ProgrammingError
+
+from core_infra.database import get_db_session  # RecallDB removed - Crown Safe uses HairProductModel
 
 logger = logging.getLogger(__name__)
 

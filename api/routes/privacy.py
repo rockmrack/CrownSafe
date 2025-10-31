@@ -3,30 +3,30 @@ User privacy API routes for GDPR/CCPA compliance
 Handles data export, deletion, and privacy information requests
 """
 
-import os
 import logging
-from typing import Optional
+import os
 from datetime import datetime, timezone
+from typing import Optional
 
-from fastapi import APIRouter, Request, HTTPException, Depends, Header
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr, Field, field_validator
-from sqlalchemy import insert, select, and_
+from sqlalchemy import and_, insert, select
 from sqlalchemy.orm import Session
 
-from core_infra.database import get_db
-from db.models.privacy_request import PrivacyRequest
-from api.utils.privacy import (
-    normalize_email,
-    validate_email,
-    email_hash,
-    detect_jurisdiction,
-    format_dsar_response,
-    privacy_audit_log,
-    mask_email,
-)
 from api.errors import APIError
 from api.rate_limiting import RateLimiter
+from api.utils.privacy import (
+    detect_jurisdiction,
+    email_hash,
+    format_dsar_response,
+    mask_email,
+    normalize_email,
+    privacy_audit_log,
+    validate_email,
+)
+from core_infra.database import get_db
+from db.models.privacy_request import PrivacyRequest
 
 logger = logging.getLogger(__name__)
 

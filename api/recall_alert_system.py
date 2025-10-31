@@ -5,23 +5,25 @@ Monitors agencies for new recalls and pushes alerts to affected users
 
 import asyncio
 import logging
-from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Query
-from pydantic import BaseModel, Field
+from typing import Any, Dict, List, Optional
+
 import httpx
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
+from sqlalchemy import and_, func, or_
+from sqlalchemy.orm import Session
+
+from api.monitoring_scheduler import MonitoredProduct
+from api.notification_endpoints import (
+    DeviceToken,
+    NotificationHistory,
+    send_push_notification,
+)
 
 # CROWN SAFE: RecallDB model removed - replaced with HairProductModel
-from core_infra.database import get_db, User, SessionLocal
+from core_infra.database import SessionLocal, User, get_db
 from db.models.scan_history import ScanHistory
-from api.notification_endpoints import (
-    send_push_notification,
-    NotificationHistory,
-    DeviceToken,
-)
-from api.monitoring_scheduler import MonitoredProduct
 
 # from core_infra.celery_app import celery_app  # Commented out - not available in dev environment
 

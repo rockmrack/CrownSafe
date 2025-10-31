@@ -1,9 +1,9 @@
 # scripts/test_router_final_success.py
 
 import asyncio
+import json
 import logging
 import sys
-import json
 import uuid
 from pathlib import Path
 
@@ -11,8 +11,9 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from agents.routing.router_agent.agent_logic import RouterLogic
 import redis.asyncio as redis
+
+from agents.routing.router_agent.agent_logic import RouterLogic
 
 # Setup logging to see router messages
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

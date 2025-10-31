@@ -2,16 +2,16 @@
 # scripts/fix_upc_data.py
 # Script to fix UPC data and complete BabyShield optimization
 
-import logging
-import sys
-import os
 import asyncio
+import logging
+import os
+import sys
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath("."))
 
-from core_infra.database import get_db_session, RecallDB
 from agents.product_identifier_agent.agent_logic import ProductIdentifierLogic
+from core_infra.database import RecallDB, get_db_session
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

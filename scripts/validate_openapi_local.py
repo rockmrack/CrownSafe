@@ -3,11 +3,12 @@
 Validate OpenAPI specification file locally
 """
 
-import sys
 import json
+import os
+import sys
+
 import yaml
 from openapi_spec_validator import validate_spec
-import os
 
 PATHS = [
     "docs/api/openapi_v1.yaml",

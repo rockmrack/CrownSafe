@@ -7,9 +7,9 @@ Tests the complete confidence-based visual safety check system
 import asyncio
 import json
 import logging
-import sys
 import os
-from typing import Dict, Any
+import sys
+from typing import Any, Dict
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -167,8 +167,8 @@ async def test_low_confidence_visual_workflow():
     logger.info("=" * 60)
 
     try:
-        from agents.routing.router_agent.agent_logic import BabyShieldRouterLogic
         from agents.planning.planner_agent.agent_logic import BabyShieldPlannerLogic
+        from agents.routing.router_agent.agent_logic import BabyShieldRouterLogic
 
         # Create router directly
         router = BabyShieldRouterLogic(agent_id="test_router")

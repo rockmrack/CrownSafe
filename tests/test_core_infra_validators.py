@@ -1,16 +1,17 @@
 """Tests for core_infra/validators.py"""
 
 import unittest
+
 from core_infra.validators import (
+    safe_sql_identifier,
+    sanitize_filename,
+    sanitize_html,
     validate_barcode,
     validate_email,
-    validate_pagination,
     validate_id,
-    sanitize_html,
-    validate_search_query,
-    sanitize_filename,
     validate_model_number,
-    safe_sql_identifier,
+    validate_pagination,
+    validate_search_query,
 )
 
 

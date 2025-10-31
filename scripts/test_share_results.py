@@ -3,16 +3,17 @@
 Test the Share Results functionality
 """
 
-import sys
-import os
 import json
+import os
+import sys
 from datetime import datetime, timedelta
 
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import MetaData, create_engine
 from sqlalchemy.orm import sessionmaker
+
 from db.models.scan_history import ScanHistory
 from db.models.share_token import ShareToken
 

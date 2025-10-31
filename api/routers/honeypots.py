@@ -3,12 +3,13 @@ Honeypot Endpoints for BabyShield Security
 Trap attackers and gather intelligence on attack patterns
 """
 
-from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import JSONResponse, HTMLResponse
+import json
 import logging
 import time
-import json
-from typing import Dict, Any
+from typing import Any, Dict
+
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import HTMLResponse, JSONResponse
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

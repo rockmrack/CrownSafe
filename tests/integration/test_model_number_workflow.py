@@ -8,11 +8,12 @@ Run with: pytest tests/integration/test_model_number_workflow.py -v -s
 """
 
 import os
+from datetime import date
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from datetime import date
 
 from api.main_crownsafe import app
 from core_infra.database import Base, LegacyRecallDB

@@ -14,12 +14,12 @@ print("=" * 80)
 
 try:
     from agents.recall_data_agent.connectors import (
-        UK_OPSS_Connector,
-        UK_FSA_Connector,
-        UK_TradingStandards_Connector,
-        UK_DVSA_Connector,
-        UK_MHRA_Connector,
         ConnectorRegistry,
+        UK_DVSA_Connector,
+        UK_FSA_Connector,
+        UK_MHRA_Connector,
+        UK_OPSS_Connector,
+        UK_TradingStandards_Connector,
     )
 
     print("✅ All UK connector imports successful")
@@ -153,8 +153,9 @@ print("TEST 6: Verifying Agent Logic Integration")
 print("=" * 80)
 
 try:
-    import agents.recall_data_agent.agent_logic as agent_logic
     import inspect
+
+    import agents.recall_data_agent.agent_logic as agent_logic
 
     source = inspect.getsource(agent_logic)
 

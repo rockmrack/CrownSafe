@@ -1,6 +1,7 @@
-from typing import Optional, TypeVar, Generic, Dict, Any
-from pydantic import BaseModel
+from typing import Any, Dict, Generic, Optional, TypeVar
+
 from fastapi import HTTPException
+from pydantic import BaseModel
 
 T = TypeVar("T")
 

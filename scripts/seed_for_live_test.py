@@ -1,8 +1,8 @@
 # scripts/seed_for_live_test.py
 
-import sys
-import os
 import logging
+import os
+import sys
 from datetime import date
 
 # CRITICAL: Set environment variables BEFORE importing database module
@@ -14,14 +14,14 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 
 from core_infra.database import (
+    DATABASE_URL,
     Base,
-    engine,
+    RecallDB,
     SessionLocal,
     User,
-    RecallDB,
     create_tables,
     drop_tables,
-    DATABASE_URL,
+    engine,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

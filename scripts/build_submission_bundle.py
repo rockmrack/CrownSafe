@@ -3,12 +3,12 @@
 Build store submission bundle (ZIP) with all required assets and documents
 """
 
-import os
-import sys
 import json
-import zipfile
-import time
+import os
 import shutil
+import sys
+import time
+import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(__file__))
 OUTDIR = os.path.join(ROOT, "dist")

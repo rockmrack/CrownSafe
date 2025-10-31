@@ -4,10 +4,11 @@ Verify BabyShield API deployment
 Tests all critical endpoints after deployment
 """
 
-import requests
 import json
 import sys
 from datetime import datetime
+
+import requests
 
 # Configuration
 BASE_URL = "https://babyshield.cureviax.ai"

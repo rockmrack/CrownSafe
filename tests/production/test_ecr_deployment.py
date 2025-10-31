@@ -3,10 +3,11 @@ Production deployment validation tests
 Run these against the deployed ECR image
 """
 
-import pytest
-import requests
 import time
 from datetime import datetime
+
+import pytest
+import requests
 
 # Test against production endpoint
 BASE_URL = "https://babyshield.cureviax.ai"  # Production URL

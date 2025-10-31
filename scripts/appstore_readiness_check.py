@@ -4,14 +4,15 @@ App Store Readiness Check for BabyShield API
 Validates API stability, predictability, and documentation for App Store/Play review
 """
 
-import os
-import sys
 import json
-import time
-import re
-import threading
+import os
 import queue
+import re
 import statistics
+import sys
+import threading
+import time
+
 import requests
 
 BASE = os.getenv("BABYSHIELD_BASE_URL", "https://babyshield.cureviax.ai")

@@ -3,16 +3,17 @@
 # Addresses: Response handling, logging configuration, proper shutdown, error handling
 
 import asyncio
+import logging
 import os
 import signal
 import sys
 from pathlib import Path
-from dotenv import load_dotenv
-import logging
 from typing import Optional
 
 from core_infra.mcp_client_library.client import MCPClient
 from core_infra.mcp_client_library.models import MCPMessage
+from dotenv import load_dotenv
+
 from core_infra.mcp_client_library.exceptions import MCPConnectionError
 
 # Import agent logic

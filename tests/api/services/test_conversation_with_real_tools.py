@@ -2,6 +2,7 @@
 
 import unittest
 from unittest.mock import Mock, patch
+
 from sqlalchemy.orm import Session
 
 

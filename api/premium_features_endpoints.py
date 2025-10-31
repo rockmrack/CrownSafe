@@ -4,24 +4,26 @@ Provides endpoints for pregnancy safety and allergy checking features
 """
 
 import logging
-from typing import Optional, List, Dict, Any
 from datetime import datetime
-from fastapi import APIRouter, HTTPException, Depends, Query, Body, Request, Response
+from typing import Any, Dict, List, Optional
+
+from agents.premium.allergy_sensitivity_agent.agent_logic import (
+    AllergySensitivityAgentLogic,
+)
+from agents.premium.pregnancy_product_safety_agent.agent_logic import (
+    PregnancyProductSafetyAgentLogic,
+)
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, Request, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-# LEGACY BABY CODE: FamilyMember removed for Crown Safe
-from core_infra.database import get_db, User  # , FamilyMember
+from api.schemas.common import fail, ok
 from core_infra.auth import get_current_active_user
+
+# LEGACY BABY CODE: FamilyMember removed for Crown Safe
+from core_infra.database import User, get_db  # , FamilyMember
 from core_infra.rate_limiter import limiter
-from api.schemas.common import ok, fail
-from agents.premium.pregnancy_product_safety_agent.agent_logic import (
-    PregnancyProductSafetyAgentLogic,
-)
-from agents.premium.allergy_sensitivity_agent.agent_logic import (
-    AllergySensitivityAgentLogic,
-)
 
 logger = logging.getLogger(__name__)
 

@@ -3,21 +3,22 @@ Query optimization utilities for BabyShield
 Prevents N+1 queries and improves database performance
 """
 
+import logging
+import time
+from contextlib import contextmanager
+from functools import wraps
+from typing import Any, Dict, List, Optional, Type
+
+from sqlalchemy import and_, or_
 from sqlalchemy.orm import (
     Query,
     Session,
+    contains_eager,
     joinedload,
     selectinload,
     subqueryload,
-    contains_eager,
 )
 from sqlalchemy.sql import func
-from sqlalchemy import and_, or_
-from typing import List, Dict, Any, Optional, Type
-from functools import wraps
-import logging
-from contextlib import contextmanager
-import time
 
 # Import User model (exists in database.py)
 from core_infra.database import User

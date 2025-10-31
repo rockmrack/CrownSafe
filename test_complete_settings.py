@@ -3,8 +3,9 @@ Complete Settings Screen Verification - ALL Screenshots
 Tests ALL endpoints shown in both Settings screen views
 """
 
-import requests
 import json
+
+import requests
 
 BASE_URL = "https://babyshield.cureviax.ai"
 

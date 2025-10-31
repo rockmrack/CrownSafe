@@ -5,17 +5,18 @@ API endpoints for supplemental data and enhanced safety reports
 import logging
 import time
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from core_infra.database import get_db
-from core_infra.enhanced_safety_service import enhanced_safety_service
 from api.models.supplemental_models import (
+    EnhancedSafetyReport,
     SupplementalDataRequest,
     SupplementalDataResponse,
-    EnhancedSafetyReport,
 )
-from api.schemas.common import ok, fail
+from api.schemas.common import fail, ok
+from core_infra.database import get_db
+from core_infra.enhanced_safety_service import enhanced_safety_service
 
 logger = logging.getLogger(__name__)
 

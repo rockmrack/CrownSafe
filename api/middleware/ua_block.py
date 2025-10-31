@@ -3,10 +3,11 @@ User-Agent blocking middleware
 Blocks requests from known malicious scanners and bots
 """
 
+import logging
 import os
 import re
-import logging
 from typing import List, Optional, Pattern
+
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse

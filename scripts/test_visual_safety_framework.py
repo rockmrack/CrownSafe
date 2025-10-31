@@ -7,9 +7,9 @@ Tests both Phase 1 (liability mitigation) and Phase 2 (visual suggestions)
 import asyncio
 import json
 import logging
-import sys
 import os
-from typing import Dict, Any
+import sys
+from typing import Any, Dict
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))

@@ -4,8 +4,8 @@ Handles environment variables and default values
 """
 
 import os
-from typing import Optional
 from pathlib import Path
+from typing import Optional
 
 
 class Config:

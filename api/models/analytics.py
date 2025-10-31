@@ -1,7 +1,9 @@
-from sqlalchemy import Column, BigInteger, Boolean, String, Text, DateTime
-from sqlalchemy.dialects.postgresql import UUID
-from core_infra.database import Base
 from datetime import datetime, timezone
+
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, String, Text
+from sqlalchemy.dialects.postgresql import UUID
+
+from core_infra.database import Base
 
 
 class ExplainFeedback(Base):

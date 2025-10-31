@@ -3,8 +3,9 @@ Test Mobile App Buttons: "Verify Now" and "View Details"
 Tests the endpoints shown in the mobile app screenshot
 """
 
-import requests
 import json
+
+import requests
 
 BASE_URL = "https://babyshield.cureviax.ai"
 
@@ -82,7 +83,7 @@ print("-" * 80)
 # First, let's get a real recall_id from the database
 print("Step 1: Finding a sample recall_id from database...")
 try:
-    from core_infra.database import SessionLocal, EnhancedRecallDB
+    from core_infra.database import EnhancedRecallDB, SessionLocal
 
     db = SessionLocal()
     sample_recall = db.query(EnhancedRecallDB).first()

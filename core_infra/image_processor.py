@@ -3,21 +3,22 @@ Image Processing Module for Visual Agent - Phase 2
 Handles OCR, barcode detection, label extraction with multiple providers
 """
 
-import os
+import hashlib
 import io
 import json
 import logging
-import hashlib
-from typing import Dict, List, Optional, Any, Tuple
-from datetime import datetime
-from dataclasses import dataclass, asdict
-from enum import Enum
+import os
 import re
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
+
+import cv2
+import numpy as np
 
 # Image processing
 from PIL import Image
-import cv2
-import numpy as np
 
 # Cloud providers
 try:

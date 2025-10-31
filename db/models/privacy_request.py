@@ -4,11 +4,13 @@ SQLAlchemy model for privacy request (DSAR) tracking
 
 import hashlib
 import secrets
-from datetime import datetime, timezone, timedelta
-from typing import Optional, Dict, Any
-from sqlalchemy import Column, String, DateTime, Text, CheckConstraint
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, Optional
+
+from sqlalchemy import CheckConstraint, Column, DateTime, String, Text
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.sql import func
+
 from core_infra.database import Base  # Use existing Base from project
 
 

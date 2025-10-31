@@ -1,21 +1,22 @@
-import pytest
-from uuid import uuid4
+import json
+import sys
 from datetime import datetime, timezone
+from uuid import uuid4
+
+import pytest
 from sqlalchemy import (
-    create_engine,
-    Column,
-    String,
     Boolean,
+    Column,
     Date,
     DateTime,
     ForeignKey,
     Integer,
     SmallInteger,
+    String,
     Text,
+    create_engine,
 )
-from sqlalchemy.orm import sessionmaker, declarative_base, relationship
-import json
-import sys
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 # Import the CRUD functions we want to test
 from api.crud import chat_memory

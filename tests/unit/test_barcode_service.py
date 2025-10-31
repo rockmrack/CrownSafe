@@ -10,10 +10,10 @@ Estimated Time: 6-8 hours
 Priority: HIGH (required for production deployment)
 """
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock
-import numpy as np
+from unittest.mock import MagicMock, Mock, patch
 
+import numpy as np
+import pytest
 
 # Mark all tests in this file as skipped - they need implementation
 pytestmark = pytest.mark.skip(reason="⚠️ Test stubs - awaiting implementation. Skipped to prevent false coverage.")

@@ -18,6 +18,7 @@ print("=" * 70)
 print()
 
 from fastapi.testclient import TestClient
+
 from api.main_crownsafe import app
 from core_infra.database import SessionLocal
 from core_infra.enhanced_database_schema import EnhancedRecallDB
@@ -88,8 +89,9 @@ print()
 print("Step 4: Test direct database query from API context...")
 try:
     # This simulates what the API does internally
-    from core_infra.database import SessionLocal
     from sqlalchemy import func
+
+    from core_infra.database import SessionLocal
 
     db = SessionLocal()
 
@@ -115,7 +117,7 @@ print()
 
 print("Step 5: Verify SessionLocal uses correct database...")
 try:
-    from core_infra.database import engine, DATABASE_URL
+    from core_infra.database import DATABASE_URL, engine
 
     print(f"  Engine URL: {str(engine.url).replace('MandarunLabadiena25!', '***')}")
     print(f"  Dialect: {engine.dialect.name}")

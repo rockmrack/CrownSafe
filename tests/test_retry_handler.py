@@ -1,8 +1,8 @@
 """Tests for core_infra/retry_handler.py"""
 
+import time
 import unittest
 from unittest.mock import Mock, patch
-import time
 
 
 class TestRetryHandler(unittest.TestCase):

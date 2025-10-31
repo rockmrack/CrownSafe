@@ -1,20 +1,21 @@
-import pytest
-from uuid import uuid4
+import json
 from datetime import date, datetime
+from uuid import uuid4
+
+import pytest
 from sqlalchemy import (
-    create_engine,
-    Column,
-    String,
     Boolean,
+    Column,
     Date,
     DateTime,
     ForeignKey,
     Integer,
     SmallInteger,
+    String,
     Text,
+    create_engine,
 )
-from sqlalchemy.orm import sessionmaker, declarative_base, relationship
-import json
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 # Create test-specific models for SQLite compatibility
 TestBase = declarative_base()

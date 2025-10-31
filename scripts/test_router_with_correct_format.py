@@ -1,9 +1,10 @@
 # scripts/test_router_with_correct_format.py
 
-import redis
 import json
-import uuid
 import time
+import uuid
+
+import redis
 
 r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 

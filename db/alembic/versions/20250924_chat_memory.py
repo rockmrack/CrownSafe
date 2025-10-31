@@ -5,9 +5,10 @@ Revises: 20250905_add_serial_verifications
 Create Date: 2025-09-24 20:15:00
 """
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+
+from alembic import op
 
 # revision identifiers
 revision = "20250924_chat_memory"

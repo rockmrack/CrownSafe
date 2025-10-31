@@ -4,7 +4,7 @@ Enterprise-grade Web Application Firewall rules
 """
 
 import json
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 
 class WAFRulesGenerator:

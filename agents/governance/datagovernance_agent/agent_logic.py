@@ -1,12 +1,12 @@
 # agents/governance/datagovernance_agent/agent_logic.py
 # Version 1.0 - Live Logic Implementation
 
-import logging
-from typing import Dict, Any, Optional
 import asyncio
+import logging
+from typing import Any, Dict, Optional
 
 # Import the consolidated database setup
-from core_infra.database import get_db_session, User
+from core_infra.database import User, get_db_session
 
 logger = logging.getLogger(__name__)
 

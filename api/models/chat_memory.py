@@ -1,20 +1,22 @@
 from __future__ import annotations
-from datetime import datetime, date
+
+import os
+from datetime import date, datetime
 from typing import Any, Optional
+
 from sqlalchemy import (
-    Column,
-    String,
+    JSON,
+    BigInteger,
     Boolean,
+    Column,
     Date,
     DateTime,
     ForeignKey,
-    BigInteger,
     SmallInteger,
-    JSON,
+    String,
 )
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship
-import os
 
 from core_infra.database import Base  # reuse your existing Base
 

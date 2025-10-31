@@ -2,29 +2,29 @@
 Enhanced Notification Endpoints - Push notifications, history, and device management
 """
 
-import logging
 import json
+import logging
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
-from sqlalchemy.orm import Session
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from sqlalchemy import (
+    JSON,
+    Boolean,
     Column,
+    DateTime,
+    ForeignKey,
     Integer,
     String,
-    DateTime,
-    Boolean,
-    JSON,
-    ForeignKey,
     Text,
     desc,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Session, relationship
 
-from core_infra.database import get_db, Base
-from core_infra.auth import get_current_active_user
-from api.schemas.common import ApiResponse, ok, fail
 from api.pydantic_base import AppModel
+from api.schemas.common import ApiResponse, fail, ok
+from core_infra.auth import get_current_active_user
+from core_infra.database import Base, get_db
 
 logger = logging.getLogger(__name__)
 
@@ -155,9 +155,10 @@ class SendNotificationRequest(AppModel):
 def get_firebase_app():
     """Get or initialize Firebase app"""
     try:
+        import os
+
         import firebase_admin
         from firebase_admin import credentials, messaging
-        import os
 
         # Check if already initialized
         try:

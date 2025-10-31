@@ -10,10 +10,10 @@ Test script to verify all 4 product identification methods are working:
 import asyncio
 import json
 import logging
-import sys
 import os
-from typing import Dict, Any
+import sys
 import uuid
+from typing import Any, Dict
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -31,6 +31,7 @@ async def test_method_1_camera_scan():
 
     try:
         from fastapi.testclient import TestClient
+
         from api.main_crownsafe import app
 
         client = TestClient(app)
@@ -85,6 +86,7 @@ async def test_method_2_upload_photo():
 
         # Test the upload request endpoint
         from fastapi.testclient import TestClient
+
         from api.main_crownsafe import app
 
         # Check if visual router is mounted
@@ -131,6 +133,7 @@ async def test_method_3_barcode_text():
 
     try:
         from fastapi.testclient import TestClient
+
         from api.main_crownsafe import app
 
         client = TestClient(app)
@@ -164,6 +167,7 @@ async def test_method_4_search_by_name():
 
     try:
         from fastapi.testclient import TestClient
+
         from api.main_crownsafe import app
 
         client = TestClient(app)

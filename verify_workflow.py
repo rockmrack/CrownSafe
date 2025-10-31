@@ -4,8 +4,8 @@ Comprehensive Workflow Verification Script
 Verifies that RecallDataAgent is properly integrated into the BabyShield workflow
 """
 
-import sys
 import json
+import sys
 from pathlib import Path
 
 print("=" * 80)

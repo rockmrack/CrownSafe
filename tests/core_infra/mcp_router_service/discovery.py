@@ -1,18 +1,18 @@
 # C:\Users\rossd\Downloads\RossNetAgents\core_infra\mcp_router_service\discovery.py
 # Fixed version with proper variable scoping
 
-import logging
-from typing import Dict, Any, List, Optional, Set
-import json
-import uuid
-import copy
 import asyncio
+import copy
+import json
+import logging
+import uuid
 from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Set
 
 print(f"Loading discovery.py (Step 77 Version - Fixed): {__file__}")
 
 from .state import get_connection
-from .utils import create_mcp_response, create_mcp_error_response, safe_json_serialize
+from .utils import create_mcp_error_response, create_mcp_response, safe_json_serialize
 
 discovery_logger = logging.getLogger("MCP_DiscoveryService")
 agent_registry: Dict[str, Dict[str, Any]] = {}

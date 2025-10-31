@@ -4,10 +4,10 @@ Test script for the Incident Reporting System
 Tests the "Report Unsafe Product" feature
 """
 
-import sys
-import os
-import json
 import asyncio
+import json
+import os
+import sys
 from datetime import datetime, timedelta
 
 # Add parent directory to path
@@ -19,8 +19,8 @@ from sqlalchemy.orm import sessionmaker
 
 # Import models
 from db.models.incident_report import (
-    IncidentReport,
     IncidentCluster,
+    IncidentReport,
     IncidentType,
     SeverityLevel,
 )

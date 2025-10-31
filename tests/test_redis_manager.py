@@ -1,7 +1,7 @@
 """Tests for core_infra/redis_manager.py"""
 
 import unittest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
 
 
 class TestRedisManager(unittest.TestCase):

@@ -1,11 +1,12 @@
 # scripts/test_api_diagnostic.py
 
-import requests
 import json
 import logging
 import time
+from typing import Any, Dict, List, Optional
+
 import redis
-from typing import Dict, Any, Optional, List
+import requests
 
 
 # Setup colored logging

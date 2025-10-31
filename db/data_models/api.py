@@ -1,6 +1,8 @@
 # data_models/api.py
+from typing import List, Optional
+
 from pydantic import BaseModel
-from typing import Optional, List
+
 from .recall import RecallRecord
 
 

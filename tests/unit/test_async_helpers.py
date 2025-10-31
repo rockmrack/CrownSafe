@@ -3,20 +3,22 @@ Unit tests for core_infra/async_helpers.py
 Tests async HTTP client, batch processing, caching, and task queue functionality
 """
 
-import pytest
 import asyncio
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
+
 import aiohttp
-from unittest.mock import Mock, patch, AsyncMock, MagicMock
+import pytest
+
 from core_infra.async_helpers import (
     AsyncAPIClient,
-    fetch_multiple_apis,
-    async_endpoint,
     AsyncBatchProcessor,
-    async_cache,
     AsyncConverter,
+    AsyncTaskQueue,
+    async_cache,
+    async_endpoint,
+    fetch_multiple_apis,
     fetch_recalls_async,
     get_product_data_async,
-    AsyncTaskQueue,
 )
 
 

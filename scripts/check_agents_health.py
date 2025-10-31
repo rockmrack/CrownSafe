@@ -1,9 +1,10 @@
 # scripts/check_agents_health.py
 
-import redis
 import json
-import time
 import subprocess
+import time
+
+import redis
 
 r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 

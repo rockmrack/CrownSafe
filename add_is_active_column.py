@@ -2,8 +2,9 @@
 Quick script to add is_active column to users table
 """
 
-from core_infra.database import engine
 from sqlalchemy import text
+
+from core_infra.database import engine
 
 try:
     with engine.connect() as conn:

@@ -5,13 +5,14 @@ Provides detailed health status for all system components
 including database, cache, and external service dependencies.
 """
 
-import time
 import logging
+import time
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
+
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from core_infra.database import get_db
 

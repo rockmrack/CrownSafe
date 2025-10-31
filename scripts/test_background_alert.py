@@ -2,10 +2,10 @@
 # scripts/test_background_alert.py
 # Test Scenario 4: Emergency Recall Notification
 
+import logging
 import os
 import sys
-import logging
-from unittest.mock import patch, AsyncMock, ANY
+from unittest.mock import ANY, AsyncMock, patch
 
 # ─── 0) Make sure project root is on sys.path ─────────────────────────────────
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

@@ -4,13 +4,13 @@ Handles email normalization, hashing, validation, and PII masking
 """
 
 import hashlib
+import json
+import logging
 import re
 import secrets
-import json
-from typing import Optional, Dict, Any, List
 from datetime import datetime, timezone
 from functools import wraps
-import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

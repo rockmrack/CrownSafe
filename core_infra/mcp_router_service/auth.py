@@ -1,12 +1,13 @@
 # RossNetAgents/core_infra/mcp_router_service/auth.py
 
 import logging
-from typing import Optional, Dict, Any
-from fastapi import WebSocket, HTTPException, status
+from typing import Any, Dict, Optional
+
 import jwt  # PyJWT library, install with: pip install pyjwt
+from fastapi import HTTPException, WebSocket, status
 
 # Import settings and logger from config
-from .config import settings, logger
+from .config import logger, settings
 
 # --- Placeholder Functions for Authentication ---
 

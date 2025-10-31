@@ -8,30 +8,33 @@ module_logger = logging.getLogger("MCPClientLibrary")
 # Critical log to confirm which version of client.py is loaded (put in __init__ of class)
 
 import asyncio
-import json
 import copy
-import websockets
-from websockets.protocol import State as WebSocketStateEnum
-from websockets.exceptions import (
-    ConnectionClosedOK,
-    ConnectionClosedError,
-    InvalidURI,
-    WebSocketException,
-    InvalidStatus as WebsocketsInvalidStatus,
-)  # Explicit import
-from typing import Callable, Dict, Any, Optional, List, TYPE_CHECKING
+import json
 import uuid
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
+
+import websockets
 from tenacity import (
+    RetryCallState,
     retry,
+    retry_if_exception_type,
     stop_after_attempt,
     wait_fixed,
-    retry_if_exception_type,
-    RetryCallState,
 )
+from websockets.exceptions import (
+    ConnectionClosedError,
+    ConnectionClosedOK,
+    InvalidURI,
+    WebSocketException,
+)  # Explicit import
+from websockets.exceptions import (
+    InvalidStatus as WebsocketsInvalidStatus,
+)
+from websockets.protocol import State as WebSocketStateEnum
 
-from .models import MCPMessage, MCPHeader
 from .exceptions import MCPConnectionError, MCPError
+from .models import MCPHeader, MCPMessage
 
 if TYPE_CHECKING:
     from websockets.legacy.protocol import WebSocketCommonProtocol

@@ -3,27 +3,29 @@ Unit tests for api/models/chat_memory.py
 Tests chat memory models for user profiles, conversations, and messages
 """
 
+from datetime import date, datetime
+from unittest.mock import Mock, patch
+
 import pytest
-from datetime import datetime, date
-from unittest.mock import patch, Mock
 from sqlalchemy import (
-    create_engine,
-    Column,
-    String,
+    JSON,
+    BigInteger,
     Boolean,
+    Column,
     Date,
     DateTime,
     ForeignKey,
-    BigInteger,
     SmallInteger,
-    JSON,
+    String,
+    create_engine,
 )
 from sqlalchemy.orm import sessionmaker
+
 from api.models.chat_memory import (
-    UserProfile,
     Conversation,
     ConversationMessage,
     JsonType,
+    UserProfile,
     UuidType,
 )
 

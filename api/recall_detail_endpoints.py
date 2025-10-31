@@ -4,14 +4,16 @@ from api.pydantic_base import AppModel
 Recall Detail Endpoints for Individual Recall Lookup
 """
 
-from fastapi import APIRouter, HTTPException, Response, Request
-from sqlalchemy import text
-from typing import Dict, Any, Optional
-from core_infra.database import get_db_session
-from core_infra.cache_manager import get_cached, set_cached
-from urllib.parse import unquote
-import re
 import logging
+import re
+from typing import Any, Dict, Optional
+from urllib.parse import unquote
+
+from fastapi import APIRouter, HTTPException, Request, Response
+from sqlalchemy import text
+
+from core_infra.cache_manager import get_cached, set_cached
+from core_infra.database import get_db_session
 
 router = APIRouter(prefix="/api/v1", tags=["recalls"])
 logger = logging.getLogger(__name__)

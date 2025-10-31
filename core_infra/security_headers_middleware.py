@@ -3,10 +3,11 @@ Security Headers Middleware for App Store Readiness
 Adds security headers to all API responses
 """
 
+import logging
+
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
-import logging
 
 logger = logging.getLogger(__name__)
 

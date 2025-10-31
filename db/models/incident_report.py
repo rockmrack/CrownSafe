@@ -2,21 +2,22 @@
 Incident Report Model for Crowdsourced Safety Reporting
 """
 
+import enum
+from datetime import datetime
+
 from sqlalchemy import (
+    JSON,
+    Boolean,
     Column,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
     Integer,
     String,
     Text,
-    DateTime,
-    Boolean,
-    Float,
-    JSON,
-    ForeignKey,
-    Enum,
 )
 from sqlalchemy.orm import relationship
-from datetime import datetime
-import enum
 
 from core_infra.database import Base
 

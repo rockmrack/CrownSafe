@@ -1,7 +1,8 @@
-import requests
 import json
 import time
 from datetime import datetime
+
+import requests
 
 BASE_URL = "http://localhost:8001"
 print("\n" + "=" * 80)

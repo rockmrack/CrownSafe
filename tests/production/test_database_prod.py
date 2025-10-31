@@ -3,11 +3,13 @@ Production Database Tests
 Testing live production database connectivity, performance, and integrity
 """
 
-import pytest
-import time
 import os
+import time
+
+import pytest
 from sqlalchemy import text
-from core_infra.database import get_db, engine
+
+from core_infra.database import engine, get_db
 
 
 class TestProductionDatabase:

@@ -3,10 +3,11 @@ Scan Results Models for Post-Scan Results Page
 Ensures legally defensible language and transparent reporting
 """
 
-from typing import Optional, List, Dict, Any
-from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
 
 
 class VerdictType(str, Enum):

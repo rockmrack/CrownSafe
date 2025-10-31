@@ -3,16 +3,17 @@ Safety Data Connectors for CPSC, EU Safety Gate, and Commercial Sources
 Part of the Proactive Consumer Product Safety Framework
 """
 
-import os
-import logging
 import asyncio
-import aiohttp
-import json
-import xml.etree.ElementTree as ET
-from typing import List, Dict, Any, Optional
-from datetime import datetime, timedelta
-from dataclasses import dataclass
 import hashlib
+import json
+import logging
+import os
+import xml.etree.ElementTree as ET
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
+import aiohttp
 
 logger = logging.getLogger(__name__)
 

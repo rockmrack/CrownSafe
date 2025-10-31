@@ -31,11 +31,12 @@ print("  4. Type Barcode/UPC (12-14 digit lookup)")
 print("  5. Search by Name (text search)")
 print()
 
+from fastapi.testclient import TestClient
+from sqlalchemy import func
+
+from api.main_crownsafe import app
 from core_infra.database import SessionLocal, engine
 from core_infra.enhanced_database_schema import EnhancedRecallDB
-from fastapi.testclient import TestClient
-from api.main_crownsafe import app
-from sqlalchemy import func
 
 # Verify database connection first
 print("=" * 80)

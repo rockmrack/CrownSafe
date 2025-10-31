@@ -1,17 +1,18 @@
 # C:\Users\rossd\Downloads\RossNetAgents\core_infra\mcp_client_library\models.py
 # Step 106.3: Drastically simplify MCPMessage payload validation.
 
-from pydantic import BaseModel, Field, field_validator, root_validator
-from typing import (
-    Dict,
-    Any,
-    Optional,
-    List,
-)  # Removed Set, Union as not used in this simplified version
-from datetime import datetime, timezone
-import uuid
-import logging
 import json
+import logging
+import uuid
+from datetime import datetime, timezone
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+)  # Removed Set, Union as not used in this simplified version
+
+from pydantic import BaseModel, Field, field_validator, root_validator
 
 logger = logging.getLogger(__name__)
 

@@ -3,22 +3,23 @@ In-App Feedback API Endpoints
 Handles user feedback submission and routing to support mailbox
 """
 
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Request
-from pydantic import BaseModel, EmailStr, Field, validator
-from typing import Optional, Dict, Any, List
-from datetime import datetime
-import smtplib
-import logging
-import json
-import uuid
 import hashlib
+import json
+import logging
 import os
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
-import aiosmtplib
+import smtplib
+import uuid
+from datetime import datetime
 from email.message import EmailMessage
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import aiosmtplib
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
+from pydantic import BaseModel, EmailStr, Field, validator
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

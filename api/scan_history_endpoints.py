@@ -5,15 +5,16 @@ Scan History Endpoints - Shows users their past scans
 import logging
 from datetime import datetime, timedelta
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
-from sqlalchemy import desc, and_
 
-from core_infra.database import get_db
-from core_infra.auth import get_current_active_user
-from core_infra.visual_agent_models import ImageJob, ImageExtraction, JobStatus
-from api.schemas.common import ApiResponse, ok, fail
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import and_, desc
+from sqlalchemy.orm import Session
+
 from api.pydantic_base import AppModel
+from api.schemas.common import ApiResponse, fail, ok
+from core_infra.auth import get_current_active_user
+from core_infra.database import get_db
+from core_infra.visual_agent_models import ImageExtraction, ImageJob, JobStatus
 
 logger = logging.getLogger(__name__)
 

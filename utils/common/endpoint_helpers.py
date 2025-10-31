@@ -4,14 +4,15 @@ Reduces code duplication across endpoint files
 """
 
 import logging
-from typing import Optional, Dict, Any, List, Callable
 from datetime import datetime
-from fastapi import HTTPException, Depends, status
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from typing import Any, Callable, Dict, List, Optional
 
-from core_infra.database import get_db, User
+from fastapi import Depends, HTTPException, status
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
 from core_infra.auth import get_current_active_user
+from core_infra.database import User, get_db
 
 logger = logging.getLogger(__name__)
 

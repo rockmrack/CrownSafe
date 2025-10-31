@@ -2,13 +2,13 @@
 # core_infra/cache_manager.py
 # Redis Cache Manager for BabyShield - Optimized for 39 International Agencies
 
-import os
-import json
 import hashlib
+import json
 import logging
-from typing import Optional, Dict, Any, List
-from datetime import datetime, timedelta, date
+import os
 from contextlib import asynccontextmanager
+from datetime import date, datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 # Make redis optional (for test environments without Redis)
 try:

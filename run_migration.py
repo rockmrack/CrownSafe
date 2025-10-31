@@ -4,7 +4,9 @@ Run Alembic migration programmatically to work around file locking issues.
 
 import os
 import sys
+
 from alembic.config import Config
+
 from alembic import command
 
 

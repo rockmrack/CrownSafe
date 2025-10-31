@@ -3,11 +3,12 @@ HTTP cache utilities for ETag, Last-Modified, and Cache-Control headers
 Implements RFC 7232 for conditional requests
 """
 
+import email.utils as email_utils
 import hashlib
 import json
-import email.utils as email_utils
-from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, Optional, List
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional
+
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 

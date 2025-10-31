@@ -5,11 +5,12 @@ Provides simple GET endpoints for barcode scanning
 
 import logging
 from typing import Optional
-from fastapi import APIRouter, Depends, Query, HTTPException
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from core_infra.database import get_db
 from api.services.search_service import SearchService
+from core_infra.database import get_db
 
 logger = logging.getLogger(__name__)
 

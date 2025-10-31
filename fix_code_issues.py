@@ -4,7 +4,6 @@ Fixes: unused imports, unused loop variables, long lines, exception chaining
 """
 
 import re
-
 from pathlib import Path
 
 

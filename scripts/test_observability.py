@@ -4,13 +4,14 @@ Test script for Task 4 - Observability features
 Validates correlation IDs, rate limits, metrics, and error handling
 """
 
+import asyncio
+import json
 import os
 import sys
 import time
-import json
-import asyncio
-import requests
 from typing import Dict, List, Optional
+
+import requests
 
 # Configuration
 BASE_URL = os.getenv("BABYSHIELD_BASE_URL", "http://localhost:8000")

@@ -6,10 +6,11 @@ Provides consistent error responses and logging
 import logging
 import traceback
 from typing import Any, Dict
-from fastapi import Request, HTTPException
+
+import redis.exceptions
+from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
-import redis.exceptions
 
 logger = logging.getLogger(__name__)
 
@@ -211,9 +212,9 @@ async def general_exception_handler(request: Request, exc: Exception):
 
 def register_error_handlers(app):
     """Register all error handlers with the FastAPI app"""
+    import redis.exceptions
     from fastapi import HTTPException
     from sqlalchemy.exc import SQLAlchemyError
-    import redis.exceptions
 
     # Register custom exception handlers
     app.add_exception_handler(BabyShieldException, babyshield_exception_handler)

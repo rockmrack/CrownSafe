@@ -3,9 +3,10 @@ Pagination utilities for BabyShield
 Prevents memory issues with large datasets
 """
 
-from typing import TypeVar, Generic, List, Optional, Dict, Any
-from pydantic import BaseModel
+from typing import Any, Dict, Generic, List, Optional, TypeVar
+
 from fastapi import Query
+from pydantic import BaseModel
 from sqlalchemy.orm import Query as SQLQuery
 
 T = TypeVar("T")
@@ -210,6 +211,7 @@ def create_pagination_links(base_url: str, params: PaginationParams, total: int)
 
 # Decorator for automatic pagination
 from functools import wraps
+
 from fastapi import Depends
 
 

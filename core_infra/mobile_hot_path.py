@@ -3,11 +3,12 @@
 # Ultra-fast mobile hot path for instant barcode scanning across 39 agencies
 
 import asyncio
+import json
 import logging
 import time
-import json
-from typing import Dict, Any, Optional, List
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 from sqlalchemy import text
 
 logger = logging.getLogger(__name__)

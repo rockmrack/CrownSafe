@@ -6,11 +6,11 @@ Test the enhanced report generation with the new improvements:
 3. Conditional section visibility based on risk level
 """
 
-import sys
-import os
 import json
-from datetime import datetime, timezone
+import os
+import sys
 import uuid
+from datetime import datetime, timezone
 
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))

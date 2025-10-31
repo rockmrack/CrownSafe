@@ -5,11 +5,12 @@ Tests web research, guidelines, visual recognition, and monitoring
 """
 
 import asyncio
-import httpx
+import base64
 import json
 from datetime import datetime
 from pathlib import Path
-import base64
+
+import httpx
 
 # API base URL - adjust as needed
 BASE_URL = "http://localhost:8001"  # Local testing

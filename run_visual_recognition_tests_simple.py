@@ -3,8 +3,8 @@ VISUAL RECOGNITION SYSTEM TEST SUITE - STRUCTURE & CAPABILITIES
 Tests the Visual Search Agent without requiring OpenAI API calls
 """
 
-import sys
 import asyncio
+import sys
 from datetime import datetime
 
 
@@ -25,8 +25,8 @@ def run_tests():
     try:
         from agents.visual.visual_search_agent.agent_logic import (
             VisualSearchAgentLogic,
-            _is_s3_url,
             _fetch_image_bytes,
+            _is_s3_url,
         )
 
         print("PASS - All imports successful")
@@ -204,13 +204,14 @@ def run_tests():
     print("\n[TEST 8] Module Dependencies...")
     try:
         # Check all required imports work
-        import logging
         import json
-        from typing import Dict, Any, Optional
-        from openai import AsyncOpenAI
+        import logging
         import os
         import re
+        from typing import Any, Dict, Optional
         from urllib.parse import urlparse
+
+        from openai import AsyncOpenAI
 
         print("PASS - All module dependencies available")
         print("  - logging: OK")

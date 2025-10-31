@@ -1,9 +1,9 @@
 # agents/value_add/alternatives_agent/agent_logic.py
 # Version 1.0 - Live Logic Implementation
 
-import logging
-from typing import Dict, Any, Optional, List
 import asyncio
+import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

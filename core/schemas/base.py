@@ -3,8 +3,9 @@ Base Schema Classes for BabyShield API
 Provides consistent Pydantic configuration across all models
 """
 
-from pydantic import BaseModel, ConfigDict
 from typing import Any, Dict, Optional
+
+from pydantic import BaseModel, ConfigDict
 
 
 class BaseSchema(BaseModel):

@@ -2,11 +2,12 @@
 Enhanced Search Service with pg_trgm fuzzy matching, keyword AND logic, and deterministic sorting
 """
 
-from typing import List, Optional, Tuple, Dict, Any
-from sqlalchemy import and_, or_, func, desc, asc, literal, text
-from sqlalchemy.orm import Session
-from datetime import date
 import logging
+from datetime import date
+from typing import Any, Dict, List, Optional, Tuple
+
+from sqlalchemy import and_, asc, desc, func, literal, or_, text
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ class SearchService:
 
         if not has_enhanced and not has_legacy:
             # No recall tables exist - return empty query tuple
-            from core_infra.search_constants import EMPTY_QUERY, EMPTY_PARAMS
+            from core_infra.search_constants import EMPTY_PARAMS, EMPTY_QUERY
 
             return EMPTY_QUERY, EMPTY_PARAMS, False
 

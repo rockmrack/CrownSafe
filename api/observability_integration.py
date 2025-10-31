@@ -3,23 +3,25 @@ Observability Integration Module
 Wires all observability features into the FastAPI app
 """
 
-import os
 import logging
-from fastapi import FastAPI, Depends
+import os
+
+from fastapi import Depends, FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi_limiter.depends import RateLimiter
-from starlette.exceptions import HTTPException as StarletteHTTPException
 from prometheus_fastapi_instrumentator import Instrumentator
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+from api import errors
+from api.logging_setup import setup_json_logging
 
 # Import our modules
-from api.middleware import CorrelationIdMiddleware, AccessLogMiddleware
-from api.logging_setup import setup_json_logging
-from api import errors
+from api.middleware import AccessLogMiddleware, CorrelationIdMiddleware
 from api.rate_limiting import (
-    init_rate_limiter,
-    close_rate_limiter,
-    rate_limit_exceeded_handler,
     RateLimiters,
+    close_rate_limiter,
+    init_rate_limiter,
+    rate_limit_exceeded_handler,
 )
 from api.routes import system
 

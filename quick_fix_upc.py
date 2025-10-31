@@ -1,8 +1,8 @@
 """Quick fix for fix_upc_data function - removes RecallDB references"""
 
 import subprocess
-import time
 import sys
+import time
 
 
 def pause_onedrive():

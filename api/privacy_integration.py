@@ -4,6 +4,7 @@ Integrates all privacy features from Task 8
 """
 
 import logging
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
@@ -25,7 +26,7 @@ def setup_privacy_compliance(app: FastAPI):
     """
 
     # Import privacy routers
-    from api.routes import privacy, admin_privacy
+    from api.routes import admin_privacy, privacy
 
     # Include user privacy endpoints
     app.include_router(
@@ -66,6 +67,7 @@ def configure_privacy_logging():
     Configure logging to mask PII in logs
     """
     import logging
+
     from api.utils.privacy import mask_pii
 
     # Create custom formatter that masks PII
@@ -145,8 +147,9 @@ def validate_privacy_setup():
 
     # Check database tables
     try:
-        from core_infra.database import engine
         from sqlalchemy import inspect
+
+        from core_infra.database import engine
 
         inspector = inspect(engine)
         tables = inspector.get_table_names()

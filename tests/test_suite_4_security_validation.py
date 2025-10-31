@@ -4,9 +4,10 @@ Test Suite 4: Security and Validation Tests (100 tests)
 Tests authentication, authorization, input validation, and security measures
 """
 
-import pytest
-import sys
 import os
+import sys
+
+import pytest
 from fastapi.testclient import TestClient
 
 # Add project root to path
@@ -230,8 +231,9 @@ class TestSecurityAndValidation:
 
     def test_jwt_token_creation(self):
         """Test JWT token creation"""
-        from jose import jwt
         from datetime import datetime, timedelta
+
+        from jose import jwt
 
         secret = "test-secret-key"
         payload = {"sub": "user123", "exp": datetime.utcnow() + timedelta(hours=1)}
@@ -241,8 +243,9 @@ class TestSecurityAndValidation:
 
     def test_jwt_token_decode(self):
         """Test JWT token decoding"""
-        from jose import jwt
         from datetime import datetime, timedelta
+
+        from jose import jwt
 
         secret = "test-secret-key"
         payload = {"sub": "user123", "exp": datetime.utcnow() + timedelta(hours=1)}
@@ -252,8 +255,9 @@ class TestSecurityAndValidation:
 
     def test_jwt_token_expiration(self):
         """Test JWT token expiration"""
-        from jose import jwt, JWTError
         from datetime import datetime, timedelta
+
+        from jose import JWTError, jwt
 
         secret = "test-secret-key"
         payload = {"sub": "user123", "exp": datetime.utcnow() - timedelta(hours=1)}
@@ -263,8 +267,9 @@ class TestSecurityAndValidation:
 
     def test_jwt_token_invalid_signature(self):
         """Test JWT token with invalid signature"""
-        from jose import jwt, JWTError
         from datetime import datetime, timedelta
+
+        from jose import JWTError, jwt
 
         secret = "test-secret-key"
         wrong_secret = "wrong-secret-key"
@@ -373,8 +378,8 @@ class TestSecurityAndValidation:
 
     def test_hmac_signature(self):
         """Test HMAC signature generation"""
-        import hmac
         import hashlib
+        import hmac
 
         secret = b"secret-key"
         message = b"test message"
@@ -383,8 +388,8 @@ class TestSecurityAndValidation:
 
     def test_hmac_verification(self):
         """Test HMAC signature verification"""
-        import hmac
         import hashlib
+        import hmac
 
         secret = b"secret-key"
         message = b"test message"
@@ -677,8 +682,8 @@ class TestSecurityAndValidation:
 
     def test_csrf_token_validation_logic(self):
         """Test CSRF token validation logic"""
-        import hmac
         import hashlib
+        import hmac
 
         secret = b"csrf-secret"
         token = b"user-token"

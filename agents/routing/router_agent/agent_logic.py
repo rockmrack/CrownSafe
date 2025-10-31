@@ -1,9 +1,9 @@
 # agents/routing/router_agent/agent_logic.py
 # Version: 2.4-BABYSHIELD (Fixed to handle both 'result' and 'data' keys from agents)
 import asyncio
-import logging
 import json
-from typing import Dict, Any, Optional
+import logging
+from typing import Any, Dict, Optional
 
 # --- Agent Logic Imports ---
 AGENT_LOGIC_CLASSES = {}

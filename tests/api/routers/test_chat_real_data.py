@@ -1,13 +1,14 @@
-import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
+
+from agents.chat.chat_agent.agent_logic import ChatAgentLogic
 from api.main_crownsafe import app
 from db.models.scan_history import ScanHistory
-from agents.chat.chat_agent.agent_logic import ChatAgentLogic
 
 
 class TestChatWithRealData:

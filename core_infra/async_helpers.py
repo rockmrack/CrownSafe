@@ -4,13 +4,14 @@ Prevents timeouts with non-blocking external API calls
 """
 
 import asyncio
+import logging
+import time
+from datetime import datetime
+from functools import wraps
+from typing import Any, Callable, Dict, List, Optional
+
 import aiohttp
 import httpx
-from typing import List, Dict, Any, Optional, Callable
-from functools import wraps
-import logging
-from datetime import datetime
-import time
 
 logger = logging.getLogger(__name__)
 

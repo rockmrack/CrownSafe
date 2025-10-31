@@ -2,8 +2,9 @@
 Quick verification that Report Unsafe Product endpoints work
 """
 
-import requests
 import json
+
+import requests
 
 BASE_URL = "http://localhost:8001"  # Change to production when deployed
 

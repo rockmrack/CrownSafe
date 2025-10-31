@@ -3,12 +3,13 @@ Enhanced Barcode Scanner with 100% Windows Compatibility
 Uses OpenCV as fallback when PyZbar DLLs are not available
 """
 
-import logging
 import base64
-from io import BytesIO
-from typing import Optional, List, Dict, Any
+import logging
 from dataclasses import dataclass
 from enum import Enum
+from io import BytesIO
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 
 # Try to import pyzbar

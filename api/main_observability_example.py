@@ -9,22 +9,24 @@ This shows the minimal changes needed to add all Task 4 features
 
 import os
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends
+
+from fastapi import Depends, FastAPI
 from fastapi.exceptions import RequestValidationError
+from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-# Observability imports
-from api.middleware import CorrelationIdMiddleware, AccessLogMiddleware
-from api.logging_setup import setup_json_logging
 from api import errors
+from api.logging_setup import setup_json_logging
+
+# Observability imports
+from api.middleware import AccessLogMiddleware, CorrelationIdMiddleware
 from api.rate_limiting import (
-    init_rate_limiter,
-    close_rate_limiter,
-    rate_limit_exceeded_handler,
     RateLimiters,
+    close_rate_limiter,
+    init_rate_limiter,
+    rate_limit_exceeded_handler,
 )
 from api.routes import system
-from prometheus_fastapi_instrumentator import Instrumentator
 
 # ============================================================================
 # LIFESPAN MANAGER (replaces @app.on_event decorators)

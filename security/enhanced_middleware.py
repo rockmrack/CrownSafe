@@ -3,15 +3,16 @@ Enhanced Security Middleware for BabyShield
 Bulletproof protection against all known attack vectors
 """
 
-import re
-import time
 import hashlib
 import ipaddress
-from typing import Dict, Set, List, Optional, Tuple
-from collections import defaultdict, deque
-from fastapi import Request, HTTPException
-from fastapi.responses import JSONResponse
 import logging
+import re
+import time
+from collections import defaultdict, deque
+from typing import Dict, List, Optional, Set, Tuple
+
+from fastapi import HTTPException, Request
+from fastapi.responses import JSONResponse
 
 logger = logging.getLogger(__name__)
 

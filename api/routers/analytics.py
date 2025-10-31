@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from uuid import UUID
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.orm import Session
 
-from core_infra.database import get_db
 from api.crud.analytics import create_explain_feedback
-from core.metrics import inc_explain_feedback, inc_alternative_clicked
+from core.metrics import inc_alternative_clicked, inc_explain_feedback
+from core_infra.database import get_db
 
 router = APIRouter()
 

@@ -3,16 +3,17 @@ Task 15: Legal & Privacy API Endpoints
 Provides access to legal documents and privacy controls
 """
 
-from fastapi import APIRouter, Response, HTTPException, Depends, Header, Request
-from fastapi.responses import HTMLResponse, PlainTextResponse, JSONResponse
-from pydantic import BaseModel, Field
-from typing import Optional, Dict, Any, List
-from datetime import datetime, timedelta
-import os
 import hashlib
 import logging
-import markdown
+import os
+from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import markdown
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
+from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 

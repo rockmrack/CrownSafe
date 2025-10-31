@@ -18,9 +18,10 @@ print("\n" + "=" * 80)
 print("🔍 DATABASE ROUTING VERIFICATION")
 print("=" * 80 + "\n")
 
+from sqlalchemy import inspect
+
 from core_infra.database import SessionLocal, engine
 from core_infra.enhanced_database_schema import EnhancedRecallDB
-from sqlalchemy import inspect
 
 # ============================================================================
 # 1. Verify Database Configuration
@@ -99,6 +100,7 @@ print("4. API Endpoint Database Routing")
 print("-" * 80)
 
 from fastapi.testclient import TestClient
+
 from api.main_crownsafe import app
 
 client = TestClient(app)

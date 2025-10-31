@@ -3,11 +3,11 @@ A-5 Exact/Valid Scan: Comprehensive Barcode Validation Service
 Provides exact validation, format checking, and error handling for barcode scanning
 """
 
-import re
 import logging
-from typing import Dict, List, Optional, Tuple, Any
+import re
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 

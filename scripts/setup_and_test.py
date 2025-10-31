@@ -6,8 +6,8 @@ Complete setup and test script for BabyShield recall API
 """
 
 import os
-import sys
 import subprocess
+import sys
 import time
 
 

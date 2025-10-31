@@ -3,10 +3,12 @@ Deep Integration Tests
 Testing cross-component integration and complex workflows
 """
 
+import os
+
 import pytest
 from fastapi.testclient import TestClient
+
 from api.main_crownsafe import app
-import os
 
 os.environ["BS_FEATURE_CHAT_ENABLED"] = "true"
 os.environ["BS_FEATURE_CHAT_ROLLOUT_PCT"] = "1.0"

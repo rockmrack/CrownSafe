@@ -3,10 +3,10 @@ COMPREHENSIVE VISUAL RECOGNITION SYSTEM TEST SUITE
 Tests all aspects of the Visual Search Agent and image analysis
 """
 
-import sys
 import asyncio
+import sys
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 
 class MockAsyncOpenAI:

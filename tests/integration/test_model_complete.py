@@ -8,8 +8,9 @@ Run: pytest tests/integration/test_model_complete.py -v -s
 """
 
 import os
-import pytest
 from datetime import date
+
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -19,7 +20,7 @@ os.environ["TEST_MODE"] = "true"
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 
 from api.main_crownsafe import app
-from core_infra.database import Base, User, LegacyRecallDB
+from core_infra.database import Base, LegacyRecallDB, User
 
 # Create test database
 TEST_DB_URL = "sqlite:///:memory:"

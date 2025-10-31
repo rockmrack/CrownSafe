@@ -5,8 +5,8 @@ Run this script from within the ECS container or a machine with DB access.
 """
 
 import os
-import sys
 import subprocess
+import sys
 
 try:
     import psycopg2

@@ -6,10 +6,10 @@ Create Date: 2024-01-25
 
 """
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy import text
 
+from alembic import op
 
 # revision identifiers
 revision = "add_subscription_unique_constraint"

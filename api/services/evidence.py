@@ -3,7 +3,7 @@ Evidence generation utilities for chat responses.
 Provides helper functions to create properly formatted evidence items.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
 
 def label_to_evidence(evidence_id: str, url: Optional[str] = None) -> List[Dict[str, Any]]:

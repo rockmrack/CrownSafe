@@ -3,9 +3,10 @@ Check UK recalls schema and data in Azure PostgreSQL
 """
 
 import os
-from dotenv import load_dotenv
-import psycopg2
 from urllib.parse import unquote
+
+import psycopg2
+from dotenv import load_dotenv
 
 # Load Azure environment variables
 load_dotenv(".env.azure")

@@ -1,7 +1,9 @@
-import pytest
 import os
 from unittest.mock import patch
-from core.feature_flags import env_bool, env_float, chat_enabled_for, _bucket
+
+import pytest
+
+from core.feature_flags import _bucket, chat_enabled_for, env_bool, env_float
 
 
 class TestEnvHelpers:

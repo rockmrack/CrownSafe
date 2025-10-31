@@ -1,7 +1,8 @@
 # scripts/check_specific_workflow.py
 
-import redis
 import json
+
+import redis
 
 workflow_id = "f7a1c54a-d011-437c-9559-3357eec16a75"  # From your test
 r = redis.Redis(host="localhost", port=6379, decode_responses=True)

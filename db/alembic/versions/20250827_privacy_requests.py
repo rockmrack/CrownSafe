@@ -7,8 +7,9 @@ Create Date: 2025-08-27 00:00:00.000000
 """
 
 import sqlalchemy as sa
-from alembic import op
 from sqlalchemy.dialects import postgresql
+
+from alembic import op
 
 # revision identifiers
 revision = "20250827_privacy_requests"

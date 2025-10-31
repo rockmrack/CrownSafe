@@ -3,23 +3,24 @@ Database models for Proactive Consumer Product Safety Risk Assessment Framework
 Implements golden records, risk profiles, and data source tracking
 """
 
+import uuid
+from datetime import datetime
+from enum import Enum
+
 from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Float,
-    DateTime,
-    Text,
     JSON,
     Boolean,
+    Column,
+    DateTime,
+    Float,
     ForeignKey,
     Index,
+    Integer,
+    String,
+    Text,
     UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
-from datetime import datetime
-import uuid
-from enum import Enum
 
 # Import Base from the main database module to maintain a single declarative base
 from core_infra.database import Base

@@ -1,7 +1,9 @@
-import pytest
-from fastapi.testclient import TestClient
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
+
+import pytest
+from fastapi.testclient import TestClient
+
 from api.main_crownsafe import app
 
 

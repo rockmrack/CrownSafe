@@ -3,9 +3,10 @@ Access Log Middleware for structured request logging
 Logs all requests with correlation IDs and metrics
 """
 
+import json
 import logging
 import time
-import json
+
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response

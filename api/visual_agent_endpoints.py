@@ -5,40 +5,41 @@ Visual Agent API Endpoints - Phase 2
 Image upload, analysis, MFV, and HITL review queue
 """
 
-import os
-import logging
 import hashlib
+import logging
+import os
 import uuid
-from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
+import boto3
 from fastapi import (
     APIRouter,
-    HTTPException,
-    UploadFile,
-    File,
-    Depends,
     Body,
+    Depends,
+    File,
+    HTTPException,
     Query,
     Request,
+    UploadFile,
 )
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, validator
+from sqlalchemy import and_, desc, or_
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, desc
-import boto3
 
+from core_infra.celery_tasks import generate_presigned_url, process_image
 from core_infra.database import get_db as get_db_session
+from core_infra.s3_uploads import BUCKET, _bucket_region, presign_post
 from core_infra.visual_agent_models import (
-    ImageJob,
-    ImageExtraction,
-    ReviewQueue,
-    MFVSession,
-    JobStatus,
-    ReviewStatus,
     ConfidenceLevel,
+    ImageExtraction,
+    ImageJob,
+    JobStatus,
+    MFVSession,
+    ReviewQueue,
+    ReviewStatus,
 )
-from core_infra.celery_tasks import process_image, generate_presigned_url
-from core_infra.s3_uploads import presign_post, _bucket_region, BUCKET
 
 
 # Define ApiResponse locally
@@ -731,7 +732,7 @@ async def visual_search(request: ImageAnalysisRequest, db: Session = Depends(get
         if product_data.get("product_name"):
             # Simple recall check - in production this would be more sophisticated
             try:
-                from sqlalchemy import text, inspect
+                from sqlalchemy import inspect, text
 
                 # Check if table exists first
                 inspector = inspect(db.bind)

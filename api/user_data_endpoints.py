@@ -3,29 +3,30 @@ User Data Export and Deletion Endpoints
 GDPR/CCPA compliant data handling
 """
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    HTTPException,
-    status,
-    Request,
-    Header,
-    BackgroundTasks,
-)
-from fastapi.responses import JSONResponse, StreamingResponse
-from sqlalchemy.orm import Session
-from typing import Optional, Dict, Any
-from datetime import datetime, timedelta
-import logging
-import json
-import uuid
+import csv
 import hashlib
 import io
-import csv
-from pydantic import BaseModel, Field, EmailStr
+import json
+import logging
+import uuid
+from datetime import datetime, timedelta
+from typing import Any, Dict, Optional
 
-from core_infra.database import get_db, User
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    Header,
+    HTTPException,
+    Request,
+    status,
+)
+from fastapi.responses import JSONResponse, StreamingResponse
+from pydantic import BaseModel, EmailStr, Field
+from sqlalchemy.orm import Session
+
 from core_infra.auth import get_current_active_user
+from core_infra.database import User, get_db
 
 logger = logging.getLogger(__name__)
 
@@ -392,8 +393,8 @@ async def download_export(
 
         if (format or "").lower() == "csv":
             # Very simple CSV export of top-level keys for demo purposes
-            import io
             import csv
+            import io
 
             buf = io.StringIO()
             writer = csv.writer(buf)

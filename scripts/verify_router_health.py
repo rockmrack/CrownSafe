@@ -1,10 +1,11 @@
 # scripts/verify_router_health.py
 
-import redis
 import json
 import time
 import uuid
 from datetime import datetime
+
+import redis
 
 
 def check_router_health():

@@ -3,20 +3,21 @@ Enhanced Search Service v2 with keyset pagination and snapshot isolation
 Implements cursor-based pagination without OFFSET for better performance
 """
 
-import os
-from typing import List, Optional, Tuple, Dict, Any
-from sqlalchemy import and_, or_, func, desc, asc, text
-from sqlalchemy.orm import Session
-from datetime import datetime, timezone
-import logging
 import hashlib
 import json
+import logging
+import os
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Tuple
+
+from sqlalchemy import and_, asc, desc, func, or_, text
+from sqlalchemy.orm import Session
 
 from api.utils import (
-    verify_cursor,
     create_search_cursor,
     hash_filters,
     validate_cursor_filters,
+    verify_cursor,
 )
 
 logger = logging.getLogger(__name__)
@@ -107,7 +108,7 @@ class SearchServiceV2:
 
         if not has_enhanced and not has_legacy:
             # No recall tables exist - return empty query tuple (4 elements expected)
-            from core_infra.search_constants import EMPTY_QUERY, EMPTY_PARAMS
+            from core_infra.search_constants import EMPTY_PARAMS, EMPTY_QUERY
 
             return EMPTY_QUERY, EMPTY_PARAMS, datetime.now(timezone.utc), None
 

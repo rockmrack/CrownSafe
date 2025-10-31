@@ -2,8 +2,8 @@
 Autocomplete utility functions for query normalization and text processing
 """
 
-import unicodedata
 import re
+import unicodedata
 from typing import Dict, List, Optional
 
 # Brand aliases for canonicalization
