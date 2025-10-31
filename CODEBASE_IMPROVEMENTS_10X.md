@@ -143,13 +143,13 @@ All changes were automatically applied using Ruff with comprehensive validation.
 
 ### Code Quality Metrics
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Ruff Errors | 422 | 269 | -36% ✅ |
-| Auto-Fixed Issues | 0 | 163 | +163 ✅ |
-| Deprecated Syntax | 72 | 0 | -100% ✅ |
-| Code Smell Patterns | 173 | 0 | -100% ✅ |
-| Lines of Code | - | -146 net | Reduction ✅ |
+| Metric              | Before | After    | Improvement |
+| ------------------- | ------ | -------- | ----------- |
+| Ruff Errors         | 422    | 269      | -36% ✅      |
+| Auto-Fixed Issues   | 0      | 163      | +163 ✅      |
+| Deprecated Syntax   | 72     | 0        | -100% ✅     |
+| Code Smell Patterns | 173    | 0        | -100% ✅     |
+| Lines of Code       | -      | -146 net | Reduction ✅ |
 
 ### Reliability Improvements
 

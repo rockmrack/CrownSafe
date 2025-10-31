@@ -412,7 +412,7 @@ async def update_privacy_consent(
 @router.post("/privacy/request-data")
 async def request_data_export(user_id: str = Header(..., alias="X-User-ID")):
     """Request a copy of user's data (GDPR Article 15)."""
-    request_id = hashlib.sha256(f"{user_id}{datetime.now()}".encode()).hexdigest()[:12]
+    request_id = hashlib.sha256(f"{user_id}{datetime.now(timezone.utc)}".encode()).hexdigest()[:12]
 
     return {
         "ok": True,
@@ -436,7 +436,7 @@ async def request_data_deletion(deletion: DataDeletionRequest, user_id: str = He
     if not deletion.confirm:
         raise HTTPException(status_code=400, detail="Deletion must be explicitly confirmed")
 
-    request_id = hashlib.sha256(f"{user_id}{datetime.now()}".encode()).hexdigest()[:12]
+    request_id = hashlib.sha256(f"{user_id}{datetime.now(timezone.utc)}".encode()).hexdigest()[:12]
 
     logger.warning(
         "Data deletion requested",
@@ -452,7 +452,7 @@ async def request_data_deletion(deletion: DataDeletionRequest, user_id: str = He
         "request_id": request_id,
         "status": "scheduled",
         "message": "Your account and all data will be permanently deleted",
-        "deletion_date": (datetime.now() + timedelta(days=30)).date().isoformat(),
+        "deletion_date": (datetime.now(timezone.utc) + timedelta(days=30)).date().isoformat(),
         "grace_period": "30 days",
         "cancel_url": f"/legal/privacy/cancel-deletion/{request_id}",
     }

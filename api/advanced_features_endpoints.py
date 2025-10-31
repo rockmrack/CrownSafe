@@ -196,7 +196,7 @@ async def research_product_safety(
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
 
-        start_time = datetime.now()
+        start_time = datetime.now(timezone.utc)
 
         # Mock web research results (in production, would use web_research_agent)
         findings = []
@@ -223,7 +223,7 @@ async def research_product_safety(
                     title="Parents discussing recall concerns",
                     content="Multiple parents reporting clumping issues with this batch. Manufacturing date codes 2024-01 through 2024-03 seem affected.",  # noqa: E501
                     url="https://reddit.com/r/example",
-                    date_found=datetime.now() - timedelta(days=3),
+                    date_found=datetime.now(timezone.utc) - timedelta(days=3),
                     relevance_score=0.92,
                     sentiment="negative",
                     verified=False,
@@ -241,7 +241,7 @@ async def research_product_safety(
                     title="Safety alert thread",
                     content=f"⚠️ Parents reporting issues with {request.product_name}. Check your batch numbers!",
                     url="https://twitter.com/example",
-                    date_found=datetime.now() - timedelta(hours=12),
+                    date_found=datetime.now(timezone.utc) - timedelta(hours=12),
                     relevance_score=0.78,
                     sentiment="negative",
                     verified=True,
@@ -260,7 +260,7 @@ async def research_product_safety(
                     title="Product experience thread",
                     content=f"Has anyone else used {request.product_name}? Working great for us, no issues after 3 months.",  # noqa: E501
                     url="https://babycenter.com/example",
-                    date_found=datetime.now() - timedelta(days=7),
+                    date_found=datetime.now(timezone.utc) - timedelta(days=7),
                     relevance_score=0.65,
                     sentiment="positive",
                     verified=False,
@@ -277,7 +277,7 @@ async def research_product_safety(
                 title="Industry safety update",
                 content="No current recalls or safety alerts for this product category.",
                 url="https://cpsc.gov/example",
-                date_found=datetime.now() - timedelta(days=1),
+                date_found=datetime.now(timezone.utc) - timedelta(days=1),
                 relevance_score=0.95,
                 sentiment="neutral",
                 verified=True,
@@ -296,7 +296,7 @@ async def research_product_safety(
         # "deep" returns all findings
 
         # Calculate processing time
-        processing_time = int((datetime.now() - start_time).total_seconds() * 1000)
+        processing_time = int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000)
 
         # Add risk indicators based on findings
         negative_count = sum(1 for f in findings if f.sentiment == "negative")
@@ -321,7 +321,7 @@ async def research_product_safety(
             safety_score=safety_score,
             sources_searched=sources_to_search,
             search_time_ms=processing_time,
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
         )
 
     except HTTPException:
@@ -373,7 +373,7 @@ async def recognize_product_from_image(
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
 
-        start_time = datetime.now()
+        start_time = datetime.now(timezone.utc)
 
         # Validate image
         if not image.content_type.startswith("image/"):
@@ -388,7 +388,7 @@ async def recognize_product_from_image(
 
         # Generate image ID (MD5 for non-security ID generation only)
         image_hash = hashlib.md5(image_data, usedforsecurity=False).hexdigest()
-        image_id = f"img_{image_hash[:12]}_{int(datetime.now().timestamp())}"
+        image_id = f"img_{image_hash[:12]}_{int(datetime.now(timezone.utc).timestamp())}"
 
         # Use real visual recognition pipeline
         products_identified = []
@@ -403,7 +403,7 @@ async def recognize_product_from_image(
             from core_infra.visual_agent_models import ImageJob, JobStatus
 
             job_id = str(uuid.uuid4())
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
             s3_key = f"uploads/{user_id}/{timestamp}_{job_id}.jpg"
 
             # Create job record
@@ -560,7 +560,7 @@ async def recognize_product_from_image(
             ]
 
         # Calculate processing time
-        processing_time = int((datetime.now() - start_time).total_seconds() * 1000)
+        processing_time = int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000)
 
         return VisualRecognitionResponse(
             status="success" if confidence > confidence_threshold else "low_confidence",
@@ -570,7 +570,7 @@ async def recognize_product_from_image(
             defects_detected=defects_detected if defects_detected else None,
             similar_products=similar_products if similar_products else None,
             processing_time_ms=processing_time,
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
         )
 
     except HTTPException:
@@ -606,7 +606,7 @@ async def setup_product_monitoring(
             raise HTTPException(status_code=404, detail="User not found")
 
         # Generate monitoring ID
-        monitoring_id = f"mon_{request.user_id}_{int(datetime.now().timestamp())}"
+        monitoring_id = f"mon_{request.user_id}_{int(datetime.now(timezone.utc).timestamp())}"
 
         # Determine sources to monitor
         sources = request.sources or [
@@ -621,11 +621,11 @@ async def setup_product_monitoring(
 
         # Calculate next check time based on alert threshold
         if request.alert_threshold == "high":
-            next_check = datetime.now() + timedelta(hours=6)  # Check 4x daily
+            next_check = datetime.now(timezone.utc) + timedelta(hours=6)  # Check 4x daily
         elif request.alert_threshold == "medium":
-            next_check = datetime.now() + timedelta(hours=24)  # Check daily
+            next_check = datetime.now(timezone.utc) + timedelta(hours=24)  # Check daily
         else:  # low
-            next_check = datetime.now() + timedelta(days=3)  # Check every 3 days
+            next_check = datetime.now(timezone.utc) + timedelta(days=3)  # Check every 3 days
 
         # In production, would store monitoring config in database
         # and schedule background task
@@ -642,7 +642,7 @@ async def setup_product_monitoring(
             alert_threshold=request.alert_threshold,
             sources_count=len(sources),
             next_check=next_check,
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
         )
 
     except HTTPException:
@@ -672,18 +672,18 @@ async def get_monitoring_status(
             "product": "Example Product",
             "checks_performed": 7,
             "alerts_sent": 1,
-            "last_check": (datetime.now() - timedelta(hours=3)).isoformat(),
-            "next_check": (datetime.now() + timedelta(hours=21)).isoformat(),
+            "last_check": (datetime.now(timezone.utc) - timedelta(hours=3)).isoformat(),
+            "next_check": (datetime.now(timezone.utc) + timedelta(hours=21)).isoformat(),
             "findings": [
                 {
-                    "date": (datetime.now() - timedelta(days=2)).isoformat(),
+                    "date": (datetime.now(timezone.utc) - timedelta(days=2)).isoformat(),
                     "source": "Reddit",
                     "type": "discussion",
                     "summary": "Parents discussing product quality",
                     "alert_sent": False,
                 },
                 {
-                    "date": (datetime.now() - timedelta(days=5)).isoformat(),
+                    "date": (datetime.now(timezone.utc) - timedelta(days=5)).isoformat(),
                     "source": "Amazon Reviews",
                     "type": "negative_review_spike",
                     "summary": "Multiple 1-star reviews mentioning safety concern",

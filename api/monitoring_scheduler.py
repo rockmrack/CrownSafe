@@ -125,7 +125,7 @@ class ProductMonitoringScheduler:
             if existing:
                 # Update existing
                 existing.check_frequency_hours = check_frequency_hours
-                existing.updated_at = datetime.now(UTC)
+                existing.updated_at = datetime.now(timezone.utc)
                 db.commit()
                 return existing
 
@@ -138,7 +138,7 @@ class ProductMonitoringScheduler:
                 upc_code=upc_code,
                 source_job_id=source_job_id,
                 check_frequency_hours=check_frequency_hours,
-                next_check=datetime.now(UTC) + timedelta(hours=check_frequency_hours),
+                next_check=datetime.now(timezone.utc) + timedelta(hours=check_frequency_hours),
                 added_via="scan" if source_job_id else "manual",
             )
 
@@ -244,7 +244,7 @@ class ProductMonitoringScheduler:
             return False
 
         try:
-            now = datetime.now().time()
+            now = datetime.now(timezone.utc).time()
             start = datetime.strptime(device.quiet_hours_start, "%H:%M").time()
             end = datetime.strptime(device.quiet_hours_end, "%H:%M").time()
 
@@ -283,7 +283,7 @@ class ProductMonitoringScheduler:
                     db.query(MonitoredProduct)
                     .filter(
                         MonitoredProduct.is_active,
-                        MonitoredProduct.next_check <= datetime.now(UTC),
+                        MonitoredProduct.next_check <= datetime.now(timezone.utc),
                     )
                     .limit(1000)
                     .all()
@@ -314,8 +314,8 @@ class ProductMonitoringScheduler:
                             product.recall_status = "safe"
 
                         # Update check time
-                        product.last_checked = datetime.now(UTC)
-                        product.next_check = datetime.now(UTC) + timedelta(hours=product.check_frequency_hours)
+                        product.last_checked = datetime.now(timezone.utc)
+                        product.next_check = datetime.now(timezone.utc) + timedelta(hours=product.check_frequency_hours)
 
                     except Exception as e:
                         logger.exception(f"Error checking product {product.id}: {e}")
@@ -327,7 +327,7 @@ class ProductMonitoringScheduler:
                 # Update run record
                 run = db.query(MonitoringRun).filter_by(id=run_id).first()
                 if run:
-                    run.completed_at = datetime.now(UTC)
+                    run.completed_at = datetime.now(timezone.utc)
                     run.products_checked = products_checked
                     run.new_recalls_found = new_recalls_found
                     run.notifications_sent = notifications_sent
@@ -360,7 +360,7 @@ class ProductMonitoringScheduler:
                     if run:
                         run.status = "failed"
                         run.error_message = str(e)
-                        run.completed_at = datetime.now(UTC)
+                        run.completed_at = datetime.now(timezone.utc)
                         db.commit()
 
             raise
@@ -376,7 +376,7 @@ class ProductMonitoringScheduler:
                     .join(ImageExtraction)
                     .filter(
                         ImageJob.status == "completed",
-                        ImageJob.created_at >= datetime.now(UTC) - timedelta(days=7),
+                        ImageJob.created_at >= datetime.now(timezone.utc) - timedelta(days=7),
                     )
                     .all()
                 )

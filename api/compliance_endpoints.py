@@ -305,7 +305,7 @@ async def verify_user_age(request: AgeVerificationRequest, db: Session = Depends
             verification_token=verification_token,
             parent_consent_url=parent_consent_url,
             restrictions=restrictions,
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
         )
 
     except Exception as e:
@@ -354,7 +354,7 @@ async def submit_parental_consent(
         consent_id = f"consent_{uuid.uuid4().hex[:12]}"
 
         # Set expiration (consent expires after 1 year)
-        expires_at = datetime.now() + timedelta(days=365) if verified else None
+        expires_at = datetime.now(timezone.utc) + timedelta(days=365) if verified else None
 
         return ParentalConsentResponse(
             consent_id=consent_id,
@@ -364,7 +364,7 @@ async def submit_parental_consent(
             consents_granted=request.consent_types if verified else [],
             verification_method=request.verification_method.value,
             expires_at=expires_at,
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
         )
 
     except Exception as e:
@@ -381,8 +381,8 @@ async def get_consent_status(user_id: int, db: Session = Depends(get_db)):
         return {
             "user_id": user_id,
             "has_parental_consent": True,
-            "consent_date": datetime.now() - timedelta(days=30),
-            "expires_at": datetime.now() + timedelta(days=335),
+            "consent_date": datetime.now(timezone.utc) - timedelta(days=30),
+            "expires_at": datetime.now(timezone.utc) + timedelta(days=335),
             "verification_method": "credit_card",
             "restrictions": [],
             "allowed_features": [
@@ -509,7 +509,7 @@ async def assess_childrens_code_compliance(request: ChildrenCodeAssessmentReques
             design_recommendations=design_recommendations,
             privacy_settings=privacy_settings,
             parental_controls_required=request.age < 16,
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
         )
 
     except Exception as e:
@@ -549,22 +549,22 @@ async def submit_data_request(
 
         # Determine processing time based on request type
         if request.request_type == PrivacyRight.ACCESS:
-            estimated_completion = datetime.now() + timedelta(hours=24)
+            estimated_completion = datetime.now(timezone.utc) + timedelta(hours=24)
             message = "Your data access request has been received. You will receive your data within 24 hours."
 
         elif request.request_type == PrivacyRight.ERASURE:
-            estimated_completion = datetime.now() + timedelta(hours=72)
+            estimated_completion = datetime.now(timezone.utc) + timedelta(hours=72)
             message = "Your deletion request has been received. Your data will be permanently deleted within 72 hours."
 
             # Schedule deletion in background
             background_tasks.add_task(logger.info, f"Scheduling deletion for user {request.user_id}")
 
         elif request.request_type == PrivacyRight.PORTABILITY:
-            estimated_completion = datetime.now() + timedelta(hours=48)
+            estimated_completion = datetime.now(timezone.utc) + timedelta(hours=48)
             message = "Your data portability request has been received. You will receive your data in a portable format within 48 hours."  # noqa: E501
 
         else:
-            estimated_completion = datetime.now() + timedelta(hours=72)
+            estimated_completion = datetime.now(timezone.utc) + timedelta(hours=72)
             message = (
                 f"Your {request.request_type.value} request has been received and will be processed within 72 hours."
             )
@@ -578,7 +578,7 @@ async def submit_data_request(
             estimated_completion=estimated_completion,
             download_url=None,
             message=message,
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
         )
 
     except HTTPException:
@@ -602,8 +602,8 @@ async def get_request_status(
             "request_id": request_id,
             "status": "processing",
             "request_type": "access",
-            "submitted_at": datetime.now() - timedelta(hours=12),
-            "estimated_completion": datetime.now() + timedelta(hours=12),
+            "submitted_at": datetime.now(timezone.utc) - timedelta(hours=12),
+            "estimated_completion": datetime.now(timezone.utc) + timedelta(hours=12),
             "progress_percentage": 50,
             "download_url": None,
             "message": "Your request is being processed. 50% complete.",
@@ -664,7 +664,7 @@ async def set_retention_policy(request: DataRetentionPolicyRequest, db: Session 
             }
 
         # Calculate next deletion date
-        next_deletion = datetime.now() + timedelta(days=30)  # Check monthly
+        next_deletion = datetime.now(timezone.utc) + timedelta(days=30)  # Check monthly
 
         return DataRetentionPolicyResponse(
             policy_id=policy_id,
@@ -672,7 +672,7 @@ async def set_retention_policy(request: DataRetentionPolicyRequest, db: Session 
             policies=policies,
             compliance_status="compliant",
             next_deletion_date=next_deletion,
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
         )
 
     except Exception as e:
@@ -734,7 +734,7 @@ async def get_legal_document(request: LegalDocumentRequest, db: Session = Depend
                 <p>We do not sell your personal information...</p>
                 <h2>Your Rights</h2>
                 <p>You have the right to access, correct, and delete your data...</p>
-                """.format(date=datetime.now().strftime("%B %d, %Y"))
+                """.format(date=datetime.now(timezone.utc).strftime("%B %d, %Y"))
 
                 summary_points = [
                     "We collect minimal data necessary for safety services",
@@ -758,7 +758,7 @@ async def get_legal_document(request: LegalDocumentRequest, db: Session = Depend
             language=request.language,
             country=request.country,
             content=content,
-            last_updated=datetime.now() - timedelta(days=30),
+            last_updated=datetime.now(timezone.utc) - timedelta(days=30),
             age_appropriate=age_appropriate,
             requires_acceptance=request.document_type == "tos",
             summary_points=summary_points,
@@ -787,12 +787,12 @@ async def update_user_consent(request: ConsentUpdateRequest, db: Session = Depen
         # In production, store consent audit trail
 
         # Calculate next review date (annual review)
-        next_review = datetime.now() + timedelta(days=365)
+        next_review = datetime.now(timezone.utc) + timedelta(days=365)
 
         return ConsentUpdateResponse(
             user_id=request.user_id,
             consents_updated=request.consent_types,
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
             ip_logged=bool(request.ip_address),
             next_review_date=next_review,
         )
@@ -837,14 +837,14 @@ async def get_privacy_dashboard(
                 "verified": True,
                 "age_group": "13-15",
                 "parental_consent": True,
-                "verification_date": datetime.now() - timedelta(days=90),
+                "verification_date": datetime.now(timezone.utc) - timedelta(days=90),
             },
             "consents": {
                 "data_processing": True,
                 "marketing": False,
                 "analytics": True,
                 "third_party": False,
-                "last_updated": datetime.now() - timedelta(days=30),
+                "last_updated": datetime.now(timezone.utc) - timedelta(days=30),
             },
             "data_collected": {
                 "personal": ["email", "age"],
@@ -861,7 +861,7 @@ async def get_privacy_dashboard(
             "data_requests": [
                 {
                     "type": "access",
-                    "date": datetime.now() - timedelta(days=60),
+                    "date": datetime.now(timezone.utc) - timedelta(days=60),
                     "status": "completed",
                 },
             ],
@@ -878,8 +878,8 @@ async def get_privacy_dashboard(
                 "Restrict processing",
                 "Object to processing",
             ],
-            "next_review_date": datetime.now() + timedelta(days=30),
-            "last_activity": datetime.now() - timedelta(hours=2),
+            "next_review_date": datetime.now(timezone.utc) + timedelta(days=30),
+            "last_activity": datetime.now(timezone.utc) - timedelta(hours=2),
         }
 
     except HTTPException:

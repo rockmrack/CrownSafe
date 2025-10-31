@@ -54,7 +54,7 @@ def _normalize_scan_payload(barcode: str, payload: dict, trace_id: str, cached: 
 
     # new required field (fixes Pydantic v2 error)
     if not data.get("scan_timestamp"):
-        data["scan_timestamp"] = datetime.now(UTC).isoformat()
+        data["scan_timestamp"] = datetime.now(timezone.utc).isoformat()
 
     return data
 
@@ -140,7 +140,7 @@ class BarcodeCache:
 
             # Check if cache is still valid (24 hours)
             cached_data = self.cache[key]
-            if datetime.now() - cached_data["timestamp"] < timedelta(hours=24):
+            if datetime.now(timezone.utc) - cached_data["timestamp"] < timedelta(hours=24):
                 logger.info(f"Cache hit for barcode: {barcode[:4]}****")
                 return cached_data
             # Expired, remove it
@@ -153,7 +153,7 @@ class BarcodeCache:
         key = self.get_key(barcode, user_id)
 
         # Add timestamp
-        data["timestamp"] = datetime.now()
+        data["timestamp"] = datetime.now(timezone.utc)
         data["cached"] = True
 
         # Add to cache
@@ -350,7 +350,7 @@ async def scan_barcode(
         device_id = device_id or request.device_id
 
         # Generate trace ID (MD5 for non-security ID generation only)
-        trace_data = f"{request.barcode}{datetime.now()}".encode()
+        trace_data = f"{request.barcode}{datetime.now(timezone.utc)}".encode()
         trace_hash = hashlib.md5(trace_data, usedforsecurity=False).hexdigest()[:8]
         trace_id = f"barcode_{trace_hash}"
     except Exception as e:

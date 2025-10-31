@@ -240,7 +240,7 @@ async def register_device(
             existing.device_name = request.device_name
             existing.device_model = request.device_model
             existing.app_version = request.app_version
-            existing.last_used = datetime.now(UTC)
+            existing.last_used = datetime.now(timezone.utc)
             existing.is_active = True
         else:
             # Create new token
@@ -279,7 +279,7 @@ async def register_device_dev(request: RegisterDeviceRequest):
                 "device_id": device_id,
                 "token": request.token,
                 "platform": request.platform,
-                "registered_at": datetime.now(UTC).isoformat(),
+                "registered_at": datetime.now(timezone.utc).isoformat(),
             },
         )
 
@@ -302,8 +302,8 @@ async def get_devices_dev():
                 "device_model": "Pixel 7",
                 "app_version": "1.0.0",
                 "is_active": True,
-                "last_used": datetime.now(UTC).isoformat(),
-                "created_at": (datetime.now(UTC) - timedelta(days=7)).isoformat(),
+                "last_used": datetime.now(timezone.utc).isoformat(),
+                "created_at": (datetime.now(timezone.utc) - timedelta(days=7)).isoformat(),
             },
             {
                 "device_id": "DEV-87654321",
@@ -313,8 +313,8 @@ async def get_devices_dev():
                 "device_model": "iPhone 14",
                 "app_version": "1.0.0",
                 "is_active": True,
-                "last_used": datetime.now(UTC).isoformat(),
-                "created_at": (datetime.now(UTC) - timedelta(days=3)).isoformat(),
+                "last_used": datetime.now(timezone.utc).isoformat(),
+                "created_at": (datetime.now(timezone.utc) - timedelta(days=3)).isoformat(),
             },
         ]
 
@@ -333,7 +333,7 @@ async def unregister_device_dev(token: str):
         return ok(
             {
                 "message": f"Device with token {token[:8]}... unregistered successfully (dev override)",
-                "unregistered_at": datetime.now(UTC).isoformat(),
+                "unregistered_at": datetime.now(timezone.utc).isoformat(),
             },
         )
 
@@ -353,7 +353,7 @@ async def get_notification_history_dev():
                 "title": "Test Recall Alert",
                 "body": "This is a test recall notification",
                 "type": "recall",
-                "sent_at": datetime.now(UTC).isoformat(),
+                "sent_at": datetime.now(timezone.utc).isoformat(),
                 "read": False,
                 "data": {"recall_id": "RECALL-123"},
             },
@@ -362,7 +362,7 @@ async def get_notification_history_dev():
                 "title": "Safety Update",
                 "body": "New safety information available",
                 "type": "safety_alert",
-                "sent_at": (datetime.now(UTC) - timedelta(hours=2)).isoformat(),
+                "sent_at": (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat(),
                 "read": True,
                 "data": {"product_id": "PROD-456"},
             },
@@ -390,7 +390,7 @@ async def update_preferences_dev(request: dict):
             {
                 "message": "Notification preferences updated successfully (dev override)",
                 "preferences": request,
-                "updated_at": datetime.now(UTC).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat(),
             },
         )
 
@@ -404,7 +404,7 @@ async def send_test_notification_dev(request: dict):
     """DEV OVERRIDE: Send test notification without authentication/database dependencies."""
     try:
         # Simulate test notification
-        notification_id = f"TEST-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
+        notification_id = f"TEST-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
 
         return ok(
             {
@@ -412,7 +412,7 @@ async def send_test_notification_dev(request: dict):
                 "notification_id": notification_id,
                 "title": request.get("title", "Test Notification"),
                 "body": request.get("body", "This is a test notification"),
-                "sent_at": datetime.now(UTC).isoformat(),
+                "sent_at": datetime.now(timezone.utc).isoformat(),
                 "devices_targeted": 2,
                 "delivery_status": "success",
             },
@@ -561,7 +561,7 @@ async def mark_notification_read(
         if not notification:
             return fail("Notification not found", code="NOT_FOUND", status=404)
 
-        notification.read_at = datetime.now(UTC)
+        notification.read_at = datetime.now(timezone.utc)
         notification.status = "read"
         db.commit()
 
@@ -579,7 +579,7 @@ async def mark_all_notifications_read(current_user=Depends(get_current_active_us
         db.query(NotificationHistory).filter(
             NotificationHistory.user_id == current_user.id,
             NotificationHistory.read_at.is_(None),
-        ).update({"read_at": datetime.now(UTC), "status": "read"})
+        ).update({"read_at": datetime.now(timezone.utc), "status": "read"})
         db.commit()
 
         return ok({"message": "All notifications marked as read"})
@@ -643,7 +643,7 @@ async def send_test_notification(
             title="Test Notification",
             body="This is a test notification from BabyShield",
             priority="normal",
-            data={"test": True, "timestamp": datetime.now(UTC).isoformat()},
+            data={"test": True, "timestamp": datetime.now(timezone.utc).isoformat()},
         )
         db.add(notification)
         db.commit()
