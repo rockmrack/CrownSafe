@@ -27,6 +27,7 @@ from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from api.auth_endpoints import get_current_user
+from core_infra.azure_storage import AzureBlobStorageClient
 from core_infra.crown_safe_models import (
     HairProductModel,
     IngredientModel,
@@ -253,7 +254,9 @@ async def extract_ingredients_from_text(ocr_text: str) -> list[ExtractedIngredie
 
 
 async def match_product_in_database(
-    db: Session, product_name: str | None, brand: str | None,
+    db: Session,
+    product_name: str | None,
+    brand: str | None,
 ) -> HairProductModel | None:
     """Match extracted product to database."""
     if not product_name:

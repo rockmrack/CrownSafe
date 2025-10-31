@@ -3,6 +3,7 @@ import argparse
 import datetime
 import os
 import sqlite3
+from datetime import timezone
 
 DB = os.path.abspath("dev.db")
 

@@ -10,6 +10,7 @@ import os
 import sys
 import time
 from dataclasses import dataclass
+from datetime import timezone
 
 import boto3
 import psycopg2

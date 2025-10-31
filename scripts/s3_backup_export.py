@@ -9,6 +9,7 @@ import logging
 import os
 import time
 from dataclasses import dataclass
+from datetime import timezone
 from enum import Enum
 
 import boto3
@@ -66,7 +67,9 @@ class S3BackupExporter:
         return sts.get_caller_identity()["Account"]
 
     def export_latest_snapshot(
-        self, db_instance: str = "babyshield-prod", tables: list[str] | None = None,
+        self,
+        db_instance: str = "babyshield-prod",
+        tables: list[str] | None = None,
     ) -> str | None:
         """Export the latest automated snapshot to S3."""
         try:
@@ -166,13 +169,15 @@ class S3BackupExporter:
                 failure_reason=task.get("FailureCause"),
             )
 
-
         except Exception as e:
             logger.exception(f"Error monitoring export: {e}")
             return None
 
     def wait_for_export(
-        self, task_id: str, timeout_minutes: int = 120, poll_interval: int = 60,
+        self,
+        task_id: str,
+        timeout_minutes: int = 120,
+        poll_interval: int = 60,
     ) -> tuple[bool, ExportTask]:
         """Wait for export to complete."""
         start_time = time.time()

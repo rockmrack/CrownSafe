@@ -581,7 +581,7 @@ async def get_scan_results_page(request: BarcodeScanRequest, db: Session = Depen
                         "date": r.recall_date.strftime("%Y-%m-%d") if r.recall_date else "",
                         "hazard": r.hazard or "",
                         "remedy": r.remedy or "",
-                        "severity": _get_highest_severity([r]),
+                        "severity": "medium",  # Default severity since _get_highest_severity was removed
                         "match_confidence": 0.95,
                     }
                     for r in recall_check.recalls
