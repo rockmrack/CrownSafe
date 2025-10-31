@@ -12,14 +12,15 @@ Features:
 
 import logging
 from typing import Dict
+
 from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 from opentelemetry.instrumentation.redis import RedisInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 logger = logging.getLogger(__name__)
 
@@ -151,11 +152,9 @@ class AzureMonitorIntegration:
 
         try:
             from azure.monitor.opentelemetry.exporter import (
-                AzureMonitorTraceExporter,
                 AzureMonitorMetricExporter,
+                AzureMonitorTraceExporter,
             )
-            from opentelemetry.sdk.metrics import MeterProvider
-            from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 
             # Configure trace exporter
             trace_exporter = AzureMonitorTraceExporter(connection_string=self.connection_string)
