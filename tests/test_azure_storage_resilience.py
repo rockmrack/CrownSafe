@@ -4,8 +4,7 @@ Tests circuit breaker, retry logic, correlation IDs, and error handling
 """
 
 import time
-import uuid
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pytest
 from azure.core.exceptions import (
@@ -14,7 +13,6 @@ from azure.core.exceptions import (
     ResourceExistsError,
     ResourceNotFoundError,
     ServiceRequestError,
-    ServiceResponseError,
 )
 
 from core_infra.azure_storage_resilience import (
