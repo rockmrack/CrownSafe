@@ -145,5 +145,5 @@ def downgrade():
     # Remove is_admin column if we added it
     try:
         op.drop_column("users", "is_admin")
-    except:
-        pass
+    except Exception:
+        pass  # Column may not have been added

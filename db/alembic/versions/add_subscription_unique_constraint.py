@@ -32,14 +32,14 @@ def upgrade() -> None:
     try:
         op.add_column("subscriptions", sa.Column("updated_at", sa.DateTime(), nullable=True))
         op.execute("UPDATE subscriptions SET updated_at = created_at WHERE updated_at IS NULL")
-    except:
+    except Exception:
         pass  # Column might already exist
 
     # Add updated_at column to recalls if it doesn't exist
     try:
         op.add_column("recalls", sa.Column("updated_at", sa.DateTime(), nullable=True))
         op.execute("UPDATE recalls SET updated_at = CURRENT_TIMESTAMP WHERE updated_at IS NULL")
-    except:
+    except Exception:
         pass  # Column might already exist
 
     print("✅ Added unique constraints for UPSERT operations")

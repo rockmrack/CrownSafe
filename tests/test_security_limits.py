@@ -4,6 +4,7 @@ Security limits test suite for Task 6
 Tests request size limits, CORS, compression, input validation, and abuse protection
 """
 
+import json
 import os
 import sys
 
@@ -53,7 +54,7 @@ class SecurityLimitsTester:
                     f"Error code is PAYLOAD_TOO_LARGE: {data.get('error', {}).get('code')}",
                 )
                 self.test("traceId" in data, "Error response includes traceId")
-            except:
+            except (ValueError, KeyError, json.JSONDecodeError):
                 self.test(False, "413 response is valid JSON")
 
         # Test with Content-Length header
