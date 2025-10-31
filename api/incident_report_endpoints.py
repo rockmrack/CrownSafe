@@ -189,7 +189,7 @@ class IncidentAnalyzer:
         return None
 
     @classmethod
-    def _update_cluster_stats(cls, cluster: IncidentCluster, incident: IncidentReport, db: Session):
+    def _update_cluster_stats(cls, cluster: IncidentCluster, incident: IncidentReport, db: Session) -> None:
         """Update cluster statistics with new incident"""
         cluster.incident_count += 1
         cluster.last_incident_date = incident.incident_date
@@ -263,7 +263,7 @@ class IncidentAnalyzer:
         return min(score, 10.0)
 
     @classmethod
-    async def _trigger_alert(cls, cluster: IncidentCluster, db: Session):
+    async def _trigger_alert(cls, cluster: IncidentCluster, db: Session) -> None:
         """Trigger internal alert for cluster"""
         logger.warning(f"ALERT: Cluster {cluster.id} has {cluster.incident_count} incidents")
 
@@ -276,7 +276,7 @@ class IncidentAnalyzer:
         logger.info(f"Safety team notified about cluster {cluster.id}")
 
     @classmethod
-    async def _trigger_critical_alert(cls, incident: IncidentReport, db: Session):
+    async def _trigger_critical_alert(cls, incident: IncidentReport, db: Session) -> None:
         """Trigger immediate alert for critical incident"""
         logger.critical(f"CRITICAL INCIDENT: {incident.product_name} - {incident.incident_type.value}")
 
@@ -285,7 +285,7 @@ class IncidentAnalyzer:
         pass
 
     @classmethod
-    async def _notify_agency(cls, cluster: IncidentCluster, db: Session):
+    async def _notify_agency(cls, cluster: IncidentCluster, db: Session) -> None:
         """Notify regulatory agency about cluster"""
         logger.info(f"Notifying CPSC about cluster {cluster.id}")
 
@@ -316,7 +316,7 @@ class IncidentAnalyzer:
 
 
 # Background task wrapper for incident analysis
-def analyze_incident_background(incident_id: int):
+def analyze_incident_background(incident_id: int) -> None:
     """Background task to analyze an incident.
     Creates its own database session to avoid DetachedInstanceError.
     """

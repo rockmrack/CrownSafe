@@ -23,7 +23,7 @@ class IPAllowlistMiddleware(BaseHTTPMiddleware):
     """Middleware to restrict admin endpoints to specific IP addresses
     """
 
-    def __init__(self, app, admin_paths: list[str] = None, allowed_ips: list[str] = None):
+    def __init__(self, app, admin_paths: list[str] = None, allowed_ips: list[str] = None) -> None:
         super().__init__(app)
         self.admin_paths = admin_paths or [
             "/admin",
@@ -176,7 +176,7 @@ class RequestValidationMiddleware(BaseHTTPMiddleware):
     """Middleware to validate and sanitize incoming requests
     """
 
-    def __init__(self, app, max_body_size: int = 10485760):  # 10MB default
+    def __init__(self, app, max_body_size: int = 10485760) -> None:  # 10MB default
         super().__init__(app)
         self.max_body_size = max_body_size
         self.blocked_patterns = [
@@ -254,7 +254,7 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
     """Middleware for API key authentication on specific endpoints
     """
 
-    def __init__(self, app, protected_paths: list[str] = None):
+    def __init__(self, app, protected_paths: list[str] = None) -> None:
         super().__init__(app)
         self.protected_paths = protected_paths or ["/api/v1/admin"]
 
@@ -318,7 +318,7 @@ class HMACMiddleware(BaseHTTPMiddleware):
     """Middleware for HMAC request signing validation
     """
 
-    def __init__(self, app, protected_paths: list[str] = None):
+    def __init__(self, app, protected_paths: list[str] = None) -> None:
         super().__init__(app)
         self.protected_paths = protected_paths or ["/api/v1/webhook"]
         self.secret = os.environ.get("HMAC_SECRET", secrets.token_bytes(32))

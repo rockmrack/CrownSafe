@@ -41,7 +41,7 @@ class CPSCDataConnector:
     Integrates Recalls, NEISS, Violations, and Penalties
     """
 
-    def __init__(self, api_key: str | None = None):
+    def __init__(self, api_key: str | None = None) -> None:
         self.api_key = api_key
         self.base_url = "https://www.saferproducts.gov/RestWebServices"
         self.recall_api = "https://www.cpsc.gov/Recalls/CPSC-Recall-API"
@@ -261,7 +261,7 @@ class EUSafetyGateConnector:
     """EU Safety Gate (RAPEX) data connector
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.base_url = "https://ec.europa.eu/safety-gate-api"
         self.atom_feed = "https://ec.europa.eu/safety/gate/consumers/feed.atom"
 
@@ -339,7 +339,7 @@ class CommercialDatabaseConnector:
     Integrates with UPC/EAN/GTIN lookup services
     """
 
-    def __init__(self, api_keys: dict[str, str] = None):
+    def __init__(self, api_keys: dict[str, str] = None) -> None:
         self.api_keys = api_keys or {}
 
     async def lookup_product_by_barcode(self, barcode: str) -> dict | None:
@@ -403,7 +403,7 @@ class DataUnificationEngine:
     Creates golden records from multiple data sources
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.matching_threshold = 0.8
 
     def create_golden_record(self, records: list[SafetyDataRecord]) -> dict:
@@ -479,7 +479,7 @@ class DataUnificationEngine:
 
         return best_record
 
-    def _merge_record(self, golden: dict, record: SafetyDataRecord):
+    def _merge_record(self, golden: dict, record: SafetyDataRecord) -> None:
         """Merge data from a record into the golden record"""
         for field, value in record.__dict__.items():
             if value is not None:

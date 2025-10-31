@@ -58,7 +58,7 @@ class AuditLogger:
     """Main audit logging service
     """
 
-    def __init__(self, db_session: Session = None):
+    def __init__(self, db_session: Session = None) -> None:
         self.db_session = db_session
         self.logger = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ class AuditLogger:
         new_value: dict = None,
         metadata: dict = None,
         error: str = None,
-    ):
+    ) -> None:
         """Create an audit log entry
         """
         try:
@@ -133,7 +133,7 @@ class AuditLogger:
 
         return changes if changes else None
 
-    def log_create(self, entity: Any):
+    def log_create(self, entity: Any) -> None:
         """Log entity creation"""
         self.log(
             action="CREATE",
@@ -142,7 +142,7 @@ class AuditLogger:
             new_value=self._serialize_entity(entity),
         )
 
-    def log_update(self, entity: Any, old_state: dict):
+    def log_update(self, entity: Any, old_state: dict) -> None:
         """Log entity update"""
         self.log(
             action="UPDATE",
@@ -152,7 +152,7 @@ class AuditLogger:
             new_value=self._serialize_entity(entity),
         )
 
-    def log_delete(self, entity: Any):
+    def log_delete(self, entity: Any) -> None:
         """Log entity deletion"""
         self.log(
             action="DELETE",
@@ -161,7 +161,7 @@ class AuditLogger:
             old_value=self._serialize_entity(entity),
         )
 
-    def log_view(self, entity_type: str, entity_id: Any, metadata: dict = None):
+    def log_view(self, entity_type: str, entity_id: Any, metadata: dict = None) -> None:
         """Log data access/viewing"""
         self.log(
             action="VIEW",
@@ -177,7 +177,7 @@ class AuditLogger:
         status_code: int,
         user_id: int = None,
         error: str = None,
-    ):
+    ) -> None:
         """Log API calls"""
         self.log(
             action="API_CALL",
@@ -213,24 +213,24 @@ class AuditLogger:
 
 
 # SQLAlchemy event listeners for automatic audit logging
-def setup_audit_listeners(Base, db_session):
+def setup_audit_listeners(Base, db_session) -> None:
     """Setup automatic audit logging for SQLAlchemy models
     """
     audit_logger = AuditLogger(db_session)
 
     @event.listens_for(Base, "after_insert", propagate=True)
-    def receive_after_insert(mapper, connection, target):
+    def receive_after_insert(mapper, connection, target) -> None:
         """Log after insert"""
         audit_logger.log_create(target)
 
     @event.listens_for(Base, "before_update", propagate=True)
-    def receive_before_update(mapper, connection, target):
+    def receive_before_update(mapper, connection, target) -> None:
         """Store old state before update"""
         # Store old state in a temporary attribute
         target._audit_old_state = audit_logger._serialize_entity(target)
 
     @event.listens_for(Base, "after_update", propagate=True)
-    def receive_after_update(mapper, connection, target):
+    def receive_after_update(mapper, connection, target) -> None:
         """Log after update"""
         old_state = getattr(target, "_audit_old_state", {})
         audit_logger.log_update(target, old_state)
@@ -239,7 +239,7 @@ def setup_audit_listeners(Base, db_session):
             delattr(target, "_audit_old_state")
 
     @event.listens_for(Base, "after_delete", propagate=True)
-    def receive_after_delete(mapper, connection, target):
+    def receive_after_delete(mapper, connection, target) -> None:
         """Log after delete"""
         audit_logger.log_delete(target)
 
@@ -346,7 +346,7 @@ class AuditQuery:
     """Query audit logs
     """
 
-    def __init__(self, db_session: Session):
+    def __init__(self, db_session: Session) -> None:
         self.db = db_session
 
     def get_user_activity(self, user_id: int, limit: int = 100) -> list[AuditLog]:

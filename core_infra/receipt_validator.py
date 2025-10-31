@@ -44,7 +44,7 @@ else:
 class AppleReceiptValidator:
     """Validates Apple App Store receipts"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.shared_secret = SubscriptionConfig.APPLE_SHARED_SECRET
         self.verify_url = SubscriptionConfig.get_apple_verify_url()
 
@@ -126,7 +126,7 @@ class AppleReceiptValidator:
 class GoogleReceiptValidator:
     """Validates Google Play receipts"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.package_name = SubscriptionConfig.GOOGLE_PACKAGE_NAME
         self.service = self._init_service()
 
@@ -229,7 +229,7 @@ class GoogleReceiptValidator:
 class ReceiptValidationService:
     """Main service for validating receipts and managing subscriptions"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.apple_validator = AppleReceiptValidator()
         self.google_validator = GoogleReceiptValidator()
 
@@ -384,7 +384,7 @@ class ReceiptValidationService:
         subscription_id: str | None = None,
         transaction_id: str | None = None,
         error: str | None = None,
-    ):
+    ) -> None:
         """Log receipt validation attempt"""
         try:
             with get_db_session() as db:

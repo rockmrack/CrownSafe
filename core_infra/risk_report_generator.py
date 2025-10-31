@@ -148,7 +148,7 @@ class RiskReportGenerator:
     Supports multiple formats: PDF, HTML, JSON
     """
 
-    def __init__(self, storage_client: AzureBlobStorageClient | None = None):
+    def __init__(self, storage_client: AzureBlobStorageClient | None = None) -> None:
         self.storage_client = storage_client or AzureBlobStorageClient()
         self.container_name = os.getenv("AZURE_STORAGE_CONTAINER", "crownsafe-reports")
 

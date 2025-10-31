@@ -52,7 +52,7 @@ class RetryConfig:
         on_retry: Callable = None,
         on_failure: Callable = None,
         on_success: Callable = None,
-    ):
+    ) -> None:
         self.max_attempts = max_attempts
         self.strategy = strategy
         self.initial_delay = initial_delay
@@ -115,7 +115,7 @@ class RetryHandler:
     """Handles retry logic with various strategies
     """
 
-    def __init__(self, config: RetryConfig = None):
+    def __init__(self, config: RetryConfig = None) -> None:
         self.config = config or RetryConfig()
         self.attempts = 0
         self.last_exception = None
@@ -280,7 +280,7 @@ class CircuitBreakerRetry:
         failure_threshold: int = 5,
         recovery_timeout: int = 60,
         retry_config: RetryConfig = None,
-    ):
+    ) -> None:
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
         self.retry_config = retry_config or RetryConfig()
@@ -300,13 +300,13 @@ class CircuitBreakerRetry:
             return True
         return False
 
-    def record_success(self):
+    def record_success(self) -> None:
         """Record successful execution"""
         if self.state == "half-open":
             self.state = "closed"
         self.failure_count = 0
 
-    def record_failure(self):
+    def record_failure(self) -> None:
         """Record failed execution"""
         self.failure_count += 1
         self.last_failure_time = time.time()
@@ -334,7 +334,7 @@ class BulkRetry:
     """Retry logic for bulk operations
     """
 
-    def __init__(self, config: RetryConfig = None):
+    def __init__(self, config: RetryConfig = None) -> None:
         self.config = config or RetryConfig()
 
     async def process_batch_with_retry(
@@ -373,7 +373,7 @@ class FallbackRetry:
     """Retry with fallback options
     """
 
-    def __init__(self, primary_func: Callable, fallback_funcs: list[Callable]):
+    def __init__(self, primary_func: Callable, fallback_funcs: list[Callable]) -> None:
         self.primary_func = primary_func
         self.fallback_funcs = fallback_funcs
 

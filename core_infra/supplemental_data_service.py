@@ -53,7 +53,7 @@ class ChemicalData:
 class USDAClient:
     """USDA FoodData Central API client"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.base_url = "https://api.nal.usda.gov/fdc/v1"
         self.api_key = os.getenv("USDA_API_KEY")
         self.enabled = bool(self.api_key)
@@ -107,7 +107,7 @@ class USDAClient:
 class EdamamClient:
     """Edamam Food Database API client"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.app_id = os.getenv("EDAMAM_APP_ID")
         self.app_key = os.getenv("EDAMAM_APP_KEY")
         self.base_url = "https://api.edamam.com/api/food-database/v2"
@@ -171,7 +171,7 @@ class EdamamClient:
 class CosIngClient:
     """EU CosIng Database client"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.base_url = "https://ec.europa.eu/growth/tools-databases/cosing/"
         self.enabled = True  # Public database, no API key needed
         logger.info("EU CosIng database client initialized")
@@ -206,7 +206,7 @@ class CosIngClient:
 class SupplementalDataService:
     """Main service for integrating supplemental data sources"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.usda_client = USDAClient()
         self.edamam_client = EdamamClient()
         self.cosing_client = CosIngClient()

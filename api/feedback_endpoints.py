@@ -372,7 +372,7 @@ For urgent issues, call 1-800-BABY-SAFE.
         return False
 
 
-def track_feedback_metrics(feedback: FeedbackRequest, priority: Priority):
+def track_feedback_metrics(feedback: FeedbackRequest, priority: Priority) -> None:
     """Track feedback metrics for analytics"""
     if not SUPPORT_CONFIG["track_metrics"]:
         return

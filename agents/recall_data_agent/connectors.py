@@ -100,7 +100,7 @@ class FDAConnector:
     DEVICE_URL = "https://api.fda.gov/device/enforcement.json"
     DRUG_URL = "https://api.fda.gov/drug/enforcement.json"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.api_key = os.getenv("FDA_API_KEY")
 
     async def fetch_recent_recalls(self) -> list[Recall]:
@@ -611,7 +611,7 @@ class SouthAfricaNCCConnector:
 class ConnectorRegistry:
     """Central registry for all recall data connectors"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.connectors = self._initialize_connectors()
 
     def _initialize_connectors(self) -> dict[str, Any]:

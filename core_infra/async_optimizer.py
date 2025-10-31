@@ -16,7 +16,7 @@ class AsyncWorkflowOptimizer:
     Provides parallel processing, connection pooling, and intelligent task management.
     """
 
-    def __init__(self, max_workers: int = 10):
+    def __init__(self, max_workers: int = 10) -> None:
         self.max_workers = max_workers
         self.thread_pool = ThreadPoolExecutor(max_workers=max_workers)
         self.logger = logger

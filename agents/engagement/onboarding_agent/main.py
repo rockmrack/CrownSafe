@@ -13,7 +13,7 @@ MCP_SERVER_URL = "ws://127.0.0.1:8001"
 
 
 class OnboardingAgent:
-    def __init__(self):
+    def __init__(self) -> None:
         self.agent_id = AGENT_ID
         self.mcp_client = MCPClient(agent_id=self.agent_id, server_url=MCP_SERVER_URL)
         self.logic = OnboardingAgentLogic(agent_id=self.agent_id)
@@ -43,12 +43,12 @@ class OnboardingAgent:
             }
         return self.logic.update_onboarding_info(user_id, parent_status, due_date)
 
-    async def run(self):
+    async def run(self) -> None:
         logger.info(f"Starting {self.agent_id}...")
         await self.mcp_client.connect()
 
 
-async def main():
+async def main() -> None:
     agent = OnboardingAgent()
     await agent.run()
 

@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 logger = logging.getLogger(__name__)
 
 
-def setup_privacy_compliance(app: FastAPI):
+def setup_privacy_compliance(app: FastAPI) -> None:
     """Integrate all privacy compliance features into the FastAPI app
 
     This includes:
@@ -59,7 +59,7 @@ def setup_privacy_compliance(app: FastAPI):
     logger.info("✅ Privacy compliance features integrated")
 
 
-def configure_privacy_logging():
+def configure_privacy_logging() -> None:
     """Configure logging to mask PII in logs
     """
     import logging

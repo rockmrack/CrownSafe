@@ -4,7 +4,7 @@ Enables backward compatibility and smooth transitions
 
 import logging
 from functools import wraps
-from typing import Callable
+from typing import Callable, Never
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -16,7 +16,7 @@ class APIVersion:
     """Represents an API version
     """
 
-    def __init__(self, version: str, deprecated: bool = False, sunset_date: str = None):
+    def __init__(self, version: str, deprecated: bool = False, sunset_date: str = None) -> None:
         self.version = version
         self.deprecated = deprecated
         self.sunset_date = sunset_date
@@ -38,7 +38,7 @@ class APIVersion:
         # Same major version = compatible
         return self.major == other.major
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"v{self.major}.{self.minor}.{self.patch}"
 
     def __lt__(self, other):
@@ -151,12 +151,12 @@ class VersionedRouter:
     """Router that handles multiple API versions
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.routers = {}
         for version in VersionedAPI.SUPPORTED_VERSIONS:
             self.routers[version] = APIRouter(prefix=f"/api/{version}")
 
-    def add_route(self, path: str, endpoint: Callable, methods: list, versions: list = None):
+    def add_route(self, path: str, endpoint: Callable, methods: list, versions: list = None) -> None:
         """Add route to specific versions"""
         versions = versions or list(self.routers.keys())
 
@@ -299,7 +299,7 @@ class BackwardCompatibility:
 
         def decorator(func):
             @wraps(func)
-            async def wrapper(*args, **kwargs):
+            async def wrapper(*args, **kwargs) -> Never:
                 message = f"This endpoint was removed in {version}"
                 if alternative:
                     message += f". Use {alternative} instead"

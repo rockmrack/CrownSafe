@@ -597,7 +597,7 @@ async def get_scan_details(
     )
 
 
-def update_scan_record(db: Session, scan_id: str, analysis: HairProductImageAnalysisResponse):
+def update_scan_record(db: Session, scan_id: str, analysis: HairProductImageAnalysisResponse) -> None:
     """Background task to update scan record with analysis results"""
     try:
         scan = db.query(ProductScanModel).filter(ProductScanModel.image_url.contains(scan_id)).first()

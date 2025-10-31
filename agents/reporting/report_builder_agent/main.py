@@ -87,7 +87,7 @@ agent_logic_instance: ReportBuilderAgentLogic | None = None
 class ReportBuilderAgentManager:
     """Main agent manager for ReportBuilderAgent with enhanced connection stability"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.mcp_client: MCPClient | None = None
         self.report_builder_logic: ReportBuilderAgentLogic | None = None
         self.stop_event = asyncio.Event()
@@ -96,7 +96,7 @@ class ReportBuilderAgentManager:
         self.last_successful_connection = None
         self._health_check_task: asyncio.Task | None = None
 
-    async def handle_incoming_message(self, message: MCPMessage):
+    async def handle_incoming_message(self, message: MCPMessage) -> None:
         """Handle incoming messages with proper response processing"""
         if not self.report_builder_logic or not self.mcp_client:
             logger.error("Logic/MCPClient instance missing in ReportBuilderAgent handler")
@@ -132,7 +132,7 @@ class ReportBuilderAgentManager:
             logger.error(f"Error processing message: {e}", exc_info=True)
             await self._handle_message_error(message, e)
 
-    async def _handle_logic_response(self, response: dict[str, Any], original_header: MCPHeader):
+    async def _handle_logic_response(self, response: dict[str, Any], original_header: MCPHeader) -> None:
         """Handle response from logic with proper validation - FIXED VERSION"""
         try:
             # The response from logic is a flat structure with message_type and payload at top level
@@ -175,7 +175,7 @@ class ReportBuilderAgentManager:
         except Exception as e:
             logger.error(f"Error handling logic response: {e}", exc_info=True)
 
-    async def _handle_message_error(self, message: MCPMessage, error: Exception):
+    async def _handle_message_error(self, message: MCPMessage, error: Exception) -> None:
         """Handle errors during message processing"""
         try:
             if not message or not message.mcp_header:
@@ -270,7 +270,7 @@ class ReportBuilderAgentManager:
 
         return False
 
-    async def _start_health_monitoring(self):
+    async def _start_health_monitoring(self) -> None:
         """Start periodic health check to monitor connection stability"""
         if self._health_check_task and not self._health_check_task.done():
             self._health_check_task.cancel()
@@ -278,7 +278,7 @@ class ReportBuilderAgentManager:
         self._health_check_task = asyncio.create_task(self._connection_health_monitor())
         logger.debug(f"Started connection health monitoring for {AGENT_ID}")
 
-    async def _connection_health_monitor(self):
+    async def _connection_health_monitor(self) -> None:
         """Monitor connection health and attempt reconnection if needed"""
         logger.debug(f"Connection health monitor started for {AGENT_ID}")
 
@@ -308,7 +308,7 @@ class ReportBuilderAgentManager:
             except Exception as e:
                 logger.error(f"Error in connection health monitor: {e}", exc_info=True)
 
-    async def initialize_components(self):
+    async def initialize_components(self) -> bool | None:
         """Initialize ReportBuilderAgentLogic and MCPClient"""
         try:
             # Initialize ReportBuilderAgentLogic
@@ -348,12 +348,12 @@ class ReportBuilderAgentManager:
             )
             return False
 
-    def setup_signal_handlers(self):
+    def setup_signal_handlers(self) -> None:
         """Setup signal handlers for graceful shutdown"""
         try:
             loop = asyncio.get_running_loop()
 
-            def signal_handler(signum):
+            def signal_handler(signum) -> None:
                 signal_name = signal.Signals(signum).name
                 logger.info(f"Received shutdown signal: {signal_name}")
                 self.stop_event.set()
@@ -372,7 +372,7 @@ class ReportBuilderAgentManager:
         """Connect to MCP server and register agent with retry logic"""
         return await self.connect_with_retry()
 
-    async def run_main_loop(self):
+    async def run_main_loop(self) -> None:
         """Main agent event loop with enhanced monitoring"""
         logger.info(f"{AGENT_ID} entering main event loop...")
 
@@ -390,7 +390,7 @@ class ReportBuilderAgentManager:
         except Exception as e:
             logger.error(f"Error in main event loop: {e}", exc_info=True)
 
-    async def shutdown(self):
+    async def shutdown(self) -> None:
         """Graceful shutdown of all components"""
         if self.shutdown_complete:
             logger.debug(f"{AGENT_ID} shutdown already in progress or complete")
@@ -428,7 +428,7 @@ class ReportBuilderAgentManager:
             logger.error(f"Error during shutdown: {e}", exc_info=True)
 
 
-async def main():
+async def main() -> int | None:
     """Main entry point with enhanced startup sequencing"""
     logger.info(f"🚀 Starting {AGENT_NAME} (ID: {AGENT_ID}, Version: {AGENT_VERSION})")
 

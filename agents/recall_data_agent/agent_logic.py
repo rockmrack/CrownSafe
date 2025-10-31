@@ -34,7 +34,7 @@ class RecallDataAgentLogic:
     3. Upsert recalls into EnhancedEnhancedRecallDB with deduplication
     """
 
-    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None) -> None:
         """Initialize RecallDataAgent logic.
 
         Args:

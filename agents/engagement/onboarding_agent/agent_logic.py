@@ -15,7 +15,7 @@ class OnboardingAgentLogic:
     """Handles setting initial user profile data after registration.
     """
 
-    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None) -> None:
         self.agent_id = agent_id
         self.logger = logger_instance or logger
         self.logger.info(f"OnboardingAgentLogic initialized for agent {self.agent_id}.")

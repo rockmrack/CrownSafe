@@ -347,7 +347,7 @@ async def get_metrics():
 class SLOTracker:
     """Tracks Service Level Objectives"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.reset_period = timedelta(days=30)  # 30-day rolling window
         self.data = {
             "uptime": {
@@ -370,7 +370,7 @@ class SLOTracker:
             },
         }
 
-    def record_uptime(self, is_up: bool):
+    def record_uptime(self, is_up: bool) -> None:
         """Record uptime status"""
         self.data["uptime"]["total_minutes"] += 1
         if not is_up:
@@ -381,7 +381,7 @@ class SLOTracker:
         down = self.data["uptime"]["downtime_minutes"]
         self.data["uptime"]["current"] = (total - down) / total if total > 0 else 1.0
 
-    def record_latency(self, latency_seconds: float):
+    def record_latency(self, latency_seconds: float) -> None:
         """Record request latency"""
         self.data["latency_p95"]["measurements"].append(latency_seconds)
 
@@ -389,7 +389,7 @@ class SLOTracker:
         if len(self.data["latency_p95"]["measurements"]) > 10000:
             self.data["latency_p95"]["measurements"] = self.data["latency_p95"]["measurements"][-10000:]
 
-    def record_request(self, is_error: bool):
+    def record_request(self, is_error: bool) -> None:
         """Record request and error status"""
         self.data["error_rate"]["total_requests"] += 1
         if is_error:
@@ -456,7 +456,7 @@ async def get_slo_status():
 class SyntheticProbe:
     """Runs synthetic probes against key endpoints"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.base_url = os.getenv("API_BASE_URL", "http://localhost:8001")
         self.timeout = 10
         self.probes = {
@@ -570,42 +570,42 @@ async def run_all_probes():
 # ========================= CUSTOM METRICS =========================
 
 
-def track_barcode_scan(scan_type: str, result: str):
+def track_barcode_scan(scan_type: str, result: str) -> None:
     """Track barcode scan metrics"""
     barcode_scans_total.labels(type=scan_type, result=result).inc()
 
 
-def track_search_query(query_type: str):
+def track_search_query(query_type: str) -> None:
     """Track search query metrics"""
     search_queries_total.labels(type=query_type).inc()
 
 
-def track_recall_found(severity: str):
+def track_recall_found(severity: str) -> None:
     """Track recall found metrics"""
     recalls_found_total.labels(severity=severity).inc()
 
 
-def track_rate_limit(endpoint: str, user: str, remaining: int):
+def track_rate_limit(endpoint: str, user: str, remaining: int) -> None:
     """Track rate limit metrics"""
     rate_limit_hits_total.labels(endpoint=endpoint, user=user).inc()
     rate_limit_remaining.labels(endpoint=endpoint, user=user).set(remaining)
 
 
-def track_cache_hit(cache_type: str):
+def track_cache_hit(cache_type: str) -> None:
     """Track cache hit"""
     cache_hits_total.labels(cache_type=cache_type).inc()
 
 
-def track_cache_miss(cache_type: str):
+def track_cache_miss(cache_type: str) -> None:
     """Track cache miss"""
     cache_misses_total.labels(cache_type=cache_type).inc()
 
 
-def track_cache_size(cache_type: str, size: int):
+def track_cache_size(cache_type: str, size: int) -> None:
     """Track cache size"""
     cache_size.labels(cache_type=cache_type).set(size)
 
 
-def track_database_query(query_type: str, duration: float):
+def track_database_query(query_type: str, duration: float) -> None:
     """Track database query metrics"""
     database_query_duration_seconds.labels(query_type=query_type).observe(duration)

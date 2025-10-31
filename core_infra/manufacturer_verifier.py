@@ -46,7 +46,7 @@ class MockManufacturerVerifier(ManufacturerVerifier):
     - Else: unknown
     """
 
-    def __init__(self, manufacturer_name: str = "MockOEM"):
+    def __init__(self, manufacturer_name: str = "MockOEM") -> None:
         self.manufacturer_name = manufacturer_name
 
     def verify(self, vin: VerificationInput) -> VerificationResult:

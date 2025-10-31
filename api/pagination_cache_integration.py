@@ -28,7 +28,7 @@ from core_infra.database import get_db
 logger = logging.getLogger(__name__)
 
 
-def setup_pagination_cache(app: FastAPI):
+def setup_pagination_cache(app: FastAPI) -> None:
     """Configure pagination and caching for the FastAPI app
 
     Args:
@@ -37,12 +37,12 @@ def setup_pagination_cache(app: FastAPI):
 
     # Add startup/shutdown for cache
     @app.on_event("startup")
-    async def init_cache():
+    async def init_cache() -> None:
         _ = await get_cache()  # cache (initializes connection)
         logger.info("Redis search cache initialized")
 
     @app.on_event("shutdown")
-    async def close_cache():
+    async def close_cache() -> None:
         from api.utils.redis_cache import close_cache as close_redis_cache
 
         await close_redis_cache()
@@ -51,7 +51,7 @@ def setup_pagination_cache(app: FastAPI):
     logger.info("Pagination and cache setup complete")
 
 
-def create_search_endpoint_v2(app: FastAPI):
+def create_search_endpoint_v2(app: FastAPI) -> None:
     """Create enhanced search endpoint with cursor pagination and caching
     """
 
@@ -170,14 +170,14 @@ def create_search_endpoint_v2(app: FastAPI):
             )
 
 
-def enhance_recall_detail_endpoint(app: FastAPI):
+def enhance_recall_detail_endpoint(app: FastAPI) -> None:
     """Enhance recall detail endpoint with HTTP caching
     """
     # Get the existing endpoint and wrap it
     # Or define a new one:
 
     @app.get("/api/v2/recall/{recall_id}")
-    async def get_recall_detail_v2(recall_id: str, request: Request, db: Session = Depends(get_db)):
+    async def get_recall_detail_v2(recall_id: str, request: Request, db: Session = Depends(get_db)) -> None:
         """Get recall detail with HTTP caching support
 
         Features:
@@ -274,7 +274,7 @@ class PaginationConfig:
     MAX_LIMIT = int(os.getenv("MAX_PAGE_SIZE", "100"))
 
     @classmethod
-    def validate(cls):
+    def validate(cls) -> None:
         """Validate configuration"""
         if cls.CURSOR_SIGNING_KEY == "change-this-in-production":
             logger.warning("Using default cursor signing key - change in production!")

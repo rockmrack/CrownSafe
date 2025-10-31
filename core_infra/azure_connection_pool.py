@@ -30,7 +30,7 @@ class AzureBlobConnectionPool:
         account_name: str | None = None,
         account_key: str | None = None,
         pool_size: int = 10,
-    ):
+    ) -> None:
         """Initialize connection pool
 
         Args:
@@ -59,7 +59,7 @@ class AzureBlobConnectionPool:
 
         logger.info(f"Azure Blob connection pool initialized (size: {pool_size})")
 
-    def _initialize_pool(self):
+    def _initialize_pool(self) -> None:
         """Pre-create connections in the pool"""
         with self._pool_lock:
             for _ in range(self.pool_size):
@@ -125,7 +125,7 @@ class AzureBlobConnectionPool:
 
                 return None
 
-    def release(self, client: BlobServiceClient):
+    def release(self, client: BlobServiceClient) -> None:
         """Release a connection back to the pool
 
         Args:
@@ -182,7 +182,7 @@ class AzureBlobConnectionPool:
                 ),
             }
 
-    def clear_pool(self):
+    def clear_pool(self) -> None:
         """Clear all connections in the pool (emergency use)"""
         with self._pool_lock:
             for conn_data in self._pool:

@@ -16,7 +16,7 @@ class IngestionRunner:
     """Manages the lifecycle of data ingestion runs, recording their status in the database.
     """
 
-    def __init__(self, db_session: Session, config: Config = None):
+    def __init__(self, db_session: Session, config: Config = None) -> None:
         self.db_session = db_session
         self.config = config or Config()
 
@@ -59,7 +59,7 @@ class IngestionRunner:
         return run
 
 
-def main():
+def main() -> None:
     """Example usage of the IngestionRunner.
     """
     config = Config()

@@ -57,7 +57,7 @@ class UserReport(Base):
     reviewed_by = Column(Integer, nullable=True)  # Admin user ID
     review_notes = Column(Text, nullable=True)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"<UserReport(report_id={self.report_id}, "
             f"product='{self.product_name}', "

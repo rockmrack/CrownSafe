@@ -194,7 +194,7 @@ def configure_startup_events(app: FastAPI) -> None:
     """Configure application startup events"""
 
     @app.on_event("startup")
-    async def startup_event():
+    async def startup_event() -> None:
         """Run on application startup"""
         logger.info("🚀 BabyShield API starting up...")
 
@@ -220,7 +220,7 @@ def configure_startup_events(app: FastAPI) -> None:
         logger.info("✅ Application startup complete")
 
     @app.on_event("shutdown")
-    async def shutdown_event():
+    async def shutdown_event() -> None:
         """Run on application shutdown"""
         logger.info("🛑 BabyShield API shutting down...")
 

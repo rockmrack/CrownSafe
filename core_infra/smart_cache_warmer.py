@@ -17,7 +17,7 @@ class SmartCacheWarmer:
     Pre-loads popular products and anticipates user queries for maximum cache hit rates.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.logger = logger
         self.warming_active = False
         self.last_warming = None
@@ -82,7 +82,7 @@ class SmartCacheWarmer:
 
             for batch in product_batches:
                 # Process batch in parallel
-                async def warm_product(product_name):
+                async def warm_product(product_name) -> bool:
                     try:
                         # Get recall data for this product
                         recalls = await optimized_recall_search(product_name=product_name)
@@ -237,7 +237,7 @@ class SmartCacheWarmer:
         elapsed = (datetime.now() - self.last_warming).total_seconds()
         return elapsed > self.config["warming_interval"]
 
-    async def background_cache_refresh(self):
+    async def background_cache_refresh(self) -> None:
         """Background task for continuous cache optimization
         """
         while True:

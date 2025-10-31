@@ -113,7 +113,7 @@ class QueryOptimizer:
         return db.query(db.query(model).filter_by(**filters).exists()).scalar()
 
     @staticmethod
-    def bulk_insert(db: Session, records: list[dict], model: type):
+    def bulk_insert(db: Session, records: list[dict], model: type) -> None:
         """Bulk insert records efficiently
 
         Example:
@@ -129,7 +129,7 @@ class QueryOptimizer:
         db.commit()
 
     @staticmethod
-    def bulk_update(db: Session, updates: list[dict], model: type):
+    def bulk_update(db: Session, updates: list[dict], model: type) -> None:
         """Bulk update records efficiently
 
         updates should be list of dicts with 'id' field
@@ -163,7 +163,7 @@ class QueryCache:
     """Simple query result caching
     """
 
-    def __init__(self, ttl: int = 60):
+    def __init__(self, ttl: int = 60) -> None:
         self.cache = {}
         self.ttl = ttl
 
@@ -180,7 +180,7 @@ class QueryCache:
         self.cache[key] = (value, time.time())
         return value
 
-    def invalidate(self, key: str = None):
+    def invalidate(self, key: str = None) -> None:
         """Invalidate cache entries
         """
         if key:
@@ -253,7 +253,7 @@ class LazyLoader:
     """Lazy loading for expensive operations
     """
 
-    def __init__(self, loader_func):
+    def __init__(self, loader_func) -> None:
         self.loader_func = loader_func
         self._value = None
         self._loaded = False
@@ -265,7 +265,7 @@ class LazyLoader:
             self._loaded = True
         return self._value
 
-    def invalidate(self):
+    def invalidate(self) -> None:
         self._loaded = False
         self._value = None
 
@@ -340,27 +340,27 @@ class BatchProcessor:
     """Process database operations in batches
     """
 
-    def __init__(self, db: Session, batch_size: int = 100):
+    def __init__(self, db: Session, batch_size: int = 100) -> None:
         self.db = db
         self.batch_size = batch_size
         self.pending_inserts = []
         self.pending_updates = []
 
-    def add_insert(self, model: type, data: dict):
+    def add_insert(self, model: type, data: dict) -> None:
         """Add to insert batch"""
         self.pending_inserts.append((model, data))
 
         if len(self.pending_inserts) >= self.batch_size:
             self.flush_inserts()
 
-    def add_update(self, model: type, data: dict):
+    def add_update(self, model: type, data: dict) -> None:
         """Add to update batch"""
         self.pending_updates.append((model, data))
 
         if len(self.pending_updates) >= self.batch_size:
             self.flush_updates()
 
-    def flush_inserts(self):
+    def flush_inserts(self) -> None:
         """Flush pending inserts"""
         if not self.pending_inserts:
             return
@@ -379,7 +379,7 @@ class BatchProcessor:
         self.db.commit()
         self.pending_inserts.clear()
 
-    def flush_updates(self):
+    def flush_updates(self) -> None:
         """Flush pending updates"""
         if not self.pending_updates:
             return
@@ -398,7 +398,7 @@ class BatchProcessor:
         self.db.commit()
         self.pending_updates.clear()
 
-    def flush_all(self):
+    def flush_all(self) -> None:
         """Flush all pending operations"""
         self.flush_inserts()
         self.flush_updates()

@@ -33,7 +33,7 @@ try:
 except ImportError:
     DOTENV_AVAILABLE = False
 
-    def load_dotenv(dotenv_path=None, verbose=False, override=False, interpolate=True, encoding="utf-8"):  # type: ignore
+    def load_dotenv(dotenv_path=None, verbose=False, override=False, interpolate=True, encoding="utf-8") -> None:  # type: ignore
         pass
 
 
@@ -76,7 +76,7 @@ class WebResearchLogic:
         agent_id: str,
         version: str,
         logger_instance: logging.Logger | None = None,
-    ):
+    ) -> None:
         self.agent_id = agent_id
         self.version = version
         self.logger = logger_instance if logger_instance else logger_wra_logic_default
@@ -109,7 +109,7 @@ class WebResearchLogic:
             f"API Key Loaded: {api_key_status}, Mock Mode: {self.pubmed_use_mock}, User-Agent: {self.user_agent}",
         )
 
-    def _load_environment(self):
+    def _load_environment(self) -> None:
         if not DOTENV_AVAILABLE:
             self.logger.warning("python-dotenv not available.")
             return
@@ -145,7 +145,7 @@ class WebResearchLogic:
             self.logger.debug(f"Created new aiohttp session for NCBI API with headers: {self.session_headers}")
         return self._session
 
-    async def _rate_limit(self):
+    async def _rate_limit(self) -> None:
         current_time = time.time()
         time_since_last = current_time - self._last_request_time
         if time_since_last < self.rate_limit_delay:
@@ -668,7 +668,7 @@ class WebResearchLogic:
                 "payload": {**response_payload_base, "error_message": error_msg},
             }
 
-    async def shutdown(self):
+    async def shutdown(self) -> None:
         self.logger.info(f"WebResearchLogic shutting down for agent {self.agent_id}")
         if self._session and not self._session.closed:
             await self._session.close()

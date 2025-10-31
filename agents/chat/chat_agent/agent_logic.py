@@ -201,7 +201,7 @@ class ChatAgentLogic:
     - Produces strictly structured JSON (ExplanationResponse).
     """
 
-    def __init__(self, llm: LLMClient, *, model: str = "gpt-4o-mini"):
+    def __init__(self, llm: LLMClient, *, model: str = "gpt-4o-mini") -> None:
         self.llm = llm
         self.model = model
 

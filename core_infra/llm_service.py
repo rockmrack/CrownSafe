@@ -143,7 +143,7 @@ class LLMMetrics:
 class LLMRateLimiter:
     """Advanced rate limiter with token tracking"""
 
-    def __init__(self, requests_per_minute: int = 60, tokens_per_minute: int = 90000):
+    def __init__(self, requests_per_minute: int = 60, tokens_per_minute: int = 90000) -> None:
         self.requests_per_minute = requests_per_minute
         self.tokens_per_minute = tokens_per_minute
         self.request_times = deque()
@@ -178,7 +178,7 @@ class LLMRateLimiter:
 
             return True, 0
 
-    def record_usage(self, tokens_used: int):
+    def record_usage(self, tokens_used: int) -> None:
         """Record actual token usage"""
         with self.lock:
             now = time.time()
@@ -189,7 +189,7 @@ class LLMRateLimiter:
 class LLMCache:
     """Response cache with TTL and size limits"""
 
-    def __init__(self, ttl_seconds: int = 3600, max_size: int = 1000):
+    def __init__(self, ttl_seconds: int = 3600, max_size: int = 1000) -> None:
         self.ttl_seconds = ttl_seconds
         self.max_size = max_size
         self.cache = {}
@@ -231,7 +231,7 @@ class LLMCache:
             self.access_times[key] = time.time()
             return self.cache[key]
 
-    def set(self, key: str, value: Any):
+    def set(self, key: str, value: Any) -> None:
         """Set cache entry with TTL"""
         with self.lock:
             # Implement LRU if at capacity
@@ -248,7 +248,7 @@ class LLMCache:
 class MockLLMProvider:
     """Sophisticated mock provider for testing"""
 
-    def __init__(self, config: LLMConfig):
+    def __init__(self, config: LLMConfig) -> None:
         self.config = config
         self.call_count = 0
 
@@ -447,7 +447,7 @@ class MockLLMProvider:
 class LLMClient:
     """Unified LLM client with comprehensive features"""
 
-    def __init__(self, config: LLMConfig):
+    def __init__(self, config: LLMConfig) -> None:
         self.config = config
         self.metrics = LLMMetrics()
         self.rate_limiter = LLMRateLimiter(config.requests_per_minute, config.tokens_per_minute)
@@ -467,7 +467,7 @@ class LLMClient:
 
         logger.info(f"LLMClient initialized with provider: {config.provider.value}, model: {config.model}")
 
-    def _initialize_provider(self):
+    def _initialize_provider(self) -> None:
         """Initialize the appropriate provider client"""
         load_dotenv()
 
@@ -499,7 +499,7 @@ class LLMClient:
             logger.warning("Falling back to mock provider")
             self.config.provider = LLMProvider.MOCK
 
-    def _initialize_openai(self, api_key: str):
+    def _initialize_openai(self, api_key: str) -> None:
         """Initialize OpenAI provider"""
         if "openai" not in AVAILABLE_PROVIDERS:
             raise ImportError("OpenAI library not available")
@@ -531,7 +531,7 @@ class LLMClient:
                 openai.api_base = self.config.api_base
             self._provider = openai
 
-    def _initialize_anthropic(self, api_key: str):
+    def _initialize_anthropic(self, api_key: str) -> None:
         """Initialize Anthropic provider"""
         if "anthropic" not in AVAILABLE_PROVIDERS:
             raise ImportError("Anthropic library not available")
@@ -541,7 +541,7 @@ class LLMClient:
         self._provider = anthropic.Anthropic(api_key=api_key)
         self._async_provider = anthropic.AsyncAnthropic(api_key=api_key)
 
-    def _initialize_azure(self, api_key: str):
+    def _initialize_azure(self, api_key: str) -> None:
         """Initialize Azure OpenAI provider"""
         if "openai" not in AVAILABLE_PROVIDERS:
             raise ImportError("OpenAI library not available (required for Azure)")
@@ -565,7 +565,7 @@ class LLMClient:
             openai.api_version = api_version
             self._provider = openai
 
-    def _initialize_google(self, api_key: str):
+    def _initialize_google(self, api_key: str) -> None:
         """Initialize Google AI provider"""
         if "google" not in AVAILABLE_PROVIDERS:
             raise ImportError("Google AI library not available")
@@ -741,20 +741,20 @@ class LLMClient:
         class WrappedResponse:
             class Choice:
                 class Message:
-                    def __init__(self, content):
+                    def __init__(self, content) -> None:
                         self.content = content
 
-                def __init__(self, content):
+                def __init__(self, content) -> None:
                     self.message = self.Message(content)
                     self.finish_reason = "stop"
 
             class Usage:
-                def __init__(self, usage_dict):
+                def __init__(self, usage_dict) -> None:
                     self.prompt_tokens = usage_dict.get("prompt_tokens", 0)
                     self.completion_tokens = usage_dict.get("completion_tokens", 0)
                     self.total_tokens = usage_dict.get("total_tokens", 0)
 
-            def __init__(self, llm_response):
+            def __init__(self, llm_response) -> None:
                 self.choices = [self.Choice(llm_response.content)]
                 self.usage = self.Usage(llm_response.usage)
                 self.model = llm_response.model
@@ -793,20 +793,20 @@ class LLMClient:
         class ConvertedResponse:
             class Choice:
                 class Message:
-                    def __init__(self, content):
+                    def __init__(self, content) -> None:
                         self.content = content
 
-                def __init__(self, content):
+                def __init__(self, content) -> None:
                     self.message = self.Message(content)
                     self.finish_reason = "stop"
 
             class Usage:
-                def __init__(self, input_tokens, output_tokens):
+                def __init__(self, input_tokens, output_tokens) -> None:
                     self.prompt_tokens = input_tokens
                     self.completion_tokens = output_tokens
                     self.total_tokens = input_tokens + output_tokens
 
-            def __init__(self, anthropic_response):
+            def __init__(self, anthropic_response) -> None:
                 content = anthropic_response.content[0].text if anthropic_response.content else ""
                 self.choices = [self.Choice(content)]
                 self.usage = self.Usage(
@@ -824,20 +824,20 @@ class LLMClient:
         class ConvertedResponse:
             class Choice:
                 class Message:
-                    def __init__(self, content):
+                    def __init__(self, content) -> None:
                         self.content = content
 
-                def __init__(self, choice_data):
+                def __init__(self, choice_data) -> None:
                     self.message = self.Message(choice_data["message"]["content"])
                     self.finish_reason = choice_data.get("finish_reason", "stop")
 
             class Usage:
-                def __init__(self, usage_data):
+                def __init__(self, usage_data) -> None:
                     self.prompt_tokens = usage_data.get("prompt_tokens", 0)
                     self.completion_tokens = usage_data.get("completion_tokens", 0)
                     self.total_tokens = usage_data.get("total_tokens", 0)
 
-            def __init__(self, response_data):
+            def __init__(self, response_data) -> None:
                 self.choices = [self.Choice(choice) for choice in response_data["choices"]]
                 self.usage = self.Usage(response_data.get("usage", {}))
                 self.model = response_data.get("model", "unknown")
@@ -851,7 +851,7 @@ class LLMClient:
         total_chars = sum(len(msg.get("content", "")) for msg in messages)
         return max(int(total_chars / 4), 100)
 
-    def _record_metrics(self, response: Any, latency_ms: float, model: str):
+    def _record_metrics(self, response: Any, latency_ms: float, model: str) -> None:
         """Record metrics from response"""
         self.metrics.total_requests += 1
         self.metrics.successful_requests += 1
@@ -1054,7 +1054,7 @@ def estimate_tokens(text: str, model: str = "gpt-4") -> int:
 class LLMStreamHandler:
     """Handler for streaming responses"""
 
-    def __init__(self, callback: Callable[[str], None] | None = None):
+    def __init__(self, callback: Callable[[str], None] | None = None) -> None:
         self.callback = callback or print
         self.accumulated_text = ""
 
@@ -1068,11 +1068,11 @@ class LLMStreamHandler:
 class CostTracker:
     """Track and analyze LLM costs"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.sessions = {}
         self.current_session = None
 
-    def start_session(self, session_name: str):
+    def start_session(self, session_name: str) -> None:
         """Start a new cost tracking session"""
         self.current_session = session_name
         self.sessions[session_name] = {
@@ -1082,7 +1082,7 @@ class CostTracker:
             "cost": 0.0,
         }
 
-    def record_usage(self, tokens: int, cost: float):
+    def record_usage(self, tokens: int, cost: float) -> None:
         """Record usage for current session"""
         if self.current_session and self.current_session in self.sessions:
             session = self.sessions[self.current_session]

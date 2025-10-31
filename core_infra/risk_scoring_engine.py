@@ -57,7 +57,7 @@ class RiskScoringEngine:
     Calculates dynamic risk scores based on multiple weighted factors
     """
 
-    def __init__(self, custom_weights: dict[RiskFactor, float] | None = None):
+    def __init__(self, custom_weights: dict[RiskFactor, float] | None = None) -> None:
         """Initialize with optional custom weights
         Weights must sum to 1.0
         """

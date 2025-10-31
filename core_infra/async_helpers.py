@@ -18,7 +18,7 @@ class AsyncAPIClient:
     """Async HTTP client with timeout, retry, and error handling
     """
 
-    def __init__(self, timeout: int = 30, max_retries: int = 3, backoff_factor: float = 1.0):
+    def __init__(self, timeout: int = 30, max_retries: int = 3, backoff_factor: float = 1.0) -> None:
         self.timeout = aiohttp.ClientTimeout(total=timeout)
         self.max_retries = max_retries
         self.backoff_factor = backoff_factor
@@ -130,7 +130,7 @@ class AsyncBatchProcessor:
     """Process items in batches asynchronously
     """
 
-    def __init__(self, batch_size: int = 10, max_concurrent: int = 5):
+    def __init__(self, batch_size: int = 10, max_concurrent: int = 5) -> None:
         self.batch_size = batch_size
         self.semaphore = asyncio.Semaphore(max_concurrent)
 
@@ -245,29 +245,29 @@ class AsyncTaskQueue:
     """Simple async task queue for background processing
     """
 
-    def __init__(self, max_workers: int = 10):
+    def __init__(self, max_workers: int = 10) -> None:
         self.queue = asyncio.Queue()
         self.max_workers = max_workers
         self.workers = []
         self.running = False
 
-    async def add_task(self, task: Callable, *args, **kwargs):
+    async def add_task(self, task: Callable, *args, **kwargs) -> None:
         """Add task to queue"""
         await self.queue.put((task, args, kwargs))
 
-    async def start(self):
+    async def start(self) -> None:
         """Start processing tasks"""
         self.running = True
         self.workers = [asyncio.create_task(self._worker(f"worker-{i}")) for i in range(self.max_workers)]
 
-    async def stop(self):
+    async def stop(self) -> None:
         """Stop processing tasks"""
         self.running = False
         await self.queue.join()
         for worker in self.workers:
             worker.cancel()
 
-    async def _worker(self, name: str):
+    async def _worker(self, name: str) -> None:
         """Worker to process tasks"""
         while self.running:
             try:

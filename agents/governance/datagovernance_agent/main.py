@@ -13,7 +13,7 @@ MCP_SERVER_URL = "ws://127.0.0.1:8001"
 
 
 class DataGovernanceAgent:
-    def __init__(self):
+    def __init__(self) -> None:
         self.agent_id = AGENT_ID
         self.mcp_client = MCPClient(agent_id=self.agent_id, server_url=MCP_SERVER_URL)
         self.logic = DataGovernanceAgentLogic(agent_id=self.agent_id)
@@ -37,12 +37,12 @@ class DataGovernanceAgent:
             return {"status": "error", "message": "Missing 'country_code'."}
         return self.logic.determine_data_residency(country_code)
 
-    async def run(self):
+    async def run(self) -> None:
         logger.info(f"Starting {self.agent_id}...")
         await self.mcp_client.connect()
 
 
-async def main():
+async def main() -> None:
     agent = DataGovernanceAgent()
     await agent.run()
 

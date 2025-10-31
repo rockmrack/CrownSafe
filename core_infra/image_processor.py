@@ -142,7 +142,7 @@ class ImageAnalysisService:
         google_credentials_path: str = None,
         aws_region: str = "us-east-1",
         enable_caching: bool = True,
-    ):
+    ) -> None:
         """Initialize image analysis service
 
         Args:
@@ -180,7 +180,7 @@ class ImageAnalysisService:
         # Compile patterns for extraction
         self._compile_patterns()
 
-    def _compile_patterns(self):
+    def _compile_patterns(self) -> None:
         """Compile regex patterns for extraction"""
         self.patterns = {
             "model": [
@@ -474,7 +474,7 @@ class ImageAnalysisService:
             processing_time_ms=processing_time,
         )
 
-    def _parse_product_info(self, text: str, result: ExtractionResult):
+    def _parse_product_info(self, text: str, result: ExtractionResult) -> None:
         """Parse product information from OCR text"""
         if not text:
             return
@@ -521,7 +521,7 @@ class ImageAnalysisService:
                     result.product_name = line.strip()
                     break
 
-    def _calculate_confidence(self, result: ExtractionResult):
+    def _calculate_confidence(self, result: ExtractionResult) -> None:
         """Calculate overall confidence score and level"""
         scores = []
 
@@ -560,7 +560,7 @@ class ImageAnalysisService:
         else:
             result.confidence_level = "low"
 
-    def _detect_issues(self, result: ExtractionResult, image: Image.Image):
+    def _detect_issues(self, result: ExtractionResult, image: Image.Image) -> None:
         """Detect potential issues with the image/extraction"""
         if not result.flags:
             result.flags = []
@@ -597,7 +597,7 @@ class ImageAnalysisService:
         # TODO: Implement cache lookup from database
         return None
 
-    def _cache_result(self, file_hash: str, result: ExtractionResult):
+    def _cache_result(self, file_hash: str, result: ExtractionResult) -> None:
         """Cache analysis result"""
         # TODO: Implement cache storage to database
         pass

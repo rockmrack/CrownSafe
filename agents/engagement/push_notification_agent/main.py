@@ -4,7 +4,7 @@ from .agent_logic import PushNotificationAgentLogic
 
 
 class PushNotificationAgent:
-    def __init__(self):
+    def __init__(self) -> None:
         # ... (Standard __init__) ...
         self.logic = PushNotificationAgentLogic(agent_id=self.agent_id)
 

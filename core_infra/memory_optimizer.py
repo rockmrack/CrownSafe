@@ -20,7 +20,7 @@ class MemoryOptimizer:
     Manages memory usage, object pooling, and garbage collection.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.logger = logger
         self.object_pool = WeakValueDictionary()
         self.memory_stats = {}
@@ -110,7 +110,7 @@ class MemoryOptimizer:
         except Exception:
             return False
 
-    async def background_memory_optimization(self):
+    async def background_memory_optimization(self) -> None:
         """Background task for continuous memory optimization
         """
         while True:

@@ -115,13 +115,13 @@ def create_secure_engine(mode: str = "readonly") -> Engine:
 
     # Add event listeners for monitoring
     @event.listens_for(engine, "connect")
-    def receive_connect(dbapi_conn, connection_record):
+    def receive_connect(dbapi_conn, connection_record) -> None:
         """Log new connections"""
         connection_record.info["connect_time"] = time.time()
         logger.debug(f"New {mode} database connection established")
 
     @event.listens_for(engine, "checkout")
-    def receive_checkout(dbapi_conn, connection_record, connection_proxy):
+    def receive_checkout(dbapi_conn, connection_record, connection_proxy) -> None:
         """Monitor connection checkouts"""
         # Log long-lived connections
         if "connect_time" in connection_record.info:
@@ -130,7 +130,7 @@ def create_secure_engine(mode: str = "readonly") -> Engine:
                 logger.warning(f"Long-lived {mode} connection: {age:.0f} seconds")
 
     @event.listens_for(engine, "checkin")
-    def receive_checkin(dbapi_conn, connection_record):
+    def receive_checkin(dbapi_conn, connection_record) -> None:
         """Reset connection state on checkin"""
         if mode == "readonly":
             # Ensure readonly transaction mode
@@ -180,7 +180,7 @@ class DatabaseEngines:
             logger.info("Created admin database engine")
         return self._admin_engine
 
-    def dispose_all(self):
+    def dispose_all(self) -> None:
         """Dispose all engines (cleanup)"""
         if self._readonly_engine:
             self._readonly_engine.dispose()
@@ -327,7 +327,7 @@ class SecureQuery:
 # ========================= MIGRATION HELPER =========================
 
 
-def migrate_to_secure_database():
+def migrate_to_secure_database() -> None:
     """Migrate existing code to use secure database connections
     """
     print("Migrating to secure database configuration...")

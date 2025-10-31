@@ -57,7 +57,7 @@ class UserAgentBlocker(BaseHTTPMiddleware):
         allowed_patterns: list[str] | None = None,
         block_empty_ua: bool = False,
         case_sensitive: bool = False,
-    ):
+    ) -> None:
         """Initialize UA blocker
 
         Args:
@@ -221,7 +221,7 @@ class SmartUserAgentFilter(UserAgentBlocker):
     """Advanced UA filter with ML-based detection (future enhancement)
     """
 
-    def __init__(self, app, **kwargs):
+    def __init__(self, app, **kwargs) -> None:
         super().__init__(app, **kwargs)
         # Could integrate with ML model for advanced bot detection
         self.suspicious_score_threshold = 0.7

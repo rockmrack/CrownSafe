@@ -65,7 +65,7 @@ class JsonFormatter(logging.Formatter):
         return json.dumps(payload, default=str)
 
 
-def setup_json_logging(log_level: str = "INFO"):
+def setup_json_logging(log_level: str = "INFO") -> None:
     """Configure all loggers to use JSON formatting
 
     Args:

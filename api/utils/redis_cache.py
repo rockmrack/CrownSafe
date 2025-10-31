@@ -17,7 +17,7 @@ class RedisSearchCache:
     """Redis-based cache for search results
     """
 
-    def __init__(self, redis_client: Redis | None = None):
+    def __init__(self, redis_client: Redis | None = None) -> None:
         """Initialize cache with Redis client
 
         Args:
@@ -29,7 +29,7 @@ class RedisSearchCache:
         self.key_prefix = "search:v1:"
         self.epoch_key = "search:epoch"
 
-    async def connect(self):
+    async def connect(self) -> None:
         """Connect to Redis if not already connected"""
         if not self.redis and self.enabled:
             try:
@@ -44,7 +44,7 @@ class RedisSearchCache:
                 logger.warning(f"Redis cache connection failed: {e}")
                 self.enabled = False
 
-    async def close(self):
+    async def close(self) -> None:
         """Close Redis connection"""
         if self.redis:
             await self.redis.close()
@@ -164,7 +164,7 @@ class RedisSearchCache:
             logger.warning(f"Cache set error: {e}")
             return False
 
-    async def invalidate_all(self):
+    async def invalidate_all(self) -> None:
         """Invalidate all cached search results by incrementing epoch
         """
         if not self.enabled or not self.redis:
@@ -181,7 +181,7 @@ class RedisSearchCache:
         except Exception as e:
             logger.warning(f"Cache invalidation error: {e}")
 
-    async def invalidate_pattern(self, pattern: str):
+    async def invalidate_pattern(self, pattern: str) -> None:
         """Invalidate cache keys matching a pattern
 
         Args:
@@ -273,7 +273,7 @@ async def get_cache() -> RedisSearchCache:
     return _cache
 
 
-async def close_cache():
+async def close_cache() -> None:
     """Close global cache instance
     """
     global _cache

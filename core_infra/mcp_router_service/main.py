@@ -121,7 +121,7 @@ app_logger.info(f"CORS Middleware added. Allowed Origins: {cors_origins}")
 
 # --- WebSocket Endpoint ---
 @app.websocket("/ws/{agent_id}")
-async def websocket_endpoint(websocket: WebSocket, agent_id: str):
+async def websocket_endpoint(websocket: WebSocket, agent_id: str) -> None:
     # Validate required functions exist
     if (
         not (hasattr(state, "add_connection") and callable(state.add_connection))

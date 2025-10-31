@@ -211,7 +211,7 @@ class APIError(HTTPException):
         code: str,
         message: str,
         details: dict[str, Any] | None = None,
-    ):
+    ) -> None:
         detail = {"message": message}
         if details:
             detail.update(details)

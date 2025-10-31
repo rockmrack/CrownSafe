@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Never
 
 from fastapi import APIRouter, HTTPException, Request
 
@@ -6,7 +6,7 @@ router = APIRouter(prefix="/api/v1", tags=["account-legacy"])
 
 
 @router.post("/user/data/delete", include_in_schema=False)
-async def legacy_delete(request: Request, body: Any | None = None):
+async def legacy_delete(request: Request, body: Any | None = None) -> Never:
     """Legacy endpoint - returns 410 Gone to force client migration.
     Accepts any request format to avoid validation errors.
     """

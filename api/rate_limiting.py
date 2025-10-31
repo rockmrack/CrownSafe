@@ -55,7 +55,7 @@ async def init_rate_limiter() -> bool:
         return False
 
 
-async def close_rate_limiter():
+async def close_rate_limiter() -> None:
     """Close rate limiter connections
     """
     try:

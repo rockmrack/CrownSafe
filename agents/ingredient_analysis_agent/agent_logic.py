@@ -31,7 +31,7 @@ class IngredientAnalysisAgent:
     - Recommend safer alternatives
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.crown_engine = CrownScoreEngine()
         logger.info("✅ Ingredient Analysis Agent initialized")
 

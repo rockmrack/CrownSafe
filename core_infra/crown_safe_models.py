@@ -411,13 +411,13 @@ class MarketInsightModel(Base):
 # ============================================================================
 
 
-def create_all_tables(engine):
+def create_all_tables(engine) -> None:
     """Create all Crown Safe database tables"""
     Base.metadata.create_all(bind=engine)
     print("✅ All Crown Safe tables created successfully!")
 
 
-def drop_all_tables(engine):
+def drop_all_tables(engine) -> None:
     """Drop all Crown Safe tables (use with caution!)"""
     Base.metadata.drop_all(bind=engine)
     print("⚠️ All Crown Safe tables dropped!")

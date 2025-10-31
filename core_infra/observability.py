@@ -27,12 +27,12 @@ class ObservabilityManager:
     """Manages observability, tracing, and instrumentation
     """
 
-    def __init__(self, service_name: str = "crownsafe-api"):
+    def __init__(self, service_name: str = "crownsafe-api") -> None:
         self.service_name = service_name
         self.tracer_provider = None
         self.tracer = None
 
-    def initialize(self, endpoint: str = None):
+    def initialize(self, endpoint: str = None) -> None:
         """Initialize OpenTelemetry tracing
 
         Args:
@@ -58,7 +58,7 @@ class ObservabilityManager:
         except Exception as e:
             logger.error(f"Failed to initialize observability: {e}")
 
-    def instrument_fastapi(self, app):
+    def instrument_fastapi(self, app) -> None:
         """Instrument FastAPI application
 
         Args:
@@ -70,7 +70,7 @@ class ObservabilityManager:
         except Exception as e:
             logger.error(f"FastAPI instrumentation failed: {e}")
 
-    def instrument_sqlalchemy(self, engine):
+    def instrument_sqlalchemy(self, engine) -> None:
         """Instrument SQLAlchemy database engine
 
         Args:
@@ -82,7 +82,7 @@ class ObservabilityManager:
         except Exception as e:
             logger.error(f"SQLAlchemy instrumentation failed: {e}")
 
-    def instrument_redis(self):
+    def instrument_redis(self) -> None:
         """Instrument Redis client
         """
         try:
@@ -91,7 +91,7 @@ class ObservabilityManager:
         except Exception as e:
             logger.error(f"Redis instrumentation failed: {e}")
 
-    def instrument_requests(self):
+    def instrument_requests(self) -> None:
         """Instrument HTTP requests library
         """
         try:
@@ -128,11 +128,11 @@ class AzureMonitorIntegration:
     """Integration with Azure Application Insights
     """
 
-    def __init__(self, connection_string: str = None):
+    def __init__(self, connection_string: str = None) -> None:
         self.connection_string = connection_string
         self.client = None
 
-    def initialize(self):
+    def initialize(self) -> None:
         """Initialize Azure Application Insights
         """
         if not self.connection_string:
@@ -155,7 +155,7 @@ class AzureMonitorIntegration:
         except Exception as e:
             logger.error(f"Azure Monitor initialization failed: {e}")
 
-    def log_custom_event(self, event_name: str, properties: dict = None):
+    def log_custom_event(self, event_name: str, properties: dict = None) -> None:
         """Log custom event to Application Insights
 
         Args:
@@ -168,7 +168,7 @@ class AzureMonitorIntegration:
         except Exception as e:
             logger.error(f"Failed to log custom event: {e}")
 
-    def log_custom_metric(self, metric_name: str, value: float, properties: dict = None):
+    def log_custom_metric(self, metric_name: str, value: float, properties: dict = None) -> None:
         """Log custom metric to Application Insights
 
         Args:

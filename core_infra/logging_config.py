@@ -184,7 +184,7 @@ def get_logger(name: str) -> logging.Logger:
 class RequestLogger:
     """Middleware to log all requests and responses"""
 
-    def __init__(self, app):
+    def __init__(self, app) -> None:
         self.app = app
         self.logger = logging.getLogger("api.requests")
 
@@ -209,7 +209,7 @@ class RequestLogger:
         )
 
         # Process request
-        async def send_wrapper(message):
+        async def send_wrapper(message) -> None:
             if message["type"] == "http.response.start":
                 # Log response
                 duration_ms = int((datetime.utcnow() - start_time).total_seconds() * 1000)

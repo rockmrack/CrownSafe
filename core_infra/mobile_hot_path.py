@@ -14,7 +14,7 @@ class MobileHotPath:
     Designed for real-time in-store scanning across 39 international agencies.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.logger = logger
         self.hot_cache = {}  # In-memory cache for instant responses
         self.popular_products = set()
@@ -180,7 +180,7 @@ class MobileHotPath:
             "agencies_optimized": 39,
         }
 
-    def clear_hot_cache(self):
+    def clear_hot_cache(self) -> None:
         """Clear hot cache for memory management
         """
         cache_size = len(self.hot_cache)

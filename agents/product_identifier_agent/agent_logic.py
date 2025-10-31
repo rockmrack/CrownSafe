@@ -25,7 +25,7 @@ class ProductIdentifierLogic:
     Falls back to the in-memory RecallDB if the API call fails (for test scenarios).
     """
 
-    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None) -> None:
         self.agent_id = agent_id
         self.logger = logger_instance or logger
 

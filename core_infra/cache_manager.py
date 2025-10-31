@@ -33,7 +33,7 @@ class BabyShieldCacheManager:
     Provides intelligent caching strategies for maximum speed with data freshness.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
         self.redis_client = None
         self.cache_enabled = True
@@ -61,7 +61,7 @@ class BabyShieldCacheManager:
 
         self.init_redis()
 
-    def init_redis(self):
+    def init_redis(self) -> None:
         """Initialize Redis connection with error handling"""
         if not REDIS_AVAILABLE:
             logger.debug("Redis library not installed. Cache disabled.")

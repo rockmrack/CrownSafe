@@ -32,7 +32,7 @@ def update_security_metrics(
     client_ip: str,
     user_agent: str,
     blocked: bool = False,
-):
+) -> None:
     """Update security metrics for dashboard"""
     global security_metrics
 

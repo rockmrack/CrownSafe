@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 # Rate limiting helper
-def _rate_limit_delete(user_id: int, limit=3, window_sec=86400):
+def _rate_limit_delete(user_id: int, limit=3, window_sec=86400) -> None:
     """Rate limit account deletion attempts to 3 per day per user"""
     try:
         r = redis.from_url(os.getenv("REDIS_URL", "redis://localhost:6379/0"), decode_responses=True)
@@ -45,7 +45,7 @@ def _rate_limit_delete(user_id: int, limit=3, window_sec=86400):
 
 
 # Audit logging helper
-def _audit(db: Session, user_id: int, jti: str, status: str, source="mobile", meta=None):
+def _audit(db: Session, user_id: int, jti: str, status: str, source="mobile", meta=None) -> None:
     """Log account deletion attempts for audit trail"""
     try:
         # Check if the audit table exists by trying to query it
@@ -61,7 +61,7 @@ def _audit(db: Session, user_id: int, jti: str, status: str, source="mobile", me
 
 
 # Token blocklist helper
-def _blocklist_access_token(raw_token: str):
+def _blocklist_access_token(raw_token: str) -> None:
     """Blocklist an access token by adding its JTI to Redis"""
     try:
         # Decode token to get JTI and expiration using the same SECRET_KEY as auth.py
@@ -85,7 +85,7 @@ def _blocklist_access_token(raw_token: str):
 
 
 # Token/session revocation helpers (implementations may live elsewhere)
-def revoke_tokens_for_user(db: Session, user_id: int):
+def revoke_tokens_for_user(db: Session, user_id: int) -> None:
     """Revoke refresh/access tokens in your token store/DB/Redis"""
     try:
         # Revoke user's refresh tokens (if stored in database)
@@ -104,7 +104,7 @@ def revoke_tokens_for_user(db: Session, user_id: int):
         db.rollback()
 
 
-def invalidate_push_tokens(db: Session, user_id: int):
+def invalidate_push_tokens(db: Session, user_id: int) -> None:
     """Remove FCM/APNS tokens tied to the user"""
     try:
         # Import DeviceToken model and delete user's device tokens
@@ -118,7 +118,7 @@ def invalidate_push_tokens(db: Session, user_id: int):
         db.rollback()
 
 
-def unlink_devices_and_sessions(db: Session, user_id: int):
+def unlink_devices_and_sessions(db: Session, user_id: int) -> None:
     """Delete device links; wipe server-side sessions"""
     try:
         # Delete device tokens (already covered by invalidate_push_tokens)
@@ -164,7 +164,7 @@ def delete_account(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_active_user),
     token: str = Depends(oauth2_scheme),
-):
+) -> None:
     """Delete current user account and all associated data.
 
     This endpoint meets Apple's in-app account deletion requirements.

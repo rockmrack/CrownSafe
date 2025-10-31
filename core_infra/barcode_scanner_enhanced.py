@@ -92,7 +92,7 @@ class EnhancedBarcodeScanner:
     Guarantees 100% functionality on Windows
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
         self.opencv_detector = None
 

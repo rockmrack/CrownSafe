@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class BabyShieldException(Exception):
     """Base exception for BabyShield application"""
 
-    def __init__(self, message: str, status_code: int = 500, details: dict[str, Any] = None):
+    def __init__(self, message: str, status_code: int = 500, details: dict[str, Any] = None) -> None:
         self.message = message
         self.status_code = status_code
         self.details = details or {}
@@ -27,7 +27,7 @@ class BabyShieldException(Exception):
 class ValidationError(BabyShieldException):
     """Validation error"""
 
-    def __init__(self, message: str, field: str = None):
+    def __init__(self, message: str, field: str = None) -> None:
         details = {"field": field} if field else {}
         super().__init__(message, status_code=400, details=details)
 
@@ -35,7 +35,7 @@ class ValidationError(BabyShieldException):
 class NotFoundError(BabyShieldException):
     """Resource not found error"""
 
-    def __init__(self, resource: str, identifier: Any):
+    def __init__(self, resource: str, identifier: Any) -> None:
         message = f"{resource} not found: {identifier}"
         super().__init__(message, status_code=404, details={"resource": resource, "id": identifier})
 
@@ -43,21 +43,21 @@ class NotFoundError(BabyShieldException):
 class AuthenticationError(BabyShieldException):
     """Authentication error"""
 
-    def __init__(self, message: str = "Authentication required"):
+    def __init__(self, message: str = "Authentication required") -> None:
         super().__init__(message, status_code=401)
 
 
 class AuthorizationError(BabyShieldException):
     """Authorization error"""
 
-    def __init__(self, message: str = "Insufficient permissions"):
+    def __init__(self, message: str = "Insufficient permissions") -> None:
         super().__init__(message, status_code=403)
 
 
 class RateLimitError(BabyShieldException):
     """Rate limit exceeded error"""
 
-    def __init__(self, message: str = "Rate limit exceeded"):
+    def __init__(self, message: str = "Rate limit exceeded") -> None:
         super().__init__(message, status_code=429)
 
 
@@ -209,7 +209,7 @@ async def general_exception_handler(request: Request, exc: Exception):
     )
 
 
-def register_error_handlers(app):
+def register_error_handlers(app) -> None:
     """Register all error handlers with the FastAPI app"""
     import redis.exceptions
     from fastapi import HTTPException

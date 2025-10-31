@@ -72,13 +72,13 @@ agent_logic_instance: WebResearchLogic | None = None
 class WebResearchAgentManager:
     """Main agent manager for WebResearchAgent"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.mcp_client: MCPClient | None = None
         self.web_research_logic: WebResearchLogic | None = None
         self.stop_event = asyncio.Event()
         self.shutdown_complete = False
 
-    async def handle_incoming_message(self, message: MCPMessage):
+    async def handle_incoming_message(self, message: MCPMessage) -> None:
         """Handle incoming messages with proper response processing"""
         if not self.web_research_logic or not self.mcp_client:
             logger.error("Logic/MCPClient instance missing in WebResearchAgent handler")
@@ -111,7 +111,7 @@ class WebResearchAgentManager:
             logger.error(f"Error processing message: {e}", exc_info=True)
             await self._handle_message_error(message, e)
 
-    async def _handle_logic_response(self, response: dict[str, Any], original_header: MCPHeader):
+    async def _handle_logic_response(self, response: dict[str, Any], original_header: MCPHeader) -> None:
         """Handle response from logic with proper validation"""
         try:
             # Validate response structure
@@ -154,7 +154,7 @@ class WebResearchAgentManager:
         except Exception as e:
             logger.error(f"Error handling logic response: {e}", exc_info=True)
 
-    async def _handle_message_error(self, message: MCPMessage, error: Exception):
+    async def _handle_message_error(self, message: MCPMessage, error: Exception) -> None:
         """Handle errors during message processing"""
         try:
             if not message or not message.mcp_header:
@@ -199,7 +199,7 @@ class WebResearchAgentManager:
         except Exception as send_error:
             logger.error(f"Failed to send error response: {send_error}", exc_info=True)
 
-    async def initialize_components(self):
+    async def initialize_components(self) -> bool | None:
         """Initialize WebResearchLogic and MCPClient"""
         try:
             # Initialize WebResearchLogic
@@ -233,12 +233,12 @@ class WebResearchAgentManager:
             logger.critical(f"Failed to initialize WebResearchAgent components: {e}", exc_info=True)
             return False
 
-    def setup_signal_handlers(self):
+    def setup_signal_handlers(self) -> None:
         """Setup signal handlers for graceful shutdown"""
         try:
             loop = asyncio.get_running_loop()
 
-            def signal_handler(signum):
+            def signal_handler(signum) -> None:
                 signal_name = signal.Signals(signum).name
                 logger.info(f"Received shutdown signal: {signal_name}")
                 self.stop_event.set()
@@ -253,7 +253,7 @@ class WebResearchAgentManager:
         except RuntimeError as e:
             logger.warning(f"Could not setup signal handlers: {e}")
 
-    async def connect_and_register(self):
+    async def connect_and_register(self) -> bool | None:
         """Connect to MCP server and register agent"""
         try:
             await self.mcp_client.connect()
@@ -273,7 +273,7 @@ class WebResearchAgentManager:
             logger.critical(f"Unexpected error during connection: {e}", exc_info=True)
             return False
 
-    async def run_main_loop(self):
+    async def run_main_loop(self) -> None:
         """Main agent event loop"""
         logger.info(f"{AGENT_ID} entering main event loop...")
 
@@ -285,7 +285,7 @@ class WebResearchAgentManager:
         except Exception as e:
             logger.error(f"Error in main event loop: {e}", exc_info=True)
 
-    async def shutdown(self):
+    async def shutdown(self) -> None:
         """Graceful shutdown of all components"""
         if self.shutdown_complete:
             return
@@ -310,7 +310,7 @@ class WebResearchAgentManager:
             logger.error(f"Error during shutdown: {e}", exc_info=True)
 
 
-async def main():
+async def main() -> int | None:
     """Main entry point"""
     agent_manager = WebResearchAgentManager()
 

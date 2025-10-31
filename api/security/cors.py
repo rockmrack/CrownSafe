@@ -188,7 +188,7 @@ class CORSConfig:
         return origin in allowed
 
 
-def create_cors_middleware(app: FastAPI):
+def create_cors_middleware(app: FastAPI) -> None:
     """Factory function to create CORS middleware
     Alternative to add_strict_cors for more control
     """

@@ -76,10 +76,10 @@ except Exception as exc:  # pragma: no cover
     logger.warning("Structured logging disabled; using standard logging: %s", exc)
     STRUCTURED_LOGGING_ENABLED = False
 
-    def log_performance(*args, **kwargs):
+    def log_performance(*args, **kwargs) -> None:
         return None
 
-    def log_error(*args, **kwargs):
+    def log_error(*args, **kwargs) -> None:
         return None
 
 
@@ -201,7 +201,7 @@ except ImportError:
     async def warm_cache_now(*args, **kwargs):
         return {"status": "disabled"}
 
-    async def start_background_cache_warming(*args, **kwargs):
+    async def start_background_cache_warming(*args, **kwargs) -> None:
         return None
 
     if not _in_test_env:
@@ -211,7 +211,7 @@ try:
     from core_infra.mobile_hot_path import get_mobile_stats, ultra_fast_check
 except ImportError:
 
-    async def ultra_fast_check(*args, **kwargs):
+    async def ultra_fast_check(*args, **kwargs) -> None:
         return None
 
     def get_mobile_stats(*args, **kwargs):
@@ -234,7 +234,7 @@ except ImportError as exc:
     def get_memory_stats(*args, **kwargs):
         return {"status": "disabled"}
 
-    def optimize_memory(*args, **kwargs):
+    def optimize_memory(*args, **kwargs) -> None:
         return None
 
 
@@ -511,7 +511,7 @@ _original_app = app
 class HealthCheckWrapper:
     """ASGI wrapper that short-circuits /healthz before middleware execution."""
 
-    def __init__(self, wrapped_app: FastAPI):
+    def __init__(self, wrapped_app: FastAPI) -> None:
         self.app = wrapped_app
 
     def __getattr__(self, name: str):

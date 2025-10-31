@@ -117,7 +117,7 @@ def get_cache_stats(cache: TTLCache) -> dict:
     }
 
 
-def clear_cache(cache: TTLCache):
+def clear_cache(cache: TTLCache) -> None:
     """Clear all entries from a cache.
 
     Args:
@@ -127,7 +127,7 @@ def clear_cache(cache: TTLCache):
     logger.info(f"Cache cleared ({cache.maxsize} max, {cache.ttl}s TTL)")
 
 
-def clear_all_caches():
+def clear_all_caches() -> None:
     """Clear all application caches."""
     for cache_name, cache in [
         ("recall", recall_cache),
@@ -176,7 +176,7 @@ def get_recalls_by_barcode_cached(barcode: str, db):
 
 
 @cache_safety_query
-def get_product_safety_score_cached(product_id: int, db):
+def get_product_safety_score_cached(product_id: int, db) -> None:
     """Get product safety score with caching.
 
     Example of how to cache expensive safety calculations.

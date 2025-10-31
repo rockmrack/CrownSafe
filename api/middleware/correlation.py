@@ -14,7 +14,7 @@ class CorrelationIdMiddleware(BaseHTTPMiddleware):
     """Middleware to add correlation IDs to all requests and responses
     """
 
-    def __init__(self, app: ASGIApp, api_version: str = "v1.2.0"):
+    def __init__(self, app: ASGIApp, api_version: str = "v1.2.0") -> None:
         super().__init__(app)
         self.api_version = api_version
 

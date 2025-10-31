@@ -39,7 +39,7 @@ class CircuitBreaker:
         failure_threshold: int = 5,
         recovery_timeout: int = 60,
         expected_exception: type = AzureError,
-    ):
+    ) -> None:
         """Initialize circuit breaker
 
         Args:
@@ -93,14 +93,14 @@ class CircuitBreaker:
             and (datetime.utcnow() - self.last_failure_time).seconds >= self.recovery_timeout
         )
 
-    def _on_success(self):
+    def _on_success(self) -> None:
         """Handle successful operation"""
         if self.state == CircuitState.HALF_OPEN:
             logger.info("Circuit breaker recovery successful - entering CLOSED state")
         self.failure_count = 0
         self.state = CircuitState.CLOSED
 
-    def _on_failure(self):
+    def _on_failure(self) -> None:
         """Handle failed operation"""
         self.failure_count += 1
         self.last_failure_time = datetime.utcnow()

@@ -18,7 +18,7 @@ class ConnectionPoolOptimizer:
     Implements connection pooling, batch operations, and query optimization.
     """
 
-    def __init__(self, max_workers: int = 20):
+    def __init__(self, max_workers: int = 20) -> None:
         self.max_workers = max_workers
         self.thread_pool = ThreadPoolExecutor(max_workers=max_workers)
         self.agent_instance_pool = {}
@@ -185,7 +185,7 @@ class ConnectionPoolOptimizer:
             self.logger.error(f"Parallel agent execution failed after {elapsed:.3f}s: {e}")
             return []
 
-    def cleanup_connections(self):
+    def cleanup_connections(self) -> None:
         """Clean up connection pools and agent instances
         """
         try:

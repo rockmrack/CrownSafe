@@ -96,7 +96,7 @@ class BabyShieldPlannerLogic:
     "Safety Check" workflow by loading and populating a predefined JSON template.
     """
 
-    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None) -> None:
         """Initializes the planner."""
         self.agent_id = agent_id
         self.logger = logger_instance or logging.getLogger(__name__)
@@ -105,7 +105,7 @@ class BabyShieldPlannerLogic:
             raise ImportError("Pydantic is required for the Planner Agent to operate.")
         self._load_plan_templates()
 
-    def _load_plan_templates(self):
+    def _load_plan_templates(self) -> None:
         """Loads all .json plan templates from the prompts directory."""
         template_dir = Path(__file__).parent.parent.parent.parent / "prompts" / "v1"
         self.plan_templates = {}

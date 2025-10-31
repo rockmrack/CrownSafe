@@ -14,7 +14,7 @@ class SecurityConfigValidator:
     """Validates security configuration against enterprise best practices
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.findings: list[dict[str, Any]] = []
         self.warnings: list[dict[str, Any]] = []
         self.passed_checks: list[str] = []

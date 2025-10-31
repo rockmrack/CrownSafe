@@ -46,7 +46,7 @@ class AzureBlobStorageClient:
         account_name: str | None = None,
         account_key: str | None = None,
         container_name: str | None = None,
-    ):
+    ) -> None:
         """Initialize Azure Blob Storage client
 
         Args:

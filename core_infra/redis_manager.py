@@ -138,7 +138,7 @@ async def get_redis_connection() -> redis.Redis:
         raise
 
 
-async def close_redis_pool():
+async def close_redis_pool() -> None:
     """Closes the Redis connection pool gracefully."""
     global _redis_pool, _pool_creation_time
     if _redis_pool:
@@ -167,7 +167,7 @@ async def check_redis_connection() -> bool:
 
 
 # --- Example Usage (for testing this module directly) ---
-async def _test_redis_connection():
+async def _test_redis_connection() -> None:
     try:
         logger.setLevel(logging.DEBUG)  # Set to DEBUG for detailed logs
         handler = logging.StreamHandler()

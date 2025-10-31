@@ -13,7 +13,7 @@ class SecurityHeadersMiddleware:
     """Add security headers to all responses
     """
 
-    def __init__(self, app, strict_mode: bool = True):
+    def __init__(self, app, strict_mode: bool = True) -> None:
         self.app = app
         self.strict_mode = strict_mode
 
@@ -81,7 +81,7 @@ class CORSSecurityMiddleware:
     """Secure CORS configuration
     """
 
-    def __init__(self, app, allowed_origins: list = None):
+    def __init__(self, app, allowed_origins: list = None) -> None:
         self.app = app
         self.allowed_origins = allowed_origins or ["https://app.babyshield.com"]
 
@@ -103,7 +103,7 @@ class CORSSecurityMiddleware:
         return response
 
 
-def add_security_headers(app):
+def add_security_headers(app) -> None:
     """Add all security middleware to app
     """
     import os

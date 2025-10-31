@@ -95,7 +95,7 @@ class EnhancedMemoryManager(MemoryManager):
         chroma_db_path: str = "chroma_db_data",
         collection_name: str = "cureviax_knowledge_base_v1",
         logger_instance: logging.Logger | None = None,
-    ):
+    ) -> None:
         """Initialize Enhanced Memory Manager"""
         # Initialize parent class first
         super().__init__(
@@ -132,7 +132,7 @@ class EnhancedMemoryManager(MemoryManager):
         else:
             self.logger.error("Failed to initialize EnhancedMemoryManager - base MemoryManager initialization failed")
 
-    def _init_enhanced_collections(self):
+    def _init_enhanced_collections(self) -> None:
         """Initialize additional ChromaDB collections for enhanced features"""
         try:
             # FIXED: Use self.chroma_client instead of self.client

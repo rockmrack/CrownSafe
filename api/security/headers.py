@@ -30,7 +30,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         cross_origin_embedder_policy: str = "require-corp",
         cross_origin_resource_policy: str = "cross-origin",
         content_security_policy: str | None = None,
-    ):
+    ) -> None:
         """Initialize security headers middleware
 
         Args:

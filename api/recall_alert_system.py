@@ -492,7 +492,7 @@ async def check_all_agencies_for_recalls():
 
 
 # @celery_app.task(name="send_daily_recall_digest")  # Commented out - celery not available
-def send_daily_recall_digest():
+def send_daily_recall_digest() -> None:
     """Send daily digest of recalls to users who prefer daily updates
     """
     logger.info("Sending daily recall digest...")

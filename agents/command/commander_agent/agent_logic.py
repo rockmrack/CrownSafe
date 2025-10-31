@@ -10,7 +10,7 @@ try:
 except ImportError:
 
     class BabyShieldPlannerLogic:
-        def __init__(self, *args, **kwargs):
+        def __init__(self, *args, **kwargs) -> None:
             pass
 
         def process_task(self, user_request):
@@ -37,7 +37,7 @@ try:
 except ImportError:
 
     class BabyShieldRouterLogic:
-        def __init__(self, *args, **kwargs):
+        def __init__(self, *args, **kwargs) -> None:
             pass
 
         async def execute_plan(self, plan):
@@ -58,7 +58,7 @@ class CrownSafeCommanderLogic:
         self,
         agent_id: str = "commander_001",
         logger_instance: logging.Logger | None = None,
-    ):
+    ) -> None:
         """Initializes the Commander and the orchestration agents it controls.
         """
         self.agent_id = agent_id

@@ -380,7 +380,7 @@ def extract_labels(job_id: str, image_data: bytes) -> dict[str, Any]:
 
 
 @app.task(base=CallbackTask, bind=True, name="save_extraction")
-def save_extraction(self, job_id: str, results: dict[str, Any]):
+def save_extraction(self, job_id: str, results: dict[str, Any]) -> None:
     """Save extraction results to database"""
     logger.info(f"Saving extraction for job {job_id}")
 
@@ -483,7 +483,7 @@ def check_needs_review(self, job_id: str) -> bool:
 
 
 @app.task(base=CallbackTask, bind=True, name="create_review_task")
-def create_review_task(self, job_id: str):
+def create_review_task(self, job_id: str) -> None:
     """Create HITL review task"""
     logger.info(f"Creating review task for job {job_id}")
     with get_db_session() as db:

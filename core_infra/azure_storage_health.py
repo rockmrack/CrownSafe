@@ -24,7 +24,7 @@ class AzureStorageHealthCheck:
         storage_client: AzureBlobStorageClient | None = None,
         performance_threshold_ms: float = 5000.0,
         storage_threshold_percent: float = 80.0,
-    ):
+    ) -> None:
         """Initialize health check monitor
 
         Args:
@@ -185,7 +185,7 @@ class AzureStorageMetrics:
     """Collect and track Azure Blob Storage metrics
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.upload_count = 0
         self.upload_bytes = 0
         self.download_count = 0
@@ -200,7 +200,7 @@ class AzureStorageMetrics:
 
         self.start_time = datetime.utcnow()
 
-    def record_upload(self, size_bytes: int, duration_ms: float):
+    def record_upload(self, size_bytes: int, duration_ms: float) -> None:
         """Record upload operation"""
         self.upload_count += 1
         self.upload_bytes += size_bytes
@@ -210,7 +210,7 @@ class AzureStorageMetrics:
         if len(self.upload_times_ms) > 100:
             self.upload_times_ms = self.upload_times_ms[-100:]
 
-    def record_download(self, size_bytes: int, duration_ms: float):
+    def record_download(self, size_bytes: int, duration_ms: float) -> None:
         """Record download operation"""
         self.download_count += 1
         self.download_bytes += size_bytes
@@ -219,7 +219,7 @@ class AzureStorageMetrics:
         if len(self.download_times_ms) > 100:
             self.download_times_ms = self.download_times_ms[-100:]
 
-    def record_sas_generation(self, duration_ms: float):
+    def record_sas_generation(self, duration_ms: float) -> None:
         """Record SAS URL generation"""
         self.sas_url_generation_count += 1
         self.sas_generation_times_ms.append(duration_ms)
@@ -227,7 +227,7 @@ class AzureStorageMetrics:
         if len(self.sas_generation_times_ms) > 100:
             self.sas_generation_times_ms = self.sas_generation_times_ms[-100:]
 
-    def record_error(self):
+    def record_error(self) -> None:
         """Record error"""
         self.error_count += 1
 
@@ -281,7 +281,7 @@ class AzureStorageMetrics:
             "timestamp": datetime.utcnow().isoformat(),
         }
 
-    def reset_metrics(self):
+    def reset_metrics(self) -> None:
         """Reset all metrics (for testing or periodic reset)"""
         self.__init__()
 

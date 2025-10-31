@@ -38,7 +38,7 @@ class BabyShieldRouterLogic:
     classes directly in a dependency-aware manner. Manages the workflow state in-memory.
     """
 
-    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None) -> None:
         self.agent_id = agent_id
         self.logger = logger_instance or logging.getLogger(__name__)
         self.agent_registry = {}

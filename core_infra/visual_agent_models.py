@@ -92,7 +92,7 @@ class ImageJob(Base):
     extractions = relationship("ImageExtraction", back_populates="job", cascade="all, delete-orphan")
     review = relationship("ReviewQueue", back_populates="job", uselist=False)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<ImageJob {self.id} status={self.status.value}>"
 
 
@@ -136,7 +136,7 @@ class ImageExtraction(Base):
     # Relationship
     job = relationship("ImageJob", back_populates="extractions")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<ImageExtraction job={self.job_id} product={self.product_name}>"
 
 
@@ -184,7 +184,7 @@ class ReviewQueue(Base):
     # Relationship
     job = relationship("ImageJob", back_populates="review")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<ReviewQueue id={self.id} job={self.job_id} status={self.status.value}>"
 
 
@@ -225,7 +225,7 @@ class MFVSession(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     completed_at = Column(DateTime)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<MFVSession {self.id} passed={self.verification_passed}>"
 
 
@@ -251,5 +251,5 @@ class ImageAnalysisCache(Base):
     expires_at = Column(DateTime)
     hit_count = Column(Integer, default=0)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<ImageAnalysisCache hash={self.file_hash[:8]}...>"

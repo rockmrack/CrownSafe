@@ -4,7 +4,7 @@ from .agent_logic import MetricsAgentLogic
 
 
 class MetricsAgent:
-    def __init__(self):
+    def __init__(self) -> None:
         # ... (Standard __init__) ...
         self.logic = MetricsAgentLogic(agent_id=self.agent_id)
 

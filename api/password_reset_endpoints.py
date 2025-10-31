@@ -63,7 +63,7 @@ class PasswordResetResponse(AppModel):
     expires_in_minutes: int | None = None
 
 
-async def send_reset_email(email: str, token: str, user_name: str | None = None):
+async def send_reset_email(email: str, token: str, user_name: str | None = None) -> None:
     """Send password reset email
     This is a placeholder - integrate with your email service
     """

@@ -24,7 +24,7 @@ class EncryptionManager:
     """Manages encryption/decryption of sensitive data
     """
 
-    def __init__(self, key: str = None):
+    def __init__(self, key: str = None) -> None:
         if key:
             self.key = key.encode() if isinstance(key, str) else key
         else:

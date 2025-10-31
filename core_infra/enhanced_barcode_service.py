@@ -39,7 +39,7 @@ class ExactScanResult:
 class EnhancedBarcodeService:
     """Enhanced barcode scanning service with exact validation"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
         self.validator = barcode_validator
 

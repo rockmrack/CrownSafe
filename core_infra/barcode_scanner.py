@@ -126,7 +126,7 @@ class BarcodeScanner:
     """Advanced barcode scanner with multi-format support
     Now with OpenCV fallback for 100% Windows compatibility"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the barcode scanner with fallback methods"""
         self.gs1_ai_patterns = self._init_gs1_patterns()
         self.opencv_qr_detector = None
@@ -444,7 +444,7 @@ class BarcodeScanner:
             or re.match(r"^\(?\d{2,4}\)", data)  # Common AI
         )  # AI in parentheses
 
-    def _parse_gs1_data(self, data: str, result: ScanResult):
+    def _parse_gs1_data(self, data: str, result: ScanResult) -> None:
         """Parse GS1 formatted data with Application Identifiers"""
         # Remove FNC1 characters
         data = data.replace(chr(29), "")
@@ -546,7 +546,7 @@ class BarcodeScanner:
         except (json.JSONDecodeError, TypeError, ValueError):
             return False
 
-    def _parse_json_qr(self, data: str, result: ScanResult):
+    def _parse_json_qr(self, data: str, result: ScanResult) -> None:
         """Parse JSON formatted QR code"""
         try:
             json_data = json.loads(data)
@@ -566,7 +566,7 @@ class BarcodeScanner:
         except Exception as e:
             logger.warning(f"Error parsing JSON QR: {e}")
 
-    def _parse_url_qr(self, data: str, result: ScanResult):
+    def _parse_url_qr(self, data: str, result: ScanResult) -> None:
         """Parse URL formatted QR code"""
         result.parsed_data = {"url": data}
 
@@ -608,7 +608,7 @@ class BarcodeScanner:
 
         return gtin
 
-    def _extract_patterns(self, data: str, result: ScanResult):
+    def _extract_patterns(self, data: str, result: ScanResult) -> None:
         """Extract common patterns from unstructured data"""
         # Look for lot numbers
         lot_patterns = [

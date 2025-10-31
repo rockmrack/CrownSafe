@@ -126,7 +126,7 @@ class Subscription(Base):
             "is_active": self.is_active(),
         }
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"<Subscription(id={self.id}, user_id={self.user_id}, "
             f"plan={self.plan.value}, status={self.status.value}, "
@@ -171,7 +171,7 @@ class ReceiptValidation(Base):
         Index("idx_user_validations", "user_id", "validated_at"),
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"<ReceiptValidation(id={self.id}, user_id={self.user_id}, "
             f"provider={self.provider.value}, is_valid={self.is_valid})>"

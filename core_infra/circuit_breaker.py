@@ -70,12 +70,12 @@ for service, config in BREAKER_CONFIGS.items():
 
 
 # Listener functions for circuit breaker events
-def breaker_opened(breaker):
+def breaker_opened(breaker) -> None:
     """Called when circuit breaker opens"""
     logger.error(f"Circuit breaker {breaker.name} opened! Service is failing.")
 
 
-def breaker_closed(breaker):
+def breaker_closed(breaker) -> None:
     """Called when circuit breaker closes"""
     logger.info(f"Circuit breaker {breaker.name} closed. Service recovered.")
 
@@ -243,7 +243,7 @@ async def database_fallback(*args, **kwargs):
     }
 
 
-async def redis_fallback(*args, **kwargs):
+async def redis_fallback(*args, **kwargs) -> None:
     """Fallback when Redis is unavailable"""
     logger.warning("Redis circuit open, using fallback")
     # Could return cached data or proceed without cache
@@ -262,14 +262,14 @@ async def external_api_fallback(*args, **kwargs):
 
 # Example usage functions
 @resilient_operation("database", max_attempts=3, fallback=database_fallback)
-async def safe_database_query(query: str):
+async def safe_database_query(query: str) -> None:
     """Example of a protected database query"""
     # Your database query logic here
     pass
 
 
 @resilient_operation("external_api", max_attempts=2, fallback=external_api_fallback)
-async def safe_api_call(url: str):
+async def safe_api_call(url: str) -> None:
     """Example of a protected API call"""
     # Your API call logic here
     pass

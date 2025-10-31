@@ -105,13 +105,13 @@ router_logic_instance: RouterLogic | None = None
 class RouterAgentManager:
     """Main agent manager for RouterAgent"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.mcp_client: MCPClient | None = None
         self.router_logic: RouterLogic | None = None
         self.stop_event = asyncio.Event()
         self.shutdown_complete = False  # Flag to prevent multiple shutdown calls
 
-    async def handle_incoming_message(self, message: MCPMessage):
+    async def handle_incoming_message(self, message: MCPMessage) -> None:
         """Handle incoming messages with proper response processing"""
         if not self.router_logic or not self.mcp_client:
             logger.error("Logic/MCPClient instance missing in RouterAgent handler during message processing.")
@@ -152,7 +152,7 @@ class RouterAgentManager:
     # if RouterLogic handles all its own outgoing messages and error reporting.
     # Kept for structural similarity if needed in future.
 
-    async def initialize_components(self):
+    async def initialize_components(self) -> bool | None:
         """Initialize RouterLogic and MCPClient"""
         try:
             base_mcp_url = MCP_SERVER_URL
@@ -182,12 +182,12 @@ class RouterAgentManager:
             logger.critical(f"Failed to initialize RouterAgent components: {e}", exc_info=True)
             return False
 
-    def setup_signal_handlers(self):
+    def setup_signal_handlers(self) -> None:
         """Setup signal handlers for graceful shutdown"""
         try:
             loop = asyncio.get_running_loop()
 
-            def signal_handler_callback(signum):  # Renamed to avoid conflict
+            def signal_handler_callback(signum) -> None:  # Renamed to avoid conflict
                 signal_name = signal.Signals(signum).name
                 logger.info(f"Received shutdown signal: {signal_name}. Setting stop event.")
                 self.stop_event.set()
@@ -212,7 +212,7 @@ class RouterAgentManager:
         except RuntimeError as e:  # e.g. "Cannot add signal handler" if not in main thread
             logger.warning(f"Could not setup signal handlers: {e}. This might be normal if not running in main thread.")
 
-    async def connect_and_register(self):
+    async def connect_and_register(self) -> bool | None:
         """Connect to MCP server and register agent"""
         if not self.mcp_client:
             logger.critical("MCPClient not initialized. Cannot connect.")
@@ -232,7 +232,7 @@ class RouterAgentManager:
             logger.critical(f"Unexpected error during connection/registration: {e}", exc_info=True)
             return False
 
-    async def run_main_loop(self):
+    async def run_main_loop(self) -> None:
         """Main agent event loop"""
         if not self.mcp_client or not self.router_logic:
             logger.critical("Agent not initialized properly. Cannot run main loop.")
@@ -247,7 +247,7 @@ class RouterAgentManager:
         except Exception as e:
             logger.error(f"Error in main event loop for {AGENT_ID}: {e}", exc_info=True)
 
-    async def shutdown(self):
+    async def shutdown(self) -> None:
         """Graceful shutdown of all components"""
         if self.shutdown_complete:
             logger.debug(f"{AGENT_ID} shutdown already in progress or completed.")
@@ -273,7 +273,7 @@ class RouterAgentManager:
             logger.error(f"Error during {AGENT_ID} shutdown: {e}", exc_info=True)
 
 
-async def main_async_runner():  # Renamed to avoid conflict with module-level main
+async def main_async_runner() -> int | None:  # Renamed to avoid conflict with module-level main
     """Main entry point for the agent"""
     agent_manager = RouterAgentManager()
 

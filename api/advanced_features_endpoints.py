@@ -6,7 +6,7 @@ import hashlib
 import logging
 import os
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, Never
 
 from fastapi import (
     APIRouter,
@@ -335,7 +335,7 @@ async def research_product_safety(
 
 
 @router.post("/guidelines", response_model=GuidelinesResponse)
-async def get_product_guidelines(request: GuidelinesRequest, db: Session = Depends(get_db)):
+async def get_product_guidelines(request: GuidelinesRequest, db: Session = Depends(get_db)) -> Never:
     """Return HTTP 501 because the guideline feature is retired."""
     del request  # Guidelines feature retired; request data unused.
     del db

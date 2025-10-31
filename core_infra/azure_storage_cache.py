@@ -29,7 +29,7 @@ class AzureStorageCacheManager:
         redis_url: str | None = None,
         default_ttl_hours: int = 23,
         key_prefix: str = "azure_sas:",
-    ):
+    ) -> None:
         """Initialize cache manager
 
         Args:
@@ -262,7 +262,7 @@ class AzureStorageCacheManager:
             "redis_connected": self.redis_client is not None and self.cache_enabled,
         }
 
-    def reset_stats(self):
+    def reset_stats(self) -> None:
         """Reset performance statistics"""
         self.cache_hits = 0
         self.cache_misses = 0

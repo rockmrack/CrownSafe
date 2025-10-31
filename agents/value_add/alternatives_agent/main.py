@@ -4,7 +4,7 @@ from .agent_logic import AlternativesAgentLogic
 
 
 class AlternativesAgent:
-    def __init__(self):
+    def __init__(self) -> None:
         # ... (Standard __init__) ...
         self.logic = AlternativesAgentLogic(agent_id=self.agent_id)
 

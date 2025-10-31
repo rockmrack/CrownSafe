@@ -84,7 +84,7 @@ async def run_manual_ingestion():
     return result
 
 
-async def test_query_mode():
+async def test_query_mode() -> None:
     """Test mode: Query for a specific product.
     Usage: python agents/recall_data_agent/main.py --test
     """
@@ -121,7 +121,7 @@ async def test_query_mode():
     logger.info("=" * 80)
 
 
-def main():
+def main() -> None:
     """Main entry point"""
     import argparse
 

@@ -179,7 +179,7 @@ def upsert_profile(db: Session, user_id: UUID, profile_data: dict[str, Any]):
     return profile
 
 
-def mark_erase_requested(db: Session, user_id: Union[UUID, str]):
+def mark_erase_requested(db: Session, user_id: Union[UUID, str]) -> None:
     """Mark user data for erasure
 
     Creates profile if it doesn't exist.

@@ -53,7 +53,7 @@ class BarcodeValidationResult:
 class BarcodeValidator:
     """Comprehensive barcode validation service"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
 
         # Barcode type patterns

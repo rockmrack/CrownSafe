@@ -172,7 +172,7 @@ class ProductMonitoringScheduler:
             return {"product_id": product.id, "error": str(e), "recalls_found": 0}
 
     @classmethod
-    async def send_recall_notification(cls, user_id: int, product: MonitoredProduct, recalls: list[dict], db: Session):
+    async def send_recall_notification(cls, user_id: int, product: MonitoredProduct, recalls: list[dict], db: Session) -> None:
         """Send notification about new recalls"""
         try:
             # Get user's devices
@@ -368,7 +368,7 @@ class ProductMonitoringScheduler:
             raise
 
     @classmethod
-    async def auto_add_from_scans(cls):
+    async def auto_add_from_scans(cls) -> None:
         """Automatically add products from recent scans to monitoring"""
         try:
             with get_db_session() as db:

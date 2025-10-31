@@ -15,14 +15,14 @@ SCRAPE_INTERVAL_HOURS = 6  # Run every 6 hours
 
 
 class CommunityAlertAgent:
-    def __init__(self):
+    def __init__(self) -> None:
         self.agent_id = AGENT_ID
         self.logic = CommunityAlertAgentLogic(agent_id=self.agent_id)
         self.scheduler_thread = None
         self.is_running = False
         logger.info(f"CommunityAlertAgent initialized: {self.agent_id}")
 
-    async def _run_scrape_job(self):
+    async def _run_scrape_job(self) -> None:
         """The async job that the scheduler will run."""
         logger.info("Scheduler triggered: Running community scrape cycle.")
         try:
@@ -30,7 +30,7 @@ class CommunityAlertAgent:
         except Exception as e:
             logger.error(f"An error occurred in the scheduled scrape job: {e}", exc_info=True)
 
-    def start(self):
+    def start(self) -> None:
         """Starts the agent's scheduled data scraping."""
         logger.info(f"Starting {self.agent_id}...")
 
@@ -38,7 +38,7 @@ class CommunityAlertAgent:
 
         self.is_running = True
 
-        def run_scheduler():
+        def run_scheduler() -> None:
             logger.info("Scheduler thread started.")
             while self.is_running:
                 schedule.run_pending()
@@ -53,12 +53,12 @@ class CommunityAlertAgent:
         logger.info("Performing initial scrape on startup...")
         asyncio.run(self._run_scrape_job())
 
-    def stop(self):
+    def stop(self) -> None:
         # ... (Standard stop method) ...
         pass
 
 
-def main():
+def main() -> None:
     agent = CommunityAlertAgent()
     # ... (Standard main execution block) ...
     agent.start()

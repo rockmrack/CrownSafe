@@ -26,7 +26,7 @@ from api.routes import system
 logger = logging.getLogger("app")
 
 
-def setup_observability(app: FastAPI):
+def setup_observability(app: FastAPI) -> None:
     """Configure all observability features for the FastAPI app
 
     This should be called BEFORE adding routes to ensure proper middleware order
@@ -83,7 +83,7 @@ def setup_observability(app: FastAPI):
     logger.info("Observability setup completed")
 
 
-async def on_startup(app: FastAPI):
+async def on_startup(app: FastAPI) -> None:
     """Startup event handler for async initialization
     """
     # Initialize rate limiter
@@ -94,7 +94,7 @@ async def on_startup(app: FastAPI):
         logger.warning("Rate limiting disabled - Redis not available")
 
 
-async def on_shutdown(app: FastAPI):
+async def on_shutdown(app: FastAPI) -> None:
     """Shutdown event handler for cleanup
     """
     # Close rate limiter
@@ -102,7 +102,7 @@ async def on_shutdown(app: FastAPI):
     logger.info("Cleanup completed")
 
 
-def add_rate_limited_routes(app: FastAPI):
+def add_rate_limited_routes(app: FastAPI) -> None:
     """Example of adding rate limits to specific routes
     This should be called AFTER routes are defined
     """
@@ -114,7 +114,7 @@ def add_rate_limited_routes(app: FastAPI):
         dependencies=[Depends(RateLimiters.search)],
         tags=["search"],
     )
-    async def search_advanced_rate_limited():
+    async def search_advanced_rate_limited() -> None:
         # This is a wrapper - actual implementation should be in the route
         pass
 
@@ -124,7 +124,7 @@ def add_rate_limited_routes(app: FastAPI):
         dependencies=[Depends(RateLimiters.detail)],
         tags=["recalls"],
     )
-    async def get_recall_rate_limited(recall_id: str):
+    async def get_recall_rate_limited(recall_id: str) -> None:
         # This is a wrapper - actual implementation should be in the route
         pass
 

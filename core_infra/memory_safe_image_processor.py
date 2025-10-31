@@ -51,15 +51,15 @@ class MemorySafeImageProcessor:
     MAX_HEIGHT = 4096
     MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._temp_files = weakref.WeakSet()
         self._open_resources = []
 
-    def __del__(self):
+    def __del__(self) -> None:
         """Cleanup on deletion"""
         self.cleanup()
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         """Clean up all resources"""
         # Clean temp files
         for temp_file in list(self._temp_files):
@@ -256,7 +256,7 @@ class ImageMemoryManager:
     """Manage memory for batch image processing
     """
 
-    def __init__(self, max_memory_mb: int = 500):
+    def __init__(self, max_memory_mb: int = 500) -> None:
         self.max_memory_mb = max_memory_mb
         self.processors = []
 
@@ -333,7 +333,7 @@ def make_memory_safe(func):
 
 
 # Update existing image processor to use memory-safe version
-def patch_image_processor():
+def patch_image_processor() -> None:
     """Patch existing image processor with memory-safe version
     """
     try:
@@ -359,7 +359,7 @@ class ResourceMonitor:
     """Monitor resource usage and alert on issues
     """
 
-    def __init__(self, alert_memory_mb: int = 1000, alert_cpu_percent: int = 80):
+    def __init__(self, alert_memory_mb: int = 1000, alert_cpu_percent: int = 80) -> None:
         self.alert_memory_mb = alert_memory_mb
         self.alert_cpu_percent = alert_cpu_percent
 

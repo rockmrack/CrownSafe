@@ -53,7 +53,7 @@ class EnhancedCORSMiddleware(BaseHTTPMiddleware):
     """Enhanced CORS middleware for mobile app support
     """
 
-    def __init__(self, app, allowed_origins=None, allow_credentials=True):
+    def __init__(self, app, allowed_origins=None, allow_credentials=True) -> None:
         super().__init__(app)
         self.allowed_origins = allowed_origins or ["*"]
         self.allow_credentials = allow_credentials

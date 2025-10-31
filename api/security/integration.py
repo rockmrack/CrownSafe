@@ -17,7 +17,7 @@ from api.security.headers import SecurityHeadersMiddleware
 logger = logging.getLogger(__name__)
 
 
-def setup_security(app: FastAPI):
+def setup_security(app: FastAPI) -> None:
     """Configure all security features for the FastAPI app
 
     This function adds all security middleware in the correct order.
@@ -81,7 +81,7 @@ def get_security_config() -> dict:
     }
 
 
-def validate_security_config():
+def validate_security_config() -> None:
     """Validate security configuration and warn about issues
     """
     config = get_security_config()
@@ -170,7 +170,7 @@ class SecurityDefaults:
     DETAIL_RATE_LIMIT = 120  # per minute
 
     @classmethod
-    def apply_to_env(cls):
+    def apply_to_env(cls) -> None:
         """Apply defaults to environment if not set
         """
         defaults = {

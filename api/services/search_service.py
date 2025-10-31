@@ -15,7 +15,7 @@ class SearchService:
     """Advanced search service using PostgreSQL pg_trgm for fuzzy matching
     """
 
-    def __init__(self, db_session: Session):
+    def __init__(self, db_session: Session) -> None:
         self.db = db_session
 
     def _normalize_text(self, s: str) -> str:

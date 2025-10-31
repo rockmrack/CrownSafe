@@ -104,7 +104,7 @@ AGE_TERMS = {
 class SuperSmartLLMClient:
     """Advanced local LLM client with comprehensive baby safety intelligence"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.conversation_memory = {}
         self.user_profiles = {}
         self.emergency_count = 0
@@ -619,7 +619,7 @@ class SuperSmartLLMClient:
         query: str,
         response: dict[str, Any],
         context: dict[str, Any],
-    ):
+    ) -> None:
         """Update conversation memory for better context"""
         if conversation_id not in self.conversation_memory:
             self.conversation_memory[conversation_id] = {

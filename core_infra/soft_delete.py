@@ -37,7 +37,7 @@ class SoftDeleteMixin:
         """User ID who deleted the record"""
         return Column(Integer, nullable=True)
 
-    def soft_delete(self, deleted_by_id: int | None = None):
+    def soft_delete(self, deleted_by_id: int | None = None) -> None:
         """Soft delete this record
         """
         self.is_deleted = True
@@ -46,7 +46,7 @@ class SoftDeleteMixin:
 
         logger.info(f"Soft deleted {self.__class__.__name__} id={getattr(self, 'id', 'unknown')}")
 
-    def restore(self):
+    def restore(self) -> None:
         """Restore a soft-deleted record
         """
         self.is_deleted = False
@@ -55,7 +55,7 @@ class SoftDeleteMixin:
 
         logger.info(f"Restored {self.__class__.__name__} id={getattr(self, 'id', 'unknown')}")
 
-    def hard_delete(self, session: Session):
+    def hard_delete(self, session: Session) -> None:
         """Permanently delete this record (use with caution!)
         """
         logger.warning(f"Hard deleting {self.__class__.__name__} id={getattr(self, 'id', 'unknown')}")
@@ -84,7 +84,7 @@ class SoftDeleteQuery(Query):
     """Custom query class that automatically filters out soft-deleted records
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._include_deleted = False
 
@@ -151,13 +151,13 @@ class SoftDeleteQuery(Query):
         return super().count()
 
 
-def soft_delete_filter(mapper, class_):
+def soft_delete_filter(mapper, class_) -> None:
     """Automatically filter out soft-deleted records
     Add this as an event listener to your models
     """
 
     @event.listens_for(class_, "load", propagate=True)
-    def receive_load(target, context):
+    def receive_load(target, context) -> None:
         """Check if loaded instance is soft-deleted"""
         if hasattr(target, "is_deleted") and target.is_deleted:
             # Log access to deleted record
@@ -168,7 +168,7 @@ class RecycleBin:
     """Manage soft-deleted records (like a recycle bin)
     """
 
-    def __init__(self, session: Session):
+    def __init__(self, session: Session) -> None:
         self.session = session
 
     def get_deleted_items(self, model: type, limit: int = 100, offset: int = 0) -> list[Any]:
@@ -263,7 +263,7 @@ class RecycleBin:
 
 
 # Cascade soft delete for relationships
-def cascade_soft_delete(parent: Any, related_attr: str):
+def cascade_soft_delete(parent: Any, related_attr: str) -> None:
     """Soft delete related records when parent is soft deleted
 
     Usage:
@@ -291,12 +291,12 @@ class DeletionTracker:
     """
 
     @staticmethod
-    def track_deletion(session: Session, user_id: int):
+    def track_deletion(session: Session, user_id: int) -> None:
         """Set up tracking for this session
         """
 
         @event.listens_for(session, "before_flush")
-        def receive_before_flush(session, flush_context, instances):
+        def receive_before_flush(session, flush_context, instances) -> None:
             """Track deletions before flush"""
             for instance in session.deleted:
                 if hasattr(instance, "soft_delete"):

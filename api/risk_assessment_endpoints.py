@@ -692,7 +692,7 @@ async def _find_or_create_product(request: RiskAssessmentRequest, db: Session) -
     return None
 
 
-async def enrich_product_data(product: ProductGoldenRecord, db: Session):
+async def enrich_product_data(product: ProductGoldenRecord, db: Session) -> None:
     """Enrich product data from commercial sources
     """
     try:
@@ -730,7 +730,7 @@ async def enrich_product_data(product: ProductGoldenRecord, db: Session):
         logger.error(f"Failed to enrich product data: {e}")
 
 
-async def refresh_product_data(product_id: str, barcode: str | None = None):
+async def refresh_product_data(product_id: str, barcode: str | None = None) -> None:
     """Background task to refresh product data from all sources
     """
     logger.info(f"Refreshing data for product {product_id}")
@@ -750,7 +750,7 @@ async def ingest_from_source(
     job_id: str,
     start_date: datetime | None,
     end_date: datetime | None,
-):
+) -> None:
     """Background task to ingest data from a specific source
     """
     logger.info(f"Starting ingestion from {source} for job {job_id}")

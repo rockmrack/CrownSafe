@@ -61,7 +61,7 @@ class TransactionManager:
     """Advanced transaction management with retry logic
     """
 
-    def __init__(self, db: Session, max_retries: int = 3):
+    def __init__(self, db: Session, max_retries: int = 3) -> None:
         self.db = db
         self.max_retries = max_retries
 
@@ -138,7 +138,7 @@ class OptimisticLock:
     """
 
     @staticmethod
-    def check_version(entity, expected_version: int):
+    def check_version(entity, expected_version: int) -> None:
         """Check if entity version matches expected
         """
         if hasattr(entity, "version"):
@@ -148,7 +148,7 @@ class OptimisticLock:
                 )
 
     @staticmethod
-    def increment_version(entity):
+    def increment_version(entity) -> None:
         """Increment entity version
         """
         if hasattr(entity, "version"):
@@ -161,7 +161,7 @@ class DistributedLock:
     """Distributed locking using Redis for preventing race conditions
     """
 
-    def __init__(self, redis_client, lock_name: str, timeout: int = 10):
+    def __init__(self, redis_client, lock_name: str, timeout: int = 10) -> None:
         self.redis = redis_client
         self.lock_name = f"lock:{lock_name}"
         self.timeout = timeout
@@ -242,18 +242,18 @@ class Saga:
     """Saga pattern for distributed transactions
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.steps = []
         self.compensations = []
         self.completed_steps = []
 
-    def add_step(self, step_func: Callable, compensation_func: Callable):
+    def add_step(self, step_func: Callable, compensation_func: Callable) -> None:
         """Add a step with its compensation
         """
         self.steps.append(step_func)
         self.compensations.append(compensation_func)
 
-    async def execute(self):
+    async def execute(self) -> bool | None:
         """Execute all steps, compensate on failure
         """
         try:
@@ -268,7 +268,7 @@ class Saga:
             await self._compensate()
             raise
 
-    async def _compensate(self):
+    async def _compensate(self) -> None:
         """Run compensations in reverse order
         """
         for step_index, result in reversed(self.completed_steps):
@@ -305,7 +305,7 @@ def safe_bulk_insert(db: Session, records: list):
     """Example: Bulk insert with transaction management
     """
 
-    def insert_record(session, record):
+    def insert_record(session, record) -> None:
         # Your insert logic here
         session.add(record)
 

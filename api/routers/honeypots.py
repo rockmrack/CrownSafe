@@ -16,7 +16,7 @@ honeypot_hits: dict[str, int] = {}
 attack_intelligence: dict[str, list] = {"ips": [], "patterns": [], "user_agents": []}
 
 
-def record_honeypot_hit(request: Request, honeypot_type: str):
+def record_honeypot_hit(request: Request, honeypot_type: str) -> None:
     """Record honeypot access for security intelligence"""
     client_ip = request.headers.get("X-Forwarded-For", request.client.host).split(",")[0].strip()
     user_agent = request.headers.get("User-Agent", "Unknown")

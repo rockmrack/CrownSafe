@@ -719,7 +719,7 @@ def _create_incident_from_record(record: SafetyDataRecord, product_id: str, db: 
     return incident
 
 
-def _update_product_data_source(product_id: str, record: SafetyDataRecord, db: Session):
+def _update_product_data_source(product_id: str, record: SafetyDataRecord, db: Session) -> None:
     """Update product data source record
     """
     # Check if source exists

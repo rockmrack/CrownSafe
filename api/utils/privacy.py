@@ -421,7 +421,7 @@ class PIIMasker:
     """Advanced PII masking for logs and responses
     """
 
-    def __init__(self, custom_patterns: dict[str, re.Pattern] | None = None):
+    def __init__(self, custom_patterns: dict[str, re.Pattern] | None = None) -> None:
         """Initialize PII masker
 
         Args:

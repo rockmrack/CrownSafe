@@ -24,7 +24,7 @@ except ImportError:
     # Fallback for testing without full infrastructure
     from typing import Any
 
-    def get_db_session():
+    def get_db_session() -> None:
         return None
 
 
@@ -120,7 +120,7 @@ class BarcodeScanResponse(BaseModel):
 class BarcodeCache:
     """Simple in-memory LRU cache for last 50 barcode scans"""
 
-    def __init__(self, max_size: int = 50):
+    def __init__(self, max_size: int = 50) -> None:
         self.cache: OrderedDict[str, dict[str, Any]] = OrderedDict()
         self.max_size = max_size
 
@@ -149,7 +149,7 @@ class BarcodeCache:
 
         return None
 
-    def set(self, barcode: str, data: dict[str, Any], user_id: str | None = None):
+    def set(self, barcode: str, data: dict[str, Any], user_id: str | None = None) -> None:
         """Cache scan result"""
         key = self.get_key(barcode, user_id)
 
@@ -166,7 +166,7 @@ class BarcodeCache:
 
         logger.info(f"Cached scan result for barcode: {barcode[:4]}**** (cache size: {len(self.cache)})")
 
-    def clear_user_cache(self, user_id: str):
+    def clear_user_cache(self, user_id: str) -> None:
         """Clear all cache entries for a specific user"""
         keys_to_remove = [k for k in self.cache.keys() if k.startswith(f"{user_id}:")]
         for key in keys_to_remove:
@@ -179,7 +179,7 @@ class BarcodeCache:
             del self.cache[key]
         return len(keys_to_remove) > 0
 
-    def clear_all_cache(self):
+    def clear_all_cache(self) -> None:
         """Clear all cache entries"""
         self.cache.clear()
 

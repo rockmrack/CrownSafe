@@ -81,7 +81,7 @@ LOG_LEVEL = os.getenv("PYTHON_LOGLEVEL", "INFO").upper()
 
 
 # Logging setup - avoid duplicate handlers
-def setup_logging():
+def setup_logging() -> None:
     """Setup logging configuration to avoid duplication"""
     # Configure root logger
     logging.basicConfig(
@@ -112,13 +112,13 @@ shutdown_in_progress = False
 class CommanderAgentManager:
     """Main agent manager for CommanderAgent"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.mcp_client: MCPClient | None = None
         self.commander_logic: CommanderLogic | None = None
         self.stop_event = asyncio.Event()
         self.shutdown_complete = False
 
-    async def handle_incoming_message(self, message: MCPMessage):
+    async def handle_incoming_message(self, message: MCPMessage) -> None:
         """Handle incoming messages with proper error handling and response processing"""
         if not self.commander_logic:
             logger.error("CommanderLogic instance not initialized. Cannot process message.")
@@ -138,7 +138,7 @@ class CommanderAgentManager:
             logger.error(f"Error processing message: {e}", exc_info=True)
             # Continue processing other messages rather than crashing
 
-    async def initialize_components(self):
+    async def initialize_components(self) -> bool | None:
         """Initialize MCP client and CommanderLogic"""
         try:
             # Initialize MCPClient
@@ -165,12 +165,12 @@ class CommanderAgentManager:
             logger.critical(f"Failed to initialize CommanderAgent components: {e}", exc_info=True)
             return False
 
-    def setup_signal_handlers(self):
+    def setup_signal_handlers(self) -> None:
         """Setup signal handlers for graceful shutdown"""
         try:
             loop = asyncio.get_running_loop()
 
-            def signal_handler(signum):
+            def signal_handler(signum) -> None:
                 signal_name = signal.Signals(signum).name
                 logger.info(f"Received shutdown signal: {signal_name}")
                 self.stop_event.set()
@@ -186,7 +186,7 @@ class CommanderAgentManager:
         except RuntimeError as e:
             logger.warning(f"Could not setup signal handlers: {e}")
 
-    async def connect_and_register(self):
+    async def connect_and_register(self) -> bool | None:
         """Connect to MCP server and register agent"""
         try:
             await self.mcp_client.connect()
@@ -206,7 +206,7 @@ class CommanderAgentManager:
             logger.critical(f"Unexpected error during connection: {e}", exc_info=True)
             return False
 
-    async def run_main_loop(self):
+    async def run_main_loop(self) -> None:
         """Main agent event loop"""
         logger.info(f"{AGENT_ID} entering main event loop...")
 
@@ -230,7 +230,7 @@ class CommanderAgentManager:
         except Exception as e:
             logger.error(f"Error in main event loop: {e}", exc_info=True)
 
-    async def _run_timeout_checker(self):
+    async def _run_timeout_checker(self) -> None:
         """Background task to check for workflow timeouts"""
         try:
             while not self.stop_event.is_set():
@@ -242,7 +242,7 @@ class CommanderAgentManager:
         except Exception as e:
             logger.error(f"Error in timeout checker: {e}", exc_info=True)
 
-    async def shutdown(self):
+    async def shutdown(self) -> None:
         """Graceful shutdown of all components"""
         if self.shutdown_complete:
             return
@@ -267,7 +267,7 @@ class CommanderAgentManager:
             logger.error(f"Error during shutdown: {e}", exc_info=True)
 
 
-async def main():
+async def main() -> int | None:
     """Main entry point"""
     agent_manager = CommanderAgentManager()
 

@@ -159,7 +159,7 @@ def escape_html(text):
     return html.escape(str(text)) if text else ""
 
 
-def html_img_tag(path, width=180, style="margin-bottom:18px;"):
+def html_img_tag(path, width=180, style="margin-bottom:18px;") -> str:
     local_url = "file:///" + path.replace("\\", "/")
     return f'<img src="{local_url}" width="{width}" style="{style}" alt="CureViaX Logo">'
 
@@ -225,7 +225,7 @@ def generate_qr_code(data: str, output_dir: str, basename: str) -> str | None:
 # --- Section Formatters for Research Reports ---
 
 
-def format_highlights(pubmed_articles, trials, adverse_events):
+def format_highlights(pubmed_articles, trials, adverse_events) -> str:
     n = len(pubmed_articles.get("articles", [])) if pubmed_articles else 0
     t = len(trials.get("trials_data", [])) if trials else 0
     aecount = len(adverse_events.get("top_adverse_reactions", [])) if adverse_events else 0
@@ -240,7 +240,7 @@ def format_highlights(pubmed_articles, trials, adverse_events):
     """
 
 
-def format_executive_summary(pubmed_articles, trials, adverse_events):
+def format_executive_summary(pubmed_articles, trials, adverse_events) -> str:
     n = len(pubmed_articles.get("articles", [])) if pubmed_articles else 0
     t = len(trials.get("trials_data", [])) if trials else 0
     aecount = len(adverse_events.get("top_adverse_reactions", [])) if adverse_events else 0
@@ -256,7 +256,7 @@ def format_executive_summary(pubmed_articles, trials, adverse_events):
     """
 
 
-def format_background(goal, drug, disease):
+def format_background(goal, drug, disease) -> str:
     disease_line = f"<b>Disease Context:</b> {escape_html(disease)}." if disease else ""
     drug_line = f"<b>Drug:</b> {escape_html(drug)}." if drug else ""
     if not disease_line and not drug_line:
@@ -272,7 +272,7 @@ def format_background(goal, drug, disease):
     """
 
 
-def format_methods():
+def format_methods() -> str:
     return f"""
     <a name="methods"></a>
     <h1>Methods</h1>
@@ -393,7 +393,7 @@ def format_references(pubmed_data, trials_data):
     return "\n".join(refs)
 
 
-def format_disclaimer():
+def format_disclaimer() -> str:
     return """
     <a name="disclaimer"></a>
     <h1>Disclaimer & Contact</h1>
@@ -426,7 +426,7 @@ class ReportBuilderAgentLogic:
         agent_id: str,
         version: str | None = None,
         logger_instance: logging.Logger | None = None,
-    ):
+    ) -> None:
         self.agent_id = agent_id
         self.version = version or DEFAULT_REPORT_BUILDER_VERSION
         self.logger = logger_instance if logger_instance else logger_rb_logic_default
@@ -1438,7 +1438,7 @@ a {{ color: #2561b1; text-decoration: none; }}
             self.logger.warning(f"ReportBuilderLogic received unhandled message type: {message_type.value}")
             return None
 
-    async def shutdown(self):
+    async def shutdown(self) -> None:
         self.logger.info(f"ReportBuilderAgentLogic shutting down for agent {self.agent_id}.")
         self.logger.info(f"ReportBuilderAgentLogic shutdown complete for agent {self.agent_id}")
 

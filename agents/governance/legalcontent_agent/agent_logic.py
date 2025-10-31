@@ -17,7 +17,7 @@ LEGAL_DOCS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", 
 
 
 class LegalContentAgentLogic:
-    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None) -> None:
         self.agent_id = agent_id
         self.logger = logger_instance or logger
         self.logger.info(f"LegalContentAgentLogic initialized. Document path: {LEGAL_DOCS_PATH}")

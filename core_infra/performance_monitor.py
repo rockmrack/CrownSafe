@@ -43,7 +43,7 @@ class PerformanceMonitor:
     """Central performance monitoring system
     """
 
-    def __init__(self, enable_memory_profiling: bool = False):
+    def __init__(self, enable_memory_profiling: bool = False) -> None:
         self.metrics: dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
         self.timers: dict[str, float] = {}
         self.counters: dict[str, int] = defaultdict(int)
@@ -53,12 +53,12 @@ class PerformanceMonitor:
         if enable_memory_profiling:
             tracemalloc.start()
 
-    def record_metric(self, metric: PerformanceMetric):
+    def record_metric(self, metric: PerformanceMetric) -> None:
         """Record a performance metric"""
         with self._lock:
             self.metrics[metric.name].append(metric)
 
-    def start_timer(self, name: str):
+    def start_timer(self, name: str) -> None:
         """Start a timer"""
         self.timers[name] = time.perf_counter()
 
@@ -81,7 +81,7 @@ class PerformanceMonitor:
 
         return elapsed
 
-    def increment_counter(self, name: str, value: int = 1):
+    def increment_counter(self, name: str, value: int = 1) -> None:
         """Increment a counter"""
         with self._lock:
             self.counters[name] += value
@@ -171,7 +171,7 @@ class PerformanceMonitor:
 
         return summary
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset all metrics"""
         with self._lock:
             self.metrics.clear()
@@ -432,7 +432,7 @@ class APIEndpointMonitor:
 class BottleneckDetector:
     """Detect performance bottlenecks"""
 
-    def __init__(self, threshold_ms: float = 1000):
+    def __init__(self, threshold_ms: float = 1000) -> None:
         self.threshold_ms = threshold_ms
         self.bottlenecks = []
 
@@ -512,25 +512,25 @@ class PerformanceReporter:
 class MetricsGarbageCollector:
     """Automatically clean old metrics"""
 
-    def __init__(self, monitor: PerformanceMonitor, max_age_minutes: int = 60):
+    def __init__(self, monitor: PerformanceMonitor, max_age_minutes: int = 60) -> None:
         self.monitor = monitor
         self.max_age = timedelta(minutes=max_age_minutes)
         self.running = False
         self._thread = None
 
-    def start(self):
+    def start(self) -> None:
         """Start garbage collection thread"""
         self.running = True
         self._thread = threading.Thread(target=self._collect, daemon=True)
         self._thread.start()
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop garbage collection"""
         self.running = False
         if self._thread:
             self._thread.join(timeout=1)
 
-    def _collect(self):
+    def _collect(self) -> None:
         """Garbage collection loop"""
         while self.running:
             try:

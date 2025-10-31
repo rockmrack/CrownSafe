@@ -23,7 +23,7 @@ class SystemHealthDashboard:
     Aggregates metrics from all monitoring subsystems
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize health dashboard"""
         self.startup_time = datetime.utcnow()
 

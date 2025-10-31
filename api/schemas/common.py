@@ -1,4 +1,4 @@
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Never, TypeVar
 
 from fastapi import HTTPException
 from pydantic import BaseModel
@@ -21,7 +21,7 @@ def fail(
     code: str = "BAD_REQUEST",
     status: int = 400,
     extra: dict[str, Any] | None = None,
-):
+) -> Never:
     payload: dict[str, Any] = {
         "success": False,
         "error": {"code": code, "message": message},

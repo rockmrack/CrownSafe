@@ -19,7 +19,7 @@ class MonetizationAgentLogic:
     """Manages user monetization, Stripe integration, and subscription state.
     """
 
-    def __init__(self, agent_id: str):
+    def __init__(self, agent_id: str) -> None:
         self.agent_id = agent_id
         self.logger = logger
         if not stripe.api_key:

@@ -17,7 +17,7 @@ class SizeLimitMiddleware(BaseHTTPMiddleware):
     Returns 413 Payload Too Large for oversized requests
     """
 
-    def __init__(self, app, max_bytes: int | None = None):
+    def __init__(self, app, max_bytes: int | None = None) -> None:
         """Initialize size limit middleware
 
         Args:

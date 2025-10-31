@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class EnhancedSafetyService:
     """Service for generating comprehensive safety reports"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.supplemental_service = supplemental_data_service
         logger.info("EnhancedSafetyService initialized")
 

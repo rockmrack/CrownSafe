@@ -113,7 +113,7 @@ def custom_openapi(app: FastAPI):
     )
 
     # Mark deprecated user_id fields in premium/alternatives/report requests
-    def deprecate_param(path_key: str, method: str, param_name: str):
+    def deprecate_param(path_key: str, method: str, param_name: str) -> None:
         try:
             params = openapi_schema["paths"][path_key][method]["requestBody"]["content"]["application/json"]["schema"][
                 "properties"

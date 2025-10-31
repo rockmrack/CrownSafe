@@ -25,7 +25,7 @@ except ImportError:
         override=False,
         interpolate=True,
         encoding="utf-8",
-    ):
+    ) -> None:
         pass
 
 
@@ -54,7 +54,7 @@ class MemoryManager:
         logger_instance: logging.Logger | None = None,
         chroma_db_path: str | None = None,
         collection_name: str | None = None,
-    ):
+    ) -> None:
         """Initialize MemoryManager with ChromaDB and OpenAI embeddings.
         FIXED: Proper logger initialization to prevent 'str' object attribute errors.
         """
@@ -129,7 +129,7 @@ class MemoryManager:
         # Initialize ChromaDB regardless of embedding function
         self._initialize_chromadb()
 
-    def _initialize_chromadb(self):
+    def _initialize_chromadb(self) -> None:
         """Initialize ChromaDB client and collection."""
         # Create directory if it doesn't exist
         if not os.path.exists(self.db_path):
@@ -652,7 +652,7 @@ class MemoryManager:
             self.logger.error(f"Failed to dump sample: {e}")
             print(f"Error: {e}")
 
-    def shutdown(self):
+    def shutdown(self) -> None:
         """Gracefully shutdown the MemoryManager."""
         self.logger.info("MemoryManager shutting down...")
         # ChromaDB clients clean up automatically

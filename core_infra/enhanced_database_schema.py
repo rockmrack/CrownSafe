@@ -122,7 +122,7 @@ class EnhancedRecallDB(Base):
                 result[c.name] = v
         return result
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<EnhancedRecallDB(id={self.id}, recall_id={self.recall_id!r}, product_name={self.product_name!r})>"
 
 
