@@ -384,13 +384,13 @@ kubectl get svc -n crownsafe
 
 ### Response Times (Typical)
 
-| Endpoint | Avg | P95 | P99 |
-|----------|-----|-----|-----|
-| `/health` | 5ms | 15ms | 25ms |
-| `/api/healthz` | 45ms | 120ms | 200ms |
-| `/api/recalls` | 150ms | 350ms | 500ms |
-| `/api/barcode` | 200ms | 450ms | 650ms |
-| System Health Dashboard | 85ms | 180ms | 280ms |
+| Endpoint                | Avg   | P95   | P99   |
+| ----------------------- | ----- | ----- | ----- |
+| `/health`               | 5ms   | 15ms  | 25ms  |
+| `/api/healthz`          | 45ms  | 120ms | 200ms |
+| `/api/recalls`          | 150ms | 350ms | 500ms |
+| `/api/barcode`          | 200ms | 450ms | 650ms |
+| System Health Dashboard | 85ms  | 180ms | 280ms |
 
 ### Throughput
 

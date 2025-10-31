@@ -98,6 +98,7 @@ Base = declarative_base()
 # -------------------------------------------------------------------
 # CROWN SAFE: Import hair product safety models (used by helper functions below)
 from core_infra.crown_safe_models import HairProfileModel
+
 # -------------------------------------------------------------------
 
 
@@ -118,6 +119,42 @@ class User(Base):
 
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email!r}, is_subscribed={self.is_subscribed})>"
+
+
+class FamilyMember(Base):
+    """Family member profile for multi-user household management"""
+
+    __tablename__ = "family_members"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    user_id = Column(Integer, nullable=False)  # Link to the main user account
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "user_id": self.user_id,
+        }
+
+    def __repr__(self):
+        return f"<FamilyMember(id={self.id}, name={self.name!r}, user_id={self.user_id})>"
+
+
+class Allergy(Base):
+    """Allergy tracking for family members"""
+
+    __tablename__ = "allergies"
+
+    id = Column(Integer, primary_key=True, index=True)
+    allergen = Column(String, nullable=False)
+    member_id = Column(Integer, nullable=False)
+
+    def to_dict(self) -> dict:
+        return {"id": self.id, "allergen": self.allergen, "member_id": self.member_id}
+
+    def __repr__(self):
+        return f"<Allergy(id={self.id}, allergen={self.allergen!r}, member_id={self.member_id})>"
 
 
 # -------------------------------------------------------------------
@@ -215,15 +252,15 @@ def create_tables():
     try:
         # Import models that use the main Base
         from api.models.chat_memory import (
-            UserProfile,
             Conversation,
             ConversationMessage,
+            UserProfile,
         )
         from api.models.user_report import UserReport
         from api.monitoring_scheduler import MonitoredProduct, MonitoringRun
+        from db.models.ingestion_run import IngestionRun
         from db.models.privacy_request import PrivacyRequest
         from db.models.scan_history import ScanHistory
-        from db.models.ingestion_run import IngestionRun
 
         # Import risk assessment models to register them with Base.metadata
         try:
