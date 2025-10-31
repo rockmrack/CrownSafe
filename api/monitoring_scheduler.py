@@ -25,7 +25,10 @@ from api.notification_endpoints import (
     NotificationHistory,
     send_push_notification,
 )
-from core_infra.database import Base, get_db_session  # RecallDB removed - Crown Safe uses HairProductModel
+from core_infra.database import (  # RecallDB removed - Crown Safe uses HairProductModel
+    Base,
+    get_db_session,
+)
 from core_infra.visual_agent_models import ImageExtraction, ImageJob
 
 logger = logging.getLogger(__name__)

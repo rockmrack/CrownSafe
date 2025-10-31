@@ -211,7 +211,8 @@ class AuditLogger:
                         # Try to serialize
                         json.dumps(value)
                         data[key] = value
-                    except:
+                    except (TypeError, ValueError):
+                        # Fall back to string representation
                         data[key] = str(value)
             return data
         else:

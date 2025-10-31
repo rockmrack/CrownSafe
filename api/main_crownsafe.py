@@ -1067,11 +1067,7 @@ def get_safety_hub_articles(
                     "title": article.title,
                     "summary": article.summary,
                     "source_agency": article.source_agency,
-                    "publication_date": (
-                        article.publication_date.isoformat()
-                        if article.publication_date
-                        else None
-                    ),
+                    "publication_date": (article.publication_date.isoformat() if article.publication_date else None),
                     "image_url": article.image_url,
                     "article_url": article.article_url,
                     "is_featured": article.is_featured,

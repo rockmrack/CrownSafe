@@ -3,11 +3,14 @@ Pagination utilities for BabyShield
 Prevents memory issues with large datasets
 """
 
+import logging
 from typing import Dict, Generic, List, Optional, TypeVar
 
 from fastapi import Query
 from pydantic import BaseModel
 from sqlalchemy.orm import Query as SQLQuery
+
+logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
@@ -110,7 +113,8 @@ class CursorPaginationParams(BaseModel):
 
             decoded = base64.b64decode(self.cursor).decode()
             return int(decoded)
-        except:
+        except (ValueError, TypeError, AttributeError) as e:
+            logger.debug(f"Failed to decode pagination cursor: {e}")
             return None
 
     @staticmethod

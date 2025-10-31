@@ -201,8 +201,8 @@ class ConnectionPoolOptimizer:
                 for session in self.session_pool.values():
                     try:
                         session.close()
-                    except:
-                        pass
+                    except Exception as e:
+                        self.logger.debug(f"Error closing session: {e}")
 
                 self.session_pool.clear()
                 self.agent_instance_pool.clear()

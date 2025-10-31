@@ -1,4 +1,3 @@
-
 """
 Visual Agent API Endpoints - Phase 2
 Image upload, analysis, MFV, and HITL review queue

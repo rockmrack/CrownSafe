@@ -207,8 +207,8 @@ def flush_logs():
     for handler in logging.root.handlers:
         try:
             handler.flush()
-        except:
-            pass
+        except Exception as e:
+            logger.debug(f"Could not flush log handler: {e}")
 
 
 def save_application_state():

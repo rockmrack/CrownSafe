@@ -17,7 +17,9 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 try:
-    from core_infra.database import get_db as get_db_session  # RecallDB removed - Crown Safe uses HairProductModel
+    from core_infra.database import (
+        get_db as get_db_session,  # RecallDB removed - Crown Safe uses HairProductModel
+    )
 except ImportError:
     # Fallback for testing without full infrastructure
     from typing import Any
