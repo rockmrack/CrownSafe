@@ -539,7 +539,8 @@ class BarcodeScanner:
                 day = calendar.monthrange(year, month)[1]
 
             return date(year, month, day)
-        except:
+        except (ValueError, TypeError) as e:
+            logger.debug(f"Could not parse date from barcode: {e}")
             return None
 
     def _is_json_format(self, data: str) -> bool:
@@ -547,7 +548,7 @@ class BarcodeScanner:
         try:
             json.loads(data)
             return True
-        except:
+        except (json.JSONDecodeError, TypeError, ValueError):
             return False
 
     def _parse_json_qr(self, data: str, result: ScanResult):
@@ -676,7 +677,7 @@ class BarcodeScanner:
         for fmt in formats:
             try:
                 return datetime.strptime(date_str, fmt).date()
-            except:
+            except (ValueError, TypeError):
                 continue
 
         return None
