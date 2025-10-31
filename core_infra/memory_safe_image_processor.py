@@ -68,16 +68,16 @@ class MemorySafeImageProcessor:
             try:
                 if os.path.exists(temp_file):
                     os.unlink(temp_file)
-            except:
-                pass
+            except (OSError, PermissionError):
+                pass  # File might be in use or already deleted
 
         # Clear resources
         for resource in self._open_resources:
             try:
                 if hasattr(resource, "close"):
                     resource.close()
-            except:
-                pass
+            except Exception:
+                pass  # Resource might already be closed
 
         self._open_resources.clear()
 
@@ -219,8 +219,8 @@ class MemorySafeImageProcessor:
             if temp_file and os.path.exists(temp_file):
                 try:
                     os.unlink(temp_file)
-                except:
-                    pass
+                except (OSError, PermissionError):
+                    pass  # File might be in use or already deleted
 
     def detect_barcodes_safe(self, image_path: str) -> list:
         """

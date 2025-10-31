@@ -9,6 +9,7 @@ This migration adds columns that were previously being added at runtime by ensur
 """
 
 import sqlalchemy as sa
+from sqlalchemy.exc import OperationalError, ProgrammingError
 
 from alembic import op
 
@@ -96,5 +97,5 @@ def downgrade():
     # Only drop is_subscribed if it was migrated (not if it already existed)
     try:
         op.drop_column("users", "is_subscribed")
-    except:
-        pass  # May not exist or may have existed before migration
+    except (OperationalError, ProgrammingError):
+        pass  # Column may not exist or may have existed before migration

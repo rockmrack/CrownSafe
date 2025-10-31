@@ -338,8 +338,8 @@ class EnhancedBarcodeScanner:
                 test_img = np.zeros((100, 100), dtype=np.uint8)
                 pyzbar.decode(test_img)
                 status["pyzbar"] = True
-            except:
-                pass
+            except Exception:
+                pass  # Library test failed, skip
 
         # Test OpenCV QR
         if OPENCV_AVAILABLE and self.qr_detector:
@@ -347,8 +347,8 @@ class EnhancedBarcodeScanner:
                 test_img = np.zeros((100, 100), dtype=np.uint8)
                 self.qr_detector.detectAndDecode(test_img)
                 status["opencv_qr"] = True
-            except:
-                pass
+            except Exception:
+                pass  # QR detector test failed, skip
 
         # Test OpenCV Barcode
         if OPENCV_AVAILABLE and self.barcode_detector:
@@ -356,8 +356,8 @@ class EnhancedBarcodeScanner:
                 test_img = np.zeros((100, 100), dtype=np.uint8)
                 self.barcode_detector.detectAndDecode(test_img)
                 status["opencv_barcode"] = True
-            except:
-                pass
+            except Exception:
+                pass  # Barcode detector test failed, skip
 
         return status
 

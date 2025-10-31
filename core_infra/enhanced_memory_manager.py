@@ -1433,7 +1433,9 @@ class EnhancedMemoryManager(MemoryManager):
                     if results["metadatas"] and results["metadatas"][0]:
                         strategy_matches = []
 
-                        for i, (metadata, distance) in enumerate(zip(results["metadatas"][0], results["distances"][0])):
+                        for i, (metadata, distance) in enumerate(
+                            zip(results["metadatas"][0], results["distances"][0], strict=False)
+                        ):
                             # Apply similarity threshold filtering
                             if distance <= self.similarity_thresholds["weak_match"]:  # Only include reasonable matches
                                 match_info = {
@@ -1490,7 +1492,7 @@ class EnhancedMemoryManager(MemoryManager):
                                 import json
 
                                 drug_context = json.loads(drug_context)
-                            except:
+                            except (json.JSONDecodeError, TypeError, ValueError):
                                 drug_context = [drug_context]
                         elif not isinstance(drug_context, list):
                             drug_context = []

@@ -84,8 +84,8 @@ class CPSCDataConnector:
                                 try:
                                     units_str = recall["NumberOfUnits"].replace(",", "")
                                     units = int(units_str.split()[0])
-                                except:
-                                    pass
+                                except (ValueError, TypeError, IndexError):
+                                    pass  # Can't parse units
 
                             record = SafetyDataRecord(
                                 source="CPSC_RECALL",
@@ -243,9 +243,9 @@ class CPSCDataConnector:
             for fmt in ["%Y-%m-%d", "%m/%d/%Y", "%B %d, %Y"]:
                 try:
                     return datetime.strptime(date_str, fmt)
-                except:
+                except (ValueError, TypeError):
                     continue
-        except:
+        except Exception:
             pass
         return None
 
@@ -553,5 +553,5 @@ class DataUnificationEngine:
             return 1.0
 
         # Count matching characters
-        matches = sum(c1 == c2 for c1, c2 in zip(s1, s2))
+        matches = sum(c1 == c2 for c1, c2 in zip(s1, s2, strict=False))
         return matches / longer
