@@ -11,7 +11,7 @@ import socket
 import sys
 import traceback
 import uuid
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Literal, cast
 
@@ -1803,7 +1803,7 @@ async def public_test_endpoint() -> dict[str, str]:
     return {
         "status": "ok",
         "message": "Public endpoint",
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
     }
 
 
@@ -1934,8 +1934,7 @@ async def get_openapi():
 
 @app.get("/cache/stats", tags=["system"])
 async def cache_stats():
-    """Get Redis cache performance statistics for 39-agency system
-    """
+    """Get Redis cache performance statistics for 39-agency system"""
     try:
         stats = get_cache_stats()
         return {
@@ -1954,8 +1953,7 @@ async def cache_stats():
 
 @app.post("/cache/warm", tags=["system"])
 async def warm_cache():
-    """Manually trigger intelligent cache warming for 39-agency system
-    """
+    """Manually trigger intelligent cache warming for 39-agency system"""
     try:
         result = await warm_cache_now()
         return {
@@ -2749,8 +2747,7 @@ async def advanced_search(request: Request):
 
 @app.post("/api/v1/search/bulk", tags=["search"])
 async def bulk_search(req: BulkSearchRequest):
-    """Bulk barcode safety check - check multiple products at once
-    """
+    """Bulk barcode safety check - check multiple products at once"""
     logger.info(
         "Bulk search request for %s barcodes by user %s",
         len(req.barcodes),
@@ -2800,8 +2797,7 @@ async def bulk_search(req: BulkSearchRequest):
     tags=["analytics"],
 )
 async def recall_analytics():
-    """Get comprehensive analytics across all 39 international agencies
-    """
+    """Get comprehensive analytics across all 39 international agencies"""
     try:
         # REMOVED FOR CROWN SAFE: RecallDB model no longer exists (replaced with HairProductModel)
         # from core_infra.database import RecallDB
@@ -2831,8 +2827,7 @@ async def recall_analytics():
 
 @app.get("/api/v1/analytics/counts", tags=["analytics"])
 async def analytics_counts():
-    """Live counts for frontend display: total recalls and per-agency breakdown.
-    """
+    """Live counts for frontend display: total recalls and per-agency breakdown."""
     try:
         # REMOVED FOR CROWN SAFE: RecallDB model no longer exists (replaced with HairProductModel)
         # from core_infra.database import RecallDB
@@ -2859,8 +2854,7 @@ async def analytics_counts():
 
 @app.get("/api/v1/monitoring/agencies", tags=["monitoring"])
 async def agency_health_check():
-    """Monitor health status of all 39 international recall agencies
-    """
+    """Monitor health status of all 39 international recall agencies"""
     try:
         # REMOVED FOR CROWN SAFE: Baby product recall agency monitoring replaced
         # This function previously monitored 39 international baby product recall agencies
@@ -2885,8 +2879,7 @@ async def agency_health_check():
 
 @app.get("/api/v1/monitoring/system", tags=["monitoring"])
 async def system_health():
-    """Comprehensive system health check for Crown Safe
-    """
+    """Comprehensive system health check for Crown Safe"""
     try:
         # Check database health
         db_healthy = True
@@ -2970,7 +2963,7 @@ async def azure_storage_health():
                 "service": "azure_blob_storage",
                 "status": "error",
                 "error": str(e),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             status_code=503,
         )
@@ -2978,8 +2971,7 @@ async def azure_storage_health():
 
 @app.get("/api/v1/monitoring/azure-storage/metrics", tags=["monitoring"])
 async def azure_storage_metrics():
-    """Get Azure Blob Storage performance metrics
-    """
+    """Get Azure Blob Storage performance metrics"""
     try:
         from core_infra.azure_storage_health import azure_storage_metrics
 
@@ -2992,7 +2984,7 @@ async def azure_storage_metrics():
         return JSONResponse(
             content={
                 "error": str(e),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             status_code=500,
         )
@@ -3018,7 +3010,7 @@ async def security_audit():
         return JSONResponse(
             content={
                 "error": str(e),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             status_code=500,
         )
@@ -3038,7 +3030,7 @@ async def azure_cache_stats():
         return JSONResponse(
             content={
                 "cache_stats": stats,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             status_code=200,
         )
@@ -3049,7 +3041,7 @@ async def azure_cache_stats():
             content={
                 "error": str(e),
                 "cache_enabled": False,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             status_code=500,
         )
@@ -3080,7 +3072,7 @@ async def system_health_dashboard_endpoint():
             content={
                 "status": "error",
                 "error": str(e),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             status_code=500,
         )
@@ -3118,8 +3110,7 @@ class NotificationResponse(BaseModel):
     tags=["notifications"],
 )
 async def setup_notifications(req: NotificationRequest):
-    """Set up real-time notifications for specific products across 39 agencies
-    """
+    """Set up real-time notifications for specific products across 39 agencies"""
     logger.info(
         "Setting up notifications for user %s, %s products",
         req.user_id,
@@ -3162,8 +3153,7 @@ async def setup_notifications(req: NotificationRequest):
 
 @app.get("/api/v1/notifications/{notification_id}", tags=["notifications"])
 async def get_notification_status(notification_id: str):
-    """Get status of notification setup
-    """
+    """Get status of notification setup"""
     try:
         from core_infra.cache_manager import get_cached
 
@@ -3324,8 +3314,7 @@ def to_gtin14(code: str) -> str:
 
 
 async def ultra_fast_check(barcode: str, user_id: int) -> dict:
-    """Ultra-fast barcode check with validation and mock recall data
-    """
+    """Ultra-fast barcode check with validation and mock recall data"""
     import time
 
     start_time = time.time()
@@ -3459,8 +3448,7 @@ async def mobile_quick_check(
 
 @app.get("/mobile/stats", tags=["mobile"])
 async def mobile_performance_stats():
-    """Get mobile hot path performance statistics
-    """
+    """Get mobile hot path performance statistics"""
     try:
         mobile_stats = get_mobile_stats()
         cache_stats = get_cache_stats()
@@ -3544,7 +3532,7 @@ async def report_unsafe_product(request: Request):
     try:
         # Rate limiting: Check submissions in last hour for this user
         with get_db_session() as db:
-            one_hour_ago = datetime.utcnow() - timedelta(hours=1)
+            one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
             recent_reports = (
                 db.query(UserReport)
                 .filter(
@@ -3579,7 +3567,7 @@ async def report_unsafe_product(request: Request):
                 incident_date=req.incident_date,
                 incident_description=req.incident_description,
                 photos=req.photos,
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             )
 
             db.add(new_report)
@@ -3671,8 +3659,7 @@ async def get_user_reports(
 
 @app.post("/system/fix-upc-data", tags=["system"])
 async def fix_upc_data():
-    """CRITICAL FIX: Enhance existing recalls with UPC data for proper barcode scanning
-    """
+    """CRITICAL FIX: Enhance existing recalls with UPC data for proper barcode scanning"""
     logger.info("Starting critical UPC data enhancement...")
 
     # Crown Safe no longer maintains the legacy RecallDB table, so this endpoint
