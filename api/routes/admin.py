@@ -3,18 +3,16 @@ Admin API routes for ingestion management and monitoring
 """
 
 import logging
-import os
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import JSONResponse
-from sqlalchemy import Integer, and_, func, or_, select, text
+from sqlalchemy import Integer, func, text
 from sqlalchemy.orm import Session
 
 from api.errors import APIError
-from api.rate_limiting import RateLimiters
 from api.security.admin_auth import AdminRateLimit, require_admin
 from api.services.ingestion_runner import IngestionRunner
 from core_infra.database import get_db
