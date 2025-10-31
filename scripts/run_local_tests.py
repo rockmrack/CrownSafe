@@ -66,8 +66,8 @@ def start_api_server():
             if response.status_code == 200:
                 print("✅ API server is running on http://localhost:8001")
                 return process
-        except:
-            pass
+        except (httpx.RequestError, httpx.TimeoutException):
+            pass  # Server not ready yet
         print(f"  Waiting for server to start... ({i + 1}/15)")
 
     print("❌ Failed to start API server")

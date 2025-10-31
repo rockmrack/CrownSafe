@@ -65,8 +65,8 @@ async def test_flow():
                     print(f"   Original: {workflow_id}")
                     print(f"   Actual: {key.split(':')[-1]}")
                     return False
-            except:
-                pass
+            except (json.JSONDecodeError, TypeError, KeyError):
+                pass  # Invalid data format
 
         print(f"   Attempt {i + 1}: Not found yet...")
 

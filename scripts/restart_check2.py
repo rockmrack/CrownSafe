@@ -11,8 +11,8 @@ for agent in ["commander_agent", "planner_agent", "router_agent"]:
             shell=True,
             capture_output=True,
         )
-    except:
-        pass
+    except (subprocess.SubprocessError, OSError):
+        pass  # Process may not exist or OS command failed
 
 # 2. Clear Redis
 print("Clearing Redis...")

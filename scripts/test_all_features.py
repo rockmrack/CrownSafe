@@ -26,8 +26,8 @@ def check_api_running():
     try:
         response = httpx.get("http://localhost:8001/health", timeout=2.0)
         return response.status_code == 200
-    except:
-        return False
+    except (httpx.RequestError, httpx.TimeoutException):
+        return False  # Server not available
 
 
 def start_api_server():

@@ -92,7 +92,7 @@ def verify_router_is_running():
             print("   Start it with: python -m agents.routing.router_agent.main")
 
         return router_running
-    except:
+    except (subprocess.SubprocessError, OSError):
         # Windows
         try:
             result = subprocess.run(["tasklist"], capture_output=True, text=True)
@@ -105,7 +105,7 @@ def verify_router_is_running():
                 print("   Check manually and start with: python -m agents.routing.router_agent.main")
 
             return True  # Can't be sure on Windows
-        except:
+        except (subprocess.SubprocessError, OSError):
             print("⚠️  Cannot check if Router is running")
             return True
 
