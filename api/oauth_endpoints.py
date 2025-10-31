@@ -67,7 +67,7 @@ class AppleOAuth(OAuthProvider):
     APPLE_ISSUER = "https://appleid.apple.com"
 
     @staticmethod
-    async def verify_token(id_token: str, client_id: str = None) -> dict[str, Any]:
+    async def verify_token(id_token: str, client_id: str | None = None) -> dict[str, Any]:
         """Verify Apple ID token
         Returns decoded token with 'sub' (subject) and 'email' (if available).
         """
@@ -114,7 +114,7 @@ class GoogleOAuth(OAuthProvider):
     GOOGLE_ISSUER = "https://accounts.google.com"
 
     @staticmethod
-    async def verify_token(id_token: str, client_id: str = None) -> dict[str, Any]:
+    async def verify_token(id_token: str, client_id: str | None = None) -> dict[str, Any]:
         """Verify Google ID token
         Returns decoded token with 'sub' (subject) and 'email'.
         """

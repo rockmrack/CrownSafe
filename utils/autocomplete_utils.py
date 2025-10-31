@@ -107,8 +107,8 @@ def clean_product_name(name: str) -> str:
 def calculate_suggestion_score(
     query: str,
     product_name: str,
-    brand: str = None,
-    domain: str = None,
+    brand: str | None = None,
+    domain: str | None = None,
     is_baby_product: bool = False,
 ) -> float:
     """Calculate relevance score for autocomplete suggestions."""

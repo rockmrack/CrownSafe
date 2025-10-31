@@ -23,7 +23,7 @@ if not ENCRYPTION_KEY:
 class EncryptionManager:
     """Manages encryption/decryption of sensitive data."""
 
-    def __init__(self, key: str = None) -> None:
+    def __init__(self, key: str | None = None) -> None:
         if key:
             self.key = key.encode() if isinstance(key, str) else key
         else:
@@ -184,7 +184,7 @@ class PIIRedactor:
     }
 
     @classmethod
-    def redact(cls, text: str, patterns: list = None) -> str:
+    def redact(cls, text: str, patterns: list | None = None) -> str:
         """Redact PII from text."""
         import re
 
@@ -202,7 +202,7 @@ class PIIRedactor:
         return result
 
 
-def encrypt_file(file_path: str, output_path: str = None):
+def encrypt_file(file_path: str, output_path: str | None = None):
     """Encrypt a file."""
     if not output_path:
         output_path = f"{file_path}.encrypted"
@@ -218,7 +218,7 @@ def encrypt_file(file_path: str, output_path: str = None):
     return output_path
 
 
-def decrypt_file(encrypted_path: str, output_path: str = None):
+def decrypt_file(encrypted_path: str, output_path: str | None = None):
     """Decrypt a file."""
     if not output_path:
         output_path = encrypted_path.replace(".encrypted", "")

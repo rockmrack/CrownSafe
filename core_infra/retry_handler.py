@@ -44,11 +44,11 @@ class RetryConfig:
         max_delay: float = 60.0,
         exponential_base: float = 2.0,
         jitter: bool = True,
-        retryable_exceptions: list[type[Exception]] = None,
-        non_retryable_exceptions: list[type[Exception]] = None,
-        on_retry: Callable = None,
-        on_failure: Callable = None,
-        on_success: Callable = None,
+        retryable_exceptions: list[type[Exception]] | None = None,
+        non_retryable_exceptions: list[type[Exception]] | None = None,
+        on_retry: Callable | None = None,
+        on_failure: Callable | None = None,
+        on_success: Callable | None = None,
     ) -> None:
         self.max_attempts = max_attempts
         self.strategy = strategy

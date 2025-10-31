@@ -426,7 +426,7 @@ def setup_test_environment() -> None:
 # -------------------------------------------------------------------
 # Helper functions for family and allergy management
 # -------------------------------------------------------------------
-def add_family_member(user_id: int, name: str, allergies: list = None):
+def add_family_member(user_id: int, name: str, allergies: list | None = None):
     """Add a family member with optional allergies."""
     with get_db_session() as db:
         member = FamilyMember(name=name, user_id=user_id)

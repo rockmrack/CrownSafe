@@ -333,7 +333,7 @@ class CommercialDatabaseConnector:
     Integrates with UPC/EAN/GTIN lookup services.
     """
 
-    def __init__(self, api_keys: dict[str, str] = None) -> None:
+    def __init__(self, api_keys: dict[str, str] | None = None) -> None:
         self.api_keys = api_keys or {}
 
     async def lookup_product_by_barcode(self, barcode: str) -> dict | None:

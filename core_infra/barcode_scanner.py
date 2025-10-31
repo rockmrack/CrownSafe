@@ -398,7 +398,7 @@ class BarcodeScanner:
 
         return results
 
-    def scan_text(self, barcode_data: str, barcode_type: str = None) -> ScanResult:
+    def scan_text(self, barcode_data: str, barcode_type: str | None = None) -> ScanResult:
         """Parse barcode text data directly.
 
         Args:
@@ -411,7 +411,7 @@ class BarcodeScanner:
         """
         return self._parse_barcode_data(barcode_data, barcode_type)
 
-    def _parse_barcode_data(self, data: str, barcode_type: str = None) -> ScanResult:
+    def _parse_barcode_data(self, data: str, barcode_type: str | None = None) -> ScanResult:
         """Parse barcode data based on type and format."""
         result = ScanResult(success=True, raw_data=data, barcode_type=barcode_type, parsed_data={})
 

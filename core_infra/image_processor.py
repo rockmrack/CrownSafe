@@ -139,7 +139,7 @@ class ImageAnalysisService:
 
     def __init__(
         self,
-        google_credentials_path: str = None,
+        google_credentials_path: str | None = None,
         aws_region: str = "us-east-1",
         enable_caching: bool = True,
     ) -> None:
@@ -227,7 +227,7 @@ class ImageAnalysisService:
     async def analyze_image(
         self,
         image_data: bytes,
-        providers: list[Provider] = None,
+        providers: list[Provider] | None = None,
         extract_all: bool = True,
     ) -> ExtractionResult:
         """Analyze image with specified providers.

@@ -15,7 +15,7 @@ class TestChatWithRealData:
     def setup_method(self) -> None:
         self.client = TestClient(app)
 
-    def _create_test_scan(self, db: Session, scan_id: str = None) -> ScanHistory:
+    def _create_test_scan(self, db: Session, scan_id: str | None = None) -> ScanHistory:
         """Helper to create a test scan record in the database."""
         if scan_id is None:
             scan_id = f"test_scan_{uuid4().hex[:8]}"

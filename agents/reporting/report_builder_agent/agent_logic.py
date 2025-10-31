@@ -589,7 +589,7 @@ class ReportBuilderAgentLogic:
             self.logger.error(f"Failed to generate PDF from template: {e}", exc_info=True)
             raise
 
-    def _build_pa_summary_report(self, data: dict, workflow_id: str = None) -> dict:
+    def _build_pa_summary_report(self, data: dict, workflow_id: str | None = None) -> dict:
         """Build Prior Authorization Summary Report."""
         self.logger.info("Building Prior Authorization Summary PDF...")
         self.logger.info(f"Received data keys: {list(data.keys())}")

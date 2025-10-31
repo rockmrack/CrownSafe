@@ -183,7 +183,7 @@ monitor = PerformanceMonitor()
 
 
 # Decorators for performance monitoring
-def monitor_performance(name: str = None):
+def monitor_performance(name: str | None = None):
     """Decorator to monitor function performance.
 
     Usage:

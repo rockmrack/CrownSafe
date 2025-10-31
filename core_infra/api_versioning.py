@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class APIVersion:
     """Represents an API version."""
 
-    def __init__(self, version: str, deprecated: bool = False, sunset_date: str = None) -> None:
+    def __init__(self, version: str, deprecated: bool = False, sunset_date: str | None = None) -> None:
         self.version = version
         self.deprecated = deprecated
         self.sunset_date = sunset_date
@@ -102,7 +102,7 @@ class VersionedAPI:
         return None
 
 
-def versioned_endpoint(versions: list = None, deprecated_in: str = None, removed_in: str = None):
+def versioned_endpoint(versions: list | None = None, deprecated_in: str | None = None, removed_in: str | None = None):
     """Decorator for versioned endpoints.
 
     Usage:
@@ -153,7 +153,7 @@ class VersionedRouter:
         for version in VersionedAPI.SUPPORTED_VERSIONS:
             self.routers[version] = APIRouter(prefix=f"/api/{version}")
 
-    def add_route(self, path: str, endpoint: Callable, methods: list, versions: list = None) -> None:
+    def add_route(self, path: str, endpoint: Callable, methods: list, versions: list | None = None) -> None:
         """Add route to specific versions."""
         versions = versions or list(self.routers.keys())
 
@@ -286,7 +286,7 @@ class BackwardCompatibility:
         return decorator
 
     @staticmethod
-    def removed_endpoint(version: str, alternative: str = None):
+    def removed_endpoint(version: str, alternative: str | None = None):
         """Mark an endpoint as removed."""
 
         def decorator(func):

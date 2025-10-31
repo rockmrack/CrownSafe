@@ -871,7 +871,7 @@ class MemoryAwareModelExecutor:
 
 Continue the response, completing any unfinished thoughts or code blocks."""
 
-    async def execute_claude(self, prompt: str, attachments: list[dict] = None) -> str:
+    async def execute_claude(self, prompt: str, attachments: list[dict] | None = None) -> str:
         """Execute Claude with REQUIRED max_tokens parameter."""
         if not self.cm.anthropic_client:
             return "Claude not connected. Please add your API key in the sidebar."
@@ -938,7 +938,7 @@ Reference our previous discussions and maintain continuity.""",
         except Exception as e:
             return f"Claude error: {e!s}"
 
-    async def execute_gemini(self, prompt: str, attachments: list[dict] = None) -> str:
+    async def execute_gemini(self, prompt: str, attachments: list[dict] | None = None) -> str:
         """Execute Gemini."""
         if not self.cm.gemini_client:
             return "Gemini not connected. Please add your API key in the sidebar."
@@ -996,7 +996,7 @@ Context about our project:
         except Exception as e:
             return f"Gemini error: {e!s}"
 
-    async def execute_gpt(self, prompt: str, attachments: list[dict] = None) -> str:
+    async def execute_gpt(self, prompt: str, attachments: list[dict] | None = None) -> str:
         """Execute GPT."""
         if not self.cm.openai_client:
             return "GPT not connected. Please add your API key in the sidebar."

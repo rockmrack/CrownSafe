@@ -79,7 +79,7 @@ class SecurityHeadersMiddleware:
 class CORSSecurityMiddleware:
     """Secure CORS configuration."""
 
-    def __init__(self, app, allowed_origins: list = None) -> None:
+    def __init__(self, app, allowed_origins: list | None = None) -> None:
         self.app = app
         self.allowed_origins = allowed_origins or ["https://app.babyshield.com"]
 

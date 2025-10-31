@@ -21,7 +21,7 @@ class SubscriptionService:
     """Service for managing subscription entitlements."""
 
     @staticmethod
-    def _dev_entitlement_override(user_id: int, feature: str = None) -> dict | None:
+    def _dev_entitlement_override(user_id: int, feature: str | None = None) -> dict | None:
         """DEV/QA only: allow entitlements via env without touching DB.
         ENTITLEMENTS_ALLOW_ALL: "1|true|yes" -> grant everything
         ENTITLEMENTS_ALLOWLIST: "67,123"      -> user_id allow-list
@@ -47,7 +47,7 @@ class SubscriptionService:
         return None
 
     @staticmethod
-    def is_active(user_id: int, db: Session | None = None, feature: str = None) -> bool:
+    def is_active(user_id: int, db: Session | None = None, feature: str | None = None) -> bool:
         """Check if user has an active subscription.
 
         Args:

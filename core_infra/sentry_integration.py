@@ -114,7 +114,7 @@ def scrub_sensitive_data(event, hint):
     return event
 
 
-def capture_exception(error: Exception, context: dict = None) -> None:
+def capture_exception(error: Exception, context: dict | None = None) -> None:
     """Manually capture an exception and send to Sentry.
 
     Args:
@@ -131,7 +131,7 @@ def capture_exception(error: Exception, context: dict = None) -> None:
         sentry_sdk.capture_exception(error)
 
 
-def capture_message(message: str, level: str = "info", context: dict = None) -> None:
+def capture_message(message: str, level: str = "info", context: dict | None = None) -> None:
     """Manually capture a message and send to Sentry.
 
     Args:

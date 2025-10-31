@@ -57,7 +57,7 @@ def generate_cache_key(*args, **kwargs) -> str:
         return hashlib.md5(str((args, kwargs)).encode()).hexdigest()
 
 
-def cached_query(cache: TTLCache, key_func: Callable = None):
+def cached_query(cache: TTLCache, key_func: Callable | None = None):
     """Decorator to cache query results.
 
     Args:

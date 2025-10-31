@@ -31,7 +31,7 @@ class ObservabilityManager:
         self.tracer_provider = None
         self.tracer = None
 
-    def initialize(self, endpoint: str = None) -> None:
+    def initialize(self, endpoint: str | None = None) -> None:
         """Initialize OpenTelemetry tracing.
 
         Args:
@@ -100,7 +100,7 @@ class ObservabilityManager:
         except Exception as e:
             logger.exception(f"Requests instrumentation failed: {e}")
 
-    def create_span(self, name: str, attributes: dict[str, str] = None):
+    def create_span(self, name: str, attributes: dict[str, str] | None = None):
         """Create a custom span for tracing.
 
         Args:
@@ -128,7 +128,7 @@ class ObservabilityManager:
 class AzureMonitorIntegration:
     """Integration with Azure Application Insights."""
 
-    def __init__(self, connection_string: str = None) -> None:
+    def __init__(self, connection_string: str | None = None) -> None:
         self.connection_string = connection_string
         self.client = None
 
@@ -154,7 +154,7 @@ class AzureMonitorIntegration:
         except Exception as e:
             logger.exception(f"Azure Monitor initialization failed: {e}")
 
-    def log_custom_event(self, event_name: str, properties: dict = None) -> None:
+    def log_custom_event(self, event_name: str, properties: dict | None = None) -> None:
         """Log custom event to Application Insights.
 
         Args:
@@ -168,7 +168,7 @@ class AzureMonitorIntegration:
         except Exception as e:
             logger.exception(f"Failed to log custom event: {e}")
 
-    def log_custom_metric(self, metric_name: str, value: float, properties: dict = None) -> None:
+    def log_custom_metric(self, metric_name: str, value: float, properties: dict | None = None) -> None:
         """Log custom metric to Application Insights.
 
         Args:

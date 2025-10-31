@@ -181,7 +181,7 @@ class QueryCache:
         self.cache[key] = (value, time.time())
         return value
 
-    def invalidate(self, key: str = None) -> None:
+    def invalidate(self, key: str | None = None) -> None:
         """Invalidate cache entries."""
         if key:
             self.cache.pop(key, None)

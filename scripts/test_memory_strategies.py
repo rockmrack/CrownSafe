@@ -186,7 +186,7 @@ class MemoryStrategyTester:
 
         return None
 
-    async def run_all_tests(self, scenarios: list[dict[str, Any]] = None) -> None:
+    async def run_all_tests(self, scenarios: list[dict[str, Any]] | None = None) -> None:
         """Run all test scenarios."""
         if scenarios is None:
             scenarios = TEST_SCENARIOS

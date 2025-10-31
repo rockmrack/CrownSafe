@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class BabyShieldException(Exception):
     """Base exception for BabyShield application."""
 
-    def __init__(self, message: str, status_code: int = 500, details: dict[str, Any] = None) -> None:
+    def __init__(self, message: str, status_code: int = 500, details: dict[str, Any] | None = None) -> None:
         self.message = message
         self.status_code = status_code
         self.details = details or {}
@@ -27,7 +27,7 @@ class BabyShieldException(Exception):
 class ValidationError(BabyShieldException):
     """Validation error."""
 
-    def __init__(self, message: str, field: str = None) -> None:
+    def __init__(self, message: str, field: str | None = None) -> None:
         details = {"field": field} if field else {}
         super().__init__(message, status_code=400, details=details)
 

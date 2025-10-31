@@ -46,7 +46,7 @@ def setup_logging(config):
 
 
 # Request logging middleware
-def log_request(request: Request, response_time: float = None, status_code: int = None) -> None:
+def log_request(request: Request, response_time: float | None = None, status_code: int | None = None) -> None:
     """Log HTTP request with context."""
     logger.info(
         "HTTP Request",
@@ -72,7 +72,7 @@ def log_performance(operation: str, duration_ms: float, **kwargs) -> None:
 
 
 # Error logging with context
-def log_error(error: Exception, context: dict[str, Any] = None) -> None:
+def log_error(error: Exception, context: dict[str, Any] | None = None) -> None:
     """Log error with full context."""
     logger.error(
         f"Error: {type(error).__name__}",

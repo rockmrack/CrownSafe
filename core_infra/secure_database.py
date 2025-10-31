@@ -291,28 +291,28 @@ class SecureQuery:
     """Helper class for secure database queries."""
 
     @staticmethod
-    def fetch_one(query: str, params: dict = None) -> Any | None:
+    def fetch_one(query: str, params: dict | None = None) -> Any | None:
         """Execute a SELECT query and fetch one result."""
         with get_readonly_session() as session:
             result = session.execute(query, params or {})
             return result.first()
 
     @staticmethod
-    def fetch_all(query: str, params: dict = None) -> list:
+    def fetch_all(query: str, params: dict | None = None) -> list:
         """Execute a SELECT query and fetch all results."""
         with get_readonly_session() as session:
             result = session.execute(query, params or {})
             return result.fetchall()
 
     @staticmethod
-    def execute_write(query: str, params: dict = None) -> int:
+    def execute_write(query: str, params: dict | None = None) -> int:
         """Execute a write query (INSERT, UPDATE, DELETE)."""
         with get_write_session() as session:
             result = session.execute(query, params or {})
             return result.rowcount
 
     @staticmethod
-    def execute_admin(query: str, params: dict = None) -> Any:
+    def execute_admin(query: str, params: dict | None = None) -> Any:
         """Execute an admin query (DDL)."""
         with get_admin_session() as session:
             result = session.execute(query, params or {})

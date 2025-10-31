@@ -65,10 +65,10 @@ class AuditLogger:
         action: str,
         entity_type: str,
         entity_id: Any = None,
-        old_value: dict = None,
-        new_value: dict = None,
-        metadata: dict = None,
-        error: str = None,
+        old_value: dict | None = None,
+        new_value: dict | None = None,
+        metadata: dict | None = None,
+        error: str | None = None,
     ) -> None:
         """Create an audit log entry."""
         try:
@@ -157,7 +157,7 @@ class AuditLogger:
             old_value=self._serialize_entity(entity),
         )
 
-    def log_view(self, entity_type: str, entity_id: Any, metadata: dict = None) -> None:
+    def log_view(self, entity_type: str, entity_id: Any, metadata: dict | None = None) -> None:
         """Log data access/viewing."""
         self.log(
             action="VIEW",
@@ -171,8 +171,8 @@ class AuditLogger:
         endpoint: str,
         method: str,
         status_code: int,
-        user_id: int = None,
-        error: str = None,
+        user_id: int | None = None,
+        error: str | None = None,
     ) -> None:
         """Log API calls."""
         self.log(
@@ -238,7 +238,7 @@ def setup_audit_listeners(Base, db_session) -> None:
 
 
 # Decorators for audit logging
-def audit_action(action: str, entity_type: str = None):
+def audit_action(action: str, entity_type: str | None = None):
     """Decorator to audit function calls."""
 
     def decorator(func):
@@ -368,11 +368,11 @@ class AuditQuery:
 
     def search_logs(
         self,
-        action: str = None,
-        entity_type: str = None,
-        user_id: int = None,
-        start_date: datetime = None,
-        end_date: datetime = None,
+        action: str | None = None,
+        entity_type: str | None = None,
+        user_id: int | None = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
     ) -> list[AuditLog]:
         """Search audit logs with filters."""
         query = self.db.query(AuditLog)

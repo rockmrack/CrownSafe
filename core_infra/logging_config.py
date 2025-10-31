@@ -88,9 +88,9 @@ class ConsoleFormatter(logging.Formatter):
 
 
 def setup_logging(
-    log_level: str = None,
+    log_level: str | None = None,
     log_format: str = "console",
-    log_file: str = None,  # "console" or "json"
+    log_file: str | None = None,  # "console" or "json"
 ) -> None:
     """Setup logging configuration for the application.
 

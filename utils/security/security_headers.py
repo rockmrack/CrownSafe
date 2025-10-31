@@ -32,7 +32,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         enable_hsts: bool = True,
         hsts_max_age: int = 31536000,  # 1 year
         enable_csp: bool = True,
-        csp_policy: str = None,
+        csp_policy: str | None = None,
         enable_frame_options: bool = True,
         enable_xss_protection: bool = True,
     ) -> None:
