@@ -497,6 +497,10 @@ class RecallDB(Base):
         return f"<RecallDB(id={self.id}, recall_id={self.recall_id!r})>"
 
 
+# Alias for backwards compatibility with tests
+LegacyRecallDB = RecallDB
+
+
 # -------------------------------------------------------------------
 # Test scaffolding
 # -------------------------------------------------------------------
