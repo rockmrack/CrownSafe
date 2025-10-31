@@ -145,6 +145,7 @@ def is_crown_safe_recall(recall_title: str, recall_description: str, product_cat
 
     Returns:
         True if recall is relevant for hair/cosmetic safety
+
     """
     # Combine all text for searching
     text = f"{recall_title} {recall_description} {product_category}".lower()

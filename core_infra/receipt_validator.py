@@ -250,6 +250,7 @@ class ReceiptValidationService:
 
         Returns:
             Dict with status and subscription info
+
         """
         try:
             # Validate based on provider

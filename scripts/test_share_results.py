@@ -4,7 +4,7 @@
 
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -38,7 +38,7 @@ def test_share_results():
         scan = ScanHistory(
             user_id=1,
             scan_id="test_scan_001",
-            scan_timestamp=datetime.utcnow(),
+            scan_timestamp=datetime.now(timezone.utc),
             product_name="Baby Monitor Pro",
             brand="SafeWatch",
             barcode="123456789012",
@@ -61,7 +61,7 @@ def test_share_results():
             share_type="scan_result",
             content_id=scan.scan_id,
             created_by=1,
-            expires_at=datetime.utcnow() + timedelta(hours=24),
+            expires_at=datetime.now(timezone.utc) + timedelta(hours=24),
             allow_download=True,
             content_snapshot={
                 "scan_id": scan.scan_id,
@@ -114,7 +114,7 @@ def test_share_results():
             share_type="scan_result",
             content_id=scan.scan_id,
             created_by=1,
-            expires_at=datetime.utcnow() + timedelta(hours=48),
+            expires_at=datetime.now(timezone.utc) + timedelta(hours=48),
             password_protected=True,
             password_hash=pwd_context.hash(password),
             content_snapshot={
@@ -158,7 +158,7 @@ def test_share_results():
         # Test 5: Revoke a share
         print("\n6. Testing share revocation...")
         share1.is_active = False
-        share1.revoked_at = datetime.utcnow()
+        share1.revoked_at = datetime.now(timezone.utc)
         db.commit()
 
         assert not share1.is_valid(), "Revoked share should be invalid"
@@ -184,7 +184,7 @@ def test_share_results():
             share_type="report",
             content_id="SR_test_001",
             created_by=1,
-            expires_at=datetime.utcnow() + timedelta(days=7),
+            expires_at=datetime.now(timezone.utc) + timedelta(days=7),
             content_snapshot={
                 "report_id": "SR_test_001",
                 "report_type": "90_day_summary",

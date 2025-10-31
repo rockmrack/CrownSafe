@@ -21,6 +21,7 @@ def setup_privacy_compliance(app: FastAPI) -> None:
 
     Args:
         app: FastAPI application instance
+
     """
     # Import privacy routers
     from api.routes import admin_privacy, privacy
@@ -94,6 +95,7 @@ def get_privacy_config():
 
     Returns:
         Dictionary with privacy configuration
+
     """
     import os
 
@@ -130,6 +132,7 @@ def validate_privacy_setup():
 
     Returns:
         Tuple of (is_valid, errors)
+
     """
     errors = []
 

@@ -72,6 +72,7 @@ class InputValidator:
 
         Raises:
             ValueError: If barcode is invalid
+
         """
         if not barcode:
             raise ValueError("Barcode cannot be empty")
@@ -164,6 +165,7 @@ class InputValidator:
 
         Returns:
             Sanitized text
+
         """
         if not text:
             return ""
@@ -199,6 +201,7 @@ class InputValidator:
 
         Returns:
             Tuple of (validated_limit, validated_offset)
+
         """
         # Limit range: 1-100
         limit = max(1, min(limit, 100))
@@ -241,6 +244,7 @@ class SecureRequestValidator:
 
         Raises:
             HTTPException: If request is invalid or dangerous
+
         """
         # Check URL length
         if len(str(request.url)) > cls.MAX_URL_LENGTH:

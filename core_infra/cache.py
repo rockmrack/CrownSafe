@@ -37,6 +37,7 @@ def generate_cache_key(*args, **kwargs) -> str:
 
     Returns:
         MD5 hash of serialized arguments
+
     """
     try:
         # Serialize arguments to JSON
@@ -70,6 +71,7 @@ def cached_query(cache: TTLCache, key_func: Callable = None):
         @cached_query(product_cache)
         def get_products_by_barcode(barcode: str, db: Session):
             return db.query(HairProductModel).filter(...).all()
+
     """
 
     def decorator(func: Callable) -> Callable:
@@ -108,6 +110,7 @@ def get_cache_stats(cache: TTLCache) -> dict:
 
     Returns:
         Dict with cache statistics
+
     """
     return {
         "size": len(cache),
@@ -122,6 +125,7 @@ def clear_cache(cache: TTLCache) -> None:
 
     Args:
         cache: The TTL cache to clear
+
     """
     cache.clear()
     logger.info(f"Cache cleared ({cache.maxsize} max, {cache.ttl}s TTL)")
@@ -193,6 +197,7 @@ def get_all_cache_stats() -> dict:
 
     Returns:
         Dict with stats for each cache
+
     """
     return {
         "recall_cache": get_cache_stats(recall_cache),

@@ -4,7 +4,7 @@ Validates security configuration and best practices across the application
 
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -24,6 +24,7 @@ class SecurityConfigValidator:
 
         Returns:
             Dict with validation results
+
         """
         results = {
             "status": "pass",
@@ -129,6 +130,7 @@ class SecurityConfigValidator:
 
         Returns:
             Dict with CORS validation results
+
         """
         results = {"status": "pass", "checks": [], "recommendations": []}
 
@@ -162,6 +164,7 @@ class SecurityConfigValidator:
 
         Returns:
             Dict with SSL/TLS validation results
+
         """
         results = {"status": "pass", "checks": [], "recommendations": []}
 
@@ -206,6 +209,7 @@ class SecurityConfigValidator:
 
         Returns:
             Dict with rate limiting validation results
+
         """
         results = {"status": "pass", "checks": [], "recommendations": []}
 
@@ -242,6 +246,7 @@ class SecurityConfigValidator:
 
         Returns:
             Dict with logging validation results
+
         """
         results = {"status": "pass", "checks": [], "recommendations": []}
 
@@ -284,9 +289,10 @@ class SecurityConfigValidator:
 
         Returns:
             Dict with complete audit results
+
         """
         audit_results = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "overall_status": "pass",
             "categories": {},
             "summary": {

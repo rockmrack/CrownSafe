@@ -5,7 +5,7 @@ Provides retry logic, circuit breakers, and error handling for Azure storage ope
 import functools
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable
 
@@ -46,6 +46,7 @@ class CircuitBreaker:
             failure_threshold: Number of failures before opening circuit
             recovery_timeout: Seconds to wait before attempting recovery
             expected_exception: Exception type to track
+
         """
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
@@ -68,6 +69,7 @@ class CircuitBreaker:
 
         Raises:
             Exception: If circuit is open or function fails
+
         """
         if self.state == CircuitState.OPEN:
             if self._should_attempt_reset():
@@ -90,7 +92,7 @@ class CircuitBreaker:
         """Check if enough time has passed to attempt reset"""
         return (
             self.last_failure_time is not None
-            and (datetime.utcnow() - self.last_failure_time).seconds >= self.recovery_timeout
+            and (datetime.now(timezone.utc) - self.last_failure_time).seconds >= self.recovery_timeout
         )
 
     def _on_success(self) -> None:
@@ -103,7 +105,7 @@ class CircuitBreaker:
     def _on_failure(self) -> None:
         """Handle failed operation"""
         self.failure_count += 1
-        self.last_failure_time = datetime.utcnow()
+        self.last_failure_time = datetime.now(timezone.utc)
 
         if self.failure_count >= self.failure_threshold:
             self.state = CircuitState.OPEN
@@ -131,6 +133,7 @@ def retry_with_exponential_backoff(
 
     Returns:
         Decorated function with retry logic
+
     """
 
     def decorator(func: Callable) -> Callable:
@@ -200,6 +203,7 @@ def with_correlation_id(func: Callable) -> Callable:
 
     Returns:
         Decorated function with correlation ID logging
+
     """
 
     @functools.wraps(func)
@@ -252,6 +256,7 @@ def log_azure_error(func: Callable) -> Callable:
 
     Returns:
         Decorated function with enhanced error logging
+
     """
 
     @functools.wraps(func)

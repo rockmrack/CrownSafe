@@ -30,6 +30,7 @@ def create_app(
 
     Returns:
         Configured FastAPI application
+
     """
     # Determine if we're in production (reserved for future environment-specific config)
     _ = environment == "production"
@@ -241,6 +242,7 @@ def create_openapi_schema(app: FastAPI) -> dict:
 
     Returns:
         OpenAPI schema dictionary
+
     """
     from fastapi.openapi.utils import get_openapi
 

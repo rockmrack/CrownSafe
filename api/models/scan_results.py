@@ -2,7 +2,7 @@
 Ensures legally defensible language and transparent reporting
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -177,6 +177,7 @@ def create_scan_results(
 
     Returns:
         ScanResultsPage with legally defensible language
+
     """
     # Determine verdict based on recall check
     if recall_check and recall_check.get("recall_found"):
@@ -219,7 +220,7 @@ def create_scan_results(
     safety_check = SafetyCheckStatus(
         status="All checks complete",
         agencies_checked=agencies_checked,
-        check_timestamp=datetime.utcnow(),
+        check_timestamp=datetime.now(timezone.utc),
         database_version="v2025.01.08",
     )
 
@@ -249,7 +250,7 @@ def create_scan_results(
         safety_check=safety_check,
         recalls=recalls,
         total_recalls=len(recalls),
-        scan_id=f"scan_{int(datetime.utcnow().timestamp())}",
-        scan_timestamp=datetime.utcnow(),
+        scan_id=f"scan_{int(datetime.now(timezone.utc).timestamp())}",
+        scan_timestamp=datetime.now(timezone.utc),
         scan_type=scan_data.get("scan_type", "barcode"),
     )

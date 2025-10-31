@@ -10,7 +10,7 @@ import tracemalloc
 from collections import defaultdict, deque
 from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from typing import Any
 
@@ -146,7 +146,7 @@ class PerformanceMonitor:
 
     def get_summary(self, time_window: int = 60) -> dict[str, Any]:
         """Get performance summary for the last N seconds"""
-        cutoff = datetime.utcnow() - timedelta(seconds=time_window)
+        cutoff = datetime.now(timezone.utc) - timedelta(seconds=time_window)
         summary = {
             "metrics": {},
             "counters": dict(self.counters),
@@ -534,7 +534,7 @@ class MetricsGarbageCollector:
         """Garbage collection loop"""
         while self.running:
             try:
-                cutoff = datetime.utcnow() - self.max_age
+                cutoff = datetime.now(timezone.utc) - self.max_age
 
                 with self.monitor._lock:
                     for name, metrics in self.monitor.metrics.items():

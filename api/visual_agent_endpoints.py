@@ -6,7 +6,7 @@ import json
 import logging
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import boto3
@@ -146,7 +146,7 @@ async def request_image_upload(
         job_id = str(uuid.uuid4())
 
         # Generate S3 key
-        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         s3_key = f"uploads/{user_id}/{timestamp}_{job_id}.jpg"
 
         # Generate presigned POST URL with region-correct host
@@ -205,7 +205,7 @@ async def analyze_image(request: ImageAnalysisRequest, db: Session = Depends(get
                 image_url=request.image_url,
                 image_base64=request.image_base64,
                 status=JobStatus.PENDING,
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             )
             db.add(job)
             db.commit()
@@ -402,7 +402,7 @@ async def confirm_mfv(request: MFVConfirmationRequest, db: Session = Depends(get
                 extraction.brand_name = request.confirmed_brand
                 extraction.model_number = request.confirmed_model
 
-        mfv.completed_at = datetime.utcnow()
+        mfv.completed_at = datetime.now(timezone.utc)
         db.commit()
 
         # Generate safety message
@@ -504,7 +504,7 @@ async def claim_review(review_id: int, request: Request, db: Session = Depends(g
 
         review.status = ReviewStatus.CLAIMED
         review.claimed_by = reviewer_email
-        review.claimed_at = datetime.utcnow()
+        review.claimed_at = datetime.now(timezone.utc)
 
         # Add to audit log
         if not review.audit_log:
@@ -513,7 +513,7 @@ async def claim_review(review_id: int, request: Request, db: Session = Depends(g
             {
                 "action": "claimed",
                 "by": reviewer_email,
-                "at": datetime.utcnow().isoformat(),
+                "at": datetime.now(timezone.utc).isoformat(),
             },
         )
 
@@ -566,7 +566,7 @@ async def resolve_review(review_id: int, action: ReviewAction, db: Session = Dep
             review.status = ReviewStatus.REJECTED
 
         review.review_notes = action.notes
-        review.reviewed_at = datetime.utcnow()
+        review.reviewed_at = datetime.now(timezone.utc)
         review.reviewed_by = review.claimed_by
 
         # Apply corrections if provided
@@ -601,7 +601,7 @@ async def resolve_review(review_id: int, action: ReviewAction, db: Session = Dep
             {
                 "action": action.action,
                 "by": review.reviewed_by,
-                "at": datetime.utcnow().isoformat(),
+                "at": datetime.now(timezone.utc).isoformat(),
                 "notes": action.notes,
             },
         )
@@ -652,7 +652,7 @@ def _generate_safety_message(
         return f"⚠️ Warnings detected: {warnings}. Please verify product model and check official sources."
 
     # Standard message - always qualified, never absolute
-    date_str = datetime.utcnow().strftime("%Y-%m-%d")
+    date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     message = f"No recalls found for {product_desc} as of {date_str}. "
     message += "Please verify the model number and check official sources. "
     message += "Keep packaging and register your product with the manufacturer for future alerts."

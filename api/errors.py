@@ -24,6 +24,7 @@ def create_error_payload(code: str, message: str, trace_id: str | None = None, *
 
     Returns:
         Error payload dictionary
+
     """
     error_data = {"code": code, "message": message}
 
@@ -47,6 +48,7 @@ async def json_error_response(status_code: int, code: str, message: str, request
 
     Returns:
         JSONResponse with error payload
+
     """
     trace_id = getattr(request.state, "trace_id", None)
 

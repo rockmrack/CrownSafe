@@ -983,7 +983,7 @@ class ReportBuilderAgentLogic:
 
         ctx = {
             "title": "Nursery Safety Summary",
-            "generated_at": datetime.utcnow().isoformat(timespec="seconds"),
+            "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "window_days": window_days,
             "stats": {
                 "total_recalls": len(recalls),

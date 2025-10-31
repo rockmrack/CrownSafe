@@ -25,6 +25,7 @@ async def get_recall_detail(recall_id: str, request: Request, response: Response
 
     Returns:
         Recall details or 404 if not found
+
     """
     # URL decode the recall_id to handle encoded slashes
     decoded_recall_id = unquote(recall_id).strip()

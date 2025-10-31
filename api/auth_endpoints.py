@@ -117,6 +117,7 @@ async def login(
     - Content-Type: application/x-www-form-urlencoded
     - username: "user@example.com"
     - password: "securepassword123"
+
     """
     try:
         # Authenticate user (username field contains email)

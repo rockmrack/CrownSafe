@@ -7,7 +7,7 @@ import json
 import logging
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from email.message import EmailMessage
 from enum import Enum
 
@@ -442,7 +442,7 @@ async def submit_feedback(feedback: FeedbackRequest, background_tasks: Backgroun
             "priority": priority,
             "status": "open",
             "feedback": feedback.dict(),
-            "created_at": datetime.utcnow(),
+            "created_at": datetime.now(timezone.utc),
             "ip_address": client_ip,
         }
 
@@ -481,8 +481,8 @@ async def get_ticket_status(ticket_number: int):
         ticket_number=ticket_number,
         status="in_progress",
         priority=Priority.P2_MEDIUM,
-        created_at=datetime.utcnow(),
-        last_updated=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
+        last_updated=datetime.now(timezone.utc),
         assigned_to="Support Agent",
         resolution=None,
         customer_satisfied=None,

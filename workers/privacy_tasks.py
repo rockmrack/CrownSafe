@@ -49,6 +49,7 @@ def export_user_data_task(user_id):
 
     Returns:
         dict: Export result with file path
+
     """
     # Stub implementation
     exporter = DataExporter()
@@ -65,6 +66,7 @@ def delete_user_data_task(user_id):
 
     Returns:
         dict: Deletion result
+
     """
     # Stub implementation
     deleter = DataDeleter()
@@ -81,6 +83,7 @@ def anonymize_user_data_task(user_id):
 
     Returns:
         dict: Anonymization result
+
     """
     # Stub implementation
     return {

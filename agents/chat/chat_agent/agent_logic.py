@@ -214,6 +214,7 @@ class ChatAgentLogic:
             Dict matching ExplanationResponse schema.
         Raises:
             ValueError on invalid or non-parseable model output.
+
         """
         user_prompt = (
             "Given the following scan_data (JSON), explain the result to a parent.\n\n"

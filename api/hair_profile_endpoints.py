@@ -9,7 +9,7 @@ Endpoints:
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -233,7 +233,7 @@ async def update_hair_profile(
         for field, value in update_data.items():
             setattr(profile, field, value)
 
-        profile.updated_at = datetime.utcnow()
+        profile.updated_at = datetime.now(timezone.utc)
 
         db.commit()
         db.refresh(profile)

@@ -22,6 +22,7 @@ class RedisSearchCache:
 
         Args:
             redis_client: Existing Redis client or None to create new
+
         """
         self.redis = redis_client
         self.ttl = int(os.getenv("SEARCH_CACHE_TTL", "60"))  # Default 60 seconds
@@ -59,6 +60,7 @@ class RedisSearchCache:
 
         Returns:
             Redis key string
+
         """
         # Get current epoch for cache invalidation
         epoch = "0"  # Default if can't get from Redis
@@ -89,6 +91,7 @@ class RedisSearchCache:
 
         Returns:
             Cached results or None if not found/expired
+
         """
         if not self.enabled or not self.redis:
             return None
@@ -136,6 +139,7 @@ class RedisSearchCache:
 
         Returns:
             True if cached successfully
+
         """
         if not self.enabled or not self.redis:
             return False
@@ -186,6 +190,7 @@ class RedisSearchCache:
 
         Args:
             pattern: Redis key pattern (e.g., "search:v1:*:FDA*")
+
         """
         if not self.enabled or not self.redis:
             return
@@ -215,6 +220,7 @@ class RedisSearchCache:
 
         Returns:
             Dictionary with cache stats
+
         """
         if not self.enabled or not self.redis:
             return {"enabled": False}

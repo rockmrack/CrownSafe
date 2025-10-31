@@ -25,6 +25,7 @@ def setup_security(app: FastAPI) -> None:
 
     Args:
         app: FastAPI application instance
+
     """
     logger.info("Setting up security middleware")
 
@@ -66,6 +67,7 @@ def get_security_config() -> dict:
 
     Returns:
         Dictionary with security settings
+
     """
     return {
         "max_request_bytes": int(os.getenv("MAX_REQUEST_BYTES", "100000")),

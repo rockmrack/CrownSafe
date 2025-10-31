@@ -34,6 +34,7 @@ def generate_report_task(report_type, data, user_id):
 
     Returns:
         dict: Report generation result
+
     """
     # Stub implementation
     pdf_gen = PDFGenerator()
@@ -59,6 +60,7 @@ def generate_pdf_report_task(data, output_path):
 
     Returns:
         dict: Generation result
+
     """
     # Stub implementation
     return {

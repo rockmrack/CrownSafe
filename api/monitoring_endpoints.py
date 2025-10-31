@@ -2,7 +2,7 @@
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlalchemy import desc
@@ -188,7 +188,7 @@ async def remove_product_from_monitoring(
 
         # Soft delete
         product.is_active = False
-        product.updated_at = datetime.utcnow()
+        product.updated_at = datetime.now(timezone.utc)
         db.commit()
 
         return ok({"message": "Product removed from monitoring"})
@@ -220,8 +220,8 @@ async def update_check_frequency(
             return fail("Product not found", code="NOT_FOUND", status=404)
 
         product.check_frequency_hours = frequency_hours
-        product.next_check = datetime.utcnow() + timedelta(hours=frequency_hours)
-        product.updated_at = datetime.utcnow()
+        product.next_check = datetime.now(timezone.utc) + timedelta(hours=frequency_hours)
+        product.updated_at = datetime.now(timezone.utc)
         db.commit()
 
         return ok(
@@ -261,8 +261,8 @@ async def check_product_now(
         result = await ProductMonitoringScheduler.check_product_for_recalls(product, db)
 
         # Update product
-        product.last_checked = datetime.utcnow()
-        product.next_check = datetime.utcnow() + timedelta(hours=product.check_frequency_hours)
+        product.last_checked = datetime.now(timezone.utc)
+        product.next_check = datetime.now(timezone.utc) + timedelta(hours=product.check_frequency_hours)
 
         if result.get("recalls_found", 0) > 0:
             product.recall_status = "recalled"
@@ -312,7 +312,7 @@ async def auto_add_from_scans(
             .filter(
                 ImageJob.user_id == current_user.id,
                 ImageJob.status == JobStatus.COMPLETED,
-                ImageJob.created_at >= datetime.utcnow() - timedelta(days=30),
+                ImageJob.created_at >= datetime.now(timezone.utc) - timedelta(days=30),
             )
             .all()
         )
@@ -387,7 +387,7 @@ async def get_monitoring_status(current_user=Depends(get_current_active_user), d
             .filter(
                 MonitoredProduct.user_id == current_user.id,
                 MonitoredProduct.is_active,
-                MonitoredProduct.next_check <= datetime.utcnow() + timedelta(hours=1),
+                MonitoredProduct.next_check <= datetime.now(timezone.utc) + timedelta(hours=1),
             )
             .count()
         )
@@ -407,7 +407,7 @@ async def get_monitoring_status(current_user=Depends(get_current_active_user), d
             "safe_products": total_products - recalled_products,
             "products_due_check": due_soon,
             "last_system_check": last_run.completed_at.isoformat() + "Z" if last_run else None,
-            "next_system_check": (datetime.utcnow() + timedelta(hours=1)).isoformat() + "Z",
+            "next_system_check": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat() + "Z",
         }
 
         return ok(status)

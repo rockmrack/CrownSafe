@@ -44,6 +44,7 @@ class EndpointValidator:
 
         Returns:
             Validation result dictionary
+
         """
         url = f"{self.base_url}{path}"
         start_time = time.time()

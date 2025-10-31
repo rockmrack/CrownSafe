@@ -33,6 +33,7 @@ def setup_observability(app: FastAPI) -> None:
 
     Args:
         app: FastAPI application instance
+
     """
     # 1. Setup JSON logging (do this first)
     log_level = os.getenv("LOG_LEVEL", "INFO")

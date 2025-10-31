@@ -496,6 +496,7 @@ class CrownScoreEngine:
 
         Returns:
             Tuple of (crown_score, breakdown, verdict)
+
         """
         breakdown = ScoreBreakdown()
         logger.info(f"Calculating Crown Score for {product_type.value} with {len(ingredients)} ingredients")

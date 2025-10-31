@@ -2,7 +2,7 @@
 """
 
 import secrets
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import (
     JSON,
@@ -65,7 +65,7 @@ class ShareToken(Base):
         if not self.is_active:
             return False
 
-        if self.expires_at and datetime.utcnow() > self.expires_at:
+        if self.expires_at and datetime.now(timezone.utc) > self.expires_at:
             return False
 
         if self.max_views and self.view_count >= self.max_views:
@@ -76,7 +76,7 @@ class ShareToken(Base):
     def increment_view(self):
         """Increment the view counter"""
         self.view_count += 1
-        self.last_accessed = datetime.utcnow()
+        self.last_accessed = datetime.now(timezone.utc)
 
     def to_dict(self):
         """Convert to dictionary for API responses"""

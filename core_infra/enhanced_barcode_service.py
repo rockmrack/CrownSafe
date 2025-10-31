@@ -4,7 +4,7 @@ Integrates comprehensive validation with exact product matching
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 # REMOVED FOR CROWN SAFE: RecallDB barcode scanning no longer applicable
@@ -52,8 +52,9 @@ class EnhancedBarcodeService:
 
         Returns:
             ExactScanResult with validation and product matching details
+
         """
-        scan_timestamp = datetime.utcnow()
+        scan_timestamp = datetime.now(timezone.utc)
 
         try:
             # Step 1: Validate barcode format and type

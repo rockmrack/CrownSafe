@@ -43,6 +43,7 @@ def presign_post(key: str, user_id: int, job_id: str, content_type: str = "image
 
     Returns:
         A dict with url and fields suitable for HTML form upload
+
     """
     region = _bucket_region()
     s3 = boto3.client("s3", region_name=region, config=Config(signature_version="s3v4"))

@@ -87,6 +87,7 @@ class PrivacyRequest(Base):
 
         Returns:
             Dictionary representation
+
         """
         data = {
             "id": str(self.id) if self.id else None,
@@ -169,6 +170,7 @@ class PrivacyRequest(Base):
 
         Returns:
             Hex digest of SHA-256 hash
+
         """
         normalized = email.strip().lower()
         return hashlib.sha256(normalized.encode()).hexdigest()
@@ -179,6 +181,7 @@ class PrivacyRequest(Base):
 
         Returns:
             URL-safe token
+
         """
         return secrets.token_urlsafe(48)  # 64 characters after encoding
 
@@ -194,6 +197,7 @@ class PrivacyRequest(Base):
         Args:
             export_url: URL for data export download
             expiry_days: Days until export link expires
+
         """
         self.status = "done"
         self.completed_at = datetime.now(timezone.utc)
@@ -207,6 +211,7 @@ class PrivacyRequest(Base):
 
         Args:
             reason: Reason for rejection
+
         """
         self.status = "rejected"
         self.completed_at = datetime.now(timezone.utc)
@@ -243,6 +248,7 @@ class PrivacyRequest(Base):
 
         Returns:
             New PrivacyRequest instance
+
         """
         return cls(
             kind=kind,

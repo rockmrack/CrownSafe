@@ -5,7 +5,7 @@ This replaces the mock JSON files with comprehensive database tables
 
 import logging
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 # Add the project root to Python path
@@ -246,8 +246,8 @@ def populate_ingredient_safety_table():
                 common_allergen=ingredient in COMMON_ALLERGENS,
                 allergen_type=COMMON_ALLERGENS.get(ingredient, {}).get("type"),
                 data_source="BabyShield Safety Database v1.0",
-                created_at=datetime.utcnow(),
-                last_updated=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
+                last_updated=datetime.now(timezone.utc),
             )
             db.add(safety_record)
 
@@ -262,8 +262,8 @@ def populate_ingredient_safety_table():
                     common_allergen=ingredient in COMMON_ALLERGENS,
                     allergen_type=COMMON_ALLERGENS.get(ingredient, {}).get("type"),
                     data_source="BabyShield Safety Database v1.0",
-                    created_at=datetime.utcnow(),
-                    last_updated=datetime.utcnow(),
+                    created_at=datetime.now(timezone.utc),
+                    last_updated=datetime.now(timezone.utc),
                 )
                 db.add(safety_record)
 
@@ -275,8 +275,8 @@ def populate_ingredient_safety_table():
                     common_allergen=True,
                     allergen_type=data["type"],
                     data_source="Common Allergen Database",
-                    created_at=datetime.utcnow(),
-                    last_updated=datetime.utcnow(),
+                    created_at=datetime.now(timezone.utc),
+                    last_updated=datetime.now(timezone.utc),
                 )
                 db.add(safety_record)
 
@@ -308,8 +308,8 @@ def populate_product_ingredients_table():
                 toddler_safe=data["toddler_safe"],
                 data_source="BabyShield Product Database v1.0",
                 confidence_score=100,
-                created_at=datetime.utcnow(),
-                last_updated=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
+                last_updated=datetime.now(timezone.utc),
             )
             db.add(product_record)
 

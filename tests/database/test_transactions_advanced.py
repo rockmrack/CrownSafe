@@ -10,7 +10,7 @@ Date: October 10, 2025
 import threading
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from unittest.mock import patch
 
 import pytest
@@ -88,8 +88,8 @@ class TestDatabaseTransactions:
                 id=str(uuid.uuid4()),
                 user_id=sample_user.user_id,
                 scan_id="test_scan_001",
-                started_at=datetime.utcnow(),
-                last_activity_at=datetime.utcnow(),
+                started_at=datetime.now(timezone.utc),
+                last_activity_at=datetime.now(timezone.utc),
             )
             db_session.add(conversation)
             db_session.flush()  # Flush to get conversation ID
@@ -102,7 +102,7 @@ class TestDatabaseTransactions:
                     conversation_id=conversation_id,
                     role="user",
                     content={"text": "This should rollback"},
-                    created_at=datetime.utcnow(),
+                    created_at=datetime.now(timezone.utc),
                 )
                 db_session.add(message)
                 db_session.flush()
@@ -255,8 +255,8 @@ class TestDatabaseTransactions:
                 id=str(uuid.uuid4()),
                 user_id=sample_user.user_id,
                 scan_id="savepoint_test",
-                started_at=datetime.utcnow(),
-                last_activity_at=datetime.utcnow(),
+                started_at=datetime.now(timezone.utc),
+                last_activity_at=datetime.now(timezone.utc),
             )
             db_session.add(conversation)
             db_session.flush()
@@ -269,7 +269,7 @@ class TestDatabaseTransactions:
                 conversation_id=conversation.id,
                 role="user",
                 content={"text": "This will be rolled back"},
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             )
             db_session.add(message)
             db_session.flush()
@@ -345,8 +345,8 @@ class TestDatabaseTransactions:
             id=str(uuid.uuid4()),
             user_id=sample_user.user_id,
             scan_id="bulk_test",
-            started_at=datetime.utcnow(),
-            last_activity_at=datetime.utcnow(),
+            started_at=datetime.now(timezone.utc),
+            last_activity_at=datetime.now(timezone.utc),
         )
         db_session.add(conversation)
         db_session.flush()
@@ -356,7 +356,7 @@ class TestDatabaseTransactions:
                 conversation_id=conversation.id,
                 role="user" if i % 2 == 0 else "assistant",
                 content={"text": f"Message {i}"},
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             )
             messages.append(message)
 
@@ -407,8 +407,8 @@ class TestDatabaseTransactions:
                 id=str(uuid.uuid4()),
                 user_id=sample_user.user_id,
                 scan_id="cross_schema_test",
-                started_at=datetime.utcnow(),
-                last_activity_at=datetime.utcnow(),
+                started_at=datetime.now(timezone.utc),
+                last_activity_at=datetime.now(timezone.utc),
             )
             db_session.add(conversation)
             db_session.flush()
@@ -418,7 +418,7 @@ class TestDatabaseTransactions:
                 conversation_id=conversation.id,
                 role="user",
                 content={"text": "Test message"},
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             )
             db_session.add(message)
 

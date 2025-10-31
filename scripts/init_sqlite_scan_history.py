@@ -70,7 +70,7 @@ def main():
         (
             1,  # user_id
             args.scan_id,
-            datetime.datetime.utcnow().isoformat() + "Z",  # scan_timestamp
+            datetime.datetime.now(timezone.utc).isoformat() + "Z",  # scan_timestamp
             "Test Product",  # product_name
             "Test Brand",  # brand
             args.barcode,
@@ -89,7 +89,7 @@ def main():
             None,
             None,  # allergen/pregnancy/age warnings
             0,  # included_in_reports
-            datetime.datetime.utcnow().isoformat() + "Z",
+            datetime.datetime.now(timezone.utc).isoformat() + "Z",
         ),
     )
     con.commit()

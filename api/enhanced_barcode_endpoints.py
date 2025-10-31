@@ -3,7 +3,7 @@ Provides exact validation and comprehensive error handling
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -222,7 +222,7 @@ async def _basic_scan_fallback(request: EnhancedScanRequest) -> EnhancedScanResp
 
         return EnhancedScanResponse(
             success=True,
-            scan_timestamp=datetime.utcnow().isoformat(),
+            scan_timestamp=datetime.now(timezone.utc).isoformat(),
             is_valid=validation_result.is_valid,
             barcode_type=validation_result.barcode_type.value,
             validation_result=validation_result.validation_result.value
@@ -243,7 +243,7 @@ async def _basic_scan_fallback(request: EnhancedScanRequest) -> EnhancedScanResp
     except Exception as e:
         return EnhancedScanResponse(
             success=False,
-            scan_timestamp=datetime.utcnow().isoformat(),
+            scan_timestamp=datetime.now(timezone.utc).isoformat(),
             is_valid=False,
             barcode_type="unknown",
             validation_result="error",
@@ -271,5 +271,5 @@ async def enhanced_scan_health() -> dict[str, Any]:
             "recommendations",
         ],
         "supported_types": [btype.value for btype in BarcodeType],
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }

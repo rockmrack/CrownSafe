@@ -90,6 +90,7 @@ class BarcodeValidator:
 
         Returns:
             BarcodeValidationResult with validation details
+
         """
         if not barcode or not isinstance(barcode, str):
             return BarcodeValidationResult(

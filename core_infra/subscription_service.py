@@ -3,7 +3,7 @@
 
 import logging
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
@@ -58,6 +58,7 @@ class SubscriptionService:
 
         Returns:
             True if user has active subscription, False otherwise
+
         """
         # Check dev override first
         override = SubscriptionService._dev_entitlement_override(user_id, feature)
@@ -81,7 +82,7 @@ class SubscriptionService:
                 and_(
                     Subscription.user_id == user_id,
                     Subscription.status == SubscriptionStatus.ACTIVE,
-                    Subscription.expires_at > datetime.utcnow(),
+                    Subscription.expires_at > datetime.now(timezone.utc),
                 ),
             )
             .order_by(Subscription.expires_at.desc())
@@ -98,7 +99,7 @@ class SubscriptionService:
                 and_(
                     Subscription.user_id == user_id,
                     Subscription.status == SubscriptionStatus.ACTIVE,
-                    Subscription.expires_at <= datetime.utcnow(),
+                    Subscription.expires_at <= datetime.now(timezone.utc),
                 ),
             )
             .all()
@@ -127,6 +128,7 @@ class SubscriptionService:
 
         Returns:
             Subscription dict or None
+
         """
         with get_db_session() as db:
             subscription = (
@@ -135,7 +137,7 @@ class SubscriptionService:
                     and_(
                         Subscription.user_id == user_id,
                         Subscription.status == SubscriptionStatus.ACTIVE,
-                        Subscription.expires_at > datetime.utcnow(),
+                        Subscription.expires_at > datetime.now(timezone.utc),
                     ),
                 )
                 .order_by(Subscription.expires_at.desc())
@@ -156,6 +158,7 @@ class SubscriptionService:
 
         Returns:
             Dict with subscription status details
+
         """
         with get_db_session() as db:
             # Get active subscription
@@ -165,7 +168,7 @@ class SubscriptionService:
                     and_(
                         Subscription.user_id == user_id,
                         Subscription.status == SubscriptionStatus.ACTIVE,
-                        Subscription.expires_at > datetime.utcnow(),
+                        Subscription.expires_at > datetime.now(timezone.utc),
                     ),
                 )
                 .order_by(Subscription.expires_at.desc())
@@ -173,7 +176,7 @@ class SubscriptionService:
             )
 
             if active:
-                days_remaining = (active.expires_at - datetime.utcnow()).days
+                days_remaining = (active.expires_at - datetime.now(timezone.utc)).days
 
                 return {
                     "active": True,
@@ -195,7 +198,7 @@ class SubscriptionService:
                             Subscription.status == SubscriptionStatus.EXPIRED,
                             and_(
                                 Subscription.status == SubscriptionStatus.ACTIVE,
-                                Subscription.expires_at <= datetime.utcnow(),
+                                Subscription.expires_at <= datetime.now(timezone.utc),
                             ),
                         ),
                     ),
@@ -210,7 +213,7 @@ class SubscriptionService:
                     "plan": expired.plan.value,
                     "provider": expired.provider.value,
                     "expired_at": expired.expires_at.isoformat(),
-                    "days_since_expiry": (datetime.utcnow() - expired.expires_at).days,
+                    "days_since_expiry": (datetime.now(timezone.utc) - expired.expires_at).days,
                 }
 
             # No subscription found
@@ -225,6 +228,7 @@ class SubscriptionService:
 
         Returns:
             Result dict
+
         """
         with get_db_session() as db:
             subscription = (
@@ -233,7 +237,7 @@ class SubscriptionService:
                     and_(
                         Subscription.user_id == user_id,
                         Subscription.status == SubscriptionStatus.ACTIVE,
-                        Subscription.expires_at > datetime.utcnow(),
+                        Subscription.expires_at > datetime.now(timezone.utc),
                     ),
                 )
                 .first()
@@ -244,7 +248,7 @@ class SubscriptionService:
 
             # Mark as cancelled but keep active until expiry
             subscription.auto_renew = False
-            subscription.cancelled_at = datetime.utcnow()
+            subscription.cancelled_at = datetime.now(timezone.utc)
 
             db.commit()
 
@@ -264,6 +268,7 @@ class SubscriptionService:
 
         Returns:
             List of subscription dicts
+
         """
         with get_db_session() as db:
             subscriptions = (
@@ -285,16 +290,17 @@ class SubscriptionService:
 
         Returns:
             List of expiring subscriptions
+
         """
         with get_db_session() as db:
-            threshold_date = datetime.utcnow() + timedelta(days=days_threshold)
+            threshold_date = datetime.now(timezone.utc) + timedelta(days=days_threshold)
 
             expiring = (
                 db.query(Subscription)
                 .filter(
                     and_(
                         Subscription.status == SubscriptionStatus.ACTIVE,
-                        Subscription.expires_at > datetime.utcnow(),
+                        Subscription.expires_at > datetime.now(timezone.utc),
                         Subscription.expires_at <= threshold_date,
                         not Subscription.auto_renew,  # Only non-auto-renewing
                     ),
@@ -308,7 +314,7 @@ class SubscriptionService:
                     "subscription_id": sub.id,
                     "plan": sub.plan.value,
                     "expires_at": sub.expires_at.isoformat(),
-                    "days_remaining": (sub.expires_at - datetime.utcnow()).days,
+                    "days_remaining": (sub.expires_at - datetime.now(timezone.utc)).days,
                 }
                 for sub in expiring
             ]
@@ -319,6 +325,7 @@ class SubscriptionService:
 
         Returns:
             Number of subscriptions cleaned up
+
         """
         with get_db_session() as db:
             # Find expired active subscriptions
@@ -327,7 +334,7 @@ class SubscriptionService:
                 .filter(
                     and_(
                         Subscription.status == SubscriptionStatus.ACTIVE,
-                        Subscription.expires_at <= datetime.utcnow(),
+                        Subscription.expires_at <= datetime.now(timezone.utc),
                     ),
                 )
                 .all()
@@ -352,7 +359,7 @@ class SubscriptionService:
                             and_(
                                 Subscription.user_id == user_id,
                                 Subscription.status == SubscriptionStatus.ACTIVE,
-                                Subscription.expires_at > datetime.utcnow(),
+                                Subscription.expires_at > datetime.now(timezone.utc),
                             ),
                         )
                         .first()
@@ -375,9 +382,10 @@ class SubscriptionService:
 
         Returns:
             Dict with subscription metrics
+
         """
         with get_db_session() as db:
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
 
             # Total active subscriptions
             active_count = (

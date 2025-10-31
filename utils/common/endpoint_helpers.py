@@ -3,7 +3,7 @@ Reduces code duplication across endpoint files
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Callable
 
 from fastapi import HTTPException, status
@@ -22,7 +22,7 @@ class StandardResponse(BaseModel):
     data: Any | None = None
     error: str | None = None
     message: str | None = None
-    timestamp: str = datetime.utcnow().isoformat()
+    timestamp: str = datetime.now(timezone.utc).isoformat()
     trace_id: str | None = None
 
 
@@ -36,7 +36,7 @@ class PaginatedResponse(BaseModel):
     offset: int
     has_more: bool
     next_cursor: str | None = None
-    timestamp: str = datetime.utcnow().isoformat()
+    timestamp: str = datetime.now(timezone.utc).isoformat()
 
 
 def success_response(data: Any = None, message: str | None = None, trace_id: str | None = None) -> dict[str, Any]:
@@ -49,12 +49,13 @@ def success_response(data: Any = None, message: str | None = None, trace_id: str
 
     Returns:
         Dictionary with standardized response format
+
     """
     return {
         "success": True,
         "data": data,
         "message": message,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "trace_id": trace_id,
     }
 
@@ -69,11 +70,12 @@ def error_response(error: str, status_code: int = 500, trace_id: str | None = No
 
     Returns:
         Dictionary with standardized error format
+
     """
     return {
         "success": False,
         "error": error,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "trace_id": trace_id,
         "status_code": status_code,
     }
@@ -97,6 +99,7 @@ def paginated_response(
 
     Returns:
         Dictionary with paginated response format
+
     """
     has_more = (offset + limit) < total
 
@@ -110,7 +113,7 @@ def paginated_response(
             "has_more": has_more,
             "next_cursor": next_cursor,
         },
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
 
@@ -126,6 +129,7 @@ def get_user_or_404(user_id: int, db: Session) -> User:
 
     Raises:
         HTTPException: If user not found
+
     """
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -141,6 +145,7 @@ def require_subscription(user: User) -> None:
 
     Raises:
         HTTPException: If user doesn't have active subscription
+
     """
     if not getattr(user, "is_subscribed", False):
         raise HTTPException(
@@ -157,6 +162,7 @@ def require_admin(user: User) -> None:
 
     Raises:
         HTTPException: If user is not admin
+
     """
     if not getattr(user, "is_admin", False):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin privileges required")
@@ -172,6 +178,7 @@ def validate_pagination(limit: int, offset: int, max_limit: int = 100) -> tuple[
 
     Returns:
         Tuple of (validated_limit, validated_offset)
+
     """
     # Ensure limit is within bounds
     limit = max(1, min(limit, max_limit))
@@ -197,6 +204,7 @@ def generate_trace_id(prefix: str = "") -> str:
 
     Returns:
         Unique trace ID string
+
     """
     import uuid
 
@@ -217,13 +225,14 @@ def log_endpoint_call(
         user_id: Optional user ID
         params: Optional request parameters
         trace_id: Optional trace ID
+
     """
     log_data = {
         "endpoint": endpoint,
         "user_id": user_id,
         "params": params,
         "trace_id": trace_id,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
     logger.info(f"Endpoint called: {endpoint}", extra=log_data)
 
@@ -237,6 +246,7 @@ def handle_db_error(e: Exception, operation: str = "database operation") -> HTTP
 
     Returns:
         HTTPException with appropriate status code and message
+
     """
     logger.error(f"Database error during {operation}: {str(e)}")
 
@@ -268,6 +278,7 @@ def require_feature_flag(flag_name: str, user: User = None) -> None:
 
     Raises:
         HTTPException: If feature is not enabled
+
     """
     # In a real implementation, check feature flags from database or config
     # For now, just a placeholder
@@ -305,6 +316,7 @@ class EndpointWrapper:
 
         Returns:
             Wrapped function
+
         """
 
         async def wrapper(*args, **kwargs):

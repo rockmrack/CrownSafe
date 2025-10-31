@@ -26,6 +26,7 @@ class OpenAILLMClient:
 
         Args:
             api_key: OpenAI API key. If None, will try to get from environment.
+
         """
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.client = None
@@ -84,6 +85,7 @@ class OpenAILLMClient:
 
         Raises:
             RuntimeError: If OpenAI client is not available or request fails
+
         """
         if not self.client:
             # Fallback response for development/testing
@@ -133,6 +135,7 @@ class OpenAILLMClient:
 
         Returns:
             Dictionary with a basic response structure
+
         """
         return {
             "summary": "Based on the product scan, this appears to be a baby formula product. While I'm experiencing connectivity issues with the AI service, I can provide basic safety guidance.",  # noqa: E501

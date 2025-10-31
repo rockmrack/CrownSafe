@@ -4,7 +4,7 @@ Supports monthly ($7.99) and annual ($79.99) plans
 
 import enum
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import (
     Boolean,
@@ -100,7 +100,7 @@ class Subscription(Base):
 
     def is_active(self) -> bool:
         """Check if subscription is currently active"""
-        return self.status == SubscriptionStatus.ACTIVE and self.expires_at > datetime.utcnow()
+        return self.status == SubscriptionStatus.ACTIVE and self.expires_at > datetime.now(timezone.utc)
 
     def calculate_expiry(self) -> DateTime:
         """Calculate expiry date based on plan"""

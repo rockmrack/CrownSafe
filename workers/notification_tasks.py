@@ -32,6 +32,7 @@ def send_notification_batch_task(notifications):
 
     Returns:
         dict: Result summary with counts
+
     """
     # Stub implementation
     fcm = FirebaseMessaging()
@@ -55,6 +56,7 @@ def send_single_notification_task(user_id, message, notification_type):
 
     Returns:
         dict: Send result
+
     """
     # Stub implementation
     return {"success": True, "user_id": user_id, "notification_type": notification_type}

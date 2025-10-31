@@ -2,7 +2,7 @@
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import and_, desc
@@ -63,6 +63,7 @@ async def get_scan_history(
     Returns:
     - List of past scans with product info and recall status
     - Pagination info
+
     """
     try:
         # Build query
@@ -70,7 +71,7 @@ async def get_scan_history(
 
         # Apply filters
         if days:
-            since_date = datetime.utcnow() - timedelta(days=days)
+            since_date = datetime.now(timezone.utc) - timedelta(days=days)
             query = query.filter(ImageJob.created_at >= since_date)
 
         if status:
@@ -152,6 +153,7 @@ async def get_scan_details(
 
     Returns:
     - Full scan details including extraction results
+
     """
     try:
         # Get job ensuring it belongs to user
@@ -249,6 +251,7 @@ async def get_scan_statistics(current_user=Depends(get_current_active_user), db:
     - Scans by status
     - Recent activity
     - Product categories scanned
+
     """
     try:
         # Get all user's jobs
@@ -260,7 +263,7 @@ async def get_scan_statistics(current_user=Depends(get_current_active_user), db:
         failed_scans = len([j for j in jobs if j.status == JobStatus.FAILED])
 
         # Get scans by time period
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         today_scans = len([j for j in jobs if j.created_at.date() == now.date()])
         week_scans = len([j for j in jobs if (now - j.created_at).days <= 7])
         month_scans = len([j for j in jobs if (now - j.created_at).days <= 30])
@@ -344,6 +347,7 @@ async def get_user_profile(current_user=Depends(get_current_active_user), db: Se
 
     Returns:
         User profile data including account details and preferences
+
     """
     try:
         # Count user's scans
@@ -358,7 +362,7 @@ async def get_user_profile(current_user=Depends(get_current_active_user), db: Se
             "is_premium": getattr(current_user, "is_premium", False),
             "created_at": current_user.created_at.isoformat() + "Z"
             if hasattr(current_user, "created_at")
-            else datetime.utcnow().isoformat() + "Z",
+            else datetime.now(timezone.utc).isoformat() + "Z",
             "last_login": current_user.last_login.isoformat() + "Z"
             if hasattr(current_user, "last_login") and current_user.last_login
             else None,
@@ -386,6 +390,7 @@ async def update_user_profile(
 
     Returns:
         Updated user profile data
+
     """
     try:
         # Update allowed fields
@@ -403,7 +408,7 @@ async def update_user_profile(
 
         # Update last_modified timestamp if exists
         if hasattr(current_user, "updated_at"):
-            current_user.updated_at = datetime.utcnow()
+            current_user.updated_at = datetime.now(timezone.utc)
 
         db.commit()
         db.refresh(current_user)
@@ -418,7 +423,7 @@ async def update_user_profile(
             "is_premium": getattr(current_user, "is_premium", False),
             "created_at": current_user.created_at.isoformat() + "Z"
             if hasattr(current_user, "created_at")
-            else datetime.utcnow().isoformat() + "Z",
+            else datetime.now(timezone.utc).isoformat() + "Z",
             "notification_preferences": getattr(current_user, "notification_preferences", {}),
         }
 
@@ -444,6 +449,7 @@ async def get_other_user_profile(
 
     Returns:
         403 Forbidden if trying to access another user's data
+
     """
     # Authorization check: Users can only access their own profile
     if user_id != current_user.id:

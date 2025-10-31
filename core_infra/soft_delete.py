@@ -3,7 +3,7 @@ Enables data recovery and maintains data history
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from sqlalchemy import Boolean, Column, DateTime, Integer, event
@@ -41,7 +41,7 @@ class SoftDeleteMixin:
         """Soft delete this record
         """
         self.is_deleted = True
-        self.deleted_at = datetime.utcnow()
+        self.deleted_at = datetime.now(timezone.utc)
         self.deleted_by = deleted_by_id
 
         logger.info(f"Soft deleted {self.__class__.__name__} id={getattr(self, 'id', 'unknown')}")
@@ -231,7 +231,7 @@ class RecycleBin:
         if not hasattr(model, "is_deleted"):
             raise ValueError(f"{model.__name__} doesn't support soft delete")
 
-        cutoff_date = datetime.utcnow() - timedelta(days=older_than_days)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=older_than_days)
 
         # Get records to delete
         to_delete = self.session.query(model).filter(model.is_deleted, model.deleted_at < cutoff_date).all()

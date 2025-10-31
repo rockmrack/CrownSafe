@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import text
 
@@ -11,7 +11,7 @@ RETENTION_DAYS_AUDIT = 365  # keep audit trail for 1y
 
 @celery_app.task(name="retention.purge_legal_retention")
 def purge_legal_retention():
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     cutoff_legal = now - timedelta(days=RETENTION_DAYS_LEGAL)
     cutoff_audit = now - timedelta(days=RETENTION_DAYS_AUDIT)
 

@@ -50,6 +50,7 @@ async def create_redis_pool(force_new=False) -> ConnectionPool:
 
     Args:
         force_new: If True, force creation of a new pool even if one exists
+
     """
     global _redis_pool, _pool_creation_time
 

@@ -19,6 +19,7 @@ def http_date(dt: datetime) -> str:
 
     Returns:
         HTTP date string like "Mon, 23 Jun 2025 22:49:00 GMT"
+
     """
     # Ensure UTC timezone
     if dt.tzinfo is None:
@@ -37,6 +38,7 @@ def parse_http_date(date_str: str) -> datetime | None:
 
     Returns:
         Datetime object or None if invalid
+
     """
     try:
         # parsedate_to_datetime handles various HTTP date formats
@@ -58,6 +60,7 @@ def make_etag(content: str, weak: bool = False) -> str:
 
     Returns:
         ETag string with quotes (e.g., '"abc123"' or 'W/"abc123"')
+
     """
     # Generate hash
     hash_value = hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]  # Use first 16 chars for brevity
@@ -79,6 +82,7 @@ def make_search_etag(filters_hash: str, as_of: str, result_ids: list[str]) -> st
 
     Returns:
         ETag string
+
     """
     # Combine components
     content = f"{filters_hash}:{as_of}:{''.join(result_ids[:5])}"
@@ -94,6 +98,7 @@ def make_detail_etag(item_id: str, last_updated: datetime) -> str:
 
     Returns:
         ETag string
+
     """
     # Use timestamp for uniqueness
     timestamp = last_updated.timestamp() if last_updated else 0
@@ -110,6 +115,7 @@ def check_if_none_match(request: Request, etag: str) -> bool:
 
     Returns:
         True if client has matching ETag (should return 304)
+
     """
     if_none_match = request.headers.get("If-None-Match")
     if not if_none_match:
@@ -131,6 +137,7 @@ def check_if_modified_since(request: Request, last_modified: datetime) -> bool:
 
     Returns:
         True if NOT modified (should return 304)
+
     """
     if_modified_since = request.headers.get("If-Modified-Since")
     if not if_modified_since:
@@ -171,6 +178,7 @@ def add_cache_headers(
         private: Make cache private
         no_cache: Prevent caching
         no_store: Prevent storage
+
     """
     # Add ETag
     if etag:
@@ -218,6 +226,7 @@ def create_not_modified_response(etag: str | None = None, cache_control: str | N
 
     Returns:
         304 response with appropriate headers
+
     """
     response = Response(content=None, status_code=304, media_type=None)
 

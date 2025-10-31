@@ -41,6 +41,7 @@ def test_api_endpoint_with_model_number(
 
     Returns:
         Dictionary containing test results
+
     """
     endpoint = f"{api_url}/api/v1/safety-check"
 
@@ -87,6 +88,7 @@ async def test_direct_database_search(model_number: str) -> dict[str, Any]:
 
     Returns:
         Dictionary containing search results
+
     """
     try:
         from core_infra.database import RecallDB, get_db_session
@@ -143,6 +145,7 @@ async def test_recall_data_agent_directly(model_number: str) -> dict[str, Any]:
 
     Returns:
         Dictionary containing agent test results
+
     """
     try:
         from agents.recall_data_agent.agent_logic import RecallDataAgentLogic
@@ -176,6 +179,7 @@ def run_comprehensive_test_suite(user_id: int, barcode: str, model_number: str |
         user_id: User ID for API tests
         barcode: Product barcode
         model_number: Product model number (optional)
+
     """
     logger.info("🧪 Starting Model Number Scanning Test Suite")
     logger.info("=" * 60)

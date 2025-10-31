@@ -49,6 +49,7 @@ async def readyz(response: Response) -> JSONResponse:
     - Kubernetes readiness probe
     - Pre-deployment checks
     - Dependency monitoring
+
     """
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
 
@@ -106,7 +107,7 @@ async def status(response: Response) -> dict[str, Any]:
     Provides comprehensive system information
     """
     import platform
-    from datetime import datetime
+    from datetime import datetime, timezone
 
     import psutil
 
@@ -121,7 +122,7 @@ async def status(response: Response) -> dict[str, Any]:
         "service": "babyshield-api",
         "version": os.getenv("API_VERSION", "v1.2.0"),
         "environment": os.getenv("ENVIRONMENT", "production"),
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "system": {
             "platform": platform.system(),
             "python_version": platform.python_version(),

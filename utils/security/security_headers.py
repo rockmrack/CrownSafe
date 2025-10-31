@@ -222,6 +222,7 @@ def configure_security_middleware(app, environment: str = "production"):
     Args:
         app: FastAPI application instance
         environment: Application environment (development, staging, production)
+
     """
     # Determine security settings based on environment
     is_production = environment == "production"

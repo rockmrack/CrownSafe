@@ -2,7 +2,7 @@
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 from uuid import UUID
 
@@ -327,7 +327,7 @@ async def data_freshness(request: Request, db: Session = Depends(get_db)):
         # Get recent ingestion runs
         recent_runs = (
             db.query(IngestionRun)
-            .filter(IngestionRun.finished_at >= datetime.utcnow() - timedelta(hours=24))
+            .filter(IngestionRun.finished_at >= datetime.now(timezone.utc) - timedelta(hours=24))
             .order_by(IngestionRun.finished_at.desc())
             .limit(5)
             .all()
@@ -383,7 +383,7 @@ async def admin_statistics(request: Request, db: Session = Depends(get_db)):
         }
 
         # Ingestion stats (last 7 days)
-        week_ago = datetime.utcnow() - timedelta(days=7)
+        week_ago = datetime.now(timezone.utc) - timedelta(days=7)
 
         ingestion_stats = (
             db.query(

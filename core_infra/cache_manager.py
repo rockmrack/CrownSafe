@@ -268,6 +268,7 @@ def invalidate_pattern(pattern: str) -> int:
     Example:
         >>> invalidate_pattern("bsc:recall:*")
         5
+
     """
     return cache_manager.invalidate_pattern(pattern)
 

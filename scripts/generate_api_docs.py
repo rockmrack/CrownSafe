@@ -23,6 +23,7 @@ class APIDocumentationEnhancer:
 
         Returns:
             List of endpoint documentation objects
+
         """
         return [
             {
@@ -206,6 +207,7 @@ class APIDocumentationEnhancer:
 
         Returns:
             Dictionary with best practices
+
         """
         return {
             "rate_limiting": {

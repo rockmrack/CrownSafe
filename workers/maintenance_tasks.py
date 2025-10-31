@@ -29,6 +29,7 @@ def cleanup_old_task_results_task(days_old=30):
 
     Returns:
         dict: Cleanup result
+
     """
     # Stub implementation
     result = TaskResult.delete_old_results(days_old)
@@ -47,6 +48,7 @@ def cleanup_expired_sessions_task():
 
     Returns:
         dict: Cleanup result
+
     """
     # Stub implementation
     return {"success": True, "sessions_deleted": 75, "time_taken_ms": 150}
@@ -58,6 +60,7 @@ def vacuum_database_task():
 
     Returns:
         dict: Vacuum result
+
     """
     # Stub implementation
     return {"success": True, "space_reclaimed_mb": 250, "time_taken_minutes": 5}
@@ -73,6 +76,7 @@ def archive_old_data_task(table_name, days_old=90):
 
     Returns:
         dict: Archive result
+
     """
     # Stub implementation
     return {

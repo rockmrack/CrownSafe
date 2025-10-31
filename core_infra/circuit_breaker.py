@@ -92,6 +92,7 @@ def with_circuit_breaker(service_name: str, fallback=None):
     Args:
         service_name: Name of the service (must be in BREAKER_CONFIGS)
         fallback: Optional fallback function to call when circuit is open
+
     """
 
     def decorator(func):
@@ -171,6 +172,7 @@ def with_retry(
         wait_exponential_multiplier: Multiplier for exponential backoff
         wait_exponential_max: Maximum wait time between retries
         retry_on: Tuple of exceptions to retry on
+
     """
     return retry(
         stop=stop_after_attempt(max_attempts),
@@ -187,6 +189,7 @@ def resilient_operation(service_name: str, max_attempts: int = 3, fallback=None)
         service_name: Name of the service
         max_attempts: Maximum retry attempts
         fallback: Fallback function if all retries fail
+
     """
 
     def decorator(func):

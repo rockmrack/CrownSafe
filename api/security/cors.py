@@ -16,6 +16,7 @@ def get_allowed_origins() -> list[str]:
 
     Returns:
         List of allowed origin URLs
+
     """
     # Get from environment variable
     origins_env = os.getenv("CORS_ALLOWED_ORIGINS", "")
@@ -73,6 +74,7 @@ def add_strict_cors(
         allowed_origins: List of allowed origins (uses env if not provided)
         allow_credentials: Whether to allow credentials in CORS requests
         max_age: Max age for preflight cache (seconds)
+
     """
     # Get origins
     origins = allowed_origins or get_allowed_origins()
@@ -155,6 +157,7 @@ class CORSConfig:
 
         Returns:
             List of allowed origins
+
         """
         env = environment.lower()
 
@@ -178,6 +181,7 @@ class CORSConfig:
 
         Returns:
             True if origin is allowed
+
         """
         # Never allow wildcard
         if origin == "*":

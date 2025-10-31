@@ -4,7 +4,7 @@ Includes Crashlytics toggle and other app preferences
 
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException, Request, status
@@ -145,7 +145,7 @@ async def update_settings(
         },
     )
 
-    return SettingsResponse(ok=True, settings=settings, updated_at=datetime.utcnow())
+    return SettingsResponse(ok=True, settings=settings, updated_at=datetime.now(timezone.utc))
 
 
 @router.post("/crashlytics", response_model=dict[str, Any])
@@ -263,7 +263,7 @@ async def reset_settings(
         },
     )
 
-    return SettingsResponse(ok=True, settings=settings_store[identifier], updated_at=datetime.utcnow())
+    return SettingsResponse(ok=True, settings=settings_store[identifier], updated_at=datetime.now(timezone.utc))
 
 
 # ========================= ERROR RECOVERY =========================

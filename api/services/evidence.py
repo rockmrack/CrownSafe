@@ -14,6 +14,7 @@ def label_to_evidence(evidence_id: str, url: str | None = None) -> list[dict[str
 
     Returns:
         List of evidence dictionaries
+
     """
     return [{"type": "label", "source": "Product label", "id": evidence_id, "url": url}]
 
@@ -28,6 +29,7 @@ def regulatory_to_evidence(agency: str, title: str | None = None, url: str | Non
 
     Returns:
         List of evidence dictionaries
+
     """
     return [{"type": "regulatory", "source": agency, "id": title, "url": url}]
 
@@ -40,6 +42,7 @@ def recalls_to_evidence(recalls: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
     Returns:
         List of evidence dictionaries
+
     """
     evidence = []
     for recall in recalls:
@@ -64,6 +67,7 @@ def datasheet_to_evidence(source: str, product_id: str, url: str | None = None) 
 
     Returns:
         List of evidence dictionaries
+
     """
     return [{"type": "datasheet", "source": source, "id": product_id, "url": url}]
 
@@ -78,6 +82,7 @@ def guideline_to_evidence(organization: str, guideline_name: str, url: str | Non
 
     Returns:
         List of evidence dictionaries
+
     """
     return [
         {

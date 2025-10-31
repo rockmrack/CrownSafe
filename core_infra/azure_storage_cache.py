@@ -12,7 +12,7 @@ Features:
 import hashlib
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 import redis
 
@@ -36,6 +36,7 @@ class AzureStorageCacheManager:
             redis_url: Redis connection URL (e.g., 'redis://localhost:6379/0')
             default_ttl_hours: Default cache TTL in hours (23 hours < 24h SAS expiry)
             key_prefix: Redis key prefix for SAS URLs
+
         """
         self.redis_url = redis_url
         self.default_ttl_hours = default_ttl_hours
@@ -73,6 +74,7 @@ class AzureStorageCacheManager:
 
         Returns:
             Redis cache key
+
         """
         # Include permissions in key to differentiate read/write URLs
         key_components = f"{container_name}:{blob_name}:{permissions}"
@@ -94,6 +96,7 @@ class AzureStorageCacheManager:
 
         Returns:
             Cached SAS URL or None if not found/expired
+
         """
         if not self.cache_enabled:
             return None
@@ -108,7 +111,7 @@ class AzureStorageCacheManager:
                 cached_at = datetime.fromisoformat(data.get("cached_at"))
 
                 # Verify cache hasn't expired (double-check)
-                age_hours = (datetime.utcnow() - cached_at).total_seconds() / 3600
+                age_hours = (datetime.now(timezone.utc) - cached_at).total_seconds() / 3600
                 if age_hours < self.default_ttl_hours:
                     self.cache_hits += 1
                     logger.debug(f"Cache HIT for {blob_name} (age: {age_hours:.1f}h)")
@@ -146,6 +149,7 @@ class AzureStorageCacheManager:
 
         Returns:
             True if cached successfully, False otherwise
+
         """
         if not self.cache_enabled:
             return False
@@ -159,7 +163,7 @@ class AzureStorageCacheManager:
                 "blob_name": blob_name,
                 "container_name": container_name,
                 "permissions": permissions,
-                "cached_at": datetime.utcnow().isoformat(),
+                "cached_at": datetime.now(timezone.utc).isoformat(),
             }
 
             # Set with TTL in seconds
@@ -188,6 +192,7 @@ class AzureStorageCacheManager:
 
         Returns:
             True if invalidated successfully, False otherwise
+
         """
         if not self.cache_enabled:
             return False
@@ -225,6 +230,7 @@ class AzureStorageCacheManager:
 
         Returns:
             Number of keys deleted
+
         """
         if not self.cache_enabled:
             return 0
@@ -248,6 +254,7 @@ class AzureStorageCacheManager:
 
         Returns:
             Dictionary with cache statistics
+
         """
         total_requests = self.cache_hits + self.cache_misses
         hit_rate = (self.cache_hits / total_requests * 100) if total_requests > 0 else 0.0
@@ -282,6 +289,7 @@ def get_cache_manager(redis_url: str | None = None) -> AzureStorageCacheManager:
 
     Returns:
         AzureStorageCacheManager instance
+
     """
     global azure_storage_cache
 

@@ -45,6 +45,7 @@ async def require_admin(request: Request, x_admin_key: str | None = Depends(api_
 
     Raises:
         HTTPException: 401 if unauthorized
+
     """
     trace_id = getattr(request.state, "trace_id", None)
 
@@ -119,6 +120,7 @@ async def optional_admin(request: Request, x_admin_key: str | None = Depends(api
 
     Returns:
         Admin identifier or None
+
     """
     if not x_admin_key or not ADMIN_API_KEY:
         return None
@@ -170,6 +172,7 @@ def validate_admin_key(key: str) -> bool:
 
     Returns:
         True if valid format
+
     """
     # Must be at least 32 characters
     if len(key) < 32:
@@ -187,6 +190,7 @@ def generate_admin_key() -> str:
 
     Returns:
         Random 64-character API key
+
     """
     import secrets
 

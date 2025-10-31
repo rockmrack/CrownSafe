@@ -6,7 +6,7 @@ including database, cache, and external service dependencies.
 
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -26,8 +26,9 @@ async def basic_health_check():
 
     Returns:
         Simple OK status for load balancers and monitoring
+
     """
-    return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}
+    return {"status": "ok", "timestamp": datetime.now(timezone.utc).isoformat()}
 
 
 @router.get("/health/detailed")
@@ -55,6 +56,7 @@ async def detailed_health_check(db: Session = Depends(get_db)) -> dict[str, Any]
                 "redis": {"status": "not_configured"}
             }
         }
+
     """
     start_time = time.time()
     checks = {}
@@ -150,7 +152,7 @@ async def detailed_health_check(db: Session = Depends(get_db)) -> dict[str, Any]
 
     response = {
         "status": overall_status,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "response_time_ms": round(response_time_ms, 2),
         "version": os.getenv("GIT_COMMIT", "unknown"),
         "environment": os.getenv("ENVIRONMENT", "unknown"),
@@ -189,4 +191,4 @@ async def liveness_check():
     Returns 200 if the service is alive (process is running).
     This should never fail unless the process is completely dead.
     """
-    return {"status": "alive", "timestamp": datetime.utcnow().isoformat()}
+    return {"status": "alive", "timestamp": datetime.now(timezone.utc).isoformat()}

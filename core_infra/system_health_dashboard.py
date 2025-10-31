@@ -12,7 +12,7 @@ Features:
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ class SystemHealthDashboard:
 
     def __init__(self) -> None:
         """Initialize health dashboard"""
-        self.startup_time = datetime.utcnow()
+        self.startup_time = datetime.now(timezone.utc)
 
     def get_comprehensive_health(self) -> dict[str, Any]:
         """Get comprehensive system health status
@@ -33,11 +33,12 @@ class SystemHealthDashboard:
 
         Returns:
             Dictionary with complete health information
+
         """
         health_data = {
             "status": "healthy",
-            "timestamp": datetime.utcnow().isoformat(),
-            "uptime_seconds": (datetime.utcnow() - self.startup_time).total_seconds(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "uptime_seconds": (datetime.now(timezone.utc) - self.startup_time).total_seconds(),
             "subsystems": {},
             "overall_health_score": 100.0,
         }

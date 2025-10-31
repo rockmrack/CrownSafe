@@ -99,7 +99,7 @@ class TestSecurityAndValidation:
 
     def test_date_validation_valid(self):
         """Test valid date validation"""
-        from datetime import date
+        from datetime import date, timezone
 
         today = date.today()
         assert today is not None
@@ -107,7 +107,7 @@ class TestSecurityAndValidation:
 
     def test_date_validation_format(self):
         """Test date format validation"""
-        from datetime import datetime
+        from datetime import date, timezonetime
 
         date_str = "2024-01-01"
         parsed = datetime.strptime(date_str, "%Y-%m-%d")
@@ -230,49 +230,49 @@ class TestSecurityAndValidation:
 
     def test_jwt_token_creation(self):
         """Test JWT token creation"""
-        from datetime import datetime, timedelta
+        from datetime import date, timezonetime, timedelta
 
         from jose import jwt
 
         secret = "test-secret-key"
-        payload = {"sub": "user123", "exp": datetime.utcnow() + timedelta(hours=1)}
+        payload = {"sub": "user123", "exp": datetime.now(timezone.utc) + timedelta(hours=1)}
         token = jwt.encode(payload, secret, algorithm="HS256")
         assert token is not None
         assert isinstance(token, str)
 
     def test_jwt_token_decode(self):
         """Test JWT token decoding"""
-        from datetime import datetime, timedelta
+        from datetime import date, timezonetime, timedelta
 
         from jose import jwt
 
         secret = "test-secret-key"
-        payload = {"sub": "user123", "exp": datetime.utcnow() + timedelta(hours=1)}
+        payload = {"sub": "user123", "exp": datetime.now(timezone.utc) + timedelta(hours=1)}
         token = jwt.encode(payload, secret, algorithm="HS256")
         decoded = jwt.decode(token, secret, algorithms=["HS256"])
         assert decoded["sub"] == "user123"
 
     def test_jwt_token_expiration(self):
         """Test JWT token expiration"""
-        from datetime import datetime, timedelta
+        from datetime import date, timezonetime, timedelta
 
         from jose import JWTError, jwt
 
         secret = "test-secret-key"
-        payload = {"sub": "user123", "exp": datetime.utcnow() - timedelta(hours=1)}
+        payload = {"sub": "user123", "exp": datetime.now(timezone.utc) - timedelta(hours=1)}
         token = jwt.encode(payload, secret, algorithm="HS256")
         with pytest.raises(JWTError):
             jwt.decode(token, secret, algorithms=["HS256"])
 
     def test_jwt_token_invalid_signature(self):
         """Test JWT token with invalid signature"""
-        from datetime import datetime, timedelta
+        from datetime import date, timezonetime, timedelta
 
         from jose import JWTError, jwt
 
         secret = "test-secret-key"
         wrong_secret = "wrong-secret-key"
-        payload = {"sub": "user123", "exp": datetime.utcnow() + timedelta(hours=1)}
+        payload = {"sub": "user123", "exp": datetime.now(timezone.utc) + timedelta(hours=1)}
         token = jwt.encode(payload, secret, algorithm="HS256")
         with pytest.raises(JWTError):
             jwt.decode(token, wrong_secret, algorithms=["HS256"])

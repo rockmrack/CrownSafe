@@ -37,6 +37,7 @@ class ObservabilityManager:
 
         Args:
             endpoint: OTLP collector endpoint
+
         """
         try:
             # Set up tracer provider
@@ -63,6 +64,7 @@ class ObservabilityManager:
 
         Args:
             app: FastAPI application instance
+
         """
         try:
             FastAPIInstrumentor.instrument_app(app)
@@ -75,6 +77,7 @@ class ObservabilityManager:
 
         Args:
             engine: SQLAlchemy engine
+
         """
         try:
             SQLAlchemyInstrumentor().instrument(engine=engine)
@@ -109,6 +112,7 @@ class ObservabilityManager:
 
         Returns:
             Span context manager
+
         """
         if self.tracer:
             span = self.tracer.start_as_current_span(name)
@@ -161,6 +165,7 @@ class AzureMonitorIntegration:
         Args:
             event_name: Event name
             properties: Event properties
+
         """
         try:
             # Log custom event
@@ -175,6 +180,7 @@ class AzureMonitorIntegration:
             metric_name: Metric name
             value: Metric value
             properties: Metric properties
+
         """
         try:
             # Log custom metric

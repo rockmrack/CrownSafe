@@ -5,7 +5,7 @@ Produces comprehensive product safety reports with legal disclaimers
 import json
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from io import BytesIO
 from typing import Any
 
@@ -214,6 +214,7 @@ class RiskReportGenerator:
 
         Returns:
             Dictionary with report URL and metadata
+
         """
         logger.info(f"Generating {format} report for product {product.id}")
 
@@ -237,7 +238,7 @@ class RiskReportGenerator:
         report_record = {
             "product_id": product.id,
             "report_type": "full",
-            "generated_at": datetime.utcnow(),
+            "generated_at": datetime.now(timezone.utc),
             "report_version": "1.0",
             "risk_score": risk_components.total_score,
             "risk_level": risk_components.risk_level,
@@ -259,8 +260,8 @@ class RiskReportGenerator:
         """Prepare all data for report generation
         """
         data = {
-            "report_id": f"RSK-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}",
-            "generated_at": datetime.utcnow().isoformat(),
+            "report_id": f"RSK-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
+            "generated_at": datetime.now(timezone.utc).isoformat(),
             "product": {
                 "name": product.product_name,
                 "brand": product.brand,
@@ -504,7 +505,7 @@ class RiskReportGenerator:
             summary += f"Injuries Reported: {injuries}\n"
 
         # Recent incidents
-        recent = [i for i in incidents if i.incident_date and (datetime.utcnow() - i.incident_date).days < 90]
+        recent = [i for i in incidents if i.incident_date and (datetime.now(timezone.utc) - i.incident_date).days < 90]
         if recent:
             summary += f"Recent Incidents (last 90 days): {len(recent)}\n"
 
@@ -640,7 +641,7 @@ class RiskReportGenerator:
     def _upload_to_azure_blob(self, content: Any, product_id: str, format: str) -> str:
         """Upload report to Azure Blob Storage and return SAS URL
         """
-        timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
         blob_name = f"risk-reports/{product_id}/{timestamp}.{format}"
 
         # Check if Azure Blob Storage is configured

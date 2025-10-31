@@ -4,7 +4,7 @@
 import hashlib
 import logging
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, BackgroundTasks, Body, Depends, Query
 from pydantic import EmailStr
@@ -194,7 +194,7 @@ async def request_password_reset(
             reset_token = PasswordResetToken(
                 id=token_hash,
                 user_id=user.id,  # Fixed: Use integer directly
-                expires_at=datetime.utcnow() + timedelta(hours=1),
+                expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
             )
             db.add(reset_token)
             db.commit()
@@ -244,7 +244,7 @@ async def confirm_password_reset(request: PasswordResetConfirm, db: Session = De
             db.query(PasswordResetToken)
             .filter(
                 PasswordResetToken.id == token_hash,
-                PasswordResetToken.expires_at > datetime.utcnow(),
+                PasswordResetToken.expires_at > datetime.now(timezone.utc),
                 PasswordResetToken.used_at.is_(None),
             )
             .first()
@@ -263,7 +263,7 @@ async def confirm_password_reset(request: PasswordResetConfirm, db: Session = De
         user.hashed_password = get_password_hash(request.new_password)
 
         # Mark token as used
-        reset_token.used_at = datetime.utcnow()
+        reset_token.used_at = datetime.now(timezone.utc)
 
         db.commit()
 
@@ -289,7 +289,7 @@ async def validate_reset_token(token: str, db: Session = Depends(get_db)):
             db.query(PasswordResetToken)
             .filter(
                 PasswordResetToken.id == token_hash,
-                PasswordResetToken.expires_at > datetime.utcnow(),
+                PasswordResetToken.expires_at > datetime.now(timezone.utc),
                 PasswordResetToken.used_at.is_(None),
             )
             .first()
@@ -297,7 +297,7 @@ async def validate_reset_token(token: str, db: Session = Depends(get_db)):
 
         if reset_token:
             # Calculate remaining time
-            remaining = reset_token.expires_at - datetime.utcnow()
+            remaining = reset_token.expires_at - datetime.now(timezone.utc)
             remaining_minutes = int(remaining.total_seconds() / 60)
 
             return ok({"valid": True, "expires_in_minutes": remaining_minutes})
@@ -336,7 +336,7 @@ async def complete_password_reset(
             db.query(PasswordResetToken)
             .filter(
                 PasswordResetToken.id == token_hash,
-                PasswordResetToken.expires_at > datetime.utcnow(),
+                PasswordResetToken.expires_at > datetime.now(timezone.utc),
                 PasswordResetToken.used_at.is_(None),
             )
             .first()
@@ -355,7 +355,7 @@ async def complete_password_reset(
         user.hashed_password = get_password_hash(request.new_password)
 
         # Mark token as used (one-time use)
-        reset_token.used_at = datetime.utcnow()
+        reset_token.used_at = datetime.now(timezone.utc)
 
         db.commit()
 

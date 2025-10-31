@@ -39,6 +39,7 @@ async def init_rate_limiter() -> bool:
 
     Returns:
         True if successful, False otherwise
+
     """
     try:
         redis_url = RateLimitConfig.get_redis_url()
@@ -117,6 +118,7 @@ def get_rate_limiter(times: int = 100, seconds: int = 60, key_func: callable | N
 
     Returns:
         RateLimiter dependency
+
     """
     return RateLimiter(times=times, seconds=seconds, key_func=key_func)
 

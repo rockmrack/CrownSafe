@@ -341,13 +341,13 @@ Please investigate immediately.
                         "MetricName": "RestoreTestSuccess",
                         "Value": 1 if result.success else 0,
                         "Unit": "None",
-                        "Timestamp": datetime.datetime.utcnow(),
+                        "Timestamp": datetime.datetime.now(timezone.utc),
                     },
                     {
                         "MetricName": "RestoreTestDuration",
                         "Value": result.duration_minutes,
                         "Unit": "Minutes",
-                        "Timestamp": datetime.datetime.utcnow(),
+                        "Timestamp": datetime.datetime.now(timezone.utc),
                     },
                 ],
             )
@@ -362,7 +362,7 @@ Please investigate immediately.
                             "Value": count,
                             "Unit": "Count",
                             "Dimensions": [{"Name": "Table", "Value": table}],
-                            "Timestamp": datetime.datetime.utcnow(),
+                            "Timestamp": datetime.datetime.now(timezone.utc),
                         },
                     ],
                 )
@@ -447,7 +447,7 @@ def main():
     """Main entry point"""
     logger.info("=" * 60)
     logger.info(" AUTOMATED RESTORE TEST STARTING")
-    logger.info(f" Time: {datetime.datetime.utcnow().isoformat()}")
+    logger.info(f" Time: {datetime.datetime.now(timezone.utc).isoformat()}")
     logger.info("=" * 60)
 
     # Create tester

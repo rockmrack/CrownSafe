@@ -4,7 +4,7 @@ Implements weighted scoring model based on CPSC penalty factors
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 
 from sqlalchemy.orm import Session
@@ -117,6 +117,7 @@ class RiskScoringEngine:
 
         Returns:
             RiskScoreComponents with detailed breakdown
+
         """
         components = RiskScoreComponents()
 
@@ -238,7 +239,7 @@ class RiskScoringEngine:
             "time_since_last_incident": None,
         }
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
 
         # Find most recent incident
         if incidents:

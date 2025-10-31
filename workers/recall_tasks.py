@@ -64,6 +64,7 @@ def ingest_recalls_from_agency_task(self: Task, agency: str, date_range: dict[st
 
     Returns:
         Dict with ingestion results
+
     """
     try:
         agent = RecallAgent()
@@ -103,6 +104,7 @@ def refresh_all_recalls_task() -> dict[str, Any]:
 
     Returns:
         Dict with refresh results for all agencies
+
     """
     agencies = ["CPSC", "FDA", "NHTSA", "Transport_Canada", "Health_Canada"]
     results = []

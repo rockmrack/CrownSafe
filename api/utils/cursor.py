@@ -37,6 +37,7 @@ def sign_cursor(payload: dict[str, Any], key: str | None = None) -> str:
 
     Raises:
         ValueError: If key is not provided and not in environment
+
     """
     if key is None:
         key = os.getenv("CURSOR_SIGNING_KEY")
@@ -70,6 +71,7 @@ def verify_cursor(token: str, key: str | None = None) -> dict[str, Any]:
 
     Raises:
         ValueError: If cursor is invalid, tampered, or expired
+
     """
     if key is None:
         key = os.getenv("CURSOR_SIGNING_KEY")
@@ -135,6 +137,7 @@ def create_search_cursor(
 
     Returns:
         Signed cursor token
+
     """
     # Ensure as_of is timezone-aware
     if as_of.tzinfo is None:
@@ -173,6 +176,7 @@ def hash_filters(filters: dict[str, Any], exclude_cursor: bool = True) -> str:
 
     Returns:
         SHA256 hash hex string
+
     """
     # Create a copy and remove cursor if needed
     canonical = dict(filters)
@@ -198,6 +202,7 @@ def validate_cursor_filters(cursor_data: dict[str, Any], current_filters_hash: s
 
     Raises:
         ValueError: If filters don't match
+
     """
     cursor_filters_hash = cursor_data.get("f")
     if cursor_filters_hash != current_filters_hash:

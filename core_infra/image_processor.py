@@ -149,6 +149,7 @@ class ImageAnalysisService:
             google_credentials_path: Path to Google Cloud credentials JSON
             aws_region: AWS region for Rekognition
             enable_caching: Enable result caching
+
         """
         self.enable_caching = enable_caching
 
@@ -238,6 +239,7 @@ class ImageAnalysisService:
 
         Returns:
             Complete extraction result
+
         """
         # Calculate file hash for caching
         file_hash = hashlib.sha256(image_data).hexdigest()
@@ -610,6 +612,7 @@ class ImageAnalysisService:
 
         Returns:
             List of detected defects with type, confidence, and location
+
         """
         defects = []
 

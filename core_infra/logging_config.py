@@ -6,7 +6,7 @@ import json
 import logging
 import logging.config
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class StructuredFormatter(logging.Formatter):
@@ -14,7 +14,7 @@ class StructuredFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         log_obj = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "level": record.levelname,
             "logger": record.name,
             "message": record.getMessage(),
@@ -98,6 +98,7 @@ def setup_logging(
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         log_format: Format for logs ("console" for development, "json" for production)
         log_file: Optional file path for log output
+
     """
     # Get log level from environment or parameter
     if log_level is None:
@@ -176,6 +177,7 @@ def get_logger(name: str) -> logging.Logger:
 
     Returns:
         Configured logger instance
+
     """
     return logging.getLogger(name)
 
@@ -199,7 +201,7 @@ class RequestLogger:
         request_id = str(uuid.uuid4())[:8]
 
         # Log request
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         path = scope["path"]
         method = scope["method"]
 
@@ -212,7 +214,7 @@ class RequestLogger:
         async def send_wrapper(message) -> None:
             if message["type"] == "http.response.start":
                 # Log response
-                duration_ms = int((datetime.utcnow() - start_time).total_seconds() * 1000)
+                duration_ms = int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000)
                 status_code = message["status"]
 
                 log_level = logging.INFO

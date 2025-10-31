@@ -49,6 +49,7 @@ def get_production_session():
 
     Raises:
         pytest.skip: If PROD_DATABASE_URL is not set or is SQLite
+
     """
     prod_url = os.getenv("PROD_DATABASE_URL", os.getenv("DATABASE_URL"))
 
@@ -75,6 +76,7 @@ def get_real_model_number_from_db():
     Returns:
         dict: Model number, product name, brand, and recall ID from database
         None: If no model numbers found
+
     """
     session = get_production_session()
     try:

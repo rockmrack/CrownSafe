@@ -12,7 +12,7 @@ Features:
 import logging
 import os
 import subprocess
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +32,7 @@ class BackupManager:
         Args:
             database_url: PostgreSQL connection URL
             backup_container: Azure Blob container for backups
+
         """
         self.database_url = database_url or os.getenv("DATABASE_URL")
         self.backup_container = backup_container
@@ -48,8 +49,9 @@ class BackupManager:
 
         Returns:
             Dictionary with backup information
+
         """
-        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         backup_filename = f"crownsafe_backup_{backup_type}_{timestamp}"
 
         if compression:
@@ -161,6 +163,7 @@ class BackupManager:
 
         Returns:
             Dictionary with upload status
+
         """
         try:
             from core_infra.azure_storage import AzureBlobStorageClient
@@ -177,7 +180,7 @@ class BackupManager:
                 container_name=self.backup_container,
                 content_type="application/octet-stream",
                 metadata={
-                    "backup_timestamp": datetime.utcnow().isoformat(),
+                    "backup_timestamp": datetime.now(timezone.utc).isoformat(),
                     "backup_type": "database",
                     "application": "crownsafe",
                 },
@@ -199,6 +202,7 @@ class BackupManager:
 
         Returns:
             List of backup information
+
         """
         try:
             from core_infra.azure_storage import AzureBlobStorageClient
@@ -232,6 +236,7 @@ class BackupManager:
 
         Returns:
             Dictionary with cleanup results
+
         """
         try:
             from core_infra.azure_storage import AzureBlobStorageClient
@@ -240,7 +245,7 @@ class BackupManager:
 
             blobs = client.list_blobs(container_name=self.backup_container)
 
-            cutoff_date = datetime.utcnow() - timedelta(days=retention_days)
+            cutoff_date = datetime.now(timezone.utc) - timedelta(days=retention_days)
             deleted_count = 0
             deleted_size = 0
 

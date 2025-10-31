@@ -36,6 +36,7 @@ def warm_cache_task(cache_keys=None):
 
     Returns:
         dict: Cache warming result
+
     """
     # Stub implementation
     cache = RedisCache()
@@ -58,6 +59,7 @@ def invalidate_cache_task(pattern):
 
     Returns:
         dict: Invalidation result
+
     """
     # Stub implementation
     return {
@@ -78,6 +80,7 @@ def refresh_cache_task(cache_key, data_source):
 
     Returns:
         dict: Refresh result
+
     """
     # Stub implementation
     return {

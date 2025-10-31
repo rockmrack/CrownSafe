@@ -16,7 +16,7 @@ Features:
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urlparse
 
 from azure.core.exceptions import ResourceNotFoundError
@@ -54,6 +54,7 @@ class AzureBlobStorageClient:
             account_name: Storage account name (alternative to connection_string)
             account_key: Storage account key (alternative to connection_string)
             container_name: Default container name (e.g., 'crownsafe-images')
+
         """
         self.connection_string = connection_string or os.getenv("AZURE_STORAGE_CONNECTION_STRING")
         self.account_name = account_name or os.getenv("AZURE_STORAGE_ACCOUNT_NAME")
@@ -113,6 +114,7 @@ class AzureBlobStorageClient:
 
         Raises:
             Exception: If upload fails
+
         """
         blob_client = self._get_blob_client(blob_name, container_name)
 
@@ -147,6 +149,7 @@ class AzureBlobStorageClient:
 
         Returns:
             Blob URL
+
         """
         blob_name = blob_name or os.path.basename(file_path)
 
@@ -178,6 +181,7 @@ class AzureBlobStorageClient:
 
         Raises:
             Exception: If upload fails
+
         """
         import asyncio
 
@@ -218,6 +222,7 @@ class AzureBlobStorageClient:
 
         Returns:
             SAS URL with temporary access token
+
         """
         container = container_name or self.container_name
 
@@ -235,7 +240,7 @@ class AzureBlobStorageClient:
                 logger.warning(f"Cache lookup failed: {e}, generating new SAS URL")
 
         # Generate new SAS token
-        expiry = datetime.utcnow() + timedelta(hours=expiry_hours)
+        expiry = datetime.now(timezone.utc) + timedelta(hours=expiry_hours)
 
         sas_token = generate_blob_sas(
             account_name=self.account_name,
@@ -274,6 +279,7 @@ class AzureBlobStorageClient:
 
         Returns:
             True if blob exists, False otherwise
+
         """
         try:
             blob_client = self._get_blob_client(blob_name, container_name)
@@ -296,6 +302,7 @@ class AzureBlobStorageClient:
 
         Raises:
             ResourceNotFoundError: If blob doesn't exist
+
         """
         blob_client = self._get_blob_client(blob_name, container_name)
         properties = blob_client.get_blob_properties()
@@ -322,6 +329,7 @@ class AzureBlobStorageClient:
 
         Raises:
             Exception: If blob doesn't exist or download fails
+
         """
         blob_client = self._get_blob_client(blob_name, container_name)
         download_stream = blob_client.download_blob()
@@ -341,6 +349,7 @@ class AzureBlobStorageClient:
 
         Returns:
             True if deleted successfully, False otherwise
+
         """
         container = container_name or self.container_name
         blob_client = self._get_blob_client(blob_name, container)
@@ -375,6 +384,7 @@ class AzureBlobStorageClient:
 
         Returns:
             List of blob names
+
         """
         container_client = self._get_container_client(container_name)
         blobs = container_client.list_blobs(name_starts_with=prefix)
@@ -395,6 +405,7 @@ class AzureBlobStorageClient:
 
         Returns:
             Public blob URL
+
         """
         container = container_name or self.container_name
         return f"https://{self.account_name}.blob.core.windows.net/{container}/{blob_name}"
@@ -408,6 +419,7 @@ class AzureBlobStorageClient:
 
         Returns:
             True if Azure Blob URL, False otherwise
+
         """
         parsed = urlparse(url)
         return "blob.core.windows.net" in (parsed.netloc or "")
@@ -424,5 +436,6 @@ def get_azure_storage_client(
 
     Returns:
         AzureBlobStorageClient instance
+
     """
     return AzureBlobStorageClient(container_name=container_name)

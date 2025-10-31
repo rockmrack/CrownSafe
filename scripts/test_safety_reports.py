@@ -5,7 +5,7 @@
 import os
 import random
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -83,7 +83,7 @@ def create_test_scan_history(db_session, user_id=1):
     # Create scans over the past 90 days
     scans_created = 0
     for days_ago in range(90, 0, -7):  # Weekly scans
-        scan_date = datetime.utcnow() - timedelta(days=days_ago)
+        scan_date = datetime.now(timezone.utc) - timedelta(days=days_ago)
 
         # Scan 2-3 random products each week
         num_scans = random.randint(2, 3)
@@ -113,7 +113,7 @@ def create_test_scan_history(db_session, user_id=1):
 
     # Add some recent scans
     for days_ago in [3, 2, 1, 0]:
-        scan_date = datetime.utcnow() - timedelta(days=days_ago)
+        scan_date = datetime.now(timezone.utc) - timedelta(days=days_ago)
         product = random.choice(products)
 
         scan = ScanHistory(
@@ -169,7 +169,7 @@ def test_90_day_report():
         # Simulate the API call
 
         # Get scan history
-        end_date = datetime.utcnow()
+        end_date = datetime.now(timezone.utc)
         start_date = end_date - timedelta(days=90)
 
         scan_history = (
@@ -247,7 +247,7 @@ def test_90_day_report():
         # Test report saving
         print("\n💾 Saving report to database...")
         report = SafetyReport(
-            report_id=f"SR_test_{datetime.utcnow().strftime('%Y%m%d')}",
+            report_id=f"SR_test_{datetime.now(timezone.utc).strftime('%Y%m%d')}",
             user_id=user_id,
             report_type="90_day_summary",
             period_start=start_date,

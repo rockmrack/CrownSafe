@@ -36,6 +36,7 @@ def normalize_email(email: str) -> str:
 
     Returns:
         Normalized email (lowercase, trimmed)
+
     """
     if not email:
         return ""
@@ -50,6 +51,7 @@ def validate_email(email: str) -> bool:
 
     Returns:
         True if valid, False otherwise
+
     """
     if not email or len(email) > 320:  # RFC 5321 max length
         return False
@@ -66,6 +68,7 @@ def email_hash(email: str) -> str:
 
     Returns:
         Hex digest of SHA-256 hash
+
     """
     normalized = normalize_email(email)
     return hashlib.sha256(normalized.encode()).hexdigest()
@@ -79,6 +82,7 @@ def mask_email(email: str) -> str:
 
     Returns:
         Masked email address
+
     """
     if not email or "@" not in email:
         return "***"
@@ -104,6 +108,7 @@ def mask_pii(text: str, mask: str = "***") -> str:
 
     Returns:
         Text with masked PII
+
     """
     if not text:
         return text
@@ -127,6 +132,7 @@ def anonymize_ip(ip_address: str) -> str:
 
     Returns:
         Anonymized IP address
+
     """
     if not ip_address:
         return ""
@@ -159,6 +165,7 @@ def detect_jurisdiction(ip_address: str | None = None, country_code: str | None 
 
     Returns:
         Jurisdiction code (gdpr, ccpa, pipeda, etc.)
+
     """
     # This is a simplified version. In production, you'd use a GeoIP service
 
@@ -218,6 +225,7 @@ def generate_dsar_token() -> str:
 
     Returns:
         URL-safe token
+
     """
     return secrets.token_urlsafe(48)
 
@@ -231,6 +239,7 @@ def calculate_sla_deadline(jurisdiction: str, submitted_at: datetime | None = No
 
     Returns:
         Deadline datetime
+
     """
     from datetime import timedelta
 
@@ -262,6 +271,7 @@ def format_dsar_response(request_type: str, status: str = "queued", jurisdiction
 
     Returns:
         Formatted response dictionary
+
     """
     sla_days = {
         "export": {"gdpr": 30, "ccpa": 45, "other": 30},
@@ -357,6 +367,7 @@ class PrivacyDataExporter:
 
         Returns:
             JSON string
+
         """
         if pretty:
             return json.dumps(data, indent=2, default=str, ensure_ascii=False)
@@ -371,6 +382,7 @@ class PrivacyDataExporter:
 
         Returns:
             CSV string
+
         """
         import csv
         import io
@@ -394,6 +406,7 @@ class PrivacyDataExporter:
 
         Returns:
             Export package with metadata
+
         """
         return {
             "export_metadata": {
@@ -426,6 +439,7 @@ class PIIMasker:
 
         Args:
             custom_patterns: Additional patterns to mask
+
         """
         self.patterns = PII_PATTERNS.copy()
         if custom_patterns:
@@ -440,6 +454,7 @@ class PIIMasker:
 
         Returns:
             Dictionary with masked PII
+
         """
         if not data:
             return data

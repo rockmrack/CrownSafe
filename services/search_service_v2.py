@@ -53,6 +53,7 @@ class SearchServiceV2:
 
         Returns:
             (sql_query, params, as_of_time, cursor_data)
+
         """
         # Parse cursor if provided
         cursor_data = None

@@ -3,7 +3,7 @@
 import json
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 import redis
 
@@ -25,7 +25,7 @@ def check_router_health():
             "sender_id": "health_check",
             "target_id": "router_agent_01",
             "correlation_id": f"health_{test_id}",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         },
         "payload": {},
     }
@@ -85,7 +85,7 @@ def check_router_health():
             "sender_id": "health_check",
             "target_id": "router_agent_01",
             "correlation_id": test_workflow_id,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         },
         "payload": {
             "plan": {

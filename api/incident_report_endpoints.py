@@ -5,7 +5,7 @@ Handles crowdsourced safety incident reporting
 import asyncio
 import logging
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from fastapi import (
@@ -127,7 +127,7 @@ class IncidentAnalyzer:
         cls, incident: IncidentReport, db: Session, days_back: int = 30,
     ) -> list[IncidentReport]:
         """Find incidents similar to the given one"""
-        cutoff_date = datetime.utcnow() - timedelta(days=days_back)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
 
         # Search for similar product and incident type
         similar = (
@@ -209,14 +209,14 @@ class IncidentAnalyzer:
             .filter(
                 and_(
                     IncidentReport.cluster_id == cluster.id,
-                    IncidentReport.created_at >= datetime.utcnow() - timedelta(days=7),
+                    IncidentReport.created_at >= datetime.now(timezone.utc) - timedelta(days=7),
                 ),
             )
             .count()
         )
 
         cluster.trending = recent_count >= cls.ALERT_THRESHOLDS["trending"]
-        cluster.updated_at = datetime.utcnow()
+        cluster.updated_at = datetime.now(timezone.utc)
 
     @classmethod
     def _calculate_risk_level(cls, cluster: IncidentCluster) -> str:
@@ -269,7 +269,7 @@ class IncidentAnalyzer:
 
         # Mark cluster as alerted
         cluster.alert_triggered = True
-        cluster.alert_triggered_at = datetime.utcnow()
+        cluster.alert_triggered_at = datetime.now(timezone.utc)
 
         # In production, this would notify safety team
         # For now, log the alert
@@ -308,7 +308,7 @@ class IncidentAnalyzer:
 
         # Mark cluster as notified
         cluster.cpsc_notified = True
-        cluster.cpsc_notified_at = datetime.utcnow()
+        cluster.cpsc_notified_at = datetime.now(timezone.utc)
 
         # In production, this would call CPSC API
         # For now, log the notification
@@ -371,7 +371,7 @@ async def submit_incident_report(
     """
     try:
         # Generate report ID
-        report_id = f"INC_{datetime.utcnow().strftime('%Y%m%d')}_{uuid.uuid4().hex[:6].upper()}"
+        report_id = f"INC_{datetime.now(timezone.utc).strftime('%Y%m%d')}_{uuid.uuid4().hex[:6].upper()}"
 
         # Upload photos to S3
         product_photo_urls = []
@@ -442,7 +442,7 @@ async def submit_incident_report(
         return ApiResponse(
             success=False,
             data={
-                "report_id": f"ERROR-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}",
+                "report_id": f"ERROR-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
                 "incident_id": None,
                 "status": "error",
                 "message": "Incident reporting service temporarily unavailable. Please try again later.",
@@ -475,7 +475,7 @@ async def submit_incident_json(
         #         product_found = True
 
         # Generate report ID
-        report_id = f"INC-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
+        report_id = f"INC-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
 
         # Create incident report (tolerant of missing products)
         incident = IncidentReport(
@@ -484,7 +484,7 @@ async def submit_incident_json(
             model_number=request.model_number,
             barcode=request.product_barcode,
             incident_type=IncidentType(request.incident_type),
-            incident_date=datetime.utcnow(),
+            incident_date=datetime.now(timezone.utc),
             severity_level=SeverityLevel(request.severity_level),
             incident_description=request.description,
             reporter_email=None,  # Not provided in JSON request
@@ -524,7 +524,7 @@ async def submit_incident_json(
         return ApiResponse(
             success=False,
             data={
-                "report_id": f"ERROR-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}",
+                "report_id": f"ERROR-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
                 "incident_id": None,
                 "status": "error",
                 "product_found": False,
@@ -585,7 +585,7 @@ async def get_incident_clusters(trending_only: bool = False, min_incidents: int 
 @incident_router.get("/stats", response_model=ApiResponse)
 async def get_incident_statistics(days: int = 30, db: Session = Depends(get_db)):
     """Get incident reporting statistics"""
-    cutoff_date = datetime.utcnow() - timedelta(days=days)
+    cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
 
     # Total incidents
     total_incidents = db.query(IncidentReport).filter(IncidentReport.created_at >= cutoff_date).count()
@@ -633,7 +633,7 @@ async def submit_incident_dev(request: IncidentSubmitRequest):
     """
     try:
         # Generate report ID
-        report_id = f"INC-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
+        report_id = f"INC-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
 
         # Simulate product lookup
         product_found = False
@@ -655,7 +655,7 @@ async def submit_incident_dev(request: IncidentSubmitRequest):
                 "status": "submitted",
                 "product_found": product_found,
                 "description": safe_description,
-                "created_at": datetime.utcnow().isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
             },
         )
 
@@ -682,8 +682,8 @@ async def get_incident_clusters_dev(trending_only: bool = False, min_incidents: 
                 "trending": True,
                 "alert_triggered": False,
                 "cpsc_notified": False,
-                "first_incident": (datetime.utcnow() - timedelta(days=7)).isoformat(),
-                "last_incident": datetime.utcnow().isoformat(),
+                "first_incident": (datetime.now(timezone.utc) - timedelta(days=7)).isoformat(),
+                "last_incident": datetime.now(timezone.utc).isoformat(),
             },
             {
                 "cluster_id": "CLUSTER-002",
@@ -696,8 +696,8 @@ async def get_incident_clusters_dev(trending_only: bool = False, min_incidents: 
                 "trending": False,
                 "alert_triggered": False,
                 "cpsc_notified": False,
-                "first_incident": (datetime.utcnow() - timedelta(days=3)).isoformat(),
-                "last_incident": (datetime.utcnow() - timedelta(days=1)).isoformat(),
+                "first_incident": (datetime.now(timezone.utc) - timedelta(days=3)).isoformat(),
+                "last_incident": (datetime.now(timezone.utc) - timedelta(days=1)).isoformat(),
             },
         ]
 

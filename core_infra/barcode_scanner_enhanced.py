@@ -122,6 +122,7 @@ class EnhancedBarcodeScanner:
 
         Returns:
             List of detected barcodes
+
         """
         results = []
 
@@ -371,6 +372,7 @@ def scan_barcode(image_data: bytes) -> list[dict[str, Any]]:
 
     Returns:
         List of detected barcodes as dictionaries
+
     """
     results = enhanced_scanner.scan_image(image_data)
 
@@ -391,6 +393,7 @@ def test_scanner_status() -> dict[str, Any]:
 
     Returns:
         Status of all scanning methods
+
     """
     status = enhanced_scanner.test_functionality()
 

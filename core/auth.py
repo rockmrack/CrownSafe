@@ -26,6 +26,7 @@ def get_current_user() -> User | None:
 
     Returns:
         User object if authenticated, None otherwise
+
     """
     # TODO: Implement proper JWT/session-based authentication
     # For now, return None to indicate no user context
@@ -38,6 +39,7 @@ def set_current_user(user: User | None) -> None:
 
     Args:
         user: User object to set as current user
+
     """
     global current_user
     current_user = user
@@ -59,6 +61,7 @@ def require_auth() -> User:
 
     Raises:
         RuntimeError: If no user is authenticated
+
     """
     user = get_current_user()
     if not user:

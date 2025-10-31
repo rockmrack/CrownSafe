@@ -28,6 +28,7 @@ class LoadTester:
 
         Args:
             base_url: Base URL of API to test
+
         """
         self.base_url = base_url
         self.results = []
@@ -49,6 +50,7 @@ class LoadTester:
 
         Returns:
             Dictionary with performance metrics
+
         """
         url = f"{self.base_url}{endpoint}"
         results = {
@@ -134,6 +136,7 @@ class LoadTester:
 
         Returns:
             Dictionary with all test results
+
         """
         test_suite = {
             "test_timestamp": time.time(),

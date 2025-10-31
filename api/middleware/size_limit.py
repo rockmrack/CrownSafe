@@ -23,6 +23,7 @@ class SizeLimitMiddleware(BaseHTTPMiddleware):
         Args:
             app: ASGI application
             max_bytes: Maximum request size in bytes (default from env or 100KB)
+
         """
         super().__init__(app)
         self.max_bytes = max_bytes or int(os.getenv("MAX_REQUEST_BYTES", "100000"))
@@ -162,6 +163,7 @@ class ConfigurableSizeLimits:
 
         Returns:
             Size limit in bytes
+
         """
         if "/upload" in path or "/image" in path:
             return cls.UPLOAD_LIMIT

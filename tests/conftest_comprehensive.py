@@ -4,7 +4,7 @@ Provides fixtures and test utilities for all test suites
 
 import os
 import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Generator
 
 import pytest
@@ -98,7 +98,7 @@ def test_user(db_session) -> dict:
     user = User(
         email="test@example.com",
         hashed_password=pwd_context.hash("TestPassword123!"),
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
         is_subscribed=False,
         email_verified=True,
     )
@@ -125,11 +125,11 @@ def test_subscriber(db_session) -> dict:
     user = User(
         email="subscriber@example.com",
         hashed_password=pwd_context.hash("TestPassword123!"),
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
         is_subscribed=True,
         subscription_tier="premium",
-        subscription_start=datetime.utcnow(),
-        subscription_end=datetime.utcnow() + timedelta(days=30),
+        subscription_start=datetime.now(timezone.utc),
+        subscription_end=datetime.now(timezone.utc) + timedelta(days=30),
         email_verified=True,
     )
 
@@ -155,7 +155,7 @@ def test_admin(db_session) -> dict:
     user = User(
         email="admin@example.com",
         hashed_password=pwd_context.hash("AdminPassword123!"),
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
         is_subscribed=True,
         is_admin=True,
         email_verified=True,
@@ -202,7 +202,7 @@ def test_recall(db_session) -> dict:
         brand="Test Brand",
         hazard="Choking hazard",
         description="Test recall for automated testing",
-        recall_date=datetime.utcnow().date(),
+        recall_date=datetime.now(timezone.utc).date(),
         source_agency="CPSC",
         country="USA",
         url="https://example.com/recall/001",

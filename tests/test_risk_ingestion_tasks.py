@@ -1,7 +1,7 @@
 """Tests for core_infra/risk_ingestion_tasks.py"""
 
 import unittest
-from datetime import datetime
+from datetime import datetime, timezone
 from unittest.mock import MagicMock, Mock, patch
 
 
@@ -15,7 +15,7 @@ class MockSafetyDataRecord:
         self.model_number = "MODEL-123"
         self.source = "CPSC"
         self.source_id = "TEST-001"
-        self.recall_date = datetime.utcnow()
+        self.recall_date = datetime.now(timezone.utc)
         self.hazard_type = "choking"
         self.severity = "high"
         self.hazard_description = "Test hazard"

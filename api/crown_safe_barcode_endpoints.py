@@ -3,7 +3,7 @@ Scan hair product barcodes and analyze ingredients for 3C-4C hair safety
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
@@ -103,6 +103,7 @@ def lookup_product_in_database(barcode: str, db: Session) -> HairProductModel | 
 
     Returns:
         HairProductModel if found, None otherwise
+
     """
     try:
         # Normalize barcode (remove dashes, leading zeros)
@@ -130,6 +131,7 @@ async def extract_ingredients_from_image(image_data: bytes, product_name: str | 
 
     Returns:
         List of ingredient names
+
     """
     try:
         # This would integrate with Google Cloud Vision or similar OCR service
@@ -152,6 +154,7 @@ def calculate_crown_score_from_product(
 
     Returns:
         Crown Score breakdown dictionary
+
     """
     try:
         engine = CrownScoreEngine()
@@ -195,6 +198,7 @@ def generate_recommendations(crown_score: int, verdict: str, product: HairProduc
 
     Returns:
         List of recommendation strings
+
     """
     recommendations = []
 
@@ -229,6 +233,7 @@ def find_similar_products(product: HairProductModel, crown_score: int, db: Sessi
 
     Returns:
         List of similar products (max 3)
+
     """
     try:
         # Only suggest alternatives if score is below 70
@@ -287,9 +292,10 @@ async def scan_hair_product_barcode(request: BarcodeScanRequest, db: Session = D
     Raises:
         404: Product not found in database
         422: Invalid user or missing hair profile
+
     """
     try:
-        scan_id = f"scan_{request.user_id}_{int(datetime.utcnow().timestamp())}"
+        scan_id = f"scan_{request.user_id}_{int(datetime.now(timezone.utc).timestamp())}"
         logger.info(f"Crown Safe barcode scan: user={request.user_id}, barcode={request.barcode}, scan_id={scan_id}")
 
         # 1. Look up product in database
@@ -326,7 +332,7 @@ async def scan_hair_product_barcode(request: BarcodeScanRequest, db: Session = D
             scan_record = ProductScanModel(
                 user_id=request.user_id,
                 product_id=product.id,
-                scan_date=datetime.utcnow(),
+                scan_date=datetime.now(timezone.utc),
                 crown_score=score_result["total_score"],
                 verdict=score_result["verdict"],
                 scan_method=request.scan_method,
@@ -391,7 +397,7 @@ async def scan_hair_product_barcode(request: BarcodeScanRequest, db: Session = D
             crown_score=crown_score_breakdown,
             recommendations=recommendations,
             similar_products=similar_products,
-            scan_timestamp=datetime.utcnow().isoformat(),
+            scan_timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
         return ApiResponse(
@@ -434,6 +440,7 @@ async def scan_hair_product_image(
         400: Invalid file type
         413: File too large
         404: No barcode detected in image
+
     """
     try:
         # Validate file type
@@ -513,6 +520,7 @@ async def get_product_by_barcode(barcode: str, db: Session = Depends(get_db_sess
 
     Raises:
         404: Product not found
+
     """
     try:
         product = lookup_product_in_database(barcode, db)

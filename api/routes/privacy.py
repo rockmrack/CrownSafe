@@ -82,6 +82,7 @@ def create_response(data: dict, request: Request, status_code: int = 200) -> JSO
 
     Returns:
         JSON response
+
     """
     return JSONResponse(
         content={

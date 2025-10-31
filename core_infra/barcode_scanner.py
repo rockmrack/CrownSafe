@@ -195,6 +195,7 @@ class BarcodeScanner:
 
         Returns:
             List of scan results
+
         """
         results = []
 
@@ -406,6 +407,7 @@ class BarcodeScanner:
 
         Returns:
             Scan result
+
         """
         return self._parse_barcode_data(barcode_data, barcode_type)
 
@@ -684,6 +686,7 @@ class BarcodeScanner:
 
         Returns:
             QR code image bytes
+
         """
         # Convert data to JSON
         json_data = json.dumps(data, default=str)

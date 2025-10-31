@@ -3,7 +3,7 @@
 
 import os
 import platform
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Request, Response
@@ -32,7 +32,7 @@ async def healthz(request: Request, response: Response) -> dict[str, Any]:
     return {
         "ok": True,
         "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "version": API_VERSION,
         "service": "babyshield-api",
     }
@@ -58,7 +58,7 @@ async def version_info(request: Request, response: Response) -> dict[str, Any]:
         "api_version": API_VERSION,
         "python_version": platform.python_version(),
         "environment": os.getenv("ENVIRONMENT", "production"),
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
 

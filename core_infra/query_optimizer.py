@@ -45,6 +45,7 @@ class QueryOptimizer:
                 db.query(User),
                 'family_members'
             ).all()
+
         """
         for relationship in relationships:
             if "." in relationship:
@@ -67,6 +68,7 @@ class QueryOptimizer:
 
             # With optimization: ceil(N/batch_size) queries
             users = QueryOptimizer.batch_load(db, User, ids)
+
         """
         results = {}
 
@@ -89,6 +91,7 @@ class QueryOptimizer:
 
             # Efficient
             count = QueryOptimizer.optimized_count(db.query(User))
+
         """
         # Remove any eager loading for count
         query = query.options()
@@ -109,6 +112,7 @@ class QueryOptimizer:
             # Efficient
             if QueryOptimizer.exists_check(db, User, email=email):
                 ...
+
         """
         return db.query(db.query(model).filter_by(**filters).exists()).scalar()
 
@@ -124,6 +128,7 @@ class QueryOptimizer:
 
             # Efficient: 1 query
             QueryOptimizer.bulk_insert(db, records, Model)
+
         """
         db.bulk_insert_mappings(model, records)
         db.commit()

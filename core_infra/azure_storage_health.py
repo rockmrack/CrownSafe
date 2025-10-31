@@ -4,7 +4,7 @@ Enterprise-grade health checks for Azure Blob Storage connectivity and performan
 
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from azure.core.exceptions import AzureError
@@ -31,6 +31,7 @@ class AzureStorageHealthCheck:
             storage_client: Azure Blob Storage client instance
             performance_threshold_ms: Performance warning threshold (milliseconds)
             storage_threshold_percent: Storage capacity warning threshold (percent)
+
         """
         self.storage_client = storage_client or AzureBlobStorageClient()
         self.performance_threshold_ms = performance_threshold_ms
@@ -47,6 +48,7 @@ class AzureStorageHealthCheck:
 
         Returns:
             Dict with connectivity status and details
+
         """
         start_time = time.perf_counter()
 
@@ -60,7 +62,7 @@ class AzureStorageHealthCheck:
                 "status": "healthy",
                 "connectivity": "ok",
                 "response_time_ms": round(elapsed_ms, 2),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         except AzureError as e:
@@ -77,7 +79,7 @@ class AzureStorageHealthCheck:
                 "error": str(e),
                 "error_type": type(e).__name__,
                 "response_time_ms": round(elapsed_ms, 2),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
     async def check_performance(self) -> dict[str, Any]:
@@ -85,11 +87,12 @@ class AzureStorageHealthCheck:
 
         Returns:
             Dict with performance metrics
+
         """
         metrics = {
             "list_operation_ms": 0.0,
             "status": "healthy",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         try:
@@ -123,12 +126,13 @@ class AzureStorageHealthCheck:
 
         Returns:
             Dict with storage capacity information
+
         """
         return {
             "status": "not_implemented",
             "message": "Storage capacity monitoring requires Azure Monitor API",
             "recommendation": "Configure Azure Monitor for capacity alerts",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     async def comprehensive_health_check(self) -> dict[str, Any]:
@@ -136,9 +140,10 @@ class AzureStorageHealthCheck:
 
         Returns:
             Dict with complete health status
+
         """
         self.total_checks += 1
-        self.last_check_time = datetime.utcnow()
+        self.last_check_time = datetime.now(timezone.utc)
 
         # Run all health checks
         connectivity_result = await self.check_connectivity()
@@ -177,7 +182,7 @@ class AzureStorageHealthCheck:
                 "uptime_percent": round(uptime_percent, 2),
                 "last_check": self.last_check_time.isoformat(),
             },
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 
@@ -198,7 +203,7 @@ class AzureStorageMetrics:
         self.download_times_ms = []
         self.sas_generation_times_ms = []
 
-        self.start_time = datetime.utcnow()
+        self.start_time = datetime.now(timezone.utc)
 
     def record_upload(self, size_bytes: int, duration_ms: float) -> None:
         """Record upload operation"""
@@ -236,8 +241,9 @@ class AzureStorageMetrics:
 
         Returns:
             Dict with all collected metrics
+
         """
-        uptime = datetime.utcnow() - self.start_time
+        uptime = datetime.now(timezone.utc) - self.start_time
 
         return {
             "operations": {
@@ -278,7 +284,7 @@ class AzureStorageMetrics:
                 if (self.upload_count + self.download_count) > 0
                 else 0.0
             ),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def reset_metrics(self) -> None:

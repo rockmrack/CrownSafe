@@ -70,6 +70,7 @@ def setup_json_logging(log_level: str = "INFO") -> None:
 
     Args:
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR)
+
     """
     # Create handler with JSON formatter
     handler = logging.StreamHandler(sys.stdout)

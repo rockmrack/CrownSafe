@@ -349,6 +349,7 @@ async def get_translations(
     - GET /api/v1/i18n/translations?locale=es-ES
     - GET /api/v1/i18n/translations (uses Accept-Language header)
     - GET /api/v1/i18n/translations?keys=app.name&keys=app.tagline
+
     """
     # Determine locale
     if accept_language and not locale:

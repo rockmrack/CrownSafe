@@ -40,6 +40,7 @@ class RecallDataAgentLogic:
         Args:
             agent_id: Unique identifier for this agent instance
             logger_instance: Optional logger instance (creates one if not provided)
+
         """
         self.agent_id = agent_id
         self.logger = logger_instance or logging.getLogger(__name__)
@@ -70,6 +71,7 @@ class RecallDataAgentLogic:
                 - status: "COMPLETED" or "FAILED"
                 - result: {recalls_found: int, recalls: List[dict]}
                 - error: Optional error message
+
         """
         product_name = inputs.get("product_name")
         model_number = inputs.get("model_number")
@@ -193,6 +195,7 @@ class RecallDataAgentLogic:
                 - total_skipped: Number of duplicates skipped
                 - duration_seconds: Time taken
                 - errors: List of any errors encountered
+
         """
         start_time = datetime.now()
         self.logger.info(f"[{self.agent_id}] Starting new ingestion cycle...")
@@ -318,6 +321,7 @@ class RecallDataAgentLogic:
 
         Returns:
             Dictionary with database stats (total recalls, by agency, etc.)
+
         """
         try:
             db = SessionLocal()

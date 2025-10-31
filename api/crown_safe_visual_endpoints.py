@@ -8,7 +8,7 @@ import io
 import logging
 import os
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from fastapi import (
@@ -404,7 +404,7 @@ async def upload_product_image(
         upload_url=image_url,
         status="uploaded",
         message="Image uploaded successfully. Use scan_id for analysis.",
-        expires_at=datetime.utcnow() + timedelta(hours=24),
+        expires_at=datetime.now(timezone.utc) + timedelta(hours=24),
     )
 
 
@@ -425,7 +425,7 @@ async def analyze_product_image(
     5. Analyze ingredient safety
     6. Return comprehensive analysis
     """
-    start_time = datetime.utcnow()
+    start_time = datetime.now(timezone.utc)
 
     # Get image
     image = None
@@ -478,7 +478,7 @@ async def analyze_product_image(
     safety_analysis = await analyze_product_safety(extracted_ingredients, db)
 
     # Calculate processing time
-    end_time = datetime.utcnow()
+    end_time = datetime.now(timezone.utc)
     processing_ms = int((end_time - start_time).total_seconds() * 1000)
 
     # Prepare response

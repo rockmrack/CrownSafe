@@ -12,7 +12,7 @@ Features:
 import logging
 import os
 import threading
-from datetime import datetime
+from datetime import datetime, timezone
 
 from azure.storage.blob import BlobServiceClient
 
@@ -38,6 +38,7 @@ class AzureBlobConnectionPool:
             account_name: Storage account name
             account_key: Storage account key
             pool_size: Maximum number of connections in pool
+
         """
         self.connection_string = connection_string or os.getenv("AZURE_STORAGE_CONNECTION_STRING")
         self.account_name = account_name or os.getenv("AZURE_STORAGE_ACCOUNT_NAME")
@@ -68,8 +69,8 @@ class AzureBlobConnectionPool:
                     self._pool.append(
                         {
                             "client": client,
-                            "created_at": datetime.utcnow(),
-                            "last_used": datetime.utcnow(),
+                            "created_at": datetime.now(timezone.utc),
+                            "last_used": datetime.now(timezone.utc),
                             "use_count": 0,
                         },
                     )
@@ -95,12 +96,13 @@ class AzureBlobConnectionPool:
 
         Returns:
             BlobServiceClient instance or None if pool exhausted
+
         """
         with self._pool_lock:
             if self._pool:
                 # Get connection from pool
                 conn_data = self._pool.pop(0)
-                conn_data["last_used"] = datetime.utcnow()
+                conn_data["last_used"] = datetime.now(timezone.utc)
                 conn_data["use_count"] += 1
 
                 self._in_use.add(id(conn_data["client"]))
@@ -130,6 +132,7 @@ class AzureBlobConnectionPool:
 
         Args:
             client: BlobServiceClient to release
+
         """
         if client is None:
             return
@@ -145,8 +148,8 @@ class AzureBlobConnectionPool:
                     self._pool.append(
                         {
                             "client": client,
-                            "created_at": datetime.utcnow(),
-                            "last_used": datetime.utcnow(),
+                            "created_at": datetime.now(timezone.utc),
+                            "last_used": datetime.now(timezone.utc),
                             "use_count": 0,
                         },
                     )
@@ -163,6 +166,7 @@ class AzureBlobConnectionPool:
 
         Returns:
             Dictionary with pool statistics
+
         """
         with self._pool_lock:
             return {
@@ -216,6 +220,7 @@ def get_connection_pool(
 
     Returns:
         AzureBlobConnectionPool instance
+
     """
     global _connection_pool
 

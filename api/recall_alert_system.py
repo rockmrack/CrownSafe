@@ -3,7 +3,7 @@ Monitors agencies for new recalls and pushes alerts to affected users
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import httpx
@@ -39,7 +39,7 @@ async def send_test_recall_alert_dev(request: dict):
     """
     try:
         # Simulate recall alert
-        alert_id = f"ALERT-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+        alert_id = f"ALERT-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
 
         return {
             "success": True,
@@ -51,7 +51,7 @@ async def send_test_recall_alert_dev(request: dict):
                 "product_name": request.get("product_name", "Test Product"),
                 "severity": request.get("severity", "high"),
                 "agency": request.get("agency", "CPSC"),
-                "sent_at": datetime.utcnow().isoformat(),
+                "sent_at": datetime.now(timezone.utc).isoformat(),
                 "devices_notified": 2,
                 "delivery_status": "success",
             },
@@ -68,14 +68,14 @@ async def check_recalls_now_dev():
     """
     try:
         # Simulate recall check
-        check_id = f"CHECK-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+        check_id = f"CHECK-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
 
         return {
             "success": True,
             "data": {
                 "message": "Recall check completed successfully (dev override)",
                 "check_id": check_id,
-                "checked_at": datetime.utcnow().isoformat(),
+                "checked_at": datetime.now(timezone.utc).isoformat(),
                 "agencies_checked": ["CPSC", "FDA", "NHTSA"],
                 "new_recalls_found": 3,
                 "recalls": [
@@ -83,14 +83,14 @@ async def check_recalls_now_dev():
                         "recall_id": "RECALL-001",
                         "product_name": "Test Baby Product",
                         "agency": "CPSC",
-                        "date": datetime.utcnow().isoformat(),
+                        "date": datetime.now(timezone.utc).isoformat(),
                         "severity": "high",
                     },
                     {
                         "recall_id": "RECALL-002",
                         "product_name": "Test Toy",
                         "agency": "CPSC",
-                        "date": (datetime.utcnow() - timedelta(hours=2)).isoformat(),
+                        "date": (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat(),
                         "severity": "medium",
                     },
                 ],
@@ -122,7 +122,7 @@ async def get_alert_preferences_dev():
             "data": {
                 "message": "Alert preferences retrieved successfully (dev override)",
                 "preferences": default_preferences,
-                "retrieved_at": datetime.utcnow().isoformat(),
+                "retrieved_at": datetime.now(timezone.utc).isoformat(),
             },
         }
 
@@ -142,7 +142,7 @@ async def update_alert_preferences_dev(request: dict):
             "data": {
                 "message": "Alert preferences updated successfully (dev override)",
                 "preferences": request,
-                "updated_at": datetime.utcnow().isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat(),
             },
         }
 
@@ -165,7 +165,7 @@ async def get_alert_history_dev(user_id: int):
                 "product_name": "Test Product A",
                 "severity": "high",
                 "agency": "CPSC",
-                "sent_at": datetime.utcnow().isoformat(),
+                "sent_at": datetime.now(timezone.utc).isoformat(),
                 "delivery_status": "delivered",
             },
             {
@@ -175,7 +175,7 @@ async def get_alert_history_dev(user_id: int):
                 "product_name": "Test Product B",
                 "severity": "medium",
                 "agency": "FDA",
-                "sent_at": (datetime.utcnow() - timedelta(days=1)).isoformat(),
+                "sent_at": (datetime.now(timezone.utc) - timedelta(days=1)).isoformat(),
                 "delivery_status": "delivered",
             },
         ]
@@ -278,7 +278,7 @@ class RecallAlertService:
             agency=agency,
             new_recalls_count=len(new_recalls),
             recalls=new_recalls,
-            check_timestamp=datetime.utcnow(),
+            check_timestamp=datetime.now(timezone.utc),
         )
 
     @classmethod
@@ -352,7 +352,7 @@ class RecallAlertService:
                 "recall_id": recall.get("recall_id"),
                 "product_name": product_name,
                 "severity": cls._determine_severity(recall),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             # Store notification in history
@@ -365,7 +365,7 @@ class RecallAlertService:
                     priority="high",
                     category="safety",
                     data=recall,
-                    sent_at=datetime.utcnow(),
+                    sent_at=datetime.now(timezone.utc),
                 )
                 db.add(notification)
             except NameError:
@@ -436,7 +436,7 @@ async def check_all_agencies_for_recalls():
     try:
         # Get last check time (stored in system config or database)
         # For now, check last 24 hours
-        last_check = datetime.utcnow() - timedelta(hours=24)
+        last_check = datetime.now(timezone.utc) - timedelta(hours=24)
 
         all_new_recalls = []
 
@@ -476,7 +476,7 @@ async def check_all_agencies_for_recalls():
                         remedy=recall.get("remedy"),
                         recall_date=datetime.fromisoformat(recall.get("date"))
                         if recall.get("date")
-                        else datetime.utcnow(),
+                        else datetime.now(timezone.utc),
                     )
                     db.add(new_recall)
                     db.commit()
@@ -499,7 +499,7 @@ def send_daily_recall_digest() -> None:
 
     with get_db() as db:
         # Get recalls from last 24 hours
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now(timezone.utc) - timedelta(days=1)
 
         recent_recalls = db.query(RecallDB).filter(RecallDB.created_at >= yesterday).all()
 
@@ -528,7 +528,7 @@ def send_daily_recall_digest() -> None:
 async def test_recall_alert(user_id: int, product_name: str, db: Session = Depends(get_db)):
     """Test endpoint to trigger a recall alert for a user"""
     mock_recall = {
-        "recall_id": f"TEST_{datetime.utcnow().timestamp()}",
+        "recall_id": f"TEST_{datetime.now(timezone.utc).timestamp()}",
         "product_name": product_name,
         "hazard": "Test hazard - this is a test alert",
         "remedy": "No action needed - this is a test",

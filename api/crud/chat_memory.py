@@ -2,7 +2,7 @@
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Union
 from uuid import UUID, uuid4
 
@@ -74,8 +74,8 @@ def get_or_create_conversation(
         id=_normalize_uuid_for_column(Conversation.id, uuid4()),
         user_id=_normalize_uuid_for_column(Conversation.user_id, user_id),
         scan_id=scan_id,
-        started_at=datetime.utcnow(),
-        last_activity_at=datetime.utcnow(),
+        started_at=datetime.now(timezone.utc),
+        last_activity_at=datetime.now(timezone.utc),
     )
     db.add(conv)
     db.commit()
@@ -107,6 +107,7 @@ def log_message(
 
     Raises:
         ValueError: If content is not a valid dictionary or not JSON-serializable
+
     """
     # Validate content structure before serialization
     if not isinstance(content, dict):
@@ -124,12 +125,12 @@ def log_message(
         content=serialized_content,
         intent=intent,
         trace_id=trace_id,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
     )
     db.add(message)
 
     # Update conversation last_activity_at
-    conversation.last_activity_at = datetime.utcnow()
+    conversation.last_activity_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(message)
     return message
@@ -162,14 +163,14 @@ def upsert_profile(db: Session, user_id: UUID, profile_data: dict[str, Any]):
         for key, value in profile_data.items():
             if key in ALLOWED_FIELDS:
                 setattr(profile, key, value)
-        profile.updated_at = datetime.utcnow()
+        profile.updated_at = datetime.now(timezone.utc)
     else:
         # Create new - filter to allowed fields only
         filtered_data = {k: v for k, v in profile_data.items() if k in ALLOWED_FIELDS}
         profile = UserProfile(
             user_id=user_id_value,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
             **filtered_data,
         )
         db.add(profile)
@@ -187,6 +188,7 @@ def mark_erase_requested(db: Session, user_id: Union[UUID, str]) -> None:
     Args:
         db: Database session
         user_id: UUID or string representation of the user to mark for erasure
+
     """
     # Normalize UUID based on the actual column type in the database
     user_id_value = _normalize_uuid_for_column(UserProfile.user_id, user_id)
@@ -196,13 +198,13 @@ def mark_erase_requested(db: Session, user_id: Union[UUID, str]) -> None:
         # Create new profile with erase request
         profile = UserProfile(
             user_id=user_id_value,
-            erase_requested_at=datetime.utcnow(),
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            erase_requested_at=datetime.now(timezone.utc),
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
         )
         db.add(profile)
     else:
-        profile.erase_requested_at = datetime.utcnow()
+        profile.erase_requested_at = datetime.now(timezone.utc)
 
     db.commit()
 
@@ -219,6 +221,7 @@ def purge_conversations_for_user(db: Session, user_id: Union[UUID, str]):
 
     Returns:
         int: Number of conversations deleted
+
     """
     # Normalize user_id to handle both UUID and string types
     # Try UUID first (for PostgreSQL), then string (for SQLite compatibility)

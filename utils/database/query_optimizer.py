@@ -25,6 +25,7 @@ class QueryPerformanceMonitor:
 
         Args:
             slow_query_threshold: Threshold in seconds for slow query warnings
+
         """
         self.slow_query_threshold = slow_query_threshold
         self.query_count = 0
@@ -62,6 +63,7 @@ def setup_query_logging(engine: Engine, echo_slow_only: bool = True):
     Args:
         engine: SQLAlchemy engine
         echo_slow_only: If True, only log slow queries
+
     """
 
     @event.listens_for(engine, "before_cursor_execute")
@@ -96,6 +98,7 @@ class OptimizedQuery(Generic[T]):
 
         Returns:
             Self for chaining
+
         """
         for rel in relationships:
             self.query = self.query.options(joinedload(rel))
@@ -109,6 +112,7 @@ class OptimizedQuery(Generic[T]):
 
         Returns:
             Self for chaining
+
         """
         for rel in relationships:
             self.query = self.query.options(selectinload(rel))
@@ -123,6 +127,7 @@ class OptimizedQuery(Generic[T]):
 
         Returns:
             Self for chaining
+
         """
         self.query = self.query.limit(limit).offset(offset)
         return self
@@ -135,6 +140,7 @@ class OptimizedQuery(Generic[T]):
 
         Returns:
             Self for chaining
+
         """
         self.query = self.query.filter_by(**kwargs)
         return self
@@ -147,6 +153,7 @@ class OptimizedQuery(Generic[T]):
 
         Returns:
             Self for chaining
+
         """
         self.query = self.query.order_by(*args)
         return self
@@ -176,6 +183,7 @@ def optimize_query(query: Query) -> OptimizedQuery:
 
     Returns:
         OptimizedQuery wrapper
+
     """
     return OptimizedQuery(query)
 
@@ -190,6 +198,7 @@ def track_queries():
             result = db.query(User).all()
 
         print(f"Executed {tracker.query_count} queries")
+
     """
     query_monitor.reset()
     yield query_monitor
@@ -208,6 +217,7 @@ def batch_load(db: Session, model: type, ids: list[int], batch_size: int = 100) 
 
     Returns:
         List of loaded records
+
     """
     results = []
 
@@ -228,6 +238,7 @@ def cached_query(cache_key: str, ttl: int = 300):
 
     Returns:
         Decorated function
+
     """
 
     def decorator(func):
@@ -254,6 +265,7 @@ class BulkOperationHelper:
             model: SQLAlchemy model class
             records: List of dictionaries with record data
             batch_size: Number of records per batch
+
         """
         for i in range(0, len(records), batch_size):
             batch = records[i : i + batch_size]
@@ -270,6 +282,7 @@ class BulkOperationHelper:
             model: SQLAlchemy model class
             records: List of dictionaries with record data (must include 'id')
             batch_size: Number of records per batch
+
         """
         for i in range(0, len(records), batch_size):
             batch = records[i : i + batch_size]
@@ -328,6 +341,7 @@ def search_with_count(db: Session, query: Query, limit: int, offset: int) -> tup
 
     Returns:
         Tuple of (results, total_count)
+
     """
     # Get total count (without limit/offset)
     total = query.count()
@@ -350,6 +364,7 @@ def suggest_indexes(db: Session, model: type) -> list[str]:
 
     Returns:
         List of suggested CREATE INDEX statements
+
     """
     suggestions = []
     table_name = model.__tablename__

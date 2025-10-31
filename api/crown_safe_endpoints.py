@@ -119,6 +119,7 @@ async def analyze_product_endpoint(req: ProductAnalysisRequest, db: Session) -> 
 
     Raises:
         HTTPException: If user not found, no hair profile, or analysis fails
+
     """
     start_time = datetime.now()
     logger.info(
@@ -218,6 +219,7 @@ async def create_hair_profile_endpoint(req: HairProfileRequest, db: Session) -> 
 
     Raises:
         HTTPException: If user not found or profile creation fails
+
     """
     logger.info(f"Creating hair profile for user_id={req.user_id}, type={req.hair_type}")
 
@@ -275,6 +277,7 @@ async def get_hair_profile_endpoint(user_id: int, db: Session) -> HairProfileRes
 
     Raises:
         HTTPException: If user or profile not found
+
     """
     logger.info(f"Retrieving hair profile for user_id={user_id}")
 
@@ -328,6 +331,7 @@ async def get_scan_history_endpoint(user_id: int, limit: int = 50, db: Session =
 
     Raises:
         HTTPException: If user not found
+
     """
     logger.info(f"Retrieving scan history for user_id={user_id}, limit={limit}")
 

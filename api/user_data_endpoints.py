@@ -6,7 +6,7 @@ import hashlib
 import json
 import logging
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from fastapi import (
@@ -85,11 +85,11 @@ def get_user_data(user_id: str, db: Session) -> dict[str, Any]:
     # In production, query all relevant tables
     user_data = {
         "user_id": user_id,
-        "export_timestamp": datetime.utcnow().isoformat(),
+        "export_timestamp": datetime.now(timezone.utc).isoformat(),
         "data_categories": {
             "profile": {
                 "user_id": user_id,
-                "created_at": datetime.utcnow().isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
                 "provider": "oauth",
             },
             "settings": {
@@ -100,7 +100,7 @@ def get_user_data(user_id: str, db: Session) -> dict[str, Any]:
             "activity": {
                 "searches": [],  # Would contain search history if stored
                 "scans": [],  # Would contain scan history if stored
-                "last_active": datetime.utcnow().isoformat(),
+                "last_active": datetime.now(timezone.utc).isoformat(),
             },
         },
         "data_notes": {
@@ -210,7 +210,7 @@ async def export_user_data(
                     request_id=request_id,
                     status="completed",
                     message="CSV export completed (simplified demo)",
-                    estimated_completion=datetime.utcnow(),
+                    estimated_completion=datetime.now(timezone.utc),
                 )
         else:
             # Email verification flow would go here
@@ -219,7 +219,7 @@ async def export_user_data(
                 request_id=request_id,
                 status="pending_verification",
                 message="Verification email sent. Please check your email to confirm the export request.",
-                estimated_completion=datetime.utcnow() + timedelta(minutes=30),
+                estimated_completion=datetime.now(timezone.utc) + timedelta(minutes=30),
             )
 
     except Exception as e:
@@ -298,7 +298,7 @@ async def delete_user_data_endpoint(
                     request_id=request_id,
                     status="completed",
                     message="All user data has been permanently deleted",
-                    estimated_completion=datetime.utcnow(),
+                    estimated_completion=datetime.now(timezone.utc),
                 )
             else:
                 raise HTTPException(
@@ -312,7 +312,7 @@ async def delete_user_data_endpoint(
                 request_id=request_id,
                 status="pending_verification",
                 message="Verification email sent. Please check your email to confirm the deletion request.",
-                estimated_completion=datetime.utcnow() + timedelta(hours=24),
+                estimated_completion=datetime.now(timezone.utc) + timedelta(hours=24),
             )
 
     except HTTPException:
@@ -343,7 +343,7 @@ async def get_export_status(request_id: str):
         "status": "completed",
         "message": "Export ready for download",
         "download_url": f"/api/v1/user/data/download/{request_id}",
-        "expires_at": (datetime.utcnow() + timedelta(days=7)).isoformat(),
+        "expires_at": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat(),
     }
 
 
@@ -361,7 +361,7 @@ async def get_deletion_status(request_id: str):
         "request_id": request_id,
         "status": "completed",
         "message": "All user data has been deleted",
-        "completed_at": datetime.utcnow().isoformat(),
+        "completed_at": datetime.now(timezone.utc).isoformat(),
     }
 
 

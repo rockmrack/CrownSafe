@@ -3,7 +3,7 @@
 
 import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from sqlalchemy import (
@@ -126,7 +126,7 @@ class ProductMonitoringScheduler:
             if existing:
                 # Update existing
                 existing.check_frequency_hours = check_frequency_hours
-                existing.updated_at = datetime.utcnow()
+                existing.updated_at = datetime.now(timezone.utc)
                 db.commit()
                 return existing
 
@@ -139,7 +139,7 @@ class ProductMonitoringScheduler:
                 upc_code=upc_code,
                 source_job_id=source_job_id,
                 check_frequency_hours=check_frequency_hours,
-                next_check=datetime.utcnow() + timedelta(hours=check_frequency_hours),
+                next_check=datetime.now(timezone.utc) + timedelta(hours=check_frequency_hours),
                 added_via="scan" if source_job_id else "manual",
             )
 
@@ -285,7 +285,7 @@ class ProductMonitoringScheduler:
                     db.query(MonitoredProduct)
                     .filter(
                         MonitoredProduct.is_active,
-                        MonitoredProduct.next_check <= datetime.utcnow(),
+                        MonitoredProduct.next_check <= datetime.now(timezone.utc),
                     )
                     .limit(1000)
                     .all()
@@ -316,8 +316,8 @@ class ProductMonitoringScheduler:
                             product.recall_status = "safe"
 
                         # Update check time
-                        product.last_checked = datetime.utcnow()
-                        product.next_check = datetime.utcnow() + timedelta(hours=product.check_frequency_hours)
+                        product.last_checked = datetime.now(timezone.utc)
+                        product.next_check = datetime.now(timezone.utc) + timedelta(hours=product.check_frequency_hours)
 
                     except Exception as e:
                         logger.error(f"Error checking product {product.id}: {e}")
@@ -329,7 +329,7 @@ class ProductMonitoringScheduler:
                 # Update run record
                 run = db.query(MonitoringRun).filter_by(id=run_id).first()
                 if run:
-                    run.completed_at = datetime.utcnow()
+                    run.completed_at = datetime.now(timezone.utc)
                     run.products_checked = products_checked
                     run.new_recalls_found = new_recalls_found
                     run.notifications_sent = notifications_sent
@@ -362,7 +362,7 @@ class ProductMonitoringScheduler:
                     if run:
                         run.status = "failed"
                         run.error_message = str(e)
-                        run.completed_at = datetime.utcnow()
+                        run.completed_at = datetime.now(timezone.utc)
                         db.commit()
 
             raise
@@ -378,7 +378,7 @@ class ProductMonitoringScheduler:
                     .join(ImageExtraction)
                     .filter(
                         ImageJob.status == "completed",
-                        ImageJob.created_at >= datetime.utcnow() - timedelta(days=7),
+                        ImageJob.created_at >= datetime.now(timezone.utc) - timedelta(days=7),
                     )
                     .all()
                 )

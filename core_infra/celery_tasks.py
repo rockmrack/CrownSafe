@@ -4,7 +4,7 @@ Handles async job queue with Azure Blob Storage integration and multi-step proce
 
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from celery import Celery, Task
@@ -81,6 +81,7 @@ def process_image(self, job_id: str) -> dict[str, Any]:
 
     Returns:
         Processing result
+
     """
     logger.info(f"Starting image processing for job {job_id}")
 
@@ -94,7 +95,7 @@ def process_image(self, job_id: str) -> dict[str, Any]:
 
             # Update status
             job.status = JobStatus.PROCESSING
-            job.started_at = datetime.utcnow()
+            job.started_at = datetime.now(timezone.utc)
             db.commit()
 
         # Download image from Azure Blob Storage
@@ -172,7 +173,7 @@ def process_image(self, job_id: str) -> dict[str, Any]:
             j = db2.query(ImageJob).filter_by(id=job_id).first()
             if j:
                 j.status = JobStatus.COMPLETED
-                j.completed_at = datetime.utcnow()
+                j.completed_at = datetime.now(timezone.utc)
                 db2.commit()
 
         logger.info(f"Image processing completed for job {job_id}")

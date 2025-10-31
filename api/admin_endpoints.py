@@ -41,6 +41,7 @@ def is_admin(current_user) -> bool:
 
     Returns:
         True if user is admin, False otherwise
+
     """
     # Check various admin indicators
     if hasattr(current_user, "is_admin") and current_user.is_admin:
@@ -75,6 +76,7 @@ async def list_all_users(
 
     Raises:
         403: If user is not an admin
+
     """
     # Check if user has admin privileges
     if not is_admin(current_user):
@@ -142,6 +144,7 @@ async def get_user_details(
     Raises:
         403: If user is not an admin
         404: If user not found
+
     """
     # Check if user has admin privileges
     if not is_admin(current_user):
@@ -203,6 +206,7 @@ async def enable_pg_trgm_extension(
     Raises:
         403: If user is not an admin
         500: If database operation fails
+
     """
     # Check if user has admin privileges
     if not is_admin(current_user):

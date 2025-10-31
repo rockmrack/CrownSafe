@@ -5,7 +5,7 @@
 import os
 import random
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -200,7 +200,7 @@ def create_nursery_scan_history(db_session, user_id=1):
     # Create scans over the past 90 days (quarterly period)
     scans_created = 0
     for days_ago in range(90, 0, -5):  # Scan every 5 days
-        scan_date = datetime.utcnow() - timedelta(days=days_ago)
+        scan_date = datetime.now(timezone.utc) - timedelta(days=days_ago)
 
         # Scan 3-5 random nursery products
         num_scans = random.randint(3, 5)
@@ -230,7 +230,7 @@ def create_nursery_scan_history(db_session, user_id=1):
 
     # Add recent scans (last week)
     for days_ago in [6, 4, 2, 0]:
-        scan_date = datetime.utcnow() - timedelta(days=days_ago)
+        scan_date = datetime.now(timezone.utc) - timedelta(days=days_ago)
 
         # Focus on critical items and safety equipment
         critical_products = [p for p in nursery_products if p["category"] in ["Critical Safety", "Safety Equipment"]]
@@ -287,7 +287,7 @@ def test_quarterly_nursery_report():
         print("\n🏠 Generating Quarterly Nursery Report...")
 
         # Get scan history
-        end_date = datetime.utcnow()
+        end_date = datetime.now(timezone.utc)
         start_date = end_date - timedelta(days=90)
 
         scan_history = (
@@ -396,7 +396,7 @@ def test_quarterly_nursery_report():
         # Save report
         print("\n💾 Saving quarterly nursery report...")
         report = SafetyReport(
-            report_id=f"NR_test_{datetime.utcnow().strftime('%Y%m%d')}",
+            report_id=f"NR_test_{datetime.now(timezone.utc).strftime('%Y%m%d')}",
             user_id=user_id,
             report_type="quarterly_nursery",
             period_start=start_date,

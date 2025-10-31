@@ -66,6 +66,7 @@ class UserAgentBlocker(BaseHTTPMiddleware):
             allowed_patterns: List of UA patterns to always allow
             block_empty_ua: Whether to block empty user agents
             case_sensitive: Whether pattern matching is case sensitive
+
         """
         super().__init__(app)
 
@@ -159,6 +160,7 @@ class UserAgentBlocker(BaseHTTPMiddleware):
 
         Returns:
             True if suspicious
+
         """
         ua_lower = user_agent.lower()
 
@@ -202,6 +204,7 @@ class UserAgentBlocker(BaseHTTPMiddleware):
 
         Returns:
             403 Forbidden response
+
         """
         return JSONResponse(
             content={
@@ -234,6 +237,7 @@ class SmartUserAgentFilter(UserAgentBlocker):
 
         Returns:
             Score between 0 (safe) and 1 (suspicious)
+
         """
         score = 0.0
 

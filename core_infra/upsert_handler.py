@@ -26,6 +26,7 @@ class UpsertHandler:
 
         Returns:
             True if successful, False otherwise
+
         """
         try:
             # Ensure recall_id exists
@@ -162,6 +163,7 @@ class UpsertHandler:
 
         Returns:
             Dictionary with counts of inserted, updated, and failed records
+
         """
         counts = {"inserted": 0, "updated": 0, "failed": 0}
 
@@ -291,6 +293,7 @@ class UpsertHandler:
 
         Returns:
             True if successful, False otherwise
+
         """
         try:
             query = text(
@@ -359,6 +362,7 @@ class EnhancedUpsertHandler(UpsertHandler):
 
         Returns:
             True if successful
+
         """
         try:
             # Build column lists

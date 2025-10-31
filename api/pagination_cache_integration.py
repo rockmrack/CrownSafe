@@ -33,6 +33,7 @@ def setup_pagination_cache(app: FastAPI) -> None:
 
     Args:
         app: FastAPI application instance
+
     """
 
     # Add startup/shutdown for cache

@@ -85,7 +85,7 @@ def create_share_token_for_azure_blob(
 ) -> tuple[str, ShareToken]:
     """Create share token for Azure Blob Storage-based content without database record"""
     token = ShareToken.generate_token()
-    expires_at = datetime.utcnow() + timedelta(hours=ttl_hours)
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=ttl_hours)
 
     # Create content snapshot for Azure Blob Storage-based report
     content_snapshot = {
@@ -192,8 +192,8 @@ async def create_share_link_dev(request: ShareRequest) -> ApiResponse:
             )
 
         # Mock share creation for testing (no database)
-        token = f"dev_token_{request.user_id}_{int(datetime.utcnow().timestamp())}"
-        expires_at = datetime.utcnow() + timedelta(hours=request.expires_in_hours or 24)
+        token = f"dev_token_{request.user_id}_{int(datetime.now(timezone.utc).timestamp())}"
+        expires_at = datetime.now(timezone.utc) + timedelta(hours=request.expires_in_hours or 24)
 
         # Generate URLs
         base_url = os.getenv("APP_BASE_URL", "https://crownsafe.cureviax.ai")
@@ -453,7 +453,7 @@ async def create_share_link(
         # Calculate expiration
         expires_at = None
         if request.expires_in_hours:
-            expires_at = datetime.utcnow() + timedelta(hours=request.expires_in_hours)
+            expires_at = datetime.now(timezone.utc) + timedelta(hours=request.expires_in_hours)
 
         # Hash password if provided
         password_hash = None
@@ -517,7 +517,7 @@ async def view_share_link_dev(token: str) -> ApiResponse:
             raise HTTPException(status_code=404, detail="Share link not found")
 
         # Check if expired
-        if share_data["expires_at"] and share_data["expires_at"] < datetime.utcnow():
+        if share_data["expires_at"] and share_data["expires_at"] < datetime.now(timezone.utc):
             raise HTTPException(status_code=410, detail="Share link has expired")
 
         # Check if revoked
@@ -668,7 +668,7 @@ async def share_via_email(
         expiry_text = "This link does not expire."
         expires_at_value = cast(datetime | None, getattr(share_token, "expires_at", None))
         if expires_at_value is not None:
-            seconds_remaining = (expires_at_value - datetime.utcnow()).total_seconds()
+            seconds_remaining = (expires_at_value - datetime.now(timezone.utc)).total_seconds()
             hours_remaining = max(0, int(seconds_remaining // 3600))
             expiry_text = f"This link will expire in {hours_remaining} hours."
 
@@ -784,7 +784,7 @@ async def revoke_share_link_dev(
 
         # Revoke the token
         share_data["is_active"] = False
-        share_data["revoked_at"] = datetime.utcnow()
+        share_data["revoked_at"] = datetime.now(timezone.utc)
 
         return ApiResponse(
             success=True,
@@ -824,7 +824,7 @@ async def revoke_share_link(
 
         # Revoke the token
         share_token.is_active = False  # type: ignore[assignment]
-        share_token.revoked_at = datetime.utcnow()  # type: ignore[assignment]
+        share_token.revoked_at = datetime.now(timezone.utc)  # type: ignore[assignment]
         db.commit()
 
         return ApiResponse(success=True, data={"message": "Share link revoked successfully"})
@@ -914,7 +914,7 @@ async def preview_share_link_dev(token: str) -> HTMLResponse:
             raise HTTPException(status_code=404, detail="Share link not found")
 
         # Check if expired
-        if share_data["expires_at"] and share_data["expires_at"] < datetime.utcnow():
+        if share_data["expires_at"] and share_data["expires_at"] < datetime.now(timezone.utc):
             raise HTTPException(status_code=410, detail="Share link has expired")
 
         # Check if revoked

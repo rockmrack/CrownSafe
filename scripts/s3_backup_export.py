@@ -378,7 +378,7 @@ class S3BackupExporter:
                         "MetricName": "ExportStarted",
                         "Value": 1,
                         "Unit": "Count",
-                        "Timestamp": datetime.datetime.utcnow(),
+                        "Timestamp": datetime.datetime.now(timezone.utc),
                     },
                 ],
             )
@@ -400,19 +400,19 @@ class S3BackupExporter:
                         "MetricName": "ExportSuccess",
                         "Value": 1,
                         "Unit": "Count",
-                        "Timestamp": datetime.datetime.utcnow(),
+                        "Timestamp": datetime.datetime.now(timezone.utc),
                     },
                     {
                         "MetricName": "ExportDuration",
                         "Value": duration_minutes,
                         "Unit": "Minutes",
-                        "Timestamp": datetime.datetime.utcnow(),
+                        "Timestamp": datetime.datetime.now(timezone.utc),
                     },
                     {
                         "MetricName": "ExportSize",
                         "Value": task.total_size_gb or 0,
                         "Unit": "Gigabytes",
-                        "Timestamp": datetime.datetime.utcnow(),
+                        "Timestamp": datetime.datetime.now(timezone.utc),
                     },
                 ],
             )
@@ -429,7 +429,7 @@ class S3BackupExporter:
                         "MetricName": "ExportFailed",
                         "Value": 1,
                         "Unit": "Count",
-                        "Timestamp": datetime.datetime.utcnow(),
+                        "Timestamp": datetime.datetime.now(timezone.utc),
                     },
                 ],
             )
@@ -441,7 +441,7 @@ def main():
     """Main entry point for scheduled exports"""
     logger.info("=" * 60)
     logger.info(" S3 BACKUP EXPORT")
-    logger.info(f" Time: {datetime.datetime.utcnow().isoformat()}")
+    logger.info(f" Time: {datetime.datetime.now(timezone.utc).isoformat()}")
     logger.info("=" * 60)
 
     # Create exporter

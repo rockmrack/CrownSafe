@@ -5,7 +5,7 @@ Stores only internal user_id and provider subject ID
 import hashlib
 import logging
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import httpx
@@ -226,8 +226,8 @@ async def oauth_login(
                 provider_type=login_data.provider,
                 is_active=True,
                 is_subscribed=False,
-                created_at=datetime.utcnow(),
-                last_login=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
+                last_login=datetime.now(timezone.utc),
             )
             db.add(user)
             db.commit()
@@ -244,7 +244,7 @@ async def oauth_login(
             )
         else:
             # Update last login
-            user.last_login = datetime.utcnow()
+            user.last_login = datetime.now(timezone.utc)
             db.commit()
 
             logger.info(

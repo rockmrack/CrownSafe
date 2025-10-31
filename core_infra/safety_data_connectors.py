@@ -4,7 +4,7 @@ Part of the Proactive Consumer Product Safety Framework
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 
 import aiohttp
 
@@ -425,7 +425,7 @@ class DataUnificationEngine:
         # Add metadata
         golden["source_records"] = [r.source_id for r in records]
         golden["sources"] = list(set(r.source for r in records))
-        golden["last_updated"] = datetime.utcnow()
+        golden["last_updated"] = datetime.now(timezone.utc)
 
         return golden
 

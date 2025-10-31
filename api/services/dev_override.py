@@ -13,6 +13,7 @@ def dev_entitled(user_id: int, feature: str) -> bool:
 
     Returns:
         True if entitled via dev override, False otherwise
+
     """
     # Allow-all kill switch (use only in staging; careful in prod)
     if os.getenv("ENTITLEMENTS_ALLOW_ALL", "").strip().lower() in {"1", "true", "yes"}:

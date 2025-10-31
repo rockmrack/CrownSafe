@@ -4,7 +4,7 @@ Generate comprehensive safety summaries for users
 
 import logging
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
@@ -197,7 +197,7 @@ async def generate_90_day_report(
     """
     try:
         # Calculate date range
-        end_date = datetime.utcnow()
+        end_date = datetime.now(timezone.utc)
         start_date = end_date - timedelta(days=90)
 
         # Get user's scan history for the period
@@ -704,7 +704,7 @@ async def generate_quarterly_nursery_report(
     """
     try:
         # Calculate date range (last 3 months)
-        end_date = datetime.utcnow()
+        end_date = datetime.now(timezone.utc)
         start_date = end_date - timedelta(days=90)
 
         # Get user's scan history for nursery products

@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 import redis
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -237,7 +237,7 @@ def delete_account(
             if hasattr(current_user, "is_active"):
                 current_user.is_active = False
             if hasattr(current_user, "deleted_at"):
-                current_user.deleted_at = datetime.utcnow()
+                current_user.deleted_at = datetime.now(timezone.utc)
             if hasattr(current_user, "email") and current_user.email:
                 current_user.email = f"deleted+{user_id}@example.invalid"
             if hasattr(current_user, "full_name"):

@@ -44,6 +44,7 @@ class SearchService:
 
         Returns:
             (sql_query, params, use_scoring)
+
         """
         # Determine which table to use (portable check)
         from sqlalchemy import inspect

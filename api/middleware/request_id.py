@@ -29,6 +29,7 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
 
         Returns:
             Response with X-Request-ID header
+
         """
         # Generate unique request ID
         request_id = str(uuid.uuid4())

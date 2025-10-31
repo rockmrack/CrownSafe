@@ -52,6 +52,7 @@ class IngredientAnalysisAgent:
 
         Returns:
             Analysis results with Crown Score and recommendations
+
         """
         try:
             # Convert dict to HairProfile object
@@ -172,6 +173,7 @@ class IngredientAnalysisAgent:
 
         Returns:
             List of alternative products
+
         """
         # TODO: Implement database query for alternatives
         # For now, return placeholder

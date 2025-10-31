@@ -4,7 +4,7 @@ Barcode, QR Code, and DataMatrix scanning with precise recall matching
 
 import base64
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile
@@ -108,6 +108,7 @@ def check_recall_database(scan_result: ScanResult, db: Session) -> RecallCheckRe
 
     Returns:
         Recall check result with matching recalls
+
     """
     # Return empty recall check for backward compatibility
     recall_check = RecallCheckResult(
@@ -179,7 +180,7 @@ def _persist_verification(
             message=verification.get("message"),
             trace_id=trace_id,
             verification_payload=verification.get("payload"),
-            checked_at=datetime.utcnow(),
+            checked_at=datetime.now(timezone.utc),
         )
         db.add(rec)
         db.commit()
@@ -212,7 +213,7 @@ async def scan_barcode_text(request: BarcodeScanRequest, db: Session = Depends(g
     """
     try:
         # Generate trace ID
-        trace_id = f"scan_{int(datetime.utcnow().timestamp())}_{hash(request.barcode_data) % 10000}"
+        trace_id = f"scan_{int(datetime.now(timezone.utc).timestamp())}_{hash(request.barcode_data) % 10000}"
 
         # Parse barcode
         scan_result = scanner.scan_text(request.barcode_data, request.barcode_type)
@@ -254,7 +255,7 @@ async def scan_image(
     """
     try:
         # Generate trace ID
-        trace_id = f"scan_img_{int(datetime.utcnow().timestamp())}_{hash(file.filename) % 10000}"
+        trace_id = f"scan_img_{int(datetime.now(timezone.utc).timestamp())}_{hash(file.filename) % 10000}"
 
         # Read image data
         image_data = await file.read()
@@ -307,7 +308,7 @@ async def scan_qr_code(request: BarcodeScanRequest, db: Session = Depends(get_db
     """
     try:
         # Generate trace ID
-        timestamp = int(datetime.utcnow().timestamp())
+        timestamp = int(datetime.now(timezone.utc).timestamp())
         hash_val = hash(request.barcode_data) % 10000
         trace_id = f"scan_qr_{timestamp}_{hash_val}"
 
@@ -347,7 +348,7 @@ async def scan_datamatrix(request: ImageScanRequest, db: Session = Depends(get_d
     """
     try:
         # Generate trace ID
-        trace_id = f"scan_dm_{int(datetime.utcnow().timestamp())}"
+        trace_id = f"scan_dm_{int(datetime.now(timezone.utc).timestamp())}"
 
         # Decode base64 image
         image_data = base64.b64decode(request.image_base64)
@@ -402,7 +403,7 @@ async def parse_gs1_data(
     """
     try:
         # Generate trace ID
-        trace_id = f"scan_gs1_{int(datetime.utcnow().timestamp())}"
+        trace_id = f"scan_gs1_{int(datetime.now(timezone.utc).timestamp())}"
 
         # Parse GS1 data
         scan_result = scanner.scan_text(gs1_data, "GS1_128")
@@ -446,7 +447,7 @@ async def verify_unit(request: VerifyRequest, db: Session = Depends(get_db_sessi
     Always persists a verification record for audit.
     """
     try:
-        trace_id = f"verify_{int(datetime.utcnow().timestamp())}"
+        trace_id = f"verify_{int(datetime.now(timezone.utc).timestamp())}"
 
         exp = None
         if request.expiry_date:
@@ -512,7 +513,7 @@ async def generate_qr_code(request: QRGenerateRequest) -> Response:
 
         # Add metadata
         qr_data["generated_by"] = "BabyShield"
-        qr_data["timestamp"] = datetime.utcnow().isoformat()
+        qr_data["timestamp"] = datetime.now(timezone.utc).isoformat()
 
         # Generate QR code
         qr_image = scanner.generate_qr_code(qr_data)
@@ -658,6 +659,7 @@ async def barcode_scan_with_file(
         400: Invalid file type
         413: File too large
         422: Validation error
+
     """
     try:
         # Validate file type
@@ -691,7 +693,7 @@ async def barcode_scan_with_file(
         image_base64 = base64.b64encode(content).decode("utf-8")
 
         # Generate trace ID
-        trace_id = f"file_scan_{int(datetime.utcnow().timestamp())}_{hash(file.filename) % 10000}"
+        trace_id = f"file_scan_{int(datetime.now(timezone.utc).timestamp())}_{hash(file.filename) % 10000}"
 
         # Scan image
         scan_results = await scanner.scan_image(image_base64)

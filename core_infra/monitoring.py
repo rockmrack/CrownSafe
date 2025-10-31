@@ -209,6 +209,7 @@ class MonitoringManager:
 
         Returns:
             List of active alerts
+
         """
         active_alerts = []
 

@@ -47,6 +47,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             cross_origin_embedder_policy: Cross-Origin-Embedder-Policy value
             cross_origin_resource_policy: Cross-Origin-Resource-Policy value
             content_security_policy: Content-Security-Policy value (for HTML responses)
+
         """
         super().__init__(app)
 
@@ -161,6 +162,7 @@ def get_security_headers_dict() -> dict[str, str]:
 
     Returns:
         Dictionary of header names and values
+
     """
     return {
         "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
@@ -187,6 +189,7 @@ def apply_security_headers(response: Response) -> Response:
 
     Returns:
         Response with security headers
+
     """
     headers = get_security_headers_dict()
     for name, value in headers.items():

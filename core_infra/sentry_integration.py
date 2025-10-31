@@ -27,6 +27,7 @@ def init_sentry() -> bool | None:
 
     Returns:
         bool: True if Sentry was initialized, False otherwise
+
     """
     sentry_dsn = os.getenv("SENTRY_DSN")
 
@@ -92,6 +93,7 @@ def scrub_sensitive_data(event, hint):
 
     Returns:
         Modified event dict or None to drop the event
+
     """
     # Scrub sensitive headers
     if "request" in event and "headers" in event["request"]:
@@ -118,6 +120,7 @@ def capture_exception(error: Exception, context: dict = None) -> None:
     Args:
         error: The exception to capture
         context: Additional context to include
+
     """
     if context:
         with sentry_sdk.push_scope() as scope:
@@ -135,6 +138,7 @@ def capture_message(message: str, level: str = "info", context: dict = None) -> 
         message: The message to capture
         level: Severity level (debug, info, warning, error, fatal)
         context: Additional context to include
+
     """
     if context:
         with sentry_sdk.push_scope() as scope:

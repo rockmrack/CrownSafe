@@ -3,7 +3,7 @@
 import asyncio
 import json
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 import redis
 
@@ -23,7 +23,7 @@ async def test_flow():
             "sender_id": "test_api_gateway",
             "target_id": "commander_agent_01",
             "correlation_id": workflow_id,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         },
         "payload": {
             "user_goal": "Test workflow flow",
