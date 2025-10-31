@@ -3,4 +3,7 @@ target-version = "py311"
 
 [lint]
 select = ["E","F","I"]
-ignore = ["F403","F405","F821"]   # temporarily ignore undefined-name
+ignore = [
+    "F403","F405","F821",   # temporarily ignore undefined-name
+    "E501",  # line-too-long - many HTML/CSS strings can't be easily broken
+]

@@ -248,7 +248,10 @@ def format_executive_summary(pubmed_articles, trials, adverse_events):
     <a name='executive_summary'></a>
     <h1>Executive Summary</h1>
     <p>
-    This evidence report summarises findings on the efficacy and safety of the queried intervention, using structured data from PubMed (n={n} studies), ClinicalTrials.gov (n={t} trials), and openFDA (n={aecount} top adverse reactions). Please refer to each section for a detailed, source-linked analysis.  # noqa: E501
+    This evidence report summarises findings on the efficacy and safety of the queried intervention,
+    using structured data from PubMed (n={n} studies), ClinicalTrials.gov (n={t} trials),
+    and openFDA (n={aecount} top adverse reactions). Please refer to each section for a detailed,
+    source-linked analysis.
     </p>
     """
 
