@@ -54,7 +54,8 @@ def check_endpoint(method: str, endpoint: str, data: Optional[Dict] = None, expe
 
         try:
             response_data = response.json()
-        except:
+        except (json.JSONDecodeError, ValueError):
+            # Response is not JSON
             response_data = {"text": response.text}
 
         logger.debug(f"Response Body: {json.dumps(response_data, indent=2)}")
@@ -111,7 +112,8 @@ def check_redis_for_workflow(workflow_id: str) -> Dict[str, Any]:
                 try:
                     data = json.loads(r.get(key))
                     logger.debug(f"Found related key {key} with status: {data.get('status')}")
-                except:
+                except (json.JSONDecodeError, TypeError):
+                    # Invalid JSON or data format
                     pass
 
         return result
@@ -192,7 +194,8 @@ def diagnose_api():
         try:
             response_data = response.json()
             logger.info(f"   Response Body: {json.dumps(response_data, indent=6)}")
-        except:
+        except (json.JSONDecodeError, ValueError):
+            # Response is not JSON
             logger.error(f"   Response Text: {response.text}")
 
         if response.status_code == 202:
@@ -277,7 +280,8 @@ def diagnose_api():
         workflow_keys = r.keys("rossnet:workflow:*")
         logger.info(f"   📊 Total workflows in Redis: {len(workflow_keys)}")
 
-    except:
+    except (redis.ConnectionError, redis.TimeoutError):
+        # Redis connection failed
         logger.error("   ❌ Redis is not accessible")
         logger.error("   Start Redis with: redis-server")
 
@@ -366,7 +370,8 @@ def test_minimal_workflow():
             logger.error(f"❌ Failed with status: {response.status_code}")
             try:
                 logger.error(f"Response: {response.json()}")
-            except:
+            except (json.JSONDecodeError, ValueError):
+                # Response is not JSON
                 logger.error(f"Response text: {response.text}")
 
     except Exception as e:
