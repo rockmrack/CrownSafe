@@ -274,7 +274,11 @@ def classify_performance(response_time_ms: int) -> str:
 class SafetyCheckRequest(AppModel):
     model_config = {"protected_namespaces": ()}
 
-    user_id: int = Field(..., json_schema_extra={"examples": [1]}, description="Authenticated Crown Safe user ID")
+    user_id: int = Field(
+        ...,
+        json_schema_extra={"examples": [1]},
+        description="Authenticated Crown Safe user ID",
+    )
     barcode: Optional[str] = Field(
         None,
         json_schema_extra={"examples": ["012345678905"]},
