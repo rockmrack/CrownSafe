@@ -450,7 +450,7 @@ app.add_middleware(
         "localhost",
         "127.0.0.1",
         "testserver",
-        "*.amazonaws.com",
+        "*.blob.core.windows.net",  # Azure Blob Storage
     ],
 )
 

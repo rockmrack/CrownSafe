@@ -235,6 +235,30 @@ class AzureBlobStorageClient:
             "Metadata": properties.metadata,
         }
 
+    def download_blob(self, blob_name: str, container_name: Optional[str] = None) -> bytes:
+        """
+        Download blob content as bytes
+
+        Args:
+            blob_name: Name of the blob
+            container_name: Container name
+
+        Returns:
+            Blob content as bytes
+
+        Raises:
+            Exception: If blob doesn't exist or download fails
+        """
+        try:
+            blob_client = self._get_blob_client(blob_name, container_name)
+            download_stream = blob_client.download_blob()
+            blob_data = download_stream.readall()
+            logger.info(f"Downloaded blob: {blob_name} ({len(blob_data)} bytes)")
+            return blob_data
+        except Exception as e:
+            logger.error(f"Failed to download blob: {e}")
+            raise
+
     def delete_blob(self, blob_name: str, container_name: Optional[str] = None) -> bool:
         """
         Delete blob from container

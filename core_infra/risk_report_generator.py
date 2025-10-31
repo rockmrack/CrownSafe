@@ -10,7 +10,6 @@ from datetime import datetime
 from io import BytesIO
 from typing import Any, Dict, List, Optional
 
-import boto3
 from jinja2 import Environment, select_autoescape
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
@@ -26,6 +25,7 @@ from reportlab.platypus import (
     TableStyle,
 )
 
+from core_infra.azure_storage import AzureBlobStorageClient
 from core_infra.risk_assessment_models import (
     CompanyComplianceProfile,
     ProductGoldenRecord,
@@ -149,9 +149,9 @@ class RiskReportGenerator:
     Supports multiple formats: PDF, HTML, JSON
     """
 
-    def __init__(self, s3_client=None):
-        self.s3_client = s3_client or boto3.client("s3")
-        self.bucket_name = os.getenv("S3_BUCKET_NAME", "babyshield-reports")
+    def __init__(self, storage_client: Optional[AzureBlobStorageClient] = None):
+        self.storage_client = storage_client or AzureBlobStorageClient()
+        self.container_name = os.getenv("AZURE_STORAGE_CONTAINER", "crownsafe-reports")
 
         # Legal disclaimers (CRITICAL - Never skip these)
         self.disclaimers = {
@@ -232,8 +232,8 @@ class RiskReportGenerator:
         else:
             raise ValueError(f"Unsupported format: {format}")
 
-        # Upload to S3
-        report_url = self._upload_report(report_content, product.id, format)
+        # Upload to Azure Blob Storage
+        report_url = self._upload_to_azure_blob(report_content, product.id, format)
 
         # Create report record
         report_record = {
@@ -649,56 +649,53 @@ class RiskReportGenerator:
         else:
             return "#689f38"
 
-    def _upload_report(self, content: Any, product_id: str, format: str) -> str:
+    def _upload_to_azure_blob(self, content: Any, product_id: str, format: str) -> str:
         """
-        Upload report to S3 and return URL
+        Upload report to Azure Blob Storage and return SAS URL
         """
         timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
-        key = f"risk-reports/{product_id}/{timestamp}.{format}"
+        blob_name = f"risk-reports/{product_id}/{timestamp}.{format}"
 
-        # Check if S3 is configured and bucket exists
-        s3_enabled = os.getenv("S3_ENABLED", "false").lower() == "true"
-        if not s3_enabled:
-            logger.info(f"S3 upload disabled, returning local path for report: {product_id}")
+        # Check if Azure Blob Storage is configured
+        azure_enabled = os.getenv("AZURE_BLOB_ENABLED", "false").lower() == "true"
+        if not azure_enabled:
+            logger.info(f"Azure Blob Storage disabled, returning local path for report: {product_id}")
             return f"/api/v1/risk/report/local/{product_id}/{timestamp}.{format}"
 
         try:
-            # Test if bucket exists first
-            self.s3_client.head_bucket(Bucket=self.bucket_name)
-
+            # Upload based on format
             if format == "pdf":
-                self.s3_client.put_object(
-                    Bucket=self.bucket_name,
-                    Key=key,
-                    Body=content.read() if hasattr(content, "read") else content,
-                    ContentType="application/pdf",
+                content_bytes = content.read() if hasattr(content, "read") else content
+                self.storage_client.upload_file(
+                    blob_name=blob_name,
+                    file_data=content_bytes,
+                    content_type="application/pdf",
                 )
             elif format == "html":
-                self.s3_client.put_object(
-                    Bucket=self.bucket_name,
-                    Key=key,
-                    Body=content.encode("utf-8"),
-                    ContentType="text/html",
+                content_bytes = content.encode("utf-8") if isinstance(content, str) else content
+                self.storage_client.upload_file(
+                    blob_name=blob_name,
+                    file_data=content_bytes,
+                    content_type="text/html",
                 )
             elif format == "json":
-                self.s3_client.put_object(
-                    Bucket=self.bucket_name,
-                    Key=key,
-                    Body=content.encode("utf-8"),
-                    ContentType="application/json",
+                content_bytes = content.encode("utf-8") if isinstance(content, str) else content
+                self.storage_client.upload_file(
+                    blob_name=blob_name,
+                    file_data=content_bytes,
+                    content_type="application/json",
                 )
 
-            # Generate presigned URL (24 hour expiry)
-            url = self.s3_client.generate_presigned_url(
-                "get_object",
-                Params={"Bucket": self.bucket_name, "Key": key},
-                ExpiresIn=86400,
+            # Generate SAS URL with 24 hour expiry
+            url = self.storage_client.generate_sas_url(
+                blob_name=blob_name,
+                expiry_hours=24,
             )
 
-            logger.info(f"Report uploaded to S3: {key}")
+            logger.info(f"Report uploaded to Azure Blob Storage: {blob_name}")
             return url
 
         except Exception as e:
-            logger.warning(f"S3 upload failed (bucket may not exist): {e}")
+            logger.warning(f"Azure Blob Storage upload failed: {e}")
             # Return local path as fallback
             return f"/api/v1/risk/report/local/{product_id}/{timestamp}.{format}"

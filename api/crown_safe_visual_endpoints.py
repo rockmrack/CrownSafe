@@ -4,59 +4,55 @@ Image upload, hair product analysis, ingredient extraction, and label recognitio
 Adapted from BabyShield's visual recognition system for hair product safety
 """
 
-import os
-import logging
-import hashlib
-import uuid
 import base64
 import io
-from typing import Optional, List, Dict, Any
+import logging
+import os
+import uuid
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
 from fastapi import (
     APIRouter,
-    HTTPException,
-    UploadFile,
-    File,
-    Depends,
-    Body,
-    Query,
-    Request,
     BackgroundTasks,
+    Depends,
+    File,
+    HTTPException,
+    Query,
+    UploadFile,
 )
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, validator
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, desc
-import boto3
 from PIL import Image
+from pydantic import BaseModel, Field, validator
+from sqlalchemy import desc
+from sqlalchemy.orm import Session
 
-from core_infra.database import get_db as get_db_session, User
+from api.auth_endpoints import get_current_user
 from core_infra.crown_safe_models import (
     HairProductModel,
     IngredientModel,
     ProductScanModel,
 )
-from api.auth_endpoints import get_current_user
+from core_infra.database import User
+from core_infra.database import get_db as get_db_session
 
 logger = logging.getLogger(__name__)
 
 # Router
 visual_router = APIRouter(prefix="/api/v1/crown-safe/visual", tags=["crown-safe-visual-recognition"])
 
-# AWS Configuration (if using cloud storage)
-AWS_REGION = os.getenv("AWS_REGION", "eu-north-1")
-S3_BUCKET_REGION = os.getenv("S3_BUCKET_REGION", "us-east-1")
-S3_BUCKET = os.getenv("S3_UPLOAD_BUCKET", "crownsafe-images")
-CLOUDFRONT_DOMAIN = os.getenv("CLOUDFRONT_DOMAIN")
+# Azure Blob Storage Configuration
+AZURE_REGION = os.getenv("AZURE_REGION", "westeurope")
+STORAGE_CONTAINER = os.getenv("AZURE_STORAGE_CONTAINER", "crownsafe-images")
 
-# Initialize S3 client if configured
+# Initialize Azure Blob Storage client if configured
 try:
-    s3_client = boto3.client("s3", region_name=S3_BUCKET_REGION)
-    S3_ENABLED = True
+    storage_client = AzureBlobStorageClient(container_name=STORAGE_CONTAINER)
+    AZURE_BLOB_ENABLED = True
 except Exception as e:
-    s3_client = None
-    S3_ENABLED = False
-    logger.warning(f"S3 not configured: {e}")
+    storage_client = None
+    AZURE_BLOB_ENABLED = False
+    logger.warning(f"Azure Blob Storage not configured: {e}")
 
 
 # ==================== Request/Response Models ====================
@@ -372,22 +368,23 @@ async def upload_product_image(
     image_bytes = await file.read()
 
     # Store image
-    if S3_ENABLED:
-        # Upload to S3
+    if AZURE_BLOB_ENABLED:
+        # Upload to Azure Blob Storage
         try:
-            object_key = f"scans/{current_user.id}/{scan_id}.jpg"
-            s3_client.put_object(
-                Bucket=S3_BUCKET,
-                Key=object_key,
-                Body=image_bytes,
-                ContentType=file.content_type,
+            blob_name = f"scans/{current_user.id}/{scan_id}.jpg"
+            storage_client.upload_file(
+                blob_name=blob_name,
+                file_data=image_bytes,
+                content_type=file.content_type,
             )
-            image_url = f"https://{S3_BUCKET}.s3.{S3_BUCKET_REGION}.amazonaws.com/{object_key}"
+            image_url = storage_client.get_blob_url(blob_name)
         except Exception as e:
-            logger.error(f"S3 upload failed: {e}")
-            raise HTTPException(status_code=500, detail="Image upload failed")
+            logger.error(f"Azure Blob Storage upload failed: {e}")
+            raise HTTPException(status_code=500, detail="Image upload failed") from e
     else:
         # Store locally
+        from pathlib import Path
+
         upload_dir = Path("uploads") / "scans" / str(current_user.id)
         upload_dir.mkdir(parents=True, exist_ok=True)
         image_path = upload_dir / f"{scan_id}.jpg"

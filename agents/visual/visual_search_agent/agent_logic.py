@@ -1,20 +1,20 @@
 # agents/visual/visual_search_agent/agent_logic.py
 
-import logging
 import json
-from typing import Dict, Any, Optional
-from openai import AsyncOpenAI
+import logging
 import os
-import re
+from typing import Any, Dict, Optional
 from urllib.parse import urlparse
+
+from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)
 
 
-def _is_s3_url(url: str) -> bool:
-    """Check if URL is an S3 URL"""
+def _is_azure_blob_url(url: str) -> bool:
+    """Check if URL is an Azure Blob Storage URL"""
     u = urlparse(url)
-    return u.scheme == "s3" or ("amazonaws.com" in (u.netloc or ""))
+    return u.scheme == "blob" or ("blob.core.windows.net" in (u.netloc or ""))
 
 
 async def _fetch_image_bytes(image_url: str) -> tuple[bytes, str]:
@@ -26,19 +26,18 @@ async def _fetch_image_bytes(image_url: str) -> tuple[bytes, str]:
 
     headers = {"User-Agent": "babyshield-backend/1.0"}
 
-    # For presigned S3 HTTPS or any external CDN → use HTTP GET
-    if _is_s3_url(image_url) and image_url.startswith("s3://"):
-        # s3://bucket/key → boto3
-        import boto3
+    # For Azure Blob Storage URLs or any external CDN → use HTTP GET
+    if _is_azure_blob_url(image_url) and image_url.startswith("blob://"):
+        # blob://container/blobname → Azure SDK
+        from core_infra.azure_storage import AzureBlobStorageClient
 
         u = urlparse(image_url)
-        bucket = u.netloc
-        key = u.path.lstrip("/")
-        s3 = boto3.client("s3", region_name="us-east-1")
-        obj = s3.get_object(Bucket=bucket, Key=key)
-        data = obj["Body"].read()
-        ctype = obj.get("ContentType", "image/jpeg")
-        return data, ctype
+        container = u.netloc
+        blob_name = u.path.lstrip("/")
+        storage_client = AzureBlobStorageClient(container_name=container)
+        blob_data = storage_client.download_blob(blob_name)
+        ctype = "image/jpeg"  # Default, could be enhanced to get from blob properties
+        return blob_data, ctype
 
     # HTTP(S) path
     async with httpx.AsyncClient(timeout=30.0, headers=headers, follow_redirects=True) as client:
