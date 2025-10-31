@@ -591,7 +591,9 @@ class DrugClassPatternTester:
                 )
 
                 if results and results["metadatas"] and results["metadatas"][0]:
-                    for j, (metadata, distance) in enumerate(zip(results["metadatas"][0], results["distances"][0])):
+                    for j, (metadata, distance) in enumerate(
+                        zip(results["metadatas"][0], results["distances"][0], strict=False)
+                    ):
                         drug_context = metadata.get("drug_names_context", [])
                         source = metadata.get("source_type", "unknown")
                         self.print_debug(
@@ -733,7 +735,7 @@ class DrugClassPatternTester:
                         import json
 
                         drug_context = json.loads(drug_context)
-                    except:
+                    except (json.JSONDecodeError, TypeError):
                         # If not JSON, treat as single drug
                         drug_context = [drug_context]
                 elif not isinstance(drug_context, list):
@@ -808,7 +810,8 @@ class DrugClassPatternTester:
                             import json
 
                             drugs = json.loads(drugs)
-                        except:
+                        except (json.JSONDecodeError, TypeError):
+                            # If not JSON, treat as single drug
                             drugs = [drugs]
 
                     sglt2_drugs_in_doc = []
@@ -889,7 +892,8 @@ class DrugClassPatternTester:
                         import json
 
                         drug_context = json.loads(drug_context)
-                    except:
+                    except (json.JSONDecodeError, TypeError):
+                        # If not JSON, treat as single drug
                         drug_context = [drug_context]
                 elif not isinstance(drug_context, list):
                     drug_context = []
@@ -931,7 +935,8 @@ class DrugClassPatternTester:
                                     sglt2_stats["by_drug"][str(parsed_drug)] = (
                                         sglt2_stats["by_drug"].get(str(parsed_drug), 0) + 1
                                     )
-                            except:
+                            except (json.JSONDecodeError, TypeError):
+                                # If JSON parsing fails, treat as single drug
                                 sglt2_stats["by_drug"][drug] = sglt2_stats["by_drug"].get(drug, 0) + 1
                         else:
                             sglt2_stats["by_drug"][str(drug)] = sglt2_stats["by_drug"].get(str(drug), 0) + 1
@@ -954,7 +959,8 @@ class DrugClassPatternTester:
                                 for parsed_drug in parsed_drugs:
                                     if any(sglt2 in str(parsed_drug).lower() for sglt2 in self.sglt2_drugs):
                                         unique_sglt2_in_doc.add(str(parsed_drug))
-                            except:
+                            except (json.JSONDecodeError, TypeError):
+                                # If JSON parsing fails, check if drug name matches
                                 if any(sglt2 in drug.lower() for sglt2 in self.sglt2_drugs):
                                     unique_sglt2_in_doc.add(drug)
                         else:
