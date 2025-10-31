@@ -1,6 +1,6 @@
 """
 Celery async tasks for Visual Agent image processing
-Handles async job queue with S3 integration and multi-step processing
+Handles async job queue with Azure Blob Storage integration and multi-step processing
 """
 
 import os
@@ -13,9 +13,9 @@ import uuid
 
 from celery import Celery, Task
 from celery.exceptions import SoftTimeLimitExceeded
-import boto3
 from sqlalchemy.orm import Session
 
+from core_infra.azure_storage import AzureBlobStorageClient
 from core_infra.image_processor import image_processor, ExtractionResult
 from core_infra.visual_agent_models import (
     ImageJob,
@@ -32,8 +32,8 @@ logger = logging.getLogger(__name__)
 
 # Celery configuration
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
-S3_BUCKET = os.getenv("S3_BUCKET", "babyshield-images")
+AZURE_REGION = os.getenv("AZURE_REGION", "westeurope")
+STORAGE_CONTAINER = os.getenv("AZURE_STORAGE_CONTAINER", "crownsafe-images")
 
 # Initialize Celery
 app = Celery("visual_agent", broker=REDIS_URL, backend=REDIS_URL)
@@ -63,9 +63,13 @@ app.conf.beat_schedule = {
     }
 }
 
-# Initialize AWS clients
-s3_client = boto3.client("s3", region_name=os.getenv("S3_BUCKET_REGION", "us-east-1"))
-rekognition_client = boto3.client("rekognition", region_name=AWS_REGION)
+# Initialize Azure Blob Storage client
+try:
+    storage_client = AzureBlobStorageClient(container_name=STORAGE_CONTAINER)
+    logger.info("Azure Blob Storage client initialized for Celery tasks")
+except Exception as e:
+    storage_client = None
+    logger.warning(f"Azure Blob Storage not configured: {e}")
 
 
 class CallbackTask(Task):
@@ -100,8 +104,9 @@ def process_image(self, job_id: str) -> Dict[str, Any]:
             job.started_at = datetime.utcnow()
             db.commit()
 
-        # Download image from S3
-        image_data = download_from_s3(job.s3_bucket, job.s3_key)
+        # Download image from Azure Blob Storage
+        # Note: job.s3_bucket and job.s3_key should be renamed to blob_container and blob_name in database migration
+        image_data = download_from_blob_storage(job.s3_bucket, job.s3_key)
 
         # Step 1: Virus scan
         virus_clean = virus_scan.run(job_id, image_data)
@@ -281,14 +286,14 @@ def normalize_image(job_id: str, image_data: bytes) -> bytes:
     output = io.BytesIO()
     image_without_exif.save(output, format="JPEG", quality=85, optimize=True)
 
-    # Upload normalized version to S3
-    normalized_key = f"processed/{job_id}_normalized.jpg"
-    s3_client.put_object(
-        Bucket=S3_BUCKET,
-        Key=normalized_key,
-        Body=output.getvalue(),
-        ContentType="image/jpeg",
-    )
+    # Upload normalized version to Azure Blob Storage
+    if storage_client:
+        normalized_blob = f"processed/{job_id}_normalized.jpg"
+        storage_client.upload_file(
+            blob_name=normalized_blob,
+            file_data=output.getvalue(),
+            content_type="image/jpeg",
+        )
 
     return output.getvalue()
 
@@ -520,15 +525,19 @@ def create_review_task(self, job_id: str):
 
 
 # Utility functions
-def download_from_s3(bucket: str, key: str) -> bytes:
-    """Download file from S3"""
-    response = s3_client.get_object(Bucket=bucket, Key=key)
-    return response["Body"].read()
+def download_from_blob_storage(container: str, blob_name: str) -> bytes:
+    """Download file from Azure Blob Storage"""
+    if not storage_client:
+        raise RuntimeError("Azure Blob Storage client not initialized")
+    return storage_client.download_blob(blob_name, container_name=container)
 
 
-def generate_presigned_url(bucket: str, key: str, expiration: int = 3600) -> str:
-    """Generate presigned URL for S3 object"""
-    return s3_client.generate_presigned_url("get_object", Params={"Bucket": bucket, "Key": key}, ExpiresIn=expiration)
+def generate_sas_url(container: str, blob_name: str, expiry_hours: int = 1) -> str:
+    """Generate SAS URL for Azure Blob"""
+    if not storage_client:
+        raise RuntimeError("Azure Blob Storage client not initialized")
+    temp_client = AzureBlobStorageClient(container_name=container)
+    return temp_client.generate_sas_url(blob_name=blob_name, expiry_hours=expiry_hours)
 
 
 # Safety Hub Tasks
