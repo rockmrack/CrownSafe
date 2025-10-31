@@ -19,8 +19,8 @@ from sqlalchemy.orm import Session
 
 from api.auth_endpoints import create_access_token
 from api.main_crownsafe import app
-from core_infra.crown_safe_models import HairProfileModel, User
-from core_infra.database import get_db
+from core_infra.crown_safe_models import HairProfileModel
+from core_infra.database import User, get_db
 
 
 @pytest.fixture

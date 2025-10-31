@@ -4,6 +4,7 @@
 import logging
 import os
 from contextlib import contextmanager
+from datetime import date
 
 from dotenv import load_dotenv
 from sqlalchemy import (
@@ -458,6 +459,42 @@ class SafetyArticle(Base):
     article_url = Column(String, nullable=False)  # The direct URL to the original article
     # A flag to feature an article on the home screen
     is_featured = Column(Boolean, default=False, index=True)
+
+
+# -------------------------------------------------------------------
+# Recalls Model - for recalls table
+# -------------------------------------------------------------------
+class RecallDB(Base):
+    """Model for recalls table - used for recall data storage and queries"""
+
+    __tablename__ = "recalls"
+
+    id = Column(Integer, primary_key=True, index=True)
+    recall_id = Column(String, unique=True, index=True, nullable=False)
+    product_name = Column(String, index=True, nullable=False)
+    model_number = Column(String, index=True, nullable=True)
+    brand = Column(String, nullable=True)
+    country = Column(String, nullable=True)
+    recall_date = Column(Date, index=True, nullable=False)
+    hazard_description = Column(Text, nullable=True)
+    manufacturer_contact = Column(String, nullable=True)
+    upc = Column(String, index=True, nullable=True)
+    source_agency = Column(String, nullable=True)
+    description = Column(Text, nullable=True)
+    hazard = Column(Text, nullable=True)
+    remedy = Column(Text, nullable=True)
+    url = Column(String, nullable=True)
+
+    def to_dict(self) -> dict:
+        """Convert to dictionary"""
+        result = {}
+        for c in self.__table__.columns:
+            v = getattr(self, c.name)
+            result[c.name] = v.isoformat() if isinstance(v, date) else v
+        return result
+
+    def __repr__(self):
+        return f"<RecallDB(id={self.id}, recall_id={self.recall_id!r})>"
 
 
 # -------------------------------------------------------------------
