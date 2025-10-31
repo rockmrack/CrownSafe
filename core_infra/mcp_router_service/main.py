@@ -1,16 +1,14 @@
 # C:\Users\rossd\Downloads\RossNetAgents\core_infra\mcp_router_service\main.py
 # CORRECTED: Fixed WebSocket connection bugs causing policy violations
 
-import asyncio
 import logging
 import os
-import signal
 import sys
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
 # --- Environment & Path Setup ---

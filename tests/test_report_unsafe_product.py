@@ -2,7 +2,6 @@
 Test Report Unsafe Product endpoint
 """
 
-from datetime import datetime
 
 import pytest
 

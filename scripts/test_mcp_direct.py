@@ -1,7 +1,6 @@
 # scripts/test_mcp_direct.py
 
 import asyncio
-import json
 import logging
 
 import aiohttp

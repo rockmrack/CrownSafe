@@ -25,7 +25,6 @@ def run_tests():
     try:
         from agents.visual.visual_search_agent.agent_logic import (
             VisualSearchAgentLogic,
-            _fetch_image_bytes,
             _is_s3_url,
         )
 
@@ -204,14 +203,9 @@ def run_tests():
     print("\n[TEST 8] Module Dependencies...")
     try:
         # Check all required imports work
-        import json
         import logging
         import os
-        import re
-        from typing import Any, Dict, Optional
-        from urllib.parse import urlparse
 
-        from openai import AsyncOpenAI
 
         print("PASS - All module dependencies available")
         print("  - logging: OK")

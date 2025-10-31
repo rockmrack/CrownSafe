@@ -1,7 +1,7 @@
 """Tests for conversation with real tools"""
 
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 from sqlalchemy.orm import Session
 

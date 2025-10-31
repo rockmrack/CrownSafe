@@ -6,9 +6,8 @@ import asyncio
 import gc
 import logging
 import os
-import threading
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 from weakref import WeakValueDictionary
 
 import psutil

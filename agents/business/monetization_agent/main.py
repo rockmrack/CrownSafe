@@ -1,7 +1,4 @@
-import asyncio
-import logging
 
-from core_infra.mcp_client_library.client import MCPClient
 
 from .agent_logic import MonetizationAgentLogic
 

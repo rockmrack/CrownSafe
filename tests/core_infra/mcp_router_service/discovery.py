@@ -5,9 +5,8 @@ import asyncio
 import copy
 import json
 import logging
-import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, Optional, Set
 
 print(f"Loading discovery.py (Step 77 Version - Fixed): {__file__}")
 

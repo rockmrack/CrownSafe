@@ -3,7 +3,7 @@ Pagination utilities for BabyShield
 Prevents memory issues with large datasets
 """
 
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+from typing import Dict, Generic, List, Optional, TypeVar
 
 from fastapi import Query
 from pydantic import BaseModel

@@ -1,7 +1,6 @@
 """Tests for api/services/chat_tools.py"""
 
 import unittest
-from unittest.mock import Mock, patch
 
 
 class TestChatTools(unittest.TestCase):

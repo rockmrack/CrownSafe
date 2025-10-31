@@ -1,7 +1,6 @@
 # scripts/test_nhtsa_connector.py
 
 import asyncio
-import json
 import logging
 import os
 import sys

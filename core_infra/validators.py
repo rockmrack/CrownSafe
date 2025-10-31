@@ -7,8 +7,7 @@ import html
 import re
 from typing import Any, Optional
 
-import bleach
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, field_validator
 
 # Barcode patterns
 BARCODE_PATTERNS = {

@@ -3,7 +3,6 @@
 Test the Share Results functionality
 """
 
-import json
 import os
 import sys
 from datetime import datetime, timedelta

@@ -3,18 +3,16 @@
 # Complete testing script for drug class pattern recognition with proper encoding
 
 import asyncio
-import json
 import logging
 import os
 import sys
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, Dict, List, Optional
 
 from dotenv import load_dotenv
 
 # Fix Unicode encoding for Windows console
 if sys.platform.startswith("win"):
-    import codecs
 
     sys.stdout.reconfigure(encoding="utf-8")
 

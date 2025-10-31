@@ -7,7 +7,6 @@ import json
 import logging
 import sys
 import time
-import traceback
 from typing import Any, Dict
 
 

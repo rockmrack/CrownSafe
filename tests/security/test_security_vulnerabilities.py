@@ -3,7 +3,6 @@ Security vulnerability tests
 Tests for OWASP Top 10 vulnerabilities and security best practices
 """
 
-import pytest
 
 
 class TestSQLInjection:

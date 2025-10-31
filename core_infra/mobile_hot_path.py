@@ -2,14 +2,9 @@
 # core_infra/mobile_hot_path.py
 # Ultra-fast mobile hot path for instant barcode scanning across 39 agencies
 
-import asyncio
-import json
 import logging
 import time
-from datetime import datetime
-from typing import Any, Dict, List, Optional
-
-from sqlalchemy import text
+from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 

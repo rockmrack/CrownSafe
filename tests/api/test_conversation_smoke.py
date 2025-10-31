@@ -1,5 +1,4 @@
 import os
-import uuid
 
 # Enable chat feature for tests - MUST be set before importing app
 os.environ["BS_FEATURE_CHAT_ENABLED"] = "true"

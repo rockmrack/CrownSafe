@@ -3,15 +3,11 @@
 # Smart cache warming system for 39-agency BabyShield performance optimization
 
 import asyncio
-import json
 import logging
 import threading
 import time
-from collections import Counter
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set
-
-from sqlalchemy import text
+from datetime import datetime
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -140,7 +136,6 @@ class SmartCacheWarmer:
         successful_warming = 0
 
         try:
-            from core_infra.cache_manager import set_cached
 
             # Pre-generate common autocomplete queries
             common_queries = []

@@ -5,7 +5,7 @@ import copy  # For deepcopy
 import json
 import uuid
 from datetime import datetime, timezone  # Ensure timezone is imported
-from typing import Any, Dict, Optional, Union  # Added Union for safe_json_serialize
+from typing import Any, Dict, Optional  # Added Union for safe_json_serialize
 
 # Attempt to import logger from config, fallback to basic logging
 try:

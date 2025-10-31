@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from api.services.alternatives_provider import _rules, get_alternatives
+from api.services.alternatives_provider import get_alternatives
 
 
 class TestAlternativesProvider:

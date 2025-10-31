@@ -11,7 +11,7 @@ import tempfile
 import weakref
 from contextlib import contextmanager
 from functools import wraps
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional
 
 import psutil
 
@@ -90,7 +90,6 @@ class MemorySafeImageProcessor:
         Context manager for safe image processing
         """
         import cv2
-        import numpy as np
 
         image = None
         try:

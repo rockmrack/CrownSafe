@@ -5,7 +5,6 @@ Build store submission bundle (ZIP) with all required assets and documents
 
 import json
 import os
-import shutil
 import sys
 import time
 import zipfile

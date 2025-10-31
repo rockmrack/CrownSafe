@@ -98,7 +98,7 @@ def check_environment():
 def create_database_tables():
     """Create database tables if they don't exist"""
     try:
-        from core_infra.database import create_tables, engine
+        from core_infra.database import create_tables
 
         logger.info("Creating database tables...")
         create_tables()

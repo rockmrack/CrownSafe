@@ -17,7 +17,7 @@ from core_infra.crown_safe_models import (
     HairProductModel,
     IngredientModel,
 )
-from core_infra.database import SessionLocal, User  # Import User for relationship resolution
+from core_infra.database import SessionLocal  # Import User for relationship resolution
 
 # Ingredient Database (200 ingredients)
 INGREDIENTS_DATA = [

@@ -1,4 +1,3 @@
-from api.pydantic_base import AppModel
 
 """
 Integration module for pagination and caching features (Task 5)
@@ -8,26 +7,22 @@ Shows how to wire cursor pagination and HTTP caching into existing endpoints
 import logging
 import os
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
-from fastapi import Depends, FastAPI, HTTPException, Request, Response
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from api.services.search_service_v2 import SearchServiceV2
 from api.utils import (
-    CacheableResponse,
     add_cache_headers,
-    check_if_modified_since,
     check_if_none_match,
     create_not_modified_response,
-    create_search_cursor,
     hash_filters,
-    make_detail_etag,
     make_search_etag,
     verify_cursor,
 )
-from api.utils.redis_cache import RedisSearchCache, get_cache
+from api.utils.redis_cache import get_cache
 from core_infra.database import get_db
 
 # from core_infra.enhanced_database_schema import EnhancedRecallDB  # REMOVED FOR CROWN SAFE

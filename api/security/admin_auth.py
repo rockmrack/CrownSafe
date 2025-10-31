@@ -9,7 +9,7 @@ import logging
 import os
 from typing import Optional
 
-from fastapi import Depends, Header, HTTPException, Request
+from fastapi import Depends, Request
 from fastapi.security import APIKeyHeader
 
 from api.errors import APIError

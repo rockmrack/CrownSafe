@@ -1,31 +1,24 @@
-from api.pydantic_base import AppModel
 
 """
 Visual Agent API Endpoints - Phase 2
 Image upload, analysis, MFV, and HITL review queue
 """
 
-import hashlib
 import logging
 import os
 import uuid
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Any, Dict, Optional
 
 import boto3
 from fastapi import (
     APIRouter,
-    Body,
     Depends,
-    File,
     HTTPException,
     Query,
     Request,
-    UploadFile,
 )
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, validator
-from sqlalchemy import and_, desc, or_
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from core_infra.celery_tasks import generate_presigned_url, process_image

@@ -16,26 +16,16 @@ Run with: python scripts/migrate_to_enhanced_schema.py
 import logging
 import os
 import sys
-from datetime import datetime
 
-from dotenv import load_dotenv
 from sqlalchemy import (
-    JSON,
-    Column,
-    Date,
-    Integer,
-    String,
-    Text,
-    create_engine,
     inspect,
     text,
 )
-from sqlalchemy.orm import sessionmaker
 
 # Add the project root to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core_infra.database import Base, RecallDB, SessionLocal, engine
+from core_infra.database import RecallDB, SessionLocal, engine
 from core_infra.enhanced_database_schema import EnhancedRecallDB
 
 # Setup logging

@@ -4,7 +4,6 @@ Stores only internal user_id and provider subject ID
 """
 
 import hashlib
-import json
 import logging
 import uuid
 from datetime import datetime, timedelta
@@ -14,8 +13,7 @@ import httpx
 import jwt
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, EmailStr, Field
-from sqlalchemy import and_
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from core_infra.auth import create_access_token, create_refresh_token

@@ -3,7 +3,6 @@ Enhanced Barcode Scanner with 100% Windows Compatibility
 Uses OpenCV as fallback when PyZbar DLLs are not available
 """
 
-import base64
 import logging
 from dataclasses import dataclass
 from enum import Enum
@@ -16,7 +15,6 @@ import numpy as np
 PYZBAR_AVAILABLE = False
 try:
     from pyzbar import pyzbar
-    from pyzbar.pyzbar import ZBarSymbol
 
     # Test if pyzbar actually works
     test_img = np.zeros((100, 100), dtype=np.uint8)

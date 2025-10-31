@@ -2,12 +2,11 @@
 Enhanced Notification Endpoints - Push notifications, history, and device management
 """
 
-import json
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -19,7 +18,7 @@ from sqlalchemy import (
     Text,
     desc,
 )
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session
 
 from api.pydantic_base import AppModel
 from api.schemas.common import ApiResponse, fail, ok
@@ -158,7 +157,7 @@ def get_firebase_app():
         import os
 
         import firebase_admin
-        from firebase_admin import credentials, messaging
+        from firebase_admin import credentials
 
         # Check if already initialized
         try:

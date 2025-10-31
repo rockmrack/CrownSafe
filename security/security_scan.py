@@ -4,15 +4,12 @@ Security Scanner for BabyShield
 Performs comprehensive security analysis of the codebase
 """
 
-import ast
-import hashlib
 import json
 import os
 import re
-import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List
 
 
 class SecurityScanner:

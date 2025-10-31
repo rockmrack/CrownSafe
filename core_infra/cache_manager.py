@@ -6,9 +6,8 @@ import hashlib
 import json
 import logging
 import os
-from contextlib import asynccontextmanager
-from datetime import date, datetime, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import date, datetime
+from typing import Any, Dict, Optional
 
 # Make redis optional (for test environments without Redis)
 try:

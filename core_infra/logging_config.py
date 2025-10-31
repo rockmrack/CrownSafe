@@ -7,9 +7,7 @@ import json
 import logging
 import logging.config
 import os
-import sys
 from datetime import datetime
-from typing import Any, Dict
 
 
 class StructuredFormatter(logging.Formatter):

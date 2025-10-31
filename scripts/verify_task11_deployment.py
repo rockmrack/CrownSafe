@@ -3,8 +3,6 @@
 Verify Task 11 deployment is successful
 """
 
-import json
-import time
 from datetime import datetime
 
 import requests

@@ -7,12 +7,11 @@ import logging
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional
 
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from core_infra.auth import get_current_active_user
-from core_infra.database import User, get_db
+from core_infra.database import User
 
 logger = logging.getLogger(__name__)
 

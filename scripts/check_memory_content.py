@@ -3,13 +3,12 @@
 # Complete validation suite with corrected cross-workflow testing
 
 import asyncio
-import json
 import logging
 import os
 import sys
 import time
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Optional
 
 from dotenv import load_dotenv
 

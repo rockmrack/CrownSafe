@@ -6,7 +6,6 @@ Tests all aspects of the Visual Search Agent and image analysis
 import asyncio
 import sys
 from datetime import datetime
-from typing import Any, Dict, Optional
 
 
 class MockAsyncOpenAI:

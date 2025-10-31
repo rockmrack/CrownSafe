@@ -10,9 +10,7 @@ Estimated Time: 6-8 hours
 Priority: HIGH (required for production deployment)
 """
 
-from unittest.mock import MagicMock, Mock, patch
 
-import numpy as np
 import pytest
 
 # Mark all tests in this file as skipped - they need implementation

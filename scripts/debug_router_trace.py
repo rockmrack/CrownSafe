@@ -2,7 +2,6 @@
 
 import asyncio
 import functools
-import inspect
 import json
 import logging
 import sys

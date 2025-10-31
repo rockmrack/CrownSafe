@@ -6,7 +6,7 @@ Integrates comprehensive validation with exact product matching
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 # REMOVED FOR CROWN SAFE: RecallDB barcode scanning no longer applicable
 # try:
@@ -14,13 +14,11 @@ from typing import Any, Dict, List, Optional, Tuple
 # except ImportError:
 #     # Fallback for different database models
 #     from data_models.recall import RecallDB
-from core_infra.barcode_scanner import ScanResult, scanner
 from core_infra.barcode_validator import (
     BarcodeType,
     BarcodeValidationResult,
     barcode_validator,
 )
-from core_infra.database import get_db_session
 
 logger = logging.getLogger(__name__)
 

@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import os
-from datetime import date, datetime
-from typing import Any, Optional
+from datetime import datetime
 
 from sqlalchemy import (
     JSON,

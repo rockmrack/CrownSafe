@@ -14,7 +14,6 @@ from agents.premium.pregnancy_product_safety_agent.agent_logic import (
     PregnancyProductSafetyAgentLogic,
 )
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, Request, Response
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 

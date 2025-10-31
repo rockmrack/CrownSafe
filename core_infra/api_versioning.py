@@ -4,12 +4,10 @@ Enables backward compatibility and smooth transitions
 """
 
 import logging
-import warnings
-from datetime import datetime
 from functools import wraps
-from typing import Any, Callable, Dict, Optional
+from typing import Callable, Dict, Optional
 
-from fastapi import APIRouter, Header, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 logger = logging.getLogger(__name__)

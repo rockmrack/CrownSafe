@@ -629,7 +629,6 @@ class TestIntegrationAndPerformance:
 
     def test_load_validation_operations(self):
         """Test load on validation operations"""
-        from datetime import datetime
 
         for _ in range(100):
             email = f"test{_}@test.com"

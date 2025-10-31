@@ -7,18 +7,15 @@ import logging
 import time
 from contextlib import contextmanager
 from functools import wraps
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Type
 
-from sqlalchemy import and_, or_
+from sqlalchemy import or_
 from sqlalchemy.orm import (
     Query,
     Session,
-    contains_eager,
     joinedload,
     selectinload,
-    subqueryload,
 )
-from sqlalchemy.sql import func
 
 # Import User model (exists in database.py)
 from core_infra.database import User

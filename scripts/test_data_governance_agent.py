@@ -13,12 +13,10 @@ sys.path.insert(0, project_root)
 
 from agents.governance.datagovernance_agent.agent_logic import DataGovernanceAgentLogic
 from core_infra.database import (
-    Base,
     SessionLocal,
     User,
     create_tables,
     drop_tables,
-    engine,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

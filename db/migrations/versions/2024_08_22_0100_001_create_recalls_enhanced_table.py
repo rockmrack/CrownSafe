@@ -8,7 +8,7 @@ Create Date: 2024-08-22 01:00:00.000000
 
 import sqlalchemy as sa
 from sqlalchemy import text
-from sqlalchemy.dialects.postgresql import JSON, UUID
+from sqlalchemy.dialects.postgresql import JSON
 
 from alembic import op
 

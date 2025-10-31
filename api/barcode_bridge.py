@@ -6,17 +6,14 @@ Implements intelligent UPC/EAN matching with fallback search and caching
 """
 
 import hashlib
-import json
 import logging
 import re
 from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
-from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Query
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, Query
 from pydantic import BaseModel, Field
-from sqlalchemy import and_, func, or_, text
 from sqlalchemy.orm import Session
 
 try:

@@ -4,10 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
-import random
-from datetime import datetime
-from time import monotonic, perf_counter
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -15,39 +12,15 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, ValidationError
 from sqlalchemy.orm import Session
 
-from agents.chat.chat_agent.agent_logic import ChatAgentLogic, ExplanationResponse
-from api.crud.chat_memory import (
-    get_or_create_conversation,
-    get_profile,
-    log_message,
-    mark_erase_requested,
-    purge_conversations_for_user,
-    upsert_profile,
-)
-from api.services.chat_tools import run_tool_for_intent
-from core.chat_budget import (
-    ROUTER_TIMEOUT_SEC,
-    SYNTH_TIMEOUT_SEC,
-    TOOL_TIMEOUT_SEC,
-    TOTAL_BUDGET_SEC,
-)
+from agents.chat.chat_agent.agent_logic import ChatAgentLogic
 from core.feature_flags import (
     FEATURE_CHAT_ENABLED,
     FEATURE_CHAT_ROLLOUT_PCT,
     chat_enabled_for,
 )
 from core.metrics import (
-    inc_alternatives_shown,
-    inc_blocked,
     inc_emergency,
-    inc_fallback,
-    inc_req,
-    inc_unclear,
-    obs_synth,
-    obs_tool,
-    obs_total,
 )
-from core.resilience import breaker, call_with_timeout
 from core_infra.database import get_db
 
 router = APIRouter()

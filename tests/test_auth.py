@@ -1,7 +1,6 @@
 """Tests for core_infra/auth.py"""
 
 import unittest
-from unittest.mock import Mock, patch
 
 
 class TestAuth(unittest.TestCase):

@@ -1,4 +1,3 @@
-from api.pydantic_base import AppModel
 
 """
 Improved search functionality for better recall matching
@@ -7,9 +6,9 @@ Handles compound searches, partial matches, and brand-product combinations
 
 import logging
 import re
-from typing import List, Optional
+from typing import List
 
-from sqlalchemy import and_, func, or_
+from sqlalchemy import and_, or_
 
 logger = logging.getLogger(__name__)
 

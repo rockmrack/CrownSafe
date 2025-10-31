@@ -11,7 +11,6 @@ Priority: HIGH (required for production deployment)
 """
 
 import pytest
-from pydantic import ValidationError
 
 # Mark all tests in this file as skipped - they need implementation
 pytestmark = pytest.mark.skip(reason="⚠️ Test stubs - awaiting implementation. Skipped to prevent false coverage.")

@@ -3,7 +3,7 @@ Share Token Model for secure result sharing
 """
 
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from sqlalchemy import (
     JSON,
@@ -13,7 +13,6 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     String,
-    Text,
 )
 
 from core_infra.database import Base

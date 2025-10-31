@@ -1,7 +1,6 @@
 """Tests for core_infra modules with extended coverage"""
 
 import unittest
-from unittest.mock import MagicMock, Mock, patch
 
 
 class TestCoreInfraModules(unittest.TestCase):

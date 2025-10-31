@@ -1,7 +1,6 @@
 """Tests for core_infra/encryption.py"""
 
 import unittest
-from unittest.mock import Mock, patch
 
 
 class TestEncryption(unittest.TestCase):

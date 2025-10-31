@@ -5,7 +5,7 @@ Tests retry logic, strategies, circuit breaker, and bulk operations
 
 import asyncio
 import time
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -14,7 +14,6 @@ from core_infra.retry_handler import (
     CircuitBreakerRetry,
     FallbackRetry,
     NonRetryableError,
-    RetryableError,
     RetryConfig,
     RetryHandler,
     RetryStrategy,

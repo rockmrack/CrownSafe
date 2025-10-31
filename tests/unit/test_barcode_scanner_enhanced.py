@@ -3,7 +3,7 @@ Unit tests for core_infra/barcode_scanner_enhanced.py
 Tests enhanced barcode scanner with multiple fallback methods
 """
 
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import numpy as np
 import pytest

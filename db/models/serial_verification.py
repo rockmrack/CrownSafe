@@ -3,7 +3,6 @@ SQLAlchemy model for unit-level serial/lot verification records
 """
 
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import (
     Column,

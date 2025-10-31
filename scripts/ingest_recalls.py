@@ -27,11 +27,9 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 # Import project modules
-import subprocess
 
 from alembic.config import Config
-from sqlalchemy import create_engine, text
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import text
 
 from agents.recall_data_agent.connectors import (
     CPSCConnector,
@@ -40,8 +38,7 @@ from agents.recall_data_agent.connectors import (
     NHTSAConnector,
 )
 from alembic import command
-from core_infra.database import engine, get_db_session
-from core_infra.enhanced_database_schema import EnhancedRecallDB
+from core_infra.database import get_db_session
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

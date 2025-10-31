@@ -11,10 +11,6 @@ from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from utils.security.input_validator import (
     InputValidator,
-    validate_barcode_field,
-    validate_email_field,
-    validate_product_name_field,
-    validate_user_id_field,
 )
 
 # ============================================================================

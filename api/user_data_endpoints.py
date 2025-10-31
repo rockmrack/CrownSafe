@@ -3,9 +3,7 @@ User Data Export and Deletion Endpoints
 GDPR/CCPA compliant data handling
 """
 
-import csv
 import hashlib
-import io
 import json
 import logging
 import uuid

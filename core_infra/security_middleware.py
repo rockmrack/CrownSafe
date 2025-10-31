@@ -3,7 +3,6 @@ Security middleware for BabyShield
 Adds security headers and protections
 """
 
-import hashlib
 import secrets
 from typing import Callable
 

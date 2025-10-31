@@ -3,29 +3,22 @@ Advanced BabyShield Features API Endpoints
 Provides endpoints for web research, guidelines, and visual recognition
 """
 
-import asyncio
-import base64
 import hashlib
-import json
 import logging
 import os
-import uuid
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from fastapi import (
     APIRouter,
     BackgroundTasks,
-    Body,
     Depends,
     File,
     HTTPException,
     Query,
     UploadFile,
 )
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 # REMOVED FOR CROWN SAFE: RecallDB no longer applicable (hair products, not baby recalls)

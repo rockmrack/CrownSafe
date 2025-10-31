@@ -7,7 +7,7 @@ import hashlib
 import json
 import logging
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, Optional, Tuple
 
 import httpx
@@ -18,8 +18,6 @@ from core_infra.subscription_models import (
     PaymentProvider,
     ReceiptValidation,
     Subscription,
-    SubscriptionPlan,
-    SubscriptionStatus,
 )
 
 logger = logging.getLogger(__name__)

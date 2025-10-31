@@ -149,8 +149,6 @@ print("-" * 80)
 try:
     from agents.recall_data_agent.models import (
         Recall,
-        RecallQueryRequest,
-        RecallQueryResponse,
     )
 
     print("   ✅ Recall model imported")

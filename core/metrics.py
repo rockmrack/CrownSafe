@@ -1,8 +1,6 @@
 # core/metrics.py
 from __future__ import annotations
 
-import os
-
 
 # No-op class for when Prometheus is not available
 class _N:

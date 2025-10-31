@@ -5,7 +5,6 @@ Tests alternatives, notifications, reports, and other baby-specific features
 """
 
 import asyncio
-import json
 from datetime import datetime
 
 import httpx

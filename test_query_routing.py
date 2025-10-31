@@ -117,7 +117,7 @@ print()
 
 print("Step 5: Verify SessionLocal uses correct database...")
 try:
-    from core_infra.database import DATABASE_URL, engine
+    from core_infra.database import engine
 
     print(f"  Engine URL: {str(engine.url).replace('MandarunLabadiena25!', '***')}")
     print(f"  Dialect: {engine.dialect.name}")

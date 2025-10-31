@@ -3,14 +3,12 @@ Enhanced Search Service v2 with keyset pagination and snapshot isolation
 Implements cursor-based pagination without OFFSET for better performance
 """
 
-import hashlib
-import json
 import logging
 import os
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
-from sqlalchemy import and_, asc, desc, func, or_, text
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from api.utils import (

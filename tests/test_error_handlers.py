@@ -1,7 +1,6 @@
 """Tests for core_infra/error_handlers.py"""
 
 import unittest
-from unittest.mock import Mock, patch
 
 
 class TestErrorHandlers(unittest.TestCase):

@@ -7,18 +7,14 @@ import hashlib
 import json
 import logging
 import os
-import smtplib
 import uuid
 from datetime import datetime
 from email.message import EmailMessage
-from email.mime.application import MIMEApplication
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 import aiosmtplib
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 from pydantic import BaseModel, EmailStr, Field, validator
 
 # Configure logging

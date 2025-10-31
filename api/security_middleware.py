@@ -10,11 +10,9 @@ import logging
 import os
 import secrets
 import time
-from datetime import datetime, timedelta
-from typing import Callable, List, Optional, Set
+from typing import List, Set
 
-from fastapi import HTTPException, Request, Response, status
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi import Request, status
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 

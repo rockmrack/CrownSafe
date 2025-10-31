@@ -4,16 +4,15 @@ Provides Prometheus metrics, health checks, and monitoring endpoints
 """
 
 import asyncio
-import json
 import logging
 import os
 import time
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import httpx
 import psutil
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Request, Response
 from fastapi.responses import JSONResponse, PlainTextResponse
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
@@ -23,12 +22,9 @@ from prometheus_client import (
     Info,
     Summary,
     generate_latest,
-    multiprocess,
-    push_to_gateway,
 )
 from prometheus_client.core import CollectorRegistry
 from sqlalchemy import text
-from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

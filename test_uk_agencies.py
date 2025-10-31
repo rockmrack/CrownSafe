@@ -5,7 +5,6 @@ Tests all 5 UK agencies: OPSS, FSA, Trading Standards, DVSA, MHRA
 
 import asyncio
 import sys
-from datetime import datetime
 
 # Test 1: Import all UK connectors
 print("=" * 80)

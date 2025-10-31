@@ -5,7 +5,6 @@ Tests only endpoints that don't require external dependencies
 """
 
 import asyncio
-import json
 from datetime import datetime
 
 import httpx

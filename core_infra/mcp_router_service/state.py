@@ -2,7 +2,7 @@
 # CORRECTED: Fixed return values for connection management functions
 
 import logging
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, Optional
 
 try:
     from .config import logger

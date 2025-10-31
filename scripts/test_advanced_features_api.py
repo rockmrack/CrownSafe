@@ -5,8 +5,6 @@ Tests web research, guidelines, visual recognition, and monitoring
 """
 
 import asyncio
-import base64
-import json
 from datetime import datetime
 from pathlib import Path
 

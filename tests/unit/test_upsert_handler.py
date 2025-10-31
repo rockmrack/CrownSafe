@@ -3,9 +3,7 @@ Unit tests for core_infra/upsert_handler.py.
 Tests database UPSERT operations for recalls and subscriptions, including bulk operations and error handling scenarios.
 """
 
-from unittest.mock import MagicMock, Mock, patch
-
-import pytest
+from unittest.mock import Mock
 
 from core_infra.upsert_handler import (
     EnhancedUpsertHandler,

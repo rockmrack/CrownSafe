@@ -3,10 +3,8 @@ Enhanced Safety Service for comprehensive safety reports
 Combines recall data with supplemental data sources
 """
 
-import asyncio
 import logging
 import time
-from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 from api.models.supplemental_models import (
@@ -18,7 +16,6 @@ from api.models.supplemental_models import (
     FoodDataResponse,
     NutritionalInfo,
 )
-from core_infra.database import get_db
 from core_infra.supplemental_data_service import supplemental_data_service
 
 logger = logging.getLogger(__name__)

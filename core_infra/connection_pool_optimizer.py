@@ -8,10 +8,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
-from typing import Any, Callable, Dict, List, Optional, Union
-
-from sqlalchemy import text
-from sqlalchemy.orm import sessionmaker
+from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

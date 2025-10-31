@@ -3,15 +3,14 @@ Recall Alert System
 Monitors agencies for new recalls and pushes alerts to affected users
 """
 
-import asyncio
 import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import httpx
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
-from pydantic import BaseModel, Field
-from sqlalchemy import and_, func, or_
+from pydantic import BaseModel
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from api.monitoring_scheduler import MonitoredProduct
@@ -22,7 +21,7 @@ from api.notification_endpoints import (
 )
 
 # CROWN SAFE: RecallDB model removed - replaced with HairProductModel
-from core_infra.database import SessionLocal, User, get_db
+from core_infra.database import SessionLocal, get_db
 from db.models.scan_history import ScanHistory
 
 # from core_infra.celery_app import celery_app  # Commented out - not available in dev environment

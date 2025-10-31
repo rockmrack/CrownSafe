@@ -4,7 +4,6 @@ Verify BabyShield API deployment
 Tests all critical endpoints after deployment
 """
 
-import json
 import sys
 from datetime import datetime
 

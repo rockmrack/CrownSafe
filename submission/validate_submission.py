@@ -4,16 +4,12 @@ Submission Validation Script
 Performs comprehensive checks before app store submission
 """
 
-import hashlib
 import json
 import os
-import re
 import subprocess
 import sys
-import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 import requests
 

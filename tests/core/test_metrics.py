@@ -1,7 +1,5 @@
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from core.metrics import inc_req, obs_synth, obs_tool, obs_total
 
 

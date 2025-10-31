@@ -4,10 +4,10 @@ Product Monitoring Management Endpoints
 
 import logging
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
-from sqlalchemy import and_, desc
+from fastapi import APIRouter, BackgroundTasks, Depends, Query
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from api.monitoring_scheduler import (

@@ -5,13 +5,13 @@ Allows administrators to manage and process privacy requests
 
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import and_, func, or_, select, update
+from sqlalchemy import and_, func
 from sqlalchemy.orm import Session
 
 from api.errors import APIError

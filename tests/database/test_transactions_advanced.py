@@ -8,20 +8,18 @@ BabyShield Backend Team
 Date: October 10, 2025
 """
 
-import os
 import threading
 import time
 import uuid
 from datetime import datetime
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 import pytest
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, OperationalError
-from sqlalchemy.orm import Session
 
 from api.models.chat_memory import Conversation, ConversationMessage, UserProfile
-from core_infra.database import Base, SessionLocal, engine, get_db
+from core_infra.database import SessionLocal, engine
 
 
 # Helper to check if using SQLite

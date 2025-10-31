@@ -8,7 +8,6 @@ import os
 
 from fastapi import Depends, FastAPI
 from fastapi.exceptions import RequestValidationError
-from fastapi_limiter.depends import RateLimiter
 from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -115,7 +114,6 @@ def add_rate_limited_routes(app: FastAPI):
     """
 
     # Import here to avoid circular imports
-    from fastapi import APIRouter
 
     # Example: Add rate limiting to search endpoint
     @app.post(

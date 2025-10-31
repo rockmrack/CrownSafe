@@ -6,7 +6,7 @@ Prevents SQL injection, XSS, and other injection attacks
 import logging
 import re
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from fastapi import HTTPException, Request, status
 from pydantic import BaseModel, Field, validator

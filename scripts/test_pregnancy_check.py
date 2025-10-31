@@ -14,7 +14,7 @@ sys.path.insert(0, project_root)
 # -----------------------------------------
 
 from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
-from core_infra.database import Base, SessionLocal, User, engine, get_db_session
+from core_infra.database import Base, User, engine, get_db_session
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 

@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.orm import Session
 
 from api.crud.analytics import create_explain_feedback
-from core.metrics import inc_alternative_clicked, inc_explain_feedback
+from core.metrics import inc_alternative_clicked
 from core_infra.database import get_db
 
 router = APIRouter()

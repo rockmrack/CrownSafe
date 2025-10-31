@@ -6,7 +6,7 @@ Blocks requests from known malicious scanners and bots
 import logging
 import os
 import re
-from typing import List, Optional, Pattern
+from typing import List, Optional
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request

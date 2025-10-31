@@ -1,7 +1,6 @@
 """Comprehensive API endpoint tests"""
 
 import unittest
-from unittest.mock import Mock, patch
 
 
 class TestEndpointsComprehensive(unittest.TestCase):

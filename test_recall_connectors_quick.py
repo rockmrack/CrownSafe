@@ -7,7 +7,7 @@ This script tests the actual workflow without requiring a full database setup.
 import asyncio
 import os
 import sys
-from datetime import date, datetime
+from datetime import datetime
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

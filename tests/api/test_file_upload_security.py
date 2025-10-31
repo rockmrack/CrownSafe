@@ -10,10 +10,10 @@ Date: October 11, 2025
 
 import time
 from io import BytesIO
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
-from fastapi import HTTPException, UploadFile
+from fastapi import UploadFile
 
 
 @pytest.mark.api

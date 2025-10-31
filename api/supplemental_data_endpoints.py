@@ -6,11 +6,10 @@ import logging
 import time
 from typing import Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlalchemy.orm import Session
 
 from api.models.supplemental_models import (
-    EnhancedSafetyReport,
     SupplementalDataRequest,
     SupplementalDataResponse,
 )

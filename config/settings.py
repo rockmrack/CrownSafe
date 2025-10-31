@@ -4,7 +4,6 @@ Handles environment-specific configuration with validation
 """
 
 import logging
-import os
 from typing import Optional
 
 try:

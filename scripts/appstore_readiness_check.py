@@ -4,11 +4,7 @@ App Store Readiness Check for BabyShield API
 Validates API stability, predictability, and documentation for App Store/Play review
 """
 
-import json
 import os
-import queue
-import re
-import statistics
 import sys
 import threading
 import time

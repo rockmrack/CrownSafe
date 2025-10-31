@@ -4,12 +4,9 @@ Test script for Task 4 - Observability features
 Validates correlation IDs, rate limits, metrics, and error handling
 """
 
-import asyncio
-import json
 import os
 import sys
 import time
-from typing import Dict, List, Optional
 
 import requests
 

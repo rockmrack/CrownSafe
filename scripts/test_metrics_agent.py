@@ -6,7 +6,7 @@ import json
 import logging
 import os
 import sys
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 # --- Add project root to Python's path ---
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

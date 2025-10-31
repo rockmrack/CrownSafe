@@ -5,11 +5,9 @@ Prevents cascade failures and provides graceful degradation
 
 import asyncio
 import logging
-import time
 from functools import wraps
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict
 
-import redis
 from pybreaker import CircuitBreaker, CircuitBreakerError
 from tenacity import (
     retry,

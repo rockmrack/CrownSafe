@@ -5,10 +5,9 @@ Tests article ingestion and API endpoint
 """
 
 import asyncio
-import json
 import os
 import sys
-from datetime import date, datetime
+from datetime import date
 
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -17,10 +16,8 @@ import httpx
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from core_infra.celery_tasks import ingest_safety_articles
-
 # Import required modules
-from core_infra.database import Base, SafetyArticle, get_db
+from core_infra.database import Base, SafetyArticle
 from core_infra.safety_data_connectors import CPSCDataConnector
 
 # Test configuration

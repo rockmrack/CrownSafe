@@ -11,7 +11,7 @@ import sys
 import threading
 import time
 from contextlib import contextmanager
-from typing import Any, Callable, List
+from typing import Callable, List
 
 logger = logging.getLogger(__name__)
 
@@ -241,7 +241,6 @@ def setup_graceful_shutdown(app):
     """
     Setup graceful shutdown for FastAPI app
     """
-    from fastapi import FastAPI
 
     @app.on_event("startup")
     async def startup_event():

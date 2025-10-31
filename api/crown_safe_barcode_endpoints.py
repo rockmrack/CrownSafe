@@ -3,7 +3,6 @@ Crown Safe Barcode Scanning API Endpoints
 Scan hair product barcodes and analyze ingredients for 3C-4C hair safety
 """
 
-import base64
 import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -12,13 +11,11 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from agents.ingredient_analysis_agent.agent_logic import IngredientAnalysisAgent
 from core.crown_score_engine import CrownScoreEngine
 from core_infra.barcode_scanner import scanner
 from core_infra.crown_safe_models import (
     HairProductModel,
     HairProfileModel,
-    IngredientModel,
     ProductScanModel,
 )
 from core_infra.database import get_db_session, get_user_hair_profile

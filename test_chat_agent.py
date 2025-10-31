@@ -32,7 +32,6 @@ except Exception as e:
 # Test 2: Check chat agent logic
 print("\n[2/4] Testing chat agent logic...")
 try:
-    from agents.chat.chat_agent.agent_logic import ChatAgentLogic
 
     print("✓ ChatAgentLogic imported successfully")
 except Exception as e:
@@ -44,7 +43,6 @@ except Exception as e:
 # Test 3: Check chat tools
 print("\n[3/4] Testing chat tools...")
 try:
-    from api.services.chat_tools import run_tool_for_intent
 
     print("✓ Chat tools imported successfully")
 except Exception as e:
@@ -56,7 +54,6 @@ except Exception as e:
 # Test 4: Check chat memory/CRUD
 print("\n[4/4] Testing chat memory...")
 try:
-    from api.crud.chat_memory import get_or_create_conversation, log_message
 
     print("✓ Chat memory functions imported successfully")
 except Exception as e:

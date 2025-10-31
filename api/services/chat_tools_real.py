@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from agents.premium.allergy_sensitivity_agent.main import AllergySensitivityAgent
-
 # Import your existing agents
 from agents.premium.pregnancy_product_safety_agent.main import (
     PregnancyProductSafetyAgent,
@@ -19,9 +17,7 @@ from api.schemas.tools import (
     IngredientInfoOut,
     PregnancyCheckIn,
     PregnancyCheckOut,
-    RecallDetailsIn,
     RecallDetailsOut,
-    RecallRecord,
     RiskItem,
 )
 from api.services.alternatives_provider import get_alternatives

@@ -1,7 +1,6 @@
 """Simple smoke tests for API modules"""
 
 import unittest
-from unittest.mock import Mock, patch
 
 
 class TestAPIModules(unittest.TestCase):

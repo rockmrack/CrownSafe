@@ -1,7 +1,6 @@
 # scripts/test_router_final_success.py
 
 import asyncio
-import json
 import logging
 import sys
 import uuid

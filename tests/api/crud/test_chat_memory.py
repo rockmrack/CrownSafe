@@ -1,6 +1,5 @@
 # Standard library imports
 from datetime import date, datetime
-from typing import Any, Union
 from unittest.mock import patch
 from uuid import UUID, uuid4
 

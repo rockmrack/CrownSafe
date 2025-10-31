@@ -4,7 +4,7 @@ Tests async HTTP client, batch processing, caching, and task queue functionality
 """
 
 import asyncio
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import aiohttp
 import pytest

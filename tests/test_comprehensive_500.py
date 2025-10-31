@@ -22,7 +22,7 @@ class TestComprehensiveSuite:
 
     def test_import_core_infra_database(self):
         """Test core_infra.database imports"""
-        from core_infra.database import User, engine, get_db_session
+        from core_infra.database import User, engine
 
         assert User is not None
         assert engine is not None

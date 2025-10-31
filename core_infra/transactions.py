@@ -7,7 +7,7 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager, contextmanager
 from functools import wraps
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session

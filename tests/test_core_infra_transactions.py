@@ -1,7 +1,7 @@
 """Tests for core_infra/transactions.py"""
 
 import unittest
-from unittest.mock import MagicMock, Mock, call, patch
+from unittest.mock import Mock, patch
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session

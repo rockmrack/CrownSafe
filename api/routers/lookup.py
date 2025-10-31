@@ -4,7 +4,6 @@ Provides simple GET endpoints for barcode scanning
 """
 
 import logging
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session

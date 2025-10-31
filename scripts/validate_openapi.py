@@ -5,7 +5,6 @@ Ensures the API spec is valid and matches implementation
 """
 
 import json
-import os
 import sys
 from pathlib import Path
 

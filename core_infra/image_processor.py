@@ -5,14 +5,13 @@ Handles OCR, barcode detection, label extraction with multiple providers
 
 import hashlib
 import io
-import json
 import logging
 import os
 import re
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import cv2
 import numpy as np

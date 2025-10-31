@@ -4,19 +4,9 @@ Tests chat memory models for user profiles, conversations, and messages
 """
 
 from datetime import date, datetime
-from unittest.mock import Mock, patch
 
 import pytest
 from sqlalchemy import (
-    JSON,
-    BigInteger,
-    Boolean,
-    Column,
-    Date,
-    DateTime,
-    ForeignKey,
-    SmallInteger,
-    String,
     create_engine,
 )
 from sqlalchemy.orm import sessionmaker
@@ -24,7 +14,6 @@ from sqlalchemy.orm import sessionmaker
 from api.models.chat_memory import (
     Conversation,
     ConversationMessage,
-    JsonType,
     UserProfile,
     UuidType,
 )

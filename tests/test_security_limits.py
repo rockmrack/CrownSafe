@@ -4,13 +4,8 @@ Security limits test suite for Task 6
 Tests request size limits, CORS, compression, input validation, and abuse protection
 """
 
-import base64
-import gzip
-import json
 import os
 import sys
-import time
-from typing import Any, Dict, Optional
 
 import requests
 

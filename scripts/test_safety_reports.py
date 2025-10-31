@@ -3,7 +3,6 @@
 Test the 90-Day Safety Summary Report Generation
 """
 
-import json
 import os
 import random
 import sys
@@ -171,11 +170,6 @@ def test_90_day_report():
         print("\nGenerating 90-day report...")
 
         # Simulate the API call
-        from api.safety_reports_endpoints import (
-            ProductScanSummary,
-            SafetyReportRequest,
-            SafetySummaryStats,
-        )
 
         # Get scan history
         end_date = datetime.utcnow()

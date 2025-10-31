@@ -3,9 +3,8 @@
 Comprehensive deployment verification and fix script
 """
 
-import json
 import sys
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 
 import requests
 

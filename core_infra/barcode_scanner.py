@@ -3,7 +3,6 @@ Next-Generation Traceability: Advanced Barcode Scanner Module
 Supports QR codes, DataMatrix, GS1, and standard barcodes with lot/serial tracking
 """
 
-import base64
 import json
 import logging
 import os
@@ -12,7 +11,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from enum import Enum
 from io import BytesIO
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 # Core barcode libraries
 PYZBAR_AVAILABLE = False

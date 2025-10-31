@@ -1,4 +1,3 @@
-from api.pydantic_base import AppModel
 
 """
 Recall Detail Endpoints for Individual Recall Lookup
@@ -6,7 +5,7 @@ Recall Detail Endpoints for Individual Recall Lookup
 
 import logging
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 from urllib.parse import unquote
 
 from fastapi import APIRouter, HTTPException, Request, Response

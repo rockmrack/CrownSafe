@@ -2,8 +2,6 @@ import json
 import os
 import tempfile
 
-import pytest
-
 from scripts.evals.run_synth_eval import check_case, get_llm_client, load_cases
 
 

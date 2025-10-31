@@ -5,7 +5,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FuturesTimeout
 from time import monotonic
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict
 
 _EXEC = ThreadPoolExecutor(max_workers=32)
 _lock = threading.Lock()

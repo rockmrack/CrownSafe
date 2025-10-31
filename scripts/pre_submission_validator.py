@@ -4,16 +4,13 @@ BabyShield Pre-Submission Validator
 Comprehensive validation before app store submission
 """
 
-import hashlib
 import json
-import os
-import re
 import sys
 import urllib.error
 import urllib.request
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import List
 
 
 class SubmissionValidator:

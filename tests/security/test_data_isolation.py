@@ -10,15 +10,13 @@ Date: October 10, 2025
 
 import uuid
 from datetime import datetime
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 import pytest
 from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
 
-from api.auth_endpoints import get_current_user
 from api.models.chat_memory import Conversation, ConversationMessage, UserProfile
-from core_infra.database import Base, SessionLocal, engine
+from core_infra.database import SessionLocal, engine
 
 
 @pytest.mark.security

@@ -5,7 +5,6 @@ Tests all edge cases, error conditions, and response variations
 
 import os
 
-import pytest
 from fastapi.testclient import TestClient
 
 from api.main_crownsafe import app

@@ -1,7 +1,6 @@
 # scripts/check_message_flow_detailed.py
 
 import json
-import time
 
 import redis
 

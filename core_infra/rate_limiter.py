@@ -4,12 +4,11 @@ Prevents API abuse and ensures fair usage
 """
 
 import os
-from typing import Optional
 
 import redis
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 

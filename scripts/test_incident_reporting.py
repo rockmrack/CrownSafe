@@ -5,7 +5,6 @@ Tests the "Report Unsafe Product" feature
 """
 
 import asyncio
-import json
 import os
 import sys
 from datetime import datetime, timedelta
@@ -14,16 +13,8 @@ from datetime import datetime, timedelta
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import httpx
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 # Import models
-from db.models.incident_report import (
-    IncidentCluster,
-    IncidentReport,
-    IncidentType,
-    SeverityLevel,
-)
 
 # Test configuration
 BASE_URL = "http://localhost:8000"

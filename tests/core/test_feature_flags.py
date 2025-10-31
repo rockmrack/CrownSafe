@@ -1,8 +1,6 @@
 import os
 from unittest.mock import patch
 
-import pytest
-
 from core.feature_flags import _bucket, chat_enabled_for, env_bool, env_float
 
 

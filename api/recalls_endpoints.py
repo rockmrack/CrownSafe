@@ -11,7 +11,6 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
-from sqlalchemy import and_, asc, desc, func, or_, select
 from sqlalchemy.orm import Session
 
 # CROWN SAFE: RecallDB model removed - replaced with HairProductModel

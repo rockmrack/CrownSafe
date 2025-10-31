@@ -4,7 +4,6 @@ Verification script to confirm all fixes are in place
 Run this locally to verify the setup before CI runs
 """
 
-import os
 import sys
 from pathlib import Path
 

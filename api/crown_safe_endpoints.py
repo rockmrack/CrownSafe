@@ -21,7 +21,7 @@ from sqlalchemy.orm import Session
 
 from agents.ingredient_analysis_agent import IngredientAnalysisAgent
 from core_infra.crown_safe_models import ProductScanModel
-from core_infra.database import User, get_db_session, get_user_hair_profile
+from core_infra.database import User, get_user_hair_profile
 
 logger = logging.getLogger(__name__)
 

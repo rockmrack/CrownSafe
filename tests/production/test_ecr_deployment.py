@@ -4,7 +4,6 @@ Run these against the deployed ECR image
 """
 
 import time
-from datetime import datetime
 
 import pytest
 import requests

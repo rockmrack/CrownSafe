@@ -10,7 +10,7 @@ This shows the minimal changes needed to add all Task 4 features
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -21,7 +21,6 @@ from api.logging_setup import setup_json_logging
 # Observability imports
 from api.middleware import AccessLogMiddleware, CorrelationIdMiddleware
 from api.rate_limiting import (
-    RateLimiters,
     close_rate_limiter,
     init_rate_limiter,
     rate_limit_exceeded_handler,

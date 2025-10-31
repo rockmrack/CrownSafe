@@ -9,10 +9,9 @@ from contextlib import contextmanager
 from functools import wraps
 from typing import Any, Generic, List, Optional, TypeVar
 
-from sqlalchemy import event, text
+from sqlalchemy import event
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import Query, Session, joinedload, selectinload, subqueryload
-from sqlalchemy.orm.query import Query as QueryType
+from sqlalchemy.orm import Query, Session, joinedload, selectinload
 
 logger = logging.getLogger(__name__)
 

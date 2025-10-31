@@ -4,9 +4,8 @@ Tests all major agents in the BabyShield system
 Date: October 10, 2025
 """
 
-import asyncio
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import pytest
 

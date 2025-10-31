@@ -3,19 +3,13 @@ App Settings Endpoints for BabyShield
 Includes Crashlytics toggle and other app preferences
 """
 
-import json
 import logging
 import uuid
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Header, HTTPException, Request, status
 from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
-
-from core_infra.auth import get_current_user
-from core_infra.database import get_db_session
 
 logger = logging.getLogger(__name__)
 

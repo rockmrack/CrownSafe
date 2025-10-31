@@ -3,7 +3,6 @@ Registration and Subscription Verification Test
 Tests all authentication and subscription endpoints for mobile app
 """
 
-import json
 from datetime import datetime
 
 import requests

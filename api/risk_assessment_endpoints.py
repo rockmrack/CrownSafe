@@ -6,9 +6,7 @@ Provides endpoints for product risk analysis, report generation, and data ingest
 """
 
 import asyncio
-import json
 import logging
-import os
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
@@ -21,13 +19,12 @@ from fastapi import (
     Query,
     UploadFile,
 )
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import and_, func, or_
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from core_infra.barcode_scanner import BarcodeScanner
-from core_infra.celery_tasks import process_image
 from core_infra.database import get_db
 from core_infra.risk_assessment_models import (
     CompanyComplianceProfile,
@@ -40,13 +37,12 @@ from core_infra.risk_assessment_models import (
     SafetyIncident,
 )
 from core_infra.risk_report_generator import RiskReportGenerator
-from core_infra.risk_scoring_engine import RiskScoreComponents, RiskScoringEngine
+from core_infra.risk_scoring_engine import RiskScoringEngine
 from core_infra.safety_data_connectors import (
     CommercialDatabaseConnector,
     CPSCDataConnector,
     DataUnificationEngine,
     EUSafetyGateConnector,
-    SafetyDataRecord,
 )
 
 logger = logging.getLogger(__name__)

@@ -1,7 +1,6 @@
 """Tests for API module imports"""
 
 import unittest
-from unittest.mock import Mock, patch
 
 
 class TestAPIModules(unittest.TestCase):

@@ -5,13 +5,12 @@ Handles data export, deletion, and privacy information requests
 
 import logging
 import os
-from datetime import datetime, timezone
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr, Field, field_validator
-from sqlalchemy import and_, insert, select
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from api.errors import APIError

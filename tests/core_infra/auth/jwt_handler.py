@@ -2,7 +2,7 @@ import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from jose import JWTError, jwt
+from jose import jwt
 
 # These should be in your .env file and loaded securely
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "a_very_secret_key_for_development")

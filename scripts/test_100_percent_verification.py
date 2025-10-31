@@ -4,8 +4,6 @@ FINAL 100% VERIFICATION TEST FOR BABYSHIELD API
 Tests all implemented endpoints with correct parameters
 """
 
-import base64
-import json
 from datetime import datetime
 
 import requests

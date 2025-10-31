@@ -4,7 +4,6 @@ Production Database Initialization Script
 Creates necessary tables in the production SQLite database via API
 """
 
-import json
 import sys
 import time
 

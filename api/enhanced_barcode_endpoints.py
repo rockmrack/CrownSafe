@@ -12,10 +12,9 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from api.services.dev_override import dev_entitled
-from core_infra.barcode_validator import BarcodeType, ValidationResult
+from core_infra.barcode_validator import BarcodeType
 from core_infra.database import get_db_session
 from core_infra.enhanced_barcode_service import (
-    ExactScanResult,
     enhanced_barcode_service,
 )
 

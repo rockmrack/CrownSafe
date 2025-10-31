@@ -4,7 +4,6 @@ Handles receipt validation and entitlement checks
 """
 
 import logging
-from datetime import datetime
 from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -13,7 +12,6 @@ from pydantic import BaseModel, Field
 from api.services.dev_override import dev_entitled
 from core_infra.auth import get_current_user
 from core_infra.database import User, get_db_session
-from core_infra.rate_limiter import limiter
 from core_infra.receipt_validator import ReceiptValidationService
 from core_infra.subscription_config import SubscriptionConfig
 from core_infra.subscription_service import SubscriptionService

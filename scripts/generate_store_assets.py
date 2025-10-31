@@ -4,12 +4,10 @@ BabyShield Store Asset Generator & Validator
 Creates placeholder assets and validates existing ones for app store submission
 """
 
-import json
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Tuple
 
 # Asset specifications
 ASSET_SPECS = {

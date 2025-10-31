@@ -4,18 +4,12 @@ Built on MVP-1.4 foundation with sophisticated pharmaceutical research intellige
 ENHANCED: Fixed get_enhanced_research_recommendations with proper similarity search and debugging
 """
 
-import asyncio
-import json
 import logging
 import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
-
-import chromadb
-from chromadb.config import Settings
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     import openai

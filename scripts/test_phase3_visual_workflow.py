@@ -9,7 +9,6 @@ import json
 import logging
 import os
 import sys
-from typing import Any, Dict
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -27,8 +26,6 @@ async def test_high_confidence_visual_workflow():
 
     try:
         from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
-        from agents.routing.router_agent.agent_logic import BabyShieldRouterLogic
-        from agents.visual.visual_search_agent.agent_logic import VisualSearchAgentLogic
 
         # Create commander with real router
         commander = BabyShieldCommanderLogic(agent_id="test_commander")
@@ -92,7 +89,6 @@ async def test_medium_confidence_visual_workflow():
 
     try:
         from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
-        from agents.hazard_analysis_agent.agent_logic import HazardAnalysisLogic
 
         # Create commander
         commander = BabyShieldCommanderLogic(agent_id="test_commander")
@@ -167,7 +163,6 @@ async def test_low_confidence_visual_workflow():
     logger.info("=" * 60)
 
     try:
-        from agents.planning.planner_agent.agent_logic import BabyShieldPlannerLogic
         from agents.routing.router_agent.agent_logic import BabyShieldRouterLogic
 
         # Create router directly

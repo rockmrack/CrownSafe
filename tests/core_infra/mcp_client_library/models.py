@@ -1,14 +1,12 @@
 # C:\Users\rossd\Downloads\RossNetAgents\core_infra\mcp_client_library\models.py
 # Step 106.3: Drastically simplify MCPMessage payload validation.
 
-import json
 import logging
 import uuid
 from datetime import datetime, timezone
 from typing import (
     Any,
     Dict,
-    List,
     Optional,
 )  # Removed Set, Union as not used in this simplified version
 

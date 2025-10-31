@@ -1,7 +1,6 @@
 """Tests for api/routers/chat.py"""
 
 import unittest
-from unittest.mock import Mock, patch
 
 
 class TestChatConversation(unittest.TestCase):

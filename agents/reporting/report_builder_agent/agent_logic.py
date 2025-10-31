@@ -1,8 +1,6 @@
 # report_builder_agent_01/logic.py
 # Version: 2.1-PA-ENHANCED - Enhanced with Prior Authorization report capability
 
-import base64
-import json
 import logging
 import os
 import sys

@@ -1,4 +1,3 @@
-from api.pydantic_base import AppModel
 
 #!/usr/bin/env python3
 """
@@ -13,10 +12,9 @@ import os
 import sys
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query, Request
-from fastapi.exceptions import RequestValidationError
+from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
@@ -24,7 +22,7 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from sqlalchemy import and_, or_, text
+from sqlalchemy import text
 from sqlalchemy.exc import ProgrammingError
 
 from core_infra.database import get_db_session  # RecallDB removed - Crown Safe uses HairProductModel

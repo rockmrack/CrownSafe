@@ -78,7 +78,6 @@ def test_app():
     app = create_app(environment="testing", enable_docs=True)
 
     # Override database dependency
-    from core_infra.database import get_db
 
     def override_get_db():
         # Use test database

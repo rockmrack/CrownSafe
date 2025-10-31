@@ -13,7 +13,6 @@ from agents.engagement.push_notification_agent.agent_logic import (
 )
 
 from .celery_app import celery_app
-from .database import User, get_db_session
 
 logger = logging.getLogger(__name__)
 

@@ -4,12 +4,9 @@ Test suite for admin tools (Task 7)
 Tests ingestion management, reindexing, and data freshness endpoints
 """
 
-import json
 import os
 import sys
 import uuid
-from datetime import datetime, timedelta
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import requests
 

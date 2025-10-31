@@ -5,8 +5,7 @@ Implements RFC 7232 for conditional requests
 
 import email.utils as email_utils
 import hashlib
-import json
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from fastapi import Request, Response

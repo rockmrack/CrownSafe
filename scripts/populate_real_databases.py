@@ -4,12 +4,8 @@ Populate Real Product and Safety Databases
 Replaces mock JSON files with comprehensive local database for immediate results
 """
 
-import json
-import os
 import sys
-from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -362,11 +358,6 @@ def create_database_tables():
     from core_infra.database import Base, engine
 
     # Import models to register them
-    from db.models.product_ingredients import (
-        IngredientSafety,
-        ProductIngredient,
-        ProductNutrition,
-    )
 
     # Create tables
     Base.metadata.create_all(bind=engine)

@@ -18,7 +18,7 @@ from sqlalchemy import (
     Text,
     and_,
 )
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session
 
 from api.notification_endpoints import (
     DeviceToken,

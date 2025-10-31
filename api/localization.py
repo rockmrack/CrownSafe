@@ -3,14 +3,10 @@ Task 13: Localization Support for BabyShield API
 Provides multi-language support with fallback to en-US
 """
 
-import json
 import logging
-import os
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Header, Query
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)

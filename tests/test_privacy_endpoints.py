@@ -4,11 +4,9 @@ Test suite for privacy endpoints (Task 8)
 Tests GDPR/CCPA compliance features and privacy management
 """
 
-import json
 import os
 import sys
 import uuid
-from datetime import datetime, timedelta
 
 import requests
 

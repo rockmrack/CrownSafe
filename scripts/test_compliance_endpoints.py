@@ -5,8 +5,7 @@ Tests COPPA, Children's Code, GDPR, and legal content management
 """
 
 import asyncio
-import json
-from datetime import date, datetime
+from datetime import datetime
 
 import httpx
 

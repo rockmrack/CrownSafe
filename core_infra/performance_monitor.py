@@ -4,8 +4,6 @@ Tracks bottlenecks, metrics, and system performance
 """
 
 import asyncio
-import gc
-import json
 import logging
 import threading
 import time
@@ -15,7 +13,7 @@ from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import psutil
 

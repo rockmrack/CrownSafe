@@ -1,8 +1,7 @@
 import logging
 import os
 import time
-from datetime import datetime, timedelta
-from typing import Optional
+from datetime import datetime
 
 import redis
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -11,7 +10,6 @@ from jose import jwt
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from api.pydantic_base import AppModel
 from core_infra.auth import SECRET_KEY, decode_token, get_current_active_user
 
 # Import existing dependencies

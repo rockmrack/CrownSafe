@@ -6,13 +6,11 @@ import json
 import logging
 import os
 import statistics
-import uuid
-from collections import Counter, defaultdict
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from collections import defaultdict
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Set, Union
 
 import chromadb
-from chromadb.utils import embedding_functions
 
 try:
     from dotenv import load_dotenv

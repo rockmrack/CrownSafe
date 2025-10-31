@@ -7,9 +7,9 @@ import asyncio
 import logging
 import os
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
-from celery import Celery, chain, group
+from celery import Celery
 from celery.schedules import crontab
 from sqlalchemy.orm import Session
 
@@ -26,7 +26,6 @@ from core_infra.risk_assessment_models import (
 )
 from core_infra.risk_scoring_engine import RiskScoringEngine
 from core_infra.safety_data_connectors import (
-    CommercialDatabaseConnector,
     CPSCDataConnector,
     DataUnificationEngine,
     EUSafetyGateConnector,

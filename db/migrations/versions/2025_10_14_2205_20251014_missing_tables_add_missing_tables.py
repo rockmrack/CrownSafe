@@ -8,7 +8,6 @@ This migration adds all tables that were defined in models but missing from migr
 """
 
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
 
 from alembic import op
 

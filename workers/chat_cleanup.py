@@ -1,7 +1,6 @@
 # workers/tasks/chat_cleanup.py
 from __future__ import annotations
 
-from typing import Optional
 from uuid import UUID
 
 from core_infra.database import SessionLocal  # adjust to your DB session factory
@@ -11,7 +10,7 @@ try:
 except Exception:  # fallback shim if Celery not wired in tests
     celery = None  # type: ignore
 
-from api.crud.chat_memory import mark_erase_requested, purge_conversations_for_user
+from api.crud.chat_memory import purge_conversations_for_user
 
 TASK_NAME = "chat.cleanup.purge_user_history"
 

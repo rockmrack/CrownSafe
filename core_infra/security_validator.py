@@ -5,9 +5,8 @@ Validates security configuration and best practices across the application
 
 import logging
 import os
-import re
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 

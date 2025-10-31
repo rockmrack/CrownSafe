@@ -4,20 +4,16 @@ Implements weighted scoring model based on CPSC penalty factors
 """
 
 import logging
-import math
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
-from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session
 
 from core_infra.risk_assessment_models import (
     CompanyComplianceProfile,
     ProductGoldenRecord,
-    ProductRiskProfile,
-    RiskSeverity,
     SafetyIncident,
 )
 

@@ -1,7 +1,7 @@
 """Tests for core_infra/database.py"""
 
 import unittest
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 
 class TestDatabase(unittest.TestCase):

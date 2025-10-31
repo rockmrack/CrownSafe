@@ -20,7 +20,7 @@ os.environ["TEST_MODE"] = "true"
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 
 from api.main_crownsafe import app
-from core_infra.database import Base, LegacyRecallDB, User
+from core_infra.database import LegacyRecallDB, User
 
 # Create test database
 TEST_DB_URL = "sqlite:///:memory:"

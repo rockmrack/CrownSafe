@@ -15,7 +15,6 @@ sys.path.insert(0, project_root)
 
 from core_infra.database import (
     DATABASE_URL,
-    Base,
     RecallDB,
     SessionLocal,
     User,

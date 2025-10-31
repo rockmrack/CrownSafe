@@ -4,7 +4,7 @@ FastAPI Logging Middleware - Issue #32
 
 import time
 
-from fastapi import Request, Response
+from fastapi import Request
 
 # Import BaseHTTPMiddleware with proper fallback
 # FastAPI >= 0.95 uses starlette directly

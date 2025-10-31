@@ -15,7 +15,6 @@ try:
     import sys
 
     sys.path.insert(0, ".")
-    from api.main_crownsafe import app
 
     print("✅ PASS: Server imports successfully")
     print("✅ PASS: No RecallDB NameError")
@@ -74,7 +73,6 @@ print()
 # Test 3: RecallDB Reference Scan
 print("TEST 3: Active RecallDB References Scan")
 print("-" * 80)
-import re
 
 files_to_check = [
     ("api/main_crownsafe.py", [3908, 3909]),

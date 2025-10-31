@@ -5,7 +5,6 @@ Tests both direct endpoints and integration with main safety check
 """
 
 import asyncio
-import json
 from datetime import datetime
 
 import httpx

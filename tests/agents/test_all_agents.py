@@ -12,8 +12,6 @@ This test suite verifies:
 """
 
 import asyncio
-from datetime import datetime
-from typing import Any, Dict
 
 import pytest
 
@@ -77,7 +75,7 @@ def test_recall_agent_database_query():
     """
     from datetime import date
 
-    from core_infra.database import Base, LegacyRecallDB, SessionLocal, engine
+    from core_infra.database import LegacyRecallDB, SessionLocal, engine
 
     print("\n[TEST 2] Testing RecallDataAgent with local recall database...")
     print("  Creating database schema...")

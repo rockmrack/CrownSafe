@@ -6,7 +6,7 @@ import logging
 from datetime import date
 from typing import Any, Dict, List, Optional, Tuple
 
-from sqlalchemy import and_, asc, desc, func, literal, or_, text
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
