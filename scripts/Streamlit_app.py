@@ -282,8 +282,8 @@ class UnifiedMemoryManager:
                     "last_activity",
                     datetime.now().timestamp(),
                 )
-            except:
-                pass
+            except (redis.RedisError, redis.ConnectionError):
+                pass  # Redis not available
 
         return st.session_state.persistent_session_id
 
@@ -431,8 +431,8 @@ class UnifiedMemoryManager:
                     if msg_data and "content" in msg_data:
                         try:
                             timestamp = datetime.fromisoformat(msg_data["timestamp"])
-                        except:
-                            timestamp = datetime.now()
+                        except (ValueError, TypeError, KeyError):
+                            timestamp = datetime.now()  # Invalid timestamp format
 
                         all_messages.append(
                             {
@@ -531,8 +531,8 @@ class UnifiedMemoryManager:
                     if "attachments" in msg_data:
                         try:
                             msg_data["attachments"] = json.loads(msg_data["attachments"])
-                        except:
-                            msg_data["attachments"] = []
+                        except (json.JSONDecodeError, TypeError):
+                            msg_data["attachments"] = []  # Invalid JSON format
                     else:
                         msg_data["attachments"] = []
 
@@ -678,8 +678,8 @@ class UnifiedMemoryManager:
                     if "attachments" in msg_data:
                         try:
                             attachments = json.loads(msg_data["attachments"])
-                        except:
-                            pass
+                        except (json.JSONDecodeError, TypeError):
+                            pass  # Invalid attachment format
 
                     message = Message(
                         id=msg_data.get("id", msg_id),
@@ -789,15 +789,15 @@ class ConnectionManager:
             self.status["gemini"] = True
             return True
 
-        except Exception as e:
+        except Exception:
             try:
                 model = genai.GenerativeModel("gemini-1.5-pro")
                 _ = model.generate_content("test")
                 self.gemini_client = genai
                 self.status["gemini"] = True
                 return True
-            except:
-                st.error(f"Gemini connection error: {e}")
+            except Exception as gemini_error:
+                st.error(f"Gemini connection error: {gemini_error}")
                 self.status["gemini"] = False
                 return False
 
@@ -818,7 +818,8 @@ class ConnectionManager:
                 )
                 self.status["gpt"] = True
                 return True
-            except:
+            except Exception as gpt_error_4o:
+                # GPT-4o failed, try GPT-4-turbo-preview
                 try:
                     _ = openai.ChatCompletion.create(
                         model="gpt-4-turbo-preview",
@@ -827,7 +828,8 @@ class ConnectionManager:
                     )
                     self.status["gpt"] = True
                     return True
-                except:
+                except Exception as gpt_error_turbo:
+                    # GPT-4-turbo-preview failed, try GPT-4
                     _ = openai.ChatCompletion.create(
                         model="gpt-4",
                         messages=[{"role": "user", "content": "test"}],
@@ -1060,7 +1062,8 @@ Project context:
                                 )
                                 model_name = fallback_model
                                 break
-                            except:
+                            except Exception:
+                                # Model not available, try next fallback
                                 continue
                         else:
                             raise Exception("No compatible GPT-4 model found")
@@ -1653,7 +1656,8 @@ if st.session_state.get("debug_mode", False):
                 st.write("\n**Redis Stats:**")
                 st.write(f"- Messages in timeline: {message_count}")
                 st.write(f"- Session key: session:{session_id}")
-            except:
+            except (redis.RedisError, AttributeError, KeyError):
+                # Redis connection issue or missing session data
                 pass
 
 # Add this to avoid reconnecting every time:
