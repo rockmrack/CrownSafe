@@ -6,15 +6,16 @@ Create Date: 2025-10-31 19:41:51.943449
 
 Migrates all S3-related columns to Azure Blob Storage naming:
 - s3_url → blob_url
-- s3_bucket → blob_container  
+- s3_bucket → blob_container
 - s3_key → blob_name
 - s3_presigned_url → blob_sas_url
 
 This migration supports the AWS to Azure infrastructure migration.
 """
-from alembic import op
+
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "b8c97058b7e6"
@@ -33,7 +34,7 @@ def upgrade() -> None:
     # content_snapshot table (if exists)
     conn = op.get_bind()
     inspector = sa.inspect(conn)
-    
+
     if "content_snapshot" in inspector.get_table_names():
         with op.batch_alter_table("content_snapshot", schema=None) as batch_op:
             if "s3_bucket" in [c["name"] for c in inspector.get_columns("content_snapshot")]:
@@ -62,7 +63,7 @@ def downgrade() -> None:
     # content_snapshot table (if exists)
     conn = op.get_bind()
     inspector = sa.inspect(conn)
-    
+
     if "content_snapshot" in inspector.get_table_names():
         with op.batch_alter_table("content_snapshot", schema=None) as batch_op:
             if "blob_container" in [c["name"] for c in inspector.get_columns("content_snapshot")]:
@@ -79,4 +80,3 @@ def downgrade() -> None:
                 batch_op.alter_column("blob_container", new_column_name="s3_bucket")
             if "blob_name" in [c["name"] for c in inspector.get_columns("image_jobs")]:
                 batch_op.alter_column("blob_name", new_column_name="s3_key")
-

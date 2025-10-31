@@ -3,30 +3,25 @@ Celery async tasks for Visual Agent image processing
 Handles async job queue with Azure Blob Storage integration and multi-step processing
 """
 
-import os
 import logging
-import hashlib
-import json
-from datetime import datetime, timedelta
-from typing import Dict, Any, Optional
-import uuid
+import os
+from datetime import datetime
+from typing import Any, Dict
 
 from celery import Celery, Task
 from celery.exceptions import SoftTimeLimitExceeded
-from sqlalchemy.orm import Session
 
 from core_infra.azure_storage import AzureBlobStorageClient
-from core_infra.image_processor import image_processor, ExtractionResult
+from core_infra.database import SafetyArticle, get_db_session
+from core_infra.image_processor import image_processor
 from core_infra.visual_agent_models import (
-    ImageJob,
-    ImageExtraction,
-    ReviewQueue,
-    MFVSession,
-    JobStatus,
-    ReviewStatus,
     ConfidenceLevel,
+    ImageExtraction,
+    ImageJob,
+    JobStatus,
+    ReviewQueue,
+    ReviewStatus,
 )
-from core_infra.database import get_db_session, SafetyArticle
 
 logger = logging.getLogger(__name__)
 
@@ -259,8 +254,9 @@ def normalize_image(job_id: str, image_data: bytes) -> bytes:
     """
     logger.info(f"Normalizing image for job {job_id}")
 
-    from PIL import Image, ImageOps
     import io
+
+    from PIL import Image, ImageOps
 
     # Open image
     img = Image.open(io.BytesIO(image_data))
@@ -303,8 +299,9 @@ def extract_barcodes(job_id: str, image_data: bytes) -> Dict[str, Any]:
     """Extract barcodes from image"""
     logger.info(f"Extracting barcodes for job {job_id}")
 
-    from core_infra.barcode_scanner import scanner
     import asyncio
+
+    from core_infra.barcode_scanner import scanner
 
     # Run async scanner
     loop = asyncio.new_event_loop()
@@ -335,8 +332,9 @@ def perform_ocr(job_id: str, image_data: bytes) -> Dict[str, Any]:
     logger.info(f"Performing OCR for job {job_id}")
 
     import asyncio
-    from PIL import Image
     import io
+
+    from PIL import Image
 
     # Convert bytes to PIL Image
     img = Image.open(io.BytesIO(image_data))
@@ -547,6 +545,7 @@ def ingest_safety_articles():
     A Celery task that runs daily to fetch and store the latest safety articles.
     """
     import asyncio
+
     from core_infra.safety_data_connectors import CPSCDataConnector
 
     logger.info("--- [Celery Task] Starting: Ingest Safety Articles ---")

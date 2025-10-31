@@ -8,6 +8,10 @@ Features:
 - Check blob existence
 - List blobs in container
 - Delete blobs
+- Circuit breaker pattern for resilience
+- Retry logic with exponential backoff
+- Correlation IDs for distributed tracing
+- Enhanced error logging
 """
 
 import logging
@@ -19,6 +23,12 @@ from urllib.parse import urlparse
 from azure.core.exceptions import ResourceNotFoundError
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobSasPermissions, BlobServiceClient, generate_blob_sas
+
+from core_infra.azure_storage_resilience import (
+    log_azure_error,
+    retry_with_exponential_backoff,
+    with_correlation_id,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +88,9 @@ class AzureBlobStorageClient:
         container = container_name or self.container_name
         return self.blob_service_client.get_blob_client(container=container, blob=blob_name)
 
+    @retry_with_exponential_backoff(max_retries=3, base_delay=1.0)
+    @log_azure_error
+    @with_correlation_id
     def upload_file(
         self,
         file_data: bytes,
@@ -102,24 +115,21 @@ class AzureBlobStorageClient:
         Raises:
             Exception: If upload fails
         """
-        try:
-            blob_client = self._get_blob_client(blob_name, container_name)
+        blob_client = self._get_blob_client(blob_name, container_name)
 
-            # Upload blob with content type and metadata
-            blob_client.upload_blob(
-                file_data,
-                overwrite=True,
-                content_settings={"content_type": content_type or "application/octet-stream"} if content_type else None,
-                metadata=metadata,
-            )
+        content_settings_dict = {"content_type": content_type or "application/octet-stream"} if content_type else None
 
-            blob_url = blob_client.url
-            logger.info(f"File uploaded to Azure Blob Storage: {blob_name}")
-            return blob_url
+        # Upload blob with content type and metadata
+        blob_client.upload_blob(
+            file_data,
+            overwrite=True,
+            content_settings=content_settings_dict,
+            metadata=metadata,
+        )
 
-        except Exception as e:
-            logger.error(f"Failed to upload file to Azure Blob Storage: {e}")
-            raise
+        blob_url = blob_client.url
+        logger.info(f"File uploaded to Azure Blob Storage: {blob_name}")
+        return blob_url
 
     def upload_file_from_path(
         self,
@@ -147,6 +157,8 @@ class AzureBlobStorageClient:
 
         return self.upload_file(file_data, blob_name, container_name, content_type)
 
+    @retry_with_exponential_backoff(max_retries=3, base_delay=1.0)
+    @log_azure_error
     def generate_sas_url(
         self,
         blob_name: str,
@@ -166,30 +178,27 @@ class AzureBlobStorageClient:
         Returns:
             SAS URL with temporary access token
         """
-        try:
-            container = container_name or self.container_name
-            expiry = datetime.utcnow() + timedelta(hours=expiry_hours)
+        container = container_name or self.container_name
+        expiry = datetime.utcnow() + timedelta(hours=expiry_hours)
 
-            # Generate SAS token
-            sas_token = generate_blob_sas(
-                account_name=self.account_name,
-                container_name=container,
-                blob_name=blob_name,
-                account_key=self.account_key,
-                permission=BlobSasPermissions(read="r" in permissions, write="w" in permissions),
-                expiry=expiry,
-            )
+        # Generate SAS token
+        sas_token = generate_blob_sas(
+            account_name=self.account_name,
+            container_name=container,
+            blob_name=blob_name,
+            account_key=self.account_key,
+            permission=BlobSasPermissions(read="r" in permissions, write="w" in permissions),
+            expiry=expiry,
+        )
 
-            # Construct full URL with SAS token
-            blob_url = f"https://{self.account_name}.blob.core.windows.net/{container}/{blob_name}?{sas_token}"
+        # Construct full URL with SAS token
+        blob_url = f"https://{self.account_name}.blob.core.windows.net/{container}/{blob_name}?{sas_token}"
 
-            logger.info(f"Generated SAS URL for {blob_name}, expires in {expiry_hours}h")
-            return blob_url
+        logger.info(f"Generated SAS URL for {blob_name}, expires in {expiry_hours}h")
+        return blob_url
 
-        except Exception as e:
-            logger.error(f"Failed to generate SAS URL: {e}")
-            raise
-
+    @retry_with_exponential_backoff(max_retries=3, base_delay=1.0)
+    @log_azure_error
     def blob_exists(self, blob_name: str, container_name: Optional[str] = None) -> bool:
         """
         Check if blob exists in container
@@ -207,10 +216,9 @@ class AzureBlobStorageClient:
             return True
         except ResourceNotFoundError:
             return False
-        except Exception as e:
-            logger.error(f"Error checking blob existence: {e}")
-            return False
 
+    @retry_with_exponential_backoff(max_retries=3, base_delay=1.0)
+    @log_azure_error
     def head_object(self, blob_name: str, container_name: Optional[str] = None) -> dict:
         """
         Get blob properties (equivalent to S3 head_object)
@@ -235,6 +243,9 @@ class AzureBlobStorageClient:
             "Metadata": properties.metadata,
         }
 
+    @retry_with_exponential_backoff(max_retries=3, base_delay=1.0)
+    @log_azure_error
+    @with_correlation_id
     def download_blob(self, blob_name: str, container_name: Optional[str] = None) -> bytes:
         """
         Download blob content as bytes
@@ -249,16 +260,14 @@ class AzureBlobStorageClient:
         Raises:
             Exception: If blob doesn't exist or download fails
         """
-        try:
-            blob_client = self._get_blob_client(blob_name, container_name)
-            download_stream = blob_client.download_blob()
-            blob_data = download_stream.readall()
-            logger.info(f"Downloaded blob: {blob_name} ({len(blob_data)} bytes)")
-            return blob_data
-        except Exception as e:
-            logger.error(f"Failed to download blob: {e}")
-            raise
+        blob_client = self._get_blob_client(blob_name, container_name)
+        download_stream = blob_client.download_blob()
+        blob_data = download_stream.readall()
+        logger.info(f"Downloaded blob: {blob_name} ({len(blob_data)} bytes)")
+        return blob_data
 
+    @retry_with_exponential_backoff(max_retries=3, base_delay=1.0)
+    @log_azure_error
     def delete_blob(self, blob_name: str, container_name: Optional[str] = None) -> bool:
         """
         Delete blob from container
@@ -270,15 +279,13 @@ class AzureBlobStorageClient:
         Returns:
             True if deleted successfully, False otherwise
         """
-        try:
-            blob_client = self._get_blob_client(blob_name, container_name)
-            blob_client.delete_blob()
-            logger.info(f"Deleted blob: {blob_name}")
-            return True
-        except Exception as e:
-            logger.error(f"Failed to delete blob: {e}")
-            return False
+        blob_client = self._get_blob_client(blob_name, container_name)
+        blob_client.delete_blob()
+        logger.info(f"Deleted blob: {blob_name}")
+        return True
 
+    @retry_with_exponential_backoff(max_retries=3, base_delay=1.0)
+    @log_azure_error
     def list_blobs(
         self,
         container_name: Optional[str] = None,
@@ -296,20 +303,15 @@ class AzureBlobStorageClient:
         Returns:
             List of blob names
         """
-        try:
-            container_client = self._get_container_client(container_name)
-            blobs = container_client.list_blobs(name_starts_with=prefix)
+        container_client = self._get_container_client(container_name)
+        blobs = container_client.list_blobs(name_starts_with=prefix)
 
-            blob_names = [blob.name for blob in blobs]
+        blob_names = [blob.name for blob in blobs]
 
-            if max_results:
-                blob_names = blob_names[:max_results]
+        if max_results:
+            blob_names = blob_names[:max_results]
 
-            return blob_names
-
-        except Exception as e:
-            logger.error(f"Failed to list blobs: {e}")
-            return []
+        return blob_names
 
     def get_blob_url(self, blob_name: str, container_name: Optional[str] = None) -> str:
         """
