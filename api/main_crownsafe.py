@@ -2996,6 +2996,33 @@ async def azure_storage_metrics():
         )
 
 
+@app.get("/api/v1/monitoring/security-audit", tags=["monitoring"])
+async def security_audit():
+    """
+    Comprehensive security configuration audit
+    Enterprise-grade security validation
+    """
+    try:
+        from core_infra.security_validator import security_validator
+
+        audit_results = security_validator.comprehensive_security_audit()
+
+        return JSONResponse(
+            content=audit_results,
+            status_code=200 if audit_results["overall_status"] == "pass" else 500,
+        )
+
+    except Exception as e:
+        logger.error(f"Security audit failed: {e}")
+        return JSONResponse(
+            content={
+                "error": str(e),
+                "timestamp": datetime.utcnow().isoformat(),
+            },
+            status_code=500,
+        )
+
+
 # --- NOTIFICATION SYSTEM ---
 
 
