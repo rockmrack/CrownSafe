@@ -11,7 +11,7 @@ from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Union
 
 from dotenv import load_dotenv
 
@@ -74,16 +74,16 @@ class LLMConfig:
     timeout: int = 30
     max_retries: int = 3
     retry_delay: float = 1.0
-    api_key: Optional[str] = None
-    api_base: Optional[str] = None
-    api_version: Optional[str] = None
-    organization: Optional[str] = None
+    api_key: str | None = None
+    api_base: str | None = None
+    api_version: str | None = None
+    organization: str | None = None
 
     # Advanced settings
     top_p: float = 1.0
     frequency_penalty: float = 0.0
     presence_penalty: float = 0.0
-    stop_sequences: List[str] = field(default_factory=list)
+    stop_sequences: list[str] = field(default_factory=list)
 
     # Rate limiting
     requests_per_minute: int = 60
@@ -115,11 +115,11 @@ class LLMResponse:
     content: str
     model: str
     provider: str
-    usage: Dict[str, int]
+    usage: dict[str, int]
     latency_ms: float
     cached: bool = False
     finish_reason: str = "stop"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -136,8 +136,8 @@ class LLMMetrics:
     total_latency_ms: float = 0.0
     cache_hits: int = 0
     cache_misses: int = 0
-    errors_by_type: Dict[str, int] = field(default_factory=dict)
-    requests_by_model: Dict[str, int] = field(default_factory=dict)
+    errors_by_type: dict[str, int] = field(default_factory=dict)
+    requests_by_model: dict[str, int] = field(default_factory=dict)
 
 
 class LLMRateLimiter:
@@ -200,7 +200,7 @@ class LLMCache:
         self,
         provider: str,
         model: str,
-        messages: List[Dict],
+        messages: list[dict],
         temperature: float,
         max_tokens: int,
     ) -> str:
@@ -215,7 +215,7 @@ class LLMCache:
         key_str = json.dumps(key_data, sort_keys=True)
         return hashlib.sha256(key_str.encode()).hexdigest()
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Get cached response if valid"""
         with self.lock:
             if key not in self.cache:
@@ -252,7 +252,7 @@ class MockLLMProvider:
         self.config = config
         self.call_count = 0
 
-    def generate_response(self, messages: List[Dict], **kwargs) -> LLMResponse:
+    def generate_response(self, messages: list[dict], **kwargs) -> LLMResponse:
         """Generate mock response based on context"""
         self.call_count += 1
 
@@ -762,7 +762,7 @@ class LLMClient:
 
         return WrappedResponse(llm_response)
 
-    def _convert_to_anthropic_format(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _convert_to_anthropic_format(self, params: dict[str, Any]) -> dict[str, Any]:
         """Convert OpenAI format to Anthropic format"""
         messages = params["messages"]
         system_message = ""
@@ -818,7 +818,7 @@ class LLMClient:
 
         return ConvertedResponse(response)
 
-    def _convert_legacy_openai_response(self, response: Dict) -> Any:
+    def _convert_legacy_openai_response(self, response: dict) -> Any:
         """Convert legacy OpenAI response to new format"""
 
         class ConvertedResponse:
@@ -845,7 +845,7 @@ class LLMClient:
 
         return ConvertedResponse(response)
 
-    def _estimate_tokens(self, messages: List[Dict[str, Any]]) -> int:
+    def _estimate_tokens(self, messages: list[dict[str, Any]]) -> int:
         """Estimate token count for messages"""
         # Simple estimation: ~4 characters per token
         total_chars = sum(len(msg.get("content", "")) for msg in messages)
@@ -900,7 +900,7 @@ class LLMClient:
             self._request_id += 1
             return f"req_{self._request_id}_{int(time.time() * 1000)}"
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get current metrics"""
         return {
             "total_requests": self.metrics.total_requests,
@@ -917,11 +917,11 @@ class LLMClient:
 
 
 # Global client registry
-_client_registry: Dict[str, LLMClient] = {}
+_client_registry: dict[str, LLMClient] = {}
 _registry_lock = threading.Lock()
 
 
-def get_llm_client(config: Optional[LLMConfig] = None) -> LLMClient:
+def get_llm_client(config: LLMConfig | None = None) -> LLMClient:
     """Get or create LLM client with advanced caching"""
     if config is None:
         config = LLMConfig()
@@ -937,14 +937,14 @@ def get_llm_client(config: Optional[LLMConfig] = None) -> LLMClient:
         return _client_registry[config_key]
 
 
-def get_all_metrics() -> Dict[str, Any]:
+def get_all_metrics() -> dict[str, Any]:
     """Get metrics for all clients"""
     with _registry_lock:
         return {client_key: client.get_metrics() for client_key, client in _client_registry.items()}
 
 
 # Utility functions
-def build_structured_prompt(sections: Dict[str, Any], separator: str = "\n" + "=" * 50 + "\n") -> str:
+def build_structured_prompt(sections: dict[str, Any], separator: str = "\n" + "=" * 50 + "\n") -> str:
     """Build a structured prompt from sections"""
     prompt_parts = []
 
@@ -962,7 +962,7 @@ def build_structured_prompt(sections: Dict[str, Any], separator: str = "\n" + "=
     return separator.join(prompt_parts)
 
 
-def parse_llm_json_response(response_text: str, strict: bool = False) -> Dict[str, Any]:
+def parse_llm_json_response(response_text: str, strict: bool = False) -> dict[str, Any]:
     """Safely parse JSON from LLM response with multiple strategies"""
     # Strategy 1: Direct JSON parsing
     try:
@@ -1054,7 +1054,7 @@ def estimate_tokens(text: str, model: str = "gpt-4") -> int:
 class LLMStreamHandler:
     """Handler for streaming responses"""
 
-    def __init__(self, callback: Optional[Callable[[str], None]] = None):
+    def __init__(self, callback: Callable[[str], None] | None = None):
         self.callback = callback or print
         self.accumulated_text = ""
 
@@ -1090,7 +1090,7 @@ class CostTracker:
             session["tokens"] += tokens
             session["cost"] += cost
 
-    def get_session_report(self, session_name: str) -> Dict[str, Any]:
+    def get_session_report(self, session_name: str) -> dict[str, Any]:
         """Get report for a specific session"""
         if session_name not in self.sessions:
             return {"error": f"Session '{session_name}' not found"}
@@ -1108,7 +1108,7 @@ class CostTracker:
             "avg_cost_per_request": f"${session['cost'] / max(session['requests'], 1):.4f}",
         }
 
-    def get_all_sessions_report(self) -> Dict[str, Any]:
+    def get_all_sessions_report(self) -> dict[str, Any]:
         """Get report for all sessions"""
         return {name: self.get_session_report(name) for name in self.sessions}
 

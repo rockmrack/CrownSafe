@@ -5,7 +5,7 @@ Health and System Endpoints for App Store Readiness
 import os
 import platform
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, Request, Response
 
@@ -15,7 +15,7 @@ API_VERSION = "1.2.0"
 
 
 @router.get("/healthz")
-async def healthz(request: Request, response: Response) -> Dict[str, Any]:
+async def healthz(request: Request, response: Response) -> dict[str, Any]:
     """
     Health check endpoint for monitoring
     Returns 200 if service is healthy
@@ -41,7 +41,7 @@ async def healthz(request: Request, response: Response) -> Dict[str, Any]:
 
 
 @router.get("/version")
-async def version_info(request: Request, response: Response) -> Dict[str, Any]:
+async def version_info(request: Request, response: Response) -> dict[str, Any]:
     """
     Get API version information
     """

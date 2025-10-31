@@ -7,7 +7,6 @@ import hashlib
 import hmac
 import logging
 import os
-from typing import Optional
 
 from fastapi import Depends, Request
 from fastapi.security import APIKeyHeader
@@ -35,7 +34,7 @@ ADMIN_KEYS = {
 api_key_header = APIKeyHeader(name="X-Admin-Key", auto_error=False)
 
 
-async def require_admin(request: Request, x_admin_key: Optional[str] = Depends(api_key_header)) -> str:
+async def require_admin(request: Request, x_admin_key: str | None = Depends(api_key_header)) -> str:
     """
     Require admin authentication via API key
 
@@ -112,7 +111,7 @@ async def require_admin(request: Request, x_admin_key: Optional[str] = Depends(a
     return "admin"
 
 
-async def optional_admin(request: Request, x_admin_key: Optional[str] = Depends(api_key_header)) -> Optional[str]:
+async def optional_admin(request: Request, x_admin_key: str | None = Depends(api_key_header)) -> str | None:
     """
     Optional admin authentication
     Returns admin identifier if authenticated, None otherwise

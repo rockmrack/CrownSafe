@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 from api.schemas.alternatives import AlternativeItem, AlternativesOut
 from api.services.evidence import label_to_evidence, regulatory_to_evidence
 
 
-def _rules(scan: Dict[str, Any], profile: Dict[str, Any]) -> List[AlternativeItem]:
+def _rules(scan: dict[str, Any], profile: dict[str, Any]) -> list[AlternativeItem]:
     """
     Rules-based alternatives engine. Returns safer product suggestions based on
     scan data, flags, and user profile.
     """
-    items: List[AlternativeItem] = []
+    items: list[AlternativeItem] = []
     cat = (scan.get("category") or "").lower()
     flags = set(scan.get("flags") or [])
     ingredients = [str(x).lower() for x in (scan.get("ingredients") or [])]
@@ -167,7 +167,7 @@ def _rules(scan: Dict[str, Any], profile: Dict[str, Any]) -> List[AlternativeIte
     return items[:3]
 
 
-def get_alternatives(scan: Dict[str, Any]) -> Dict[str, Any]:
+def get_alternatives(scan: dict[str, Any]) -> dict[str, Any]:
     """
     Get safer product alternatives based on scan data and user profile.
     Returns AlternativesOut schema with up to 3 suggestions.

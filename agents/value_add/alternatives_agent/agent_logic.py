@@ -3,7 +3,7 @@
 
 import asyncio
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -37,12 +37,12 @@ class AlternativesAgentLogic:
     Suggests safer alternative products based on the category of a recalled item.
     """
 
-    def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
         self.logger.info(f"AlternativesAgentLogic initialized for agent {self.agent_id}.")
 
-    async def find_alternatives(self, category: str) -> List[Dict[str, str]]:
+    async def find_alternatives(self, category: str) -> list[dict[str, str]]:
         """Simulates searching for safe alternatives in a given category."""
         await asyncio.sleep(0.2)  # Simulate processing time
 
@@ -53,7 +53,7 @@ class AlternativesAgentLogic:
 
         return []  # Return an empty list if no matching category is found
 
-    async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
         """
         Main entry point for the agent.
         """

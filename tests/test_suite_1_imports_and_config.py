@@ -624,11 +624,11 @@ class TestImportsAndConfiguration:
 
     def test_import_typing(self):
         """Test typing module import"""
-        from typing import Dict, List, Optional
+        from typing import Optional
 
         assert Optional is not None
-        assert List is not None
-        assert Dict is not None
+        assert list is not None
+        assert dict is not None
 
     def test_import_asyncio(self):
         """Test asyncio module import"""

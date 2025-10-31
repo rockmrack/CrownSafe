@@ -7,7 +7,6 @@ import base64
 import json
 import unicodedata
 from datetime import date
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
@@ -19,7 +18,7 @@ from core_infra.database import get_db
 router = APIRouter(prefix="/api/v1/recalls", tags=["recalls"])
 
 
-def clean_encoding(text: Optional[str]) -> Optional[str]:
+def clean_encoding(text: str | None) -> str | None:
     """Clean up encoding issues in text data"""
     if not text:
         return text
@@ -61,7 +60,7 @@ def encode_cursor(recall_id: str, recall_date: date, id: int) -> str:
     return base64.b64encode(cursor_json.encode()).decode()
 
 
-def decode_cursor(cursor: str) -> Optional[dict]:
+def decode_cursor(cursor: str) -> dict | None:
     """Decode cursor for pagination"""
     try:
         cursor_json = base64.b64decode(cursor.encode()).decode()
@@ -74,71 +73,71 @@ class RecallItem(BaseModel):
     model_config = {"protected_namespaces": ()}  # Allow model_number field
 
     id: int
-    recall_id: Optional[str] = None
-    agency: Optional[str] = None
-    country: Optional[str] = None
-    product_name: Optional[str] = None
-    brand: Optional[str] = None
-    manufacturer: Optional[str] = None
-    model_number: Optional[str] = None
-    category: Optional[str] = None
-    hazard: Optional[str] = None
-    hazard_category: Optional[str] = None
-    recall_date: Optional[date] = None
-    recall_reason: Optional[str] = None
-    remedy: Optional[str] = None
-    recall_class: Optional[str] = None
-    reference: Optional[str] = None  # recall_id
-    url: Optional[str] = None  # source URL if available
+    recall_id: str | None = None
+    agency: str | None = None
+    country: str | None = None
+    product_name: str | None = None
+    brand: str | None = None
+    manufacturer: str | None = None
+    model_number: str | None = None
+    category: str | None = None
+    hazard: str | None = None
+    hazard_category: str | None = None
+    recall_date: date | None = None
+    recall_reason: str | None = None
+    remedy: str | None = None
+    recall_class: str | None = None
+    reference: str | None = None  # recall_id
+    url: str | None = None  # source URL if available
 
     model_config = {"from_attributes": True, "protected_namespaces": ()}
 
 
 class RecallListResponse(BaseModel):
-    items: List[RecallItem]
+    items: list[RecallItem]
     total: int
     limit: int
-    offset: Optional[int] = None
-    nextCursor: Optional[str] = None
+    offset: int | None = None
+    nextCursor: str | None = None
     hasMore: bool = False
 
 
 @router.get("", response_model=dict)
 def list_recalls(
-    q: Optional[str] = Query(
+    q: str | None = Query(
         None,
         min_length=2,
         description="Free text search over name/brand/description/hazard/category",
     ),
-    agency: Optional[str] = Query(None, description="Filter by source agency (e.g., CPSC, FDA)"),
-    country: Optional[str] = Query(None, description="Filter by country"),
-    category: Optional[str] = Query(None, description="Filter by product category"),
-    hazard_category: Optional[str] = Query(None, description="Filter by hazard category"),
-    date_from: Optional[date] = Query(None, description="Filter recalls from this date"),
-    date_to: Optional[date] = Query(None, description="Filter recalls to this date"),
+    agency: str | None = Query(None, description="Filter by source agency (e.g., CPSC, FDA)"),
+    country: str | None = Query(None, description="Filter by country"),
+    category: str | None = Query(None, description="Filter by product category"),
+    hazard_category: str | None = Query(None, description="Filter by hazard category"),
+    date_from: date | None = Query(None, description="Filter recalls from this date"),
+    date_to: date | None = Query(None, description="Filter recalls to this date"),
     sort: str = Query(
         "recent",
         pattern="^(recent|oldest)$",
         description="Sort order: recent (newest first) or oldest",
     ),
     limit: int = Query(20, ge=1, le=100, description="Number of results per page"),
-    offset: Optional[int] = Query(
+    offset: int | None = Query(
         None,
         ge=0,
         description="Number of results to skip (offset pagination)",
     ),
-    page: Optional[int] = Query(
+    page: int | None = Query(
         None,
         ge=1,
         description="Page number (1-indexed) when using classic pagination",
     ),
-    page_size: Optional[int] = Query(
+    page_size: int | None = Query(
         None,
         ge=1,
         le=100,
         description="Page size when using classic pagination",
     ),
-    cursor: Optional[str] = Query(
+    cursor: str | None = Query(
         None,
         description="Cursor for pagination (cursor-based pagination)",
     ),
@@ -195,17 +194,17 @@ def list_recalls(
 
 @router.get("/search-dev", response_model=dict)
 def search_recalls_dev(
-    q: Optional[str] = Query(None, description="Free text search"),
-    agency: Optional[str] = Query(None, description="Filter by source agency"),
-    country: Optional[str] = Query(None, description="Filter by country"),
-    category: Optional[str] = Query(None, description="Filter by product category"),
-    hazard_category: Optional[str] = Query(None, description="Filter by hazard category"),
-    date_from: Optional[date] = Query(None, description="Filter recalls from this date"),
-    date_to: Optional[date] = Query(None, description="Filter recalls to this date"),
+    q: str | None = Query(None, description="Free text search"),
+    agency: str | None = Query(None, description="Filter by source agency"),
+    country: str | None = Query(None, description="Filter by country"),
+    category: str | None = Query(None, description="Filter by product category"),
+    hazard_category: str | None = Query(None, description="Filter by hazard category"),
+    date_from: date | None = Query(None, description="Filter recalls from this date"),
+    date_to: date | None = Query(None, description="Filter recalls to this date"),
     sort: str = Query("recent", pattern="^(recent|oldest)$", description="Sort order"),
     limit: int = Query(20, ge=1, le=100, description="Number of results per page"),
-    offset: Optional[int] = Query(None, ge=0, description="Number of results to skip (offset pagination)"),
-    cursor: Optional[str] = Query(None, description="Cursor for pagination (cursor-based pagination)"),
+    offset: int | None = Query(None, ge=0, description="Number of results to skip (offset pagination)"),
+    cursor: str | None = Query(None, description="Cursor for pagination (cursor-based pagination)"),
 ):
     """
     DEV OVERRIDE: Search recalls without database dependencies

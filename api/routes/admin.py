@@ -4,7 +4,7 @@ Admin API routes for ingestion management and monitoring
 
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request
@@ -45,7 +45,7 @@ def create_response(data: Any, request: Request, status_code: int = 200) -> JSON
 @router.post("/ingest", dependencies=[Depends(AdminRateLimit.get_ingest_limiter)])
 async def trigger_ingestion(
     request: Request,
-    body: Dict[str, Any],
+    body: dict[str, Any],
     admin: str = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
@@ -125,8 +125,8 @@ async def list_ingestion_runs(
     request: Request,
     limit: int = Query(20, ge=1, le=100, description="Number of runs to return"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
-    agency: Optional[str] = Query(None, description="Filter by agency"),
-    status: Optional[str] = Query(None, description="Filter by status"),
+    agency: str | None = Query(None, description="Filter by agency"),
+    status: str | None = Query(None, description="Filter by status"),
     db: Session = Depends(get_db),
 ):
     """

@@ -14,7 +14,6 @@ import logging
 import os
 import threading
 from datetime import datetime
-from typing import Optional
 
 from azure.storage.blob import BlobServiceClient
 
@@ -29,9 +28,9 @@ class AzureBlobConnectionPool:
 
     def __init__(
         self,
-        connection_string: Optional[str] = None,
-        account_name: Optional[str] = None,
-        account_key: Optional[str] = None,
+        connection_string: str | None = None,
+        account_name: str | None = None,
+        account_key: str | None = None,
         pool_size: int = 10,
     ):
         """
@@ -79,7 +78,7 @@ class AzureBlobConnectionPool:
                     )
                     self.connections_created += 1
 
-    def _create_client(self) -> Optional[BlobServiceClient]:
+    def _create_client(self) -> BlobServiceClient | None:
         """Create a new BlobServiceClient"""
         try:
             if self.connection_string:
@@ -94,7 +93,7 @@ class AzureBlobConnectionPool:
             logger.error(f"Failed to create Azure Blob client: {e}")
             return None
 
-    def acquire(self) -> Optional[BlobServiceClient]:
+    def acquire(self) -> BlobServiceClient | None:
         """
         Acquire a connection from the pool
 
@@ -208,9 +207,9 @@ _pool_lock = threading.Lock()
 
 
 def get_connection_pool(
-    connection_string: Optional[str] = None,
-    account_name: Optional[str] = None,
-    account_key: Optional[str] = None,
+    connection_string: str | None = None,
+    account_name: str | None = None,
+    account_key: str | None = None,
     pool_size: int = 10,
 ) -> AzureBlobConnectionPool:
     """

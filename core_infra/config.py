@@ -5,7 +5,6 @@ Handles environment variables and default values
 
 import os
 from pathlib import Path
-from typing import Optional
 
 
 class Config:
@@ -36,15 +35,15 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
     # AWS Configuration (Optional)
-    AWS_ACCESS_KEY_ID: Optional[str] = os.getenv("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY: Optional[str] = os.getenv("AWS_SECRET_ACCESS_KEY")
+    AWS_ACCESS_KEY_ID: str | None = os.getenv("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY: str | None = os.getenv("AWS_SECRET_ACCESS_KEY")
     AWS_REGION: str = os.getenv("AWS_REGION", "us-east-1")
-    S3_BUCKET_NAME: Optional[str] = os.getenv("S3_BUCKET_NAME")
+    S3_BUCKET_NAME: str | None = os.getenv("S3_BUCKET_NAME")
 
     # External APIs (Optional)
-    GOOGLE_VISION_API_KEY: Optional[str] = os.getenv("GOOGLE_VISION_API_KEY")
-    CPSC_API_KEY: Optional[str] = os.getenv("CPSC_API_KEY")
-    OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY")
+    GOOGLE_VISION_API_KEY: str | None = os.getenv("GOOGLE_VISION_API_KEY")
+    CPSC_API_KEY: str | None = os.getenv("CPSC_API_KEY")
+    OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY")
 
     # Celery
     CELERY_BROKER_URL: str = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/1")

@@ -7,7 +7,7 @@ import json
 import logging
 import os
 from datetime import date, datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 # Make redis optional (for test environments without Redis)
 try:
@@ -15,7 +15,7 @@ try:
 
     REDIS_AVAILABLE = True
 except ImportError:
-    redis: Optional[Any] = None
+    redis: Any | None = None
     REDIS_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
@@ -99,7 +99,7 @@ class BabyShieldCacheManager:
         key_hash = hashlib.md5(key_data.encode()).hexdigest()[:12]
         return f"{prefix}{key_hash}:{identifier}"
 
-    def get(self, cache_type: str, identifier: str, **kwargs) -> Optional[Dict[str, Any]]:
+    def get(self, cache_type: str, identifier: str, **kwargs) -> dict[str, Any] | None:
         """Get cached data with automatic JSON deserialization"""
         if not self.cache_enabled or not self.redis_client:
             return None
@@ -126,7 +126,7 @@ class BabyShieldCacheManager:
         cache_type: str,
         identifier: str,
         data: Any,
-        custom_ttl: Optional[int] = None,
+        custom_ttl: int | None = None,
         **kwargs,
     ) -> bool:
         """Set cached data with automatic JSON serialization and TTL"""
@@ -194,7 +194,7 @@ class BabyShieldCacheManager:
             logger.warning(f"Cache pattern invalidation error: {e}")
             return 0
 
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get cache performance statistics"""
         if not self.cache_enabled or not self.redis_client:
             return {"status": "disabled"}
@@ -237,13 +237,13 @@ cache_manager = BabyShieldCacheManager()
 
 
 # Convenience functions for easy usage
-def get_cached(cache_type: str, identifier: str, **kwargs) -> Optional[Dict[str, Any]]:
+def get_cached(cache_type: str, identifier: str, **kwargs) -> dict[str, Any] | None:
     """Get cached data"""
     result = cache_manager.get(cache_type, identifier, **kwargs)
     return result.get("data") if result else None
 
 
-def set_cached(cache_type: str, identifier: str, data: Any, ttl: Optional[int] = None, **kwargs) -> bool:
+def set_cached(cache_type: str, identifier: str, data: Any, ttl: int | None = None, **kwargs) -> bool:
     """Set cached data"""
     return cache_manager.set(cache_type, identifier, data, ttl, **kwargs)
 
@@ -274,13 +274,13 @@ def invalidate_pattern(pattern: str) -> int:
     return cache_manager.invalidate_pattern(pattern)
 
 
-def get_cache_stats() -> Dict[str, Any]:
+def get_cache_stats() -> dict[str, Any]:
     """Get cache statistics"""
     return cache_manager.get_cache_stats()
 
 
 # Cache decorators for easy function caching
-def cache_result(cache_type: str, ttl: Optional[int] = None, key_func=None):
+def cache_result(cache_type: str, ttl: int | None = None, key_func=None):
     """Decorator to cache function results"""
 
     def decorator(func):

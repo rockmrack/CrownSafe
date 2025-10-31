@@ -4,7 +4,7 @@ import asyncio
 import logging
 import os
 import sys
-from typing import Any, Dict
+from typing import Any
 
 # --- Adjust Python Path ---
 # Add the parent directory (RossNetAgents) to the Python path
@@ -29,7 +29,7 @@ TEST_AGENT_ID = "test_agent_001"
 
 
 # --- Message Handler ---
-async def handle_incoming_message(message: Dict[str, Any]):
+async def handle_incoming_message(message: dict[str, Any]):
     """
     Callback function to process messages received from the MCP Router.
     """

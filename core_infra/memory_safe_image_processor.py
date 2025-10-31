@@ -11,7 +11,7 @@ import tempfile
 import weakref
 from contextlib import contextmanager
 from functools import wraps
-from typing import Any, Dict, Optional
+from typing import Any
 
 import psutil
 
@@ -125,7 +125,7 @@ class MemorySafeImageProcessor:
             gc.collect()
 
     @log_memory
-    def process_with_pil(self, image_bytes: bytes) -> Optional[Dict[str, Any]]:
+    def process_with_pil(self, image_bytes: bytes) -> dict[str, Any] | None:
         """
         Process image with PIL, ensuring memory cleanup
         """
@@ -161,7 +161,7 @@ class MemorySafeImageProcessor:
             gc.collect()
 
     @log_memory
-    def extract_text_ocr(self, image_path: str) -> Optional[str]:
+    def extract_text_ocr(self, image_path: str) -> str | None:
         """
         Extract text using OCR with memory management
         """
@@ -375,7 +375,7 @@ class ResourceMonitor:
         self.alert_memory_mb = alert_memory_mb
         self.alert_cpu_percent = alert_cpu_percent
 
-    def check_resources(self) -> Dict[str, Any]:
+    def check_resources(self) -> dict[str, Any]:
         """Check current resource usage"""
         process = psutil.Process()
 

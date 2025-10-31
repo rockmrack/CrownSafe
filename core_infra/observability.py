@@ -11,7 +11,6 @@ Features:
 """
 
 import logging
-from typing import Dict
 
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
@@ -108,7 +107,7 @@ class ObservabilityManager:
         except Exception as e:
             logger.error(f"Requests instrumentation failed: {e}")
 
-    def create_span(self, name: str, attributes: Dict[str, str] = None):
+    def create_span(self, name: str, attributes: dict[str, str] = None):
         """
         Create a custom span for tracing
 
@@ -166,7 +165,7 @@ class AzureMonitorIntegration:
         except Exception as e:
             logger.error(f"Azure Monitor initialization failed: {e}")
 
-    def log_custom_event(self, event_name: str, properties: Dict = None):
+    def log_custom_event(self, event_name: str, properties: dict = None):
         """
         Log custom event to Application Insights
 
@@ -180,7 +179,7 @@ class AzureMonitorIntegration:
         except Exception as e:
             logger.error(f"Failed to log custom event: {e}")
 
-    def log_custom_metric(self, metric_name: str, value: float, properties: Dict = None):
+    def log_custom_metric(self, metric_name: str, value: float, properties: dict = None):
         """
         Log custom metric to Application Insights
 

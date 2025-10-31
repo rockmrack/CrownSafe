@@ -6,7 +6,7 @@ Generate comprehensive safety summaries for users
 import logging
 import uuid
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -36,7 +36,7 @@ class SafetyReportRequest(BaseModel):
     )
     include_details: bool = Field(True, description="Include detailed product information")
     generate_pdf: bool = Field(True, description="Generate PDF version")
-    nursery_id: Optional[int] = Field(None, description="Nursery ID for nursery-specific reports")
+    nursery_id: int | None = Field(None, description="Nursery ID for nursery-specific reports")
 
 
 class SafetySummaryStats(BaseModel):
@@ -48,8 +48,8 @@ class SafetySummaryStats(BaseModel):
     high_risk_products: int
     medium_risk_products: int
     low_risk_products: int
-    most_scanned_category: Optional[str]
-    most_scanned_brand: Optional[str]
+    most_scanned_category: str | None
+    most_scanned_brand: str | None
     safety_score: float  # 0-100 score based on scan results
 
 
@@ -57,8 +57,8 @@ class ProductScanSummary(BaseModel):
     """Summary of a scanned product"""
 
     product_name: str
-    brand: Optional[str]
-    barcode: Optional[str]
+    brand: str | None
+    barcode: str | None
     scan_count: int
     first_scanned: datetime
     last_scanned: datetime
@@ -74,7 +74,7 @@ class NurseryProductCategory(BaseModel):
     product_count: int
     high_risk_count: int
     recall_count: int
-    products: List[ProductScanSummary]
+    products: list[ProductScanSummary]
 
 
 class NurseryReportStats(BaseModel):
@@ -91,7 +91,7 @@ class NurseryReportStats(BaseModel):
     recalls_found: int
     expired_products: int
     compliance_score: float  # 0-100 score for overall nursery safety
-    recommendations: List[str]
+    recommendations: list[str]
 
 
 class SafetyReportResponse(BaseModel):
@@ -103,8 +103,8 @@ class SafetyReportResponse(BaseModel):
     period_start: datetime
     period_end: datetime
     statistics: SafetySummaryStats
-    products: List[ProductScanSummary]
-    pdf_url: Optional[str]
+    products: list[ProductScanSummary]
+    pdf_url: str | None
     message: str
 
 
@@ -599,7 +599,7 @@ async def get_report_details(report_id: str, db: Session = Depends(get_db)) -> A
 
 
 @safety_reports_router.post("/track-scan", response_model=ApiResponse)
-async def track_scan(scan_data: Dict[str, Any], db: Session = Depends(get_db)) -> ApiResponse:
+async def track_scan(scan_data: dict[str, Any], db: Session = Depends(get_db)) -> ApiResponse:
     """
     Track a product scan in user's history
     Called after each scan to build history for reports

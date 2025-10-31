@@ -7,7 +7,7 @@ Tests all the newly added features to ensure they work correctly
 import os
 import sys
 import time
-from typing import Any, Dict
+from typing import Any
 
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -31,7 +31,7 @@ def print_test(name: str, passed: bool, details: str = ""):
         print(f"    {details}")
 
 
-def register_user() -> Dict[str, Any]:
+def register_user() -> dict[str, Any]:
     """Register a test user"""
     response = client.post(
         "/api/v1/auth/register",
@@ -47,7 +47,7 @@ def login_user() -> str:
     return data.get("access_token", "")
 
 
-def get_headers(token: str) -> Dict[str, str]:
+def get_headers(token: str) -> dict[str, str]:
     """Get authorization headers"""
     return {"Authorization": f"Bearer {token}"}
 

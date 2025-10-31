@@ -4,7 +4,7 @@ Enhanced Notification Endpoints - Push notifications, history, and device manage
 
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlalchemy import (
@@ -106,18 +106,18 @@ class RegisterDeviceRequest(AppModel):
 
     token: str
     platform: str  # ios, android, web
-    device_name: Optional[str] = None
-    device_model: Optional[str] = None
-    app_version: Optional[str] = None
+    device_name: str | None = None
+    device_model: str | None = None
+    app_version: str | None = None
 
 
 class NotificationPreferences(AppModel):
     """User notification preferences"""
 
     quiet_hours_enabled: bool = False
-    quiet_hours_start: Optional[str] = None  # HH:MM
-    quiet_hours_end: Optional[str] = None  # HH:MM
-    notification_types: Dict[str, bool] = {
+    quiet_hours_start: str | None = None  # HH:MM
+    quiet_hours_end: str | None = None  # HH:MM
+    notification_types: dict[str, bool] = {
         "recalls": True,
         "safety_alerts": True,
         "product_updates": True,
@@ -134,10 +134,10 @@ class NotificationItem(AppModel):
     title: str
     body: str
     sent_at: datetime
-    read_at: Optional[datetime] = None
+    read_at: datetime | None = None
     status: str
     priority: str
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
 
 
 class SendNotificationRequest(AppModel):
@@ -147,7 +147,7 @@ class SendNotificationRequest(AppModel):
     body: str
     type: str = "alert"
     priority: str = "normal"
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
 
 
 # Firebase integration
@@ -186,7 +186,7 @@ async def send_push_notification(
     token: str,
     title: str,
     body: str,
-    data: Optional[Dict] = None,
+    data: dict | None = None,
     platform: str = "android",
 ) -> bool:
     """Send push notification via Firebase"""
@@ -493,7 +493,7 @@ async def get_registered_devices(current_user=Depends(get_current_active_user), 
 async def get_notification_history(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    type: Optional[str] = None,
+    type: str | None = None,
     unread_only: bool = False,
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),

@@ -4,7 +4,7 @@
 
 import logging
 import time
-from typing import Any, Dict
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class MobileHotPath:
             "aggressive_caching": True,  # Use all caching layers
         }
 
-    async def ultra_fast_barcode_check(self, barcode: str, user_id: int) -> Dict[str, Any]:
+    async def ultra_fast_barcode_check(self, barcode: str, user_id: int) -> dict[str, Any]:
         """
         Ultra-fast barcode check optimized for <100ms mobile responses
         """
@@ -172,7 +172,7 @@ class MobileHotPath:
             self.logger.error(f"Popular product pre-computation failed (deprecated): {e}")
             return 0
 
-    def get_hot_cache_stats(self) -> Dict[str, Any]:
+    def get_hot_cache_stats(self) -> dict[str, Any]:
         """
         Get hot cache performance statistics
         """
@@ -198,7 +198,7 @@ mobile_hot_path = MobileHotPath()
 
 
 # Convenience functions
-async def ultra_fast_check(barcode: str, user_id: int) -> Dict[str, Any]:
+async def ultra_fast_check(barcode: str, user_id: int) -> dict[str, Any]:
     """Ultra-fast mobile barcode check"""
     return await mobile_hot_path.ultra_fast_barcode_check(barcode, user_id)
 
@@ -208,6 +208,6 @@ async def precompute_popular() -> int:
     return await mobile_hot_path.precompute_popular_products()
 
 
-def get_mobile_stats() -> Dict[str, Any]:
+def get_mobile_stats() -> dict[str, Any]:
     """Get mobile hot path statistics"""
     return mobile_hot_path.get_hot_cache_stats()

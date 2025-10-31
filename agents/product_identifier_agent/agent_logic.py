@@ -7,7 +7,7 @@
 import json
 import logging
 import os
-from typing import Any, Dict, Optional
+from typing import Any
 
 import aiohttp
 
@@ -26,7 +26,7 @@ class ProductIdentifierLogic:
     Falls back to the in-memory RecallDB if the API call fails (for test scenarios).
     """
 
-    def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
 
@@ -46,7 +46,7 @@ class ProductIdentifierLogic:
                 f"ProductIdentifierLogic initialized for agent {self.agent_id}. UPCitemdb trial endpoint disabled."
             )
 
-    async def _lookup_barcode_api(self, barcode: str) -> Optional[Dict[str, Any]]:
+    async def _lookup_barcode_api(self, barcode: str) -> dict[str, Any] | None:
         """
         Performs a live lookup of a barcode using the UPCitemdb free trial API.
         Returns product details dict on success, or None on any failure.
@@ -97,7 +97,7 @@ class ProductIdentifierLogic:
             self.logger.error(f"Unexpected error in UPC lookup for {barcode}: {e}", exc_info=True)
             return None
 
-    async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
         """
         Main entry point. Expects inputs {"barcode": str, "image_url": Optional[str]}.
         Returns a dict with "status" and either "result" or "error".

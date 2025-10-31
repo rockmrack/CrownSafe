@@ -12,7 +12,6 @@ Features:
 
 import logging
 import time
-from typing import Dict, List
 
 from fastapi import Response
 from prometheus_client import (
@@ -103,7 +102,7 @@ class MonitoringManager:
         self.start_time = time.time()
         self.alert_rules = self._define_alert_rules()
 
-    def _define_alert_rules(self) -> List[Dict]:
+    def _define_alert_rules(self) -> list[dict]:
         """
         Define alert rules and thresholds
         """
@@ -211,13 +210,13 @@ class MonitoringManager:
         """
         return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
-    def get_alert_rules(self) -> List[Dict]:
+    def get_alert_rules(self) -> list[dict]:
         """
         Get all alert rules
         """
         return self.alert_rules
 
-    def check_alerts(self) -> List[Dict]:
+    def check_alerts(self) -> list[dict]:
         """
         Check if any alerts should be triggered
 

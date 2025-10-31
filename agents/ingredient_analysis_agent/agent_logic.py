@@ -7,7 +7,6 @@ to provide personalized safety and compatibility assessments.
 """
 
 import logging
-from typing import Dict, List, Optional
 
 from core.crown_score_engine import (
     CrownScoreEngine,
@@ -40,11 +39,11 @@ class IngredientAnalysisAgent:
 
     async def analyze_product(
         self,
-        ingredients: List[str],
-        hair_profile: Dict,
+        ingredients: list[str],
+        hair_profile: dict,
         product_type: str,
-        ph_level: Optional[float] = None,
-    ) -> Dict:
+        ph_level: float | None = None,
+    ) -> dict:
         """
         Analyze a hair product's ingredients
 
@@ -166,7 +165,7 @@ class IngredientAnalysisAgent:
             recommendation += "This product could damage your hair."
             return recommendation
 
-    async def find_alternatives(self, product_name: str, category: str, min_crown_score: int = 75) -> List[Dict]:
+    async def find_alternatives(self, product_name: str, category: str, min_crown_score: int = 75) -> list[dict]:
         """
         Find safer alternative products
 

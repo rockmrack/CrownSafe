@@ -6,7 +6,7 @@ import json
 import os
 import sys
 import time
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 # --- Import your agent logic ---
 from agents.chat.chat_agent.agent_logic import ChatAgentLogic
@@ -23,9 +23,9 @@ def get_llm_client(dummy: bool = False):
                 model: str,
                 system: str,
                 user: str,
-                response_schema: Dict[str, Any],
+                response_schema: dict[str, Any],
                 timeout: float = 1.5,
-            ) -> Dict[str, Any]:
+            ) -> dict[str, Any]:
                 # Extremely basic deterministic synthesis from the scan_data embedded in prompt
                 # Extract scan_data dict from the prompt (hacky but good enough for CI mode)
                 sd_start = user.find("scan_data JSON:")
@@ -83,8 +83,8 @@ def get_llm_client(dummy: bool = False):
             return get_llm_client(dummy=True)
 
 
-def load_cases(path: str, limit: int | None) -> List[Dict[str, Any]]:
-    cases: List[Dict[str, Any]] = []
+def load_cases(path: str, limit: int | None) -> list[dict[str, Any]]:
+    cases: list[dict[str, Any]] = []
     with open(path, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
@@ -96,9 +96,9 @@ def load_cases(path: str, limit: int | None) -> List[Dict[str, Any]]:
     return cases
 
 
-def check_case(resp: Dict[str, Any], expect: Dict[str, Any]) -> Tuple[bool, List[str]]:
+def check_case(resp: dict[str, Any], expect: dict[str, Any]) -> tuple[bool, list[str]]:
     ok = True
-    errors: List[str] = []
+    errors: list[str] = []
 
     # Schema minimal checks
     for k in ("summary", "disclaimer", "reasons", "checks", "flags"):
@@ -156,7 +156,7 @@ def main():
 
     total = len(cases)
     passed = 0
-    results: List[Dict[str, Any]] = []
+    results: list[dict[str, Any]] = []
 
     t_start = time.time()
     for c in cases:

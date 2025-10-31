@@ -9,7 +9,6 @@ Last Updated: October 24, 2025
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -86,9 +85,9 @@ class HairProfile:
 
     hair_type: HairType
     porosity: Porosity
-    hair_state: List[HairState]
-    hair_goals: List[HairGoal]
-    sensitivities: List[str]  # e.g., ["protein-sensitive", "coconut-sensitive"]
+    hair_state: list[HairState]
+    hair_goals: list[HairGoal]
+    sensitivities: list[str]  # e.g., ["protein-sensitive", "coconut-sensitive"]
 
 
 @dataclass
@@ -96,13 +95,13 @@ class Ingredient:
     """Individual ingredient data"""
 
     name: str
-    common_names: List[str]
+    common_names: list[str]
     category: str  # "Alcohol", "Sulfate", "Butter", "Oil", "Protein", etc.
     base_score: int  # -50 to +20
     safety_level: str  # "Safe", "Caution", "Avoid", "Dangerous"
-    effects: List[str]  # ["Moisturizing", "Drying", "Protein", etc.]
-    porosity_adjustments: Dict[Porosity, int]  # Additional points by porosity
-    curl_pattern_adjustments: Dict[HairType, int]  # Additional points by curl type
+    effects: list[str]  # ["Moisturizing", "Drying", "Protein", etc.]
+    porosity_adjustments: dict[Porosity, int]  # Additional points by porosity
+    curl_pattern_adjustments: dict[HairType, int]  # Additional points by curl type
 
 
 @dataclass
@@ -119,9 +118,9 @@ class ScoreBreakdown:
     product_type_modifiers: int = 0
     interaction_penalties: int = 0
     final_score: int = 0
-    red_flags: Optional[List[str]] = None
-    good_ingredients: Optional[List[str]] = None
-    warnings: Optional[List[str]] = None
+    red_flags: list[str] | None = None
+    good_ingredients: list[str] | None = None
+    warnings: list[str] | None = None
 
     def __post_init__(self):
         if self.red_flags is None:
@@ -438,7 +437,7 @@ class IngredientDatabase:
     }
 
     @classmethod
-    def get_all_ingredients(cls) -> Dict[str, Ingredient]:
+    def get_all_ingredients(cls) -> dict[str, Ingredient]:
         """Combine all ingredient databases"""
         all_ingredients = {}
         all_ingredients.update(cls.SEVERE_HAZARDS)
@@ -450,7 +449,7 @@ class IngredientDatabase:
         return all_ingredients
 
     @classmethod
-    def find_ingredient(cls, ingredient_name: str) -> Optional[Ingredient]:
+    def find_ingredient(cls, ingredient_name: str) -> Ingredient | None:
         """Find ingredient by name or common name (case-insensitive)"""
         ingredient_name_lower = ingredient_name.lower().strip()
         all_ingredients = cls.get_all_ingredients()
@@ -485,11 +484,11 @@ class CrownScoreEngine:
 
     def calculate_crown_score(
         self,
-        ingredients: List[str],
+        ingredients: list[str],
         hair_profile: HairProfile,
         product_type: ProductType,
-        ph_level: Optional[float] = None,
-    ) -> Tuple[int, ScoreBreakdown, VerdictLevel]:
+        ph_level: float | None = None,
+    ) -> tuple[int, ScoreBreakdown, VerdictLevel]:
         """
         Calculate Crown Score for a product
 
@@ -591,7 +590,7 @@ class CrownScoreEngine:
         logger.info(f"Crown Score calculated: {breakdown.final_score}/100 - {verdict.value}")
         return breakdown.final_score, breakdown, verdict
 
-    def _calculate_goal_bonuses(self, ingredient: Ingredient, goals: List[HairGoal]) -> int:
+    def _calculate_goal_bonuses(self, ingredient: Ingredient, goals: list[HairGoal]) -> int:
         """Calculate bonuses based on user's hair goals"""
         bonus = 0
 
@@ -644,7 +643,7 @@ class CrownScoreEngine:
             return -15  # Damaging
 
     def _calculate_product_type_modifiers(
-        self, ingredients: List[str], product_type: ProductType, hair_profile: HairProfile
+        self, ingredients: list[str], product_type: ProductType, hair_profile: HairProfile
     ) -> int:
         """Product-type specific score adjustments"""
         modifier = 0
@@ -684,7 +683,7 @@ class CrownScoreEngine:
 
         return modifier
 
-    def _detect_dangerous_combinations(self, ingredients: List[str]) -> int:
+    def _detect_dangerous_combinations(self, ingredients: list[str]) -> int:
         """Detect dangerous ingredient combinations"""
         penalty = 0
         ingredient_names_lower = [i.lower() for i in ingredients]

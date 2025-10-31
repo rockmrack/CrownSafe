@@ -2,7 +2,7 @@
 import asyncio
 import logging
 import os
-from typing import Any, Dict, Optional
+from typing import Any
 
 try:
     import firebase_admin
@@ -42,7 +42,7 @@ class PushNotificationAgentLogic:
     Handles sending push notifications using Firebase Cloud Messaging (HTTP v1 via Admin SDK).
     """
 
-    def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
         self.logger.info(f"PushNotificationAgentLogic initialized for agent {self.agent_id}.")
@@ -52,8 +52,8 @@ class PushNotificationAgentLogic:
         device_token: str,
         title: str,
         body: str,
-        data: Optional[Dict[str, str]] = None,
-    ) -> Dict[str, Any]:
+        data: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
         """
         Sends a single push notification to a device using Firebase Admin SDK.
         """
@@ -82,7 +82,7 @@ class PushNotificationAgentLogic:
             self.logger.error(f"Failed to send push notification: {e}", exc_info=True)
             return {"status": "error", "message": str(e)}
 
-    async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
         """
         Main entry point: processes inputs and sends notification.
         """

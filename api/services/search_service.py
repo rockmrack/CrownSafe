@@ -4,7 +4,7 @@ Enhanced Search Service with pg_trgm fuzzy matching, keyword AND logic, and dete
 
 import logging
 from datetime import date
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -27,21 +27,21 @@ class SearchService:
     def build_search_query(
         self,
         # Text search
-        query: Optional[str] = None,
-        product: Optional[str] = None,
-        id: Optional[str] = None,
-        keywords: Optional[List[str]] = None,
+        query: str | None = None,
+        product: str | None = None,
+        id: str | None = None,
+        keywords: list[str] | None = None,
         # Filters
-        agencies: Optional[List[str]] = None,
-        severity: Optional[str] = None,
-        risk_category: Optional[str] = None,
-        date_from: Optional[date] = None,
-        date_to: Optional[date] = None,
+        agencies: list[str] | None = None,
+        severity: str | None = None,
+        risk_category: str | None = None,
+        date_from: date | None = None,
+        date_to: date | None = None,
         # Pagination
         limit: int = 20,
         offset: int = 0,
-        cursor_data: Optional[Dict[str, Any]] = None,
-    ) -> Tuple[str, Dict[str, Any], bool]:
+        cursor_data: dict[str, Any] | None = None,
+    ) -> tuple[str, dict[str, Any], bool]:
         """
         Build optimized SQL query using pg_trgm for fuzzy search
 
@@ -271,19 +271,19 @@ class SearchService:
 
     def search(
         self,
-        query: Optional[str] = None,
-        product: Optional[str] = None,
-        id: Optional[str] = None,
-        keywords: Optional[List[str]] = None,
-        agencies: Optional[List[str]] = None,
-        severity: Optional[str] = None,
-        risk_category: Optional[str] = None,
-        date_from: Optional[date] = None,
-        date_to: Optional[date] = None,
+        query: str | None = None,
+        product: str | None = None,
+        id: str | None = None,
+        keywords: list[str] | None = None,
+        agencies: list[str] | None = None,
+        severity: str | None = None,
+        risk_category: str | None = None,
+        date_from: date | None = None,
+        date_to: date | None = None,
         limit: int = 20,
-        offset: Optional[int] = None,
-        cursor: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        offset: int | None = None,
+        cursor: str | None = None,
+    ) -> dict[str, Any]:
         """
         Execute search with fuzzy matching and return results
         """

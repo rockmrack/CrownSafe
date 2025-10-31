@@ -5,7 +5,7 @@ Scan hair product barcodes and analyze ingredients for 3C-4C hair safety
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field
@@ -42,7 +42,7 @@ class IngredientInfo(BaseModel):
     category: str
     safety_level: str  # safe, caution, harmful
     impact_score: float
-    description: Optional[str] = None
+    description: str | None = None
 
 
 class CrownScoreBreakdown(BaseModel):
@@ -50,8 +50,8 @@ class CrownScoreBreakdown(BaseModel):
 
     total_score: int = Field(..., ge=0, le=100, description="Total Crown Score (0-100)")
     verdict: str = Field(..., description="UNSAFE, USE_WITH_CAUTION, SAFE, EXCELLENT_MATCH")
-    harmful_ingredients: List[IngredientInfo] = Field(default_factory=list)
-    beneficial_ingredients: List[IngredientInfo] = Field(default_factory=list)
+    harmful_ingredients: list[IngredientInfo] = Field(default_factory=list)
+    beneficial_ingredients: list[IngredientInfo] = Field(default_factory=list)
     porosity_match: float = Field(..., description="Porosity compatibility score")
     curl_pattern_match: float = Field(..., description="Curl pattern compatibility")
     hair_goal_alignment: float = Field(..., description="Hair goal alignment score")
@@ -65,10 +65,10 @@ class ProductInfo(BaseModel):
     product_name: str
     brand: str
     upc_barcode: str
-    category: Optional[str] = None
-    ingredients_list: List[str]
-    product_image_url: Optional[str] = None
-    manufacturer: Optional[str] = None
+    category: str | None = None
+    ingredients_list: list[str]
+    product_image_url: str | None = None
+    manufacturer: str | None = None
 
 
 class BarcodeScanResponse(BaseModel):
@@ -78,8 +78,8 @@ class BarcodeScanResponse(BaseModel):
     scan_id: str = Field(..., description="Unique scan identifier")
     product: ProductInfo
     crown_score: CrownScoreBreakdown
-    recommendations: List[str] = Field(default_factory=list, description="Personalized recommendations")
-    similar_products: List[Dict[str, Any]] = Field(
+    recommendations: list[str] = Field(default_factory=list, description="Personalized recommendations")
+    similar_products: list[dict[str, Any]] = Field(
         default_factory=list, description="Better alternatives if score is low"
     )
     scan_timestamp: str
@@ -89,13 +89,13 @@ class ApiResponse(BaseModel):
     """Standard API response wrapper"""
 
     success: bool
-    data: Optional[Any] = None
-    error: Optional[str] = None
-    message: Optional[str] = None
+    data: Any | None = None
+    error: str | None = None
+    message: str | None = None
 
 
 # Helper Functions
-def lookup_product_in_database(barcode: str, db: Session) -> Optional[HairProductModel]:
+def lookup_product_in_database(barcode: str, db: Session) -> HairProductModel | None:
     """
     Look up hair product by UPC barcode in database
 
@@ -123,7 +123,7 @@ def lookup_product_in_database(barcode: str, db: Session) -> Optional[HairProduc
         return None
 
 
-async def extract_ingredients_from_image(image_data: bytes, product_name: Optional[str] = None) -> List[str]:
+async def extract_ingredients_from_image(image_data: bytes, product_name: str | None = None) -> list[str]:
     """
     Extract ingredient list from product image using OCR
 
@@ -145,8 +145,8 @@ async def extract_ingredients_from_image(image_data: bytes, product_name: Option
 
 
 def calculate_crown_score_from_product(
-    product: HairProductModel, hair_profile: Optional[HairProfileModel]
-) -> Dict[str, Any]:
+    product: HairProductModel, hair_profile: HairProfileModel | None
+) -> dict[str, Any]:
     """
     Calculate Crown Score for a product using user's hair profile
 
@@ -189,7 +189,7 @@ def calculate_crown_score_from_product(
         raise
 
 
-def generate_recommendations(crown_score: int, verdict: str, product: HairProductModel) -> List[str]:
+def generate_recommendations(crown_score: int, verdict: str, product: HairProductModel) -> list[str]:
     """
     Generate personalized recommendations based on Crown Score
 
@@ -224,7 +224,7 @@ def generate_recommendations(crown_score: int, verdict: str, product: HairProduc
     return recommendations
 
 
-def find_similar_products(product: HairProductModel, crown_score: int, db: Session) -> List[Dict[str, Any]]:
+def find_similar_products(product: HairProductModel, crown_score: int, db: Session) -> list[dict[str, Any]]:
     """
     Find similar products with better Crown Scores
 

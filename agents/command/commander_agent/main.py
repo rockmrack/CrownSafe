@@ -8,7 +8,6 @@ import os
 import signal
 import sys
 from pathlib import Path
-from typing import Optional
 
 from core_infra.mcp_client_library.client import MCPClient
 from core_infra.mcp_client_library.models import MCPMessage
@@ -105,8 +104,8 @@ setup_logging()
 logger = logging.getLogger(f"{AGENT_ID}.main")
 
 # Global instances
-mcp_client_instance: Optional[MCPClient] = None
-commander_logic_instance: Optional[CommanderLogic] = None
+mcp_client_instance: MCPClient | None = None
+commander_logic_instance: CommanderLogic | None = None
 shutdown_in_progress = False
 
 
@@ -114,8 +113,8 @@ class CommanderAgentManager:
     """Main agent manager for CommanderAgent"""
 
     def __init__(self):
-        self.mcp_client: Optional[MCPClient] = None
-        self.commander_logic: Optional[CommanderLogic] = None
+        self.mcp_client: MCPClient | None = None
+        self.commander_logic: CommanderLogic | None = None
         self.stop_event = asyncio.Event()
         self.shutdown_complete = False
 

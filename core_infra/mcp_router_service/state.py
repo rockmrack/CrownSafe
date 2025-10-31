@@ -2,7 +2,7 @@
 # CORRECTED: Fixed return values for connection management functions
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 try:
     from .config import logger
@@ -15,10 +15,10 @@ except ImportError:
     logger.warning("Could not import logger from .config, using fallback basicConfig.")
 
 # --- State Variables ---
-active_connections: Dict[str, Optional[Any]] = {}
+active_connections: dict[str, Any | None] = {}
 logger.info("State: In-memory active connections dictionary initialized.")
 
-active_workflows: Dict[str, Any] = {}
+active_workflows: dict[str, Any] = {}
 logger.info("State: In-memory active workflows dictionary initialized.")
 
 # --- Connection Management Functions ---
@@ -65,7 +65,7 @@ def remove_connection(agent_id: str) -> bool:
         return False
 
 
-def get_connection(agent_id: str) -> Optional[Any]:
+def get_connection(agent_id: str) -> Any | None:
     """Retrieves a WebSocket connection by agent_id."""
     if not isinstance(agent_id, str) or not agent_id:
         logger.error("State Error: get_connection called with invalid agent_id.")
@@ -74,7 +74,7 @@ def get_connection(agent_id: str) -> Optional[Any]:
     return active_connections.get(agent_id)
 
 
-def get_all_connections() -> Dict[str, Optional[Any]]:
+def get_all_connections() -> dict[str, Any | None]:
     """Returns the dictionary of all active connections."""
     logger.debug("State: Getting all active connections.")
     return active_connections
@@ -120,7 +120,7 @@ def update_workflow(workflow_id: str, updated_state: Any):
         logger.warning(f"State: Attempted to update non-existent workflow '{workflow_id}'.")
 
 
-def get_workflow(workflow_id: str) -> Optional[Any]:
+def get_workflow(workflow_id: str) -> Any | None:
     """Retrieves a workflow state."""
     if not isinstance(workflow_id, str) or not workflow_id:
         logger.error("State Error: get_workflow called with invalid workflow_id.")

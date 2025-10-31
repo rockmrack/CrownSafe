@@ -4,7 +4,6 @@ Handles environment-specific configuration with validation
 """
 
 import logging
-from typing import Optional
 
 try:
     from pydantic_settings import BaseSettings
@@ -21,12 +20,12 @@ class Settings(BaseSettings):
     is_production: bool = Field(default=False, env="IS_PRODUCTION")
 
     # Database
-    database_url: Optional[str] = Field(default=None, env="DATABASE_URL")
-    db_username: Optional[str] = Field(default=None, env="DB_USERNAME")
-    db_password: Optional[str] = Field(default=None, env="DB_PASSWORD")
-    db_host: Optional[str] = Field(default=None, env="DB_HOST")
-    db_port: Optional[int] = Field(default=None, env="DB_PORT")
-    db_name: Optional[str] = Field(default=None, env="DB_NAME")
+    database_url: str | None = Field(default=None, env="DATABASE_URL")
+    db_username: str | None = Field(default=None, env="DB_USERNAME")
+    db_password: str | None = Field(default=None, env="DB_PASSWORD")
+    db_host: str | None = Field(default=None, env="DB_HOST")
+    db_port: int | None = Field(default=None, env="DB_PORT")
+    db_name: str | None = Field(default=None, env="DB_NAME")
 
     # API
     api_host: str = Field(default="0.0.0.0", env="API_HOST")
@@ -34,7 +33,7 @@ class Settings(BaseSettings):
 
     # Security
     secret_key: str = Field(default="dev-secret-key", env="SECRET_KEY")
-    openai_api_key: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
+    openai_api_key: str | None = Field(default=None, env="OPENAI_API_KEY")
 
     # Features
     enable_agents: bool = Field(default=True, env="ENABLE_AGENTS")
@@ -127,7 +126,7 @@ class Settings(BaseSettings):
 
 
 # Global settings instance
-_settings: Optional[Settings] = None
+_settings: Settings | None = None
 
 
 def get_config() -> Settings:

@@ -10,7 +10,7 @@ import traceback
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Pydantic models for plan validation and structure.
 try:
@@ -22,9 +22,9 @@ try:
         step_id: str
         task_description: str
         agent_capability_required: str
-        target_agent_type: Optional[str] = None  # Added to match your template
-        inputs: Dict[str, Any]
-        dependencies: List[str] = Field(default_factory=list)
+        target_agent_type: str | None = None  # Added to match your template
+        inputs: dict[str, Any]
+        dependencies: list[str] = Field(default_factory=list)
         priority: str = "medium"
 
         @field_validator("agent_capability_required")
@@ -51,7 +51,7 @@ try:
         # These fields are no longer needed at the top level as they are in the inputs
         # product_identifier_type: str
         # product_identifier_value: str
-        steps: List[PlanStep]
+        steps: list[PlanStep]
         template_name: str
         created_timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -62,7 +62,7 @@ except ImportError:
     PlanStep = None
 
 
-def substitute_placeholders(obj: Any, params: Dict[str, Any]) -> Any:
+def substitute_placeholders(obj: Any, params: dict[str, Any]) -> Any:
     """
     Recursively substitutes placeholders like {{{key}}} in a nested object.
     UPDATED to handle triple-brace syntax and None values properly.
@@ -98,7 +98,7 @@ class BabyShieldPlannerLogic:
     "Safety Check" workflow by loading and populating a predefined JSON template.
     """
 
-    def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
         """Initializes the planner."""
         self.agent_id = agent_id
         self.logger = logger_instance or logging.getLogger(__name__)
@@ -128,7 +128,7 @@ class BabyShieldPlannerLogic:
             except Exception as e:
                 self.logger.error(f"Failed to load template {template_file}: {e}")
 
-    def _generate_plan_from_template(self, template_name: str, task_payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _generate_plan_from_template(self, template_name: str, task_payload: dict[str, Any]) -> dict[str, Any]:
         """
         Generates a structured plan by loading a JSON template and substituting placeholders.
         """
@@ -214,7 +214,7 @@ class BabyShieldPlannerLogic:
             self.logger.debug(f"Data that failed validation: {final_plan_data}")
             raise
 
-    def process_task(self, task_data: Dict[str, Any]) -> Dict[str, Any]:
+    def process_task(self, task_data: dict[str, Any]) -> dict[str, Any]:
         """
         Main entry point for the agent. It receives a task and returns a completed plan.
         """

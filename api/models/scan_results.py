@@ -5,7 +5,7 @@ Ensures legally defensible language and transparent reporting
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -64,7 +64,7 @@ class SafetyCheckStatus(BaseModel):
     status: str = Field(..., description="Check completion status")
     agencies_checked: str = Field(..., description="Number and status of agencies checked")
     check_timestamp: datetime = Field(..., description="When the check was performed")
-    database_version: Optional[str] = Field(None, description="Database version used")
+    database_version: str | None = Field(None, description="Database version used")
 
     model_config = {
         "protected_namespaces": (),
@@ -104,17 +104,17 @@ class ScanResultsPage(BaseModel):
     product_summary: ProductSummary
 
     # Barcode detection transparency
-    barcode_detection: Optional[BarcodeDetectionResult] = None
+    barcode_detection: BarcodeDetectionResult | None = None
 
     # Safety check status
     safety_check: SafetyCheckStatus
 
     # Recall details (if any)
-    recalls: List[RecallSummary] = Field(default_factory=list)
+    recalls: list[RecallSummary] = Field(default_factory=list)
     total_recalls: int = Field(0, description="Total number of recalls found")
 
     # Action buttons
-    actions: Dict[str, str] = Field(
+    actions: dict[str, str] = Field(
         default_factory=lambda: {
             "download_pdf": "/api/v1/reports/generate",
             "view_details": "/api/v1/products/details",
@@ -165,9 +165,9 @@ class ScanResultsPage(BaseModel):
 
 
 def create_scan_results(
-    scan_data: Dict[str, Any],
-    recall_check: Optional[Dict[str, Any]] = None,
-    barcode_info: Optional[Dict[str, Any]] = None,
+    scan_data: dict[str, Any],
+    recall_check: dict[str, Any] | None = None,
+    barcode_info: dict[str, Any] | None = None,
 ) -> ScanResultsPage:
     """
     Create a properly formatted scan results page response

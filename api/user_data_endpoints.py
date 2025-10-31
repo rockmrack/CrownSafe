@@ -8,7 +8,7 @@ import json
 import logging
 import uuid
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import (
     APIRouter,
@@ -40,8 +40,8 @@ privacy_router = APIRouter(prefix="/api/v1/user/privacy", tags=["User Privacy"])
 class DataExportRequest(BaseModel):
     """Request for data export"""
 
-    user_id: Optional[str] = Field(None, description="User ID")
-    email: Optional[EmailStr] = Field(None, description="Email for verification")
+    user_id: str | None = Field(None, description="User ID")
+    email: EmailStr | None = Field(None, description="Email for verification")
     format: str = Field("json", pattern="^(json|csv)$", description="Export format")
     include_logs: bool = Field(False, description="Include activity logs")
 
@@ -49,10 +49,10 @@ class DataExportRequest(BaseModel):
 class DataDeletionRequest(BaseModel):
     """Request for data deletion"""
 
-    user_id: Optional[str] = Field(None, description="User ID")
-    email: Optional[EmailStr] = Field(None, description="Email for verification")
+    user_id: str | None = Field(None, description="User ID")
+    email: EmailStr | None = Field(None, description="Email for verification")
     confirm: bool = Field(..., description="Confirmation flag (must be true)")
-    reason: Optional[str] = Field(None, description="Reason for deletion")
+    reason: str | None = Field(None, description="Reason for deletion")
 
 
 class DataOperationResponse(BaseModel):
@@ -62,7 +62,7 @@ class DataOperationResponse(BaseModel):
     request_id: str
     status: str
     message: str
-    estimated_completion: Optional[datetime] = None
+    estimated_completion: datetime | None = None
 
 
 # ========================= HELPER FUNCTIONS =========================
@@ -78,7 +78,7 @@ def hash_email(email: str) -> str:
     return hashlib.sha256(email.lower().strip().encode()).hexdigest()
 
 
-def get_user_data(user_id: str, db: Session) -> Dict[str, Any]:
+def get_user_data(user_id: str, db: Session) -> dict[str, Any]:
     """
     Gather all user data for export
     In production, this would query all tables containing user data
@@ -147,7 +147,7 @@ async def export_user_data(
     export_request: DataExportRequest,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
-    user_id_header: Optional[str] = Header(None, alias="X-User-ID"),
+    user_id_header: str | None = Header(None, alias="X-User-ID"),
 ):
     """
     Export all user data (GDPR Article 20 - Right to Data Portability)
@@ -243,7 +243,7 @@ async def delete_user_data_endpoint(
     deletion_request: DataDeletionRequest,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
-    user_id_header: Optional[str] = Header(None, alias="X-User-ID"),
+    user_id_header: str | None = Header(None, alias="X-User-ID"),
 ):
     """
     Delete all user data (GDPR Article 17 - Right to Erasure)
@@ -375,7 +375,7 @@ async def get_deletion_status(request_id: str):
 @router.get("/download/{request_id}")
 async def download_export(
     request_id: str,
-    format: Optional[str] = "json",
+    format: str | None = "json",
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -426,7 +426,7 @@ async def download_export(
 
 
 @privacy_router.get("/summary")
-async def get_privacy_summary(user_id: Optional[str] = Header(None, alias="X-User-ID")):
+async def get_privacy_summary(user_id: str | None = Header(None, alias="X-User-ID")):
     """
     Get privacy policy summary and user's privacy settings
     """

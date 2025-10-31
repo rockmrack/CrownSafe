@@ -14,7 +14,6 @@ import logging
 import os
 import subprocess
 from datetime import datetime, timedelta
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +26,7 @@ class BackupManager:
 
     def __init__(
         self,
-        database_url: Optional[str] = None,
+        database_url: str | None = None,
         backup_container: str = "crownsafe-backups",
     ):
         """

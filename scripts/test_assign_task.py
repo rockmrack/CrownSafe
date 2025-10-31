@@ -6,7 +6,7 @@ import logging
 import os
 import sys
 import uuid
-from typing import Any, Dict, Optional
+from typing import Any
 
 # --- Adjust Python Path ---
 # Ensure the project root directory (RossNetAgents) is added to the Python path
@@ -51,12 +51,12 @@ TASK_TIMEOUT_SECONDS = 30.0  # How long to wait for the task result
 
 # --- Shared State for Response Handling ---
 task_completion_event = asyncio.Event()
-task_result: Optional[Dict[str, Any]] = None
-task_correlation_id: Optional[str] = None  # Store the correlation ID of the sent task
+task_result: dict[str, Any] | None = None
+task_correlation_id: str | None = None  # Store the correlation ID of the sent task
 
 
 # --- Message Handling for Controller ---
-async def handle_controller_message(message: Dict[str, Any]):
+async def handle_controller_message(message: dict[str, Any]):
     """
     Callback for the controller client to process responses.
     Looks for TASK_COMPLETE or TASK_FAIL related to our sent task

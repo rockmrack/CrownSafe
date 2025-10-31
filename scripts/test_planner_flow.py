@@ -6,7 +6,7 @@ import logging
 import os
 import sys
 import uuid
-from typing import Any, Dict, Optional
+from typing import Any
 
 # --- Adjust Python Path ---
 try:
@@ -46,12 +46,12 @@ TASK_TIMEOUT_SECONDS = 45.0  # Increase timeout slightly for multi-step process
 
 # --- Shared State for Response Handling ---
 task_completion_event = asyncio.Event()
-task_result: Optional[Dict[str, Any]] = None
-task_correlation_id: Optional[str] = None
+task_result: dict[str, Any] | None = None
+task_correlation_id: str | None = None
 
 
 # --- Message Handling for Controller ---
-async def handle_controller_message(message: Dict[str, Any]):
+async def handle_controller_message(message: dict[str, Any]):
     """
     Callback for the controller client to process responses.
     Looks for TASK_COMPLETE or TASK_FAIL from the PlannerAgent.

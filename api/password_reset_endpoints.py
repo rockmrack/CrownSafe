@@ -6,7 +6,6 @@ import hashlib
 import logging
 import secrets
 from datetime import datetime, timedelta
-from typing import Optional
 
 from fastapi import APIRouter, BackgroundTasks, Body, Depends, Query
 from pydantic import EmailStr
@@ -62,10 +61,10 @@ class PasswordResetResponse(AppModel):
     """Password reset response"""
 
     message: str
-    expires_in_minutes: Optional[int] = None
+    expires_in_minutes: int | None = None
 
 
-async def send_reset_email(email: str, token: str, user_name: Optional[str] = None):
+async def send_reset_email(email: str, token: str, user_name: str | None = None):
     """
     Send password reset email
     This is a placeholder - integrate with your email service

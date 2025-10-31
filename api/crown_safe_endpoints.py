@@ -13,7 +13,6 @@ for Black hair types (3C-4C).
 
 import logging
 from datetime import datetime
-from typing import List, Optional
 
 from fastapi import HTTPException
 from pydantic import BaseModel, Field
@@ -38,14 +37,14 @@ class ProductAnalysisRequest(BaseModel):
     product_name: str = Field(
         ..., description="Name of the hair product", example="Shea Moisture Curl Enhancing Smoothie"
     )
-    ingredients: List[str] = Field(
+    ingredients: list[str] = Field(
         ...,
         description="List of ingredients in the product",
         example=["Water", "Butyrospermum Parkii (Shea Butter)", "Cocos Nucifera (Coconut Oil)", "Fragrance"],
     )
-    brand: Optional[str] = Field(None, description="Brand name", example="Shea Moisture")
-    category: Optional[str] = Field(None, description="Product category", example="styling_cream")
-    upc_barcode: Optional[str] = Field(None, description="UPC barcode for product lookup", example="764302215004")
+    brand: str | None = Field(None, description="Brand name", example="Shea Moisture")
+    category: str | None = Field(None, description="Product category", example="styling_cream")
+    upc_barcode: str | None = Field(None, description="UPC barcode for product lookup", example="764302215004")
 
 
 class ProductAnalysisResponse(BaseModel):
@@ -57,8 +56,8 @@ class ProductAnalysisResponse(BaseModel):
     product_name: str = Field(..., description="Analyzed product name")
     breakdown: dict = Field(..., description="Detailed score breakdown")
     recommendations: str = Field(..., description="Personalized recommendations")
-    alternatives: List[dict] = Field(default_factory=list, description="Alternative product suggestions")
-    error: Optional[str] = Field(None, description="Error message if analysis failed")
+    alternatives: list[dict] = Field(default_factory=list, description="Alternative product suggestions")
+    error: str | None = Field(None, description="Error message if analysis failed")
 
 
 class HairProfileRequest(BaseModel):
@@ -67,15 +66,15 @@ class HairProfileRequest(BaseModel):
     user_id: int = Field(..., description="User ID", example=1)
     hair_type: str = Field(..., description="Hair curl pattern", example="4C")
     porosity: str = Field(..., description="Hair porosity level", example="High")
-    hair_state: Optional[dict] = Field(
+    hair_state: dict | None = Field(
         None, description="Current hair state", example={"dryness": True, "breakage": False, "shedding": False}
     )
-    hair_goals: Optional[dict] = Field(
+    hair_goals: dict | None = Field(
         None,
         description="Hair care goals",
         example={"moisture_retention": True, "length_retention": True, "curl_definition": True},
     )
-    sensitivities: Optional[dict] = Field(
+    sensitivities: dict | None = Field(
         None, description="Known ingredient sensitivities", example={"fragrance": True, "sulfates": True}
     )
 
@@ -85,16 +84,16 @@ class HairProfileResponse(BaseModel):
 
     status: str = Field(..., description="Operation status", example="COMPLETED")
     profile: dict = Field(..., description="Hair profile data")
-    error: Optional[str] = Field(None, description="Error message if operation failed")
+    error: str | None = Field(None, description="Error message if operation failed")
 
 
 class ScanHistoryResponse(BaseModel):
     """Response model for scan history"""
 
     status: str = Field(..., description="Operation status", example="COMPLETED")
-    scans: List[dict] = Field(..., description="List of previous product scans")
+    scans: list[dict] = Field(..., description="List of previous product scans")
     total_scans: int = Field(..., description="Total number of scans")
-    error: Optional[str] = Field(None, description="Error message if operation failed")
+    error: str | None = Field(None, description="Error message if operation failed")
 
 
 # ============================================

@@ -3,10 +3,10 @@ Evidence generation utilities for chat responses.
 Provides helper functions to create properly formatted evidence items.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
-def label_to_evidence(evidence_id: str, url: Optional[str] = None) -> List[Dict[str, Any]]:
+def label_to_evidence(evidence_id: str, url: str | None = None) -> list[dict[str, Any]]:
     """
     Generate evidence items for product label information.
 
@@ -20,7 +20,7 @@ def label_to_evidence(evidence_id: str, url: Optional[str] = None) -> List[Dict[
     return [{"type": "label", "source": "Product label", "id": evidence_id, "url": url}]
 
 
-def regulatory_to_evidence(agency: str, title: Optional[str] = None, url: Optional[str] = None) -> List[Dict[str, Any]]:
+def regulatory_to_evidence(agency: str, title: str | None = None, url: str | None = None) -> list[dict[str, Any]]:
     """
     Generate evidence item for regulatory guidance.
 
@@ -35,7 +35,7 @@ def regulatory_to_evidence(agency: str, title: Optional[str] = None, url: Option
     return [{"type": "regulatory", "source": agency, "id": title, "url": url}]
 
 
-def recalls_to_evidence(recalls: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def recalls_to_evidence(recalls: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Convert recall records to evidence items.
 
@@ -58,7 +58,7 @@ def recalls_to_evidence(recalls: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return evidence
 
 
-def datasheet_to_evidence(source: str, product_id: str, url: Optional[str] = None) -> List[Dict[str, Any]]:
+def datasheet_to_evidence(source: str, product_id: str, url: str | None = None) -> list[dict[str, Any]]:
     """
     Generate evidence item for product datasheet.
 
@@ -73,7 +73,7 @@ def datasheet_to_evidence(source: str, product_id: str, url: Optional[str] = Non
     return [{"type": "datasheet", "source": source, "id": product_id, "url": url}]
 
 
-def guideline_to_evidence(organization: str, guideline_name: str, url: Optional[str] = None) -> List[Dict[str, Any]]:
+def guideline_to_evidence(organization: str, guideline_name: str, url: str | None = None) -> list[dict[str, Any]]:
     """
     Generate evidence item for safety guidelines.
 

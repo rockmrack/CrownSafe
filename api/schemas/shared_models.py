@@ -5,7 +5,7 @@ Reduces duplication of model definitions across endpoint files
 
 from datetime import date, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
@@ -94,8 +94,8 @@ class PaginationRequest(BaseModel):
 class DateRangeRequest(BaseModel):
     """Date range filter"""
 
-    date_from: Optional[date] = Field(None, description="Start date (YYYY-MM-DD)")
-    date_to: Optional[date] = Field(None, description="End date (YYYY-MM-DD)")
+    date_from: date | None = Field(None, description="Start date (YYYY-MM-DD)")
+    date_to: date | None = Field(None, description="End date (YYYY-MM-DD)")
 
     @field_validator("date_to")
     @classmethod
@@ -114,7 +114,7 @@ class BarcodeScanRequest(BaseModel):
 
     barcode: str = Field(..., min_length=1, max_length=50, description="Barcode data")
     user_id: int = Field(..., gt=0, description="User ID")
-    barcode_type: Optional[ScanType] = Field(None, description="Type of barcode")
+    barcode_type: ScanType | None = Field(None, description="Type of barcode")
 
     @field_validator("barcode")
     @classmethod
@@ -130,17 +130,17 @@ class BarcodeScanRequest(BaseModel):
 class ProductSearchRequest(BaseModel):
     """Request to search for products/recalls"""
 
-    query: Optional[str] = Field(None, max_length=200, description="Search query")
-    product_name: Optional[str] = Field(None, max_length=500, description="Product name")
-    brand: Optional[str] = Field(None, max_length=200, description="Brand name")
-    model_number: Optional[str] = Field(None, max_length=100, description="Model number")
-    barcode: Optional[str] = Field(None, max_length=50, description="Barcode")
+    query: str | None = Field(None, max_length=200, description="Search query")
+    product_name: str | None = Field(None, max_length=500, description="Product name")
+    brand: str | None = Field(None, max_length=200, description="Brand name")
+    model_number: str | None = Field(None, max_length=100, description="Model number")
+    barcode: str | None = Field(None, max_length=50, description="Barcode")
 
     # Filters
-    risk_level: Optional[RiskLevel] = Field(None, description="Risk level filter")
-    agencies: Optional[List[str]] = Field(None, description="Agency filter")
-    date_from: Optional[date] = Field(None, description="Start date")
-    date_to: Optional[date] = Field(None, description="End date")
+    risk_level: RiskLevel | None = Field(None, description="Risk level filter")
+    agencies: list[str] | None = Field(None, description="Agency filter")
+    date_from: date | None = Field(None, description="Start date")
+    date_to: date | None = Field(None, description="End date")
 
     # Pagination
     limit: int = Field(20, ge=1, le=100)
@@ -181,23 +181,23 @@ class ApiResponse(BaseModel):
     """Standard API response"""
 
     success: bool = Field(..., description="Whether request was successful")
-    data: Optional[Any] = Field(None, description="Response data")
-    error: Optional[str] = Field(None, description="Error message if failed")
-    message: Optional[str] = Field(None, description="Additional message")
+    data: Any | None = Field(None, description="Response data")
+    error: str | None = Field(None, description="Error message if failed")
+    message: str | None = Field(None, description="Additional message")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Response timestamp")
-    trace_id: Optional[str] = Field(None, description="Trace ID for debugging")
+    trace_id: str | None = Field(None, description="Trace ID for debugging")
 
 
 class PaginatedResponse(BaseModel):
     """Paginated API response"""
 
     success: bool = True
-    data: List[Any] = Field(default_factory=list, description="List of items")
+    data: list[Any] = Field(default_factory=list, description="List of items")
     total: int = Field(..., description="Total number of items")
     limit: int = Field(..., description="Items per page")
     offset: int = Field(..., description="Current offset")
     has_more: bool = Field(..., description="Whether more items exist")
-    next_cursor: Optional[str] = Field(None, description="Cursor for next page")
+    next_cursor: str | None = Field(None, description="Cursor for next page")
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -208,7 +208,7 @@ class UserResponse(BaseModel):
     email: str
     created_at: datetime
     is_subscribed: bool = False
-    subscription_tier: Optional[SubscriptionTier] = None
+    subscription_tier: SubscriptionTier | None = None
     email_verified: bool = False
 
 
@@ -218,12 +218,12 @@ class ProductInfo(BaseModel):
     model_config = {"protected_namespaces": ()}
 
     product_name: str
-    brand: Optional[str] = None
-    model_number: Optional[str] = None
-    category: Optional[str] = None
-    manufacturer: Optional[str] = None
-    upc: Optional[str] = None
-    description: Optional[str] = None
+    brand: str | None = None
+    model_number: str | None = None
+    category: str | None = None
+    manufacturer: str | None = None
+    upc: str | None = None
+    description: str | None = None
 
 
 class RecallInfo(BaseModel):
@@ -231,7 +231,7 @@ class RecallInfo(BaseModel):
 
     recall_id: str
     product_name: str
-    brand: Optional[str] = None
+    brand: str | None = None
     hazard: str
     description: str
     recall_date: date
@@ -239,8 +239,8 @@ class RecallInfo(BaseModel):
     country: str
     risk_level: RiskLevel
     status: RecallStatus = RecallStatus.ACTIVE
-    url: Optional[str] = None
-    image_url: Optional[str] = None
+    url: str | None = None
+    image_url: str | None = None
 
 
 class ScanResult(BaseModel):
@@ -254,20 +254,20 @@ class ScanResult(BaseModel):
     timestamp: datetime
 
     # Extracted data
-    product_info: Optional[ProductInfo] = None
+    product_info: ProductInfo | None = None
 
     # Recall check results
     recall_found: bool = False
     recall_count: int = 0
-    recalls: List[RecallInfo] = Field(default_factory=list)
+    recalls: list[RecallInfo] = Field(default_factory=list)
 
     # Risk assessment
     overall_risk: RiskLevel = RiskLevel.UNKNOWN
-    safety_score: Optional[float] = Field(None, ge=0, le=100, description="Safety score (0-100)")
+    safety_score: float | None = Field(None, ge=0, le=100, description="Safety score (0-100)")
 
     # Additional metadata
-    verification_status: Optional[str] = None
-    trace_id: Optional[str] = None
+    verification_status: str | None = None
+    trace_id: str | None = None
 
 
 class NotificationResponse(BaseModel):
@@ -279,8 +279,8 @@ class NotificationResponse(BaseModel):
     message: str
     channel: NotificationChannel
     sent_at: datetime
-    read_at: Optional[datetime] = None
-    data: Optional[Dict[str, Any]] = None
+    read_at: datetime | None = None
+    data: dict[str, Any] | None = None
 
 
 class SubscriptionResponse(BaseModel):
@@ -290,9 +290,9 @@ class SubscriptionResponse(BaseModel):
     tier: SubscriptionTier
     is_active: bool
     start_date: date
-    end_date: Optional[date] = None
+    end_date: date | None = None
     auto_renew: bool = False
-    features: List[str] = Field(default_factory=list)
+    features: list[str] = Field(default_factory=list)
 
 
 # ============================================================================
@@ -306,7 +306,7 @@ class AnalyticsData(BaseModel):
     metric_name: str
     value: float
     timestamp: datetime
-    dimensions: Optional[Dict[str, str]] = None
+    dimensions: dict[str, str] | None = None
 
 
 class ReportMetadata(BaseModel):
@@ -316,7 +316,7 @@ class ReportMetadata(BaseModel):
     report_type: str
     created_at: datetime
     user_id: int
-    file_url: Optional[str] = None
+    file_url: str | None = None
     status: str = "completed"
 
 
@@ -330,8 +330,8 @@ class ErrorDetail(BaseModel):
 
     code: str = Field(..., description="Error code")
     message: str = Field(..., description="Error message")
-    field: Optional[str] = Field(None, description="Field that caused error")
-    details: Optional[Dict[str, Any]] = Field(None, description="Additional details")
+    field: str | None = Field(None, description="Field that caused error")
+    details: dict[str, Any] | None = Field(None, description="Additional details")
 
 
 class ValidationError(BaseModel):
@@ -339,7 +339,7 @@ class ValidationError(BaseModel):
 
     success: bool = False
     error: str = "Validation failed"
-    errors: List[ErrorDetail] = Field(default_factory=list)
+    errors: list[ErrorDetail] = Field(default_factory=list)
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -354,7 +354,7 @@ class HealthCheckResponse(BaseModel):
     status: str = "healthy"
     version: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    checks: Dict[str, str] = Field(
+    checks: dict[str, str] = Field(
         default_factory=lambda: {
             "database": "unknown",
             "cache": "unknown",

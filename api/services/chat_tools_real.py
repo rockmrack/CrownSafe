@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 # Import your existing agents
 from agents.premium.pregnancy_product_safety_agent.main import (
@@ -24,7 +24,7 @@ from api.services.alternatives_provider import get_alternatives
 from api.services.evidence import label_to_evidence, recalls_to_evidence
 
 
-def pregnancy_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
+def pregnancy_adapter(scan: dict[str, Any]) -> dict[str, Any]:
     """
     Adapter for PregnancyProductSafetyAgent that converts between chat format and agent format.
     """
@@ -80,7 +80,7 @@ def pregnancy_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
     return {"pregnancy": out.model_dump()}
 
 
-def allergy_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
+def allergy_adapter(scan: dict[str, Any]) -> dict[str, Any]:
     """
     Adapter for AllergySensitivityAgent that converts between chat format and agent format.
     """
@@ -113,7 +113,7 @@ def allergy_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
     return {"allergy": out.model_dump()}
 
 
-def _check_pregnancy_safety_from_scan(agent: PregnancyProductSafetyAgent, scan: Dict[str, Any]) -> Dict[str, Any]:
+def _check_pregnancy_safety_from_scan(agent: PregnancyProductSafetyAgent, scan: dict[str, Any]) -> dict[str, Any]:
     """
     Helper to check pregnancy safety based on scan data rather than UPC.
     This is a simplified adapter until we have full ingredient database integration.
@@ -182,7 +182,7 @@ def _check_pregnancy_safety_from_scan(agent: PregnancyProductSafetyAgent, scan: 
         return {"status": "error", "message": str(e)}
 
 
-def _check_allergy_from_scan(scan: Dict[str, Any], profile_allergies: list) -> Dict[str, Any]:
+def _check_allergy_from_scan(scan: dict[str, Any], profile_allergies: list) -> dict[str, Any]:
     """
     Helper to check allergies based on scan data and profile.
     This is a simplified adapter until we have full user profile integration.
@@ -261,7 +261,7 @@ def _check_allergy_from_scan(scan: Dict[str, Any], profile_allergies: list) -> D
         return {"status": "error", "message": str(e)}
 
 
-def recall_details_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
+def recall_details_adapter(scan: dict[str, Any]) -> dict[str, Any]:
     """
     Adapter for recall lookups using the enhanced RecallDB.
     REMOVED FOR CROWN SAFE: Recall lookups no longer applicable (hair products, not baby recalls)
@@ -291,7 +291,7 @@ def recall_details_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
     return facts
 
 
-def ingredient_info_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
+def ingredient_info_adapter(scan: dict[str, Any]) -> dict[str, Any]:
     """
     Adapter for ingredient analysis. Uses simple highlighting rules for now.
     """
@@ -357,7 +357,7 @@ AGE_RULES = {
 }
 
 
-def age_check_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
+def age_check_adapter(scan: dict[str, Any]) -> dict[str, Any]:
     """
     Adapter for age appropriateness checks using safety rules.
     """
@@ -401,7 +401,7 @@ def age_check_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
     return out.model_dump()
 
 
-def alternatives_adapter(scan: Dict[str, Any]) -> Dict[str, Any]:
+def alternatives_adapter(scan: dict[str, Any]) -> dict[str, Any]:
     """
     Adapter for alternatives provider that suggests safer product swaps.
     """

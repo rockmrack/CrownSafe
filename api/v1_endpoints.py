@@ -11,7 +11,7 @@ import os
 import sys
 import uuid
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse
@@ -43,7 +43,7 @@ class Agency(BaseModel):
     code: str = Field(..., description="Agency code (e.g., 'FDA')")
     name: str = Field(..., description="Full agency name")
     country: str = Field(..., description="Country or region")
-    website: Optional[str] = Field(None, description="Official website URL")
+    website: str | None = Field(None, description="Official website URL")
 
 
 class SafetyIssue(BaseModel):
@@ -52,28 +52,28 @@ class SafetyIssue(BaseModel):
     id: str = Field(..., description="Unique identifier")
     agencyCode: str = Field(..., description="Agency code")
     title: str = Field(..., description="Recall title")
-    description: Optional[str] = Field(None, description="Detailed description")
-    productName: Optional[str] = Field(None, description="Product name")
-    brand: Optional[str] = Field(None, description="Brand name")
-    model: Optional[str] = Field(None, description="Model number")
-    upc: Optional[str] = Field(None, description="UPC/barcode")
-    hazard: Optional[str] = Field(None, description="Hazard description")
-    riskCategory: Optional[str] = Field(None, description="Risk category")
-    severity: Optional[str] = Field(None, description="Severity level", pattern="^(low|medium|high)$")
-    status: Optional[str] = Field(None, description="Recall status", pattern="^(open|closed)$")
-    imageUrl: Optional[str] = Field(None, description="Product image URL")
-    affectedCountries: Optional[List[str]] = Field(None, description="Affected countries")
-    recallDate: Optional[str] = Field(None, description="Recall date (YYYY-MM-DD)")
-    lastUpdated: Optional[str] = Field(None, description="Last update timestamp (ISO-8601)")
+    description: str | None = Field(None, description="Detailed description")
+    productName: str | None = Field(None, description="Product name")
+    brand: str | None = Field(None, description="Brand name")
+    model: str | None = Field(None, description="Model number")
+    upc: str | None = Field(None, description="UPC/barcode")
+    hazard: str | None = Field(None, description="Hazard description")
+    riskCategory: str | None = Field(None, description="Risk category")
+    severity: str | None = Field(None, description="Severity level", pattern="^(low|medium|high)$")
+    status: str | None = Field(None, description="Recall status", pattern="^(open|closed)$")
+    imageUrl: str | None = Field(None, description="Product image URL")
+    affectedCountries: list[str] | None = Field(None, description="Affected countries")
+    recallDate: str | None = Field(None, description="Recall date (YYYY-MM-DD)")
+    lastUpdated: str | None = Field(None, description="Last update timestamp (ISO-8601)")
     sourceUrl: str = Field(..., description="Source URL for recall details")
 
 
 class SearchResults(BaseModel):
     """Search results with pagination"""
 
-    items: List[SafetyIssue]
-    nextCursor: Optional[str] = None
-    total: Optional[int] = None
+    items: list[SafetyIssue]
+    nextCursor: str | None = None
+    total: int | None = None
 
 
 class SuccessResponse(BaseModel):
@@ -581,7 +581,7 @@ async def search_agency_upstream(agency_code: str, product: str, limit: int = 20
         return get_empty_search_result()
 
 
-async def search_agency_recalls(agency_code: str, product: str, limit: int = 20, cursor: Optional[str] = None) -> dict:
+async def search_agency_recalls(agency_code: str, product: str, limit: int = 20, cursor: str | None = None) -> dict:
     """
     Search recalls for a specific agency with graceful table missing handling
 
@@ -670,7 +670,7 @@ async def search_fda_v1(
     request: Request,
     product: str = Query(..., description="Product search term"),
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
-    cursor: Optional[str] = Query(None, description="Pagination cursor"),
+    cursor: str | None = Query(None, description="Pagination cursor"),
 ):
     """Search FDA recalls (versioned)"""
     trace_id = generate_trace_id()
@@ -709,7 +709,7 @@ async def search_cpsc_v1(
     request: Request,
     product: str = Query(..., description="Product search term"),
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
-    cursor: Optional[str] = Query(None, description="Pagination cursor"),
+    cursor: str | None = Query(None, description="Pagination cursor"),
 ):
     """Search CPSC recalls (versioned)"""
     trace_id = generate_trace_id()
@@ -748,7 +748,7 @@ async def search_eu_safety_gate_v1(
     request: Request,
     product: str = Query(..., description="Product search term"),
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
-    cursor: Optional[str] = Query(None, description="Pagination cursor"),
+    cursor: str | None = Query(None, description="Pagination cursor"),
 ):
     """Search EU Safety Gate (RAPEX) recalls (versioned)"""
     trace_id = generate_trace_id()
@@ -787,7 +787,7 @@ async def search_uk_opss_v1(
     request: Request,
     product: str = Query(..., description="Product search term"),
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
-    cursor: Optional[str] = Query(None, description="Pagination cursor"),
+    cursor: str | None = Query(None, description="Pagination cursor"),
 ):
     """Search UK OPSS recalls (versioned)"""
     trace_id = generate_trace_id()
@@ -835,7 +835,7 @@ async def search_fda_alias(
     request: Request,
     product: str = Query(..., description="Product search term"),
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
-    cursor: Optional[str] = Query(None, description="Pagination cursor"),
+    cursor: str | None = Query(None, description="Pagination cursor"),
 ):
     """Search FDA recalls (unversioned alias - backward compatibility)"""
     return await search_fda_v1(request, product, limit, cursor)
@@ -846,7 +846,7 @@ async def search_cpsc_alias(
     request: Request,
     product: str = Query(..., description="Product search term"),
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
-    cursor: Optional[str] = Query(None, description="Pagination cursor"),
+    cursor: str | None = Query(None, description="Pagination cursor"),
 ):
     """Search CPSC recalls (unversioned alias for backward compatibility)"""
     return await search_cpsc_v1(request, product, limit, cursor)
@@ -857,7 +857,7 @@ async def search_eu_safety_gate_alias(
     request: Request,
     product: str = Query(..., description="Product search term"),
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
-    cursor: Optional[str] = Query(None, description="Pagination cursor"),
+    cursor: str | None = Query(None, description="Pagination cursor"),
 ):
     """Search EU Safety Gate recalls (unversioned alias for backward compatibility)"""
     return await search_eu_safety_gate_v1(request, product, limit, cursor)
@@ -868,7 +868,7 @@ async def search_uk_opss_alias(
     request: Request,
     product: str = Query(..., description="Product search term"),
     limit: int = Query(20, ge=1, le=100, description="Maximum results to return"),
-    cursor: Optional[str] = Query(None, description="Pagination cursor"),
+    cursor: str | None = Query(None, description="Pagination cursor"),
 ):
     """Search UK OPSS recalls (unversioned alias for backward compatibility)"""
     return await search_uk_opss_v1(request, product, limit, cursor)

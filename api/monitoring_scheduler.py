@@ -5,7 +5,7 @@ Product Monitoring Scheduler - 24/7 automated product monitoring
 import asyncio
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import (
     JSON,
@@ -101,10 +101,10 @@ class ProductMonitoringScheduler:
         cls,
         user_id: int,
         product_name: str,
-        brand_name: Optional[str] = None,
-        model_number: Optional[str] = None,
-        upc_code: Optional[str] = None,
-        source_job_id: Optional[str] = None,
+        brand_name: str | None = None,
+        model_number: str | None = None,
+        upc_code: str | None = None,
+        source_job_id: str | None = None,
         check_frequency_hours: int = 24,
     ) -> MonitoredProduct:
         """Add a product to monitoring"""
@@ -152,7 +152,7 @@ class ProductMonitoringScheduler:
             return monitored
 
     @classmethod
-    async def check_product_for_recalls(cls, product: MonitoredProduct, db: Session) -> Dict[str, Any]:
+    async def check_product_for_recalls(cls, product: MonitoredProduct, db: Session) -> dict[str, Any]:
         """Check a single product for recalls"""
         try:
             # REMOVED FOR CROWN SAFE: Recall checking logic gutted
@@ -173,7 +173,7 @@ class ProductMonitoringScheduler:
             return {"product_id": product.id, "error": str(e), "recalls_found": 0}
 
     @classmethod
-    async def send_recall_notification(cls, user_id: int, product: MonitoredProduct, recalls: List[Dict], db: Session):
+    async def send_recall_notification(cls, user_id: int, product: MonitoredProduct, recalls: list[dict], db: Session):
         """Send notification about new recalls"""
         try:
             # Get user's devices
@@ -260,7 +260,7 @@ class ProductMonitoringScheduler:
             return False
 
     @classmethod
-    async def run_monitoring_cycle(cls) -> Dict[str, Any]:
+    async def run_monitoring_cycle(cls) -> dict[str, Any]:
         """Run a complete monitoring cycle"""
         run = None
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import json
 import logging
-from typing import Any, Dict
+from typing import Any
 
 import requests
 
@@ -15,7 +15,7 @@ TEST_BARCODE = "850016249012"
 # --------------------------
 
 
-def validate_response(resp: Dict[str, Any]) -> bool:
+def validate_response(resp: dict[str, Any]) -> bool:
     """
     Validate that:
       - status == COMPLETED

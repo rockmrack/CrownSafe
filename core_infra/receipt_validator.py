@@ -8,7 +8,6 @@ import json
 import logging
 import os
 from datetime import datetime
-from typing import Dict, Optional, Tuple
 
 import httpx
 
@@ -50,7 +49,7 @@ class AppleReceiptValidator:
         self.shared_secret = SubscriptionConfig.APPLE_SHARED_SECRET
         self.verify_url = SubscriptionConfig.get_apple_verify_url()
 
-    async def validate(self, receipt_data: str) -> Tuple[bool, Optional[Dict]]:
+    async def validate(self, receipt_data: str) -> tuple[bool, dict | None]:
         """
         Validate Apple receipt
         Returns: (is_valid, receipt_info)
@@ -99,7 +98,7 @@ class AppleReceiptValidator:
             logger.error(f"Apple receipt validation error: {e}")
             return False, None
 
-    def _parse_receipt(self, receipt_data: Dict) -> Dict:
+    def _parse_receipt(self, receipt_data: dict) -> dict:
         """Parse Apple receipt response"""
         latest_receipt_info = receipt_data.get("latest_receipt_info", [])
 
@@ -177,7 +176,7 @@ class GoogleReceiptValidator:
             logger.error(f"Failed to initialize Google Play service: {e}")
             return None
 
-    async def validate(self, purchase_token: str, product_id: str) -> Tuple[bool, Optional[Dict]]:
+    async def validate(self, purchase_token: str, product_id: str) -> tuple[bool, dict | None]:
         """
         Validate Google Play receipt
         Returns: (is_valid, receipt_info)
@@ -210,7 +209,7 @@ class GoogleReceiptValidator:
             logger.error(f"Google receipt validation error: {e}")
             return False, None
 
-    def _parse_purchase(self, purchase: Dict, product_id: str) -> Dict:
+    def _parse_purchase(self, purchase: dict, product_id: str) -> dict:
         """Parse Google Play purchase response"""
 
         # Parse dates (Google uses milliseconds)
@@ -242,8 +241,8 @@ class ReceiptValidationService:
         user_id: int,
         provider: str,
         receipt_data: str,
-        product_id: Optional[str] = None,
-    ) -> Dict:
+        product_id: str | None = None,
+    ) -> dict:
         """
         Validate receipt and activate subscription
 
@@ -324,8 +323,8 @@ class ReceiptValidationService:
         self,
         user_id: int,
         provider: PaymentProvider,
-        receipt_info: Dict,
-        product_info: Dict,
+        receipt_info: dict,
+        product_info: dict,
         receipt_data: str,
     ) -> Subscription:
         """Create or update subscription in database"""
@@ -386,9 +385,9 @@ class ReceiptValidationService:
         product_id: str,
         receipt_hash: str,
         is_valid: bool,
-        subscription_id: Optional[str] = None,
-        transaction_id: Optional[str] = None,
-        error: Optional[str] = None,
+        subscription_id: str | None = None,
+        transaction_id: str | None = None,
+        error: str | None = None,
     ):
         """Log receipt validation attempt"""
         try:

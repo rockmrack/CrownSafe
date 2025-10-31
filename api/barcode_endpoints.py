@@ -6,7 +6,7 @@ Barcode, QR Code, and DataMatrix scanning with precise recall matching
 import base64
 import logging
 from datetime import date, datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile
 from fastapi.responses import Response
@@ -31,9 +31,9 @@ class ApiResponse(BaseModel):
     """API response wrapper"""
 
     success: bool
-    data: Optional[Any] = None
-    error: Optional[str] = None
-    message: Optional[str] = None
+    data: Any | None = None
+    error: str | None = None
+    message: str | None = None
 
 
 logger = logging.getLogger(__name__)
@@ -53,24 +53,24 @@ class BarcodeScanRequest(BaseModel):
     """Request model for text-based barcode scanning"""
 
     barcode_data: str = Field(..., description="Raw barcode data string")
-    barcode_type: Optional[str] = Field(None, description="Optional barcode type hint")
+    barcode_type: str | None = Field(None, description="Optional barcode type hint")
 
 
 class ImageScanRequest(BaseModel):
     """Request model for image-based scanning"""
 
     image_base64: str = Field(..., description="Base64 encoded image data")
-    scan_mode: Optional[str] = Field("auto", description="Scan mode: auto, qr, datamatrix, barcode")
+    scan_mode: str | None = Field("auto", description="Scan mode: auto, qr, datamatrix, barcode")
 
 
 class QRGenerateRequest(BaseModel):
     """Request model for QR code generation"""
 
-    gtin: Optional[str] = Field(None, description="Product GTIN/UPC")
-    lot_number: Optional[str] = Field(None, description="Lot/Batch number")
-    serial_number: Optional[str] = Field(None, description="Serial number")
-    expiry_date: Optional[str] = Field(None, description="Expiry date (YYYY-MM-DD)")
-    custom_data: Optional[Dict[str, Any]] = Field(None, description="Additional custom data")
+    gtin: str | None = Field(None, description="Product GTIN/UPC")
+    lot_number: str | None = Field(None, description="Lot/Batch number")
+    serial_number: str | None = Field(None, description="Serial number")
+    expiry_date: str | None = Field(None, description="Expiry date (YYYY-MM-DD)")
+    custom_data: dict[str, Any] | None = Field(None, description="Additional custom data")
 
 
 class RecallCheckResult(BaseModel):
@@ -78,8 +78,8 @@ class RecallCheckResult(BaseModel):
 
     recall_found: bool
     recall_count: int = 0
-    severity: Optional[str] = None
-    recalls: List[SafetyIssue] = []
+    severity: str | None = None
+    recalls: list[SafetyIssue] = []
     match_type: str = Field(
         ...,
         description="Type of match: exact_unit, lot_match, product_match, no_match",
@@ -91,11 +91,11 @@ class ScanResponse(BaseModel):
     """Response model for barcode scanning"""
 
     ok: bool
-    scan_results: List[Dict[str, Any]]
-    recall_check: Optional[RecallCheckResult] = None
+    scan_results: list[dict[str, Any]]
+    recall_check: RecallCheckResult | None = None
     trace_id: str
-    message: Optional[str] = None
-    verification: Optional[Dict[str, Any]] = None
+    message: str | None = None
+    verification: dict[str, Any] | None = None
 
 
 # Helper Functions
@@ -134,7 +134,7 @@ def check_recall_database(scan_result: ScanResult, db: Session) -> RecallCheckRe
     return recall_check
 
 
-def _attempt_unit_verification(scan_result: ScanResult) -> Optional[Dict[str, Any]]:
+def _attempt_unit_verification(scan_result: ScanResult) -> dict[str, Any] | None:
     """Call manufacturer verifier if we have identifiers."""
     if not scan_result or not (scan_result.gtin or scan_result.lot_number or scan_result.serial_number):
         return None
@@ -163,10 +163,10 @@ def _attempt_unit_verification(scan_result: ScanResult) -> Optional[Dict[str, An
 
 def _persist_verification(
     scan_result: ScanResult,
-    verification: Optional[Dict[str, Any]],
+    verification: dict[str, Any] | None,
     db: Session,
-    trace_id: Optional[str] = None,
-) -> Optional[int]:
+    trace_id: str | None = None,
+) -> int | None:
     """Persist verification outcome to serial_verifications table."""
     if not verification:
         return None
@@ -270,7 +270,7 @@ async def scan_image(
         # Check each result against database
         recall_checks = []
         any_recalls = False
-        verifications: List[Optional[Dict[str, Any]]] = []
+        verifications: list[dict[str, Any] | None] = []
 
         for scan_result in scan_results:
             if scan_result.success:
@@ -441,11 +441,11 @@ async def parse_gs1_data(
 class VerifyRequest(BaseModel):
     """Manual verification request for unit-level identifiers."""
 
-    gtin: Optional[str] = Field(None)
-    lot_number: Optional[str] = Field(None)
-    serial_number: Optional[str] = Field(None)
-    expiry_date: Optional[str] = Field(None, description="YYYY-MM-DD")
-    manufacturer: Optional[str] = Field(None, description="Optional hint")
+    gtin: str | None = Field(None)
+    lot_number: str | None = Field(None)
+    serial_number: str | None = Field(None)
+    expiry_date: str | None = Field(None, description="YYYY-MM-DD")
+    manufacturer: str | None = Field(None, description="Optional hint")
 
 
 @barcode_router.post("/verify", response_model=ApiResponse)
@@ -711,7 +711,7 @@ async def barcode_scan_with_file(
         # Check each result against database
         recall_checks = []
         any_recalls = False
-        verifications: List[Optional[Dict[str, Any]]] = []
+        verifications: list[dict[str, Any] | None] = []
 
         for scan_result in scan_results:
             if scan_result.success:

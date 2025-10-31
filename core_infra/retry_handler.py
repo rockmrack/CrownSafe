@@ -9,7 +9,7 @@ import random
 import time
 from enum import Enum
 from functools import wraps
-from typing import Any, Callable, Dict, List, Type
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -49,8 +49,8 @@ class RetryConfig:
         max_delay: float = 60.0,
         exponential_base: float = 2.0,
         jitter: bool = True,
-        retryable_exceptions: List[Type[Exception]] = None,
-        non_retryable_exceptions: List[Type[Exception]] = None,
+        retryable_exceptions: list[type[Exception]] = None,
+        non_retryable_exceptions: list[type[Exception]] = None,
         on_retry: Callable = None,
         on_failure: Callable = None,
         on_success: Callable = None,
@@ -346,8 +346,8 @@ class BulkRetry:
         self.config = config or RetryConfig()
 
     async def process_batch_with_retry(
-        self, items: List[Any], process_func: Callable, batch_size: int = 100
-    ) -> Dict[str, List]:
+        self, items: list[Any], process_func: Callable, batch_size: int = 100
+    ) -> dict[str, list]:
         """
         Process items in batches with retry
         """
@@ -383,7 +383,7 @@ class FallbackRetry:
     Retry with fallback options
     """
 
-    def __init__(self, primary_func: Callable, fallback_funcs: List[Callable]):
+    def __init__(self, primary_func: Callable, fallback_funcs: list[Callable]):
         self.primary_func = primary_func
         self.fallback_funcs = fallback_funcs
 

@@ -8,7 +8,6 @@ import os
 import sys
 import time
 from datetime import datetime
-from typing import Optional
 
 from dotenv import load_dotenv
 
@@ -38,7 +37,7 @@ class MemoryValidationSuite:
     """Comprehensive validation suite for MemoryManager MVP-1.4"""
 
     def __init__(self):
-        self.memory: Optional[MemoryManager] = None
+        self.memory: MemoryManager | None = None
         self.test_results = {
             "basic_functionality": False,
             "enhanced_retrieval": False,

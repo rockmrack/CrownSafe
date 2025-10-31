@@ -5,7 +5,6 @@ import json
 import logging
 import os
 import sys
-from typing import List
 from unittest.mock import patch
 
 # Color support
@@ -54,12 +53,12 @@ MOCK_CPSC_RECALL = Recall(
 
 # Mock connector classes
 class MockCPSCConnector:
-    async def fetch_recent_recalls(self) -> List[Recall]:
+    async def fetch_recent_recalls(self) -> list[Recall]:
         return [MOCK_CPSC_RECALL]
 
 
 class EmptyConnector:
-    async def fetch_recent_recalls(self) -> List[Recall]:
+    async def fetch_recent_recalls(self) -> list[Recall]:
         return []
 
 

@@ -3,7 +3,7 @@
 
 import asyncio
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 # Import the consolidated database setup
 from core_infra.database import User, get_db_session
@@ -16,7 +16,7 @@ class OnboardingAgentLogic:
     Handles setting initial user profile data after registration.
     """
 
-    def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
         self.logger.info(f"OnboardingAgentLogic initialized for agent {self.agent_id}.")
@@ -42,7 +42,7 @@ class OnboardingAgentLogic:
             self.logger.error(f"Database update failed for user {user_id}: {e}", exc_info=True)
             return False
 
-    async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
         """
         Main entry point for the agent.
         """

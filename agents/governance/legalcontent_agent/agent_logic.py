@@ -9,7 +9,7 @@ and returns them as part of the agent result payload.
 import asyncio
 import logging
 import os
-from typing import Any, Dict, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -18,12 +18,12 @@ LEGAL_DOCS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", 
 
 
 class LegalContentAgentLogic:
-    def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
         self.logger.info(f"LegalContentAgentLogic initialized. Document path: {LEGAL_DOCS_PATH}")
 
-    async def get_document(self, document_name: str) -> Optional[str]:
+    async def get_document(self, document_name: str) -> str | None:
         # Sanitize filename to prevent path traversal
         safe_name = os.path.basename(document_name)
         file_path = os.path.join(LEGAL_DOCS_PATH, safe_name)
@@ -45,7 +45,7 @@ class LegalContentAgentLogic:
             self.logger.error(f"Failed to read document {safe_name}: {e}", exc_info=True)
             return None
 
-    async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
         self.logger.info(f"Received task with inputs: {inputs}")
 
         document_name = inputs.get("document_name")

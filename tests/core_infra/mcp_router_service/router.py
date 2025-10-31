@@ -3,7 +3,7 @@
 
 import json
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import WebSocket
 
@@ -14,7 +14,7 @@ from .utils import create_mcp_error_response, create_mcp_message, parse_mcp_mess
 
 async def forward_message(
     sender_id: str,  # This is the original sender_id from the message header
-    message_to_forward: Dict[str, Any],
+    message_to_forward: dict[str, Any],
     target_agent_id: str,  # The agent_id to forward the message to
     label: str,
 ) -> bool:
@@ -92,7 +92,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
     # --- END ADDED CRITICAL LOG ---
 
     logger.debug(f"ROUTER RECV: from='{agent_id}' snippet='{message_text[:200]}'")  # Existing debug log
-    msg: Optional[Dict[str, Any]] = None
+    msg: dict[str, Any] | None = None
     try:
         msg = parse_mcp_message(message_text)
         if not msg or "mcp_header" not in msg:

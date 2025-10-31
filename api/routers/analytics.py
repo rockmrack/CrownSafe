@@ -1,4 +1,3 @@
-from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -15,13 +14,13 @@ router = APIRouter()
 class ExplainFeedbackPayload(BaseModel):
     scan_id: str = Field(..., min_length=1, max_length=64)
     helpful: bool
-    trace_id: Optional[str] = Field(None, max_length=64)
-    reason: Optional[str] = Field(None, max_length=256)  # e.g., "unclear","incorrect","irrelevant"
-    comment: Optional[str] = Field(None, max_length=500)
-    platform: Optional[str] = Field(None, max_length=32)
-    app_version: Optional[str] = Field(None, max_length=32)
-    locale: Optional[str] = Field(None, max_length=16)
-    jurisdiction_code: Optional[str] = Field(None, max_length=8)
+    trace_id: str | None = Field(None, max_length=64)
+    reason: str | None = Field(None, max_length=256)  # e.g., "unclear","incorrect","irrelevant"
+    comment: str | None = Field(None, max_length=500)
+    platform: str | None = Field(None, max_length=32)
+    app_version: str | None = Field(None, max_length=32)
+    locale: str | None = Field(None, max_length=16)
+    jurisdiction_code: str | None = Field(None, max_length=8)
 
     @field_validator("helpful", mode="before")
     @classmethod
@@ -44,7 +43,7 @@ def explain_feedback(payload: ExplainFeedbackPayload, request: Request, db: Sess
     Captures thumbs up/down from the mobile UI.
     """
     # Resolve user (optional)
-    user_id: Optional[UUID] = None
+    user_id: UUID | None = None
     try:
         from core.auth import current_user
 

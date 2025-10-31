@@ -5,7 +5,6 @@ Allows administrators to manage and process privacy requests
 
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request
@@ -40,11 +39,11 @@ class UpdatePrivacyRequest(BaseModel):
         pattern="^(verifying|processing|done|rejected|cancelled)$",
         description="New status for the request",
     )
-    notes: Optional[str] = Field(None, max_length=2000, description="Admin notes about the request")
-    rejection_reason: Optional[str] = Field(
+    notes: str | None = Field(None, max_length=2000, description="Admin notes about the request")
+    rejection_reason: str | None = Field(
         None, max_length=500, description="Reason for rejection (if status=rejected)"
     )
-    export_url: Optional[str] = Field(None, description="Export download URL (if status=done for export requests)")
+    export_url: str | None = Field(None, description="Export download URL (if status=done for export requests)")
 
 
 class PrivacyRequestFilter(BaseModel):
@@ -52,11 +51,11 @@ class PrivacyRequestFilter(BaseModel):
     Filters for privacy request queries
     """
 
-    kind: Optional[str] = Field(None, pattern="^(export|delete|rectify|access|restrict|object)$")
-    status: Optional[str] = Field(None, pattern="^(queued|verifying|processing|done|rejected|expired|cancelled)$")
-    jurisdiction: Optional[str] = Field(None, pattern="^(gdpr|uk_gdpr|ccpa|pipeda|lgpd|appi|other)$")
+    kind: str | None = Field(None, pattern="^(export|delete|rectify|access|restrict|object)$")
+    status: str | None = Field(None, pattern="^(queued|verifying|processing|done|rejected|expired|cancelled)$")
+    jurisdiction: str | None = Field(None, pattern="^(gdpr|uk_gdpr|ccpa|pipeda|lgpd|appi|other)$")
     overdue_only: bool = False
-    email_search: Optional[str] = None
+    email_search: str | None = None
 
 
 def create_response(data: dict, request: Request, status_code: int = 200) -> JSONResponse:
@@ -76,9 +75,9 @@ async def list_privacy_requests(
     request: Request,
     limit: int = Query(50, ge=1, le=200, description="Number of requests to return"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
-    kind: Optional[str] = Query(None, description="Filter by request type"),
-    status: Optional[str] = Query(None, description="Filter by status"),
-    jurisdiction: Optional[str] = Query(None, description="Filter by jurisdiction"),
+    kind: str | None = Query(None, description="Filter by request type"),
+    status: str | None = Query(None, description="Filter by status"),
+    jurisdiction: str | None = Query(None, description="Filter by jurisdiction"),
     overdue_only: bool = Query(False, description="Show only overdue requests"),
     admin: str = Depends(require_admin),
     db: Session = Depends(get_db),

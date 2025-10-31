@@ -11,7 +11,6 @@ import os
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
 
 import boto3
 
@@ -39,10 +38,10 @@ class ExportTask:
     s3_location: str
     status: ExportStatus
     percent_progress: int
-    total_size_gb: Optional[float] = None
-    start_time: Optional[datetime.datetime] = None
-    end_time: Optional[datetime.datetime] = None
-    failure_reason: Optional[str] = None
+    total_size_gb: float | None = None
+    start_time: datetime.datetime | None = None
+    end_time: datetime.datetime | None = None
+    failure_reason: str | None = None
 
 
 class S3BackupExporter:
@@ -68,8 +67,8 @@ class S3BackupExporter:
         return sts.get_caller_identity()["Account"]
 
     def export_latest_snapshot(
-        self, db_instance: str = "babyshield-prod", tables: Optional[List[str]] = None
-    ) -> Optional[str]:
+        self, db_instance: str = "babyshield-prod", tables: list[str] | None = None
+    ) -> str | None:
         """Export the latest automated snapshot to S3"""
 
         try:
@@ -120,7 +119,7 @@ class S3BackupExporter:
             self._record_export_failed()
             return None
 
-    def _get_latest_snapshot(self, db_instance: str) -> Optional[Dict]:
+    def _get_latest_snapshot(self, db_instance: str) -> dict | None:
         """Get the most recent automated snapshot"""
 
         try:
@@ -179,7 +178,7 @@ class S3BackupExporter:
 
     def wait_for_export(
         self, task_id: str, timeout_minutes: int = 120, poll_interval: int = 60
-    ) -> Tuple[bool, ExportTask]:
+    ) -> tuple[bool, ExportTask]:
         """Wait for export to complete"""
 
         start_time = time.time()
@@ -304,7 +303,7 @@ class S3BackupExporter:
             logger.error(f"Error cleaning up exports: {e}")
             return 0
 
-    def _delete_objects(self, objects: List[Dict]):
+    def _delete_objects(self, objects: list[dict]):
         """Delete objects from S3"""
 
         if not objects:
@@ -320,7 +319,7 @@ class S3BackupExporter:
         except Exception as e:
             logger.error(f"Error deleting objects: {e}")
 
-    def get_export_statistics(self) -> Dict:
+    def get_export_statistics(self) -> dict:
         """Get export statistics"""
 
         try:

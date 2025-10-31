@@ -7,7 +7,6 @@ import asyncio
 import logging
 import os
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
 
 from celery import Celery
 from celery.schedules import crontab
@@ -165,7 +164,7 @@ def sync_all_agencies(days_back: int = 3):
 
 
 @celery_app.task(name="risk_ingestion_tasks.sync_cpsc_data")
-def sync_cpsc_data(days_back: int = 7, job_id: Optional[str] = None):
+def sync_cpsc_data(days_back: int = 7, job_id: str | None = None):
     """
     Sync data from CPSC sources
     """
@@ -594,7 +593,7 @@ def update_company_compliance():
 
 
 @celery_app.task(name="risk_ingestion_tasks.send_risk_alerts")
-def send_risk_alerts(alerts: List[Dict]):
+def send_risk_alerts(alerts: list[dict]):
     """
     Send alerts for significant risk changes
     """
@@ -661,7 +660,7 @@ def enrich_product_from_barcode(product_id: str, barcode: str):
 
 
 # Helper functions
-def _find_or_create_product_from_record(record: SafetyDataRecord, db: Session) -> Optional[ProductGoldenRecord]:
+def _find_or_create_product_from_record(record: SafetyDataRecord, db: Session) -> ProductGoldenRecord | None:
     """
     Find or create product from safety data record
     """
@@ -699,7 +698,7 @@ def _find_or_create_product_from_record(record: SafetyDataRecord, db: Session) -
     return product
 
 
-def _create_incident_from_record(record: SafetyDataRecord, product_id: str, db: Session) -> Optional[SafetyIncident]:
+def _create_incident_from_record(record: SafetyDataRecord, product_id: str, db: Session) -> SafetyIncident | None:
     """
     Create safety incident from record
     """

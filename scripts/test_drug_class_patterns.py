@@ -7,7 +7,7 @@ import logging
 import os
 import sys
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from dotenv import load_dotenv
 
@@ -47,7 +47,7 @@ class DrugClassPatternTester:
     """Test drug class pattern recognition with SGLT2 inhibitors"""
 
     def __init__(self):
-        self.memory: Optional[EnhancedMemoryManager] = None
+        self.memory: EnhancedMemoryManager | None = None
 
         # Test drugs in SGLT2 inhibitor class with correct names
         self.sglt2_drugs = [
@@ -150,7 +150,7 @@ class DrugClassPatternTester:
             self.print_error(f"Failed to initialize MemoryManager: {e}")
             return False
 
-    async def analyze_current_patterns(self) -> Dict[str, Any]:
+    async def analyze_current_patterns(self) -> dict[str, Any]:
         """Analyze current drug class patterns in memory"""
         self.print_section("Current Drug Class Pattern Analysis")
 
@@ -312,7 +312,7 @@ class DrugClassPatternTester:
             traceback.print_exc()
             return {}
 
-    async def _get_sglt2_cross_workflow_evidence(self) -> List[Dict[str, Any]]:
+    async def _get_sglt2_cross_workflow_evidence(self) -> list[dict[str, Any]]:
         """Get SGLT2-specific cross-workflow evidence by querying ChromaDB directly"""
         try:
             # Query with correct drug names
@@ -366,7 +366,7 @@ class DrugClassPatternTester:
             self.print_warning(f"Failed to get SGLT2 cross-workflow evidence: {e}")
             return []
 
-    async def test_ertugliflozin_simulation(self) -> Dict[str, Any]:
+    async def test_ertugliflozin_simulation(self) -> dict[str, Any]:
         """Simulate what would happen if we query Ertugliflozin (a new SGLT2) with detailed debugging"""
         self.print_section("Ertugliflozin Query Simulation (New SGLT2) - Enhanced Debugging")
 
@@ -605,7 +605,7 @@ class DrugClassPatternTester:
         except Exception as e:
             self.print_debug(f"Failed to debug Ertugliflozin similarity: {e}")
 
-    async def _manual_ertugliflozin_analysis(self) -> Dict[str, Any]:
+    async def _manual_ertugliflozin_analysis(self) -> dict[str, Any]:
         """Manual analysis of Ertugliflozin similarity"""
         try:
             # Search for related content with correct drug names
@@ -692,7 +692,7 @@ class DrugClassPatternTester:
             self.print_error(f"Manual analysis failed: {e}")
             return {"research_strategy": "comprehensive", "sglt2_related": 0}
 
-    async def test_cross_drug_evidence_retrieval(self) -> Dict[str, Any]:
+    async def test_cross_drug_evidence_retrieval(self) -> dict[str, Any]:
         """Test retrieval of evidence relevant to multiple SGLT2 inhibitors"""
         self.print_section("Cross-Drug Evidence Retrieval Test")
 
@@ -849,7 +849,7 @@ class DrugClassPatternTester:
             traceback.print_exc()
             return {"success": False, "multi_drug_count": 0, "comparative_examples": []}
 
-    async def analyze_sglt2_knowledge_base(self) -> Dict[str, Any]:
+    async def analyze_sglt2_knowledge_base(self) -> dict[str, Any]:
         """Analyze the complete SGLT2 knowledge base"""
         self.print_section("SGLT2 Knowledge Base Analysis")
 
@@ -1057,10 +1057,10 @@ class DrugClassPatternTester:
 
     async def generate_test_summary(
         self,
-        current_patterns: Dict[str, Any],
-        ertugliflozin_sim: Dict[str, Any],
-        cross_drug_results: Dict[str, Any],
-        sglt2_kb: Dict[str, Any],
+        current_patterns: dict[str, Any],
+        ertugliflozin_sim: dict[str, Any],
+        cross_drug_results: dict[str, Any],
+        sglt2_kb: dict[str, Any],
     ) -> None:
         """Generate comprehensive test summary with corrected logic"""
         self.print_header("SGLT2 Inhibitor Class Testing Summary")

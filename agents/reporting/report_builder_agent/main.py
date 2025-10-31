@@ -6,7 +6,7 @@ import logging
 import os
 import signal
 import sys
-from typing import Any, Dict, Optional
+from typing import Any
 
 from dotenv import load_dotenv
 
@@ -80,21 +80,21 @@ logger = logging.getLogger(f"{AGENT_ID}.main")
 logic_logger = logging.getLogger(f"{AGENT_ID}.logic")
 
 # Global instances
-mcp_client_instance: Optional[MCPClient] = None
-agent_logic_instance: Optional[ReportBuilderAgentLogic] = None
+mcp_client_instance: MCPClient | None = None
+agent_logic_instance: ReportBuilderAgentLogic | None = None
 
 
 class ReportBuilderAgentManager:
     """Main agent manager for ReportBuilderAgent with enhanced connection stability"""
 
     def __init__(self):
-        self.mcp_client: Optional[MCPClient] = None
-        self.report_builder_logic: Optional[ReportBuilderAgentLogic] = None
+        self.mcp_client: MCPClient | None = None
+        self.report_builder_logic: ReportBuilderAgentLogic | None = None
         self.stop_event = asyncio.Event()
         self.shutdown_complete = False
         self.connection_retry_count = 0
         self.last_successful_connection = None
-        self._health_check_task: Optional[asyncio.Task] = None
+        self._health_check_task: asyncio.Task | None = None
 
     async def handle_incoming_message(self, message: MCPMessage):
         """Handle incoming messages with proper response processing"""
@@ -132,7 +132,7 @@ class ReportBuilderAgentManager:
             logger.error(f"Error processing message: {e}", exc_info=True)
             await self._handle_message_error(message, e)
 
-    async def _handle_logic_response(self, response: Dict[str, Any], original_header: MCPHeader):
+    async def _handle_logic_response(self, response: dict[str, Any], original_header: MCPHeader):
         """Handle response from logic with proper validation - FIXED VERSION"""
         try:
             # The response from logic is a flat structure with message_type and payload at top level

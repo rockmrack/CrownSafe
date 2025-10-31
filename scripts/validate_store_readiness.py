@@ -7,7 +7,6 @@ Tests critical endpoints and features required for app store submission
 import os
 import sys
 import time
-from typing import Dict, Tuple
 
 import requests
 
@@ -37,7 +36,7 @@ CRITICAL_ENDPOINTS = [
 ]
 
 
-def test_endpoint(method: str, path: str, data: dict, name: str) -> Tuple[bool, str, int]:
+def test_endpoint(method: str, path: str, data: dict, name: str) -> tuple[bool, str, int]:
     """Test a single endpoint and return status"""
     url = f"{BASE_URL}{path}"
     headers = {
@@ -66,7 +65,7 @@ def test_endpoint(method: str, path: str, data: dict, name: str) -> Tuple[bool, 
         return False, str(e), 0
 
 
-def check_headers(url: str) -> Dict[str, bool]:
+def check_headers(url: str) -> dict[str, bool]:
     """Check security and operational headers"""
     try:
         response = requests.get(url, timeout=10)

@@ -11,7 +11,7 @@ import re
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import cv2
 import numpy as np
@@ -87,7 +87,7 @@ class OCRResult:
     text: str
     confidence: float
     provider: str
-    blocks: List[Dict[str, Any]] = None  # Text blocks with positions
+    blocks: list[dict[str, Any]] = None  # Text blocks with positions
     processing_time_ms: int = 0
 
 
@@ -95,8 +95,8 @@ class OCRResult:
 class LabelResult:
     """Image labeling/classification result"""
 
-    labels: List[Dict[str, float]]  # [{"name": "baby bottle", "confidence": 0.92}]
-    categories: List[str]
+    labels: list[dict[str, float]]  # [{"name": "baby bottle", "confidence": 0.92}]
+    categories: list[str]
     provider: str
     processing_time_ms: int = 0
 
@@ -106,28 +106,28 @@ class ExtractionResult:
     """Complete extraction result from image"""
 
     # Core extractions
-    ocr: Optional[OCRResult] = None
-    barcodes: List[Dict[str, Any]] = None
-    labels: Optional[LabelResult] = None
+    ocr: OCRResult | None = None
+    barcodes: list[dict[str, Any]] = None
+    labels: LabelResult | None = None
 
     # Parsed product info
-    product_name: Optional[str] = None
-    brand: Optional[str] = None
-    model_number: Optional[str] = None
-    serial_number: Optional[str] = None
-    lot_number: Optional[str] = None
-    upc: Optional[str] = None
+    product_name: str | None = None
+    brand: str | None = None
+    model_number: str | None = None
+    serial_number: str | None = None
+    lot_number: str | None = None
+    upc: str | None = None
 
     # Safety info
-    warnings: List[str] = None
-    age_recommendation: Optional[str] = None
-    certifications: List[str] = None
-    defects: List[Dict[str, Any]] = None  # Visual defects detected
+    warnings: list[str] = None
+    age_recommendation: str | None = None
+    certifications: list[str] = None
+    defects: list[dict[str, Any]] = None  # Visual defects detected
 
     # Metadata
     confidence_score: float = 0.0
     confidence_level: str = "low"  # high/medium/low
-    flags: List[str] = None  # Issues detected
+    flags: list[str] = None  # Issues detected
 
     def to_dict(self):
         return asdict(self)
@@ -229,7 +229,7 @@ class ImageAnalysisService:
     async def analyze_image(
         self,
         image_data: bytes,
-        providers: List[Provider] = None,
+        providers: list[Provider] = None,
         extract_all: bool = True,
     ) -> ExtractionResult:
         """
@@ -294,7 +294,7 @@ class ImageAnalysisService:
 
         return result
 
-    def _auto_select_providers(self) -> List[Provider]:
+    def _auto_select_providers(self) -> list[Provider]:
         """Auto-select best available providers"""
         providers = []
 
@@ -315,7 +315,7 @@ class ImageAnalysisService:
 
         return providers
 
-    async def _extract_barcodes(self, image_data: bytes) -> List[Dict[str, Any]]:
+    async def _extract_barcodes(self, image_data: bytes) -> list[dict[str, Any]]:
         """Extract barcodes using Phase 1 scanner"""
         try:
             scan_results = await barcode_scanner.scan_image(image_data)
@@ -339,7 +339,7 @@ class ImageAnalysisService:
             logger.error(f"Barcode extraction error: {e}")
             return []
 
-    async def _extract_text(self, image: Image.Image, providers: List[Provider]) -> Optional[OCRResult]:
+    async def _extract_text(self, image: Image.Image, providers: list[Provider]) -> OCRResult | None:
         """Extract text using specified providers"""
         for provider in providers:
             try:
@@ -435,7 +435,7 @@ class ImageAnalysisService:
             processing_time_ms=processing_time,
         )
 
-    async def _extract_labels(self, image_data: bytes, providers: List[Provider]) -> Optional[LabelResult]:
+    async def _extract_labels(self, image_data: bytes, providers: list[Provider]) -> LabelResult | None:
         """Extract image labels/tags"""
         for provider in providers:
             try:
@@ -596,7 +596,7 @@ class ImageAnalysisService:
         if result.barcodes and len(result.barcodes) > 2:
             result.flags.append("multiple_products_detected")
 
-    def _check_cache(self, file_hash: str) -> Optional[ExtractionResult]:
+    def _check_cache(self, file_hash: str) -> ExtractionResult | None:
         """Check cache for existing analysis"""
         # TODO: Implement cache lookup from database
         return None
@@ -606,7 +606,7 @@ class ImageAnalysisService:
         # TODO: Implement cache storage to database
         pass
 
-    def detect_visual_defects(self, pil_image: Image) -> List[Dict[str, Any]]:
+    def detect_visual_defects(self, pil_image: Image) -> list[dict[str, Any]]:
         """
         Detect visual defects using OpenCV computer vision
 

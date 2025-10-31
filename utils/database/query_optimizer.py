@@ -7,7 +7,7 @@ import logging
 import time
 from contextlib import contextmanager
 from functools import wraps
-from typing import Any, Generic, List, Optional, TypeVar
+from typing import Any, Generic, TypeVar
 
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
@@ -159,11 +159,11 @@ class OptimizedQuery(Generic[T]):
         self.query = self.query.order_by(*args)
         return self
 
-    def all(self) -> List[T]:
+    def all(self) -> list[T]:
         """Execute query and return all results"""
         return self.query.all()
 
-    def first(self) -> Optional[T]:
+    def first(self) -> T | None:
         """Execute query and return first result"""
         return self.query.first()
 
@@ -171,7 +171,7 @@ class OptimizedQuery(Generic[T]):
         """Get count of results"""
         return self.query.count()
 
-    def one_or_none(self) -> Optional[T]:
+    def one_or_none(self) -> T | None:
         """Execute query and return one result or None"""
         return self.query.one_or_none()
 
@@ -207,7 +207,7 @@ def track_queries():
     logger.info(f"Query block executed {stats['total_queries']} queries ({stats['slow_queries']} slow)")
 
 
-def batch_load(db: Session, model: type, ids: List[int], batch_size: int = 100) -> List[Any]:
+def batch_load(db: Session, model: type, ids: list[int], batch_size: int = 100) -> list[Any]:
     """
     Load multiple records by ID in batches to prevent large IN clauses
 
@@ -258,7 +258,7 @@ class BulkOperationHelper:
     """Helper for efficient bulk database operations"""
 
     @staticmethod
-    def bulk_insert(db: Session, model: type, records: List[dict], batch_size: int = 1000):
+    def bulk_insert(db: Session, model: type, records: list[dict], batch_size: int = 1000):
         """
         Insert multiple records efficiently
 
@@ -275,7 +275,7 @@ class BulkOperationHelper:
         logger.info(f"Bulk inserted {len(records)} {model.__name__} records")
 
     @staticmethod
-    def bulk_update(db: Session, model: type, records: List[dict], batch_size: int = 1000):
+    def bulk_update(db: Session, model: type, records: list[dict], batch_size: int = 1000):
         """
         Update multiple records efficiently
 
@@ -311,7 +311,7 @@ def get_user_with_subscriptions(db: Session, user_id: int):
     )
 
 
-def get_recalls_with_products(db: Session, limit: int = 20, offset: int = 0, filters: Optional[dict] = None):
+def get_recalls_with_products(db: Session, limit: int = 20, offset: int = 0, filters: dict | None = None):
     """
     Get recalls with related product data (optimized)
 
@@ -331,7 +331,7 @@ def get_recalls_with_products(db: Session, limit: int = 20, offset: int = 0, fil
     return query.order_by(RecallDB.recall_date.desc()).paginate(limit, offset).all()
 
 
-def search_with_count(db: Session, query: Query, limit: int, offset: int) -> tuple[List[Any], int]:
+def search_with_count(db: Session, query: Query, limit: int, offset: int) -> tuple[list[Any], int]:
     """
     Execute query with pagination and return results + total count
 
@@ -358,7 +358,7 @@ def search_with_count(db: Session, query: Query, limit: int, offset: int) -> tup
 # Index suggestions
 
 
-def suggest_indexes(db: Session, model: type) -> List[str]:
+def suggest_indexes(db: Session, model: type) -> list[str]:
     """
     Suggest database indexes based on common query patterns
 

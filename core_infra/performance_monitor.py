@@ -13,7 +13,7 @@ from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import psutil
 
@@ -28,9 +28,9 @@ class PerformanceMetric:
     value: float
     unit: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    tags: Dict[str, str] = field(default_factory=dict)
+    tags: dict[str, str] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "name": self.name,
             "value": self.value,
@@ -46,9 +46,9 @@ class PerformanceMonitor:
     """
 
     def __init__(self, enable_memory_profiling: bool = False):
-        self.metrics: Dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
-        self.timers: Dict[str, float] = {}
-        self.counters: Dict[str, int] = defaultdict(int)
+        self.metrics: dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
+        self.timers: dict[str, float] = {}
+        self.counters: dict[str, int] = defaultdict(int)
         self.enable_memory_profiling = enable_memory_profiling
         self._lock = threading.Lock()
 
@@ -64,7 +64,7 @@ class PerformanceMonitor:
         """Start a timer"""
         self.timers[name] = time.perf_counter()
 
-    def stop_timer(self, name: str) -> Optional[float]:
+    def stop_timer(self, name: str) -> float | None:
         """Stop a timer and return elapsed time"""
         if name not in self.timers:
             return None
@@ -88,7 +88,7 @@ class PerformanceMonitor:
         with self._lock:
             self.counters[name] += value
 
-    def get_system_metrics(self) -> Dict[str, Any]:
+    def get_system_metrics(self) -> dict[str, Any]:
         """Get current system metrics"""
         cpu_percent = psutil.cpu_percent(interval=0.1)
         memory = psutil.virtual_memory()
@@ -122,7 +122,7 @@ class PerformanceMonitor:
 
         return metrics
 
-    def get_memory_profile(self) -> Optional[Dict]:
+    def get_memory_profile(self) -> dict | None:
         """Get memory profiling data"""
         if not self.enable_memory_profiling:
             return None
@@ -146,7 +146,7 @@ class PerformanceMonitor:
 
         return profile
 
-    def get_summary(self, time_window: int = 60) -> Dict[str, Any]:
+    def get_summary(self, time_window: int = 60) -> dict[str, Any]:
         """Get performance summary for the last N seconds"""
         cutoff = datetime.utcnow() - timedelta(seconds=time_window)
         summary = {
@@ -440,7 +440,7 @@ class BottleneckDetector:
         self.threshold_ms = threshold_ms
         self.bottlenecks = []
 
-    def analyze(self, monitor: PerformanceMonitor) -> List[Dict]:
+    def analyze(self, monitor: PerformanceMonitor) -> list[dict]:
         """Analyze metrics for bottlenecks"""
         bottlenecks = []
 

@@ -18,7 +18,6 @@ import secrets
 import string
 import sys
 from pathlib import Path
-from typing import Dict
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -47,7 +46,7 @@ class ConfigManager:
         alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
         return "".join(secrets.choice(alphabet) for _ in range(length))
 
-    def generate_secrets(self) -> Dict[str, str]:
+    def generate_secrets(self) -> dict[str, str]:
         """Generate secure secrets for production"""
         return {
             "SECRET_KEY": self.generate_secret_key(64),

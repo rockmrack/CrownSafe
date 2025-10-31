@@ -10,7 +10,7 @@ import logging  # noqa: E402
 import re  # noqa: E402
 from collections import OrderedDict  # noqa: E402
 from datetime import datetime, timedelta, timezone  # noqa: E402
-from typing import Any, Dict, List, Optional, Tuple  # noqa: E402
+from typing import Any  # noqa: E402
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, Query  # noqa: E402
 from pydantic import BaseModel, Field  # noqa: E402
@@ -67,9 +67,9 @@ class BarcodeScanRequest(BaseModel):
     """Enhanced barcode scan request"""
 
     barcode: str = Field(..., description="UPC/EAN barcode value")
-    barcode_type: Optional[str] = Field("UPC", description="Barcode type: UPC, EAN, CODE128, etc")
-    user_id: Optional[str] = Field(None, description="User ID for caching")
-    device_id: Optional[str] = Field(None, description="Device ID for caching")
+    barcode_type: str | None = Field("UPC", description="Barcode type: UPC, EAN, CODE128, etc")
+    user_id: str | None = Field(None, description="User ID for caching")
+    device_id: str | None = Field(None, description="Device ID for caching")
     include_similar: bool = Field(True, description="Include similar products if no exact match")
 
 
@@ -79,11 +79,11 @@ class BarcodeProduct(AppModel):
     model_config = {"protected_namespaces": ()}  # Allow model_number field
 
     barcode: str
-    product_name: Optional[str] = None
-    brand: Optional[str] = None
-    manufacturer: Optional[str] = None
-    category: Optional[str] = None
-    model_number: Optional[str] = None
+    product_name: str | None = None
+    brand: str | None = None
+    manufacturer: str | None = None
+    category: str | None = None
+    model_number: str | None = None
 
 
 class RecallMatch(BaseModel):
@@ -91,10 +91,10 @@ class RecallMatch(BaseModel):
 
     recall_id: str
     product_name: str
-    brand: Optional[str]
-    hazard: Optional[str]
-    remedy: Optional[str]
-    recall_date: Optional[str]
+    brand: str | None
+    hazard: str | None
+    remedy: str | None
+    recall_date: str | None
     agency: str
     match_confidence: float = Field(..., ge=0, le=1, description="0-1 confidence score")
     match_type: str = Field(..., description="exact, similar, brand_only, category")
@@ -105,14 +105,14 @@ class BarcodeScanResponse(BaseModel):
 
     ok: bool = True
     barcode: str
-    product: Optional[BarcodeProduct] = None
+    product: BarcodeProduct | None = None
     match_status: str = Field(..., description="exact_match, similar_found, no_recalls, no_match")
-    message: Optional[str] = None
-    recalls: List[RecallMatch] = []
+    message: str | None = None
+    recalls: list[RecallMatch] = []
     total_recalls: int = 0
     cached: bool = False
     scan_timestamp: datetime
-    trace_id: Optional[str] = None
+    trace_id: str | None = None
 
 
 # ========================= CACHE IMPLEMENTATION =========================
@@ -122,16 +122,16 @@ class BarcodeCache:
     """Simple in-memory LRU cache for last 50 barcode scans"""
 
     def __init__(self, max_size: int = 50):
-        self.cache: OrderedDict[str, Dict[str, Any]] = OrderedDict()
+        self.cache: OrderedDict[str, dict[str, Any]] = OrderedDict()
         self.max_size = max_size
 
-    def get_key(self, barcode: str, user_id: Optional[str] = None) -> str:
+    def get_key(self, barcode: str, user_id: str | None = None) -> str:
         """Generate cache key"""
         if user_id:
             return f"{user_id}:{barcode}"
         return f"anon:{barcode}"
 
-    def get(self, barcode: str, user_id: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    def get(self, barcode: str, user_id: str | None = None) -> dict[str, Any] | None:
         """Get cached scan result"""
         key = self.get_key(barcode, user_id)
 
@@ -150,7 +150,7 @@ class BarcodeCache:
 
         return None
 
-    def set(self, barcode: str, data: Dict[str, Any], user_id: Optional[str] = None):
+    def set(self, barcode: str, data: dict[str, Any], user_id: str | None = None):
         """Cache scan result"""
         key = self.get_key(barcode, user_id)
 
@@ -246,7 +246,7 @@ def validate_ean(ean: str) -> bool:
         return False
 
 
-def normalize_barcode(barcode: str) -> Tuple[str, str]:
+def normalize_barcode(barcode: str) -> tuple[str, str]:
     """
     Normalize barcode and detect type
     Returns: (normalized_barcode, barcode_type)
@@ -269,7 +269,7 @@ def normalize_barcode(barcode: str) -> Tuple[str, str]:
     return barcode, "UNKNOWN"
 
 
-def extract_brand_from_barcode(barcode: str) -> Optional[str]:
+def extract_brand_from_barcode(barcode: str) -> str | None:
     """
     Extract potential brand from barcode prefix
     Common manufacturer prefixes (simplified)
@@ -302,12 +302,12 @@ def extract_brand_from_barcode(barcode: str) -> Optional[str]:
 # - calculate_match_confidence: Scored matches 0.0-1.0 based on field overlap
 
 
-def search_exact_barcode(barcode: str, db: Session) -> List:
+def search_exact_barcode(barcode: str, db: Session) -> list:
     """Search for exact barcode match - DEPRECATED FOR CROWN SAFE"""
     return []
 
 
-def search_similar_products(barcode: str, brand: Optional[str], category: Optional[str], db: Session) -> List:
+def search_similar_products(barcode: str, brand: str | None, category: str | None, db: Session) -> list:
     """Search for similar products - DEPRECATED FOR CROWN SAFE"""
     return []
 
@@ -325,8 +325,8 @@ async def scan_barcode(
     request: BarcodeScanRequest,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db_session),
-    user_id: Optional[str] = Header(None, alias="X-User-ID"),
-    device_id: Optional[str] = Header(None, alias="X-Device-ID"),
+    user_id: str | None = Header(None, alias="X-User-ID"),
+    device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
     """
     Enhanced barcode scanning with intelligent matching and fallback
@@ -570,7 +570,7 @@ async def scan_barcode(
 
 
 @router.get("/cache/status")
-async def get_cache_status(user_id: Optional[str] = Header(None, alias="X-User-ID")):
+async def get_cache_status(user_id: str | None = Header(None, alias="X-User-ID")):
     """Get cache status and optionally user's cached items"""
 
     cache_info = {
@@ -591,8 +591,8 @@ async def get_cache_status(user_id: Optional[str] = Header(None, alias="X-User-I
 @router.delete("/cache/clear", operation_id="clear_cache_delete")
 @router.post("/cache/clear", operation_id="clear_cache_post")
 async def clear_cache(
-    barcode: Optional[str] = Query(None, description="Specific barcode to clear (optional)"),
-    user_id: Optional[str] = Header(None, alias="X-User-ID", description="User ID for user-specific cache"),
+    barcode: str | None = Query(None, description="Specific barcode to clear (optional)"),
+    user_id: str | None = Header(None, alias="X-User-ID", description="User ID for user-specific cache"),
 ):
     """Clear cache - all or specific barcode"""
 

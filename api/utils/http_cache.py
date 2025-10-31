@@ -6,7 +6,7 @@ Implements RFC 7232 for conditional requests
 import email.utils as email_utils
 import hashlib
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
@@ -31,7 +31,7 @@ def http_date(dt: datetime) -> str:
     return email_utils.format_datetime(dt, usegmt=True)
 
 
-def parse_http_date(date_str: str) -> Optional[datetime]:
+def parse_http_date(date_str: str) -> datetime | None:
     """
     Parse HTTP date string to datetime
 
@@ -73,7 +73,7 @@ def make_etag(content: str, weak: bool = False) -> str:
         return f'"{hash_value}"'
 
 
-def make_search_etag(filters_hash: str, as_of: str, result_ids: List[str]) -> str:
+def make_search_etag(filters_hash: str, as_of: str, result_ids: list[str]) -> str:
     """
     Generate ETag for search results
 
@@ -158,10 +158,10 @@ def check_if_modified_since(request: Request, last_modified: datetime) -> bool:
 
 def add_cache_headers(
     response: Response,
-    etag: Optional[str] = None,
-    last_modified: Optional[datetime] = None,
-    max_age: Optional[int] = None,
-    cache_control: Optional[str] = None,
+    etag: str | None = None,
+    last_modified: datetime | None = None,
+    max_age: int | None = None,
+    cache_control: str | None = None,
     must_revalidate: bool = False,
     private: bool = False,
     no_cache: bool = False,
@@ -218,7 +218,7 @@ def add_cache_headers(
             response.headers["Cache-Control"] = ", ".join(directives)
 
 
-def create_not_modified_response(etag: Optional[str] = None, cache_control: Optional[str] = None) -> Response:
+def create_not_modified_response(etag: str | None = None, cache_control: str | None = None) -> Response:
     """
     Create a 304 Not Modified response
 
@@ -247,10 +247,10 @@ class CacheableResponse:
 
     @staticmethod
     def search_response(
-        content: Dict[str, Any],
+        content: dict[str, Any],
         filters_hash: str,
         as_of: str,
-        result_ids: List[str],
+        result_ids: list[str],
         request: Request,
         max_age: int = 60,
     ) -> Response:
@@ -272,7 +272,7 @@ class CacheableResponse:
 
     @staticmethod
     def detail_response(
-        content: Dict[str, Any],
+        content: dict[str, Any],
         item_id: str,
         last_updated: datetime,
         request: Request,

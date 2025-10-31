@@ -6,7 +6,7 @@ Provides a chat_json method that interfaces with OpenAI's API.
 import json
 import logging
 import os
-from typing import Any, Dict, Optional
+from typing import Any
 
 try:
     import httpx
@@ -23,7 +23,7 @@ class OpenAILLMClient:
     OpenAI client that implements the LLMClient protocol for chat functionality.
     """
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         """
         Initialize the OpenAI client with optimized HTTP settings.
 
@@ -70,9 +70,9 @@ class OpenAILLMClient:
         model: str = "gpt-4o-mini",
         system: str = "",
         user: str = "",
-        response_schema: Optional[Dict[str, Any]] = None,
+        response_schema: dict[str, Any] | None = None,
         timeout: float = 30.0,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Send a chat request to OpenAI and get a JSON response.
 
@@ -132,7 +132,7 @@ class OpenAILLMClient:
             logging.error(f"OpenAI API call failed: {e}")
             return self._get_fallback_response()
 
-    def _get_fallback_response(self) -> Dict[str, Any]:
+    def _get_fallback_response(self) -> dict[str, Any]:
         """
         Get a fallback response when OpenAI is not available.
 

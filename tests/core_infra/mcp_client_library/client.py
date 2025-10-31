@@ -12,7 +12,7 @@ import copy  # noqa: E402
 import json  # noqa: E402
 import uuid  # noqa: E402
 from datetime import datetime, timezone  # noqa: E402
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional  # noqa: E402
+from typing import TYPE_CHECKING, Any, Callable  # noqa: E402
 
 import websockets  # noqa: E402
 from tenacity import (  # noqa: E402
@@ -80,7 +80,7 @@ class MCPClient:
         agent_type: str,
         mcp_server_url: str,
         message_handler: Callable[[MCPMessage], Any],
-        capabilities: Optional[List[Dict[str, Any]]] = None,
+        capabilities: list[dict[str, Any]] | None = None,
         reconnect_delay: int = DEFAULT_RECONNECT_DELAY,
         max_connect_attempts: int = DEFAULT_MAX_CONNECT_ATTEMPTS,
         heartbeat_interval: int = DEFAULT_HEARTBEAT_INTERVAL,
@@ -105,10 +105,10 @@ class MCPClient:
 
         self.heartbeat_interval = heartbeat_interval
 
-        self.websocket: Optional["WebSocketCommonProtocol"] = None
+        self.websocket: "WebSocketCommonProtocol" | None = None
         self._is_connected = False
-        self._receive_task: Optional[asyncio.Task] = None
-        self._heartbeat_task: Optional[asyncio.Task] = None
+        self._receive_task: asyncio.Task | None = None
+        self._heartbeat_task: asyncio.Task | None = None
         self._stop_requested = asyncio.Event()
         self.logger = logging.getLogger(f"MCPClient.{self.agent_id}")
         self.logger.critical(
@@ -261,11 +261,11 @@ class MCPClient:
 
     async def send_message(
         self,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
         message_type: str,
-        target_agent_id: Optional[str] = None,
-        target_service: Optional[str] = None,
-        correlation_id: Optional[str] = None,
+        target_agent_id: str | None = None,
+        target_service: str | None = None,
+        correlation_id: str | None = None,
     ):
         if not self.is_connected:
             raise MCPConnectionError(f"Cannot send message ({self.agent_id}), not connected.")
@@ -342,7 +342,7 @@ class MCPClient:
                 exc_info=True,
             )
 
-    async def query_discovery(self, capabilities_to_query: List[str]) -> Optional[str]:
+    async def query_discovery(self, capabilities_to_query: list[str]) -> str | None:
         if not (
             isinstance(capabilities_to_query, list)
             and all(isinstance(c, str) for c in capabilities_to_query)
@@ -388,7 +388,7 @@ class MCPClient:
                 self.logger.debug(f"CLIENT_RECV_RAW_BYTES ({self.agent_id}): <<< {str(message_text)[:1000]} >>>")
 
                 message_data = None
-                validated_message: Optional[MCPMessage] = None
+                validated_message: MCPMessage | None = None
                 try:
                     self.logger.debug(f"CLIENT_RECV_JSON_PARSE_ATTEMPT ({self.agent_id}): Attempting json.loads...")
                     message_data = json.loads(str(message_text))

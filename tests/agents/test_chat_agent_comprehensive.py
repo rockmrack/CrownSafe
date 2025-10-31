@@ -18,7 +18,7 @@ Tests cover:
 """
 
 import ast
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
@@ -53,9 +53,9 @@ class MockLLMClient:
         model: str,
         system: str,
         user: str,
-        response_schema: Dict[str, Any],
+        response_schema: dict[str, Any],
         timeout: float = 8.0,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Mock chat_json method"""
         self.call_count += 1
         self.last_request = {

@@ -5,7 +5,6 @@ Requires admin role/permissions
 
 import logging
 from datetime import datetime
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import desc
@@ -26,12 +25,12 @@ class AdminUserListItem(AppModel):
 
     id: int
     email: str
-    username: Optional[str] = None
-    full_name: Optional[str] = None
+    username: str | None = None
+    full_name: str | None = None
     is_active: bool
     is_premium: bool = False
     created_at: datetime
-    last_login: Optional[datetime] = None
+    last_login: datetime | None = None
     scan_count: int = 0
 
 

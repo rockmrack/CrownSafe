@@ -5,7 +5,7 @@ SQLAlchemy model for privacy request (DSAR) tracking
 import hashlib
 import secrets
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Optional
+from typing import Any
 
 from sqlalchemy import CheckConstraint, Column, DateTime, String, Text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
@@ -81,7 +81,7 @@ class PrivacyRequest(Base):
     def __repr__(self):
         return f"<PrivacyRequest(id={self.id}, kind={self.kind}, email_hash={self.email_hash[:8]}..., status={self.status})>"  # noqa: E501
 
-    def to_dict(self, include_pii: bool = False) -> Dict[str, Any]:
+    def to_dict(self, include_pii: bool = False) -> dict[str, Any]:
         """
         Convert to dictionary for JSON serialization
 
@@ -146,7 +146,7 @@ class PrivacyRequest(Base):
         return False
 
     @property
-    def days_elapsed(self) -> Optional[int]:
+    def days_elapsed(self) -> int | None:
         """Calculate days elapsed since submission"""
         if self.submitted_at:
             elapsed = datetime.now(timezone.utc) - self.submitted_at
@@ -193,7 +193,7 @@ class PrivacyRequest(Base):
         self.verified_at = datetime.now(timezone.utc)
         self.verification_token = None  # Clear token after use
 
-    def set_completed(self, export_url: Optional[str] = None, expiry_days: int = 7):
+    def set_completed(self, export_url: str | None = None, expiry_days: int = 7):
         """
         Mark request as completed
 
@@ -229,12 +229,12 @@ class PrivacyRequest(Base):
         cls,
         kind: str,
         email: str,
-        jurisdiction: Optional[str] = None,
-        source: Optional[str] = None,
-        trace_id: Optional[str] = None,
-        ip_address: Optional[str] = None,
-        user_agent: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        jurisdiction: str | None = None,
+        source: str | None = None,
+        trace_id: str | None = None,
+        ip_address: str | None = None,
+        user_agent: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> "PrivacyRequest":
         """
         Factory method to create a new privacy request

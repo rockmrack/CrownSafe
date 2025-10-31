@@ -7,7 +7,7 @@ import hashlib
 import logging
 import uuid
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional
+from typing import Any
 
 import httpx
 import jwt
@@ -35,9 +35,9 @@ class OAuthLoginRequest(BaseModel):
 
     provider: str = Field(..., pattern="^(apple|google)$", description="OAuth provider (apple or google)")
     id_token: str = Field(..., description="ID token from provider")
-    authorization_code: Optional[str] = Field(None, description="Authorization code (for Apple)")
-    device_id: Optional[str] = Field(None, description="Device ID for tracking")
-    app_version: Optional[str] = Field(None, description="App version")
+    authorization_code: str | None = Field(None, description="Authorization code (for Apple)")
+    device_id: str | None = Field(None, description="Device ID for tracking")
+    app_version: str | None = Field(None, description="App version")
 
 
 class OAuthLoginResponse(BaseModel):
@@ -56,7 +56,7 @@ class OAuthProvider:
     """Base class for OAuth providers"""
 
     @staticmethod
-    async def verify_token(id_token: str) -> Dict[str, Any]:
+    async def verify_token(id_token: str) -> dict[str, Any]:
         """Verify and decode provider token"""
         raise NotImplementedError
 
@@ -68,7 +68,7 @@ class AppleOAuth(OAuthProvider):
     APPLE_ISSUER = "https://appleid.apple.com"
 
     @staticmethod
-    async def verify_token(id_token: str, client_id: str = None) -> Dict[str, Any]:
+    async def verify_token(id_token: str, client_id: str = None) -> dict[str, Any]:
         """
         Verify Apple ID token
         Returns decoded token with 'sub' (subject) and 'email' (if available)
@@ -116,7 +116,7 @@ class GoogleOAuth(OAuthProvider):
     GOOGLE_ISSUER = "https://accounts.google.com"
 
     @staticmethod
-    async def verify_token(id_token: str, client_id: str = None) -> Dict[str, Any]:
+    async def verify_token(id_token: str, client_id: str = None) -> dict[str, Any]:
         """
         Verify Google ID token
         Returns decoded token with 'sub' (subject) and 'email'
@@ -178,7 +178,7 @@ async def oauth_login(
     request: Request,
     login_data: OAuthLoginRequest,
     db: Session = Depends(get_db),
-    user_agent: Optional[str] = Header(None),
+    user_agent: str | None = Header(None),
 ):
     """
     OAuth login with Apple or Google
@@ -310,7 +310,7 @@ async def oauth_login(
 
 
 @router.post("/logout")
-async def oauth_logout(request: Request, user_id: Optional[str] = None, device_id: Optional[str] = None):
+async def oauth_logout(request: Request, user_id: str | None = None, device_id: str | None = None):
     """
     OAuth logout
 

@@ -3,7 +3,7 @@ SQLAlchemy model for ingestion run tracking
 """
 
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any
 
 from sqlalchemy import CheckConstraint, Column, DateTime, Integer, String, Text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
@@ -65,7 +65,7 @@ class IngestionRun(Base):
     def __repr__(self):
         return f"<IngestionRun(id={self.id}, agency={self.agency}, status={self.status})>"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
         return {
             "id": str(self.id) if self.id else None,
@@ -89,7 +89,7 @@ class IngestionRun(Base):
         }
 
     @property
-    def duration_seconds(self) -> Optional[float]:
+    def duration_seconds(self) -> float | None:
         """Calculate run duration in seconds"""
         if self.started_at and self.finished_at:
             return (self.finished_at - self.started_at).total_seconds()
@@ -118,7 +118,7 @@ class IngestionRun(Base):
         """Total number of items processed"""
         return self.items_inserted + self.items_updated + self.items_skipped
 
-    def set_running(self, trace_id: Optional[str] = None):
+    def set_running(self, trace_id: str | None = None):
         """Mark ingestion as running"""
         self.status = "running"
         self.started_at = datetime.utcnow().replace(tzinfo=timezone.utc)

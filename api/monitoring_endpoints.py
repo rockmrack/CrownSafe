@@ -4,7 +4,6 @@ Product Monitoring Management Endpoints
 
 import logging
 from datetime import datetime, timedelta
-from typing import Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlalchemy import desc
@@ -31,9 +30,9 @@ class AddProductRequest(AppModel):
     model_config = {"protected_namespaces": ()}  # Allow model_number field
 
     product_name: str
-    brand_name: Optional[str] = None
-    model_number: Optional[str] = None
-    upc_code: Optional[str] = None
+    brand_name: str | None = None
+    model_number: str | None = None
+    upc_code: str | None = None
     check_frequency_hours: int = 24
 
 
@@ -44,12 +43,12 @@ class MonitoredProductResponse(AppModel):
 
     id: int
     product_name: str
-    brand_name: Optional[str]
-    model_number: Optional[str]
-    upc_code: Optional[str]
+    brand_name: str | None
+    model_number: str | None
+    upc_code: str | None
     is_active: bool
     check_frequency_hours: int
-    last_checked: Optional[datetime]
+    last_checked: datetime | None
     next_check: datetime
     recall_status: str
     recalls_found: int

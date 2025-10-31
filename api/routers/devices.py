@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import text
@@ -25,7 +24,7 @@ router = APIRouter(prefix="/api/v1", tags=["devices"])
 
 @router.post("/devices/unregister", status_code=204)
 def unregister_device(
-    token: Optional[str] = None,
+    token: str | None = None,
     db: Session = Depends(get_db_session),
     user=Depends(get_current_active_user),
 ):

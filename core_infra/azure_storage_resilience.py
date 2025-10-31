@@ -8,7 +8,7 @@ import logging
 import time
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 from azure.core.exceptions import (
     AzureError,
@@ -55,7 +55,7 @@ class CircuitBreaker:
         self.expected_exception = expected_exception
 
         self.failure_count = 0
-        self.last_failure_time: Optional[datetime] = None
+        self.last_failure_time: datetime | None = None
         self.state = CircuitState.CLOSED
 
     def call(self, func: Callable, *args, **kwargs) -> Any:

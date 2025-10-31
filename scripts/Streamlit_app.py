@@ -12,7 +12,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import anthropic
 import chromadb
@@ -201,11 +201,11 @@ class Message:
     id: str
     role: str  # 'user' or 'assistant'
     content: str
-    model: Optional[str] = None
+    model: str | None = None
     timestamp: datetime = field(default_factory=datetime.now)
     tokens: int = 0
-    attachments: List[Dict[str, Any]] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    attachments: list[dict[str, Any]] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 # Fixed Memory Manager with Proper Redis Key Structure
@@ -513,7 +513,7 @@ class UnifiedMemoryManager:
 
         return "\n".join(context_parts)
 
-    def _get_recent_messages(self, limit: int = 50) -> List[Dict]:
+    def _get_recent_messages(self, limit: int = 50) -> list[dict]:
         """Get recent messages from Redis"""
         messages = []
 
@@ -659,7 +659,7 @@ class UnifiedMemoryManager:
         except Exception:
             pass
 
-    def load_conversation_history(self) -> List[Message]:
+    def load_conversation_history(self) -> list[Message]:
         """Load all messages from the current session"""
         messages = []
 
@@ -872,7 +872,7 @@ class MemoryAwareModelExecutor:
 
 Continue the response, completing any unfinished thoughts or code blocks."""
 
-    async def execute_claude(self, prompt: str, attachments: List[Dict] = None) -> str:
+    async def execute_claude(self, prompt: str, attachments: list[dict] = None) -> str:
         """Execute Claude with REQUIRED max_tokens parameter"""
         if not self.cm.anthropic_client:
             return "Claude not connected. Please add your API key in the sidebar."
@@ -939,7 +939,7 @@ Reference our previous discussions and maintain continuity.""",
         except Exception as e:
             return f"Claude error: {str(e)}"
 
-    async def execute_gemini(self, prompt: str, attachments: List[Dict] = None) -> str:
+    async def execute_gemini(self, prompt: str, attachments: list[dict] = None) -> str:
         """Execute Gemini"""
         if not self.cm.gemini_client:
             return "Gemini not connected. Please add your API key in the sidebar."
@@ -997,7 +997,7 @@ Context about our project:
         except Exception as e:
             return f"Gemini error: {str(e)}"
 
-    async def execute_gpt(self, prompt: str, attachments: List[Dict] = None) -> str:
+    async def execute_gpt(self, prompt: str, attachments: list[dict] = None) -> str:
         """Execute GPT"""
         if not self.cm.openai_client:
             return "GPT not connected. Please add your API key in the sidebar."
@@ -1126,7 +1126,7 @@ def display_message_with_code(content: str, container):
         container.markdown(current_text.strip())
 
 
-def process_uploaded_file(uploaded_file) -> Dict[str, Any]:
+def process_uploaded_file(uploaded_file) -> dict[str, Any]:
     """Process uploaded file and return metadata"""
     file_details = {
         "name": uploaded_file.name,
@@ -1173,7 +1173,7 @@ def process_uploaded_file(uploaded_file) -> Dict[str, Any]:
     return file_details
 
 
-def export_conversation_to_pdf(messages: List[Message]) -> bytes:
+def export_conversation_to_pdf(messages: list[Message]) -> bytes:
     """Export conversation to PDF format"""
     if not PDF_EXPORT_SUPPORT:
         return None

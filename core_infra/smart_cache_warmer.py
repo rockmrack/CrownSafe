@@ -7,7 +7,7 @@ import logging
 import threading
 import time
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class SmartCacheWarmer:
             "popular_threshold": 2,  # Minimum mentions to be "popular"
         }
 
-    async def analyze_popular_products(self) -> Dict[str, List[str]]:
+    async def analyze_popular_products(self) -> dict[str, list[str]]:
         """
         Analyze 3,218+ recalls to identify most popular products and brands for cache warming
         """
@@ -68,7 +68,7 @@ class SmartCacheWarmer:
             self.logger.error(f"Popular product analysis failed: {e}")
             return {"products": [], "brands": []}
 
-    async def warm_cache_for_products(self, products: List[str]) -> int:
+    async def warm_cache_for_products(self, products: list[str]) -> int:
         """
         Pre-warm cache for popular products with optimized batch operations
         """
@@ -128,7 +128,7 @@ class SmartCacheWarmer:
             self.logger.error(f"Cache warming failed: {e}")
             return 0
 
-    async def warm_cache_for_autocomplete(self, products: List[str], brands: List[str]) -> int:
+    async def warm_cache_for_autocomplete(self, products: list[str], brands: list[str]) -> int:
         """
         Pre-warm autocomplete cache for instant typing responses
         """
@@ -175,7 +175,7 @@ class SmartCacheWarmer:
             self.logger.error(f"Autocomplete cache warming failed: {e}")
             return 0
 
-    async def start_intelligent_cache_warming(self) -> Dict[str, Any]:
+    async def start_intelligent_cache_warming(self) -> dict[str, Any]:
         """
         Start intelligent cache warming process for maximum performance
         """

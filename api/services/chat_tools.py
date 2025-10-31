@@ -2,12 +2,12 @@
 Chat tools service - stub implementation for chat router
 """
 
-from typing import Any, Dict
+from typing import Any
 
 from sqlalchemy.orm import Session
 
 
-def run_tool_for_intent(intent: str, db: Session, scan_data: Dict[str, Any]) -> Dict[str, Any]:
+def run_tool_for_intent(intent: str, db: Session, scan_data: dict[str, Any]) -> dict[str, Any]:
     """Run appropriate tool based on intent"""
 
     # Simple stub responses based on intent

@@ -8,7 +8,7 @@ import logging
 import os
 from datetime import datetime
 from io import BytesIO
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from jinja2 import Environment, select_autoescape
 from reportlab.lib import colors
@@ -149,7 +149,7 @@ class RiskReportGenerator:
     Supports multiple formats: PDF, HTML, JSON
     """
 
-    def __init__(self, storage_client: Optional[AzureBlobStorageClient] = None):
+    def __init__(self, storage_client: AzureBlobStorageClient | None = None):
         self.storage_client = storage_client or AzureBlobStorageClient()
         self.container_name = os.getenv("AZURE_STORAGE_CONTAINER", "crownsafe-reports")
 
@@ -199,10 +199,10 @@ class RiskReportGenerator:
         product: ProductGoldenRecord,
         risk_profile: ProductRiskProfile,
         risk_components: RiskScoreComponents,
-        incidents: List[SafetyIncident],
-        company_profile: Optional[CompanyComplianceProfile],
+        incidents: list[SafetyIncident],
+        company_profile: CompanyComplianceProfile | None,
         format: str = "pdf",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate comprehensive risk assessment report
 
@@ -255,9 +255,9 @@ class RiskReportGenerator:
         product: ProductGoldenRecord,
         risk_profile: ProductRiskProfile,
         risk_components: RiskScoreComponents,
-        incidents: List[SafetyIncident],
-        company_profile: Optional[CompanyComplianceProfile],
-    ) -> Dict:
+        incidents: list[SafetyIncident],
+        company_profile: CompanyComplianceProfile | None,
+    ) -> dict:
         """
         Prepare all data for report generation
         """
@@ -316,7 +316,7 @@ class RiskReportGenerator:
 
         return data
 
-    def _generate_pdf_report(self, data: Dict) -> BytesIO:
+    def _generate_pdf_report(self, data: dict) -> BytesIO:
         """
         Generate PDF report using ReportLab
         """
@@ -470,14 +470,14 @@ class RiskReportGenerator:
         buffer.seek(0)
         return buffer
 
-    def _generate_html_report(self, data: Dict) -> str:
+    def _generate_html_report(self, data: dict) -> str:
         """Render HTML report with autoescaped template."""
         context = dict(data)
         context["risk_color"] = self._get_risk_color_hex(context["risk_summary"]["level"])
         context["risk_level"] = context["risk_summary"]["level"].lower()
         return self.RISK_REPORT_HTML_TEMPLATE.render(**context)
 
-    def _generate_json_report(self, data: Dict) -> str:
+    def _generate_json_report(self, data: dict) -> str:
         """
         Generate JSON report
         """
@@ -492,7 +492,7 @@ class RiskReportGenerator:
 
         return json.dumps(data, default=serialize, indent=2)
 
-    def _summarize_incidents(self, incidents: List[SafetyIncident]) -> str:
+    def _summarize_incidents(self, incidents: list[SafetyIncident]) -> str:
         """
         Create incident summary text
         """
@@ -544,7 +544,7 @@ class RiskReportGenerator:
 
         return summary
 
-    def _generate_recommendations(self, risk_components: RiskScoreComponents) -> List[str]:
+    def _generate_recommendations(self, risk_components: RiskScoreComponents) -> list[str]:
         """
         Generate actionable recommendations based on risk analysis
         """
@@ -605,7 +605,7 @@ class RiskReportGenerator:
 
         return "\n".join(sources)
 
-    def _format_details(self, details: Dict) -> str:
+    def _format_details(self, details: dict) -> str:
         """
         Format details dictionary as readable text
         """

@@ -3,7 +3,7 @@ Base Schema Classes for BabyShield API
 Provides consistent Pydantic configuration across all models
 """
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
@@ -50,9 +50,9 @@ class APIResponse(BaseSchema):
     """
 
     ok: bool = True
-    message: Optional[str] = None
-    data: Optional[Any] = None
-    error: Optional[Dict[str, Any]] = None
+    message: str | None = None
+    data: Any | None = None
+    error: dict[str, Any] | None = None
 
     model_config = ConfigDict(
         protected_namespaces=(),
@@ -74,8 +74,8 @@ class ErrorResponse(BaseSchema):
     """
 
     ok: bool = False
-    error: Dict[str, Any]
-    message: Optional[str] = None
+    error: dict[str, Any]
+    message: str | None = None
 
     model_config = ConfigDict(
         protected_namespaces=(),

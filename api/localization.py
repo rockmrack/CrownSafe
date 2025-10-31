@@ -4,7 +4,6 @@ Provides multi-language support with fallback to en-US
 """
 
 import logging
-from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Header, Query
 from pydantic import BaseModel, Field
@@ -29,7 +28,7 @@ class LocalizedContent(BaseModel):
     """Content with all translations"""
 
     key: str
-    translations: Dict[str, str]
+    translations: dict[str, str]
 
 
 class SupportedLocale(BaseModel):
@@ -256,7 +255,7 @@ TRANSLATIONS = {
 # ========================= HELPER FUNCTIONS =========================
 
 
-def parse_accept_language(accept_language: str) -> List[str]:
+def parse_accept_language(accept_language: str) -> list[str]:
     """
     Parse Accept-Language header and return ordered list of locales
     Example: "en-US,en;q=0.9,es;q=0.8" -> ["en-US", "en", "es"]
@@ -278,7 +277,7 @@ def parse_accept_language(accept_language: str) -> List[str]:
     return locales
 
 
-def get_best_locale(requested_locales: List[str]) -> str:
+def get_best_locale(requested_locales: list[str]) -> str:
     """
     Find the best matching locale from requested list
     """
@@ -324,7 +323,7 @@ def translate(key: str, locale: str = "en-US") -> str:
 # ========================= API ENDPOINTS =========================
 
 
-@router.get("/locales", response_model=List[SupportedLocale])
+@router.get("/locales", response_model=list[SupportedLocale])
 async def get_supported_locales():
     """
     Get list of supported locales with their configuration
@@ -346,9 +345,9 @@ async def get_locale_info(locale_code: str):
 
 @router.get("/translations")
 async def get_translations(
-    locale: Optional[str] = Query("en-US", description="Locale code"),
-    keys: Optional[List[str]] = Query(None, description="Specific keys to retrieve"),
-    accept_language: Optional[str] = Header(None, alias="Accept-Language"),
+    locale: str | None = Query("en-US", description="Locale code"),
+    keys: list[str] | None = Query(None, description="Specific keys to retrieve"),
+    accept_language: str | None = Header(None, alias="Accept-Language"),
 ):
     """
     Get translations for specified locale or from Accept-Language header
@@ -384,8 +383,8 @@ async def get_translations(
 @router.get("/translate/{key}")
 async def translate_key(
     key: str,
-    locale: Optional[str] = Query("en-US"),
-    accept_language: Optional[str] = Header(None, alias="Accept-Language"),
+    locale: str | None = Query("en-US"),
+    accept_language: str | None = Header(None, alias="Accept-Language"),
 ):
     """
     Translate a single key
@@ -402,9 +401,9 @@ async def translate_key(
 
 @router.post("/translations/batch")
 async def translate_batch(
-    keys: List[str],
-    locale: Optional[str] = Query("en-US"),
-    accept_language: Optional[str] = Header(None, alias="Accept-Language"),
+    keys: list[str],
+    locale: str | None = Query("en-US"),
+    accept_language: str | None = Header(None, alias="Accept-Language"),
 ):
     """
     Translate multiple keys at once
@@ -426,8 +425,8 @@ async def translate_batch(
 
 @router.get("/a11y/labels")
 async def get_accessibility_labels(
-    locale: Optional[str] = Query("en-US"),
-    accept_language: Optional[str] = Header(None, alias="Accept-Language"),
+    locale: str | None = Query("en-US"),
+    accept_language: str | None = Header(None, alias="Accept-Language"),
 ):
     """
     Get all accessibility labels for screen readers

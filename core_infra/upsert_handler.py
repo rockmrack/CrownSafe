@@ -4,7 +4,7 @@ Implements PostgreSQL ON CONFLICT for atomic upsert operations
 """
 
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -19,7 +19,7 @@ class UpsertHandler:
     """
 
     @staticmethod
-    def upsert_recall(db: Session, recall_data: Dict[str, Any]) -> bool:
+    def upsert_recall(db: Session, recall_data: dict[str, Any]) -> bool:
         """
         Perform atomic UPSERT for a single recall record
 
@@ -155,7 +155,7 @@ class UpsertHandler:
             return False
 
     @staticmethod
-    def bulk_upsert_recalls(db: Session, recalls: List[Dict[str, Any]], batch_size: int = 100) -> Dict[str, int]:
+    def bulk_upsert_recalls(db: Session, recalls: list[dict[str, Any]], batch_size: int = 100) -> dict[str, int]:
         """
         Perform bulk UPSERT for multiple recalls with batching
 
@@ -286,7 +286,7 @@ class UpsertHandler:
         return counts
 
     @staticmethod
-    def upsert_subscription(db: Session, subscription_data: Dict[str, Any]) -> bool:
+    def upsert_subscription(db: Session, subscription_data: dict[str, Any]) -> bool:
         """
         Perform atomic UPSERT for subscription records
 
@@ -350,7 +350,7 @@ class EnhancedUpsertHandler(UpsertHandler):
     def upsert_with_history(
         db: Session,
         table: str,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         unique_key: str,
         track_changes: bool = True,
     ) -> bool:

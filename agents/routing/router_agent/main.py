@@ -7,7 +7,6 @@ import logging
 import os
 import signal
 import sys
-from typing import Optional
 
 from dotenv import load_dotenv
 
@@ -99,16 +98,16 @@ logic_logger = logging.getLogger(f"{AGENT_ID}.logic")  # Separate logger for log
 
 # Global instances (for potential direct access if needed, though manager is preferred)
 # These are less critical now with the AgentManager pattern but kept for context if any part relies on them.
-mcp_client_instance: Optional[MCPClient] = None
-router_logic_instance: Optional[RouterLogic] = None
+mcp_client_instance: MCPClient | None = None
+router_logic_instance: RouterLogic | None = None
 
 
 class RouterAgentManager:
     """Main agent manager for RouterAgent"""
 
     def __init__(self):
-        self.mcp_client: Optional[MCPClient] = None
-        self.router_logic: Optional[RouterLogic] = None
+        self.mcp_client: MCPClient | None = None
+        self.router_logic: RouterLogic | None = None
         self.stop_event = asyncio.Event()
         self.shutdown_complete = False  # Flag to prevent multiple shutdown calls
 

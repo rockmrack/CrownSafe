@@ -4,7 +4,6 @@ Handles receipt validation and entitlement checks
 """
 
 import logging
-from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, Field
@@ -27,27 +26,27 @@ class ActivateSubscriptionRequest(BaseModel):
 
     provider: str = Field(..., pattern="^(apple|google)$", description="Payment provider")
     receipt_data: str = Field(..., description="Receipt data (base64 for Apple, purchase token for Google)")
-    product_id: Optional[str] = Field(None, description="Product ID (required for Google)")
+    product_id: str | None = Field(None, description="Product ID (required for Google)")
 
 
 class SubscriptionStatusResponse(BaseModel):
     """Subscription status response"""
 
     active: bool
-    plan: Optional[str] = None
-    provider: Optional[str] = None
-    expires_at: Optional[str] = None
-    days_remaining: Optional[int] = None
-    auto_renew: Optional[bool] = None
-    cancelled: Optional[bool] = None
-    message: Optional[str] = None
+    plan: str | None = None
+    provider: str | None = None
+    expires_at: str | None = None
+    days_remaining: int | None = None
+    auto_renew: bool | None = None
+    cancelled: bool | None = None
+    message: str | None = None
 
 
 class EntitlementResponse(BaseModel):
     """Entitlement check response"""
 
     has_access: bool
-    subscription: Optional[SubscriptionStatusResponse] = None
+    subscription: SubscriptionStatusResponse | None = None
     user_id: int
 
 
@@ -56,7 +55,7 @@ class EntitlementData(BaseModel):
 
     feature: str
     entitled: bool
-    subscription: Optional[SubscriptionStatusResponse] = None
+    subscription: SubscriptionStatusResponse | None = None
     user_id: int
 
 
@@ -71,8 +70,8 @@ class ActivateSubscriptionResponse(BaseModel):
     """Response after activating subscription"""
 
     success: bool
-    subscription: Optional[Dict] = None
-    error: Optional[str] = None
+    subscription: dict | None = None
+    error: str | None = None
 
 
 # Initialize services
@@ -117,8 +116,8 @@ async def activate_subscription(
 @router.get("/status", response_model=SubscriptionStatusResponse)
 async def get_subscription_status(
     request: Request,
-    user_id: Optional[int] = Query(None, description="User ID (for testing without auth)"),
-    current_user: Optional[User] = Depends(lambda: None),
+    user_id: int | None = Query(None, description="User ID (for testing without auth)"),
+    current_user: User | None = Depends(lambda: None),
 ):
     """
     Get current subscription status for authenticated user or by user_id
@@ -486,7 +485,7 @@ class SubscriptionPlan(BaseModel):
     description: str = Field(..., description="Plan description")
     price: float = Field(..., description="Monthly price in USD")
     currency: str = Field("USD", description="Currency code")
-    features: List[PlanFeature] = Field(..., description="Included features")
+    features: list[PlanFeature] = Field(..., description="Included features")
     popular: bool = Field(False, description="Whether this is a popular plan")
     trial_days: int = Field(0, description="Free trial days")
 
@@ -495,7 +494,7 @@ class PlansResponse(BaseModel):
     """Response for plans endpoint"""
 
     success: bool = Field(True, description="Request success status")
-    plans: List[SubscriptionPlan] = Field(..., description="Available subscription plans")
+    plans: list[SubscriptionPlan] = Field(..., description="Available subscription plans")
     total: int = Field(..., description="Total number of plans")
 
 
@@ -504,7 +503,7 @@ async def get_subscription_plans(
     request: Request,
     sort: str = Query("price", description="Sort by: price, name, popularity"),
     order: str = Query("asc", description="Sort order: asc, desc"),
-    feature: Optional[str] = Query(None, description="Filter plans by feature"),
+    feature: str | None = Query(None, description="Filter plans by feature"),
 ):
     """
     K-1 Products/Plans: Get available subscription plans with stable shape

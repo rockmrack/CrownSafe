@@ -5,7 +5,7 @@ Combines recall data with supplemental data sources
 
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from api.models.supplemental_models import (
     ChemicalDataResponse,
@@ -31,8 +31,8 @@ class EnhancedSafetyService:
     async def generate_enhanced_safety_report(
         self,
         product_identifier: str,
-        product_name: Optional[str] = None,
-        product_type: Optional[str] = None,
+        product_name: str | None = None,
+        product_type: str | None = None,
         include_food_data: bool = True,
         include_cosmetic_data: bool = True,
         include_chemical_data: bool = True,
@@ -81,7 +81,7 @@ class EnhancedSafetyService:
 
         return report
 
-    async def _get_recall_data(self, product_identifier: str) -> Dict[str, Any]:
+    async def _get_recall_data(self, product_identifier: str) -> dict[str, Any]:
         """Get recall data for the product"""
         try:
             # This would integrate with your existing recall database
@@ -91,7 +91,7 @@ class EnhancedSafetyService:
             logger.error(f"Error getting recall data: {e}")
             return {"status": "error", "count": 0, "recalls": []}
 
-    async def _get_food_data(self, product_identifier: str, product_name: Optional[str]) -> Optional[FoodDataResponse]:
+    async def _get_food_data(self, product_identifier: str, product_name: str | None) -> FoodDataResponse | None:
         """Get food data from supplemental sources"""
         try:
             search_term = product_name or product_identifier
@@ -128,8 +128,8 @@ class EnhancedSafetyService:
             return None
 
     async def _get_cosmetic_data(
-        self, product_identifier: str, product_name: Optional[str]
-    ) -> Optional[CosmeticDataResponse]:
+        self, product_identifier: str, product_name: str | None
+    ) -> CosmeticDataResponse | None:
         """Get cosmetic data from supplemental sources"""
         try:
             search_term = product_name or product_identifier
@@ -183,8 +183,8 @@ class EnhancedSafetyService:
             return None
 
     async def _get_chemical_data(
-        self, product_identifier: str, product_name: Optional[str]
-    ) -> Optional[ChemicalDataResponse]:
+        self, product_identifier: str, product_name: str | None
+    ) -> ChemicalDataResponse | None:
         """Get chemical data from supplemental sources"""
         try:
             search_term = product_name or product_identifier
@@ -250,7 +250,7 @@ class EnhancedSafetyService:
 
         return 0.5  # Default neutral score
 
-    def _generate_safety_recommendations(self, report: EnhancedSafetyReport) -> List[str]:
+    def _generate_safety_recommendations(self, report: EnhancedSafetyReport) -> list[str]:
         """Generate safety recommendations based on the report data"""
         recommendations = []
 
@@ -300,7 +300,7 @@ class EnhancedSafetyService:
 
         return recommendations
 
-    def _identify_risk_factors(self, report: EnhancedSafetyReport) -> List[str]:
+    def _identify_risk_factors(self, report: EnhancedSafetyReport) -> list[str]:
         """Identify risk factors from the report data"""
         risk_factors = []
 
@@ -332,7 +332,7 @@ class EnhancedSafetyService:
 
         return list(set(risk_factors))  # Remove duplicates
 
-    def _get_data_sources(self, report: EnhancedSafetyReport) -> List[str]:
+    def _get_data_sources(self, report: EnhancedSafetyReport) -> list[str]:
         """Get list of data sources used in the report"""
         sources = ["recall_database"]
 

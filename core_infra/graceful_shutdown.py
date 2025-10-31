@@ -11,7 +11,7 @@ import sys
 import threading
 import time
 from contextlib import contextmanager
-from typing import Callable, List
+from typing import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class GracefulShutdownHandler:
     def __init__(self, timeout: int = 30):
         self.timeout = timeout
         self.shutdown_event = threading.Event()
-        self.cleanup_tasks: List[Callable] = []
+        self.cleanup_tasks: list[Callable] = []
         self.active_requests = 0
         self.lock = threading.Lock()
         self._original_sigint = None

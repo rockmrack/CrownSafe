@@ -5,7 +5,6 @@ Trap attackers and gather intelligence on attack patterns
 
 import logging
 import time
-from typing import Dict
 
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -14,8 +13,8 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # Track honeypot hits for intelligence gathering
-honeypot_hits: Dict[str, int] = {}
-attack_intelligence: Dict[str, list] = {"ips": [], "patterns": [], "user_agents": []}
+honeypot_hits: dict[str, int] = {}
+attack_intelligence: dict[str, list] = {"ips": [], "patterns": [], "user_agents": []}
 
 
 def record_honeypot_hit(request: Request, honeypot_type: str):

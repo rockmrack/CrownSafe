@@ -12,7 +12,7 @@ import asyncio
 import logging
 import os
 import sys
-from typing import Any, Dict, Optional
+from typing import Any
 
 import requests
 
@@ -29,9 +29,9 @@ logger = logging.getLogger(__name__)
 def test_api_endpoint_with_model_number(
     user_id: int,
     barcode: str,
-    model_number: Optional[str],
+    model_number: str | None,
     api_url: str = "http://localhost:8001",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Test the /api/v1/safety-check endpoint with model number parameter.
 
@@ -81,7 +81,7 @@ def test_api_endpoint_with_model_number(
         return {"success": False, "error": str(e)}
 
 
-async def test_direct_database_search(model_number: str) -> Dict[str, Any]:
+async def test_direct_database_search(model_number: str) -> dict[str, Any]:
     """
     Test direct database search for model number to verify data ingestion worked.
 
@@ -138,7 +138,7 @@ async def test_direct_database_search(model_number: str) -> Dict[str, Any]:
         return {"success": False, "error": str(e)}
 
 
-async def test_recall_data_agent_directly(model_number: str) -> Dict[str, Any]:
+async def test_recall_data_agent_directly(model_number: str) -> dict[str, Any]:
     """
     Test the RecallDataAgent directly with model number input.
 
@@ -173,7 +173,7 @@ async def test_recall_data_agent_directly(model_number: str) -> Dict[str, Any]:
         return {"success": False, "error": str(e)}
 
 
-def run_comprehensive_test_suite(user_id: int, barcode: str, model_number: Optional[str] = None):
+def run_comprehensive_test_suite(user_id: int, barcode: str, model_number: str | None = None):
     """
     Run comprehensive test suite for model number scanning feature.
 

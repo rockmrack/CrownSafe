@@ -12,7 +12,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from html import escape
 from textwrap import dedent
-from typing import Any, Dict, Optional, Tuple, Union, cast
+from typing import Any, Union, cast
 from urllib.parse import quote
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -45,7 +45,7 @@ def _is_uuid(s: str) -> bool:
         return False
 
 
-def _guess_blob_key(user_id: int, report_uuid: str, content_type: str) -> Optional[str]:
+def _guess_blob_key(user_id: int, report_uuid: str, content_type: str) -> str | None:
     """Guess Azure Blob key for report by trying common layouts"""
     now = datetime.now(timezone.utc)
     year = now.strftime("%Y")
@@ -72,7 +72,7 @@ def _guess_blob_key(user_id: int, report_uuid: str, content_type: str) -> Option
     return None
 
 
-def _build_share_urls(base_url: str, token: str) -> Tuple[str, str]:
+def _build_share_urls(base_url: str, token: str) -> tuple[str, str]:
     """Construct normalized share and QR URLs with a URL-safe token"""
     normalized_base = base_url.rstrip("/") or base_url
     safe_token = quote(token, safe="")
@@ -83,7 +83,7 @@ def _build_share_urls(base_url: str, token: str) -> Tuple[str, str]:
 
 def create_share_token_for_azure_blob(
     user_id: int, content_type: str, content_ref: str, blob_key: str, ttl_hours: int = 24
-) -> Tuple[str, ShareToken]:
+) -> tuple[str, ShareToken]:
     """Create share token for Azure Blob Storage-based content without database record"""
     token = ShareToken.generate_token()
     expires_at = datetime.utcnow() + timedelta(hours=ttl_hours)
@@ -129,15 +129,15 @@ class ShareRequest(BaseModel):
     user_id: int = Field(..., description="User creating the share")
 
     # Optional UUID field for reports
-    report_uuid: Optional[str] = Field(
+    report_uuid: str | None = Field(
         None,
         description="Report UUID (alternative to content_id for reports)",
     )
 
     # Share settings
-    expires_in_hours: Optional[int] = Field(24, description="Hours until expiration (default 24)")
-    max_views: Optional[int] = Field(None, description="Maximum number of views")
-    password: Optional[str] = Field(None, description="Optional password protection")
+    expires_in_hours: int | None = Field(24, description="Hours until expiration (default 24)")
+    max_views: int | None = Field(None, description="Maximum number of views")
+    password: str | None = Field(None, description="Optional password protection")
     allow_download: bool = Field(True, description="Allow downloading PDFs")
     show_personal_info: bool = Field(False, description="Include personal information")
 
@@ -148,7 +148,7 @@ class EmailShareRequest(BaseModel):
     share_token: str = Field(..., description="Share token to send")
     recipient_email: EmailStr = Field(..., description="Recipient email address")
     sender_name: str = Field(..., description="Sender's name")
-    message: Optional[str] = Field(None, description="Personal message to include")
+    message: str | None = Field(None, description="Personal message to include")
 
 
 class ShareResponse(BaseModel):
@@ -157,8 +157,8 @@ class ShareResponse(BaseModel):
     success: bool
     share_token: str
     share_url: str
-    expires_at: Optional[datetime]
-    qr_code_url: Optional[str]
+    expires_at: datetime | None
+    qr_code_url: str | None
 
 
 class SharedContentResponse(BaseModel):
@@ -166,9 +166,9 @@ class SharedContentResponse(BaseModel):
 
     success: bool
     content_type: str
-    content: Dict[str, Any]
+    content: dict[str, Any]
     allow_download: bool
-    views_remaining: Optional[int]
+    views_remaining: int | None
 
 
 @share_router.post("/create-dev", response_model=ApiResponse)
@@ -338,7 +338,7 @@ async def create_share_link(
                 )
 
             # Create content snapshot
-            scan_timestamp = cast(Optional[datetime], getattr(scan, "scan_timestamp", None))
+            scan_timestamp = cast(datetime | None, getattr(scan, "scan_timestamp", None))
             content_snapshot = {
                 "scan_id": scan.scan_id,
                 "product_name": scan.product_name,
@@ -418,8 +418,8 @@ async def create_share_link(
                         )
 
                     # Create content snapshot
-                    period_start = cast(Optional[datetime], getattr(report, "period_start", None))
-                    period_end = cast(Optional[datetime], getattr(report, "period_end", None))
+                    period_start = cast(datetime | None, getattr(report, "period_start", None))
+                    period_end = cast(datetime | None, getattr(report, "period_end", None))
                     content_snapshot = {
                         "report_id": report.report_id,
                         "report_type": report.report_type,
@@ -560,7 +560,7 @@ async def view_share_link_dev(token: str) -> ApiResponse:
 @share_router.get("/view/{token}", response_model=ApiResponse)
 async def view_shared_content(
     token: str,
-    password: Optional[str] = Query(None),
+    password: str | None = Query(None),
     db: Session = Depends(get_db),  # noqa: B008
 ) -> ApiResponse:
     """
@@ -596,7 +596,7 @@ async def view_shared_content(
 
             pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-            stored_hash = cast(Optional[str], getattr(share_token, "password_hash", None))
+            stored_hash = cast(str | None, getattr(share_token, "password_hash", None))
             if not stored_hash or not pwd_context.verify(password, stored_hash):
                 raise HTTPException(status_code=401, detail="Invalid password")
 
@@ -606,8 +606,8 @@ async def view_shared_content(
 
         # Calculate views remaining
         views_remaining = None
-        max_views_value = cast(Optional[int], getattr(share_token, "max_views", None))
-        view_count_value = cast(Optional[int], getattr(share_token, "view_count", None)) or 0
+        max_views_value = cast(int | None, getattr(share_token, "max_views", None))
+        view_count_value = cast(int | None, getattr(share_token, "view_count", None)) or 0
         if max_views_value is not None:
             views_remaining = max(0, max_views_value - view_count_value)
 
@@ -615,7 +615,7 @@ async def view_shared_content(
         response = SharedContentResponse(
             success=True,
             content_type=cast(str, share_token.share_type),
-            content=cast(Dict[str, Any], share_token.content_snapshot or {}),
+            content=cast(dict[str, Any], share_token.content_snapshot or {}),
             allow_download=bool(getattr(share_token, "allow_download", False)),
             views_remaining=views_remaining,
         )
@@ -664,15 +664,15 @@ async def share_via_email(
                 f'<p style="background-color: #e3f2fd; padding: 15px; border-radius: 5px;"><em>{safe_message}</em></p>'
             )
 
-        current_view_count = cast(Optional[int], getattr(share_token, "view_count", None)) or 0
+        current_view_count = cast(int | None, getattr(share_token, "view_count", None)) or 0
         views_remaining = None
-        max_views_email = cast(Optional[int], getattr(share_token, "max_views", None))
+        max_views_email = cast(int | None, getattr(share_token, "max_views", None))
         if max_views_email is not None:
             remaining = max_views_email - current_view_count
             views_remaining = max(0, remaining)
 
         expiry_text = "This link does not expire."
-        expires_at_value = cast(Optional[datetime], getattr(share_token, "expires_at", None))
+        expires_at_value = cast(datetime | None, getattr(share_token, "expires_at", None))
         if expires_at_value is not None:
             seconds_remaining = (expires_at_value - datetime.utcnow()).total_seconds()
             hours_remaining = max(0, int(seconds_remaining // 3600))

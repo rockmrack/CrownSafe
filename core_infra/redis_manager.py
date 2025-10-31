@@ -5,7 +5,6 @@ import asyncio
 import logging
 import os
 import time
-from typing import Optional
 
 import redis.asyncio as redis  # Import the async redis client
 from dotenv import load_dotenv
@@ -42,7 +41,7 @@ if not logger.hasHandlers():
 
 # --- Connection Pool ---
 # Global variable to hold the connection pool once created
-_redis_pool: Optional[ConnectionPool] = None
+_redis_pool: ConnectionPool | None = None
 _pool_creation_time = 0  # Track when the pool was created for potential refresh
 
 

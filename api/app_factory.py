@@ -5,7 +5,6 @@ Creates and configures the BabyShield API application with all middleware and se
 
 import logging
 import os
-from typing import Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def create_app(
     environment: str = "development",
-    config: Optional[object] = None,
+    config: object | None = None,
     enable_docs: bool = True,
 ) -> FastAPI:
     """
@@ -78,7 +77,7 @@ def _configure_logging(app: FastAPI, environment: str) -> None:
     logger.info(f"Logging configured: level={log_level}")
 
 
-def _configure_middleware(app: FastAPI, environment: str, config: Optional[object]) -> None:
+def _configure_middleware(app: FastAPI, environment: str, config: object | None) -> None:
     """Configure all application middleware"""
 
     # 1. Security headers and rate limiting

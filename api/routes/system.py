@@ -5,7 +5,7 @@ Provides health checks for monitoring and orchestration
 
 import logging
 import os
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, Response
 from fastapi.responses import JSONResponse
@@ -18,7 +18,7 @@ router = APIRouter()
 
 
 @router.get("/api/v1/healthz")
-async def healthz(response: Response) -> Dict[str, Any]:
+async def healthz(response: Response) -> dict[str, Any]:
     """
     Basic health check endpoint
     Returns 200 if the service is running
@@ -104,7 +104,7 @@ async def readyz(response: Response) -> JSONResponse:
 
 
 @router.get("/api/v1/status")
-async def status(response: Response) -> Dict[str, Any]:
+async def status(response: Response) -> dict[str, Any]:
     """
     Detailed status endpoint
     Provides comprehensive system information

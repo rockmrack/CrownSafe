@@ -9,14 +9,14 @@ import traceback
 from contextvars import ContextVar
 from datetime import datetime
 from functools import wraps
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import JSON, Column, DateTime, Integer, String, Text, event
 from sqlalchemy.orm import Session
 
 # Context variable for request tracking
-current_user_context: ContextVar[Optional[int]] = ContextVar("current_user", default=None)
-current_request_id: ContextVar[Optional[str]] = ContextVar("request_id", default=None)
+current_user_context: ContextVar[int | None] = ContextVar("current_user", default=None)
+current_request_id: ContextVar[str | None] = ContextVar("request_id", default=None)
 
 
 def get_base():
@@ -71,9 +71,9 @@ class AuditLogger:
         action: str,
         entity_type: str,
         entity_id: Any = None,
-        old_value: Dict = None,
-        new_value: Dict = None,
-        metadata: Dict = None,
+        old_value: dict = None,
+        new_value: dict = None,
+        metadata: dict = None,
         error: str = None,
     ):
         """
@@ -121,7 +121,7 @@ class AuditLogger:
         except Exception as e:
             self.logger.error(f"Failed to create audit log: {e}")
 
-    def _calculate_diff(self, old: Dict, new: Dict) -> Dict:
+    def _calculate_diff(self, old: dict, new: dict) -> dict:
         """
         Calculate differences between old and new values
         """
@@ -148,7 +148,7 @@ class AuditLogger:
             new_value=self._serialize_entity(entity),
         )
 
-    def log_update(self, entity: Any, old_state: Dict):
+    def log_update(self, entity: Any, old_state: dict):
         """Log entity update"""
         self.log(
             action="UPDATE",
@@ -167,7 +167,7 @@ class AuditLogger:
             old_value=self._serialize_entity(entity),
         )
 
-    def log_view(self, entity_type: str, entity_id: Any, metadata: Dict = None):
+    def log_view(self, entity_type: str, entity_id: Any, metadata: dict = None):
         """Log data access/viewing"""
         self.log(
             action="VIEW",
@@ -197,7 +197,7 @@ class AuditLogger:
             error=error,
         )
 
-    def _serialize_entity(self, entity: Any) -> Dict:
+    def _serialize_entity(self, entity: Any) -> dict:
         """
         Serialize entity to dictionary
         """
@@ -360,7 +360,7 @@ class AuditQuery:
     def __init__(self, db_session: Session):
         self.db = db_session
 
-    def get_user_activity(self, user_id: int, limit: int = 100) -> List[AuditLog]:
+    def get_user_activity(self, user_id: int, limit: int = 100) -> list[AuditLog]:
         """Get activity for a specific user"""
         return (
             self.db.query(AuditLog)
@@ -370,7 +370,7 @@ class AuditQuery:
             .all()
         )
 
-    def get_entity_history(self, entity_type: str, entity_id: str) -> List[AuditLog]:
+    def get_entity_history(self, entity_type: str, entity_id: str) -> list[AuditLog]:
         """Get history for a specific entity"""
         return (
             self.db.query(AuditLog)
@@ -379,7 +379,7 @@ class AuditQuery:
             .all()
         )
 
-    def get_recent_changes(self, hours: int = 24) -> List[AuditLog]:
+    def get_recent_changes(self, hours: int = 24) -> list[AuditLog]:
         """Get recent changes"""
         from datetime import timedelta
 
@@ -394,7 +394,7 @@ class AuditQuery:
         user_id: int = None,
         start_date: datetime = None,
         end_date: datetime = None,
-    ) -> List[AuditLog]:
+    ) -> list[AuditLog]:
         """Search audit logs with filters"""
         query = self.db.query(AuditLog)
 

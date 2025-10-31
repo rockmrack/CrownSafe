@@ -6,7 +6,7 @@ Integrates comprehensive validation with exact product matching
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # REMOVED FOR CROWN SAFE: RecallDB barcode scanning no longer applicable
 # try:
@@ -30,11 +30,11 @@ class ExactScanResult:
     is_valid: bool
     barcode_validation: BarcodeValidationResult
     product_found: bool
-    exact_matches: List[Dict[str, Any]]
+    exact_matches: list[dict[str, Any]]
     confidence_score: float
     scan_timestamp: datetime
-    error_message: Optional[str] = None
-    recommendations: List[str] = None
+    error_message: str | None = None
+    recommendations: list[str] = None
 
 
 class EnhancedBarcodeService:
@@ -121,7 +121,7 @@ class EnhancedBarcodeService:
 
     async def _find_exact_product_matches(
         self, normalized_barcode: str, barcode_type: BarcodeType
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Find exact product matches in database"""
         # REMOVED FOR CROWN SAFE: Recall database search no longer applicable
         # Crown Safe uses hair products (HairProductModel), not baby product recalls
@@ -147,7 +147,7 @@ class EnhancedBarcodeService:
     # Crown Safe uses hair products (HairProductModel), not baby product recalls
 
     def _calculate_overall_confidence(
-        self, validation_result: BarcodeValidationResult, matches: List[Dict[str, Any]]
+        self, validation_result: BarcodeValidationResult, matches: list[dict[str, Any]]
     ) -> float:
         """Calculate overall confidence score"""
         base_confidence = validation_result.confidence_score
@@ -160,8 +160,8 @@ class EnhancedBarcodeService:
         return (base_confidence + best_match_confidence) / 2
 
     def _get_scan_recommendations(
-        self, validation_result: BarcodeValidationResult, matches: List[Dict[str, Any]]
-    ) -> List[str]:
+        self, validation_result: BarcodeValidationResult, matches: list[dict[str, Any]]
+    ) -> list[str]:
         """Get recommendations based on scan results"""
         recommendations = []
 
@@ -182,7 +182,7 @@ class EnhancedBarcodeService:
 
         return recommendations
 
-    def get_scan_summary(self, result: ExactScanResult) -> Dict[str, Any]:
+    def get_scan_summary(self, result: ExactScanResult) -> dict[str, Any]:
         """Get comprehensive scan summary"""
         return {
             "scan_timestamp": result.scan_timestamp.isoformat(),

@@ -5,7 +5,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FuturesTimeout
 from time import monotonic
-from typing import Any, Callable, Dict
+from typing import Any, Callable
 
 _EXEC = ThreadPoolExecutor(max_workers=32)
 _lock = threading.Lock()
@@ -21,7 +21,7 @@ class CircuitBreaker:
         self.threshold = threshold
         self.window = window_sec
         self.cooldown = cooldown_sec
-        self.state: Dict[str, Dict[str, float]] = {}  # key -> {"fails": int, "window_start": ts, "open_until": ts}
+        self.state: dict[str, dict[str, float]] = {}  # key -> {"fails": int, "window_start": ts, "open_until": ts}
 
     def allow(self, key: str) -> bool:
         now = monotonic()

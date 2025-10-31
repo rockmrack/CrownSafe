@@ -11,26 +11,26 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 @dataclass
 class VerificationInput:
-    gtin: Optional[str]
-    lot_number: Optional[str]
-    serial_number: Optional[str]
-    expiry_date: Optional[date]
-    trace_id: Optional[str] = None
+    gtin: str | None
+    lot_number: str | None
+    serial_number: str | None
+    expiry_date: date | None
+    trace_id: str | None = None
 
 
 @dataclass
 class VerificationResult:
     verified: bool
     status: str  # verified | invalid | unknown | error
-    manufacturer: Optional[str] = None
-    source: Optional[str] = None
-    message: Optional[str] = None
-    payload: Optional[Dict[str, Any]] = None
+    manufacturer: str | None = None
+    source: str | None = None
+    message: str | None = None
+    payload: dict[str, Any] | None = None
     checked_at: datetime = datetime.utcnow()
 
 

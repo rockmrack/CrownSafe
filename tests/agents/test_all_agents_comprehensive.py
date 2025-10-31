@@ -5,7 +5,7 @@ Date: October 10, 2025
 """
 
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
@@ -73,7 +73,7 @@ class TestResults:
     """Track test results for summary report"""
 
     def __init__(self):
-        self.results: Dict[str, Dict[str, Any]] = {}
+        self.results: dict[str, dict[str, Any]] = {}
         self.start_time = datetime.now()
 
     def add_result(
@@ -258,9 +258,9 @@ class MockLLMClient:
         model: str,
         system: str,
         user: str,
-        response_schema: Dict[str, Any],
+        response_schema: dict[str, Any],
         timeout: float = 8.0,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         # Return a deterministic payload that satisfies ChatAgent expectations.
         return {
             "summary": "Test summary",

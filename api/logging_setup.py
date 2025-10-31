@@ -7,7 +7,7 @@ import json
 import logging
 import sys
 import time
-from typing import Any, Dict
+from typing import Any
 
 
 class JsonFormatter(logging.Formatter):
@@ -20,7 +20,7 @@ class JsonFormatter(logging.Formatter):
         Format log record as JSON
         """
         # Base payload
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "timestamp": int(time.time() * 1000),  # Unix timestamp in milliseconds
             "time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(record.created)),
             "level": record.levelname,

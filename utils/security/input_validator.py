@@ -6,7 +6,7 @@ Prevents SQL injection, XSS, and other injection attacks
 import logging
 import re
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import HTTPException, Request, status
 from pydantic import BaseModel, Field, validator
@@ -218,8 +218,8 @@ class InputValidator:
 
     @classmethod
     def validate_date_range(
-        cls, date_from: Optional[str], date_to: Optional[str]
-    ) -> tuple[Optional[str], Optional[str]]:
+        cls, date_from: str | None, date_to: str | None
+    ) -> tuple[str | None, str | None]:
         """Validate date range"""
         if date_from and not re.match(cls.PATTERNS["date"], date_from):
             raise ValueError("Invalid date_from format (use YYYY-MM-DD)")
@@ -303,7 +303,7 @@ class SafeBarcodeScanRequest(BaseModel):
 
     barcode: str = Field(..., description="Barcode to scan")
     user_id: int = Field(..., gt=0, description="User ID")
-    barcode_type: Optional[BarcodeFormat] = Field(None, description="Barcode format")
+    barcode_type: BarcodeFormat | None = Field(None, description="Barcode format")
 
     @validator("barcode")
     def validate_barcode(cls, v):

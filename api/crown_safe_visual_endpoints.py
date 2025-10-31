@@ -10,7 +10,7 @@ import logging
 import os
 import uuid
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import (
     APIRouter,
@@ -62,20 +62,20 @@ class ImageUploadResponse(BaseModel):
     """Response for image upload"""
 
     scan_id: str
-    upload_url: Optional[str] = None
+    upload_url: str | None = None
     status: str
     message: str
-    expires_at: Optional[datetime] = None
+    expires_at: datetime | None = None
 
 
 class HairProductImageAnalysisRequest(BaseModel):
     """Request for hair product image analysis"""
 
-    scan_id: Optional[str] = Field(None, description="Scan ID from upload")
-    image_url: Optional[str] = Field(None, description="Direct image URL")
-    image_base64: Optional[str] = Field(None, description="Base64 encoded image")
-    claimed_product_name: Optional[str] = Field(None, description="User-claimed product name")
-    claimed_brand: Optional[str] = Field(None, description="User-claimed brand")
+    scan_id: str | None = Field(None, description="Scan ID from upload")
+    image_url: str | None = Field(None, description="Direct image URL")
+    image_base64: str | None = Field(None, description="Base64 encoded image")
+    claimed_product_name: str | None = Field(None, description="User-claimed product name")
+    claimed_brand: str | None = Field(None, description="User-claimed brand")
     skip_verification: bool = Field(False, description="Skip multi-factor verification")
 
     @validator("image_base64")
@@ -91,21 +91,21 @@ class ExtractedIngredient(BaseModel):
     name: str
     confidence: float = Field(..., ge=0, le=1)
     position: int = Field(..., description="Position in ingredient list")
-    category: Optional[str] = None
-    concerns: List[str] = []
+    category: str | None = None
+    concerns: list[str] = []
 
 
 class LabelExtractionResult(BaseModel):
     """Results from label OCR and parsing"""
 
-    product_name: Optional[str] = None
-    brand: Optional[str] = None
-    ingredients: List[ExtractedIngredient] = []
-    net_weight: Optional[str] = None
-    manufacturer: Optional[str] = None
-    warnings: List[str] = []
+    product_name: str | None = None
+    brand: str | None = None
+    ingredients: list[ExtractedIngredient] = []
+    net_weight: str | None = None
+    manufacturer: str | None = None
+    warnings: list[str] = []
     extraction_confidence: float = Field(..., ge=0, le=1)
-    ocr_text_raw: Optional[str] = None
+    ocr_text_raw: str | None = None
 
 
 class SafetyAnalysis(BaseModel):
@@ -113,12 +113,12 @@ class SafetyAnalysis(BaseModel):
 
     overall_safety_score: float = Field(..., ge=0, le=100)
     risk_level: str = Field(..., description="low, moderate, high, critical")
-    flagged_ingredients: List[Dict[str, Any]] = []
-    recommendations: List[str] = []
-    hair_type_compatibility: Optional[Dict[str, bool]] = None
-    sulfate_free: Optional[bool] = None
-    paraben_free: Optional[bool] = None
-    silicone_free: Optional[bool] = None
+    flagged_ingredients: list[dict[str, Any]] = []
+    recommendations: list[str] = []
+    hair_type_compatibility: dict[str, bool] | None = None
+    sulfate_free: bool | None = None
+    paraben_free: bool | None = None
+    silicone_free: bool | None = None
 
 
 class HairProductImageAnalysisResponse(BaseModel):
@@ -130,29 +130,29 @@ class HairProductImageAnalysisResponse(BaseModel):
     processing_time_ms: int
 
     # Label extraction
-    label_extraction: Optional[LabelExtractionResult] = None
+    label_extraction: LabelExtractionResult | None = None
 
     # Product matching
-    matched_product: Optional[Dict[str, Any]] = None
+    matched_product: dict[str, Any] | None = None
     match_confidence: float = Field(0.0, ge=0, le=1)
 
     # Safety analysis
-    safety_analysis: Optional[SafetyAnalysis] = None
+    safety_analysis: SafetyAnalysis | None = None
 
     # Additional data
     image_quality_score: float = Field(..., ge=0, le=1)
     requires_manual_review: bool = False
-    user_feedback_requested: Optional[str] = None
+    user_feedback_requested: str | None = None
 
 
 class ProductVerificationRequest(BaseModel):
     """Request to verify extracted product data"""
 
     scan_id: str
-    confirmed_product_name: Optional[str] = None
-    confirmed_brand: Optional[str] = None
-    confirmed_ingredients: Optional[List[str]] = None
-    user_corrections: Optional[Dict[str, Any]] = None
+    confirmed_product_name: str | None = None
+    confirmed_brand: str | None = None
+    confirmed_ingredients: list[str] | None = None
+    user_corrections: dict[str, Any] | None = None
 
 
 class ScanHistoryItem(BaseModel):
@@ -160,17 +160,17 @@ class ScanHistoryItem(BaseModel):
 
     scan_id: str
     timestamp: datetime
-    product_name: Optional[str]
-    brand: Optional[str]
-    safety_score: Optional[float]
-    image_thumbnail: Optional[str]
+    product_name: str | None
+    brand: str | None
+    safety_score: float | None
+    image_thumbnail: str | None
     status: str
 
 
 class ScanHistoryResponse(BaseModel):
     """Response for scan history"""
 
-    scans: List[ScanHistoryItem]
+    scans: list[ScanHistoryItem]
     total: int
     page: int
     page_size: int
@@ -184,7 +184,7 @@ def generate_scan_id() -> str:
     return f"scan_{uuid.uuid4().hex[:16]}"
 
 
-def validate_image_file(file: UploadFile) -> tuple[bool, Optional[str]]:
+def validate_image_file(file: UploadFile) -> tuple[bool, str | None]:
     """Validate uploaded image file"""
     # Check content type (max 10MB size check removed as unused)
     allowed_types = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
@@ -233,7 +233,7 @@ async def perform_ocr(image: Image.Image) -> str:
     return "PLACEHOLDER: OCR text would appear here"
 
 
-async def extract_ingredients_from_text(ocr_text: str) -> List[ExtractedIngredient]:
+async def extract_ingredients_from_text(ocr_text: str) -> list[ExtractedIngredient]:
     """Parse ingredients from OCR text"""
     # Placeholder - implement ingredient parsing logic
     # Look for common patterns like "Ingredients:", "Contains:", etc.
@@ -257,8 +257,8 @@ async def extract_ingredients_from_text(ocr_text: str) -> List[ExtractedIngredie
 
 
 async def match_product_in_database(
-    db: Session, product_name: Optional[str], brand: Optional[str]
-) -> Optional[HairProductModel]:
+    db: Session, product_name: str | None, brand: str | None
+) -> HairProductModel | None:
     """Match extracted product to database"""
     if not product_name:
         return None
@@ -276,7 +276,7 @@ async def match_product_in_database(
     return query.first()
 
 
-async def analyze_product_safety(ingredients: List[ExtractedIngredient], db: Session) -> SafetyAnalysis:
+async def analyze_product_safety(ingredients: list[ExtractedIngredient], db: Session) -> SafetyAnalysis:
     """Analyze safety based on ingredients"""
     flagged = []
     risk_score = 100.0

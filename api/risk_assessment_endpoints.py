@@ -8,7 +8,7 @@ Provides endpoints for product risk analysis, report generation, and data ingest
 import asyncio  # noqa: E402
 import logging  # noqa: E402
 from datetime import datetime, timedelta  # noqa: E402
-from typing import Any, Dict, List, Optional  # noqa: E402
+from typing import Any  # noqa: E402
 
 from fastapi import (  # noqa: E402
     APIRouter,
@@ -57,11 +57,11 @@ class RiskAssessmentRequest(AppModel):
 
     model_config = {"protected_namespaces": ()}  # Allow model_number field
 
-    product_name: Optional[str] = Field(None, description="Product name to search")
-    upc: Optional[str] = Field(None, description="UPC barcode")
-    gtin: Optional[str] = Field(None, description="GTIN identifier")
-    manufacturer: Optional[str] = Field(None, description="Manufacturer name")
-    model_number: Optional[str] = Field(None, description="Model number")
+    product_name: str | None = Field(None, description="Product name to search")
+    upc: str | None = Field(None, description="UPC barcode")
+    gtin: str | None = Field(None, description="GTIN identifier")
+    manufacturer: str | None = Field(None, description="Manufacturer name")
+    model_number: str | None = Field(None, description="Model number")
     include_report: bool = Field(True, description="Generate full report")
     report_format: str = Field("pdf", description="Report format: pdf, html, json")
 
@@ -74,10 +74,10 @@ class RiskAssessmentResponse(BaseModel):
     risk_score: float
     risk_level: str
     confidence: float
-    risk_factors: Dict[str, Any]
-    recommendations: List[str]
-    report_url: Optional[str] = None
-    disclaimers: Dict[str, str]
+    risk_factors: dict[str, Any]
+    recommendations: list[str]
+    report_url: str | None = None
+    disclaimers: dict[str, str]
     assessment_id: str
     timestamp: datetime
 
@@ -85,10 +85,10 @@ class RiskAssessmentResponse(BaseModel):
 class DataIngestionRequest(BaseModel):
     """Request model for data ingestion"""
 
-    sources: List[str] = Field(default=["CPSC", "EU_SAFETY_GATE"], description="Data sources to ingest")
-    start_date: Optional[datetime] = Field(None, description="Start date for data range")
-    end_date: Optional[datetime] = Field(None, description="End date for data range")
-    product_filter: Optional[str] = Field(None, description="Product category filter")
+    sources: list[str] = Field(default=["CPSC", "EU_SAFETY_GATE"], description="Data sources to ingest")
+    start_date: datetime | None = Field(None, description="Start date for data range")
+    end_date: datetime | None = Field(None, description="End date for data range")
+    product_filter: str | None = Field(None, description="Product category filter")
     full_sync: bool = Field(False, description="Perform full sync vs incremental")
 
 
@@ -650,7 +650,7 @@ async def get_risk_statistics(db: Session = Depends(get_db)):
 
 
 # Helper functions
-async def _find_or_create_product(request: RiskAssessmentRequest, db: Session) -> Optional[ProductGoldenRecord]:
+async def _find_or_create_product(request: RiskAssessmentRequest, db: Session) -> ProductGoldenRecord | None:
     """
     Find existing product or create new golden record
     """
@@ -742,7 +742,7 @@ async def enrich_product_data(product: ProductGoldenRecord, db: Session):
         logger.error(f"Failed to enrich product data: {e}")
 
 
-async def refresh_product_data(product_id: str, barcode: Optional[str] = None):
+async def refresh_product_data(product_id: str, barcode: str | None = None):
     """
     Background task to refresh product data from all sources
     """
@@ -761,8 +761,8 @@ async def refresh_product_data(product_id: str, barcode: Optional[str] = None):
 async def ingest_from_source(
     source: str,
     job_id: str,
-    start_date: Optional[datetime],
-    end_date: Optional[datetime],
+    start_date: datetime | None,
+    end_date: datetime | None,
 ):
     """
     Background task to ingest data from a specific source

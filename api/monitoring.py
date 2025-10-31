@@ -8,7 +8,7 @@ import logging
 import os
 import time
 from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import Any
 
 import httpx
 import psutil
@@ -402,7 +402,7 @@ class SLOTracker:
         if is_error:
             self.data["error_rate"]["error_requests"] += 1
 
-    def get_slo_status(self) -> Dict[str, Any]:
+    def get_slo_status(self) -> dict[str, Any]:
         """Get current SLO status"""
         import numpy as np
 
@@ -490,7 +490,7 @@ class SyntheticProbe:
             },
         }
 
-    async def run_probe(self, probe_name: str) -> Dict[str, Any]:
+    async def run_probe(self, probe_name: str) -> dict[str, Any]:
         """Run a single synthetic probe"""
 
         if probe_name not in self.probes:
@@ -539,7 +539,7 @@ class SyntheticProbe:
                     "timestamp": datetime.now().isoformat(),
                 }
 
-    async def run_all_probes(self) -> List[Dict[str, Any]]:
+    async def run_all_probes(self) -> list[dict[str, Any]]:
         """Run all synthetic probes"""
 
         tasks = [self.run_probe(name) for name in self.probes]

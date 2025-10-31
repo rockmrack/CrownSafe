@@ -7,7 +7,7 @@ import hashlib
 import json
 import logging
 import os
-from typing import Any, Dict, Optional
+from typing import Any
 
 from redis.asyncio import Redis
 
@@ -19,7 +19,7 @@ class RedisSearchCache:
     Redis-based cache for search results
     """
 
-    def __init__(self, redis_client: Optional[Redis] = None):
+    def __init__(self, redis_client: Redis | None = None):
         """
         Initialize cache with Redis client
 
@@ -52,7 +52,7 @@ class RedisSearchCache:
         if self.redis:
             await self.redis.close()
 
-    def _make_cache_key(self, filters_hash: str, as_of: str, after_tuple: Optional[tuple] = None) -> str:
+    def _make_cache_key(self, filters_hash: str, as_of: str, after_tuple: tuple | None = None) -> str:
         """
         Generate cache key for search results
 
@@ -83,7 +83,7 @@ class RedisSearchCache:
 
         return ":".join(components)
 
-    async def get(self, filters_hash: str, as_of: str, after_tuple: Optional[tuple] = None) -> Optional[Dict[str, Any]]:
+    async def get(self, filters_hash: str, as_of: str, after_tuple: tuple | None = None) -> dict[str, Any] | None:
         """
         Get cached search results
 
@@ -126,9 +126,9 @@ class RedisSearchCache:
         self,
         filters_hash: str,
         as_of: str,
-        after_tuple: Optional[tuple],
-        value: Dict[str, Any],
-        ttl: Optional[int] = None,
+        after_tuple: tuple | None,
+        value: dict[str, Any],
+        ttl: int | None = None,
     ) -> bool:
         """
         Set cached search results
@@ -218,7 +218,7 @@ class RedisSearchCache:
         except Exception as e:
             logger.warning(f"Pattern invalidation error: {e}")
 
-    async def get_stats(self) -> Dict[str, Any]:
+    async def get_stats(self) -> dict[str, Any]:
         """
         Get cache statistics
 
@@ -269,7 +269,7 @@ class RedisSearchCache:
 
 
 # Global cache instance
-_cache: Optional[RedisSearchCache] = None
+_cache: RedisSearchCache | None = None
 
 
 async def get_cache() -> RedisSearchCache:

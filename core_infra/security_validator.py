@@ -6,7 +6,7 @@ Validates security configuration and best practices across the application
 import logging
 import os
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -17,11 +17,11 @@ class SecurityConfigValidator:
     """
 
     def __init__(self):
-        self.findings: List[Dict[str, Any]] = []
-        self.warnings: List[Dict[str, Any]] = []
-        self.passed_checks: List[str] = []
+        self.findings: list[dict[str, Any]] = []
+        self.warnings: list[dict[str, Any]] = []
+        self.passed_checks: list[str] = []
 
-    def validate_environment_variables(self) -> Dict[str, Any]:
+    def validate_environment_variables(self) -> dict[str, Any]:
         """
         Validate critical environment variables are properly configured
 
@@ -127,7 +127,7 @@ class SecurityConfigValidator:
 
         return results
 
-    def validate_cors_configuration(self) -> Dict[str, Any]:
+    def validate_cors_configuration(self) -> dict[str, Any]:
         """
         Validate CORS configuration for security
 
@@ -161,7 +161,7 @@ class SecurityConfigValidator:
 
         return results
 
-    def validate_ssl_tls_configuration(self) -> Dict[str, Any]:
+    def validate_ssl_tls_configuration(self) -> dict[str, Any]:
         """
         Validate SSL/TLS configuration
 
@@ -206,7 +206,7 @@ class SecurityConfigValidator:
 
         return results
 
-    def validate_rate_limiting(self) -> Dict[str, Any]:
+    def validate_rate_limiting(self) -> dict[str, Any]:
         """
         Validate rate limiting configuration
 
@@ -243,7 +243,7 @@ class SecurityConfigValidator:
 
         return results
 
-    def validate_logging_configuration(self) -> Dict[str, Any]:
+    def validate_logging_configuration(self) -> dict[str, Any]:
         """
         Validate logging configuration for security events
 
@@ -286,7 +286,7 @@ class SecurityConfigValidator:
 
         return results
 
-    def comprehensive_security_audit(self) -> Dict[str, Any]:
+    def comprehensive_security_audit(self) -> dict[str, Any]:
         """
         Run comprehensive security audit
 

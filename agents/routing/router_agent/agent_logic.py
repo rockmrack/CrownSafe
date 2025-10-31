@@ -2,7 +2,7 @@
 # Version: 2.4-BABYSHIELD (Fixed to handle both 'result' and 'data' keys from agents)
 import json
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 # --- Agent Logic Imports ---
 AGENT_LOGIC_CLASSES = {}
@@ -39,7 +39,7 @@ class BabyShieldRouterLogic:
     classes directly in a dependency-aware manner. Manages the workflow state in-memory.
     """
 
-    def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logging.getLogger(__name__)
         self.agent_registry = {}
@@ -63,8 +63,8 @@ class BabyShieldRouterLogic:
         )
 
     def _substitute_dependency_placeholders(
-        self, inputs: Dict[str, Any], workflow_state: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, inputs: dict[str, Any], workflow_state: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Replaces placeholders like '.' with actual data
         from the results of completed dependency tasks.
@@ -110,7 +110,7 @@ class BabyShieldRouterLogic:
 
         return substituted
 
-    async def execute_plan(self, plan: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_plan(self, plan: dict[str, Any]) -> dict[str, Any]:
         wf_id = plan.get("plan_id")
         self.logger.info(f"--- Starting execution for workflow: {wf_id} ---")
 

@@ -6,7 +6,6 @@ Bulletproof protection against all known attack vectors
 import logging
 import time
 from collections import defaultdict, deque
-from typing import Dict, List, Set
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -20,17 +19,17 @@ class BulletproofSecurityMiddleware:
     """
 
     def __init__(self):
-        self.request_history: Dict[str, deque] = defaultdict(lambda: deque(maxlen=100))
-        self.blocked_ips: Set[str] = set()
-        self.suspicious_patterns: Dict[str, int] = defaultdict(int)
-        self.honeypot_hits: Dict[str, int] = defaultdict(int)
+        self.request_history: dict[str, deque] = defaultdict(lambda: deque(maxlen=100))
+        self.blocked_ips: set[str] = set()
+        self.suspicious_patterns: dict[str, int] = defaultdict(int)
+        self.honeypot_hits: dict[str, int] = defaultdict(int)
 
         # Enhanced blocked paths (500+ attack vectors)
         self.blocked_paths = self._load_attack_patterns()
         self.suspicious_user_agents = self._load_suspicious_agents()
         self.allowed_countries = {"US", "EU", "GB", "CA", "AU", "ES", "FR", "DE", "IT"}
 
-    def _load_attack_patterns(self) -> List[str]:
+    def _load_attack_patterns(self) -> list[str]:
         """Load comprehensive attack pattern database"""
         return [
             # PHP vulnerabilities
@@ -126,7 +125,7 @@ class BulletproofSecurityMiddleware:
             "eval(",
         ]
 
-    def _load_suspicious_agents(self) -> List[str]:
+    def _load_suspicious_agents(self) -> list[str]:
         """Load suspicious User-Agent patterns"""
         return [
             "sqlmap",

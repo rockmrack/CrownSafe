@@ -7,7 +7,7 @@ import hashlib
 import logging
 import os
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import (
     APIRouter,
@@ -49,9 +49,9 @@ class WebResearchRequest(BaseModel):
     """Request model for web research"""
 
     product_name: str = Field(..., description="Product name to research")
-    barcode: Optional[str] = Field(None, description="Product barcode if available")
+    barcode: str | None = Field(None, description="Product barcode if available")
     search_depth: str = Field("standard", description="Search depth: quick, standard, deep")
-    sources: Optional[List[str]] = Field(None, description="Specific sources to search")
+    sources: list[str] | None = Field(None, description="Specific sources to search")
     include_social_media: bool = Field(True, description="Include social media monitoring")
     include_forums: bool = Field(True, description="Include parent forums")
     user_id: int = Field(..., description="User ID for personalization")
@@ -64,12 +64,12 @@ class WebResearchResult(BaseModel):
     source_type: str  # "forum", "social_media", "news", "blog", "official"
     title: str
     content: str
-    url: Optional[str] = None
-    date_found: Optional[datetime] = None
+    url: str | None = None
+    date_found: datetime | None = None
     relevance_score: float = Field(..., ge=0, le=1)
     sentiment: str = Field("neutral", description="positive, negative, neutral")
     verified: bool = False
-    reported_by_count: Optional[int] = None
+    reported_by_count: int | None = None
 
 
 class WebResearchResponse(BaseModel):
@@ -78,10 +78,10 @@ class WebResearchResponse(BaseModel):
     status: str
     product_researched: str
     findings_count: int
-    findings: List[WebResearchResult]
-    risk_indicators: List[str]
+    findings: list[WebResearchResult]
+    risk_indicators: list[str]
     safety_score: float = Field(..., ge=0, le=100)
-    sources_searched: List[str]
+    sources_searched: list[str]
     search_time_ms: int
     timestamp: datetime
 
@@ -89,13 +89,13 @@ class WebResearchResponse(BaseModel):
 class GuidelinesRequest(BaseModel):
     """Request model for product guidelines"""
 
-    product_name: Optional[str] = Field(None, description="Product name")
-    product_category: Optional[str] = Field(None, description="Product category")
-    barcode: Optional[str] = Field(None, description="Product barcode")
+    product_name: str | None = Field(None, description="Product name")
+    product_category: str | None = Field(None, description="Product category")
+    barcode: str | None = Field(None, description="Product barcode")
     child_age_months: int = Field(..., ge=0, le=216, description="Child's age in months")
-    child_weight_lbs: Optional[float] = Field(None, gt=0, description="Child's weight in pounds")
-    child_height_inches: Optional[float] = Field(None, gt=0, description="Child's height in inches")
-    usage_scenario: Optional[str] = Field(None, description="How product will be used")
+    child_weight_lbs: float | None = Field(None, gt=0, description="Child's weight in pounds")
+    child_height_inches: float | None = Field(None, gt=0, description="Child's height in inches")
+    usage_scenario: str | None = Field(None, description="How product will be used")
     user_id: int = Field(..., description="User ID")
 
 
@@ -108,7 +108,7 @@ class SafetyGuideline(BaseModel):
     importance: str  # "critical", "important", "recommended", "optional"
     source: str
     applicable: bool
-    reason: Optional[str] = None
+    reason: str | None = None
 
 
 class GuidelinesResponse(BaseModel):
@@ -117,12 +117,12 @@ class GuidelinesResponse(BaseModel):
     status: str
     product: str
     age_appropriate: bool
-    weight_appropriate: Optional[bool] = None
-    guidelines: List[SafetyGuideline]
-    warnings: List[str]
-    best_practices: List[str]
-    developmental_considerations: List[str]
-    recommended_alternatives: Optional[List[str]] = None
+    weight_appropriate: bool | None = None
+    guidelines: list[SafetyGuideline]
+    warnings: list[str]
+    best_practices: list[str]
+    developmental_considerations: list[str]
+    recommended_alternatives: list[str] | None = None
     timestamp: datetime
 
 
@@ -140,10 +140,10 @@ class VisualRecognitionResponse(BaseModel):
 
     status: str
     image_id: str
-    products_identified: List[Dict[str, Any]]
+    products_identified: list[dict[str, Any]]
     confidence: float
-    defects_detected: Optional[List[Dict[str, Any]]] = None
-    similar_products: Optional[List[Dict[str, Any]]] = None
+    defects_detected: list[dict[str, Any]] | None = None
+    similar_products: list[dict[str, Any]] | None = None
     processing_time_ms: int
     timestamp: datetime
 
@@ -152,11 +152,11 @@ class MonitoringRequest(BaseModel):
     """Request model for continuous monitoring"""
 
     product_name: str = Field(..., description="Product to monitor")
-    barcode: Optional[str] = Field(None, description="Product barcode")
+    barcode: str | None = Field(None, description="Product barcode")
     user_id: int = Field(..., description="User ID")
     monitoring_duration_days: int = Field(30, ge=1, le=365, description="How long to monitor")
     alert_threshold: str = Field("medium", description="Alert sensitivity: low, medium, high")
-    sources: Optional[List[str]] = Field(None, description="Specific sources to monitor")
+    sources: list[str] | None = Field(None, description="Specific sources to monitor")
 
 
 class MonitoringResponse(BaseModel):

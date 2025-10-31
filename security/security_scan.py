@@ -9,7 +9,6 @@ import os
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
 
 
 class SecurityScanner:
@@ -70,7 +69,7 @@ class SecurityScanner:
         print(f" {title}")
         print("=" * 70)
 
-    def scan_for_secrets(self) -> List[Dict]:
+    def scan_for_secrets(self) -> list[dict]:
         """Scan codebase for exposed secrets"""
 
         self.print_header("🔍 SECRET SCANNING")
@@ -128,7 +127,7 @@ class SecurityScanner:
         self.findings["secrets"] = secrets_found
         return secrets_found
 
-    def scan_dependencies(self) -> List[Dict]:
+    def scan_dependencies(self) -> list[dict]:
         """Scan Python dependencies for vulnerabilities"""
 
         self.print_header("📦 DEPENDENCY SCANNING")
@@ -205,7 +204,7 @@ class SecurityScanner:
         self.findings["dependencies"] = vulnerabilities
         return vulnerabilities
 
-    def verify_data_handling(self) -> Dict:
+    def verify_data_handling(self) -> dict:
         """Verify data handling practices"""
 
         self.print_header("🔐 DATA HANDLING VERIFICATION")
@@ -280,7 +279,7 @@ class SecurityScanner:
         self.findings["data_handling"] = data_checks
         return data_checks
 
-    def check_security_configurations(self) -> Dict:
+    def check_security_configurations(self) -> dict:
         """Check security configurations"""
 
         self.print_header("⚙️ SECURITY CONFIGURATION")
@@ -393,7 +392,7 @@ class SecurityScanner:
             print("  Create sql/create_readonly_user.sql")
             return False
 
-    def check_secret_rotation(self) -> Dict:
+    def check_secret_rotation(self) -> dict:
         """Check secret rotation procedures"""
 
         self.print_header("🔄 SECRET ROTATION VERIFICATION")
@@ -440,7 +439,7 @@ class SecurityScanner:
 
         return rotation_checks
 
-    def generate_recommendations(self) -> List[str]:
+    def generate_recommendations(self) -> list[str]:
         """Generate security recommendations"""
 
         recommendations = []
@@ -472,7 +471,7 @@ class SecurityScanner:
         self.findings["recommendations"] = recommendations
         return recommendations
 
-    def generate_report(self) -> Dict:
+    def generate_report(self) -> dict:
         """Generate security scan report"""
 
         self.print_header("📋 SECURITY SCAN SUMMARY")
@@ -521,7 +520,7 @@ class SecurityScanner:
 
         return report
 
-    def run_full_scan(self) -> Dict:
+    def run_full_scan(self) -> dict:
         """Run complete security scan"""
 
         print("=" * 70)

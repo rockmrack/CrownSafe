@@ -1,7 +1,7 @@
 # agents/chat/chat_agent/agent_logic.py
 from __future__ import annotations
 
-from typing import Any, Dict, List, Literal, Optional, Protocol
+from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, Field, ValidationError
 
@@ -9,8 +9,8 @@ from pydantic import BaseModel, Field, ValidationError
 class EvidenceItem(BaseModel):
     type: Literal["recall", "regulation", "guideline", "datasheet", "label"] = "regulation"
     source: str  # e.g., "EU Safety Gate", "CPSC", "FDA"
-    id: Optional[str] = None
-    url: Optional[str] = None
+    id: str | None = None
+    url: str | None = None
 
 
 class EmergencyNotice(BaseModel):
@@ -26,34 +26,34 @@ class ExplanationResponse(BaseModel):
     """
 
     summary: str = Field(..., description="2–3 line plain-language explanation.")
-    reasons: List[str] = Field(
+    reasons: list[str] = Field(
         default_factory=list,
         description="Bulleted reasons behind the verdict.",
     )
-    checks: List[str] = Field(
+    checks: list[str] = Field(
         default_factory=list,
         description="Concrete checks for the user to perform.",
     )
-    flags: List[str] = Field(
+    flags: list[str] = Field(
         default_factory=list,
         description="Machine-readable tags (e.g., 'soft_cheese','contains_peanuts').",
     )
     disclaimer: str = Field(..., description="Short non-diagnostic disclaimer.")
 
     # NEW (optional)
-    jurisdiction: Optional[Dict[str, Optional[str]]] = Field(
+    jurisdiction: dict[str, str | None] | None = Field(
         default=None,
         description='Applied region context, e.g., {"code":"EU","label":"EU Safety Gate"}',
     )
-    evidence: List[EvidenceItem] = Field(
+    evidence: list[EvidenceItem] = Field(
         default_factory=list,
         description="Cited sources backing claims.",
     )
-    suggested_questions: List[str] = Field(
+    suggested_questions: list[str] = Field(
         default_factory=list,
         description="Follow-up questions parents commonly ask.",
     )
-    emergency: Optional[EmergencyNotice] = Field(
+    emergency: EmergencyNotice | None = Field(
         default=None,
         description="Emergency notice for urgent situations.",
     )
@@ -83,9 +83,9 @@ class LLMClient(Protocol):
         model: str,
         system: str,
         user: str,
-        response_schema: Dict[str, Any],
+        response_schema: dict[str, Any],
         timeout: float = 8.0,
-    ) -> Dict[str, Any]: ...
+    ) -> dict[str, Any]: ...
 
 
 _PHASE0_SYSTEM_PROMPT = (
@@ -114,7 +114,7 @@ _PHASE0_SYSTEM_PROMPT = (
 )
 
 # JSON Schema to hard-enforce structure in providers that support JSON-mode
-_EXPLANATION_JSON_SCHEMA: Dict[str, Any] = {
+_EXPLANATION_JSON_SCHEMA: dict[str, Any] = {
     "type": "object",
     "additionalProperties": False,
     "properties": {
@@ -208,7 +208,7 @@ class ChatAgentLogic:
         self.llm = llm
         self.model = model
 
-    def synthesize_result(self, scan_data: Dict[str, Any]) -> Dict[str, Any]:
+    def synthesize_result(self, scan_data: dict[str, Any]) -> dict[str, Any]:
         """
         Turn final scan_data into parent-friendly, structured output.
 
@@ -235,7 +235,7 @@ class ChatAgentLogic:
             "statements.\n"
         )
 
-        raw: Dict[str, Any] = self.llm.chat_json(
+        raw: dict[str, Any] = self.llm.chat_json(
             model=self.model,
             system=_PHASE0_SYSTEM_PROMPT,
             user=user_prompt,
@@ -251,7 +251,7 @@ class ChatAgentLogic:
 
         return validated
 
-    def classify_intent(self, query: Optional[str]) -> Intent:
+    def classify_intent(self, query: str | None) -> Intent:
         """
         Fast heuristic pass, then cheap LLM fallback.
         Returns one of the fixed intents or 'unclear_intent'.

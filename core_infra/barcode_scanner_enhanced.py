@@ -7,7 +7,7 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from io import BytesIO
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import numpy as np
 
@@ -83,7 +83,7 @@ class BarcodeResult:
 
     data: str
     type: BarcodeType
-    rect: Optional[Dict[str, int]] = None  # x, y, width, height
+    rect: dict[str, int] | None = None  # x, y, width, height
     confidence: float = 1.0
     method: str = "unknown"  # "pyzbar" or "opencv"
 
@@ -116,7 +116,7 @@ class EnhancedBarcodeScanner:
                 self.qr_detector = None
                 self.barcode_detector = None
 
-    def scan_image(self, image_data: bytes) -> List[BarcodeResult]:
+    def scan_image(self, image_data: bytes) -> list[BarcodeResult]:
         """
         Scan image for barcodes using best available method
 
@@ -160,7 +160,7 @@ class EnhancedBarcodeScanner:
 
         return results
 
-    def _scan_with_pyzbar(self, image: np.ndarray) -> List[BarcodeResult]:
+    def _scan_with_pyzbar(self, image: np.ndarray) -> list[BarcodeResult]:
         """Scan using PyZbar"""
         results = []
 
@@ -190,7 +190,7 @@ class EnhancedBarcodeScanner:
 
         return results
 
-    def _scan_with_opencv(self, image: np.ndarray) -> List[BarcodeResult]:
+    def _scan_with_opencv(self, image: np.ndarray) -> list[BarcodeResult]:
         """Scan using OpenCV (fallback method)"""
         results = []
 
@@ -287,7 +287,7 @@ class EnhancedBarcodeScanner:
 
         return buffer.getvalue()
 
-    def _bytes_to_cv2(self, image_data: bytes) -> Optional[np.ndarray]:
+    def _bytes_to_cv2(self, image_data: bytes) -> np.ndarray | None:
         """Convert image bytes to OpenCV format"""
         try:
             if PIL_AVAILABLE:
@@ -321,7 +321,7 @@ class EnhancedBarcodeScanner:
         }
         return mapping.get(pyzbar_type, BarcodeType.UNKNOWN)
 
-    def test_functionality(self) -> Dict[str, bool]:
+    def test_functionality(self) -> dict[str, bool]:
         """Test which barcode methods are working"""
         status = {
             "pyzbar": False,
@@ -366,7 +366,7 @@ class EnhancedBarcodeScanner:
 enhanced_scanner = EnhancedBarcodeScanner()
 
 
-def scan_barcode(image_data: bytes) -> List[Dict[str, Any]]:
+def scan_barcode(image_data: bytes) -> list[dict[str, Any]]:
     """
     Public API for barcode scanning
 
@@ -390,7 +390,7 @@ def scan_barcode(image_data: bytes) -> List[Dict[str, Any]]:
     ]
 
 
-def test_scanner_status() -> Dict[str, Any]:
+def test_scanner_status() -> dict[str, Any]:
     """
     Test scanner functionality
 

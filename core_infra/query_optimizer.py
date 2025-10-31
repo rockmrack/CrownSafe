@@ -7,7 +7,7 @@ import logging
 import time
 from contextlib import contextmanager
 from functools import wraps
-from typing import Any, Dict, List, Type
+from typing import Any
 
 from sqlalchemy import or_
 from sqlalchemy.orm import (
@@ -60,7 +60,7 @@ class QueryOptimizer:
         return query
 
     @staticmethod
-    def batch_load(db: Session, model: Type, ids: List[int], batch_size: int = 100) -> Dict[int, Any]:
+    def batch_load(db: Session, model: type, ids: list[int], batch_size: int = 100) -> dict[int, Any]:
         """
         Load multiple records in batches instead of one by one
 
@@ -102,7 +102,7 @@ class QueryOptimizer:
         return query.count()
 
     @staticmethod
-    def exists_check(db: Session, model: Type, **filters) -> bool:
+    def exists_check(db: Session, model: type, **filters) -> bool:
         """
         Check if record exists without loading it
 
@@ -119,7 +119,7 @@ class QueryOptimizer:
         return db.query(db.query(model).filter_by(**filters).exists()).scalar()
 
     @staticmethod
-    def bulk_insert(db: Session, records: List[Dict], model: Type):
+    def bulk_insert(db: Session, records: list[dict], model: type):
         """
         Bulk insert records efficiently
 
@@ -136,7 +136,7 @@ class QueryOptimizer:
         db.commit()
 
     @staticmethod
-    def bulk_update(db: Session, updates: List[Dict], model: Type):
+    def bulk_update(db: Session, updates: list[dict], model: type):
         """
         Bulk update records efficiently
 
@@ -368,14 +368,14 @@ class BatchProcessor:
         self.pending_inserts = []
         self.pending_updates = []
 
-    def add_insert(self, model: Type, data: Dict):
+    def add_insert(self, model: type, data: dict):
         """Add to insert batch"""
         self.pending_inserts.append((model, data))
 
         if len(self.pending_inserts) >= self.batch_size:
             self.flush_inserts()
 
-    def add_update(self, model: Type, data: Dict):
+    def add_update(self, model: type, data: dict):
         """Add to update batch"""
         self.pending_updates.append((model, data))
 

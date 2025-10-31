@@ -5,7 +5,6 @@ Only allows specific origins, no wildcards
 
 import logging
 import os
-from typing import List, Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 logger = logging.getLogger(__name__)
 
 
-def get_allowed_origins() -> List[str]:
+def get_allowed_origins() -> list[str]:
     """
     Get allowed CORS origins from environment
 
@@ -65,7 +64,7 @@ def get_allowed_origins() -> List[str]:
 
 def add_strict_cors(
     app: FastAPI,
-    allowed_origins: Optional[List[str]] = None,
+    allowed_origins: list[str] | None = None,
     allow_credentials: bool = False,
     max_age: int = 600,
 ) -> None:
@@ -152,7 +151,7 @@ class CORSConfig:
     ]
 
     @classmethod
-    def get_origins_for_environment(cls, environment: str) -> List[str]:
+    def get_origins_for_environment(cls, environment: str) -> list[str]:
         """
         Get appropriate origins based on environment
 

@@ -6,7 +6,7 @@ Enterprise-grade health checks for Azure Blob Storage connectivity and performan
 import logging
 import time
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from azure.core.exceptions import AzureError
 
@@ -23,7 +23,7 @@ class AzureStorageHealthCheck:
 
     def __init__(
         self,
-        storage_client: Optional[AzureBlobStorageClient] = None,
+        storage_client: AzureBlobStorageClient | None = None,
         performance_threshold_ms: float = 5000.0,
         storage_threshold_percent: float = 80.0,
     ):
@@ -40,12 +40,12 @@ class AzureStorageHealthCheck:
         self.storage_threshold_percent = storage_threshold_percent
 
         # Health check metrics
-        self.last_check_time: Optional[datetime] = None
+        self.last_check_time: datetime | None = None
         self.consecutive_failures = 0
         self.total_checks = 0
         self.successful_checks = 0
 
-    async def check_connectivity(self) -> Dict[str, Any]:
+    async def check_connectivity(self) -> dict[str, Any]:
         """
         Check basic Azure Blob Storage connectivity
 
@@ -84,7 +84,7 @@ class AzureStorageHealthCheck:
                 "timestamp": datetime.utcnow().isoformat(),
             }
 
-    async def check_performance(self) -> Dict[str, Any]:
+    async def check_performance(self) -> dict[str, Any]:
         """
         Check Azure Blob Storage performance
 
@@ -120,7 +120,7 @@ class AzureStorageHealthCheck:
 
         return metrics
 
-    async def check_storage_capacity(self) -> Dict[str, Any]:
+    async def check_storage_capacity(self) -> dict[str, Any]:
         """
         Check Azure Blob Storage capacity and usage
 
@@ -137,7 +137,7 @@ class AzureStorageHealthCheck:
             "timestamp": datetime.utcnow().isoformat(),
         }
 
-    async def comprehensive_health_check(self) -> Dict[str, Any]:
+    async def comprehensive_health_check(self) -> dict[str, Any]:
         """
         Run comprehensive health check with all tests
 
@@ -239,7 +239,7 @@ class AzureStorageMetrics:
         """Record error"""
         self.error_count += 1
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """
         Get current metrics
 

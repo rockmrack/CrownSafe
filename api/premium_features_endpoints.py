@@ -5,7 +5,7 @@ Provides endpoints for pregnancy safety and allergy checking features
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agents.premium.allergy_sensitivity_agent.agent_logic import (
     AllergySensitivityAgentLogic,
@@ -35,10 +35,10 @@ router = APIRouter(prefix="/api/v1/premium", tags=["Premium Features"])
 class PregnancyCheckRequest(BaseModel):
     """Request model for pregnancy safety check"""
 
-    barcode: Optional[str] = Field(None, description="Product barcode/UPC")
-    product_name: Optional[str] = Field(None, description="Product name if barcode not available")
+    barcode: str | None = Field(None, description="Product barcode/UPC")
+    product_name: str | None = Field(None, description="Product name if barcode not available")
     trimester: int = Field(1, ge=1, le=3, description="Pregnancy trimester (1-3)")
-    user_id: Optional[int] = Field(None, description="User ID (deprecated; derived from token if present)")
+    user_id: int | None = Field(None, description="User ID (deprecated; derived from token if present)")
 
 
 class PregnancyCheckResponse(BaseModel):
@@ -47,18 +47,18 @@ class PregnancyCheckResponse(BaseModel):
     status: str
     product_name: str
     is_safe: bool
-    risk_level: Optional[str] = None
-    alerts: List[Dict[str, Any]]
-    recommendations: List[str]
+    risk_level: str | None = None
+    alerts: list[dict[str, Any]]
+    recommendations: list[str]
     checked_at: datetime
 
 
 class AllergyCheckRequest(BaseModel):
     """Request model for allergy check"""
 
-    barcode: Optional[str] = Field(None, description="Product barcode/UPC")
-    product_name: Optional[str] = Field(None, description="Product name if barcode not available")
-    user_id: Optional[int] = Field(None, description="User ID (deprecated; derived from token if present)")
+    barcode: str | None = Field(None, description="Product barcode/UPC")
+    product_name: str | None = Field(None, description="Product name if barcode not available")
+    user_id: int | None = Field(None, description="User ID (deprecated; derived from token if present)")
     check_all_members: bool = Field(True, description="Check for all family members")
 
 
@@ -68,9 +68,9 @@ class AllergyCheckResponse(BaseModel):
     status: str
     product_name: str
     is_safe: bool
-    alerts: List[Dict[str, Any]]
-    safe_for_members: List[str]
-    unsafe_for_members: List[Dict[str, Any]]
+    alerts: list[dict[str, Any]]
+    safe_for_members: list[str]
+    unsafe_for_members: list[dict[str, Any]]
     checked_at: datetime
 
 
@@ -78,10 +78,10 @@ class FamilyMemberRequest(BaseModel):
     """Request model for adding/updating family member"""
 
     name: str = Field(..., min_length=1, max_length=100, description="Family member name")
-    relationship: Optional[str] = Field(None, description="Relationship to user")
-    allergies: List[str] = Field(default=[], description="List of allergies")
-    dietary_restrictions: Optional[List[str]] = Field(default=[], description="Dietary restrictions")
-    age: Optional[int] = Field(None, ge=0, le=150, description="Age of family member")
+    relationship: str | None = Field(None, description="Relationship to user")
+    allergies: list[str] = Field(default=[], description="List of allergies")
+    dietary_restrictions: list[str] | None = Field(default=[], description="Dietary restrictions")
+    age: int | None = Field(None, ge=0, le=150, description="Age of family member")
 
 
 class FamilyMemberResponse(BaseModel):
@@ -89,21 +89,21 @@ class FamilyMemberResponse(BaseModel):
 
     id: int
     name: str
-    relationship: Optional[str]
-    allergies: List[str]
-    dietary_restrictions: List[str]
-    age: Optional[int]
+    relationship: str | None
+    allergies: list[str]
+    dietary_restrictions: list[str]
+    age: int | None
     created_at: datetime
 
 
 class CombinedSafetyCheckRequest(BaseModel):
     """Request for combined safety check including pregnancy and allergies"""
 
-    barcode: Optional[str] = Field(None, description="Product barcode/UPC")
-    product_name: Optional[str] = Field(None, description="Product name")
+    barcode: str | None = Field(None, description="Product barcode/UPC")
+    product_name: str | None = Field(None, description="Product name")
     user_id: int = Field(..., description="User ID")
     check_pregnancy: bool = Field(False, description="Include pregnancy safety check")
-    trimester: Optional[int] = Field(None, ge=1, le=3, description="If pregnant, which trimester")
+    trimester: int | None = Field(None, ge=1, le=3, description="If pregnant, which trimester")
     check_allergies: bool = Field(True, description="Include allergy check")
 
 
@@ -282,7 +282,7 @@ async def check_product_allergies(
             else:
                 safe_members = ["No family members registered"]
 
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "product_name": result.get("product_name", payload.product_name or "Unknown Product"),
             "is_safe": result.get("is_safe", True),
             "alerts": result.get("alerts", []),
@@ -304,7 +304,7 @@ async def check_product_allergies(
 # ==================== Family Member Management Endpoints ====================
 
 
-@router.get("/family/members", response_model=List[FamilyMemberResponse])
+@router.get("/family/members", response_model=list[FamilyMemberResponse])
 async def get_family_members(user_id: int = Query(..., description="User ID"), db: Session = Depends(get_db)):
     """
     Get all family members and their allergy profiles.

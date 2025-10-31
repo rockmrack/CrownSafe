@@ -5,7 +5,7 @@ Enforces bounded inputs for security and performance
 
 import re
 from datetime import date
-from typing import List, Literal, Optional
+from typing import Literal
 
 from pydantic import BaseModel, Field, conlist, constr, field_validator, model_validator
 
@@ -26,67 +26,56 @@ class SecureAdvancedSearchRequest(BaseModel):
     """
 
     # Text search fields (capped length)
-    query: Optional[Str128] = Field(
+    query: Str128 | None = Field(
         None,
         description="General search query (max 128 chars)",
         examples=["baby formula", "crib recall"],
     )
 
-    product: Optional[Str128] = Field(
+    product: Str128 | None = Field(
         None,
         description="Product name search (max 128 chars)",
         examples=["Graco car seat", "Fisher-Price bouncer"],
     )
 
     # Keyword search (bounded list)
-    keywords: Optional[KeywordList] = Field(
+    keywords: KeywordList | None = Field(
         None,
         description="Keywords for AND search (1-8 items, max 32 chars each)",
         examples=[["infant", "choking", "toy"]],
     )
 
     # Exact ID lookup (bounded)
-    id: Optional[constr(strip_whitespace=True, min_length=3, max_length=64)] = Field(
+    id: constr(strip_whitespace=True, min_length=3, max_length=64) | None = Field(
         None,
         description="Exact recall ID (3-64 chars)",
         examples=["FDA-2025-1234", "CPSC-2025-0001"],
     )
 
     # Agency filter (bounded list)
-    agencies: Optional[AgencyList] = Field(
+    agencies: AgencyList | None = Field(
         None,
         description="Filter by agencies (1-10 items)",
         examples=[["FDA", "CPSC", "NHTSA"]],
     )
 
     # Enum fields with strict values
-    severity: Optional[Literal["low", "medium", "high", "critical"]] = Field(
+    severity: Literal["low", "medium", "high", "critical"] | None = Field(
         None, description="Severity level filter", examples=["high"]
     )
 
-    riskCategory: Optional[
-        Literal[
-            "drug",
-            "device",
-            "food",
-            "cosmetic",
-            "supplement",
-            "toy",
-            "baby_product",
-            "other",
-        ]
-    ] = Field(None, description="Risk category filter", examples=["toy"])
+    riskCategory: Literal["drug", "device", "food", "cosmetic", "supplement", "toy", "baby_product", "other"] | None = Field(None, description="Risk category filter", examples=["toy"])
 
     # Date range (validated)
-    date_from: Optional[date] = Field(None, description="Start date for recall date range", examples=["2024-01-01"])
+    date_from: date | None = Field(None, description="Start date for recall date range", examples=["2024-01-01"])
 
-    date_to: Optional[date] = Field(None, description="End date for recall date range", examples=["2024-12-31"])
+    date_to: date | None = Field(None, description="End date for recall date range", examples=["2024-12-31"])
 
     # Pagination (bounded)
     limit: int = Field(default=20, ge=1, le=50, description="Results per page (1-50)", examples=[20])
 
     # Cursor (length limited)
-    nextCursor: Optional[constr(max_length=512)] = Field(
+    nextCursor: constr(max_length=512) | None = Field(
         None,
         description="Pagination cursor (max 512 chars)",
         examples=["eyJ2IjoxLCJmIjoiYWJjZGVmIn0.SIGNATURE"],
@@ -94,7 +83,7 @@ class SecureAdvancedSearchRequest(BaseModel):
 
     @field_validator("query", "product")
     @classmethod
-    def validate_text_fields(cls, v: Optional[str]) -> Optional[str]:
+    def validate_text_fields(cls, v: str | None) -> str | None:
         """
         Validate text search fields
         """
@@ -139,7 +128,7 @@ class SecureAdvancedSearchRequest(BaseModel):
 
     @field_validator("keywords")
     @classmethod
-    def validate_keywords(cls, v: Optional[List[str]]) -> Optional[List[str]]:
+    def validate_keywords(cls, v: list[str] | None) -> list[str] | None:
         """
         Validate keyword list
         """
@@ -162,7 +151,7 @@ class SecureAdvancedSearchRequest(BaseModel):
 
     @field_validator("agencies")
     @classmethod
-    def validate_agencies(cls, v: Optional[List[str]]) -> Optional[List[str]]:
+    def validate_agencies(cls, v: list[str] | None) -> list[str] | None:
         """
         Validate agency codes
         """
@@ -195,7 +184,7 @@ class SecureAdvancedSearchRequest(BaseModel):
 
     @field_validator("date_from", "date_to")
     @classmethod
-    def validate_dates(cls, v: Optional[date]) -> Optional[date]:
+    def validate_dates(cls, v: date | None) -> date | None:
         """
         Validate date ranges
         """

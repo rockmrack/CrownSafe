@@ -4,14 +4,14 @@ Enterprise-grade Web Application Firewall rules
 """
 
 import json
-from typing import Any, Dict, List
+from typing import Any
 
 
 class WAFRulesGenerator:
     """Generate AWS WAF rules for bulletproof protection"""
 
     @staticmethod
-    def generate_rate_limiting_rules() -> List[Dict[str, Any]]:
+    def generate_rate_limiting_rules() -> list[dict[str, Any]]:
         """Generate rate limiting rules"""
         return [
             {
@@ -57,7 +57,7 @@ class WAFRulesGenerator:
         ]
 
     @staticmethod
-    def generate_attack_prevention_rules() -> List[Dict[str, Any]]:
+    def generate_attack_prevention_rules() -> list[dict[str, Any]]:
         """Generate rules to prevent common attacks"""
         return [
             # SQL Injection Prevention
@@ -175,7 +175,7 @@ class WAFRulesGenerator:
         ]
 
     @staticmethod
-    def generate_geographic_rules() -> List[Dict[str, Any]]:
+    def generate_geographic_rules() -> list[dict[str, Any]]:
         """Generate geographic blocking rules"""
         return [
             {
@@ -214,7 +214,7 @@ class WAFRulesGenerator:
         ]
 
     @staticmethod
-    def generate_ip_reputation_rules() -> List[Dict[str, Any]]:
+    def generate_ip_reputation_rules() -> list[dict[str, Any]]:
         """Generate IP reputation rules"""
         return [
             {
@@ -254,7 +254,7 @@ class WAFRulesGenerator:
         ]
 
 
-def generate_complete_waf_config() -> Dict[str, Any]:
+def generate_complete_waf_config() -> dict[str, Any]:
     """Generate complete WAF configuration"""
     generator = WAFRulesGenerator()
 

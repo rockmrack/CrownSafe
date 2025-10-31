@@ -7,7 +7,6 @@ Creates placeholder assets and validates existing ones for app store submission
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Tuple
 
 # Asset specifications
 ASSET_SPECS = {
@@ -64,7 +63,7 @@ class AssetGenerator:
             dir_path.mkdir(parents=True, exist_ok=True)
             print(f"✓ Directory: {dir_path}")
 
-    def create_placeholder_image(self, path: Path, size: Tuple[int, int], text: str):
+    def create_placeholder_image(self, path: Path, size: tuple[int, int], text: str):
         """Create a placeholder image file with specifications"""
         content = f"""PLACEHOLDER IMAGE
 Size: {size[0]}x{size[1]}

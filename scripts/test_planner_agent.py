@@ -3,7 +3,7 @@ import logging
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).resolve().parent.parent
@@ -39,7 +39,7 @@ def print_info(message: str):
     print(f"ℹ️  {message}")
 
 
-def validate_plan_structure(plan: Dict[str, Any], expected_fields: list) -> bool:
+def validate_plan_structure(plan: dict[str, Any], expected_fields: list) -> bool:
     """Validate that plan contains expected fields"""
     for field in expected_fields:
         if field not in plan:

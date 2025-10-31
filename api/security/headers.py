@@ -4,7 +4,6 @@ Adds comprehensive security headers to all responses
 """
 
 import logging
-from typing import Dict, Optional
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -28,11 +27,11 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         content_type_options: str = "nosniff",
         xss_protection: str = "1; mode=block",
         referrer_policy: str = "strict-origin-when-cross-origin",
-        permissions_policy: Optional[str] = None,
+        permissions_policy: str | None = None,
         cross_origin_opener_policy: str = "same-origin",
         cross_origin_embedder_policy: str = "require-corp",
         cross_origin_resource_policy: str = "cross-origin",
-        content_security_policy: Optional[str] = None,
+        content_security_policy: str | None = None,
     ):
         """
         Initialize security headers middleware
@@ -161,7 +160,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 
-def get_security_headers_dict() -> Dict[str, str]:
+def get_security_headers_dict() -> dict[str, str]:
     """
     Get dictionary of security headers for manual application
 

@@ -6,8 +6,6 @@ import uuid
 from datetime import datetime, timezone
 from typing import (
     Any,
-    Dict,
-    Optional,
 )  # Removed Set, Union as not used in this simplified version
 
 from pydantic import BaseModel, Field, field_validator, root_validator
@@ -39,8 +37,8 @@ class MCPHeader(BaseModel):
     correlation_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     version: str = Field("1.0")
-    target_agent_id: Optional[str] = Field(None)
-    target_service: Optional[str] = Field(None)
+    target_agent_id: str | None = Field(None)
+    target_service: str | None = Field(None)
 
     @field_validator("timestamp")
     @classmethod
@@ -78,11 +76,11 @@ class MCPMessage(BaseModel):
     # If 'payload' key is missing from input, default_factory creates an empty dict.
     # If 'payload' key is present, its value will be used.
     # The type hint Dict[str, Any] means Pydantic will expect a dict-like structure.
-    payload: Dict[str, Any] = Field(default_factory=dict)
+    payload: dict[str, Any] = Field(default_factory=dict)
 
     @root_validator(pre=True)  # Keep this to ensure basic structure
     @classmethod
-    def ensure_basic_structure(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+    def ensure_basic_structure(cls, values: dict[str, Any]) -> dict[str, Any]:
         if not isinstance(values, dict):
             raise ValueError("MCPMessage input must be a dictionary.")
         if "mcp_header" not in values:  # mcp_header is mandatory

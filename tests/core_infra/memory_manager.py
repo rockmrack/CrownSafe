@@ -8,7 +8,7 @@ import os
 import statistics
 from collections import defaultdict
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, Union
 
 import chromadb
 
@@ -51,9 +51,9 @@ if DOTENV_AVAILABLE:
 class MemoryManager:
     def __init__(
         self,
-        logger_instance: Optional[logging.Logger] = None,
-        chroma_db_path: Optional[str] = None,
-        collection_name: Optional[str] = None,
+        logger_instance: logging.Logger | None = None,
+        chroma_db_path: str | None = None,
+        collection_name: str | None = None,
     ):
         """
         Initialize MemoryManager with ChromaDB and OpenAI embeddings.
@@ -178,7 +178,7 @@ class MemoryManager:
         clean_identifier = str(identifier).lower().replace(" ", "_").replace("/", "_").replace("-", "_")
         return f"{document_type}_{clean_identifier}"
 
-    def _safe_json_loads(self, json_string: Union[str, List, None], default_value: Optional[List] = None) -> List:
+    def _safe_json_loads(self, json_string: Union[str, list, None], default_value: list | None = None) -> list:
         """Safely parse JSON string to list."""
         if default_value is None:
             default_value = []
@@ -195,7 +195,7 @@ class MemoryManager:
                 return [json_string] if json_string else default_value
         return default_value
 
-    def _safe_json_dumps(self, data: Union[List, Set, str, None]) -> str:
+    def _safe_json_dumps(self, data: Union[list, set, str, None]) -> str:
         """Safely convert data to JSON string."""
         if data is None:
             return "[]"
@@ -211,10 +211,10 @@ class MemoryManager:
 
     def _merge_metadata_for_existing_document(
         self,
-        existing_metadata: Dict[str, Any],
-        new_context_metadata: Dict[str, Any],
+        existing_metadata: dict[str, Any],
+        new_context_metadata: dict[str, Any],
         current_timestamp: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Intelligently merge metadata for existing documents."""
         merged = existing_metadata.copy()
 
@@ -267,7 +267,7 @@ class MemoryManager:
 
         return {k: v for k, v in merged.items() if v is not None}
 
-    def _get_existing_metadatas(self, ids_to_check: List[str]) -> Dict[str, Dict[str, Any]]:
+    def _get_existing_metadatas(self, ids_to_check: list[str]) -> dict[str, dict[str, Any]]:
         """Check which documents already exist and return their metadata."""
         if not self.collection or not ids_to_check:
             return {}
@@ -295,13 +295,13 @@ class MemoryManager:
 
     def _prepare_safe_metadata(
         self,
-        base_metadata: Dict[str, Any],
+        base_metadata: dict[str, Any],
         workflow_id: str,
         user_goal: str,
-        drug_name: Optional[str],
-        disease_name: Optional[str],
+        drug_name: str | None,
+        disease_name: str | None,
         timestamp: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Prepare metadata with ChromaDB-safe values."""
         safe_metadata = base_metadata.copy()
 
@@ -332,11 +332,11 @@ class MemoryManager:
         self,
         workflow_id: str,
         user_goal: str,
-        extracted_entities: Dict[str, Optional[str]],
-        pubmed_results_payload: Optional[Dict[str, Any]],
-        pdf_path: Optional[str] = None,
-        completion_timestamp: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        extracted_entities: dict[str, str | None],
+        pubmed_results_payload: dict[str, Any] | None,
+        pdf_path: str | None = None,
+        completion_timestamp: str | None = None,
+    ) -> dict[str, Any]:
         """Store workflow outputs with intelligent deduplication and metadata merging."""
         if not self.collection:
             self.logger.error("Cannot store workflow outputs: ChromaDB collection not available.")
@@ -347,9 +347,9 @@ class MemoryManager:
 
         self.logger.info(f"Storing outputs for workflow_id: {workflow_id}")
 
-        docs_for_upsert: List[str] = []
-        metadatas_to_prepare: List[Dict[str, Any]] = []
-        ids_for_upsert: List[str] = []
+        docs_for_upsert: list[str] = []
+        metadatas_to_prepare: list[dict[str, Any]] = []
+        ids_for_upsert: list[str] = []
 
         current_utc_timestamp = datetime.now(timezone.utc).isoformat()
         drug_name = extracted_entities.get("drug_name")
@@ -478,8 +478,8 @@ class MemoryManager:
         self,
         query_text: str,
         n_results: int = 5,
-        filter_metadata: Optional[Dict[str, Any]] = None,
-    ) -> List[Dict[str, Any]]:
+        filter_metadata: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:
         """Find similar documents (synchronous version for compatibility)."""
         if not self.collection:
             self.logger.error("Cannot retrieve: ChromaDB collection not available.")
@@ -518,7 +518,7 @@ class MemoryManager:
             self.logger.error(f"Failed to find similar documents: {e}")
             return []
 
-    def get_document_usage_analytics(self) -> Dict[str, Any]:
+    def get_document_usage_analytics(self) -> dict[str, Any]:
         """Get comprehensive analytics about document usage and patterns."""
         if not self.collection:
             return {"error": "Collection unavailable"}
@@ -604,7 +604,7 @@ class MemoryManager:
 
     def dump_collection_sample(
         self,
-        document_type: Optional[str] = None,
+        document_type: str | None = None,
         limit: int = 5,
         parse_json: bool = True,
     ) -> None:

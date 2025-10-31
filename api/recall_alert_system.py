@@ -5,7 +5,7 @@ Monitors agencies for new recalls and pushes alerts to affected users
 
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
@@ -205,7 +205,7 @@ class RecallCheckResult(BaseModel):
 
     agency: str
     new_recalls_count: int
-    recalls: List[Dict[str, Any]]
+    recalls: list[dict[str, Any]]
     check_timestamp: datetime
 
 
@@ -215,10 +215,10 @@ class UserAlertPreference(BaseModel):
     user_id: int
     alert_enabled: bool = True
     alert_frequency: str = "immediate"  # immediate, daily, weekly
-    categories: List[str] = []  # Empty means all categories
+    categories: list[str] = []  # Empty means all categories
     severity_threshold: str = "all"  # all, medium, high, critical
-    quiet_hours_start: Optional[int] = None  # Hour of day (0-23)
-    quiet_hours_end: Optional[int] = None
+    quiet_hours_start: int | None = None  # Hour of day (0-23)
+    quiet_hours_end: int | None = None
 
 
 class RecallAlertService:
@@ -289,7 +289,7 @@ class RecallAlertService:
         )
 
     @classmethod
-    async def find_affected_users(cls, recall: Dict[str, Any], db: Session) -> List[int]:
+    async def find_affected_users(cls, recall: dict[str, Any], db: Session) -> list[int]:
         """Find users who have scanned products affected by this recall"""
 
         affected_user_ids = []
@@ -338,7 +338,7 @@ class RecallAlertService:
         return affected_user_ids
 
     @classmethod
-    async def send_recall_alert(cls, user_id: int, recall: Dict[str, Any], db: Session) -> bool:
+    async def send_recall_alert(cls, user_id: int, recall: dict[str, Any], db: Session) -> bool:
         """Send recall alert to a specific user"""
 
         try:
@@ -406,7 +406,7 @@ class RecallAlertService:
             return False
 
     @classmethod
-    def _determine_severity(cls, recall: Dict[str, Any]) -> str:
+    def _determine_severity(cls, recall: dict[str, Any]) -> str:
         """Determine severity level of a recall"""
 
         hazard = recall.get("hazard", "").lower()

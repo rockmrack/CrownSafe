@@ -6,7 +6,7 @@ import copy
 import json
 import logging
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional, Set
+from typing import Any
 
 print(f"Loading discovery.py (Step 77 Version - Fixed): {__file__}")
 
@@ -14,7 +14,7 @@ from .state import get_connection  # noqa: E402
 from .utils import create_mcp_error_response, create_mcp_response, safe_json_serialize  # noqa: E402
 
 discovery_logger = logging.getLogger("MCP_DiscoveryService")
-agent_registry: Dict[str, Dict[str, Any]] = {}
+agent_registry: dict[str, dict[str, Any]] = {}
 registry_lock = asyncio.Lock()
 
 discovery_logger.info("Discovery: In-memory agent registry initialized (Step 77 Version - Fixed).")
@@ -30,7 +30,7 @@ def _normalize_capability_name(cap_name: str) -> str:
     return cap_name.lower().strip()
 
 
-def _get_agent_capabilities(agent_info: Dict[str, Any]) -> Set[str]:
+def _get_agent_capabilities(agent_info: dict[str, Any]) -> set[str]:
     """Extracts and normalizes capability names from agent registration info."""
     capabilities = set()
     if not isinstance(agent_info, dict):
@@ -76,7 +76,7 @@ def _get_agent_capabilities(agent_info: Dict[str, Any]) -> Set[str]:
     return capabilities
 
 
-async def handle_discovery_message(message: Dict[str, Any], sender_id: str):
+async def handle_discovery_message(message: dict[str, Any], sender_id: str):
     """Handles incoming discovery service messages (REGISTER or QUERY)."""
     if not message or not isinstance(message, dict):
         discovery_logger.error(
@@ -180,8 +180,8 @@ async def handle_discovery_message(message: Dict[str, Any], sender_id: str):
 
 
 async def handle_registration(
-    payload: Dict[str, Any], sender_id: str, correlation_id: Optional[str]
-) -> Optional[Dict[str, Any]]:
+    payload: dict[str, Any], sender_id: str, correlation_id: str | None
+) -> dict[str, Any] | None:
     """Handles agent registration, updating the agent_registry."""
     agent_id_from_payload = payload.get("agent_id")
     if not agent_id_from_payload or not isinstance(agent_id_from_payload, str) or agent_id_from_payload != sender_id:
@@ -233,7 +233,7 @@ async def handle_registration(
     return create_mcp_response(sender_id, correlation_id, "MCP_DISCOVERY", "DISCOVERY_ACK", ack_payload)
 
 
-async def handle_query(payload: Dict[str, Any], sender_id: str, correlation_id: Optional[str]) -> Dict[str, Any]:
+async def handle_query(payload: dict[str, Any], sender_id: str, correlation_id: str | None) -> dict[str, Any]:
     """Handles discovery queries for finding agents."""
     discovery_logger.info(f"Processing query from '{sender_id}' (CorrID: {correlation_id})")
 

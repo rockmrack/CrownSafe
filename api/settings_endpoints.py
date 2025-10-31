@@ -6,7 +6,7 @@ Includes Crashlytics toggle and other app preferences
 import logging
 import uuid
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException, Request, status
 from pydantic import BaseModel, Field
@@ -33,12 +33,12 @@ class AppSettings(BaseModel):
 class UpdateSettingsRequest(BaseModel):
     """Request to update specific settings"""
 
-    crashlytics_enabled: Optional[bool] = None
-    notifications_enabled: Optional[bool] = None
-    offline_mode: Optional[bool] = None
-    auto_retry: Optional[bool] = None
-    language: Optional[str] = None
-    theme: Optional[str] = None
+    crashlytics_enabled: bool | None = None
+    notifications_enabled: bool | None = None
+    offline_mode: bool | None = None
+    auto_retry: bool | None = None
+    language: str | None = None
+    theme: str | None = None
 
 
 class SettingsResponse(BaseModel):
@@ -46,22 +46,22 @@ class SettingsResponse(BaseModel):
 
     ok: bool = True
     settings: AppSettings
-    updated_at: Optional[datetime] = None
+    updated_at: datetime | None = None
 
 
 class CrashlyticsToggleRequest(BaseModel):
     """Specific request for Crashlytics toggle"""
 
     enabled: bool = Field(..., description="Enable or disable Crashlytics")
-    user_id: Optional[str] = Field(None, description="User ID (optional)")
-    device_id: Optional[str] = Field(None, description="Device ID for tracking")
-    app_version: Optional[str] = Field(None, description="App version")
+    user_id: str | None = Field(None, description="User ID (optional)")
+    device_id: str | None = Field(None, description="Device ID for tracking")
+    app_version: str | None = Field(None, description="App version")
 
 
 # ========================= STORAGE =========================
 
 # In-memory storage for demo (use Redis or database in production)
-settings_store: Dict[str, AppSettings] = {}
+settings_store: dict[str, AppSettings] = {}
 
 
 def get_user_settings(user_id: str) -> AppSettings:
@@ -89,8 +89,8 @@ def update_user_settings(user_id: str, updates: dict) -> AppSettings:
 @router.get("/", response_model=SettingsResponse)
 async def get_settings(
     request: Request,
-    user_id: Optional[str] = Header(None, alias="X-User-ID"),
-    device_id: Optional[str] = Header(None, alias="X-Device-ID"),
+    user_id: str | None = Header(None, alias="X-User-ID"),
+    device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
     """
     Get current app settings
@@ -118,8 +118,8 @@ async def get_settings(
 async def update_settings(
     request: Request,
     updates: UpdateSettingsRequest,
-    user_id: Optional[str] = Header(None, alias="X-User-ID"),
-    device_id: Optional[str] = Header(None, alias="X-Device-ID"),
+    user_id: str | None = Header(None, alias="X-User-ID"),
+    device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
     """
     Update app settings
@@ -151,11 +151,11 @@ async def update_settings(
     return SettingsResponse(ok=True, settings=settings, updated_at=datetime.utcnow())
 
 
-@router.post("/crashlytics", response_model=Dict[str, Any])
+@router.post("/crashlytics", response_model=dict[str, Any])
 async def toggle_crashlytics(
     request: Request,
     toggle_request: CrashlyticsToggleRequest,
-    user_agent: Optional[str] = Header(None),
+    user_agent: str | None = Header(None),
 ):
     """
     Toggle Crashlytics crash reporting
@@ -210,11 +210,11 @@ async def toggle_crashlytics(
         )
 
 
-@router.get("/crashlytics/status", response_model=Dict[str, Any])
+@router.get("/crashlytics/status", response_model=dict[str, Any])
 async def get_crashlytics_status(
     request: Request,
-    user_id: Optional[str] = Header(None, alias="X-User-ID"),
-    device_id: Optional[str] = Header(None, alias="X-Device-ID"),
+    user_id: str | None = Header(None, alias="X-User-ID"),
+    device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
     """
     Get current Crashlytics status
@@ -246,8 +246,8 @@ async def get_crashlytics_status(
 @router.post("/reset", response_model=SettingsResponse)
 async def reset_settings(
     request: Request,
-    user_id: Optional[str] = Header(None, alias="X-User-ID"),
-    device_id: Optional[str] = Header(None, alias="X-Device-ID"),
+    user_id: str | None = Header(None, alias="X-User-ID"),
+    device_id: str | None = Header(None, alias="X-Device-ID"),
 ):
     """
     Reset all settings to defaults

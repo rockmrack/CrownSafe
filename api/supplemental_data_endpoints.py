@@ -4,7 +4,6 @@ API endpoints for supplemental data and enhanced safety reports
 
 import logging
 import time
-from typing import Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlalchemy.orm import Session
@@ -63,7 +62,7 @@ async def get_enhanced_safety_report(
 @router.get("/food-data/{product_identifier}", response_model=SupplementalDataResponse)
 async def get_food_data(
     product_identifier: str,
-    product_name: Optional[str] = Query(None, description="Product name for better search results"),
+    product_name: str | None = Query(None, description="Product name for better search results"),
     db: Session = Depends(get_db),
 ):
     """
@@ -98,7 +97,7 @@ async def get_food_data(
 @router.get("/cosmetic-data/{product_identifier}", response_model=SupplementalDataResponse)
 async def get_cosmetic_data(
     product_identifier: str,
-    product_name: Optional[str] = Query(None, description="Product name for better search results"),
+    product_name: str | None = Query(None, description="Product name for better search results"),
     db: Session = Depends(get_db),
 ):
     """
@@ -140,7 +139,7 @@ async def get_cosmetic_data(
 @router.get("/chemical-data/{product_identifier}", response_model=SupplementalDataResponse)
 async def get_chemical_data(
     product_identifier: str,
-    product_name: Optional[str] = Query(None, description="Product name for better search results"),
+    product_name: str | None = Query(None, description="Product name for better search results"),
     db: Session = Depends(get_db),
 ):
     """

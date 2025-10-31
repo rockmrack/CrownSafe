@@ -6,7 +6,7 @@ Handles async job queue with Azure Blob Storage integration and multi-step proce
 import logging
 import os
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 from celery import Celery, Task
 from celery.exceptions import SoftTimeLimitExceeded
@@ -74,7 +74,7 @@ class CallbackTask(Task):
 
 
 @app.task(base=CallbackTask, bind=True, name="process_image")
-def process_image(self, job_id: str) -> Dict[str, Any]:
+def process_image(self, job_id: str) -> dict[str, Any]:
     """
     Main image processing task
 
@@ -295,7 +295,7 @@ def normalize_image(job_id: str, image_data: bytes) -> bytes:
 
 
 @app.task(name="extract_barcodes")
-def extract_barcodes(job_id: str, image_data: bytes) -> Dict[str, Any]:
+def extract_barcodes(job_id: str, image_data: bytes) -> dict[str, Any]:
     """Extract barcodes from image"""
     logger.info(f"Extracting barcodes for job {job_id}")
 
@@ -327,7 +327,7 @@ def extract_barcodes(job_id: str, image_data: bytes) -> Dict[str, Any]:
 
 
 @app.task(name="perform_ocr")
-def perform_ocr(job_id: str, image_data: bytes) -> Dict[str, Any]:
+def perform_ocr(job_id: str, image_data: bytes) -> dict[str, Any]:
     """Perform OCR on image"""
     logger.info(f"Performing OCR for job {job_id}")
 
@@ -360,7 +360,7 @@ def perform_ocr(job_id: str, image_data: bytes) -> Dict[str, Any]:
 
 
 @app.task(name="extract_labels")
-def extract_labels(job_id: str, image_data: bytes) -> Dict[str, Any]:
+def extract_labels(job_id: str, image_data: bytes) -> dict[str, Any]:
     """Extract image labels and categories"""
     logger.info(f"Extracting labels for job {job_id}")
 
@@ -384,7 +384,7 @@ def extract_labels(job_id: str, image_data: bytes) -> Dict[str, Any]:
 
 
 @app.task(base=CallbackTask, bind=True, name="save_extraction")
-def save_extraction(self, job_id: str, results: Dict[str, Any]):
+def save_extraction(self, job_id: str, results: dict[str, Any]):
     """Save extraction results to database"""
     logger.info(f"Saving extraction for job {job_id}")
 

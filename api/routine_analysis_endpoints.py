@@ -14,7 +14,6 @@ Key Features:
 """
 
 import logging
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -46,19 +45,19 @@ router = APIRouter(prefix="/api/v1", tags=["routine-analysis"])
 class ProductInput(BaseModel):
     """Product for analysis (either by product_id or manual input)"""
 
-    product_id: Optional[int] = Field(None, description="Product ID from database")
-    product_name: Optional[str] = Field(None, description="Product name (if manual)")
-    brand: Optional[str] = Field(None, description="Brand name (if manual)")
+    product_id: int | None = Field(None, description="Product ID from database")
+    product_name: str | None = Field(None, description="Product name (if manual)")
+    brand: str | None = Field(None, description="Brand name (if manual)")
     product_type: str = Field(..., description="Shampoo, Conditioner, Leave-In, etc.")
-    ingredients: List[str] = Field(..., description="List of ingredients (INCI order)")
+    ingredients: list[str] = Field(..., description="List of ingredients (INCI order)")
     usage_frequency: str = Field(default="daily", description="How often used: daily, weekly, occasionally")
 
 
 class CabinetAuditRequest(BaseModel):
     """Request for cabinet audit (batch product analysis)"""
 
-    products: List[ProductInput] = Field(..., min_length=1, description="Products to analyze")
-    user_id: Optional[int] = Field(None, description="User ID (for fetching hair profile)")
+    products: list[ProductInput] = Field(..., min_length=1, description="Products to analyze")
+    user_id: int | None = Field(None, description="User ID (for fetching hair profile)")
 
     class Config:
         json_schema_extra = {
@@ -95,7 +94,7 @@ class RoutineIssue(BaseModel):
     severity: str  # low, medium, high, critical
     title: str
     description: str
-    affected_products: List[str]  # Product names
+    affected_products: list[str]  # Product names
     recommendation: str
 
 
@@ -103,7 +102,7 @@ class RotationPlan(BaseModel):
     """Recommended product rotation schedule"""
 
     frequency: str  # daily, weekly, bi-weekly, monthly
-    products: List[str]
+    products: list[str]
     purpose: str
 
 
@@ -113,18 +112,18 @@ class CabinetAuditResponse(BaseModel):
     success: bool
     total_products: int
     average_crown_score: float
-    issues: List[RoutineIssue]
-    rotation_plan: List[RotationPlan]
+    issues: list[RoutineIssue]
+    rotation_plan: list[RotationPlan]
     summary: str
-    red_flag_ingredients: List[str]
+    red_flag_ingredients: list[str]
     product_scores: dict  # {product_name: crown_score}
 
 
 class RoutineCheckRequest(BaseModel):
     """Request for product interaction check"""
 
-    product_1_ingredients: List[str] = Field(..., description="First product ingredients")
-    product_2_ingredients: List[str] = Field(..., description="Second product ingredients")
+    product_1_ingredients: list[str] = Field(..., description="First product ingredients")
+    product_2_ingredients: list[str] = Field(..., description="Second product ingredients")
     product_1_type: str = Field(..., description="First product type")
     product_2_type: str = Field(..., description="Second product type")
     use_together: bool = Field(default=True, description="Are these used together or sequentially?")
@@ -144,7 +143,7 @@ class RoutineCheckResponse(BaseModel):
 
     success: bool
     safe_combination: bool
-    warnings: List[InteractionWarning]
+    warnings: list[InteractionWarning]
     summary: str
 
 
@@ -153,7 +152,7 @@ class ApiResponse(BaseModel):
 
     success: bool
     message: str
-    data: Optional[dict] = None
+    data: dict | None = None
 
 
 # ============================================================================
@@ -161,7 +160,7 @@ class ApiResponse(BaseModel):
 # ============================================================================
 
 
-def detect_protein_overload(products: List[ProductInput]) -> Optional[RoutineIssue]:
+def detect_protein_overload(products: list[ProductInput]) -> RoutineIssue | None:
     """Detect if routine has too much protein"""
     protein_keywords = [
         "hydrolyzed",
@@ -203,7 +202,7 @@ def detect_protein_overload(products: List[ProductInput]) -> Optional[RoutineIss
     return None
 
 
-def detect_buildup(products: List[ProductInput]) -> Optional[RoutineIssue]:
+def detect_buildup(products: list[ProductInput]) -> RoutineIssue | None:
     """Detect silicone/heavy oil build-up risk"""
     buildup_keywords = [
         "dimethicone",
@@ -245,7 +244,7 @@ def detect_buildup(products: List[ProductInput]) -> Optional[RoutineIssue]:
     return None
 
 
-def detect_stripping(products: List[ProductInput]) -> Optional[RoutineIssue]:
+def detect_stripping(products: list[ProductInput]) -> RoutineIssue | None:
     """Detect harsh stripping from too many sulfates"""
     stripping_sulfates = ["sodium lauryl sulfate", "sodium laureth sulfate", "sls", "sles"]
 
@@ -272,7 +271,7 @@ def detect_stripping(products: List[ProductInput]) -> Optional[RoutineIssue]:
     return None
 
 
-def detect_moisture_imbalance(products: List[ProductInput]) -> Optional[RoutineIssue]:
+def detect_moisture_imbalance(products: list[ProductInput]) -> RoutineIssue | None:
     """Detect lack of moisturizing products"""
     moisturizing_keywords = [
         "shea butter",

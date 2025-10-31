@@ -1,6 +1,6 @@
 # RossNetAgents/core_infra/mcp_router_service/auth.py
 
-from typing import Any, Dict
+from typing import Any
 
 import jwt  # PyJWT library, install with: pip install pyjwt
 from fastapi import WebSocket
@@ -46,7 +46,7 @@ async def authenticate_connection(websocket: WebSocket, agent_id: str) -> bool:
     return True  # Placeholder - REMOVE IN PRODUCTION
 
 
-def decode_jwt_token(token: str) -> Dict[str, Any]:
+def decode_jwt_token(token: str) -> dict[str, Any]:
     """
     Decodes a JWT token and returns its payload.
     Raises jwt.ExpiredSignatureError or jwt.InvalidTokenError on failure.
@@ -65,7 +65,7 @@ def decode_jwt_token(token: str) -> Dict[str, Any]:
         raise jwt.InvalidTokenError("Unexpected error during token decoding.")
 
 
-async def validate_message_authentication(message: Dict[str, Any]) -> bool:
+async def validate_message_authentication(message: dict[str, Any]) -> bool:
     """
     Validates the authentication token within an MCP message header.
     Placeholder: Currently always returns True.

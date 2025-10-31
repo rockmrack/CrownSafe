@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -112,7 +112,7 @@ class SuperSmartLLMClient:
         self.pattern_memory = self._initialize_patterns()
         logger.info("SuperSmartLLMClient initialized with advanced features")
 
-    def _initialize_patterns(self) -> Dict[str, Any]:
+    def _initialize_patterns(self) -> dict[str, Any]:
         """Initialize common response patterns and knowledge base"""
         return {
             "safety_guidelines": {
@@ -161,7 +161,7 @@ class SuperSmartLLMClient:
             },
         }
 
-    def _analyze_context(self, query: str, conversation_id: Optional[str] = None) -> Dict[str, Any]:
+    def _analyze_context(self, query: str, conversation_id: str | None = None) -> dict[str, Any]:
         """Deep context analysis with pattern recognition"""
         query_lower = query.lower()
 
@@ -289,7 +289,7 @@ class SuperSmartLLMClient:
         complex_topics = ["allergen", "preparation", "schedule", "nutrition"]
         return self._categorize_topic(query) in complex_topics
 
-    def _generate_smart_response(self, query: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _generate_smart_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
         """Generate intelligent response based on context"""
 
         # FIXED: Emergency response with proper structure
@@ -314,7 +314,7 @@ class SuperSmartLLMClient:
         else:
             return self._general_response(query, context)
 
-    def _emergency_response(self, query: str) -> Dict[str, Any]:
+    def _emergency_response(self, query: str) -> dict[str, Any]:
         """Generate emergency response"""
         self.emergency_count += 1
 
@@ -359,7 +359,7 @@ class SuperSmartLLMClient:
 
         return response
 
-    def _allergen_response(self, query: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _allergen_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
         """Generate allergen-specific response"""
         return {
             "summary": "Allergen information is critical for baby safety. Always check product labels carefully.",
@@ -393,7 +393,7 @@ class SuperSmartLLMClient:
             ],
         }
 
-    def _preparation_response(self, query: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _preparation_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
         """Generate preparation/mixing response"""
         return {
             "summary": "Proper formula preparation is essential for baby's health and safety.",
@@ -423,7 +423,7 @@ class SuperSmartLLMClient:
             ],
         }
 
-    def _age_response(self, query: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _age_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
         """Generate age-appropriate response"""
         return {
             "summary": "Age-appropriate feeding ensures your baby gets proper nutrition for their developmental stage.",
@@ -453,7 +453,7 @@ class SuperSmartLLMClient:
             ],
         }
 
-    def _safety_response(self, query: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _safety_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
         """Generate general safety response"""
         return {
             "summary": "Baby safety requires constant vigilance and proper knowledge of best practices.",
@@ -483,7 +483,7 @@ class SuperSmartLLMClient:
             ],
         }
 
-    def _nutrition_response(self, query: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _nutrition_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
         """Generate nutrition response"""
         return {
             "summary": "Proper nutrition is crucial for your baby's growth and development.",
@@ -513,7 +513,7 @@ class SuperSmartLLMClient:
             ],
         }
 
-    def _schedule_response(self, query: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _schedule_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
         """Generate feeding schedule response"""
         return {
             "summary": "A consistent feeding schedule helps establish healthy patterns for your baby.",
@@ -551,7 +551,7 @@ class SuperSmartLLMClient:
             ],
         }
 
-    def _general_response(self, query: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _general_response(self, query: str, context: dict[str, Any]) -> dict[str, Any]:
         """Generate general helpful response"""
 
         # Add personalization based on emotion
@@ -584,7 +584,7 @@ class SuperSmartLLMClient:
             "suggested_questions": self._get_contextual_suggestions(query, context),
         }
 
-    def _get_contextual_suggestions(self, query: str, context: Dict[str, Any]) -> List[str]:
+    def _get_contextual_suggestions(self, query: str, context: dict[str, Any]) -> list[str]:
         """Generate smart follow-up suggestions based on context"""
         suggestions = []
 
@@ -619,8 +619,8 @@ class SuperSmartLLMClient:
         self,
         conversation_id: str,
         query: str,
-        response: Dict[str, Any],
-        context: Dict[str, Any],
+        response: dict[str, Any],
+        context: dict[str, Any],
     ):
         """Update conversation memory for better context"""
         if conversation_id not in self.conversation_memory:
@@ -652,8 +652,8 @@ class SuperSmartLLMClient:
         user: str = "",
         response_schema=None,
         timeout: float = 30.0,
-        conversation_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        conversation_id: str | None = None,
+    ) -> dict[str, Any]:
         """Main entry point for chat requests"""
         try:
             # Analyze context
@@ -680,7 +680,7 @@ class SuperSmartLLMClient:
             logger.error(f"Error in chat_json: {e}")
             return self._fallback_response()
 
-    def _translate_response(self, response: Dict[str, Any], language: str) -> Dict[str, Any]:
+    def _translate_response(self, response: dict[str, Any], language: str) -> dict[str, Any]:
         """Basic translation for common languages"""
         if language == "es":
             # Spanish translations
@@ -711,7 +711,7 @@ class SuperSmartLLMClient:
 
         return response
 
-    def _fallback_response(self) -> Dict[str, Any]:
+    def _fallback_response(self) -> dict[str, Any]:
         """Ultimate fallback response"""
         return {
             "summary": "I'm here to help with baby safety questions. Please consult your pediatrician for specific medical advice.",  # noqa: E501
@@ -773,7 +773,7 @@ def looks_emergency(q: str) -> bool:
     return any(t in (q or "").lower() for t in EMERGENCY_TERMS)
 
 
-def build_suggested_questions(category: str, profile: dict) -> List[str]:
+def build_suggested_questions(category: str, profile: dict) -> list[str]:
     """Build contextual suggestions"""
     questions = []
 
@@ -809,16 +809,16 @@ def build_suggested_questions(category: str, profile: dict) -> List[str]:
 # Request/Response Models
 class ChatRequest(BaseModel):
     message: str = Field(..., description="User's question or message")
-    conversation_id: Optional[str] = Field(None, description="Conversation ID for context")
-    user_id: Optional[str] = Field(None, description="User ID for personalization")
-    device_id: Optional[str] = Field(None, description="Device ID for rollout bucketing")
+    conversation_id: str | None = Field(None, description="Conversation ID for context")
+    user_id: str | None = Field(None, description="User ID for personalization")
+    device_id: str | None = Field(None, description="Device ID for rollout bucketing")
 
 
 class ChatResponse(BaseModel):
     answer: str = Field(..., description="AI response")
     conversation_id: str = Field(..., description="Conversation ID")
-    suggested_questions: List[str] = Field(default_factory=list)
-    emergency: Optional[Dict[str, Any]] = Field(None)
+    suggested_questions: list[str] = Field(default_factory=list)
+    emergency: dict[str, Any] | None = Field(None)
 
 
 # API Endpoints
@@ -827,7 +827,7 @@ async def chat_explain_result(
     request: Request,
     scan_id: str,
     user_query: str,
-    conversation_id: Optional[str] = None,
+    conversation_id: str | None = None,
     db: Session = Depends(get_db),
 ) -> JSONResponse:
     """Explain scan results endpoint"""

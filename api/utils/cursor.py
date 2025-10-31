@@ -9,7 +9,7 @@ import hmac
 import json
 import os
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 def _b64u_encode(data: bytes) -> str:
@@ -28,7 +28,7 @@ def _b64u_decode(s: str) -> bytes:
     return base64.urlsafe_b64decode(s + padding)
 
 
-def sign_cursor(payload: Dict[str, Any], key: Optional[str] = None) -> str:
+def sign_cursor(payload: dict[str, Any], key: str | None = None) -> str:
     """
     Create a signed cursor token from a payload
 
@@ -62,7 +62,7 @@ def sign_cursor(payload: Dict[str, Any], key: Optional[str] = None) -> str:
     return _b64u_encode(json_bytes) + "." + _b64u_encode(signature)
 
 
-def verify_cursor(token: str, key: Optional[str] = None) -> Dict[str, Any]:
+def verify_cursor(token: str, key: str | None = None) -> dict[str, Any]:
     """
     Verify and decode a signed cursor token
 
@@ -126,7 +126,7 @@ def create_search_cursor(
     filters_hash: str,
     as_of: datetime,
     limit: int,
-    after_tuple: Optional[tuple] = None,
+    after_tuple: tuple | None = None,
     ttl_hours: int = 24,
 ) -> str:
     """
@@ -170,7 +170,7 @@ def create_search_cursor(
     return sign_cursor(payload)
 
 
-def hash_filters(filters: Dict[str, Any], exclude_cursor: bool = True) -> str:
+def hash_filters(filters: dict[str, Any], exclude_cursor: bool = True) -> str:
     """
     Create a deterministic hash of search filters
 
@@ -196,7 +196,7 @@ def hash_filters(filters: Dict[str, Any], exclude_cursor: bool = True) -> str:
     return hashlib.sha256(json_str.encode("utf-8")).hexdigest()
 
 
-def validate_cursor_filters(cursor_data: Dict[str, Any], current_filters_hash: str) -> None:
+def validate_cursor_filters(cursor_data: dict[str, Any], current_filters_hash: str) -> None:
     """
     Validate that cursor filters match current request filters
 

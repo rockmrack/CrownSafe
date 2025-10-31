@@ -5,7 +5,7 @@ Issue #32 - Phase 2 Implementation
 
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import Request
 from loguru import logger
@@ -73,7 +73,7 @@ def log_performance(operation: str, duration_ms: float, **kwargs):
 
 
 # Error logging with context
-def log_error(error: Exception, context: Dict[str, Any] = None):
+def log_error(error: Exception, context: dict[str, Any] = None):
     """Log error with full context"""
     logger.error(
         f"Error: {type(error).__name__}",

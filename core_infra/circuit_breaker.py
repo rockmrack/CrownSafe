@@ -6,7 +6,7 @@ Prevents cascade failures and provides graceful degradation
 import asyncio
 import logging
 from functools import wraps
-from typing import Any, Callable, Dict
+from typing import Any, Callable
 
 from pybreaker import CircuitBreaker, CircuitBreakerError
 from tenacity import (
@@ -59,7 +59,7 @@ BREAKER_CONFIGS = {
 }
 
 # Create circuit breakers
-breakers: Dict[str, CircuitBreaker] = {}
+breakers: dict[str, CircuitBreaker] = {}
 
 for service, config in BREAKER_CONFIGS.items():
     breakers[service] = CircuitBreaker(
@@ -204,7 +204,7 @@ def resilient_operation(service_name: str, max_attempts: int = 3, fallback=None)
 
 
 # Status checking functions
-def get_circuit_status(service_name: str) -> Dict[str, Any]:
+def get_circuit_status(service_name: str) -> dict[str, Any]:
     """Get the current status of a circuit breaker"""
     if service_name not in breakers:
         return {"error": f"Unknown service: {service_name}"}
@@ -221,7 +221,7 @@ def get_circuit_status(service_name: str) -> Dict[str, Any]:
     }
 
 
-def get_all_circuit_status() -> Dict[str, Dict[str, Any]]:
+def get_all_circuit_status() -> dict[str, dict[str, Any]]:
     """Get status of all circuit breakers"""
     return {service: get_circuit_status(service) for service in breakers.keys()}
 
@@ -280,7 +280,7 @@ async def safe_api_call(url: str):
 
 
 # Health check for circuit breakers
-def check_circuits_health() -> Dict[str, Any]:
+def check_circuits_health() -> dict[str, Any]:
     """Check health of all circuit breakers"""
     all_status = get_all_circuit_status()
 

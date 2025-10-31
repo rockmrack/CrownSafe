@@ -4,14 +4,13 @@ Comprehensive deployment verification and fix script
 """
 
 import sys
-from typing import Dict, Tuple
 
 import requests
 
 BASE_URL = "https://babyshield.cureviax.ai"
 
 
-def check_endpoint(path: str, method: str = "GET", data: Dict = None) -> Tuple[int, Dict]:
+def check_endpoint(path: str, method: str = "GET", data: dict = None) -> tuple[int, dict]:
     """Check if an endpoint is working"""
     url = f"{BASE_URL}{path}"
     headers = {"Content-Type": "application/json"}

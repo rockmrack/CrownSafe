@@ -4,23 +4,22 @@ Provides current user context for authenticated requests.
 """
 
 import logging
-from typing import Optional
 from uuid import UUID
 
 
 class User:
     """Simple user model for authentication context."""
 
-    def __init__(self, id: UUID, email: Optional[str] = None):
+    def __init__(self, id: UUID, email: str | None = None):
         self.id = id
         self.email = email
 
 
 # Global current user context (in production, this would be request-scoped)
-current_user: Optional[User] = None
+current_user: User | None = None
 
 
-def get_current_user() -> Optional[User]:
+def get_current_user() -> User | None:
     """
     Get the current authenticated user.
 
@@ -36,7 +35,7 @@ def get_current_user() -> Optional[User]:
     return current_user
 
 
-def set_current_user(user: Optional[User]) -> None:
+def set_current_user(user: User | None) -> None:
     """
     Set the current user context (for testing/development).
 

@@ -4,7 +4,7 @@ Recall ingestion Celery tasks for BabyShield Backend.
 This module provides background task processing for regulatory agency recall ingestion.
 """
 
-from typing import Any, Dict, List
+from typing import Any
 
 from celery import Task
 
@@ -16,7 +16,7 @@ class RecallAgent:
     def __init__(self):
         pass
 
-    def fetch_recalls(self, agency: str, date_range: Dict[str, str]) -> List[Dict[str, Any]]:
+    def fetch_recalls(self, agency: str, date_range: dict[str, str]) -> list[dict[str, Any]]:
         """Fetch recalls from a specific agency."""
         return [
             {
@@ -27,7 +27,7 @@ class RecallAgent:
             }
         ]
 
-    def process_recall(self, recall_data: Dict[str, Any]) -> Dict[str, Any]:
+    def process_recall(self, recall_data: dict[str, Any]) -> dict[str, Any]:
         """Process a single recall."""
         return {"status": "processed", "recall_id": recall_data.get("recall_id")}
 
@@ -55,7 +55,7 @@ except ImportError:
     soft_time_limit=300,
     time_limit=360,
 )
-def ingest_recalls_from_agency_task(self: Task, agency: str, date_range: Dict[str, str]) -> Dict[str, Any]:
+def ingest_recalls_from_agency_task(self: Task, agency: str, date_range: dict[str, str]) -> dict[str, Any]:
     """
     Ingest recalls from a specific regulatory agency.
 
@@ -100,7 +100,7 @@ def ingest_recalls_from_agency_task(self: Task, agency: str, date_range: Dict[st
 
 
 @app.task(name="refresh_all_recalls", soft_time_limit=600, time_limit=720)
-def refresh_all_recalls_task() -> Dict[str, Any]:
+def refresh_all_recalls_task() -> dict[str, Any]:
     """
     Refresh recalls from all configured agencies.
 

@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, timezone
-from typing import Optional
 
 from sqlalchemy.orm import Session
 
@@ -22,7 +21,7 @@ class IngestionRunner:
         self.db_session = db_session
         self.config = config or Config()
 
-    def start_run(self, source: IngestionSource, run_name: Optional[str] = None) -> IngestionRun:
+    def start_run(self, source: IngestionSource, run_name: str | None = None) -> IngestionRun:
         """
         Records the start of an ingestion run.
         """
@@ -45,7 +44,7 @@ class IngestionRunner:
         status: IngestionStatus,
         records_processed: int = 0,
         errors: int = 0,
-        details: Optional[str] = None,
+        details: str | None = None,
     ) -> IngestionRun:
         """
         Records the completion or failure of an ingestion run.

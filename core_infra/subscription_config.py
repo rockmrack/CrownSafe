@@ -4,7 +4,6 @@ Centralizes all subscription-related settings
 """
 
 import os
-from typing import Dict, Optional
 
 from dotenv import load_dotenv
 
@@ -65,7 +64,7 @@ class SubscriptionConfig:
     }
 
     @classmethod
-    def get_product_info(cls, product_id: str) -> Optional[Dict]:
+    def get_product_info(cls, product_id: str) -> dict | None:
         """Get product information by ID"""
         return cls.PRODUCT_MAPPINGS.get(product_id)
 
@@ -88,7 +87,7 @@ class SubscriptionConfig:
         return info["duration_months"] if info else 0
 
     @classmethod
-    def get_plan_type(cls, product_id: str) -> Optional[str]:
+    def get_plan_type(cls, product_id: str) -> str | None:
         """Get plan type (monthly/annual) from product ID"""
         info = cls.get_product_info(product_id)
         return info["plan"] if info else None

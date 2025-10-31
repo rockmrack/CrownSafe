@@ -6,7 +6,7 @@ Integrates authoritative data sources beyond recalls for comprehensive safety re
 import logging
 import os
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 
@@ -17,12 +17,12 @@ logger = logging.getLogger(__name__)
 class FoodData:
     """Food product data from USDA and Edamam"""
 
-    fdc_id: Optional[str] = None
-    name: Optional[str] = None
-    ingredients: Optional[List[str]] = None
-    allergens: Optional[List[str]] = None
-    nutritional_info: Optional[Dict[str, Any]] = None
-    safety_score: Optional[float] = None
+    fdc_id: str | None = None
+    name: str | None = None
+    ingredients: list[str] | None = None
+    allergens: list[str] | None = None
+    nutritional_info: dict[str, Any] | None = None
+    safety_score: float | None = None
     source: str = "unknown"
 
 
@@ -30,11 +30,11 @@ class FoodData:
 class CosmeticData:
     """Cosmetic product data from EU CosIng and Open Beauty Facts"""
 
-    product_name: Optional[str] = None
-    ingredients: Optional[List[str]] = None
-    regulatory_status: Optional[Dict[str, str]] = None
-    safety_concerns: Optional[List[str]] = None
-    safety_score: Optional[float] = None
+    product_name: str | None = None
+    ingredients: list[str] | None = None
+    regulatory_status: dict[str, str] | None = None
+    safety_concerns: list[str] | None = None
+    safety_score: float | None = None
     source: str = "unknown"
 
 
@@ -42,12 +42,12 @@ class CosmeticData:
 class ChemicalData:
     """Chemical safety data from OSHA and ATSDR"""
 
-    chemical_name: Optional[str] = None
-    cas_number: Optional[str] = None
-    safety_limits: Optional[Dict[str, Any]] = None
-    health_effects: Optional[List[str]] = None
-    exposure_guidelines: Optional[Dict[str, Any]] = None
-    safety_score: Optional[float] = None
+    chemical_name: str | None = None
+    cas_number: str | None = None
+    safety_limits: dict[str, Any] | None = None
+    health_effects: list[str] | None = None
+    exposure_guidelines: dict[str, Any] | None = None
+    safety_score: float | None = None
     source: str = "unknown"
 
 
@@ -62,7 +62,7 @@ class USDAClient:
         if not self.enabled:
             logger.info("USDA FoodData Central disabled - no API key provided")
 
-    async def search_food(self, query: str, limit: int = 10) -> List[Dict[str, Any]]:
+    async def search_food(self, query: str, limit: int = 10) -> list[dict[str, Any]]:
         """Search for food products in USDA database"""
         if not self.enabled:
             return []
@@ -86,7 +86,7 @@ class USDAClient:
             logger.error(f"USDA API error: {e}")
             return []
 
-    async def get_food_details(self, fdc_id: str) -> Optional[Dict[str, Any]]:
+    async def get_food_details(self, fdc_id: str) -> dict[str, Any] | None:
         """Get detailed food information by FDC ID"""
         if not self.enabled:
             return None
@@ -117,7 +117,7 @@ class EdamamClient:
         if not self.enabled:
             logger.info("Edamam API disabled - no credentials provided")
 
-    async def search_food(self, query: str, limit: int = 10) -> List[Dict[str, Any]]:
+    async def search_food(self, query: str, limit: int = 10) -> list[dict[str, Any]]:
         """Search for food products in Edamam database"""
         if not self.enabled:
             return []
@@ -141,7 +141,7 @@ class EdamamClient:
             logger.error(f"Edamam API error: {e}")
             return []
 
-    async def get_nutrition_info(self, food_id: str) -> Optional[Dict[str, Any]]:
+    async def get_nutrition_info(self, food_id: str) -> dict[str, Any] | None:
         """Get nutritional information for a food item"""
         if not self.enabled:
             return None
@@ -177,7 +177,7 @@ class CosIngClient:
         self.enabled = True  # Public database, no API key needed
         logger.info("EU CosIng database client initialized")
 
-    async def search_ingredient(self, ingredient_name: str) -> List[Dict[str, Any]]:
+    async def search_ingredient(self, ingredient_name: str) -> list[dict[str, Any]]:
         """Search for cosmetic ingredients in EU CosIng database"""
         if not self.enabled:
             return []
@@ -214,7 +214,7 @@ class SupplementalDataService:
 
         logger.info("SupplementalDataService initialized")
 
-    async def get_food_data(self, product_name: str, barcode: Optional[str] = None) -> FoodData:
+    async def get_food_data(self, product_name: str, barcode: str | None = None) -> FoodData:
         """Get comprehensive food data from multiple sources"""
         logger.info(f"Getting food data for: {product_name}")
 
@@ -315,7 +315,7 @@ class SupplementalDataService:
 
         return chemical_data
 
-    def _extract_nutritional_info(self, usda_data: Dict[str, Any]) -> Dict[str, Any]:
+    def _extract_nutritional_info(self, usda_data: dict[str, Any]) -> dict[str, Any]:
         """Extract nutritional information from USDA data"""
         nutrients = {}
 
@@ -330,7 +330,7 @@ class SupplementalDataService:
 
         return nutrients
 
-    def _extract_edamam_nutrition(self, edamam_data: Dict[str, Any]) -> Dict[str, Any]:
+    def _extract_edamam_nutrition(self, edamam_data: dict[str, Any]) -> dict[str, Any]:
         """Extract nutritional information from Edamam data"""
         nutrients = {}
 

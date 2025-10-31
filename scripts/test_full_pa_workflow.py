@@ -3,7 +3,7 @@
 import json
 import logging
 import time
-from typing import Any, Dict, Optional
+from typing import Any
 
 import redis
 import requests
@@ -36,7 +36,7 @@ logger.addHandler(handler)
 API_BASE_URL = "http://127.0.0.1:8000"
 
 
-def check_endpoint(method: str, endpoint: str, data: Optional[Dict] = None, expected_status: int = 200) -> tuple:
+def check_endpoint(method: str, endpoint: str, data: dict | None = None, expected_status: int = 200) -> tuple:
     """Check a single endpoint and return (success, response_data, error_message)"""
     url = f"{API_BASE_URL}{endpoint}"
 
@@ -77,7 +77,7 @@ def check_endpoint(method: str, endpoint: str, data: Optional[Dict] = None, expe
         return False, None, f"Error: {str(e)}"
 
 
-def check_redis_for_workflow(workflow_id: str) -> Dict[str, Any]:
+def check_redis_for_workflow(workflow_id: str) -> dict[str, Any]:
     """Check Redis directly for workflow information"""
     try:
         r = redis.Redis(host="localhost", port=6379, decode_responses=True)

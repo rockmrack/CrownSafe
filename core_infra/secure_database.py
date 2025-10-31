@@ -7,7 +7,7 @@ import logging
 import os
 import time
 from contextlib import contextmanager
-from typing import Any, Generator, Optional
+from typing import Any, Generator
 
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
@@ -152,9 +152,9 @@ class DatabaseEngines:
     """Singleton to manage database engines"""
 
     _instance = None
-    _readonly_engine: Optional[Engine] = None
-    _write_engine: Optional[Engine] = None
-    _admin_engine: Optional[Engine] = None
+    _readonly_engine: Engine | None = None
+    _write_engine: Engine | None = None
+    _admin_engine: Engine | None = None
 
     def __new__(cls):
         if cls._instance is None:
@@ -307,7 +307,7 @@ class SecureQuery:
     """Helper class for secure database queries"""
 
     @staticmethod
-    def fetch_one(query: str, params: dict = None) -> Optional[Any]:
+    def fetch_one(query: str, params: dict = None) -> Any | None:
         """Execute a SELECT query and fetch one result"""
         with get_readonly_session() as session:
             result = session.execute(query, params or {})

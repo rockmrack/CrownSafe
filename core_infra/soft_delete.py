@@ -5,7 +5,7 @@ Enables data recovery and maintains data history
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import Boolean, Column, DateTime, Integer, event
 from sqlalchemy.ext.declarative import declared_attr
@@ -39,7 +39,7 @@ class SoftDeleteMixin:
         """User ID who deleted the record"""
         return Column(Integer, nullable=True)
 
-    def soft_delete(self, deleted_by_id: Optional[int] = None):
+    def soft_delete(self, deleted_by_id: int | None = None):
         """
         Soft delete this record
         """
@@ -189,7 +189,7 @@ class RecycleBin:
     def __init__(self, session: Session):
         self.session = session
 
-    def get_deleted_items(self, model: type, limit: int = 100, offset: int = 0) -> List[Any]:
+    def get_deleted_items(self, model: type, limit: int = 100, offset: int = 0) -> list[Any]:
         """
         Get deleted items of a specific type
         """
@@ -268,7 +268,7 @@ class RecycleBin:
         logger.info(f"Permanently deleted {count} old {model.__name__} records")
         return count
 
-    def get_deletion_stats(self) -> Dict[str, int]:
+    def get_deletion_stats(self) -> dict[str, int]:
         """
         Get statistics about deleted records
         """

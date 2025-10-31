@@ -7,7 +7,7 @@ Version: 3.0 - Adapted for Crown Safe (Hair/Cosmetic Products)
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from sqlalchemy import or_
 
@@ -36,7 +36,7 @@ class RecallDataAgentLogic:
     3. Upsert recalls into EnhancedEnhancedRecallDB with deduplication
     """
 
-    def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
         """
         Initialize RecallDataAgent logic.
 
@@ -52,7 +52,7 @@ class RecallDataAgentLogic:
             f"{len(self.connector_registry.connectors)} connectors."
         )
 
-    async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
         """
         Query database for recalls matching product identifiers.
 
@@ -180,7 +180,7 @@ class RecallDataAgentLogic:
             self.logger.error(f"[{self.agent_id}] Database query failed: {e}", exc_info=True)
             return {"status": "FAILED", "error": f"Database query failed: {str(e)}"}
 
-    async def run_ingestion_cycle(self) -> Dict[str, Any]:
+    async def run_ingestion_cycle(self) -> dict[str, Any]:
         """
         Run a full ingestion cycle from all enabled connectors.
 
@@ -318,7 +318,7 @@ class RecallDataAgentLogic:
                 "duration_seconds": (datetime.now() - start_time).total_seconds(),
             }
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """
         Get recall database statistics.
 
@@ -390,10 +390,10 @@ class RecallDataAgentLogic:
 
 
 async def test_query(
-    product_name: Optional[str] = None,
-    model_number: Optional[str] = None,
-    upc: Optional[str] = None,
-    brand: Optional[str] = None,
+    product_name: str | None = None,
+    model_number: str | None = None,
+    upc: str | None = None,
+    brand: str | None = None,
 ):
     """Test the query functionality"""
     agent = RecallDataAgentLogic(agent_id="test_agent")

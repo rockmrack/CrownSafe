@@ -6,7 +6,7 @@ import json
 import logging
 import os
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 from dotenv import load_dotenv
@@ -27,7 +27,7 @@ class HazardAnalysisLogic:
     Handles the logic for analyzing product hazards from recall data by calling an LLM.
     """
 
-    def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
         if not API_KEY:
@@ -35,7 +35,7 @@ class HazardAnalysisLogic:
             raise ValueError("OPENAI_API_KEY is not set.")
         self.logger.info(f"HazardAnalysisLogic initialized for agent {self.agent_id}.")
 
-    def _create_llm_prompt(self, recall_data: List[Dict[str, Any]], product_name: str) -> str:
+    def _create_llm_prompt(self, recall_data: list[dict[str, Any]], product_name: str) -> str:
         """Creates a system prompt for the LLM to summarize recall information."""
         recall_details = ""
         for i, recall in enumerate(recall_data):
@@ -72,7 +72,7 @@ Example of a perfect response:
 advised to stop using this product immediately.", "risk_level": "High"}}
 """
 
-    async def _query_llm(self, prompt: str) -> Optional[Dict[str, Any]]:
+    async def _query_llm(self, prompt: str) -> dict[str, Any] | None:
         """
         Queries the OpenAI API for analysis using an async HTTPX client with no proxy support.
         """
@@ -102,7 +102,7 @@ advised to stop using this product immediately.", "risk_level": "High"}}
             self.logger.error(f"OpenAI API call failed: {e}", exc_info=True)
             return None
 
-    async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
         """
         Main entry point for the agent. It receives recall data from the Router
         and returns either a safe default or the LLM analysis.

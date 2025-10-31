@@ -7,7 +7,7 @@ import hashlib
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import markdown
 from fastapi import APIRouter, Header, HTTPException, Request, Response
@@ -49,7 +49,7 @@ class DataDeletionRequest(BaseModel):
     """Data deletion request"""
 
     user_id: str
-    reason: Optional[str] = None
+    reason: str | None = None
     confirm: bool = Field(..., description="Must be true to confirm deletion")
 
 
@@ -70,7 +70,7 @@ class LegalAgreement(BaseModel):
     version: str
     accepted: bool
     timestamp: datetime = Field(default_factory=datetime.now)
-    ip_address: Optional[str] = None
+    ip_address: str | None = None
 
 
 # ========================= LEGAL DOCUMENTS =========================
@@ -244,8 +244,8 @@ def calculate_content_hash(content: str) -> str:
 # ========================= API ENDPOINTS =========================
 
 
-@router.get("/", response_model=List[LegalDocument])
-async def list_legal_documents(language: Optional[str] = "en"):
+@router.get("/", response_model=list[LegalDocument])
+async def list_legal_documents(language: str | None = "en"):
     """Get list of all legal documents with metadata"""
 
     documents = []
@@ -269,7 +269,7 @@ async def list_legal_documents(language: Optional[str] = "en"):
 
 
 @router.get("/{document_id}")
-async def get_legal_document(document_id: str, format: Optional[str] = "html", language: Optional[str] = "en"):
+async def get_legal_document(document_id: str, format: str | None = "html", language: str | None = "en"):
     """
     Get a specific legal document
 
@@ -301,8 +301,8 @@ async def get_legal_document(document_id: str, format: Optional[str] = "html", l
         raise HTTPException(status_code=500, detail="Error retrieving document")
 
 
-@router.get("/privacy/summary", response_model=Dict[str, Any])
-async def get_privacy_summary(user_id: Optional[str] = Header(None, alias="X-User-ID")):
+@router.get("/privacy/summary", response_model=dict[str, Any])
+async def get_privacy_summary(user_id: str | None = Header(None, alias="X-User-ID")):
     """Get privacy policy summary and user's privacy settings"""
 
     summary = {
@@ -380,7 +380,7 @@ async def get_privacy_summary(user_id: Optional[str] = Header(None, alias="X-Use
 @router.post("/privacy/consent")
 async def update_privacy_consent(
     consent: ConsentUpdate,
-    user_id: Optional[str] = Header(None, alias="X-User-ID"),
+    user_id: str | None = Header(None, alias="X-User-ID"),
     request: Request = None,
 ):
     """Update user's privacy consent settings"""
@@ -595,7 +595,7 @@ async def accept_legal_agreement(
 
 
 @router.get("/cookies/preferences")
-async def get_cookie_preferences(session_id: Optional[str] = Header(None, alias="X-Session-ID")):
+async def get_cookie_preferences(session_id: str | None = Header(None, alias="X-Session-ID")):
     """Get cookie preferences (web only)"""
 
     return {

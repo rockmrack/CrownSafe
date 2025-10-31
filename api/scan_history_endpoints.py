@@ -4,7 +4,6 @@ Scan History Endpoints - Shows users their past scans
 
 import logging
 from datetime import datetime, timedelta
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import and_, desc
@@ -29,23 +28,23 @@ class ScanHistoryItem(AppModel):
     job_id: str
     scan_date: datetime
     status: str
-    product_name: Optional[str] = None
-    brand_name: Optional[str] = None
-    model_number: Optional[str] = None
-    upc_code: Optional[str] = None
-    confidence_score: Optional[float] = None
-    confidence_level: Optional[str] = None
+    product_name: str | None = None
+    brand_name: str | None = None
+    model_number: str | None = None
+    upc_code: str | None = None
+    confidence_score: float | None = None
+    confidence_level: str | None = None
     has_recalls: bool = False
     recall_count: int = 0
-    image_url: Optional[str] = None
-    processing_time_ms: Optional[int] = None
+    image_url: str | None = None
+    processing_time_ms: int | None = None
 
 
 class ScanHistoryResponse(AppModel):
     """Scan history response"""
 
     total_scans: int
-    scans: List[ScanHistoryItem]
+    scans: list[ScanHistoryItem]
     page: int
     page_size: int
     has_more: bool
@@ -55,8 +54,8 @@ class ScanHistoryResponse(AppModel):
 async def get_scan_history(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Items per page"),
-    days: Optional[int] = Query(None, ge=1, le=365, description="Filter by last N days"),
-    status: Optional[str] = Query(None, description="Filter by status"),
+    days: int | None = Query(None, ge=1, le=365, description="Filter by last N days"),
+    status: str | None = Query(None, description="Filter by status"),
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -326,12 +325,12 @@ class UserProfileResponse(AppModel):
 
     id: int
     email: str
-    username: Optional[str] = None
-    full_name: Optional[str] = None
+    username: str | None = None
+    full_name: str | None = None
     is_active: bool
     is_premium: bool = False
     created_at: datetime
-    last_login: Optional[datetime] = None
+    last_login: datetime | None = None
     scan_count: int = 0
     notification_preferences: dict = {}
 
@@ -339,9 +338,9 @@ class UserProfileResponse(AppModel):
 class UserProfileUpdateRequest(AppModel):
     """User profile update request"""
 
-    username: Optional[str] = None
-    full_name: Optional[str] = None
-    notification_preferences: Optional[dict] = None
+    username: str | None = None
+    full_name: str | None = None
+    notification_preferences: dict | None = None
 
 
 @router.get("/profile", response_model=ApiResponse)

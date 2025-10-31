@@ -5,7 +5,6 @@ Subscription service for entitlement checks and management
 import logging
 import os
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
 
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
@@ -24,7 +23,7 @@ class SubscriptionService:
     """Service for managing subscription entitlements"""
 
     @staticmethod
-    def _dev_entitlement_override(user_id: int, feature: str = None) -> Optional[Dict]:
+    def _dev_entitlement_override(user_id: int, feature: str = None) -> dict | None:
         """
         DEV/QA only: allow entitlements via env without touching DB.
         ENTITLEMENTS_ALLOW_ALL: "1|true|yes" -> grant everything
@@ -51,7 +50,7 @@ class SubscriptionService:
         return None
 
     @staticmethod
-    def is_active(user_id: int, db: Optional[Session] = None, feature: str = None) -> bool:
+    def is_active(user_id: int, db: Session | None = None, feature: str = None) -> bool:
         """
         Check if user has an active subscription
 
@@ -123,7 +122,7 @@ class SubscriptionService:
         return False
 
     @staticmethod
-    def get_active_subscription(user_id: int) -> Optional[Dict]:
+    def get_active_subscription(user_id: int) -> dict | None:
         """
         Get user's active subscription details
 
@@ -153,7 +152,7 @@ class SubscriptionService:
             return None
 
     @staticmethod
-    def get_subscription_status(user_id: int) -> Dict:
+    def get_subscription_status(user_id: int) -> dict:
         """
         Get detailed subscription status for user
 
@@ -223,7 +222,7 @@ class SubscriptionService:
             return {"active": False, "plan": None, "message": "No subscription found"}
 
     @staticmethod
-    def cancel_subscription(user_id: int) -> Dict:
+    def cancel_subscription(user_id: int) -> dict:
         """
         Cancel user's subscription (will remain active until expiry)
 
@@ -262,7 +261,7 @@ class SubscriptionService:
             }
 
     @staticmethod
-    def get_subscription_history(user_id: int, limit: int = 10) -> List[Dict]:
+    def get_subscription_history(user_id: int, limit: int = 10) -> list[dict]:
         """
         Get user's subscription history
 
@@ -285,7 +284,7 @@ class SubscriptionService:
             return [sub.to_dict() for sub in subscriptions]
 
     @staticmethod
-    def check_expiring_soon(days_threshold: int = 3) -> List[Dict]:
+    def check_expiring_soon(days_threshold: int = 3) -> list[dict]:
         """
         Find subscriptions expiring soon
 
@@ -380,7 +379,7 @@ class SubscriptionService:
             return count
 
     @staticmethod
-    def get_subscription_metrics() -> Dict:
+    def get_subscription_metrics() -> dict:
         """
         Get subscription metrics for analytics
 

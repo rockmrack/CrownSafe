@@ -12,7 +12,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -138,7 +138,7 @@ class MemoryPlannerAnalyzer:
 
         return any(resolved_candidate.is_relative_to(root) for root in allowed_roots)
 
-    def _resolve_if_safe(self, candidate: Path) -> Optional[Path]:
+    def _resolve_if_safe(self, candidate: Path) -> Path | None:
         """Resolve candidate path when it satisfies safety requirements."""
         try:
             resolved_candidate = candidate.expanduser().resolve()
@@ -148,7 +148,7 @@ class MemoryPlannerAnalyzer:
         return resolved_candidate if self._is_safe_path(resolved_candidate) else None
 
     @staticmethod
-    def _safe_parse_structured_block(raw_block: str) -> Optional[Dict[str, Any]]:
+    def _safe_parse_structured_block(raw_block: str) -> dict[str, Any] | None:
         """Parse structured log dictionaries without using eval."""
         normalized = (
             raw_block.replace("'", '"').replace("None", "null").replace("True", "true").replace("False", "false")
@@ -161,7 +161,7 @@ class MemoryPlannerAnalyzer:
             except (ValueError, SyntaxError):
                 return None
 
-    def _find_pdf_for_drug(self, drug_name: str) -> Optional[Tuple[Path, float]]:
+    def _find_pdf_for_drug(self, drug_name: str) -> tuple[Path, float] | None:
         """Find PDF file for the drug and return its path and timestamp"""
         if drug_name in self._pdf_timestamps:
             return self._pdf_timestamps[drug_name]
@@ -188,9 +188,9 @@ class MemoryPlannerAnalyzer:
     def _score_log_candidate(
         self,
         candidate: LogCandidate,
-        drug_name: Optional[str] = None,
-        workflow_id: Optional[str] = None,
-        reference_time: Optional[float] = None,
+        drug_name: str | None = None,
+        workflow_id: str | None = None,
+        reference_time: float | None = None,
     ) -> float:
         """Score a log candidate based on multiple factors"""
         score = 0.0
@@ -241,8 +241,8 @@ class MemoryPlannerAnalyzer:
     def _analyze_log_content(
         self,
         log_path: Path,
-        drug_name: Optional[str] = None,
-        workflow_id: Optional[str] = None,
+        drug_name: str | None = None,
+        workflow_id: str | None = None,
         check_depth: int = 50000,
     ) -> LogCandidate:
         """Analyze log content and create a scored candidate"""
@@ -291,11 +291,11 @@ class MemoryPlannerAnalyzer:
     def _find_best_log_file(
         self,
         agent_type: str,
-        drug_name: Optional[str] = None,
-        workflow_id: Optional[str] = None,
-        specific_log_path: Optional[str] = None,
+        drug_name: str | None = None,
+        workflow_id: str | None = None,
+        specific_log_path: str | None = None,
         time_window_minutes: int = 60,
-    ) -> Optional[Path]:
+    ) -> Path | None:
         """Find the most appropriate log file for analysis with advanced scoring"""
 
         # If specific log path provided, validate and use it when safe
@@ -433,10 +433,10 @@ class MemoryPlannerAnalyzer:
 
     def analyze_planner_logs(
         self,
-        workflow_id: Optional[str] = None,
-        drug_name: Optional[str] = None,
-        planner_log_path: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        workflow_id: str | None = None,
+        drug_name: str | None = None,
+        planner_log_path: str | None = None,
+    ) -> dict[str, Any]:
         """Analyze planner logs for memory-augmented behavior"""
         print("\n=== ANALYZING PLANNER LOGS ===")
         print(f"Target drug: {drug_name}")
@@ -484,8 +484,8 @@ class MemoryPlannerAnalyzer:
             with open(safe_planner_log, "r", encoding="utf-8", errors="ignore") as f:
                 content = f.read()
 
-                escaped_drug_name: Optional[str] = None
-                drug_name_lower: Optional[str] = None
+                escaped_drug_name: str | None = None
+                drug_name_lower: str | None = None
 
                 # Verify this log contains the drug we're looking for
                 if drug_name:
@@ -744,11 +744,11 @@ class MemoryPlannerAnalyzer:
 
     def analyze_workflow_execution(
         self,
-        workflow_id: Optional[str] = None,
-        drug_name: Optional[str] = None,
-        router_log_path: Optional[str] = None,
-        commander_log_path: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        workflow_id: str | None = None,
+        drug_name: str | None = None,
+        router_log_path: str | None = None,
+        commander_log_path: str | None = None,
+    ) -> dict[str, Any]:
         """Analyze complete workflow execution efficiency"""
         print("\n=== ANALYZING WORKFLOW EXECUTION ===")
 
@@ -895,7 +895,7 @@ class MemoryPlannerAnalyzer:
         self.analysis_results["workflow_efficiency"] = analysis
         return analysis
 
-    async def analyze_memory_impact(self, drug_name: str) -> Dict[str, Any]:
+    async def analyze_memory_impact(self, drug_name: str) -> dict[str, Any]:
         """Analyze how memory was impacted by the workflow"""
         print(f"\n=== ANALYZING MEMORY IMPACT FOR {drug_name} ===")
 
@@ -1068,7 +1068,7 @@ class MemoryPlannerAnalyzer:
         self.analysis_results["memory_utilization"] = analysis
         return analysis
 
-    def generate_recommendations(self, drug_name: str) -> List[str]:
+    def generate_recommendations(self, drug_name: str) -> list[str]:
         """Generate recommendations based on analysis"""
         recommendations = []
 
@@ -1186,11 +1186,11 @@ class MemoryPlannerAnalyzer:
 
     async def run_complete_analysis(
         self,
-        workflow_id: Optional[str] = None,
+        workflow_id: str | None = None,
         drug_name: str = "Empagliflozin",
-        planner_log: Optional[str] = None,
-        router_log: Optional[str] = None,
-        commander_log: Optional[str] = None,
+        planner_log: str | None = None,
+        router_log: str | None = None,
+        commander_log: str | None = None,
     ):
         """Run complete analysis of memory-augmented planner test"""
         print("\n" + "=" * 60)

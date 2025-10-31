@@ -10,7 +10,6 @@ import logging
 import os
 import secrets
 import time
-from typing import List, Set
 
 from fastapi import Request, status
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -26,7 +25,7 @@ class IPAllowlistMiddleware(BaseHTTPMiddleware):
     Middleware to restrict admin endpoints to specific IP addresses
     """
 
-    def __init__(self, app, admin_paths: List[str] = None, allowed_ips: List[str] = None):
+    def __init__(self, app, admin_paths: list[str] = None, allowed_ips: list[str] = None):
         super().__init__(app)
         self.admin_paths = admin_paths or [
             "/admin",
@@ -46,7 +45,7 @@ class IPAllowlistMiddleware(BaseHTTPMiddleware):
         logger.info(f"IP Allowlist configured for paths: {self.admin_paths}")
         logger.info(f"Allowed IPs/Networks: {self.allowed_ips}")
 
-    def _parse_ip_networks(self, ip_list: List[str]) -> Set[ipaddress.IPv4Network]:
+    def _parse_ip_networks(self, ip_list: list[str]) -> set[ipaddress.IPv4Network]:
         """Parse IP addresses and CIDR ranges"""
         networks = set()
 
@@ -265,7 +264,7 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
     Middleware for API key authentication on specific endpoints
     """
 
-    def __init__(self, app, protected_paths: List[str] = None):
+    def __init__(self, app, protected_paths: list[str] = None):
         super().__init__(app)
         self.protected_paths = protected_paths or ["/api/v1/admin"]
 
@@ -331,7 +330,7 @@ class HMACMiddleware(BaseHTTPMiddleware):
     Middleware for HMAC request signing validation
     """
 
-    def __init__(self, app, protected_paths: List[str] = None):
+    def __init__(self, app, protected_paths: list[str] = None):
         super().__init__(app)
         self.protected_paths = protected_paths or ["/api/v1/webhook"]
         self.secret = os.environ.get("HMAC_SECRET", secrets.token_bytes(32))

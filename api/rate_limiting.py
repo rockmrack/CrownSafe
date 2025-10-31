@@ -6,7 +6,6 @@ Uses Redis for distributed rate limiting across instances
 import logging
 import os
 from contextlib import asynccontextmanager
-from typing import Optional
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -32,7 +31,7 @@ class RateLimitConfig:
     WINDOW = 60
 
     @classmethod
-    def get_redis_url(cls) -> Optional[str]:
+    def get_redis_url(cls) -> str | None:
         """Get Redis URL from environment; do not default to localhost in prod."""
         return os.getenv("RATE_LIMIT_REDIS_URL") or os.getenv("REDIS_URL")
 
@@ -113,7 +112,7 @@ async def rate_limit_exceeded_handler(request: Request, exc) -> JSONResponse:
     )
 
 
-def get_rate_limiter(times: int = 100, seconds: int = 60, key_func: Optional[callable] = None) -> RateLimiter:
+def get_rate_limiter(times: int = 100, seconds: int = 60, key_func: callable | None = None) -> RateLimiter:
     """
     Factory function to create rate limiter dependencies
 

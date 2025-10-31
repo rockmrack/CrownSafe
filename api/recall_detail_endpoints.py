@@ -4,7 +4,7 @@ Recall Detail Endpoints for Individual Recall Lookup
 
 import logging
 import re
-from typing import Any, Dict
+from typing import Any
 from urllib.parse import unquote
 
 from fastapi import APIRouter, HTTPException, Request, Response
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/recall/{recall_id:path}")
-async def get_recall_detail(recall_id: str, request: Request, response: Response) -> Dict[str, Any]:
+async def get_recall_detail(recall_id: str, request: Request, response: Response) -> dict[str, Any]:
     """
     Get detailed information for a specific recall by ID
 

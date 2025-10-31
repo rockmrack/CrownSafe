@@ -9,7 +9,7 @@ import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 try:
     import openai  # noqa: F401
@@ -36,7 +36,7 @@ class TemporalPattern:
     confidence_score: float
     first_seen: datetime
     last_updated: datetime
-    supporting_evidence: List[str] = field(default_factory=list)
+    supporting_evidence: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -45,12 +45,12 @@ class Contradiction:
 
     contradiction_id: str
     entity: str
-    conflicting_claims: List[str]
-    evidence_sources: List[str]
+    conflicting_claims: list[str]
+    evidence_sources: list[str]
     severity: str  # "minor", "moderate", "major"
     confidence_score: float
     detected_at: datetime
-    resolution_suggestions: List[str] = field(default_factory=list)
+    resolution_suggestions: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -62,7 +62,7 @@ class ResearchGap:
     gap_type: str  # "clinical_trial", "safety_data", "mechanism", "population"
     description: str
     priority_score: float
-    suggested_research: List[str]
+    suggested_research: list[str]
     identified_at: datetime
 
 
@@ -72,11 +72,11 @@ class CrossWorkflowInsight:
 
     insight_id: str
     insight_type: str  # "drug_class_pattern", "indication_synergy", "safety_correlation"
-    entities_involved: List[str]
+    entities_involved: list[str]
     insight_description: str
     confidence_score: float
-    supporting_workflows: List[str]
-    actionable_recommendations: List[str]
+    supporting_workflows: list[str]
+    actionable_recommendations: list[str]
     generated_at: datetime
 
 
@@ -96,7 +96,7 @@ class EnhancedMemoryManager(MemoryManager):
         self,
         chroma_db_path: str = "chroma_db_data",
         collection_name: str = "cureviax_knowledge_base_v1",
-        logger_instance: Optional[logging.Logger] = None,
+        logger_instance: logging.Logger | None = None,
     ):
         """Initialize Enhanced Memory Manager"""
 
@@ -108,10 +108,10 @@ class EnhancedMemoryManager(MemoryManager):
         )
 
         # Enhanced collections for advanced features
-        self.temporal_patterns: Dict[str, TemporalPattern] = {}
-        self.contradictions: Dict[str, Contradiction] = {}
-        self.research_gaps: Dict[str, ResearchGap] = {}
-        self.cross_workflow_insights: Dict[str, CrossWorkflowInsight] = {}
+        self.temporal_patterns: dict[str, TemporalPattern] = {}
+        self.contradictions: dict[str, Contradiction] = {}
+        self.research_gaps: dict[str, ResearchGap] = {}
+        self.cross_workflow_insights: dict[str, CrossWorkflowInsight] = {}
 
         # Analysis caches
         self._temporal_analysis_cache = {}
@@ -172,7 +172,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.gaps_collection = None
             self.insights_collection = None
 
-    async def store_workflow_outputs_enhanced(self, workflow_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def store_workflow_outputs_enhanced(self, workflow_data: dict[str, Any]) -> dict[str, Any]:
         """
         Enhanced workflow storage with temporal analysis and contradiction detection
         """
@@ -242,7 +242,7 @@ class EnhancedMemoryManager(MemoryManager):
             enhanced_results["error"] = str(e)
             return enhanced_results
 
-    def _extract_entities_enhanced(self, workflow_data: Dict[str, Any]) -> Dict[str, List[str]]:
+    def _extract_entities_enhanced(self, workflow_data: dict[str, Any]) -> dict[str, list[str]]:
         """Enhanced entity extraction for temporal and contradiction analysis"""
         entities = {
             "drugs": [],
@@ -306,8 +306,8 @@ class EnhancedMemoryManager(MemoryManager):
             return entities
 
     async def _analyze_temporal_patterns(
-        self, entities: Dict[str, List[str]], workflow_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, entities: dict[str, list[str]], workflow_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze temporal patterns in research data"""
         self.logger.info("Starting temporal pattern analysis")
 
@@ -352,7 +352,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Temporal pattern analysis failed: {e}")
             return temporal_results
 
-    async def _get_historical_documents(self, entity: str) -> List[Dict[str, Any]]:
+    async def _get_historical_documents(self, entity: str) -> list[dict[str, Any]]:
         """Retrieve historical documents for temporal analysis"""
         try:
             # Query for documents containing the entity
@@ -384,7 +384,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Failed to retrieve historical documents for {entity}: {e}")
             return []
 
-    def _extract_timestamp(self, metadata: Dict[str, Any]) -> Optional[datetime]:
+    def _extract_timestamp(self, metadata: dict[str, Any]) -> datetime | None:
         """Extract timestamp from document metadata"""
         try:
             # Try various timestamp fields
@@ -415,8 +415,8 @@ class EnhancedMemoryManager(MemoryManager):
             return None
 
     async def _detect_temporal_pattern(
-        self, entity: str, historical_docs: List[Dict[str, Any]], current_time: datetime
-    ) -> Optional[TemporalPattern]:
+        self, entity: str, historical_docs: list[dict[str, Any]], current_time: datetime
+    ) -> TemporalPattern | None:
         """Detect temporal patterns in historical documents"""
         try:
             if len(historical_docs) < 2:
@@ -470,7 +470,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Failed to detect temporal pattern for {entity}: {e}")
             return None
 
-    async def _generate_temporal_insights(self, entities: Dict[str, List[str]]) -> List[str]:
+    async def _generate_temporal_insights(self, entities: dict[str, list[str]]) -> list[str]:
         """Generate actionable temporal insights"""
         insights = []
 
@@ -501,8 +501,8 @@ class EnhancedMemoryManager(MemoryManager):
             return insights
 
     async def _detect_contradictions(
-        self, entities: Dict[str, List[str]], workflow_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, entities: dict[str, list[str]], workflow_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Detect contradictory evidence across research"""
         self.logger.info("Starting contradiction detection")
 
@@ -541,7 +541,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Contradiction detection failed: {e}")
             return contradiction_results
 
-    async def _find_contradictory_evidence(self, entity: str) -> List[Contradiction]:
+    async def _find_contradictory_evidence(self, entity: str) -> list[Contradiction]:
         """Find contradictory evidence for a specific entity"""
         contradictions = []
 
@@ -598,8 +598,8 @@ class EnhancedMemoryManager(MemoryManager):
             return contradictions
 
     async def _analyze_statement_contradictions(
-        self, entity: str, category: str, statements: List[Tuple[str, str]]
-    ) -> List[Contradiction]:
+        self, entity: str, category: str, statements: list[tuple[str, str]]
+    ) -> list[Contradiction]:
         """Analyze statements for contradictions"""
         contradictions = []
 
@@ -659,7 +659,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Failed to analyze statement contradictions for {entity}: {e}")
             return contradictions
 
-    async def _suggest_contradiction_resolutions(self) -> List[str]:
+    async def _suggest_contradiction_resolutions(self) -> list[str]:
         """Suggest ways to resolve detected contradictions"""
         suggestions = []
 
@@ -700,8 +700,8 @@ class EnhancedMemoryManager(MemoryManager):
             return suggestions
 
     async def _identify_research_gaps(
-        self, entities: Dict[str, List[str]], workflow_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, entities: dict[str, list[str]], workflow_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Identify gaps in current research"""
         self.logger.info("Starting research gap identification")
 
@@ -739,7 +739,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Research gap identification failed: {e}")
             return gap_results
 
-    async def _analyze_research_gaps_for_entity(self, entity: str) -> List[ResearchGap]:
+    async def _analyze_research_gaps_for_entity(self, entity: str) -> list[ResearchGap]:
         """Analyze research gaps for a specific entity"""
         gaps = []
 
@@ -835,7 +835,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Failed to analyze research gaps for {entity}: {e}")
             return gaps
 
-    def _generate_gap_specific_suggestions(self, entity: str, gap_type: str) -> List[str]:
+    def _generate_gap_specific_suggestions(self, entity: str, gap_type: str) -> list[str]:
         """Generate specific research suggestions for identified gaps"""
         suggestions_map = {
             "clinical_trials": [
@@ -867,7 +867,7 @@ class EnhancedMemoryManager(MemoryManager):
 
         return suggestions_map.get(gap_type, [f"Conduct additional research on {entity}"])
 
-    async def _prioritize_research_areas(self) -> List[str]:
+    async def _prioritize_research_areas(self) -> list[str]:
         """Prioritize identified research areas"""
         priority_areas = []
 
@@ -903,7 +903,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Failed to prioritize research areas: {e}")
             return priority_areas
 
-    async def _generate_research_suggestions(self) -> List[str]:
+    async def _generate_research_suggestions(self) -> list[str]:
         """Generate actionable research suggestions"""
         suggestions = []
 
@@ -941,8 +941,8 @@ class EnhancedMemoryManager(MemoryManager):
             return suggestions
 
     async def _generate_cross_workflow_insights(
-        self, entities: Dict[str, List[str]], workflow_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, entities: dict[str, list[str]], workflow_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate advanced cross-workflow insights"""
         self.logger.info("Starting cross-workflow insight generation")
 
@@ -973,7 +973,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Cross-workflow insight generation failed: {e}")
             return insight_results
 
-    async def _analyze_drug_class_patterns(self, entities: Dict[str, List[str]]) -> List[Dict[str, Any]]:
+    async def _analyze_drug_class_patterns(self, entities: dict[str, list[str]]) -> list[dict[str, Any]]:
         """Analyze patterns across drug classes"""
         insights = []
 
@@ -1024,7 +1024,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Failed to analyze drug class patterns: {e}")
             return insights
 
-    async def _find_common_outcomes(self, drugs: List[str]) -> List[str]:
+    async def _find_common_outcomes(self, drugs: list[str]) -> list[str]:
         """Find common outcomes across drugs"""
         outcome_patterns = defaultdict(int)
 
@@ -1062,7 +1062,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Failed to find common outcomes: {e}")
             return []
 
-    async def _find_common_indications(self, drugs: List[str]) -> List[str]:
+    async def _find_common_indications(self, drugs: list[str]) -> list[str]:
         """Find common indications across drugs"""
         indication_patterns = defaultdict(int)
 
@@ -1098,7 +1098,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Failed to find common indications: {e}")
             return []
 
-    async def _analyze_indication_patterns(self, entities: Dict[str, List[str]]) -> List[Dict[str, Any]]:
+    async def _analyze_indication_patterns(self, entities: dict[str, list[str]]) -> list[dict[str, Any]]:
         """Analyze patterns across indications"""
         insights = []
 
@@ -1136,7 +1136,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Failed to analyze indication patterns: {e}")
             return insights
 
-    async def _generate_insight_recommendations(self) -> List[str]:
+    async def _generate_insight_recommendations(self) -> list[str]:
         """Generate actionable recommendations from insights"""
         recommendations = []
 
@@ -1164,7 +1164,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Failed to generate insight recommendations: {e}")
             return recommendations
 
-    def get_enhanced_analytics(self) -> Dict[str, Any]:
+    def get_enhanced_analytics(self) -> dict[str, Any]:
         """Get comprehensive analytics including enhanced features"""
         try:
             # Get base analytics from MVP-1.4
@@ -1229,7 +1229,7 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.error(f"Failed to get enhanced analytics: {e}")
             return {"error": str(e)}
 
-    async def get_enhanced_research_recommendations(self, entities: Dict[str, Any]) -> Dict[str, Any]:
+    async def get_enhanced_research_recommendations(self, entities: dict[str, Any]) -> dict[str, Any]:
         """
         ENHANCED: Get comprehensive research recommendations based on similarity search and existing evidence
 
@@ -1370,9 +1370,9 @@ class EnhancedMemoryManager(MemoryManager):
     async def _find_existing_evidence_for_entity(
         self,
         primary_drug: str,
-        primary_disease: Optional[str] = None,
-        drug_class: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        primary_disease: str | None = None,
+        drug_class: str | None = None,
+    ) -> dict[str, Any]:
         """
         Find existing evidence for an entity using multiple similarity search strategies
         """
@@ -1530,10 +1530,10 @@ class EnhancedMemoryManager(MemoryManager):
 
     def _determine_research_strategy(
         self,
-        evidence_results: Dict[str, Any],
+        evidence_results: dict[str, Any],
         primary_drug: str,
-        drug_class: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        drug_class: str | None = None,
+    ) -> dict[str, Any]:
         """
         Determine the appropriate research strategy based on existing evidence analysis
         """
@@ -1633,8 +1633,8 @@ class EnhancedMemoryManager(MemoryManager):
         }
 
     async def _generate_strategy_specific_recommendations(
-        self, strategy: str, primary_drug: str, evidence_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, strategy: str, primary_drug: str, evidence_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Generate specific recommendations based on the determined research strategy
         """

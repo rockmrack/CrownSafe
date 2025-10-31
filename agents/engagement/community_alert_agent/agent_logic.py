@@ -3,7 +3,7 @@
 
 import asyncio
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 try:
     from bs4 import BeautifulSoup
@@ -24,12 +24,12 @@ class CommunityAlertAgentLogic:
     Scrapes web pages to find early, unofficial warnings about product safety.
     """
 
-    def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
         self.logger.info(f"CommunityAlertAgentLogic initialized for agent {self.agent_id}.")
 
-    async def scrape_and_analyze(self, html_content: str, product_name: str) -> Dict[str, Any]:
+    async def scrape_and_analyze(self, html_content: str, product_name: str) -> dict[str, Any]:
         """
         Parses HTML content and analyzes it for safety keywords related to a product.
         """
@@ -55,7 +55,7 @@ class CommunityAlertAgentLogic:
         self.logger.info(f"Found {len(found_risks)} potential risk keywords: {found_risks}")
         return {"mentions_found": 1, "risks": found_risks}
 
-    async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
         """
         Main entry point for the agent.
         """

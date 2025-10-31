@@ -5,7 +5,7 @@ Prevents SQL injection, XSS, and invalid data
 
 import html
 import re
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, field_validator
 
@@ -274,7 +274,7 @@ class ValidatedSafetyCheckRequest(BaseModel):
     model_config = {"protected_namespaces": ()}  # Allow model_number field
 
     barcode: str
-    model_number: Optional[str] = None
+    model_number: str | None = None
 
     @field_validator("barcode")
     @classmethod
@@ -308,7 +308,7 @@ class ValidatedPaginationParams(BaseModel):
 
 class ValidatedSearchRequest(BaseModel):
     query: str
-    category: Optional[str] = None
+    category: str | None = None
 
     @field_validator("query")
     @classmethod

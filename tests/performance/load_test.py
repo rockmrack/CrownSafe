@@ -14,7 +14,7 @@ Features:
 import asyncio
 import statistics
 import time
-from typing import Any, Dict
+from typing import Any
 
 import httpx
 
@@ -41,7 +41,7 @@ class LoadTester:
         method: str = "GET",
         num_requests: int = 100,
         concurrent_requests: int = 10,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Load test a specific endpoint
 
@@ -111,7 +111,7 @@ class LoadTester:
 
         return results
 
-    async def _make_request(self, client: httpx.AsyncClient, url: str, method: str) -> Dict[str, Any]:
+    async def _make_request(self, client: httpx.AsyncClient, url: str, method: str) -> dict[str, Any]:
         """Make single HTTP request and measure time"""
         start_time = time.time()
 
@@ -133,7 +133,7 @@ class LoadTester:
         except Exception as e:
             return {"response_time": time.time() - start_time, "status_code": 0, "error": str(e)}
 
-    async def run_comprehensive_load_test(self) -> Dict[str, Any]:
+    async def run_comprehensive_load_test(self) -> dict[str, Any]:
         """
         Run comprehensive load tests on critical endpoints
 

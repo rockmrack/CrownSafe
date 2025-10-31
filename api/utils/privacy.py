@@ -10,7 +10,7 @@ import re
 import secrets
 from datetime import datetime, timezone
 from functools import wraps
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -157,7 +157,7 @@ def anonymize_ip(ip_address: str) -> str:
     return ip_address
 
 
-def detect_jurisdiction(ip_address: Optional[str] = None, country_code: Optional[str] = None) -> str:
+def detect_jurisdiction(ip_address: str | None = None, country_code: str | None = None) -> str:
     """
     Detect privacy jurisdiction based on location indicators
 
@@ -231,7 +231,7 @@ def generate_dsar_token() -> str:
     return secrets.token_urlsafe(48)
 
 
-def calculate_sla_deadline(jurisdiction: str, submitted_at: Optional[datetime] = None) -> datetime:
+def calculate_sla_deadline(jurisdiction: str, submitted_at: datetime | None = None) -> datetime:
     """
     Calculate SLA deadline based on jurisdiction
 
@@ -262,7 +262,7 @@ def calculate_sla_deadline(jurisdiction: str, submitted_at: Optional[datetime] =
     return submitted_at + timedelta(days=days)
 
 
-def format_dsar_response(request_type: str, status: str = "queued", jurisdiction: str = "other") -> Dict[str, Any]:
+def format_dsar_response(request_type: str, status: str = "queued", jurisdiction: str = "other") -> dict[str, Any]:
     """
     Format standard DSAR response
 
@@ -361,7 +361,7 @@ class PrivacyDataExporter:
     """
 
     @staticmethod
-    def to_json(data: Dict[str, Any], pretty: bool = True) -> str:
+    def to_json(data: dict[str, Any], pretty: bool = True) -> str:
         """
         Export data as JSON
 
@@ -377,7 +377,7 @@ class PrivacyDataExporter:
         return json.dumps(data, default=str, ensure_ascii=False)
 
     @staticmethod
-    def to_csv(data: List[Dict[str, Any]]) -> str:
+    def to_csv(data: list[dict[str, Any]]) -> str:
         """
         Export data as CSV
 
@@ -401,7 +401,7 @@ class PrivacyDataExporter:
         return output.getvalue()
 
     @staticmethod
-    def create_export_package(user_data: Dict[str, Any]) -> Dict[str, Any]:
+    def create_export_package(user_data: dict[str, Any]) -> dict[str, Any]:
         """
         Create comprehensive data export package
 
@@ -438,7 +438,7 @@ class PIIMasker:
     Advanced PII masking for logs and responses
     """
 
-    def __init__(self, custom_patterns: Optional[Dict[str, re.Pattern]] = None):
+    def __init__(self, custom_patterns: dict[str, re.Pattern] | None = None):
         """
         Initialize PII masker
 
@@ -449,7 +449,7 @@ class PIIMasker:
         if custom_patterns:
             self.patterns.update(custom_patterns)
 
-    def mask_dict(self, data: Dict[str, Any], sensitive_keys: Optional[List[str]] = None) -> Dict[str, Any]:
+    def mask_dict(self, data: dict[str, Any], sensitive_keys: list[str] | None = None) -> dict[str, Any]:
         """
         Mask PII in dictionary
 

@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from enum import Enum
 from io import BytesIO
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Core barcode libraries
 PYZBAR_AVAILABLE = False
@@ -84,17 +84,17 @@ class ScanResult:
     """Result from barcode scanning"""
 
     success: bool
-    barcode_type: Optional[str] = None
-    raw_data: Optional[str] = None
-    gtin: Optional[str] = None
-    lot_number: Optional[str] = None
-    serial_number: Optional[str] = None
-    expiry_date: Optional[date] = None
-    production_date: Optional[date] = None
-    batch_code: Optional[str] = None
-    parsed_data: Dict[str, Any] = None
+    barcode_type: str | None = None
+    raw_data: str | None = None
+    gtin: str | None = None
+    lot_number: str | None = None
+    serial_number: str | None = None
+    expiry_date: date | None = None
+    production_date: date | None = None
+    batch_code: str | None = None
+    parsed_data: dict[str, Any] = None
     confidence: float = 0.0
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
     def to_dict(self):
         """Convert to dictionary for API response"""
@@ -146,7 +146,7 @@ class BarcodeScanner:
             except Exception as e:
                 logger.warning(f"OpenCV detection initialization failed: {e}")
 
-    def _init_gs1_patterns(self) -> Dict[str, Dict[str, Any]]:
+    def _init_gs1_patterns(self) -> dict[str, dict[str, Any]]:
         """Initialize GS1 Application Identifier patterns"""
         return {
             "01": {"name": "GTIN", "length": 14, "type": "numeric"},
@@ -188,7 +188,7 @@ class BarcodeScanner:
             },
         }
 
-    async def scan_image(self, image_data: bytes) -> List[ScanResult]:
+    async def scan_image(self, image_data: bytes) -> list[ScanResult]:
         """
         Scan an image for barcodes
 
@@ -228,7 +228,7 @@ class BarcodeScanner:
 
         return results
 
-    def _scan_with_opencv(self, image: Image.Image) -> List[ScanResult]:
+    def _scan_with_opencv(self, image: Image.Image) -> list[ScanResult]:
         """Scan using OpenCV as fallback when PyZbar is not available"""
         results = []
 
@@ -287,7 +287,7 @@ class BarcodeScanner:
 
         return results
 
-    def _scan_with_pyzbar(self, image: Image.Image) -> List[ScanResult]:
+    def _scan_with_pyzbar(self, image: Image.Image) -> list[ScanResult]:
         """Scan using pyzbar library"""
         results = []
 
@@ -310,7 +310,7 @@ class BarcodeScanner:
 
         return results
 
-    def _scan_datamatrix(self, image: Image.Image) -> List[ScanResult]:
+    def _scan_datamatrix(self, image: Image.Image) -> list[ScanResult]:
         """Scan for DataMatrix codes"""
         results = []
 
@@ -335,7 +335,7 @@ class BarcodeScanner:
 
         return results
 
-    def _scan_with_preprocessing(self, image: Image.Image) -> List[ScanResult]:
+    def _scan_with_preprocessing(self, image: Image.Image) -> list[ScanResult]:
         """Enhanced scanning with image preprocessing"""
         results = []
 
@@ -520,7 +520,7 @@ class BarcodeScanner:
 
         result.parsed_data = parsed
 
-    def _parse_gs1_date(self, date_str: str) -> Optional[date]:
+    def _parse_gs1_date(self, date_str: str) -> date | None:
         """Parse GS1 date format (YYMMDD)"""
         try:
             if len(date_str) != 6:
@@ -661,7 +661,7 @@ class BarcodeScanner:
         if gtin_match:
             result.gtin = self._normalize_gtin(gtin_match.group(1))
 
-    def _parse_date_string(self, date_str: str) -> Optional[date]:
+    def _parse_date_string(self, date_str: str) -> date | None:
         """Parse various date formats"""
         formats = [
             "%Y-%m-%d",
@@ -682,7 +682,7 @@ class BarcodeScanner:
 
         return None
 
-    def generate_qr_code(self, data: Dict[str, Any]) -> bytes:
+    def generate_qr_code(self, data: dict[str, Any]) -> bytes:
         """
         Generate a QR code with product data
 

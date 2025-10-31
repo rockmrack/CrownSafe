@@ -10,7 +10,7 @@ Features:
 - Rate limiting information
 """
 
-from typing import Any, Dict, List
+from typing import Any
 
 
 class APIDocumentationEnhancer:
@@ -20,7 +20,7 @@ class APIDocumentationEnhancer:
     """
 
     @staticmethod
-    def get_monitoring_endpoints_docs() -> List[Dict[str, Any]]:
+    def get_monitoring_endpoints_docs() -> list[dict[str, Any]]:
         """
         Get documentation for monitoring endpoints
 
@@ -204,7 +204,7 @@ class APIDocumentationEnhancer:
         ]
 
     @staticmethod
-    def get_api_best_practices() -> Dict[str, Any]:
+    def get_api_best_practices() -> dict[str, Any]:
         """
         Get API best practices documentation
 

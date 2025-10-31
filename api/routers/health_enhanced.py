@@ -8,7 +8,7 @@ including database, cache, and external service dependencies.
 import logging
 import time
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
@@ -33,7 +33,7 @@ async def basic_health_check():
 
 
 @router.get("/health/detailed")
-async def detailed_health_check(db: Session = Depends(get_db)) -> Dict[str, Any]:
+async def detailed_health_check(db: Session = Depends(get_db)) -> dict[str, Any]:
     """
     Comprehensive health check with component status.
 

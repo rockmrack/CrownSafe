@@ -8,7 +8,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ class ConnectionPoolOptimizer:
             # Keep session open for reuse instead of closing
             pass
 
-    async def batch_database_operations(self, operations: List[Callable]) -> List[Any]:
+    async def batch_database_operations(self, operations: list[Callable]) -> list[Any]:
         """
         Execute multiple database operations in a single optimized batch
         """
@@ -92,10 +92,10 @@ class ConnectionPoolOptimizer:
 
     async def optimized_recall_search(
         self,
-        upc: Optional[str] = None,
-        model_number: Optional[str] = None,
-        product_name: Optional[str] = None,
-    ) -> List[Dict[str, Any]]:
+        upc: str | None = None,
+        model_number: str | None = None,
+        product_name: str | None = None,
+    ) -> list[dict[str, Any]]:
         """
         Ultra-optimized recall search with intelligent query strategy
         """
@@ -130,7 +130,7 @@ class ConnectionPoolOptimizer:
 
         return self.agent_instance_pool[pool_key]
 
-    async def parallel_agent_execution(self, agent_tasks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    async def parallel_agent_execution(self, agent_tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """
         Execute multiple agent tasks in parallel for massive speedup
         """

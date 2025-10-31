@@ -14,7 +14,7 @@ Features:
 
 import logging
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class SystemHealthDashboard:
         """Initialize health dashboard"""
         self.startup_time = datetime.utcnow()
 
-    def get_comprehensive_health(self) -> Dict[str, Any]:
+    def get_comprehensive_health(self) -> dict[str, Any]:
         """
         Get comprehensive system health status
         Aggregates metrics from all subsystems
@@ -154,7 +154,7 @@ class SystemHealthDashboard:
 
         return health_data
 
-    def _get_security_status(self) -> Dict[str, Any]:
+    def _get_security_status(self) -> dict[str, Any]:
         """Get security audit status"""
         try:
             from core_infra.security_validator import security_validator
@@ -171,7 +171,7 @@ class SystemHealthDashboard:
             logger.error(f"Security status check failed: {e}")
             return {"status": "error", "error": str(e)}
 
-    def _get_azure_storage_health(self) -> Dict[str, Any]:
+    def _get_azure_storage_health(self) -> dict[str, Any]:
         """Get Azure Storage health status"""
         try:
             from core_infra.azure_storage import AzureBlobStorageClient
@@ -202,7 +202,7 @@ class SystemHealthDashboard:
             logger.error(f"Azure Storage health check failed: {e}")
             return {"status": "error", "error": str(e)}
 
-    def _get_cache_stats(self) -> Dict[str, Any]:
+    def _get_cache_stats(self) -> dict[str, Any]:
         """Get cache performance statistics"""
         try:
             from core_infra.azure_storage_cache import get_cache_manager
@@ -221,7 +221,7 @@ class SystemHealthDashboard:
             logger.error(f"Cache stats retrieval failed: {e}")
             return {"cache_enabled": False, "error": str(e)}
 
-    def _get_connection_pool_stats(self) -> Dict[str, Any]:
+    def _get_connection_pool_stats(self) -> dict[str, Any]:
         """Get connection pool statistics"""
         try:
             from core_infra.azure_connection_pool import get_connection_pool
@@ -239,7 +239,7 @@ class SystemHealthDashboard:
             logger.error(f"Connection pool stats retrieval failed: {e}")
             return {"error": str(e)}
 
-    def _get_database_health(self) -> Dict[str, Any]:
+    def _get_database_health(self) -> dict[str, Any]:
         """Get database connectivity health"""
         try:
             from sqlalchemy import text

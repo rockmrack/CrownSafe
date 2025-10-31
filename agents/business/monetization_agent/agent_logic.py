@@ -2,7 +2,7 @@
 
 import logging
 import os
-from typing import Any, Dict
+from typing import Any
 
 import stripe
 
@@ -27,7 +27,7 @@ class MonetizationAgentLogic:
             self.logger.error("Stripe API key not configured. MonetizationAgent will not function.")
         self.logger.info("MonetizationAgentLogic initialized.")
 
-    def create_stripe_customer(self, user_id: int) -> Dict[str, Any]:
+    def create_stripe_customer(self, user_id: int) -> dict[str, Any]:
         """
         Ensure the user is a Stripe customer; if not, create and persist the Stripe customer_id.
         """
@@ -58,7 +58,7 @@ class MonetizationAgentLogic:
                 "message": f"Stripe customer creation failed: {e}",
             }
 
-    def create_subscription_checkout_session(self, user_id: int, tier: str) -> Dict[str, Any]:
+    def create_subscription_checkout_session(self, user_id: int, tier: str) -> dict[str, Any]:
         """
         Creates a Stripe Checkout session for the user's subscription tier.
         """
@@ -106,7 +106,7 @@ class MonetizationAgentLogic:
                 "message": f"Checkout session creation failed: {e}",
             }
 
-    def get_user_subscription_status(self, user_id: int) -> Dict[str, Any]:
+    def get_user_subscription_status(self, user_id: int) -> dict[str, Any]:
         """
         Return the subscription status for the user.
         """
@@ -138,7 +138,7 @@ class MonetizationAgentLogic:
                 "message": f"Failed to check subscription status: {e}",
             }
 
-    def cancel_user_subscription(self, user_id: int) -> Dict[str, Any]:
+    def cancel_user_subscription(self, user_id: int) -> dict[str, Any]:
         """
         Cancels the user's active Stripe subscription.
         """
@@ -161,7 +161,7 @@ class MonetizationAgentLogic:
             return {"status": "error", "message": f"Failed to cancel subscription: {e}"}
 
     # Helper for onboarding/UX flows (optional)
-    def get_or_create_customer_and_checkout(self, user_id: int, tier: str) -> Dict[str, Any]:
+    def get_or_create_customer_and_checkout(self, user_id: int, tier: str) -> dict[str, Any]:
         """
         Ensure Stripe customer exists, then create a checkout session (one call UX).
         """

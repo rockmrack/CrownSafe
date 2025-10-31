@@ -4,7 +4,6 @@ Generates region-correct presigned POST URLs for client-side uploads
 """
 
 import os
-from typing import Dict, Optional
 
 import boto3
 from botocore.config import Config
@@ -35,7 +34,7 @@ def _bucket_region() -> str:
         return "eu-north-1"
 
 
-def presign_post(key: str, user_id: int, job_id: str, content_type: str = "image/jpeg") -> Dict:
+def presign_post(key: str, user_id: int, job_id: str, content_type: str = "image/jpeg") -> dict:
     """Generate a presigned POST for uploading to S3 with correct regional endpoint.
 
     Args:
@@ -90,10 +89,10 @@ def presign_post(key: str, user_id: int, job_id: str, content_type: str = "image
 
 def presign_get(
     key: str,
-    expires: Optional[int] = None,
-    filename: Optional[str] = None,
+    expires: int | None = None,
+    filename: str | None = None,
     content_type: str = "application/pdf",
-) -> Dict:
+) -> dict:
     """Generate a presigned GET URL with filename and content type.
 
     TTL defaults to PRESIGN_TTL_SECONDS env or 600s.
@@ -119,7 +118,7 @@ def presign_get(
     }
 
 
-def upload_file(file_path: str, key: str, content_type: str = "application/pdf") -> Dict:
+def upload_file(file_path: str, key: str, content_type: str = "application/pdf") -> dict:
     """Upload a local file to S3 at the given key.
 
     Returns dict with bucket, key, region.

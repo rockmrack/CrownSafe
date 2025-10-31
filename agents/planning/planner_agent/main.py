@@ -6,7 +6,7 @@ import logging
 import os
 import signal
 import sys
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from dotenv import load_dotenv
 
@@ -79,8 +79,8 @@ logger = logging.getLogger(f"{AGENT_ID}.main")
 logic_logger = logging.getLogger(f"{AGENT_ID}.logic")
 
 # Global instances
-mcp_client_instance: Optional[MCPClient] = None
-agent_logic_instance: Optional[PlannerLogic] = None
+mcp_client_instance: MCPClient | None = None
+agent_logic_instance: PlannerLogic | None = None
 shutdown_in_progress = False
 
 
@@ -88,8 +88,8 @@ class PlannerAgentManager:
     """Main agent manager for PlannerAgent"""
 
     def __init__(self):
-        self.mcp_client: Optional[MCPClient] = None
-        self.planner_logic: Optional[PlannerLogic] = None
+        self.mcp_client: MCPClient | None = None
+        self.planner_logic: PlannerLogic | None = None
         self.stop_event = asyncio.Event()
         self.shutdown_complete = False
 
@@ -221,7 +221,7 @@ class PlannerAgentManager:
             # Log other errors but continue
             logger.error(f"Non-fatal error received: {payload}")
 
-    async def _handle_logic_response(self, response: Dict[str, Any], original_header: MCPHeader):
+    async def _handle_logic_response(self, response: dict[str, Any], original_header: MCPHeader):
         """Handle response from logic with proper validation"""
         try:
             if not isinstance(response, dict):
@@ -296,7 +296,7 @@ class PlannerAgentManager:
         except Exception as send_error:
             logger.error(f"Failed to send error response: {send_error}", exc_info=True)
 
-    def _get_capabilities_list(self) -> List[Dict[str, Any]]:
+    def _get_capabilities_list(self) -> list[dict[str, Any]]:
         """FIXED: Get capabilities in the correct format - list of dictionaries"""
         # Check if logic has memory manager
         memory_augmented = False

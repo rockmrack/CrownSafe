@@ -5,7 +5,7 @@ Compatible with BabyShield EnhancedRecallDB schema.
 """
 
 from datetime import date
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -21,61 +21,61 @@ class Recall(BaseModel):
     product_name: str = Field(..., description="Product name")
 
     # Product identifiers
-    brand: Optional[str] = None
-    manufacturer: Optional[str] = None
-    model_number: Optional[str] = None
+    brand: str | None = None
+    manufacturer: str | None = None
+    model_number: str | None = None
 
     # Retail identifiers (barcodes)
-    upc: Optional[str] = None
-    ean_code: Optional[str] = None
-    gtin: Optional[str] = None
-    article_number: Optional[str] = None
+    upc: str | None = None
+    ean_code: str | None = None
+    gtin: str | None = None
+    article_number: str | None = None
 
     # Batch/lot identifiers
-    lot_number: Optional[str] = None
-    batch_number: Optional[str] = None
-    serial_number: Optional[str] = None
-    part_number: Optional[str] = None
+    lot_number: str | None = None
+    batch_number: str | None = None
+    serial_number: str | None = None
+    part_number: str | None = None
 
     # Date identifiers
     recall_date: date = Field(..., description="Date of recall")
-    expiry_date: Optional[date] = None
-    best_before_date: Optional[date] = None
-    production_date: Optional[date] = None
+    expiry_date: date | None = None
+    best_before_date: date | None = None
+    production_date: date | None = None
 
     # Pharmaceutical identifiers
-    ndc_number: Optional[str] = None
-    din_number: Optional[str] = None
+    ndc_number: str | None = None
+    din_number: str | None = None
 
     # Vehicle identifiers
-    vehicle_make: Optional[str] = None
-    vehicle_model: Optional[str] = None
-    model_year: Optional[str] = None
-    vin_range: Optional[str] = None
+    vehicle_make: str | None = None
+    vehicle_model: str | None = None
+    model_year: str | None = None
+    vin_range: str | None = None
 
     # Regional/distribution
-    country: Optional[str] = None
-    regions_affected: Optional[List[str]] = None
-    registry_codes: Optional[Dict[str, str]] = None
+    country: str | None = None
+    regions_affected: list[str] | None = None
+    registry_codes: dict[str, str] | None = None
 
     # Recall metadata
-    source_agency: Optional[str] = None
-    hazard: Optional[str] = None
-    hazard_category: Optional[str] = None
-    severity: Optional[str] = None
-    risk_category: Optional[str] = None
-    recall_reason: Optional[str] = None
-    remedy: Optional[str] = None
-    recall_class: Optional[str] = None
+    source_agency: str | None = None
+    hazard: str | None = None
+    hazard_category: str | None = None
+    severity: str | None = None
+    risk_category: str | None = None
+    recall_reason: str | None = None
+    remedy: str | None = None
+    recall_class: str | None = None
 
     # Descriptive fields
-    description: Optional[str] = None
-    manufacturer_contact: Optional[str] = None
-    url: Optional[str] = None
+    description: str | None = None
+    manufacturer_contact: str | None = None
+    url: str | None = None
 
     # Search optimization
-    search_keywords: Optional[str] = None
-    agency_specific_data: Optional[Dict[str, Any]] = None
+    search_keywords: str | None = None
+    agency_specific_data: dict[str, Any] | None = None
 
     # Pydantic v2 configuration
     model_config = ConfigDict(from_attributes=True, protected_namespaces=())
@@ -95,11 +95,11 @@ class Recall(BaseModel):
 class RecallQueryRequest(BaseModel):
     """Request model for recall queries"""
 
-    product_name: Optional[str] = None
-    model_number: Optional[str] = None
-    upc: Optional[str] = None
-    brand: Optional[str] = None
-    lot_number: Optional[str] = None
+    product_name: str | None = None
+    model_number: str | None = None
+    upc: str | None = None
+    brand: str | None = None
+    lot_number: str | None = None
 
     model_config = ConfigDict(from_attributes=True, protected_namespaces=())
 
@@ -109,7 +109,7 @@ class RecallQueryResponse(BaseModel):
 
     status: str
     recalls_found: int
-    recalls: List[Recall]
-    error: Optional[str] = None
+    recalls: list[Recall]
+    error: str | None = None
 
     model_config = ConfigDict(from_attributes=True, protected_namespaces=())

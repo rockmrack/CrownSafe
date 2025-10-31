@@ -8,7 +8,7 @@ import logging
 import os
 import uuid
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 import boto3
 from fastapi import (
@@ -40,9 +40,9 @@ class ApiResponse(BaseModel):
     """API response wrapper"""
 
     success: bool
-    data: Optional[Any] = None
-    error: Optional[str] = None
-    message: Optional[str] = None
+    data: Any | None = None
+    error: str | None = None
+    message: str | None = None
 
 
 logger = logging.getLogger(__name__)
@@ -73,12 +73,12 @@ class ImageUploadResponse(BaseModel):
 class ImageAnalysisRequest(BaseModel):
     """Request for image analysis with MFV"""
 
-    job_id: Optional[str] = Field(None, description="Job ID from upload")
-    image_url: Optional[str] = Field(None, description="Direct image URL for analysis")
-    image_base64: Optional[str] = Field(None, description="Base64 encoded image data")
-    claimed_product: Optional[str] = Field(None, description="User claimed product name")
-    claimed_brand: Optional[str] = Field(None, description="User claimed brand")
-    claimed_model: Optional[str] = Field(None, description="User claimed model number")
+    job_id: str | None = Field(None, description="Job ID from upload")
+    image_url: str | None = Field(None, description="Direct image URL for analysis")
+    image_base64: str | None = Field(None, description="Base64 encoded image data")
+    claimed_product: str | None = Field(None, description="User claimed product name")
+    claimed_brand: str | None = Field(None, description="User claimed brand")
+    claimed_model: str | None = Field(None, description="User claimed model number")
     skip_mfv: bool = Field(False, description="Skip multi-factor verification")
 
 
@@ -89,10 +89,10 @@ class ImageAnalysisResponse(BaseModel):
     status: str
     confidence_level: str
     confidence_score: float
-    extraction: Optional[Dict[str, Any]] = None
-    recall_check: Optional[Dict[str, Any]] = None
+    extraction: dict[str, Any] | None = None
+    recall_check: dict[str, Any] | None = None
     mfv_required: bool = False
-    mfv_message: Optional[str] = None
+    mfv_message: str | None = None
     needs_review: bool = False
     safety_message: str
 
@@ -102,17 +102,17 @@ class MFVConfirmationRequest(BaseModel):
 
     session_id: str
     confirmed_product: str = Field(..., min_length=1)
-    confirmed_brand: Optional[str] = None
-    confirmed_model: Optional[str] = None
-    user_corrections: Optional[Dict[str, str]] = None
+    confirmed_brand: str | None = None
+    confirmed_model: str | None = None
+    user_corrections: dict[str, str] | None = None
 
 
 class ReviewQueueFilter(BaseModel):
     """Filter for review queue"""
 
-    status: Optional[ReviewStatus] = None
-    priority: Optional[int] = None
-    claimed_by: Optional[str] = None
+    status: ReviewStatus | None = None
+    priority: int | None = None
+    claimed_by: str | None = None
     limit: int = Field(20, le=100)
     offset: int = Field(0, ge=0)
 
@@ -125,11 +125,11 @@ class ReviewAction(BaseModel):
         pattern="^(approve|reject)$",
         description="Action to take: 'approve' or 'reject'",
     )
-    notes: Optional[str] = Field(None, description="Optional review notes")
-    corrected_product: Optional[str] = None
-    corrected_brand: Optional[str] = None
-    corrected_model: Optional[str] = None
-    user_message: Optional[str] = None
+    notes: str | None = Field(None, description="Optional review notes")
+    corrected_product: str | None = None
+    corrected_brand: str | None = None
+    corrected_model: str | None = None
+    user_message: str | None = None
 
 
 # Endpoints
@@ -432,8 +432,8 @@ async def confirm_mfv(request: MFVConfirmationRequest, db: Session = Depends(get
 # HITL Review Queue Endpoints
 @visual_router.get("/review/queue", response_model=ApiResponse)
 async def get_review_queue(
-    status: Optional[str] = None,
-    priority: Optional[int] = None,
+    status: str | None = None,
+    priority: int | None = None,
     limit: int = Query(20, le=100),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db_session),
@@ -630,7 +630,7 @@ async def resolve_review(review_id: int, action: ReviewAction, db: Session = Dep
 
 # Helper functions
 def _generate_safety_message(
-    job: ImageJob, extraction: Optional[ImageExtraction], always_qualified: bool = False
+    job: ImageJob, extraction: ImageExtraction | None, always_qualified: bool = False
 ) -> str:
     """
     Generate safety message following legal requirements
@@ -665,7 +665,7 @@ def _generate_safety_message(
     return message
 
 
-def _fuzzy_match(str1: Optional[str], str2: Optional[str]) -> bool:
+def _fuzzy_match(str1: str | None, str2: str | None) -> bool:
     """Simple fuzzy string matching"""
     if not str1 or not str2:
         return False

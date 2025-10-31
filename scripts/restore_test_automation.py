@@ -11,7 +11,6 @@ import os
 import sys
 import time
 from dataclasses import dataclass
-from typing import Dict, Optional
 
 import boto3
 import psycopg2
@@ -29,8 +28,8 @@ class RestoreTestResult:
     duration_minutes: float
     snapshot_id: str
     test_instance_id: str
-    validation_results: Dict
-    error_message: Optional[str] = None
+    validation_results: dict
+    error_message: str | None = None
 
 
 class RestoreTester:
@@ -44,7 +43,7 @@ class RestoreTester:
         self.source_db = os.environ.get("SOURCE_DB_ID", "babyshield-prod")
         self.test_prefix = "babyshield-test-restore"
 
-    def get_latest_snapshot(self) -> Optional[str]:
+    def get_latest_snapshot(self) -> str | None:
         """Get the most recent automated snapshot"""
 
         try:
@@ -75,7 +74,7 @@ class RestoreTester:
             logger.error(f"Error getting snapshots: {e}")
             return None
 
-    def create_test_restore(self, snapshot_id: str) -> Optional[str]:
+    def create_test_restore(self, snapshot_id: str) -> str | None:
         """Create a test instance from snapshot"""
 
         test_instance_id = f"{self.test_prefix}-{int(time.time())}"
@@ -135,7 +134,7 @@ class RestoreTester:
         logger.error(f"Timeout waiting for instance after {timeout_minutes} minutes")
         return False
 
-    def get_connection_info(self, instance_id: str) -> Optional[Dict]:
+    def get_connection_info(self, instance_id: str) -> dict | None:
         """Get connection details for test instance"""
 
         try:
@@ -156,7 +155,7 @@ class RestoreTester:
             logger.error(f"Error getting connection info: {e}")
             return None
 
-    def validate_restored_data(self, connection_info: Dict) -> Dict:
+    def validate_restored_data(self, connection_info: dict) -> dict:
         """Validate the restored database"""
 
         validation_results = {

@@ -5,7 +5,6 @@ Prevents oversized payloads from consuming server resources
 
 import logging
 import os
-from typing import Optional
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -20,7 +19,7 @@ class SizeLimitMiddleware(BaseHTTPMiddleware):
     Returns 413 Payload Too Large for oversized requests
     """
 
-    def __init__(self, app, max_bytes: Optional[int] = None):
+    def __init__(self, app, max_bytes: int | None = None):
         """
         Initialize size limit middleware
 

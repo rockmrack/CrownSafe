@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import hashlib
 import os
-from typing import Optional
 
 
 def env_bool(name: str, default: bool = False) -> bool:
@@ -30,7 +29,7 @@ def _bucket(user_key: str) -> float:
     return int(h[:4], 16) / 65535.0
 
 
-def chat_enabled_for(user_id: Optional[str], device_id: Optional[str] = None) -> bool:
+def chat_enabled_for(user_id: str | None, device_id: str | None = None) -> bool:
     if not FEATURE_CHAT_ENABLED:
         return False
     # sticky key (prefer user_id, else device_id, else off)

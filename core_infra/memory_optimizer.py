@@ -7,7 +7,7 @@ import gc
 import logging
 import os
 import time
-from typing import Any, Dict
+from typing import Any
 from weakref import WeakValueDictionary
 
 import psutil
@@ -28,7 +28,7 @@ class MemoryOptimizer:
         self.gc_threshold = 100 * 1024 * 1024  # 100MB threshold for GC
         self.last_gc = time.time()
 
-    def get_memory_usage(self) -> Dict[str, Any]:
+    def get_memory_usage(self) -> dict[str, Any]:
         """
         Get current memory usage statistics
         """
@@ -51,7 +51,7 @@ class MemoryOptimizer:
             self.logger.warning(f"Memory usage check failed: {e}")
             return {"error": str(e)}
 
-    def optimize_memory_usage(self) -> Dict[str, Any]:
+    def optimize_memory_usage(self) -> dict[str, Any]:
         """
         Perform memory optimization including garbage collection
         """

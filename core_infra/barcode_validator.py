@@ -7,7 +7,7 @@ import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -46,8 +46,8 @@ class BarcodeValidationResult:
     barcode_type: BarcodeType
     validation_result: ValidationResult
     normalized_barcode: str
-    check_digit: Optional[str] = None
-    error_message: Optional[str] = None
+    check_digit: str | None = None
+    error_message: str | None = None
     confidence_score: float = 0.0
 
 
@@ -282,7 +282,7 @@ class BarcodeValidator:
         else:
             return actual_length == length_req
 
-    def _validate_check_digit(self, barcode: str, barcode_type: BarcodeType) -> Tuple[bool, Optional[str]]:
+    def _validate_check_digit(self, barcode: str, barcode_type: BarcodeType) -> tuple[bool, str | None]:
         """Validate check digit for numeric barcodes"""
         if barcode_type == BarcodeType.UPC_A:
             return self._validate_upc_a_check_digit(barcode)
@@ -295,7 +295,7 @@ class BarcodeValidator:
 
         return True, None
 
-    def _validate_upc_a_check_digit(self, barcode: str) -> Tuple[bool, Optional[str]]:
+    def _validate_upc_a_check_digit(self, barcode: str) -> tuple[bool, str | None]:
         """Validate UPC-A check digit"""
         if len(barcode) != 12:
             return False, None
@@ -308,7 +308,7 @@ class BarcodeValidator:
 
         return int(barcode[11]) == check_digit, str(check_digit)
 
-    def _validate_ean_13_check_digit(self, barcode: str) -> Tuple[bool, Optional[str]]:
+    def _validate_ean_13_check_digit(self, barcode: str) -> tuple[bool, str | None]:
         """Validate EAN-13 check digit"""
         if len(barcode) != 13:
             return False, None
@@ -321,7 +321,7 @@ class BarcodeValidator:
 
         return int(barcode[12]) == check_digit, str(check_digit)
 
-    def _validate_ean_8_check_digit(self, barcode: str) -> Tuple[bool, Optional[str]]:
+    def _validate_ean_8_check_digit(self, barcode: str) -> tuple[bool, str | None]:
         """Validate EAN-8 check digit"""
         if len(barcode) != 8:
             return False, None
@@ -334,7 +334,7 @@ class BarcodeValidator:
 
         return int(barcode[7]) == check_digit, str(check_digit)
 
-    def _validate_upc_e_check_digit(self, barcode: str) -> Tuple[bool, Optional[str]]:
+    def _validate_upc_e_check_digit(self, barcode: str) -> tuple[bool, str | None]:
         """Validate UPC-E check digit"""
         # UPC-E is more complex - for now, just check if it's numeric
         return barcode.isdigit(), None
@@ -361,7 +361,7 @@ class BarcodeValidator:
 
         return min(confidence, 1.0)
 
-    def get_validation_summary(self, result: BarcodeValidationResult) -> Dict[str, Any]:
+    def get_validation_summary(self, result: BarcodeValidationResult) -> dict[str, Any]:
         """Get human-readable validation summary"""
         return {
             "is_valid": result.is_valid,
@@ -374,7 +374,7 @@ class BarcodeValidator:
             "recommendations": self._get_recommendations(result),
         }
 
-    def _get_recommendations(self, result: BarcodeValidationResult) -> List[str]:
+    def _get_recommendations(self, result: BarcodeValidationResult) -> list[str]:
         """Get recommendations for invalid barcodes"""
         recommendations = []
 

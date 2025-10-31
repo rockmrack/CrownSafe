@@ -10,7 +10,6 @@ import urllib.error
 import urllib.request
 from datetime import datetime
 from pathlib import Path
-from typing import List
 
 
 class SubmissionValidator:
@@ -39,7 +38,7 @@ class SubmissionValidator:
         self.warnings.append(message)
         print(f"  ⚠️  {message}")
 
-    def validate_json_file(self, path: Path, required_fields: List[str] = None) -> bool:
+    def validate_json_file(self, path: Path, required_fields: list[str] = None) -> bool:
         """Validate a JSON file"""
         if not path.exists():
             self.log_error(f"Missing file: {path}")
@@ -64,7 +63,7 @@ class SubmissionValidator:
             self.log_error(f"Error reading {path.name}: {e}")
             return False
 
-    def validate_text_file(self, path: Path, max_length: int = None, required_content: List[str] = None) -> bool:
+    def validate_text_file(self, path: Path, max_length: int = None, required_content: list[str] = None) -> bool:
         """Validate a text file"""
         if not path.exists():
             self.log_error(f"Missing file: {path}")

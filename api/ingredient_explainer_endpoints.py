@@ -9,7 +9,6 @@ Core UX Feature: "Tap any ingredient for explanation"
 """
 
 import logging
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
@@ -34,7 +33,7 @@ class IngredientExplanation(BaseModel):
 
     # Basic info
     name: str = Field(..., description="Common ingredient name")
-    inci_name: Optional[str] = Field(None, description="INCI (scientific) name")
+    inci_name: str | None = Field(None, description="INCI (scientific) name")
     common_names: list[str] = Field(default=[], description="Alternative names for this ingredient")
 
     # Quick verdict
@@ -44,8 +43,8 @@ class IngredientExplanation(BaseModel):
 
     # Plain English explanation
     description: str = Field(..., description="What this ingredient is and does")
-    why_good: Optional[str] = Field(None, description="Benefits (if any)")
-    why_bad: Optional[str] = Field(None, description="Concerns (if any)")
+    why_good: str | None = Field(None, description="Benefits (if any)")
+    why_bad: str | None = Field(None, description="Concerns (if any)")
 
     # Hair type guidance
     best_for: list[str] = Field(default=[], description="Hair types that benefit most (3C, 4A, 4B, 4C)")
@@ -58,12 +57,12 @@ class IngredientExplanation(BaseModel):
     )
 
     # Usage context
-    function: Optional[str] = Field(None, description="Technical function (humectant, etc.)")
-    rinse_off_vs_leave_in: Optional[str] = Field(None, description="Is it safer in rinse-off or leave-in products?")
+    function: str | None = Field(None, description="Technical function (humectant, etc.)")
+    rinse_off_vs_leave_in: str | None = Field(None, description="Is it safer in rinse-off or leave-in products?")
 
     # Regulatory
-    fda_status: Optional[str] = Field(None, description="FDA status")
-    eu_status: Optional[str] = Field(None, description="EU status")
+    fda_status: str | None = Field(None, description="FDA status")
+    eu_status: str | None = Field(None, description="EU status")
 
     # Additional info
     research_links: list[str] = Field(default=[], description="Scientific references")
@@ -87,7 +86,7 @@ class ApiResponse(BaseModel):
 
     success: bool
     message: str
-    data: Optional[dict] = None
+    data: dict | None = None
 
 
 # ============================================================================
@@ -98,8 +97,8 @@ class ApiResponse(BaseModel):
 @router.get("/{ingredient_name}", response_model=IngredientExplanation)
 async def get_ingredient_explainer(
     ingredient_name: str,
-    hair_type: Optional[str] = Query(None, description="User's hair type for personalized advice"),
-    porosity: Optional[str] = Query(None, description="User's porosity for tailored notes"),
+    hair_type: str | None = Query(None, description="User's hair type for personalized advice"),
+    porosity: str | None = Query(None, description="User's porosity for tailored notes"),
 ):
     """
     Get plain-English explanation for an ingredient.

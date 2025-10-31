@@ -6,7 +6,6 @@ Blocks requests from known malicious scanners and bots
 import logging
 import os
 import re
-from typing import List, Optional
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -56,8 +55,8 @@ class UserAgentBlocker(BaseHTTPMiddleware):
     def __init__(
         self,
         app,
-        blocked_patterns: Optional[List[str]] = None,
-        allowed_patterns: Optional[List[str]] = None,
+        blocked_patterns: list[str] | None = None,
+        allowed_patterns: list[str] | None = None,
         block_empty_ua: bool = False,
         case_sensitive: bool = False,
     ):
@@ -199,7 +198,7 @@ class UserAgentBlocker(BaseHTTPMiddleware):
 
         return False
 
-    def _forbidden_response(self, trace_id: Optional[str], message: str) -> JSONResponse:
+    def _forbidden_response(self, trace_id: str | None, message: str) -> JSONResponse:
         """
         Create forbidden response
 

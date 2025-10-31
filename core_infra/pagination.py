@@ -4,7 +4,7 @@ Prevents memory issues with large datasets
 """
 
 import logging
-from typing import Dict, Generic, List, Optional, TypeVar
+from typing import Generic, TypeVar
 
 from fastapi import Query
 from pydantic import BaseModel
@@ -30,11 +30,11 @@ class PaginationParams(BaseModel):
         """Calculate page number (1-based)"""
         return (self.skip // self.limit) + 1
 
-    def next_params(self) -> Dict[str, int]:
+    def next_params(self) -> dict[str, int]:
         """Get params for next page"""
         return {"skip": self.skip + self.limit, "limit": self.limit}
 
-    def prev_params(self) -> Optional[Dict[str, int]]:
+    def prev_params(self) -> dict[str, int] | None:
         """Get params for previous page"""
         if self.skip == 0:
             return None
@@ -45,7 +45,7 @@ class PaginationParams(BaseModel):
 class PaginatedResponse(BaseModel, Generic[T]):
     """Generic paginated response"""
 
-    items: List[T]
+    items: list[T]
     total: int
     skip: int
     limit: int
@@ -58,7 +58,7 @@ class PaginatedResponse(BaseModel, Generic[T]):
         arbitrary_types_allowed = True
 
     @classmethod
-    def create(cls, items: List[T], total: int, params: PaginationParams):
+    def create(cls, items: list[T], total: int, params: PaginationParams):
         """Create paginated response"""
         pages = (total + params.limit - 1) // params.limit  # Ceiling division
 
@@ -74,7 +74,7 @@ class PaginatedResponse(BaseModel, Generic[T]):
         )
 
 
-def paginate_query(query: SQLQuery, params: PaginationParams) -> tuple[List, int]:
+def paginate_query(query: SQLQuery, params: PaginationParams) -> tuple[list, int]:
     """
     Paginate a SQLAlchemy query
     Returns (items, total_count)
@@ -101,10 +101,10 @@ class CursorPaginationParams(BaseModel):
     Cursor-based pagination for better performance
     """
 
-    cursor: Optional[str] = Query(None, description="Cursor for next page")
+    cursor: str | None = Query(None, description="Cursor for next page")
     limit: int = Query(100, ge=1, le=1000, description="Number of items")
 
-    def decode_cursor(self) -> Optional[int]:
+    def decode_cursor(self) -> int | None:
         """Decode cursor to get last ID"""
         if not self.cursor:
             return None
@@ -128,8 +128,8 @@ class CursorPaginationParams(BaseModel):
 class CursorPaginatedResponse(BaseModel, Generic[T]):
     """Cursor-based paginated response"""
 
-    items: List[T]
-    next_cursor: Optional[str]
+    items: list[T]
+    next_cursor: str | None
     has_next: bool
     limit: int
 
@@ -139,7 +139,7 @@ class CursorPaginatedResponse(BaseModel, Generic[T]):
 
 def paginate_with_cursor(
     query: SQLQuery, params: CursorPaginationParams, id_field: str = "id"
-) -> tuple[List, Optional[str]]:
+) -> tuple[list, str | None]:
     """
     Cursor-based pagination for large datasets
     More efficient than offset/limit for deep pagination
@@ -172,7 +172,7 @@ def paginate_with_cursor(
 # Utility functions for common use cases
 
 
-def paginate_list(items: List[T], params: PaginationParams) -> PaginatedResponse[T]:
+def paginate_list(items: list[T], params: PaginationParams) -> PaginatedResponse[T]:
     """
     Paginate a Python list
     """
@@ -184,7 +184,7 @@ def paginate_list(items: List[T], params: PaginationParams) -> PaginatedResponse
     return PaginatedResponse.create(paginated_items, total, params)
 
 
-def create_pagination_links(base_url: str, params: PaginationParams, total: int) -> Dict[str, Optional[str]]:
+def create_pagination_links(base_url: str, params: PaginationParams, total: int) -> dict[str, str | None]:
     """
     Create HATEOAS links for pagination
     """

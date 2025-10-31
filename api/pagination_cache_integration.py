@@ -6,7 +6,7 @@ Shows how to wire cursor pagination and HTTP caching into existing endpoints
 import logging
 import os
 from datetime import datetime, timezone
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -59,7 +59,7 @@ def create_search_endpoint_v2(app: FastAPI):
     """
 
     @app.post("/api/v2/search/advanced")
-    async def search_advanced_v2(request: Request, payload: Dict[str, Any], db: Session = Depends(get_db)):
+    async def search_advanced_v2(request: Request, payload: dict[str, Any], db: Session = Depends(get_db)):
         """
         Enhanced search with cursor pagination and HTTP caching
 

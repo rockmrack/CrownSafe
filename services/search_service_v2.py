@@ -6,7 +6,7 @@ Implements cursor-based pagination without OFFSET for better performance
 import logging
 import os
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -37,20 +37,20 @@ class SearchServiceV2:
     def build_keyset_query(
         self,
         # Search parameters
-        query: Optional[str] = None,
-        product: Optional[str] = None,
-        id: Optional[str] = None,
-        keywords: Optional[List[str]] = None,
+        query: str | None = None,
+        product: str | None = None,
+        id: str | None = None,
+        keywords: list[str] | None = None,
         # Filters
-        agencies: Optional[List[str]] = None,
-        severity: Optional[str] = None,
-        risk_category: Optional[str] = None,
-        date_from: Optional[datetime] = None,
-        date_to: Optional[datetime] = None,
+        agencies: list[str] | None = None,
+        severity: str | None = None,
+        risk_category: str | None = None,
+        date_from: datetime | None = None,
+        date_to: datetime | None = None,
         # Pagination
         limit: int = 20,
-        cursor_token: Optional[str] = None,
-    ) -> Tuple[str, Dict[str, Any], datetime, Optional[Dict]]:
+        cursor_token: str | None = None,
+    ) -> tuple[str, dict[str, Any], datetime, dict | None]:
         """
         Build optimized SQL query with keyset pagination
 
@@ -297,18 +297,18 @@ class SearchServiceV2:
 
     def search_with_cursor(
         self,
-        query: Optional[str] = None,
-        product: Optional[str] = None,
-        id: Optional[str] = None,
-        keywords: Optional[List[str]] = None,
-        agencies: Optional[List[str]] = None,
-        severity: Optional[str] = None,
-        risk_category: Optional[str] = None,
-        date_from: Optional[datetime] = None,
-        date_to: Optional[datetime] = None,
+        query: str | None = None,
+        product: str | None = None,
+        id: str | None = None,
+        keywords: list[str] | None = None,
+        agencies: list[str] | None = None,
+        severity: str | None = None,
+        risk_category: str | None = None,
+        date_from: datetime | None = None,
+        date_to: datetime | None = None,
         limit: int = 20,
-        next_cursor: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        next_cursor: str | None = None,
+    ) -> dict[str, Any]:
         """
         Execute search with cursor-based pagination
         """

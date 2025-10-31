@@ -7,7 +7,7 @@ import logging
 import os
 import secrets
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -66,7 +66,7 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
     """Create a JWT access token"""
     import time
     import uuid
@@ -89,7 +89,7 @@ def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta]
     return encoded_jwt
 
 
-def create_refresh_token(data: Dict[str, Any]) -> str:
+def create_refresh_token(data: dict[str, Any]) -> str:
     """Create a JWT refresh token"""
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
@@ -98,7 +98,7 @@ def create_refresh_token(data: Dict[str, Any]) -> str:
     return encoded_jwt
 
 
-def decode_token(token: str) -> Dict[str, Any]:
+def decode_token(token: str) -> dict[str, Any]:
     """Decode and verify a JWT token"""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -108,7 +108,7 @@ def decode_token(token: str) -> Dict[str, Any]:
         return None
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Optional[User]:
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User | None:
     """Get the current authenticated user"""
     if not token:
         return None
@@ -185,7 +185,7 @@ async def get_current_active_user(
     return current_user
 
 
-async def optional_auth(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Optional[User]:
+async def optional_auth(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User | None:
     """Optional authentication - returns user if authenticated, None otherwise"""
     if not token:
         return None
@@ -196,7 +196,7 @@ async def optional_auth(token: str = Depends(oauth2_scheme), db: Session = Depen
         return None
 
 
-def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
+def authenticate_user(db: Session, email: str, password: str) -> User | None:
     """Authenticate a user with email and password"""
     try:
         user = db.query(User).filter(User.email == email).first()
@@ -231,7 +231,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    user_id: Optional[int] = None
+    user_id: int | None = None
 
 
 class UserLogin(BaseModel):

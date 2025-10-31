@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 from dataclasses import asdict, dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     from defusedxml.ElementTree import fromstring as secure_fromstring
@@ -53,21 +53,21 @@ class PubMedArticle:
     title: str
     pmid: str
     abstract: str
-    authors: Optional[List[str]] = None
-    journal: Optional[str] = None
-    publication_date: Optional[str] = None  # Format YYYY, YYYY Mmm, YYYY Mmm DD
-    doi: Optional[str] = None
+    authors: list[str] | None = None
+    journal: str | None = None
+    publication_date: str | None = None  # Format YYYY, YYYY Mmm, YYYY Mmm DD
+    doi: str | None = None
 
 
 @dataclass
 class SearchResult:
     query_used_for_api: str  # The actual term sent to NCBI ESearch
-    articles: List[PubMedArticle]
+    articles: list[PubMedArticle]
     total_found_by_esearch: int = 0  # Count from ESearch
     search_time_ms: int = 0
-    error: Optional[str] = None
+    error: str | None = None
     source: str = "pubmed_api"
-    original_input_query: Optional[str] = None  # To store the high-level query if different
+    original_input_query: str | None = None  # To store the high-level query if different
 
 
 class WebResearchLogic:
@@ -75,7 +75,7 @@ class WebResearchLogic:
         self,
         agent_id: str,
         version: str,
-        logger_instance: Optional[logging.Logger] = None,
+        logger_instance: logging.Logger | None = None,
     ):
         self.agent_id = agent_id
         self.version = version
@@ -96,7 +96,7 @@ class WebResearchLogic:
 
         self.rate_limit_delay = 0.4  # NCBI allows 3/sec without key, 10/sec with. Being conservative.
 
-        self._session: Optional[aiohttp.ClientSession] = None
+        self._session: aiohttp.ClientSession | None = None
         self._last_request_time = 0.0
         self.session_headers = {  # Define session headers once
             "User-Agent": self.user_agent,
@@ -152,7 +152,7 @@ class WebResearchLogic:
             await asyncio.sleep(self.rate_limit_delay - time_since_last)
         self._last_request_time = time.time()
 
-    def _validate_search_parameters(self, params: Dict[str, Any]) -> tuple[bool, Optional[str], str, int]:
+    def _validate_search_parameters(self, params: dict[str, Any]) -> tuple[bool, str | None, str, int]:
         """Validates input parameters and constructs the PubMed query term."""
         drug_name = params.get("drug_name")
         disease_name = params.get("disease_name")
@@ -216,7 +216,7 @@ class WebResearchLogic:
         self.logger.info(f"Constructed PubMed API query term: '{pubmed_query_term}'")
         return True, None, pubmed_query_term, max_results_int
 
-    def _validate_message_structure(self, message_data: Any) -> tuple[bool, Optional[str]]:
+    def _validate_message_structure(self, message_data: Any) -> tuple[bool, str | None]:
         if not isinstance(message_data, dict):
             return False, f"Message must be dict, got {type(message_data)}"
         if not isinstance(message_data.get("mcp_header"), dict):
@@ -225,7 +225,7 @@ class WebResearchLogic:
             return False, "Missing or invalid payload"
         return True, None
 
-    def get_capabilities(self) -> List[Dict[str, Any]]:
+    def get_capabilities(self) -> list[dict[str, Any]]:
         return [
             {
                 "name": "perform_web_search",
@@ -248,7 +248,7 @@ class WebResearchLogic:
         ]
 
     def _create_mock_data(
-        self, api_query_term: str, max_results: int, original_input_query: Optional[str]
+        self, api_query_term: str, max_results: int, original_input_query: str | None
     ) -> SearchResult:
         self.logger.warning(
             f"PUBMED_MOCK: Returning mock data for API query term: '{api_query_term[:50]}...' (Original input: '{original_input_query[:50] if original_input_query else 'N/A'}')"  # noqa: E501
@@ -274,7 +274,7 @@ class WebResearchLogic:
             original_input_query=original_input_query,
         )
 
-    async def _make_ncbi_request(self, url: str, params: Dict[str, str], description: str) -> str:
+    async def _make_ncbi_request(self, url: str, params: dict[str, str], description: str) -> str:
         # ... (This method remains the same robust version from "Enhanced-Timeouts-V2" / V2.4.x ClinicalTrialsAgent) ...
         # ... It should correctly handle aiohttp exceptions and re-raise standard ones ...
         session = await self._get_session()
@@ -284,7 +284,7 @@ class WebResearchLogic:
         else:
             params_to_send = params
 
-        last_exception: Optional[Exception] = None
+        last_exception: Exception | None = None
 
         for attempt in range(self.max_retries + 1):
             try:
@@ -432,7 +432,7 @@ class WebResearchLogic:
         self,
         constructed_api_query_term: str,
         max_results: int,
-        original_input_query_for_result: Optional[str],
+        original_input_query_for_result: str | None,
     ) -> SearchResult:
         start_time_ns = time.perf_counter_ns()
         try:
@@ -544,7 +544,7 @@ class WebResearchLogic:
                 original_input_query=original_input_query_for_result,
             )
 
-    async def process_message(self, message_data: Dict[str, Any], client: Any) -> Optional[Dict[str, Any]]:
+    async def process_message(self, message_data: dict[str, Any], client: Any) -> dict[str, Any] | None:
         is_valid_msg, msg_err = self._validate_message_structure(message_data)
         if not is_valid_msg:
             self.logger.error(f"Invalid message structure: {msg_err}")
@@ -576,7 +576,7 @@ class WebResearchLogic:
             self.logger.warning(f"Unhandled message type: {message_type.value}")
             return None
 
-    async def _handle_task_assign(self, payload: Dict[str, Any], correlation_id: Optional[str]) -> Dict[str, Any]:
+    async def _handle_task_assign(self, payload: dict[str, Any], correlation_id: str | None) -> dict[str, Any]:
         task_id = payload.get("task_id", "unknown_task")
         workflow_id = payload.get("workflow_id", "unknown_workflow")
         response_payload_base = {
@@ -675,7 +675,7 @@ class WebResearchLogic:
             self.logger.debug("aiohttp ClientSession closed during shutdown.")
         self.logger.info(f"WebResearchLogic shutdown complete for agent {self.agent_id}")
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         return {
             "agent_id": self.agent_id,
             "version": self.version,

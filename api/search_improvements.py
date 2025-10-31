@@ -5,14 +5,13 @@ Handles compound searches, partial matches, and brand-product combinations
 
 import logging
 import re
-from typing import List
 
 from sqlalchemy import and_, or_
 
 logger = logging.getLogger(__name__)
 
 
-def tokenize_search_query(query: str) -> List[str]:
+def tokenize_search_query(query: str) -> list[str]:
     """
     Tokenize search query into meaningful parts
     Handles brand-product combinations and special characters

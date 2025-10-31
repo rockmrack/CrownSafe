@@ -9,7 +9,7 @@ import secrets
 import uuid
 from datetime import date, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from pydantic import BaseModel, EmailStr, Field
@@ -67,10 +67,10 @@ class DataCategory(str, Enum):
 class AgeVerificationRequest(BaseModel):
     """Request model for age verification"""
 
-    user_id: Optional[int] = Field(None, description="Existing user ID if available")
+    user_id: int | None = Field(None, description="Existing user ID if available")
     email: EmailStr = Field(..., description="User email")
     birthdate: date = Field(..., description="User's birthdate")
-    parent_email: Optional[EmailStr] = Field(None, description="Parent email if under 13")
+    parent_email: EmailStr | None = Field(None, description="Parent email if under 13")
     verification_method: AgeVerificationMethod = Field(AgeVerificationMethod.BIRTHDATE)
     country: str = Field("US", description="User's country for compliance rules")
 
@@ -83,9 +83,9 @@ class AgeVerificationResponse(BaseModel):
     requires_parental_consent: bool
     coppa_applies: bool
     gdpr_child: bool  # Under 16 in EU
-    verification_token: Optional[str] = None
-    parent_consent_url: Optional[str] = None
-    restrictions: List[str]
+    verification_token: str | None = None
+    parent_consent_url: str | None = None
+    restrictions: list[str]
     timestamp: datetime
 
 
@@ -95,10 +95,10 @@ class ParentalConsentRequest(BaseModel):
     child_email: EmailStr
     parent_email: EmailStr
     parent_name: str
-    consent_types: List[ConsentType]
+    consent_types: list[ConsentType]
     verification_token: str = Field(..., description="Token from age verification")
     verification_method: AgeVerificationMethod = Field(AgeVerificationMethod.PARENTAL_EMAIL)
-    credit_card_last4: Optional[str] = Field(None, min_length=4, max_length=4)
+    credit_card_last4: str | None = Field(None, min_length=4, max_length=4)
 
 
 class ParentalConsentResponse(BaseModel):
@@ -108,9 +108,9 @@ class ParentalConsentResponse(BaseModel):
     status: str  # "pending", "verified", "rejected"
     child_email: str
     parent_email: str
-    consents_granted: List[ConsentType]
+    consents_granted: list[ConsentType]
     verification_method: str
-    expires_at: Optional[datetime] = None
+    expires_at: datetime | None = None
     timestamp: datetime
 
 
@@ -121,8 +121,8 @@ class ChildrenCodeAssessmentRequest(BaseModel):
     user_id: int
     age: int
     country: str
-    features_used: List[str] = Field(..., description="App features the child uses")
-    data_collected: List[DataCategory] = Field(..., description="Types of data collected")
+    features_used: list[str] = Field(..., description="App features the child uses")
+    data_collected: list[DataCategory] = Field(..., description="Types of data collected")
     third_party_sharing: bool = Field(False, description="Whether data is shared")
 
 
@@ -131,10 +131,10 @@ class ChildrenCodeAssessmentResponse(BaseModel):
 
     compliant: bool
     age_appropriate: bool
-    required_safeguards: List[str]
-    prohibited_features: List[str]
-    design_recommendations: List[str]
-    privacy_settings: Dict[str, Any]
+    required_safeguards: list[str]
+    prohibited_features: list[str]
+    design_recommendations: list[str]
+    privacy_settings: dict[str, Any]
     parental_controls_required: bool
     timestamp: datetime
 
@@ -146,9 +146,9 @@ class DataRequestModel(BaseModel):
     user_id: int
     request_type: PrivacyRight
     email: EmailStr
-    reason: Optional[str] = None
-    data_categories: Optional[List[DataCategory]] = None
-    verification_code: Optional[str] = None
+    reason: str | None = None
+    data_categories: list[DataCategory] | None = None
+    verification_code: str | None = None
 
 
 class DataRequestResponse(BaseModel):
@@ -158,7 +158,7 @@ class DataRequestResponse(BaseModel):
     status: str  # "pending", "processing", "completed", "rejected"
     request_type: PrivacyRight
     estimated_completion: datetime
-    download_url: Optional[str] = None
+    download_url: str | None = None
     message: str
     timestamp: datetime
 
@@ -168,7 +168,7 @@ class DataRetentionPolicyRequest(BaseModel):
 
     user_id: int
     data_category: DataCategory
-    retention_days: Optional[int] = Field(None, ge=0, le=3650)
+    retention_days: int | None = Field(None, ge=0, le=3650)
     auto_delete: bool = Field(True)
     anonymize_instead: bool = Field(False)
 
@@ -178,9 +178,9 @@ class DataRetentionPolicyResponse(BaseModel):
 
     policy_id: str
     user_id: int
-    policies: Dict[DataCategory, Dict[str, Any]]
+    policies: dict[DataCategory, dict[str, Any]]
     compliance_status: str
-    next_deletion_date: Optional[datetime]
+    next_deletion_date: datetime | None
     timestamp: datetime
 
 
@@ -191,7 +191,7 @@ class LegalDocumentRequest(BaseModel):
     document_type: str = Field(..., description="tos, privacy, cookie, child_privacy")
     language: str = Field("en", description="Language code")
     country: str = Field("US", description="Country code")
-    user_age: Optional[int] = Field(None, description="For age-appropriate content")
+    user_age: int | None = Field(None, description="For age-appropriate content")
     format: str = Field("html", description="html, plain, json")
 
 
@@ -206,23 +206,23 @@ class LegalDocumentResponse(BaseModel):
     last_updated: datetime
     age_appropriate: bool
     requires_acceptance: bool
-    summary_points: List[str]
+    summary_points: list[str]
 
 
 class ConsentUpdateRequest(BaseModel):
     """Request model for updating consent"""
 
     user_id: int
-    consent_types: Dict[ConsentType, bool]
-    ip_address: Optional[str] = None
-    user_agent: Optional[str] = None
+    consent_types: dict[ConsentType, bool]
+    ip_address: str | None = None
+    user_agent: str | None = None
 
 
 class ConsentUpdateResponse(BaseModel):
     """Response model for consent update"""
 
     user_id: int
-    consents_updated: Dict[ConsentType, bool]
+    consents_updated: dict[ConsentType, bool]
     timestamp: datetime
     ip_logged: bool
     next_review_date: datetime

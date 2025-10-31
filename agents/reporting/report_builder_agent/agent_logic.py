@@ -10,7 +10,7 @@ from dataclasses import asdict
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     import markdown
@@ -203,7 +203,7 @@ def generate_adverse_event_chart(top_reactions, output_dir, basename):
         return None
 
 
-def generate_qr_code(data: str, output_dir: str, basename: str) -> Optional[str]:
+def generate_qr_code(data: str, output_dir: str, basename: str) -> str | None:
     try:
         qr = qrcode.QRCode(
             version=1,
@@ -424,8 +424,8 @@ class ReportBuilderAgentLogic:
     def __init__(
         self,
         agent_id: str,
-        version: Optional[str] = None,
-        logger_instance: Optional[logging.Logger] = None,
+        version: str | None = None,
+        logger_instance: logging.Logger | None = None,
     ):
         self.agent_id = agent_id
         self.version = version or DEFAULT_REPORT_BUILDER_VERSION
@@ -450,7 +450,7 @@ class ReportBuilderAgentLogic:
             self.logger.error(f"Failed to initialize Jinja2 environment: {e}", exc_info=True)
             raise
 
-    def get_capabilities(self) -> List[Dict[str, Any]]:
+    def get_capabilities(self) -> list[dict[str, Any]]:
         return [
             {
                 "name": "build_final_report",
@@ -629,7 +629,7 @@ class ReportBuilderAgentLogic:
             self.logger.error(f"Failed to build PA summary report: {e}", exc_info=True)
             return {"status": "error", "message": str(e)}
 
-    def _compute_composite_risk(self, recalls: List[dict], community: dict, hazards: dict) -> Dict[str, Any]:
+    def _compute_composite_risk(self, recalls: list[dict], community: dict, hazards: dict) -> dict[str, Any]:
         """Compute a simple deterministic composite risk score and level."""
         score = 0
         level = "LOW"
@@ -658,7 +658,7 @@ class ReportBuilderAgentLogic:
             level = "LOW"
         return {"score": score, "level": level}
 
-    def _build_product_safety_report(self, data: dict, workflow_id: Optional[str] = None) -> dict:
+    def _build_product_safety_report(self, data: dict, workflow_id: str | None = None) -> dict:
         """
         Build BabyShield Product Safety Report (Level 1). Expects a pre-aggregated 'data' dict
         with keys: product, recalls, personalized, community, manufacturer, hazards.
@@ -817,7 +817,7 @@ class ReportBuilderAgentLogic:
             self.logger.error(f"Failed to build product safety report: {e}", exc_info=True)
             return {"status": "error", "message": str(e)}
 
-    def _build_nursery_quarterly_report(self, data: dict, workflow_id: Optional[str] = None) -> dict:
+    def _build_nursery_quarterly_report(self, data: dict, workflow_id: str | None = None) -> dict:
         """
         Build Nursery Quarterly Report over multiple products.
         Expects data: { products: [ {product, recalls, personalized, community, manufacturer, hazards}, ... ] }
@@ -1027,7 +1027,7 @@ class ReportBuilderAgentLogic:
             # Keep the existing logic for building the old research reports
             return self._build_default_research_report(report_data)
 
-    def _extract_data_from_dependency_result(self, dep_result: Any, expected_key: str) -> Dict[str, Any]:
+    def _extract_data_from_dependency_result(self, dep_result: Any, expected_key: str) -> dict[str, Any]:
         """
         Enhanced extraction logic that handles various formats of dependency results.
         This is more flexible and can handle nested structures.
@@ -1070,10 +1070,10 @@ class ReportBuilderAgentLogic:
 
     def _compose_html_report(
         self,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         logo_path: str,
-        chart_path: Optional[str],
-        qr_path: Optional[str],
+        chart_path: str | None,
+        qr_path: str | None,
         pdf_path: str,
     ) -> str:
         pubmed = context.get("pubmed_articles", {})
@@ -1182,7 +1182,7 @@ a {{ color: #2561b1; text-decoration: none; }}
 """.format(workflow_id=escape_html(workflow_id))
         return html
 
-    async def process_message(self, message_data: Dict[str, Any], client: Any) -> Optional[Dict[str, Any]]:
+    async def process_message(self, message_data: dict[str, Any], client: Any) -> dict[str, Any] | None:
         header = message_data.get("mcp_header", {})
         payload = message_data.get("payload", {})
         message_type_str = header.get("message_type", "UNKNOWN")

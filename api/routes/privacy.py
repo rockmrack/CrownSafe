@@ -5,7 +5,6 @@ Handles data export, deletion, and privacy information requests
 
 import logging
 import os
-from typing import Optional
 
 from fastapi import APIRouter, Depends, Header, Request
 from fastapi.responses import JSONResponse
@@ -42,18 +41,18 @@ class DSARRequest(BaseModel):
     """
 
     email: EmailStr = Field(..., description="User email for export/delete")
-    jurisdiction: Optional[str] = Field(
+    jurisdiction: str | None = Field(
         None,
         description="Privacy jurisdiction (gdpr|ccpa|pipeda|other)",
         pattern="^(gdpr|uk_gdpr|ccpa|pipeda|lgpd|appi|other)$",
     )
-    source: Optional[str] = Field(
+    source: str | None = Field(
         None,
         description="Request source (ios|android|web|api)",
         pattern="^(ios|android|web|email|api)$",
     )
-    reason: Optional[str] = Field(None, max_length=500, description="Optional reason for request")
-    metadata: Optional[dict] = Field(None, description="Additional metadata")
+    reason: str | None = Field(None, max_length=500, description="Optional reason for request")
+    metadata: dict | None = Field(None, description="Additional metadata")
 
     @field_validator("email")
     def validate_email_format(cls, v):
@@ -71,9 +70,9 @@ class DSARResponse(BaseModel):
     ok: bool = True
     message: str
     sla_days: int
-    request_id: Optional[str] = None
+    request_id: str | None = None
     status: str = "queued"
-    submitted_at: Optional[str] = None
+    submitted_at: str | None = None
 
 
 def create_response(data: dict, request: Request, status_code: int = 200) -> JSONResponse:
@@ -103,7 +102,7 @@ def create_response(data: dict, request: Request, status_code: int = 200) -> JSO
 async def request_data_export(
     request: Request,
     body: DSARRequest,
-    user_agent: Optional[str] = Header(None),
+    user_agent: str | None = Header(None),
     db: Session = Depends(get_db),
 ):
     """
@@ -192,7 +191,7 @@ async def request_data_export(
 async def request_data_deletion(
     request: Request,
     body: DSARRequest,
-    user_agent: Optional[str] = Header(None),
+    user_agent: str | None = Header(None),
     db: Session = Depends(get_db),
 ):
     """

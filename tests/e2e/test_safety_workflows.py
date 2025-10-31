@@ -14,7 +14,7 @@ from __future__ import annotations
 import datetime
 import importlib
 import os
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi.testclient import TestClient
 import pytest
@@ -115,15 +115,15 @@ def _seed_recall(
     recall_id: str,
     product_name: str,
     hazard: str,
-    upc: Optional[str] = None,
-    model_number: Optional[str] = None,
-    lot_number: Optional[str] = None,
+    upc: str | None = None,
+    model_number: str | None = None,
+    lot_number: str | None = None,
     severity: str = "critical",
     source_agency: str = "CPSC",
 ) -> None:
     session = SessionLocal()
     try:
-        recall_kwargs: Dict[str, Any] = {
+        recall_kwargs: dict[str, Any] = {
             "recall_id": recall_id,
             "product_name": product_name,
             "hazard": hazard,
@@ -156,7 +156,7 @@ def test_barcode_recall_workflow_returns_high_risk(client: TestClient, monkeypat
         hazard="Lithium-ion battery overheating",
     )
 
-    async def fake_run_optimized(user_request: Dict[str, Any]) -> Dict[str, Any]:
+    async def fake_run_optimized(user_request: dict[str, Any]) -> dict[str, Any]:
         assert user_request["barcode"] == "850016249012"
         return {
             "status": "COMPLETED",
@@ -204,7 +204,7 @@ def test_allergy_workflow_flags_family_allergens(client: TestClient, monkeypatch
     finally:
         session.close()
 
-    async def fake_run_optimized(user_request: Dict[str, Any]) -> Dict[str, Any]:
+    async def fake_run_optimized(user_request: dict[str, Any]) -> dict[str, Any]:
         assert user_request["barcode"] == "041220787346"
         return {
             "status": "COMPLETED",
@@ -216,7 +216,7 @@ def test_allergy_workflow_flags_family_allergens(client: TestClient, monkeypatch
             },
         }
 
-    def fake_allergy_check(self, user_id: int, product_upc: str) -> Dict[str, Any]:
+    def fake_allergy_check(self, user_id: int, product_upc: str) -> dict[str, Any]:
         assert user_id == 2
         assert product_upc == "041220787346"
         return {
@@ -261,7 +261,7 @@ def test_visual_low_confidence_returns_inconclusive(client: TestClient, monkeypa
 
     _seed_user(user_id=3)
 
-    async def failing_run_optimized(user_request: Dict[str, Any]) -> Dict[str, Any]:
+    async def failing_run_optimized(user_request: dict[str, Any]) -> dict[str, Any]:
         assert user_request["image_url"] == "https://example.com/blurry_photo.jpg"
         return {
             "status": "FAILED",
@@ -269,7 +269,7 @@ def test_visual_low_confidence_returns_inconclusive(client: TestClient, monkeypa
         }
 
     class StubCommander:
-        async def start_safety_check_workflow(self, user_request: Dict[str, Any]) -> Dict[str, Any]:
+        async def start_safety_check_workflow(self, user_request: dict[str, Any]) -> dict[str, Any]:
             assert user_request["image_url"] == "https://example.com/blurry_photo.jpg"
             return {
                 "status": "COMPLETED",
@@ -318,7 +318,7 @@ def test_scan_camera_model_number_workflow(client: TestClient, monkeypatch: pyte
         model_number="YM001",
     )
 
-    async def fake_run_optimized(user_request: Dict[str, Any]) -> Dict[str, Any]:
+    async def fake_run_optimized(user_request: dict[str, Any]) -> dict[str, Any]:
         assert user_request["barcode"] is None
         assert user_request["model_number"] == "YM001"
         assert user_request.get("lot_number") is None
@@ -428,7 +428,7 @@ def test_enter_model_number_prioritizes_recall_agent(client: TestClient, monkeyp
         model_number="YM001",
     )
 
-    async def fake_run_optimized(user_request: Dict[str, Any]) -> Dict[str, Any]:
+    async def fake_run_optimized(user_request: dict[str, Any]) -> dict[str, Any]:
         assert user_request["model_number"] == "YM001"
         assert user_request["barcode"] is None
         return {
@@ -466,7 +466,7 @@ def test_manual_barcode_entry_golden_path(client: TestClient, monkeypatch: pytes
 
     _seed_user(user_id=6)
 
-    async def fake_run_optimized(user_request: Dict[str, Any]) -> Dict[str, Any]:
+    async def fake_run_optimized(user_request: dict[str, Any]) -> dict[str, Any]:
         assert user_request["barcode"] == "123456789012"
         assert user_request["model_number"] is None
         return {
@@ -504,7 +504,7 @@ def test_lot_number_search_returns_precise_recall(client: TestClient, monkeypatc
         source_agency="FDA",
     )
 
-    async def fake_run_optimized(user_request: Dict[str, Any]) -> Dict[str, Any]:
+    async def fake_run_optimized(user_request: dict[str, Any]) -> dict[str, Any]:
         assert user_request["lot_number"] == "LOT-ABC-123"
         assert user_request["barcode"] is None
         return {
@@ -541,7 +541,7 @@ def test_product_name_search_uses_fuzzy_matching(client: TestClient, monkeypatch
         source_agency="CPSC",
     )
 
-    async def fake_run_optimized(user_request: Dict[str, Any]) -> Dict[str, Any]:
+    async def fake_run_optimized(user_request: dict[str, Any]) -> dict[str, Any]:
         assert user_request["product_name"] == "Yoto Mini"
         assert user_request["barcode"] is None
         return {

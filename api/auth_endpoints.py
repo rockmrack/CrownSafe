@@ -4,7 +4,6 @@ JWT-based authentication system
 """
 
 import logging
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -305,8 +304,8 @@ async def logout(current_user: User = Depends(get_current_active_user)):  # noqa
 
 @router.get("/verify")
 async def verify_token(
-    code: Optional[str] = Query(None, description="Verification code from email"),
-    current_user: Optional[User] = Depends(get_current_user),  # noqa: B008
+    code: str | None = Query(None, description="Verification code from email"),
+    current_user: User | None = Depends(get_current_user),  # noqa: B008
 ):
     """
     Verify email or token

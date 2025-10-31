@@ -11,7 +11,6 @@ import uuid
 from datetime import datetime
 from email.message import EmailMessage
 from enum import Enum
-from typing import List, Optional
 
 import aiosmtplib
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
@@ -81,22 +80,22 @@ class FeedbackRequest(BaseModel):
     message: str = Field(..., min_length=10, max_length=5000, description="Detailed message")
 
     # Optional user info
-    user_email: Optional[EmailStr] = Field(None, description="User's email for response")
-    user_name: Optional[str] = Field(None, max_length=100, description="User's name")
-    user_id: Optional[str] = Field(None, description="Authenticated user ID")
+    user_email: EmailStr | None = Field(None, description="User's email for response")
+    user_name: str | None = Field(None, max_length=100, description="User's name")
+    user_id: str | None = Field(None, description="Authenticated user ID")
 
     # App context
-    app_version: Optional[str] = Field(None, description="App version")
-    device_info: Optional[str] = Field(None, description="Device model and OS")
+    app_version: str | None = Field(None, description="App version")
+    device_info: str | None = Field(None, description="Device model and OS")
 
     # Additional data
-    screenshot: Optional[str] = Field(None, description="Base64 encoded screenshot")
-    logs: Optional[str] = Field(None, description="App logs if applicable")
-    reproduction_steps: Optional[List[str]] = Field(None, description="Steps to reproduce issue")
+    screenshot: str | None = Field(None, description="Base64 encoded screenshot")
+    logs: str | None = Field(None, description="App logs if applicable")
+    reproduction_steps: list[str] | None = Field(None, description="Steps to reproduce issue")
 
     # Metadata
-    locale: Optional[str] = Field("en-US", description="User's locale")
-    timestamp: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    locale: str | None = Field("en-US", description="User's locale")
+    timestamp: datetime | None = Field(default_factory=datetime.utcnow)
 
     @validator("message")
     def clean_message(cls, v):
@@ -132,7 +131,7 @@ class FeedbackResponse(BaseModel):
     priority: Priority = Field(..., description="Assigned priority")
     estimated_response: str = Field(..., description="Expected response time")
     message: str = Field(..., description="Confirmation message")
-    tracking_url: Optional[str] = Field(None, description="URL to track ticket status")
+    tracking_url: str | None = Field(None, description="URL to track ticket status")
 
 
 class TicketStatus(BaseModel):
@@ -144,9 +143,9 @@ class TicketStatus(BaseModel):
     priority: Priority
     created_at: datetime
     last_updated: datetime
-    assigned_to: Optional[str]
-    resolution: Optional[str]
-    customer_satisfied: Optional[bool]
+    assigned_to: str | None
+    resolution: str | None
+    customer_satisfied: bool | None
 
 
 # =====================================================
@@ -502,7 +501,7 @@ async def get_ticket_status(ticket_number: int):
 
 
 @router.post("/ticket/{ticket_number}/satisfy")
-async def mark_satisfaction(ticket_number: int, satisfied: bool = True, comments: Optional[str] = None):
+async def mark_satisfaction(ticket_number: int, satisfied: bool = True, comments: str | None = None):
     """
     Mark customer satisfaction
 
@@ -619,10 +618,10 @@ async def get_support_stats():
 
 @router.post("/admin/bulk_update")
 async def bulk_update_tickets(
-    ticket_ids: List[str],
-    status: Optional[str] = None,
-    assigned_to: Optional[str] = None,
-    priority: Optional[Priority] = None,
+    ticket_ids: list[str],
+    status: str | None = None,
+    assigned_to: str | None = None,
+    priority: Priority | None = None,
 ):
     """
     Bulk update tickets

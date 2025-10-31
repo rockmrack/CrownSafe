@@ -10,7 +10,6 @@ import os
 import sys
 import uuid
 from datetime import datetime, timedelta
-from typing import Optional
 
 from dotenv import load_dotenv
 
@@ -111,7 +110,7 @@ async def run_test():
     logger.info("Starting Enhanced MCP Commander Flow Test Script...")
     logger.info(f"Goal: {USER_RESEARCH_GOAL_STRING}")
 
-    client: Optional[MCPClient] = None
+    client: MCPClient | None = None
     monitor = WorkflowMonitor()
 
     controller_capabilities = [

@@ -3,7 +3,7 @@
 import json
 import logging
 import os
-from typing import Any, Dict, Optional
+from typing import Any
 from urllib.parse import urlparse
 
 from openai import AsyncOpenAI
@@ -60,7 +60,7 @@ class VisualSearchAgentLogic:
     Phase 3: Provides definitive identification with confidence scoring.
     """
 
-    def __init__(self, agent_id: str, logger_instance: Optional[logging.Logger] = None):
+    def __init__(self, agent_id: str, logger_instance: logging.Logger | None = None):
         self.agent_id = agent_id
         self.logger = logger_instance or logger
 
@@ -74,7 +74,7 @@ class VisualSearchAgentLogic:
 
         self.logger.info("VisualSearchAgentLogic initialized.")
 
-    async def suggest_products_from_image(self, image_url: str) -> Dict[str, Any]:
+    async def suggest_products_from_image(self, image_url: str) -> dict[str, Any]:
         """
         Analyzes an image and returns a list of potential product matches.
         (Kept for backward compatibility with Phase 2 endpoints)
@@ -214,7 +214,7 @@ class VisualSearchAgentLogic:
 
             return {"status": "FAILED", "error": "Failed to analyze image."}
 
-    async def identify_product_from_image(self, image_url: str) -> Dict[str, Any]:
+    async def identify_product_from_image(self, image_url: str) -> dict[str, Any]:
         """
         Analyzes an image and returns the single best product match with a confidence score.
         Used for Phase 3 full workflow integration.
@@ -387,7 +387,7 @@ class VisualSearchAgentLogic:
                 "error": "Failed to identify product from image.",
             }
 
-    async def process_task(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    async def process_task(self, inputs: dict[str, Any]) -> dict[str, Any]:
         """Main entry point for the agent."""
         image_url = inputs.get("image_url")
         if not image_url:

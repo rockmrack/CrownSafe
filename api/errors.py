@@ -4,7 +4,7 @@ All errors follow the same JSON structure with correlation IDs
 """
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import HTTPException, Request
 from fastapi.exceptions import RequestValidationError
@@ -14,7 +14,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 logger = logging.getLogger("app")
 
 
-def create_error_payload(code: str, message: str, trace_id: Optional[str] = None, **extra) -> Dict[str, Any]:
+def create_error_payload(code: str, message: str, trace_id: str | None = None, **extra) -> dict[str, Any]:
     """
     Create standardized error payload
 
@@ -217,7 +217,7 @@ class APIError(HTTPException):
         status_code: int,
         code: str,
         message: str,
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ):
         detail = {"message": message}
         if details:

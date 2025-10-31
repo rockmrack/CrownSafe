@@ -4,7 +4,7 @@ Chat memory CRUD operations - stub implementation for chat router
 
 import json
 from datetime import datetime
-from typing import Any, Dict, Optional, Union
+from typing import Any, Union
 from uuid import UUID, uuid4
 
 from sqlalchemy.orm import Session
@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from api.models.chat_memory import Conversation, ConversationMessage, UserProfile
 
 
-def _get_column_python_type(column) -> Optional[type]:
+def _get_column_python_type(column) -> type | None:
     """Safely retrieve a column's python_type attribute."""
 
     try:
@@ -23,8 +23,8 @@ def _get_column_python_type(column) -> Optional[type]:
 
 def _normalize_uuid_for_column(
     column,
-    uuid_value: Optional[Union[UUID, str]],
-) -> Optional[Union[UUID, str]]:
+    uuid_value: Union[UUID, str] | None,
+) -> Union[UUID, str] | None:
     """Normalize UUID values according to the target column type."""
 
     if uuid_value is None:
@@ -47,7 +47,7 @@ def _normalize_uuid_for_column(
     return str(normalized_uuid)
 
 
-def get_profile(db: Session, user_id: Optional[UUID]):
+def get_profile(db: Session, user_id: UUID | None):
     """Get user profile for chat personalization"""
     if user_id is None:
         return None
@@ -57,8 +57,8 @@ def get_profile(db: Session, user_id: Optional[UUID]):
 
 def get_or_create_conversation(
     db: Session,
-    conversation_id: Optional[UUID],
-    user_id: Optional[UUID],
+    conversation_id: UUID | None,
+    user_id: UUID | None,
     scan_id: str,
 ):
     """Get or create conversation record.
@@ -90,9 +90,9 @@ def log_message(
     db: Session,
     conversation: Conversation,
     role: str,
-    content: Dict[str, Any],
-    intent: Optional[str] = None,
-    trace_id: Optional[str] = None,
+    content: dict[str, Any],
+    intent: str | None = None,
+    trace_id: str | None = None,
 ):
     """Log chat message to conversation.
 
@@ -138,7 +138,7 @@ def log_message(
     return message
 
 
-def upsert_profile(db: Session, user_id: UUID, profile_data: Dict[str, Any]):
+def upsert_profile(db: Session, user_id: UUID, profile_data: dict[str, Any]):
     """Update or insert user profile
 
     Note: Converts UUID to appropriate type based on database.

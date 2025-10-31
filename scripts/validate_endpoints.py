@@ -16,7 +16,6 @@ import logging
 import sys
 import time
 from pathlib import Path
-from typing import Dict
 
 import httpx
 
@@ -37,7 +36,7 @@ class EndpointValidator:
         self.base_url = base_url
         self.results = []
 
-    async def validate_endpoint(self, method: str, path: str, expected_status: int = 200) -> Dict:
+    async def validate_endpoint(self, method: str, path: str, expected_status: int = 200) -> dict:
         """
         Validate single endpoint
 

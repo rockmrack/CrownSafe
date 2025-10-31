@@ -3,7 +3,6 @@ Pydantic schemas for user report endpoints
 """
 
 from datetime import date, datetime
-from typing import List, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -16,11 +15,11 @@ class ReportUnsafeProductRequest(BaseModel):
     hazard_description: str = Field(..., min_length=10, description="Detailed description of the hazard")
 
     # Optional product identifiers
-    barcode: Optional[str] = Field(None, max_length=50, description="Product barcode/UPC")
-    model_number: Optional[str] = Field(None, max_length=100, description="Model number")
-    lot_number: Optional[str] = Field(None, max_length=100, description="Lot/batch number")
-    brand: Optional[str] = Field(None, max_length=100, description="Product brand")
-    manufacturer: Optional[str] = Field(None, max_length=200, description="Manufacturer name")
+    barcode: str | None = Field(None, max_length=50, description="Product barcode/UPC")
+    model_number: str | None = Field(None, max_length=100, description="Model number")
+    lot_number: str | None = Field(None, max_length=100, description="Lot/batch number")
+    brand: str | None = Field(None, max_length=100, description="Product brand")
+    manufacturer: str | None = Field(None, max_length=200, description="Manufacturer name")
 
     # Classification
     severity: str = Field(
@@ -28,19 +27,19 @@ class ReportUnsafeProductRequest(BaseModel):
         description="Hazard severity level",
         pattern="^(HIGH|MEDIUM|LOW)$",
     )
-    category: Optional[str] = Field(None, max_length=100, description="Product category")
+    category: str | None = Field(None, max_length=100, description="Product category")
 
     # Reporter information (optional, for follow-up)
-    reporter_name: Optional[str] = Field(None, max_length=100, description="Reporter's name")
-    reporter_email: Optional[str] = Field(None, max_length=255, description="Reporter's email")
-    reporter_phone: Optional[str] = Field(None, max_length=50, description="Reporter's phone")
+    reporter_name: str | None = Field(None, max_length=100, description="Reporter's name")
+    reporter_email: str | None = Field(None, max_length=255, description="Reporter's email")
+    reporter_phone: str | None = Field(None, max_length=50, description="Reporter's phone")
 
     # Incident details
-    incident_date: Optional[date] = Field(None, description="Date of the incident")
-    incident_description: Optional[str] = Field(None, description="Detailed description of what happened")
+    incident_date: date | None = Field(None, description="Date of the incident")
+    incident_description: str | None = Field(None, description="Detailed description of what happened")
 
     # Evidence
-    photos: Optional[List[str]] = Field(None, description="Array of photo URLs or base64 encoded images")
+    photos: list[str] | None = Field(None, description="Array of photo URLs or base64 encoded images")
 
     @field_validator("photos")
     @classmethod
@@ -98,23 +97,23 @@ class UserReportDetail(BaseModel):
     user_id: int
     product_name: str
     hazard_description: str
-    barcode: Optional[str] = None
-    model_number: Optional[str] = None
-    lot_number: Optional[str] = None
-    brand: Optional[str] = None
-    manufacturer: Optional[str] = None
+    barcode: str | None = None
+    model_number: str | None = None
+    lot_number: str | None = None
+    brand: str | None = None
+    manufacturer: str | None = None
     severity: str
-    category: Optional[str] = None
+    category: str | None = None
     status: str
-    reporter_name: Optional[str] = None
-    reporter_email: Optional[str] = None
-    reporter_phone: Optional[str] = None
-    incident_date: Optional[date] = None
-    incident_description: Optional[str] = None
-    photos: Optional[List[str]] = None
+    reporter_name: str | None = None
+    reporter_email: str | None = None
+    reporter_phone: str | None = None
+    incident_date: date | None = None
+    incident_description: str | None = None
+    photos: list[str] | None = None
     created_at: datetime
-    updated_at: Optional[datetime] = None
-    reviewed_at: Optional[datetime] = None
+    updated_at: datetime | None = None
+    reviewed_at: datetime | None = None
 
     class Config:
         from_attributes = True
@@ -128,7 +127,7 @@ class UpdateReportStatusRequest(BaseModel):
         description="New status",
         pattern="^(PENDING|REVIEWING|VERIFIED|REJECTED|DUPLICATE)$",
     )
-    review_notes: Optional[str] = Field(None, description="Admin notes about the review")
+    review_notes: str | None = Field(None, description="Admin notes about the review")
 
     class Config:
         json_schema_extra = {

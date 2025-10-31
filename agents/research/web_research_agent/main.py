@@ -7,7 +7,7 @@ import logging
 import os
 import signal
 import sys
-from typing import Any, Dict, Optional
+from typing import Any
 
 from dotenv import load_dotenv
 
@@ -65,16 +65,16 @@ logger = logging.getLogger(f"{AGENT_ID}.main")
 logic_logger = logging.getLogger(f"{AGENT_ID}.logic")
 
 # Global instances
-mcp_client_instance: Optional[MCPClient] = None
-agent_logic_instance: Optional[WebResearchLogic] = None
+mcp_client_instance: MCPClient | None = None
+agent_logic_instance: WebResearchLogic | None = None
 
 
 class WebResearchAgentManager:
     """Main agent manager for WebResearchAgent"""
 
     def __init__(self):
-        self.mcp_client: Optional[MCPClient] = None
-        self.web_research_logic: Optional[WebResearchLogic] = None
+        self.mcp_client: MCPClient | None = None
+        self.web_research_logic: WebResearchLogic | None = None
         self.stop_event = asyncio.Event()
         self.shutdown_complete = False
 
@@ -111,7 +111,7 @@ class WebResearchAgentManager:
             logger.error(f"Error processing message: {e}", exc_info=True)
             await self._handle_message_error(message, e)
 
-    async def _handle_logic_response(self, response: Dict[str, Any], original_header: MCPHeader):
+    async def _handle_logic_response(self, response: dict[str, Any], original_header: MCPHeader):
         """Handle response from logic with proper validation"""
         try:
             # Validate response structure

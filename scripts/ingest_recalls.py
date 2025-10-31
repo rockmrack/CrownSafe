@@ -19,7 +19,6 @@ import logging
 import os
 import sys
 from datetime import date, datetime, timedelta
-from typing import List, Optional
 
 # Add project root to path
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -100,7 +99,7 @@ class RecallDataIngester:
             logger.warning(f"Could not get table count: {e}")
             return 0
 
-    async def fetch_agency_data(self, agency_name: str, since_date: Optional[date] = None) -> List[dict]:
+    async def fetch_agency_data(self, agency_name: str, since_date: date | None = None) -> list[dict]:
         """Fetch recall data from a specific agency"""
         try:
             connector = self.connectors.get(agency_name)
@@ -189,7 +188,7 @@ class RecallDataIngester:
             logger.error(f"Error converting recall to database record: {e}")
             return None
 
-    def insert_recalls_batch(self, recalls: List[dict], agency_name: str) -> int:
+    def insert_recalls_batch(self, recalls: list[dict], agency_name: str) -> int:
         """Insert batch of recalls using optimized UPSERT"""
         from core_infra.upsert_handler import upsert_handler
 
@@ -218,7 +217,7 @@ class RecallDataIngester:
 
         return processed_count
 
-    async def ingest_agency_data(self, agency_name: str, since_date: Optional[date] = None) -> int:
+    async def ingest_agency_data(self, agency_name: str, since_date: date | None = None) -> int:
         """Ingest data from a specific agency"""
         try:
             # Fetch data from agency
@@ -237,7 +236,7 @@ class RecallDataIngester:
             logger.error(f"❌ Failed to ingest data for {agency_name}: {e}")
             return 0
 
-    async def run_full_ingestion(self, agencies: List[str], since_date: Optional[date] = None):
+    async def run_full_ingestion(self, agencies: list[str], since_date: date | None = None):
         """Run full data ingestion for specified agencies"""
         logger.info(f"🚀 Starting data ingestion for agencies: {', '.join(agencies)}")
 

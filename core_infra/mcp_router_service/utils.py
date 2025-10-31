@@ -5,7 +5,7 @@ import copy  # For deepcopy
 import json
 import uuid
 from datetime import datetime, timezone  # Ensure timezone is imported
-from typing import Any, Dict, Optional  # Added Union for safe_json_serialize
+from typing import Any  # Added Union for safe_json_serialize
 
 # Attempt to import logger from config, fallback to basic logging
 try:
@@ -23,7 +23,7 @@ except ImportError:
 logger.debug("MCP Router Utils module loaded (Step 74 Version - FIXED).")
 
 
-def parse_mcp_message(message_text: str) -> Optional[Dict[str, Any]]:
+def parse_mcp_message(message_text: str) -> dict[str, Any] | None:
     """Parses raw text received over WebSocket; returns MCP message dict or None on failure."""
     if not message_text or not isinstance(message_text, str):
         logger.error("parse_mcp_message: Received empty or non-string input.")
@@ -73,13 +73,13 @@ def parse_mcp_message(message_text: str) -> Optional[Dict[str, Any]]:
 def create_mcp_message(
     sender_id: str,
     message_type: str,
-    payload: Dict[str, Any],
-    target_agent_id: Optional[str] = None,
-    target_service: Optional[str] = None,
-    correlation_id: Optional[str] = None,
+    payload: dict[str, Any],
+    target_agent_id: str | None = None,
+    target_service: str | None = None,
+    correlation_id: str | None = None,
     version: str = "1.0",
-    message_id: Optional[str] = None,
-) -> Optional[Dict[str, Any]]:
+    message_id: str | None = None,
+) -> dict[str, Any] | None:
     """Creates a complete MCP message dictionary, ready for JSON serialization."""
     if not sender_id or not message_type:
         logger.error("create_mcp_message requires sender_id and message_type.")
@@ -123,12 +123,12 @@ def create_mcp_message(
 
 def create_mcp_response(
     target_agent_id: str,
-    correlation_id: Optional[str],
+    correlation_id: str | None,
     sender_service: str,
     response_message_type: str,
-    response_payload: Dict[str, Any],
-    message_id: Optional[str] = None,
-) -> Optional[Dict[str, Any]]:
+    response_payload: dict[str, Any],
+    message_id: str | None = None,
+) -> dict[str, Any] | None:
     """Helper to create a standard response message addressed to the original sender (target_agent_id)."""
     if not target_agent_id or not sender_service or not response_message_type:
         logger.error("create_mcp_response requires target_agent_id, sender_service, and response_message_type.")
@@ -215,11 +215,11 @@ def create_mcp_response(
 
 def create_mcp_error_response(
     target_agent_id: str,
-    correlation_id: Optional[str],
+    correlation_id: str | None,
     sender_service: str,
-    error_payload: Dict[str, Any],
+    error_payload: dict[str, Any],
     error_message_type: str = "ERROR",
-) -> Optional[Dict[str, Any]]:
+) -> dict[str, Any] | None:
     """Helper to create a standard ERROR or TASK_FAIL response message."""
     if "error_code" not in error_payload or "error_message" not in error_payload:
         logger.warning(

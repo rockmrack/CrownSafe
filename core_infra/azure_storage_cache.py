@@ -14,7 +14,6 @@ import hashlib
 import json
 import logging
 from datetime import datetime
-from typing import Optional
 
 import redis
 
@@ -29,7 +28,7 @@ class AzureStorageCacheManager:
 
     def __init__(
         self,
-        redis_url: Optional[str] = None,
+        redis_url: str | None = None,
         default_ttl_hours: int = 23,
         key_prefix: str = "azure_sas:",
     ):
@@ -89,7 +88,7 @@ class AzureStorageCacheManager:
         blob_name: str,
         container_name: str,
         permissions: str = "r",
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Retrieve cached SAS URL from Redis
 
@@ -139,7 +138,7 @@ class AzureStorageCacheManager:
         container_name: str,
         sas_url: str,
         permissions: str = "r",
-        ttl_hours: Optional[int] = None,
+        ttl_hours: int | None = None,
     ) -> bool:
         """
         Cache SAS URL in Redis with TTL
@@ -184,7 +183,7 @@ class AzureStorageCacheManager:
         self,
         blob_name: str,
         container_name: str,
-        permissions: Optional[str] = None,
+        permissions: str | None = None,
     ) -> bool:
         """
         Invalidate cached SAS URL (on blob delete/update)
@@ -284,7 +283,7 @@ class AzureStorageCacheManager:
 azure_storage_cache = None
 
 
-def get_cache_manager(redis_url: Optional[str] = None) -> AzureStorageCacheManager:
+def get_cache_manager(redis_url: str | None = None) -> AzureStorageCacheManager:
     """
     Get or create global cache manager instance
 

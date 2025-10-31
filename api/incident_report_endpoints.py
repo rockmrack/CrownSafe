@@ -7,7 +7,7 @@ import asyncio
 import logging
 import uuid
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import (
     APIRouter,
@@ -53,13 +53,13 @@ class IncidentSubmitRequest(BaseModel):
 
     title: str = Field(..., description="Brief title of the incident")
     description: str = Field(..., description="Detailed description of what happened")
-    product_barcode: Optional[str] = Field(None, description="Product barcode if available")
-    product_name: Optional[str] = Field(None, description="Product name if known")
-    brand_name: Optional[str] = Field(None, description="Brand name if known")
-    model_number: Optional[str] = Field(None, description="Model number if available")
+    product_barcode: str | None = Field(None, description="Product barcode if available")
+    product_name: str | None = Field(None, description="Product name if known")
+    brand_name: str | None = Field(None, description="Brand name if known")
+    model_number: str | None = Field(None, description="Model number if available")
     incident_type: str = Field("safety_concern", description="Type of incident")
     severity_level: str = Field("medium", description="Severity level")
-    user_id: Optional[int] = Field(None, description="User ID if authenticated")
+    user_id: int | None = Field(None, description="User ID if authenticated")
 
 
 class IncidentAnalyzer:
@@ -74,7 +74,7 @@ class IncidentAnalyzer:
     }
 
     @classmethod
-    async def analyze_incident(cls, incident: IncidentReport, db: Session) -> Dict[str, Any]:
+    async def analyze_incident(cls, incident: IncidentReport, db: Session) -> dict[str, Any]:
         """Analyze a new incident for patterns and clusters"""
 
         analysis_result = {
@@ -127,7 +127,7 @@ class IncidentAnalyzer:
     @classmethod
     def _find_similar_incidents(
         cls, incident: IncidentReport, db: Session, days_back: int = 30
-    ) -> List[IncidentReport]:
+    ) -> list[IncidentReport]:
         """Find incidents similar to the given one"""
 
         cutoff_date = datetime.utcnow() - timedelta(days=days_back)
@@ -157,9 +157,9 @@ class IncidentAnalyzer:
     def _find_or_create_cluster(
         cls,
         incident: IncidentReport,
-        similar_incidents: List[IncidentReport],
+        similar_incidents: list[IncidentReport],
         db: Session,
-    ) -> Optional[IncidentCluster]:
+    ) -> IncidentCluster | None:
         """Find existing cluster or create new one"""
 
         # Check if similar incidents already have a cluster
@@ -368,14 +368,14 @@ async def submit_incident_report(
     incident_date: str = Form(...),
     severity_level: str = Form(...),
     description: str = Form(...),
-    brand_name: Optional[str] = Form(None),
-    product_model_number: Optional[str] = Form(None, alias="model_number"),
-    barcode: Optional[str] = Form(None),
-    child_age_months: Optional[int] = Form(None),
-    reporter_email: Optional[str] = Form(None),
+    brand_name: str | None = Form(None),
+    product_model_number: str | None = Form(None, alias="model_number"),
+    barcode: str | None = Form(None),
+    child_age_months: int | None = Form(None),
+    reporter_email: str | None = Form(None),
     # File uploads
-    product_photos: List[UploadFile] = File(None),
-    incident_photos: List[UploadFile] = File(None),
+    product_photos: list[UploadFile] = File(None),
+    incident_photos: list[UploadFile] = File(None),
 ):
     """
     Submit a new incident report

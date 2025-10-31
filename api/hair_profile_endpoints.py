@@ -11,7 +11,6 @@ Endpoints:
 
 import logging
 from datetime import datetime
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -36,20 +35,20 @@ class HairProfileCreate(BaseModel):
 
     hair_type: str = Field(..., description="Hair type: 3C, 4A, 4B, 4C, Mixed")
     porosity: str = Field(..., description="Porosity: Low, Medium, High")
-    hair_state: List[str] = Field(
+    hair_state: list[str] = Field(
         default=[],
         description="Current state: Natural, Relaxed, Transitioning, Heat-damaged, Color-treated",
     )
-    hair_goals: List[str] = Field(
+    hair_goals: list[str] = Field(
         default=[],
         description="Goals: Growth, Moisture retention, Edge recovery, Definition, Thickness",
     )
-    sensitivities: List[str] = Field(
+    sensitivities: list[str] = Field(
         default=[],
         description="Sensitivities: protein-sensitive, coconut-sensitive, fragrance-sensitive",
     )
-    preferred_brands: List[str] = Field(default=[], description="Preferred brand names")
-    avoided_ingredients: List[str] = Field(default=[], description="Ingredients to avoid")
+    preferred_brands: list[str] = Field(default=[], description="Preferred brand names")
+    avoided_ingredients: list[str] = Field(default=[], description="Ingredients to avoid")
     climate: str = Field(default="humid", description="Climate: humid, dry, mixed (affects humectants)")
 
     class Config:
@@ -70,14 +69,14 @@ class HairProfileCreate(BaseModel):
 class HairProfileUpdate(BaseModel):
     """Request model for updating a hair profile (all fields optional)"""
 
-    hair_type: Optional[str] = None
-    porosity: Optional[str] = None
-    hair_state: Optional[List[str]] = None
-    hair_goals: Optional[List[str]] = None
-    sensitivities: Optional[List[str]] = None
-    preferred_brands: Optional[List[str]] = None
-    avoided_ingredients: Optional[List[str]] = None
-    climate: Optional[str] = None
+    hair_type: str | None = None
+    porosity: str | None = None
+    hair_state: list[str] | None = None
+    hair_goals: list[str] | None = None
+    sensitivities: list[str] | None = None
+    preferred_brands: list[str] | None = None
+    avoided_ingredients: list[str] | None = None
+    climate: str | None = None
 
 
 class HairProfileResponse(BaseModel):
@@ -87,11 +86,11 @@ class HairProfileResponse(BaseModel):
     user_id: int
     hair_type: str
     porosity: str
-    hair_state: List[str]
-    hair_goals: List[str]
-    sensitivities: List[str]
-    preferred_brands: List[str]
-    avoided_ingredients: List[str]
+    hair_state: list[str]
+    hair_goals: list[str]
+    sensitivities: list[str]
+    preferred_brands: list[str]
+    avoided_ingredients: list[str]
     climate: str
     created_at: datetime
     updated_at: datetime
@@ -105,7 +104,7 @@ class ApiResponse(BaseModel):
 
     success: bool
     message: str
-    data: Optional[dict] = None
+    data: dict | None = None
 
 
 # ============================================================================

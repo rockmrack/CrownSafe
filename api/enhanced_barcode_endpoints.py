@@ -5,7 +5,7 @@ Provides exact validation and comprehensive error handling
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -46,17 +46,17 @@ class EnhancedScanResponse(BaseModel):
     product_found: bool
     exact_matches_count: int
     confidence_score: float
-    error_message: Optional[str] = None
-    recommendations: List[str] = []
-    validation_details: Optional[Dict[str, Any]] = None
-    matches: List[Dict[str, Any]] = []
+    error_message: str | None = None
+    recommendations: list[str] = []
+    validation_details: dict[str, Any] | None = None
+    matches: list[dict[str, Any]] = []
 
 
 class ValidationTestRequest(BaseModel):
     """Request model for barcode validation testing"""
 
     barcode: str = Field(..., description="Barcode to validate")
-    expected_type: Optional[str] = Field(None, description="Expected barcode type")
+    expected_type: str | None = Field(None, description="Expected barcode type")
 
 
 class ValidationTestResponse(BaseModel):
@@ -67,10 +67,10 @@ class ValidationTestResponse(BaseModel):
     barcode_type: str
     validation_result: str
     normalized_barcode: str
-    check_digit: Optional[str] = None
+    check_digit: str | None = None
     confidence_score: float
-    error_message: Optional[str] = None
-    recommendations: List[str] = []
+    error_message: str | None = None
+    recommendations: list[str] = []
 
 
 @enhanced_barcode_router.post("/exact-scan", response_model=EnhancedScanResponse)
@@ -192,8 +192,8 @@ async def validate_barcode_format(
 @enhanced_barcode_router.get("/test-validation")
 async def test_barcode_validation(
     barcode: str = Query(..., description="Barcode to test"),
-    expected_type: Optional[str] = Query(None, description="Expected barcode type"),
-) -> Dict[str, Any]:
+    expected_type: str | None = Query(None, description="Expected barcode type"),
+) -> dict[str, Any]:
     """
     A-5 Exact/Valid Scan: Test endpoint for barcode validation
 
@@ -261,7 +261,7 @@ async def _basic_scan_fallback(request: EnhancedScanRequest) -> EnhancedScanResp
 
 
 @enhanced_barcode_router.get("/health")
-async def enhanced_scan_health() -> Dict[str, Any]:
+async def enhanced_scan_health() -> dict[str, Any]:
     """Health check for enhanced barcode scanning service"""
     return {
         "service": "enhanced-barcode-scanning",

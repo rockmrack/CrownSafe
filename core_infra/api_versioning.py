@@ -5,7 +5,7 @@ Enables backward compatibility and smooth transitions
 
 import logging
 from functools import wraps
-from typing import Callable, Dict, Optional
+from typing import Callable
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -96,7 +96,7 @@ class VersionedAPI:
         return version in cls.SUPPORTED_VERSIONS
 
     @classmethod
-    def get_deprecation_warning(cls, version: str) -> Optional[Dict[str, str]]:
+    def get_deprecation_warning(cls, version: str) -> dict[str, str] | None:
         """Get deprecation warning for a version"""
         ver = cls.SUPPORTED_VERSIONS.get(version)
         if ver and ver.deprecated:
@@ -184,7 +184,7 @@ class ResponseTransformer:
     """
 
     @staticmethod
-    def transform_v1_to_v2(data: Dict) -> Dict:
+    def transform_v1_to_v2(data: dict) -> dict:
         """Transform v1 response to v2 format"""
         # Example transformation
         if "user_name" in data:
@@ -194,7 +194,7 @@ class ResponseTransformer:
         return data
 
     @staticmethod
-    def transform_v2_to_v3(data: Dict) -> Dict:
+    def transform_v2_to_v3(data: dict) -> dict:
         """Transform v2 response to v3 format"""
         # Example transformation
         if "id" in data:
@@ -204,7 +204,7 @@ class ResponseTransformer:
         return data
 
     @classmethod
-    def transform_response(cls, data: Dict, from_version: str, to_version: str) -> Dict:
+    def transform_response(cls, data: dict, from_version: str, to_version: str) -> dict:
         """Transform response between versions"""
         if from_version == to_version:
             return data
@@ -329,7 +329,7 @@ class VersionMigration:
     """
 
     @staticmethod
-    def generate_migration_guide(from_version: str, to_version: str) -> Dict:
+    def generate_migration_guide(from_version: str, to_version: str) -> dict:
         """
         Generate migration guide between versions
         """

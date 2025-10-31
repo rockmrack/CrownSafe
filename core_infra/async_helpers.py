@@ -7,7 +7,7 @@ import asyncio
 import logging
 import time
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable
 
 import aiohttp
 import httpx
@@ -24,7 +24,7 @@ class AsyncAPIClient:
         self.timeout = aiohttp.ClientTimeout(total=timeout)
         self.max_retries = max_retries
         self.backoff_factor = backoff_factor
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
 
     async def __aenter__(self):
         """Context manager entry"""
@@ -36,19 +36,19 @@ class AsyncAPIClient:
         if self.session:
             await self.session.close()
 
-    async def get(self, url: str, **kwargs) -> Dict[str, Any]:
+    async def get(self, url: str, **kwargs) -> dict[str, Any]:
         """
         Async GET request with retry logic
         """
         return await self._request("GET", url, **kwargs)
 
-    async def post(self, url: str, **kwargs) -> Dict[str, Any]:
+    async def post(self, url: str, **kwargs) -> dict[str, Any]:
         """
         Async POST request with retry logic
         """
         return await self._request("POST", url, **kwargs)
 
-    async def _request(self, method: str, url: str, **kwargs) -> Dict[str, Any]:
+    async def _request(self, method: str, url: str, **kwargs) -> dict[str, Any]:
         """
         Make async request with retry logic
         """
@@ -95,7 +95,7 @@ class AsyncAPIClient:
         raise last_exception or Exception("Request failed")
 
 
-async def fetch_multiple_apis(urls: List[str], timeout: int = 30) -> List[Optional[Dict[str, Any]]]:
+async def fetch_multiple_apis(urls: list[str], timeout: int = 30) -> list[dict[str, Any] | None]:
     """
     Fetch data from multiple APIs concurrently
     """
@@ -142,7 +142,7 @@ class AsyncBatchProcessor:
         self.batch_size = batch_size
         self.semaphore = asyncio.Semaphore(max_concurrent)
 
-    async def process(self, items: List[Any], process_func: Callable) -> List[Any]:
+    async def process(self, items: list[Any], process_func: Callable) -> list[Any]:
         """
         Process items in concurrent batches
         """
@@ -157,7 +157,7 @@ class AsyncBatchProcessor:
 
         return results
 
-    async def _process_batch(self, batch: List[Any], process_func: Callable) -> List[Any]:
+    async def _process_batch(self, batch: list[Any], process_func: Callable) -> list[Any]:
         """
         Process a single batch with concurrency limit
         """
@@ -232,7 +232,7 @@ class AsyncConverter:
 
 
 # Example usage functions
-async def fetch_recalls_async() -> Dict[str, Any]:
+async def fetch_recalls_async() -> dict[str, Any]:
     """
     Example: Fetch recalls from multiple sources concurrently
     """
@@ -248,7 +248,7 @@ async def fetch_recalls_async() -> Dict[str, Any]:
 
 
 @async_cache(ttl=600)
-async def get_product_data_async(barcode: str) -> Dict[str, Any]:
+async def get_product_data_async(barcode: str) -> dict[str, Any]:
     """
     Example: Get product data with caching
     """

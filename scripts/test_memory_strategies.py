@@ -8,7 +8,7 @@ import os
 import sys
 import time
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -60,7 +60,7 @@ class MemoryStrategyTester:
         self.test_results_dir = os.path.join(project_root, "test_results")
         os.makedirs(self.test_results_dir, exist_ok=True)
 
-    async def run_test_scenario(self, scenario: Dict[str, Any]) -> Dict[str, Any]:
+    async def run_test_scenario(self, scenario: dict[str, Any]) -> dict[str, Any]:
         """Run a single test scenario"""
         print(f"\n{'=' * 60}")
         print(f"TEST: {scenario['name']}")
@@ -110,7 +110,7 @@ class MemoryStrategyTester:
         self.results.append(result)
         return result
 
-    def _extract_strategy_from_logs(self) -> Optional[str]:
+    def _extract_strategy_from_logs(self) -> str | None:
         """Extract strategy from latest planner log"""
         try:
             # Find latest planner log
@@ -157,7 +157,7 @@ class MemoryStrategyTester:
 
         return None
 
-    def _extract_workflow_id(self) -> Optional[str]:
+    def _extract_workflow_id(self) -> str | None:
         """Extract workflow ID from commander logs"""
         try:
             commander_logs = [
@@ -186,7 +186,7 @@ class MemoryStrategyTester:
 
         return None
 
-    async def run_all_tests(self, scenarios: List[Dict[str, Any]] = None):
+    async def run_all_tests(self, scenarios: list[dict[str, Any]] = None):
         """Run all test scenarios"""
         if scenarios is None:
             scenarios = TEST_SCENARIOS

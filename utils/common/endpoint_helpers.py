@@ -5,7 +5,7 @@ Reduces code duplication across endpoint files
 
 import logging
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel
@@ -20,27 +20,27 @@ class StandardResponse(BaseModel):
     """Standard API response format"""
 
     success: bool
-    data: Optional[Any] = None
-    error: Optional[str] = None
-    message: Optional[str] = None
+    data: Any | None = None
+    error: str | None = None
+    message: str | None = None
     timestamp: str = datetime.utcnow().isoformat()
-    trace_id: Optional[str] = None
+    trace_id: str | None = None
 
 
 class PaginatedResponse(BaseModel):
     """Paginated API response format"""
 
     success: bool
-    data: List[Any]
+    data: list[Any]
     total: int
     limit: int
     offset: int
     has_more: bool
-    next_cursor: Optional[str] = None
+    next_cursor: str | None = None
     timestamp: str = datetime.utcnow().isoformat()
 
 
-def success_response(data: Any = None, message: Optional[str] = None, trace_id: Optional[str] = None) -> Dict[str, Any]:
+def success_response(data: Any = None, message: str | None = None, trace_id: str | None = None) -> dict[str, Any]:
     """
     Create a standardized success response
 
@@ -61,7 +61,7 @@ def success_response(data: Any = None, message: Optional[str] = None, trace_id: 
     }
 
 
-def error_response(error: str, status_code: int = 500, trace_id: Optional[str] = None) -> Dict[str, Any]:
+def error_response(error: str, status_code: int = 500, trace_id: str | None = None) -> dict[str, Any]:
     """
     Create a standardized error response
 
@@ -83,12 +83,12 @@ def error_response(error: str, status_code: int = 500, trace_id: Optional[str] =
 
 
 def paginated_response(
-    items: List[Any],
+    items: list[Any],
     total: int,
     limit: int,
     offset: int,
-    next_cursor: Optional[str] = None,
-) -> Dict[str, Any]:
+    next_cursor: str | None = None,
+) -> dict[str, Any]:
     """
     Create a standardized paginated response
 
@@ -215,9 +215,9 @@ def generate_trace_id(prefix: str = "") -> str:
 
 def log_endpoint_call(
     endpoint: str,
-    user_id: Optional[int] = None,
-    params: Optional[Dict[str, Any]] = None,
-    trace_id: Optional[str] = None,
+    user_id: int | None = None,
+    params: dict[str, Any] | None = None,
+    trace_id: str | None = None,
 ) -> None:
     """
     Log endpoint call with context

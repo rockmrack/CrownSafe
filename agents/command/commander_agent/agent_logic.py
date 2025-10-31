@@ -2,7 +2,7 @@
 
 import logging
 import traceback
-from typing import Any, Dict, Optional
+from typing import Any
 
 # Adjust imports to your actual folder structure:
 try:
@@ -58,7 +58,7 @@ class CrownSafeCommanderLogic:
     def __init__(
         self,
         agent_id: str = "commander_001",
-        logger_instance: Optional[logging.Logger] = None,
+        logger_instance: logging.Logger | None = None,
     ):
         """
         Initializes the Commander and the orchestration agents it controls.
@@ -69,7 +69,7 @@ class CrownSafeCommanderLogic:
         self.router = BabyShieldRouterLogic(agent_id="router_for_commander", logger_instance=self.logger)
         self.logger.info("CrownSafeCommanderLogic initialized. It now directly controls the Planner and Router.")
 
-    async def start_safety_check_workflow(self, user_request: Dict[str, Any]) -> Dict[str, Any]:
+    async def start_safety_check_workflow(self, user_request: dict[str, Any]) -> dict[str, Any]:
         """
         The primary method that executes the entire end-to-end safety check.
 
