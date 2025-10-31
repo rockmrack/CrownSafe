@@ -274,31 +274,31 @@ def classify_performance(response_time_ms: int) -> str:
 class SafetyCheckRequest(AppModel):
     model_config = {"protected_namespaces": ()}
 
-    user_id: int = Field(..., example=1, description="Authenticated Crown Safe user ID")
+    user_id: int = Field(..., json_schema_extra={"examples": [1]}, description="Authenticated Crown Safe user ID")
     barcode: Optional[str] = Field(
         None,
-        example="012345678905",
+        json_schema_extra={"examples": ["012345678905"]},
         pattern=r"^\d{8,14}$",
         description="UPC/EAN barcode for direct lookup",
     )
     model_number: Optional[str] = Field(
         None,
-        example="HC-2000X",
+        json_schema_extra={"examples": ["HC-2000X"]},
         description="Manufacturer model number",
     )
     lot_number: Optional[str] = Field(
         None,
-        example="LOT2023-05-A",
+        json_schema_extra={"examples": ["LOT2023-05-A"]},
         description="Lot or batch identifier",
     )
     product_name: Optional[str] = Field(
         None,
-        example="Moisturizing Shampoo",
+        json_schema_extra={"examples": ["Moisturizing Shampoo"]},
         description="Product name for text-based search",
     )
     image_url: Optional[str] = Field(
         None,
-        example="https://example.com/product.jpg",
+        json_schema_extra={"examples": ["https://example.com/product.jpg"]},
         description="Image URL for visual recognition fallback",
     )
 
@@ -306,9 +306,9 @@ class SafetyCheckRequest(AppModel):
 class SafetyCheckResponse(BaseModel):
     model_config = {"protected_namespaces": ()}
 
-    status: str = Field(..., example="COMPLETED")
-    data: Optional[Dict[str, Any]] = Field(None, example={})
-    error: Optional[str] = Field(None, example=None)
+    status: str = Field(..., json_schema_extra={"examples": ["COMPLETED"]})
+    data: Optional[Dict[str, Any]] = Field(None, json_schema_extra={"examples": [{}]})
+    error: Optional[str] = Field(None, json_schema_extra={"examples": [None]})
     alternatives: Optional[List[Dict[str, Any]]] = Field(
         None,
         description="Suggested safer alternatives when a hazard is detected",
@@ -387,7 +387,7 @@ class AdvancedSearchRequest(BaseModel):
 class BulkSearchRequest(BaseModel):
     model_config = {"protected_namespaces": ()}
 
-    barcodes: List[str] = Field(..., min_items=1, max_items=50, description="List of barcodes to evaluate")
+    barcodes: List[str] = Field(..., min_length=1, max_length=50, description="List of barcodes to evaluate")
     user_id: int = Field(..., description="User ID performing the bulk check")
 
 
@@ -1024,7 +1024,9 @@ def get_safety_hub_articles(
         )
 
         # Use get_db as a dependency
-        with get_db() as db:
+        db_gen = get_db()
+        db = next(db_gen)
+        try:
             # Build query
             query = db.query(SafetyArticle)
 
@@ -1065,7 +1067,11 @@ def get_safety_hub_articles(
                     "title": article.title,
                     "summary": article.summary,
                     "source_agency": article.source_agency,
-                    "publication_date": (article.publication_date.isoformat() if article.publication_date else None),
+                    "publication_date": (
+                        article.publication_date.isoformat()
+                        if article.publication_date
+                        else None
+                    ),
                     "image_url": article.image_url,
                     "article_url": article.article_url,
                     "is_featured": article.is_featured,
@@ -1074,6 +1080,8 @@ def get_safety_hub_articles(
                 }
                 for article in articles
             ]
+        finally:
+            db.close()
 
         # Create response data
         response_data = {
