@@ -16,6 +16,7 @@ Features:
 
 import logging
 import os
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from typing import Optional
 from urllib.parse import urlparse
@@ -31,6 +32,9 @@ from core_infra.azure_storage_resilience import (
 )
 
 logger = logging.getLogger(__name__)
+
+# Thread pool for async operations
+_upload_executor = ThreadPoolExecutor(max_workers=10, thread_name_prefix="azure_upload")
 
 
 class AzureBlobStorageClient:
@@ -156,6 +160,48 @@ class AzureBlobStorageClient:
             file_data = f.read()
 
         return self.upload_file(file_data, blob_name, container_name, content_type)
+
+    async def upload_file_async(
+        self,
+        file_data: bytes,
+        blob_name: str,
+        container_name: Optional[str] = None,
+        content_type: Optional[str] = None,
+        metadata: Optional[dict] = None,
+    ) -> str:
+        """
+        Asynchronously upload file to Azure Blob Storage (non-blocking)
+        Uses thread pool executor for I/O operations
+
+        Args:
+            file_data: File data as bytes
+            blob_name: Name of the blob (path in container)
+            container_name: Container name (defaults to self.container_name)
+            content_type: MIME type (e.g., 'application/pdf', 'image/png')
+            metadata: Custom metadata dictionary
+
+        Returns:
+            Blob URL
+
+        Raises:
+            Exception: If upload fails
+        """
+        import asyncio
+
+        loop = asyncio.get_event_loop()
+
+        # Run sync upload in thread pool to avoid blocking
+        result = await loop.run_in_executor(
+            _upload_executor,
+            self.upload_file,
+            file_data,
+            blob_name,
+            container_name,
+            content_type,
+            metadata,
+        )
+
+        return result
 
     @retry_with_exponential_backoff(max_retries=3, base_delay=1.0)
     @log_azure_error

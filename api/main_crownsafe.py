@@ -1728,6 +1728,32 @@ def on_startup():
         logger.warning(f"Database initialization skipped: {db_error}")
     logger.info("Running without database - some features may not work")
 
+    # RUN SECURITY CONFIGURATION AUDIT
+    if IS_PRODUCTION:
+        try:
+            logger.info("Running security configuration audit...")
+            from core_infra.security_validator import security_validator
+
+            audit_results = security_validator.comprehensive_security_audit()
+
+            if audit_results["overall_status"] == "fail":
+                risk_level = audit_results.get("risk_level", "UNKNOWN")
+                failures = audit_results.get("total_failures", 0)
+                logger.error(f"SECURITY AUDIT FAILED: {failures} issues found (Risk: {risk_level})")
+                # Log specific failures
+                for category, result in audit_results.get("results", {}).items():
+                    if result["status"] == "fail":
+                        logger.error(f"  - {category}: {result['failures']}")
+
+                # In production, consider failing fast for CRITICAL issues
+                if risk_level == "CRITICAL":
+                    logger.critical("CRITICAL security issues detected! Review /api/v1/monitoring/security-audit")
+            else:
+                logger.info("✅ Security audit passed - all checks OK")
+
+        except Exception as e:
+            logger.error(f"Security audit failed to run: {e}")
+
     # START BACKGROUND CACHE WARMING for 70%+ hit rate
     try:
         logger.info("Starting intelligent cache warming for 39-agency system...")
