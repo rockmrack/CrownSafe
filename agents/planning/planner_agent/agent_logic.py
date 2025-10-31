@@ -117,7 +117,7 @@ class BabyShieldPlannerLogic:
         # Assuming your file is named 'babyshield_safety_check_plan.json'
         for template_file in template_dir.glob("*.json"):
             try:
-                with open(template_file, "r") as f:
+                with open(template_file) as f:
                     template_data = json.load(f)
                     template_name = template_file.stem
                     self.plan_templates[template_name] = template_data

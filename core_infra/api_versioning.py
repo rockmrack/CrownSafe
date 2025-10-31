@@ -4,7 +4,8 @@ Enables backward compatibility and smooth transitions.
 
 import logging
 from functools import wraps
-from typing import Callable, Never
+from typing import Never
+from collections.abc import Callable
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse

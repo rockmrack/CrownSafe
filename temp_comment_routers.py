@@ -6,7 +6,7 @@ import re
 
 def comment_out_router_blocks(file_path) -> None:
     """Comment out the 5 legacy BabyShield router registration blocks."""
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     # Pattern to match each router registration block

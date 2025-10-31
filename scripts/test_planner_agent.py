@@ -53,7 +53,7 @@ def fix_template_file() -> bool:
     template_path = project_root / "prompts" / "v1" / "prior_auth_plan_template.json"
 
     if template_path.exists():
-        with open(template_path, "r") as f:
+        with open(template_path) as f:
             template_data = json.load(f)
 
         # Check if template needs fixing

@@ -96,7 +96,7 @@ def drop_all_cascade() -> None:
 async def main() -> None:
     # 4.1 Load the JSON plan
     plan_path = os.path.join(PROJECT_ROOT, "tests", "fixtures", "test_plan_with_allergy_check.json")
-    with open(plan_path, "r") as f:
+    with open(plan_path) as f:
         test_plan = json.load(f)
 
     # 4.2 Inject concrete test inputs

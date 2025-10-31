@@ -71,7 +71,7 @@ def main() -> None:
         (
             1,  # user_id
             args.scan_id,
-            datetime.datetime.now(timezone.utc).isoformat() + "Z",  # scan_timestamp
+            datetime.datetime.now(datetime.UTC).isoformat() + "Z",  # scan_timestamp
             "Test Product",  # product_name
             "Test Brand",  # brand
             args.barcode,
@@ -90,7 +90,7 @@ def main() -> None:
             None,
             None,  # allergen/pregnancy/age warnings
             0,  # included_in_reports
-            datetime.datetime.now(timezone.utc).isoformat() + "Z",
+            datetime.datetime.now(datetime.UTC).isoformat() + "Z",
         ),
     )
     con.commit()

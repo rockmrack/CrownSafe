@@ -32,7 +32,7 @@ if __name__ == "__main__":
     file_path = os.path.join(project_root, "api", "main_crownsafe.py")
 
     # Read file
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     print(f"Original file size: {len(content)} chars")

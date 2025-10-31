@@ -14,7 +14,7 @@ def test_typescript_sdk():
         print("   ❌ TypeScript SDK not found")
         return False
 
-    with open(sdk_path, "r") as f:
+    with open(sdk_path) as f:
         content = f.read()
 
     # Check for key components
@@ -49,7 +49,7 @@ def test_swift_sdk():
         print("   ❌ Swift SDK not found")
         return False
 
-    with open(sdk_path, "r") as f:
+    with open(sdk_path) as f:
         content = f.read()
 
     # Check for key components
@@ -85,7 +85,7 @@ def test_postman_collection():
         return False
 
     try:
-        with open(collection_path, "r") as f:
+        with open(collection_path) as f:
             collection = json.load(f)
         print("   ✅ Postman collection is valid JSON")
     except json.JSONDecodeError as e:
@@ -125,7 +125,7 @@ def test_openapi_exists() -> bool:
     spec_path = Path("docs/api/openapi_v1.yaml")
 
     if spec_path.exists():
-        with open(spec_path, "r", encoding="utf-8") as f:
+        with open(spec_path, encoding="utf-8") as f:
             lines = len(f.read().split("\n"))
         print(f"   ✅ OpenAPI spec exists ({lines} lines)")
         return True
@@ -138,7 +138,7 @@ def test_readme_exists() -> bool:
     readme_path = Path("docs/api/README.md")
 
     if readme_path.exists():
-        with open(readme_path, "r", encoding="utf-8") as f:
+        with open(readme_path, encoding="utf-8") as f:
             lines = len(f.read().split("\n"))
         print(f"   ✅ API README exists ({lines} lines)")
         return True

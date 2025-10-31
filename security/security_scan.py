@@ -88,7 +88,7 @@ class SecurityScanner:
                 files_scanned += 1
 
                 try:
-                    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                    with open(file_path, encoding="utf-8", errors="ignore") as f:
                         content = f.read()
 
                         for secret_type, pattern in self.secret_patterns.items():
@@ -138,7 +138,7 @@ class SecurityScanner:
             return vulnerabilities
 
         # Parse requirements
-        with open(req_file, "r") as f:
+        with open(req_file) as f:
             requirements = f.readlines()
 
         print(f"Dependencies found: {len(requirements)}")
@@ -218,7 +218,7 @@ class SecurityScanner:
         # Check database models
         db_file = self.base_path / "core_infra" / "database.py"
         if db_file.exists():
-            with open(db_file, "r") as f:
+            with open(db_file) as f:
                 content = f.read()
 
                 # Check for email storage
@@ -249,7 +249,7 @@ class SecurityScanner:
         # Check for PII handling
         api_files = list((self.base_path / "api").glob("*.py"))
         for api_file in api_files:
-            with open(api_file, "r") as f:
+            with open(api_file) as f:
                 content = f.read()
 
                 # Check for encryption
@@ -295,7 +295,7 @@ class SecurityScanner:
         # Check main API file
         main_api = self.base_path / "api" / "main_crownsafe.py"
         if main_api.exists():
-            with open(main_api, "r") as f:
+            with open(main_api) as f:
                 content = f.read()
 
                 # Check configurations
@@ -362,7 +362,7 @@ class SecurityScanner:
         if sql_file.exists():
             print("✅ Read-only database role script found")
 
-            with open(sql_file, "r") as f:
+            with open(sql_file) as f:
                 content = f.read()
 
                 required_elements = [
@@ -404,7 +404,7 @@ class SecurityScanner:
             rotation_checks["documentation"] = True
             print("✅ Secret rotation guide found")
 
-            with open(rotation_file, "r") as f:
+            with open(rotation_file) as f:
                 content = f.read()
 
                 if "API" in content and ("key" in content.lower() or "token" in content.lower()):

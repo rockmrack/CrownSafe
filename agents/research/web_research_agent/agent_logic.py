@@ -326,7 +326,7 @@ class WebResearchLogic:
                             self.logger.info(f"NCBI API request successful: {description}")
                             return content
 
-            except asyncio.TimeoutError as e:
+            except TimeoutError as e:
                 last_exception = TimeoutError(f"Overall task timeout on attempt {attempt + 1}: {description} - {e}")
             except aiohttp.ClientTimeout as e:
                 last_exception = TimeoutError(f"AIOHTTP ClientTimeout on attempt {attempt + 1}: {description} - {e}")

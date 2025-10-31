@@ -4,7 +4,7 @@
 
 def comment_routers() -> None:
     # Read the file
-    with open("api/main_crownsafe.py", "r", encoding="utf-8") as f:
+    with open("api/main_crownsafe.py", encoding="utf-8") as f:
         lines = f.readlines()
 
     # Track if we're inside a block to comment

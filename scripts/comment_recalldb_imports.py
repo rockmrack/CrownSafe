@@ -17,7 +17,7 @@ def comment_out_imports() -> bool | None:
 
     try:
         # Read file with UTF-8 encoding
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             lines = f.readlines()
 
         print(f"Total lines: {len(lines)}")

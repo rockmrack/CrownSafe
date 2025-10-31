@@ -193,7 +193,7 @@ class SubmissionValidator:
 
             if path.exists():
                 try:
-                    with open(path, "r", encoding="utf-8") as f:
+                    with open(path, encoding="utf-8") as f:
                         data = json.load(f)
 
                     # Check for required fields
@@ -368,7 +368,7 @@ class SubmissionValidator:
             path = Path(info["path"])
 
             if path.exists():
-                with open(path, "r", encoding="utf-8") as f:
+                with open(path, encoding="utf-8") as f:
                     content = f.read()
 
                 length = len(content)
@@ -466,7 +466,7 @@ class SubmissionValidator:
 
             # Parse results
             if Path("postman_results.json").exists():
-                with open("postman_results.json", "r") as f:
+                with open("postman_results.json") as f:
                     results = json.load(f)
 
                 stats = results.get("run", {}).get("stats", {})

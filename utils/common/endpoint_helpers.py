@@ -4,7 +4,8 @@ Reduces code duplication across endpoint files.
 
 import logging
 from datetime import UTC, datetime
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel

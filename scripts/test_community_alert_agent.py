@@ -24,7 +24,7 @@ async def main() -> None:
     # 1. Load the mock HTML file from our test fixtures.
     fixture_path = os.path.join(project_root, "tests", "fixtures", "mock_forum_page.html")
     try:
-        with open(fixture_path, "r") as f:
+        with open(fixture_path) as f:
             mock_html = f.read()
         logger.info("Successfully loaded mock HTML fixture.")
     except FileNotFoundError:

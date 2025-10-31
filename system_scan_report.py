@@ -83,7 +83,7 @@ files_to_check = [
 total_references = 0
 for filepath, line_numbers in files_to_check:
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             lines = f.readlines()
 
         active_refs = 0
@@ -114,7 +114,7 @@ print()
 print("TEST 4: Crown Safe Branding Verification")
 print("-" * 80)
 try:
-    with open("api/main_crownsafe.py", "r", encoding="utf-8") as f:
+    with open("api/main_crownsafe.py", encoding="utf-8") as f:
         content = f.read()
 
     checks = [

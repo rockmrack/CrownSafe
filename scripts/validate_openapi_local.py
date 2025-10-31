@@ -23,7 +23,7 @@ def main() -> int | None:
         return
 
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             if path.endswith((".yaml", ".yml")):
                 spec = yaml.safe_load(f)
             else:

@@ -1413,7 +1413,7 @@ try:
     from api.openapi_spec import custom_openapi
 
     def _custom_openapi() -> dict[str, Any]:
-        return custom_openapi(cast(FastAPI, _original_app))
+        return custom_openapi(cast("FastAPI", _original_app))
 
     _original_app.openapi = _custom_openapi  # type: ignore[assignment]
     app.openapi = _custom_openapi  # type: ignore[assignment]

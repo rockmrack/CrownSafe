@@ -198,9 +198,9 @@ def generate_admin_key() -> str:
 
 # Export
 __all__ = [
-    "require_admin",
-    "optional_admin",
     "AdminRateLimit",
-    "validate_admin_key",
     "generate_admin_key",
+    "optional_admin",
+    "require_admin",
+    "validate_admin_key",
 ]

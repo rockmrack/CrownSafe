@@ -178,8 +178,8 @@ def validate_privacy_setup():
 
 # Export functions
 __all__ = [
-    "setup_privacy_compliance",
     "configure_privacy_logging",
     "get_privacy_config",
+    "setup_privacy_compliance",
     "validate_privacy_setup",
 ]

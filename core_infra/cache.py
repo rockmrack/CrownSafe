@@ -8,7 +8,7 @@ import hashlib
 import json
 import logging
 from functools import wraps
-from typing import Callable
+from collections.abc import Callable
 
 from cachetools import TTLCache
 

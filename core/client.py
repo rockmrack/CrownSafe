@@ -12,7 +12,8 @@ import copy  # noqa: E402
 import json  # noqa: E402
 import uuid  # noqa: E402
 from datetime import UTC, datetime  # noqa: E402
-from typing import TYPE_CHECKING, Any, Callable  # noqa: E402
+from typing import TYPE_CHECKING, Any
+from collections.abc import Callable  # noqa: E402
 
 import websockets  # noqa: E402
 from tenacity import (  # noqa: E402
@@ -193,7 +194,7 @@ class MCPClient:
                 self.websocket = None
                 self._is_connected = False
                 raise MCPConnectionError(f"Failed to establish an OPEN WebSocket connection for {self.agent_id}.")
-        except asyncio.TimeoutError:  # Timeout for the websockets.connect call itself
+        except TimeoutError:  # Timeout for the websockets.connect call itself
             self._is_connected = False
             self.websocket = None
             self.logger.exception(
@@ -436,7 +437,7 @@ class MCPClient:
                         else str(message_data)
                     )
                     self.logger.exception(f"CLIENT_RECV_FAIL_DATA ({self.agent_id}): Problematic data: {data_snippet}")
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 self.logger.debug(f"Receive loop ({self.agent_id}): Timeout. Checking connection.")
                 continue
             except (
@@ -472,7 +473,7 @@ class MCPClient:
         while not self._stop_requested.is_set():
             try:
                 await asyncio.wait_for(self._stop_requested.wait(), timeout=self.heartbeat_interval)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
             except asyncio.CancelledError:
                 self.logger.info(f"Heartbeat task cancelled during sleep for {self.agent_id}.")

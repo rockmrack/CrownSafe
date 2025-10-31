@@ -5,7 +5,8 @@ Prevents cascade failures and provides graceful degradation.
 import asyncio
 import logging
 from functools import wraps
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 
 from pybreaker import CircuitBreaker, CircuitBreakerError
 from tenacity import (

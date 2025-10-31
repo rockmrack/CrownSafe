@@ -10,7 +10,7 @@ import sys
 import threading
 import time
 from contextlib import contextmanager
-from typing import Callable
+from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -306,7 +306,7 @@ def check_previous_shutdown() -> None:
 
     if os.path.exists("shutdown_state.json"):
         try:
-            with open("shutdown_state.json", "r") as f:
+            with open("shutdown_state.json") as f:
                 state = json.load(f)
 
             logger.warning(f"Previous shutdown detected at {state['shutdown_time']}")

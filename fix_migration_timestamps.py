@@ -2,7 +2,7 @@
 
 file_path = "db/migrations/versions/2025_10_24_add_crown_safe_models.py"
 
-with open(file_path, "r", encoding="utf-8") as f:
+with open(file_path, encoding="utf-8") as f:
     content = f.read()
 
 # Replace all remaining server_default=sa.text("now()") with timestamp_default

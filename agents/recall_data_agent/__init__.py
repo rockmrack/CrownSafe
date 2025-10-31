@@ -6,4 +6,4 @@ Handles ingestion from 39+ international regulatory agencies and live queries.
 from .agent_logic import RecallDataAgentLogic
 from .models import Recall
 
-__all__ = ["RecallDataAgentLogic", "Recall"]
+__all__ = ["Recall", "RecallDataAgentLogic"]

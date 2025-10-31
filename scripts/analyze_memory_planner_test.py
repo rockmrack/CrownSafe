@@ -257,7 +257,7 @@ class MemoryPlannerAnalyzer:
         )
 
         try:
-            with open(safe_log_path, "r", encoding="utf-8", errors="ignore") as f:
+            with open(safe_log_path, encoding="utf-8", errors="ignore") as f:
                 # Read limited content for analysis
                 content = f.read(check_depth)
                 candidate.content_preview = content[:500]
@@ -480,7 +480,7 @@ class MemoryPlannerAnalyzer:
         }
 
         try:
-            with open(safe_planner_log, "r", encoding="utf-8", errors="ignore") as f:
+            with open(safe_planner_log, encoding="utf-8", errors="ignore") as f:
                 content = f.read()
 
                 escaped_drug_name: str | None = None
@@ -775,7 +775,7 @@ class MemoryPlannerAnalyzer:
 
         if router_log:
             try:
-                with open(router_log, "r", encoding="utf-8", errors="ignore") as f:
+                with open(router_log, encoding="utf-8", errors="ignore") as f:
                     router_content = f.read()
 
                     # Check workflow completion
@@ -837,7 +837,7 @@ class MemoryPlannerAnalyzer:
 
             if worker_log:
                 try:
-                    with open(worker_log, "r", encoding="utf-8", errors="ignore") as f:
+                    with open(worker_log, encoding="utf-8", errors="ignore") as f:
                         content = f.read()
 
                         for pattern in patterns:
@@ -871,7 +871,7 @@ class MemoryPlannerAnalyzer:
 
         if commander_log:
             try:
-                with open(commander_log, "r", encoding="utf-8", errors="ignore") as f:
+                with open(commander_log, encoding="utf-8", errors="ignore") as f:
                     content = f.read()
 
                     storage_patterns = [

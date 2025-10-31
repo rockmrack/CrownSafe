@@ -334,7 +334,7 @@ async def create_share_link(
                 )
 
             # Create content snapshot
-            scan_timestamp = cast(datetime | None, getattr(scan, "scan_timestamp", None))
+            scan_timestamp = cast("datetime | None", getattr(scan, "scan_timestamp", None))
             content_snapshot = {
                 "scan_id": scan.scan_id,
                 "product_name": scan.product_name,
@@ -414,8 +414,8 @@ async def create_share_link(
                         )
 
                     # Create content snapshot
-                    period_start = cast(datetime | None, getattr(report, "period_start", None))
-                    period_end = cast(datetime | None, getattr(report, "period_end", None))
+                    period_start = cast("datetime | None", getattr(report, "period_start", None))
+                    period_end = cast("datetime | None", getattr(report, "period_end", None))
                     content_snapshot = {
                         "report_id": report.report_id,
                         "report_type": report.report_type,
@@ -589,7 +589,7 @@ async def view_shared_content(
 
             pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-            stored_hash = cast(str | None, getattr(share_token, "password_hash", None))
+            stored_hash = cast("str | None", getattr(share_token, "password_hash", None))
             if not stored_hash or not pwd_context.verify(password, stored_hash):
                 raise HTTPException(status_code=401, detail="Invalid password")
 
@@ -599,16 +599,16 @@ async def view_shared_content(
 
         # Calculate views remaining
         views_remaining = None
-        max_views_value = cast(int | None, getattr(share_token, "max_views", None))
-        view_count_value = cast(int | None, getattr(share_token, "view_count", None)) or 0
+        max_views_value = cast("int | None", getattr(share_token, "max_views", None))
+        view_count_value = cast("int | None", getattr(share_token, "view_count", None)) or 0
         if max_views_value is not None:
             views_remaining = max(0, max_views_value - view_count_value)
 
         # Return content
         response = SharedContentResponse(
             success=True,
-            content_type=cast(str, share_token.share_type),
-            content=cast(dict[str, Any], share_token.content_snapshot or {}),
+            content_type=cast("str", share_token.share_type),
+            content=cast("dict[str, Any]", share_token.content_snapshot or {}),
             allow_download=bool(getattr(share_token, "allow_download", False)),
             views_remaining=views_remaining,
         )
@@ -656,15 +656,15 @@ async def share_via_email(
                 f'<p style="background-color: #e3f2fd; padding: 15px; border-radius: 5px;"><em>{safe_message}</em></p>'
             )
 
-        current_view_count = cast(int | None, getattr(share_token, "view_count", None)) or 0
+        current_view_count = cast("int | None", getattr(share_token, "view_count", None)) or 0
         views_remaining = None
-        max_views_email = cast(int | None, getattr(share_token, "max_views", None))
+        max_views_email = cast("int | None", getattr(share_token, "max_views", None))
         if max_views_email is not None:
             remaining = max_views_email - current_view_count
             views_remaining = max(0, remaining)
 
         expiry_text = "This link does not expire."
-        expires_at_value = cast(datetime | None, getattr(share_token, "expires_at", None))
+        expires_at_value = cast("datetime | None", getattr(share_token, "expires_at", None))
         if expires_at_value is not None:
             seconds_remaining = (expires_at_value - datetime.now(UTC)).total_seconds()
             hours_remaining = max(0, int(seconds_remaining // 3600))
@@ -991,7 +991,7 @@ async def preview_shared_content(
 
         # Generate preview HTML
         content = share_token.content_snapshot or {}
-        share_type: str = cast(str, share_token.share_type)
+        share_type: str = cast("str", share_token.share_type)
 
         if share_type == "scan_result":
             raw_title = f"Product Safety: {content.get('product_name', 'Unknown Product')}"

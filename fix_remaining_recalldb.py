@@ -6,7 +6,7 @@ def fix_fix_upc_data() -> bool:
     file_path = "api/main_crownsafe.py"
 
     # Read file
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     # Check if already fixed

@@ -5,7 +5,7 @@ Provides fixtures and test utilities for all test suites.
 import os
 import tempfile
 from datetime import UTC, datetime, timedelta
-from typing import Generator
+from collections.abc import Generator
 
 import pytest
 from fastapi.testclient import TestClient

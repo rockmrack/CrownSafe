@@ -6,7 +6,8 @@ import asyncio
 import logging
 import time
 from functools import wraps
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 
 import aiohttp
 import httpx
@@ -68,7 +69,7 @@ class AsyncAPIClient:
                         logger.warning(f"API call failed: {method} {url} Status: {response.status}")
                         last_exception = Exception(f"HTTP {response.status}")
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 logger.warning(f"Timeout on attempt {attempt + 1} for {url}")
                 last_exception = TimeoutError(f"Request timed out after {self.timeout}s")
             except Exception as e:
@@ -265,7 +266,7 @@ class AsyncTaskQueue:
 
                 self.queue.task_done()
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 continue
             except Exception as e:
                 logger.exception(f"{name} error: {e}")

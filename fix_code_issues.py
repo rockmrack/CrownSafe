@@ -47,7 +47,7 @@ def fix_exception_chaining(content):
 
 def remove_unused_imports(file_path, unused_imports) -> None:
     """Remove specified unused imports from a file."""
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         lines = f.readlines()
 
     new_lines = []
@@ -90,7 +90,7 @@ for file_path in files_to_fix:
 
     print(f"Fixing {file_path}...")
 
-    with open(full_path, "r", encoding="utf-8") as f:
+    with open(full_path, encoding="utf-8") as f:
         content = f.read()
 
     # Apply fixes

@@ -139,7 +139,6 @@ class MemorySafeImageProcessor:
             # Process image (example)
             return {"format": img.format, "size": img.size, "mode": img.mode}
 
-
         finally:
             # Clean up PIL image
             if img:
@@ -174,7 +173,6 @@ class MemorySafeImageProcessor:
 
             # Extract text
             return pytesseract.image_to_string(img)
-
 
         except Exception as e:
             logger.exception(f"OCR error: {e}")

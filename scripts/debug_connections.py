@@ -51,7 +51,7 @@ async def test_mcp_connection() -> None:
                     else:
                         print("\n❌ No commander agent found! Make sure commander_agent is running and connected.")
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 print("❌ No response received - discovery service might not be running")
 
     except Exception as e:
@@ -118,7 +118,7 @@ async def test_workflow_submission() -> None:
                     if msg_type == "ERROR":
                         print(f"   ❌ Error: {response_data.get('payload', {}).get('error_message')}")
 
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     continue
 
     except Exception as e:
@@ -163,7 +163,7 @@ async def check_agent_registrations() -> None:
                         else:
                             print(f"❌ {agent_id}: NOT FOUND - Make sure this agent is running")
 
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     print(f"❌ {agent_id}: NO RESPONSE")
 
     except Exception as e:

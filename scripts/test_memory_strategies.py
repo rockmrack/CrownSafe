@@ -126,7 +126,7 @@ class MemoryStrategyTester:
             )
             log_path = os.path.join(self.logs_dir, latest_log)
 
-            with open(log_path, "r", encoding="utf-8") as f:
+            with open(log_path, encoding="utf-8") as f:
                 content = f.read()
 
                 # Look for strategy in various formats
@@ -172,7 +172,7 @@ class MemoryStrategyTester:
             )
             log_path = os.path.join(self.logs_dir, latest_log)
 
-            with open(log_path, "r", encoding="utf-8") as f:
+            with open(log_path, encoding="utf-8") as f:
                 content = f.read()
 
                 import re

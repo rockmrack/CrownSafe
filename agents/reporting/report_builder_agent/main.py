@@ -263,7 +263,7 @@ class ReportBuilderAgentManager:
                         if self.stop_event.is_set():
                             logger.info("Stop event set during retry delay, aborting connection attempts")
                             return False
-                    except asyncio.TimeoutError:
+                    except TimeoutError:
                         pass  # Normal timeout, continue to next attempt
                 else:
                     logger.critical(f"💥 All {MAX_CONNECT_RETRIES} connection attempts failed for {AGENT_ID}")
@@ -406,7 +406,7 @@ class ReportBuilderAgentManager:
                 self._health_check_task.cancel()
                 try:
                     await asyncio.wait_for(self._health_check_task, timeout=5.0)
-                except (asyncio.CancelledError, asyncio.TimeoutError):
+                except (TimeoutError, asyncio.CancelledError):
                     pass
                 logger.debug("Health check task cancelled")
 

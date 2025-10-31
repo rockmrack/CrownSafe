@@ -3,6 +3,6 @@
 from . import admin, system
 
 __all__ = [
-    "system",
     "admin",
+    "system",
 ]

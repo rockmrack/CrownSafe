@@ -5,7 +5,7 @@ Tests authentication, authorization, input validation, and security measures.
 
 import os
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 
 import pytest
 from fastapi.testclient import TestClient
@@ -234,7 +234,7 @@ class TestSecurityAndValidation:
         from jose import jwt
 
         secret = "test-secret-key"
-        payload = {"sub": "user123", "exp": datetime.now(timezone.utc) + timedelta(hours=1)}
+        payload = {"sub": "user123", "exp": datetime.now(UTC) + timedelta(hours=1)}
         token = jwt.encode(payload, secret, algorithm="HS256")
         assert token is not None
         assert isinstance(token, str)
@@ -245,7 +245,7 @@ class TestSecurityAndValidation:
         from jose import jwt
 
         secret = "test-secret-key"
-        payload = {"sub": "user123", "exp": datetime.now(timezone.utc) + timedelta(hours=1)}
+        payload = {"sub": "user123", "exp": datetime.now(UTC) + timedelta(hours=1)}
         token = jwt.encode(payload, secret, algorithm="HS256")
         decoded = jwt.decode(token, secret, algorithms=["HS256"])
         assert decoded["sub"] == "user123"
@@ -256,7 +256,7 @@ class TestSecurityAndValidation:
         from jose import JWTError, jwt
 
         secret = "test-secret-key"
-        payload = {"sub": "user123", "exp": datetime.now(timezone.utc) - timedelta(hours=1)}
+        payload = {"sub": "user123", "exp": datetime.now(UTC) - timedelta(hours=1)}
         token = jwt.encode(payload, secret, algorithm="HS256")
         with pytest.raises(JWTError):
             jwt.decode(token, secret, algorithms=["HS256"])
@@ -268,7 +268,7 @@ class TestSecurityAndValidation:
 
         secret = "test-secret-key"
         wrong_secret = "wrong-secret-key"
-        payload = {"sub": "user123", "exp": datetime.now(timezone.utc) + timedelta(hours=1)}
+        payload = {"sub": "user123", "exp": datetime.now(UTC) + timedelta(hours=1)}
         token = jwt.encode(payload, secret, algorithm="HS256")
         with pytest.raises(JWTError):
             jwt.decode(token, wrong_secret, algorithms=["HS256"])

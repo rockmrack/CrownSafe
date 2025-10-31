@@ -208,8 +208,8 @@ def create_cors_middleware(app: FastAPI) -> None:
 
 # Export main function
 __all__ = [
-    "add_strict_cors",
-    "get_allowed_origins",
     "CORSConfig",
+    "add_strict_cors",
     "create_cors_middleware",
+    "get_allowed_origins",
 ]

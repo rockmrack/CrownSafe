@@ -132,7 +132,7 @@ def get_document_content(doc_id: str, format: str = "markdown") -> tuple[str, st
         # Return template content
         content = generate_template_content(doc_id, doc_info)
     else:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
     # Format conversion

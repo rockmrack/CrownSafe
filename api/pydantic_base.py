@@ -5,4 +5,4 @@ Maintained for backward compatibility.
 from core.schemas.base import APIResponse, AppModel, BaseSchema, ErrorResponse
 
 # Re-export for backward compatibility
-__all__ = ["AppModel", "BaseSchema", "APIResponse", "ErrorResponse"]
+__all__ = ["APIResponse", "AppModel", "BaseSchema", "ErrorResponse"]

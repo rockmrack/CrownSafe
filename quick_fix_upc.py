@@ -33,7 +33,7 @@ def fix_function() -> bool | None:
     filepath = r"c:\Users\rossd\OneDrive\Documents\Crown Safe\api\main_crownsafe.py"
 
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             lines = f.readlines()
 
         # Find the problematic section (around line 3855-3925)

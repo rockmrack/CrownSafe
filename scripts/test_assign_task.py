@@ -144,7 +144,7 @@ async def run_task_assignment() -> None:
             else:
                 logger.error("Completion event received, but no result was stored.")
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.exception(f"Timeout: Did not receive task completion message within {TASK_TIMEOUT_SECONDS} seconds.")
 
     except ConnectionError as e:

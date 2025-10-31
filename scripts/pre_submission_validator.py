@@ -44,7 +44,7 @@ class SubmissionValidator:
             return False
 
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 data = json.load(f)
 
             if required_fields:
@@ -69,7 +69,7 @@ class SubmissionValidator:
             return False
 
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 content = f.read()
 
             if max_length and len(content) > max_length:
@@ -245,7 +245,7 @@ class SubmissionValidator:
         # Check for required disclaimers
         long_desc_path = self.base_path / "docs/store/common/descriptions/long_description_en.txt"
         if long_desc_path.exists():
-            with open(long_desc_path, "r", encoding="utf-8") as f:
+            with open(long_desc_path, encoding="utf-8") as f:
                 content = f.read().lower()
 
             if "not medical advice" in content:
@@ -261,7 +261,7 @@ class SubmissionValidator:
         # Check age rating configuration
         apple_meta_path = self.base_path / "docs/store/apple/metadata.json"
         if apple_meta_path.exists():
-            with open(apple_meta_path, "r", encoding="utf-8") as f:
+            with open(apple_meta_path, encoding="utf-8") as f:
                 apple_data = json.load(f)
 
             if apple_data.get("ageRating", {}).get("ageRatingOverride") == "FOUR_PLUS":
@@ -299,7 +299,7 @@ class SubmissionValidator:
         # Check in Apple metadata
         apple_meta_path = self.base_path / "docs/store/apple/metadata.json"
         if apple_meta_path.exists():
-            with open(apple_meta_path, "r", encoding="utf-8") as f:
+            with open(apple_meta_path, encoding="utf-8") as f:
                 apple_data = json.load(f)
 
             if apple_data.get("bundleId") == bundle_id:
@@ -310,7 +310,7 @@ class SubmissionValidator:
         # Check in Google metadata
         google_meta_path = self.base_path / "docs/store/google/listing.json"
         if google_meta_path.exists():
-            with open(google_meta_path, "r", encoding="utf-8") as f:
+            with open(google_meta_path, encoding="utf-8") as f:
                 google_data = json.load(f)
 
             if google_data.get("packageName") == bundle_id:

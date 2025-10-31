@@ -389,7 +389,7 @@ def test_visual_upload_pipeline_completes_analysis(client: TestClient, monkeypat
         job.status = JobStatus.COMPLETED  # type: ignore[assignment]
         job.confidence_level = ConfidenceLevel.HIGH  # type: ignore[assignment]
         job.confidence_score = 0.94  # type: ignore[assignment]
-        job.completed_at = datetime.datetime.now(timezone.utc)  # type: ignore[assignment]
+        job.completed_at = datetime.datetime.now(datetime.UTC)  # type: ignore[assignment]
         session.add(
             ImageExtraction(
                 job_id=job_id,

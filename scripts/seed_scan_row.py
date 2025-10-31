@@ -31,7 +31,7 @@ values = dict(
     pregnancy_warnings="[]",
     age_warnings="[]",
     included_in_reports=0,
-    created_at=datetime.datetime.now(timezone.utc).isoformat() + "Z",
+    created_at=datetime.datetime.now(datetime.UTC).isoformat() + "Z",
 )
 if row:
     sets = ",".join([f"{k}=?" for k in values.keys()])

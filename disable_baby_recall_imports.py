@@ -9,7 +9,7 @@ import re
 def disable_baby_recall_code() -> None:
     main_file = r"c:\Users\rossd\OneDrive\Documents\Crown Safe\api\main_crownsafe.py"
 
-    with open(main_file, "r", encoding="utf-8") as f:
+    with open(main_file, encoding="utf-8") as f:
         content = f.read()
 
     # Patterns to disable

@@ -66,7 +66,7 @@ print("4. WORKFLOW TEMPLATE CONFIGURATION")
 print("-" * 80)
 try:
     workflow_path = Path("prompts/v1/babyshield_safety_check_plan.json")
-    with open(workflow_path, "r") as f:
+    with open(workflow_path) as f:
         plan = json.load(f)
 
     # Find step2_check_recalls

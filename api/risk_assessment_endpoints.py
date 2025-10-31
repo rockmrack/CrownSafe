@@ -7,7 +7,7 @@ Provides endpoints for product risk analysis, report generation, and data ingest
 
 import asyncio  # noqa: E402
 import logging  # noqa: E402
-from datetime import datetime, timedelta, timezone  # noqa: E402
+from datetime import datetime, timedelta, timezone, UTC  # noqa: E402
 from typing import Any  # noqa: E402
 
 from fastapi import (  # noqa: E402
@@ -200,7 +200,7 @@ async def assess_product_risk(
         risk_profile.volume_score = risk_components.volume_score
         risk_profile.violation_score = risk_components.violation_score
         risk_profile.compliance_score = risk_components.compliance_score
-        risk_profile.last_calculated = datetime.now(timezone.utc)
+        risk_profile.last_calculated = datetime.now(UTC)
 
         # Update incident counts
         risk_profile.total_incidents = len(incidents)
@@ -281,8 +281,8 @@ async def assess_product_risk(
                 "general": report_generator.disclaimers["general"],
                 "action": report_generator.disclaimers["action"],
             },
-            assessment_id=f"ASM-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
-            timestamp=datetime.now(timezone.utc),
+            assessment_id=f"ASM-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}",
+            timestamp=datetime.now(UTC),
         )
 
     except Exception as e:
@@ -307,8 +307,8 @@ async def assess_product_risk(
                 "general": "Risk assessment service is temporarily unavailable",
                 "action": "Please try again later",
             },
-            assessment_id=f"ERROR-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
-            timestamp=datetime.now(timezone.utc),
+            assessment_id=f"ERROR-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}",
+            timestamp=datetime.now(UTC),
         )
 
 
@@ -371,7 +371,7 @@ async def assess_by_image(
                 content={
                     "status": "processing",
                     "message": "Image queued for visual analysis. Check back for results.",
-                    "job_id": f"IMG-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
+                    "job_id": f"IMG-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}",
                 },
             )
 
@@ -497,7 +497,7 @@ async def trigger_data_ingestion(
             source_type=",".join(request.sources),
             job_type="full" if request.full_sync else "incremental",
             status="queued",
-            scheduled_at=datetime.now(timezone.utc),
+            scheduled_at=datetime.now(UTC),
             configuration={
                 "start_date": request.start_date.isoformat() if request.start_date else None,
                 "end_date": request.end_date.isoformat() if request.end_date else None,
@@ -711,7 +711,7 @@ async def enrich_product_data(product: ProductGoldenRecord, db: Session) -> None
                     source_type=DataSource.COMMERCIAL_DB.value,
                     source_name=product_data.get("source", "commercial"),
                     raw_data=product_data,
-                    fetched_at=datetime.now(timezone.utc),
+                    fetched_at=datetime.now(UTC),
                 )
                 db.add(source_record)
                 db.commit()

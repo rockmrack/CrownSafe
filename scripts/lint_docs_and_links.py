@@ -44,13 +44,13 @@ def ok(cond, msg) -> None:
 
 def load_json(path):
     """Load and parse JSON file."""
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
 def load_yaml(path):
     """Load and parse YAML file."""
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
@@ -104,7 +104,7 @@ def main() -> int:
             print(f"⚠️  {rel} not found, skipping")
             continue
 
-        with open(p, "r", encoding="utf-8") as f:
+        with open(p, encoding="utf-8") as f:
             txt = f.read()
 
         links = find_links(txt)

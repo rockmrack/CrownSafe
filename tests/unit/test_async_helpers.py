@@ -88,7 +88,7 @@ class TestAsyncAPIClient:
     async def test_timeout_error(self) -> None:
         """Test timeout error handling."""
         with patch("aiohttp.ClientSession.request") as mock_request:
-            mock_request.return_value.__aenter__.side_effect = asyncio.TimeoutError()
+            mock_request.return_value.__aenter__.side_effect = TimeoutError()
 
             async with AsyncAPIClient(max_retries=1) as client:
                 with pytest.raises(TimeoutError):

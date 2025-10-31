@@ -11,7 +11,8 @@ from collections import deque
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Callable, Union
+from typing import Any, Union
+from collections.abc import Callable
 
 from dotenv import load_dotenv
 

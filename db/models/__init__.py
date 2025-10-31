@@ -9,14 +9,14 @@ from .serial_verification import SerialVerification
 from .share_token import ShareToken
 
 __all__ = [
+    "AgencyNotification",
+    "IncidentCluster",
+    "IncidentReport",
     "IngestionRun",
     "PrivacyRequest",
     "ReportRecord",
-    "SerialVerification",
-    "ScanHistory",
     "SafetyReport",
+    "ScanHistory",
+    "SerialVerification",
     "ShareToken",
-    "IncidentReport",
-    "IncidentCluster",
-    "AgencyNotification",
 ]

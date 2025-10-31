@@ -6,8 +6,8 @@ from .size_limit import SizeLimitMiddleware
 from .ua_block import UserAgentBlocker
 
 __all__ = [
-    "CorrelationIdMiddleware",
     "AccessLogMiddleware",
+    "CorrelationIdMiddleware",
     "SizeLimitMiddleware",
     "UserAgentBlocker",
 ]

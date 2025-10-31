@@ -256,7 +256,7 @@ class ComprehensiveTestRunner:
         # Read coverage data if available
         try:
             if os.path.exists("coverage.json"):
-                with open("coverage.json", "r") as f:
+                with open("coverage.json") as f:
                     cov_data = json.load(f)
                     total_cov = cov_data.get("totals", {}).get("percent_covered", 0)
                     print(f"\n📊 Code Coverage: {total_cov:.2f}%")

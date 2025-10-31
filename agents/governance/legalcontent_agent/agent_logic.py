@@ -35,7 +35,7 @@ class LegalContentAgentLogic:
         try:
             # Simulate a small I/O delay
             await asyncio.sleep(0.01)
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
             self.logger.info(f"Successfully read document: {safe_name}")
             return content

@@ -20,7 +20,7 @@ def validate_openapi_spec() -> bool | None:
 
     try:
         # Load YAML
-        with open(spec_path, "r") as f:
+        with open(spec_path) as f:
             spec = yaml.safe_load(f)
         print(f"✅ OpenAPI spec loaded from {spec_path}")
 
@@ -73,7 +73,7 @@ def check_endpoints_match() -> bool | None:
     spec_path = Path("docs/api/openapi_v1.yaml")
 
     try:
-        with open(spec_path, "r") as f:
+        with open(spec_path) as f:
             spec = yaml.safe_load(f)
 
         paths = spec.get("paths", {})
@@ -119,7 +119,7 @@ def validate_examples():
     spec_path = Path("docs/api/openapi_v1.yaml")
 
     try:
-        with open(spec_path, "r") as f:
+        with open(spec_path) as f:
             spec = yaml.safe_load(f)
 
         print("\n📝 Validating Examples:")
