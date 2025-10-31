@@ -5,7 +5,7 @@ Tests authentication, authorization, input validation, and security measures.
 
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from fastapi.testclient import TestClient

@@ -1,6 +1,7 @@
 import datetime
 import os
 import sqlite3
+from datetime import timezone
 
 db = os.path.abspath("dev.db")
 scan_id = r"barcode_2c69d21d"

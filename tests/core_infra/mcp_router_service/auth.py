@@ -1,5 +1,7 @@
 # RossNetAgents/core_infra/mcp_router_service/auth.py
 
+import datetime
+from datetime import timezone
 from typing import Any
 
 import jwt  # PyJWT library, install with: pip install pyjwt
@@ -95,7 +97,6 @@ async def validate_message_authentication(message: dict[str, Any]) -> bool:
 # DO NOT use this simplistic generation in production. Use a proper identity provider.
 def generate_test_jwt(agent_id: str) -> str:
     """Generates a simple JWT for testing purposes."""
-    import datetime
 
     payload = {
         "sub": agent_id,
