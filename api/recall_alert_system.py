@@ -19,8 +19,8 @@ from api.notification_endpoints import (
     send_push_notification,
 )
 
-# CROWN SAFE: RecallDB model removed - replaced with HairProductModel
-from core_infra.database import SessionLocal, get_db
+# CROWN SAFE: RecallDB model removed - replaced with HairProductModel (re-enabled for alerts)
+from core_infra.database import RecallDB, SessionLocal, get_db
 from db.models.scan_history import ScanHistory
 
 # from core_infra.celery_app import celery_app  # Commented out - not available in dev environment
@@ -225,7 +225,10 @@ class RecallAlertService:
 
     @classmethod
     async def check_agency_for_new_recalls(
-        cls, agency: str, last_check_time: datetime, db: Session,
+        cls,
+        agency: str,
+        last_check_time: datetime,
+        db: Session,
     ) -> RecallCheckResult:
         """Check a specific agency for new recalls since last check."""
         new_recalls = []

@@ -8,7 +8,6 @@ from contextlib import contextmanager
 from functools import wraps
 from typing import Any
 
-from sqlalchemy import or_
 from sqlalchemy.orm import (
     Query,
     Session,
@@ -209,25 +208,35 @@ class OptimizedQueries:
 
     @staticmethod
     def get_recalls_with_details(db: Session, limit: int = 100):
-        """Get recalls with all details efficiently."""
-        return db.query(Recall).options(selectinload("images"), selectinload("incidents")).limit(limit).all()
+        """Get recalls with all details efficiently.
+
+        NOTE: This is template code - Recall model not implemented yet.
+        """
+        # return db.query(Recall).options(
+        #     selectinload("images"), selectinload("incidents")
+        # ).limit(limit).all()
+        raise NotImplementedError("Recall model not implemented - use RecallDB instead")
 
     @staticmethod
     def search_products_optimized(db: Session, search_term: str, limit: int = 50):
-        """Optimized product search."""
-        # Use index-friendly query
-        return (
-            db.query(Product)
-            .filter(
-                or_(
-                    Product.name.ilike(f"%{search_term}%"),
-                    Product.brand.ilike(f"%{search_term}%"),
-                ),
-            )
-            .options(joinedload("risk_profile"), selectinload("recalls"))
-            .limit(limit)
-            .all()
-        )
+        """Optimized product search.
+
+        NOTE: This is template code - Product model not implemented yet.
+        """
+        # # Use index-friendly query
+        # return (
+        #     db.query(Product)
+        #     .filter(
+        #         or_(
+        #             Product.name.ilike(f"%{search_term}%"),
+        #             Product.brand.ilike(f"%{search_term}%"),
+        #         ),
+        #     )
+        #     .options(joinedload("risk_profile"), selectinload("recalls"))
+        #     .limit(limit)
+        #     .all()
+        # )
+        raise NotImplementedError("Product model not implemented - use HairProductModel instead")
 
 
 @contextmanager
@@ -286,24 +295,27 @@ async def query_optimization_middleware(request, call_next):
 
 # Example optimizations for existing code
 def optimize_recall_search(db: Session, barcode: str):
-    """Optimized recall search."""
+    """Optimized recall search.
+
+    NOTE: This is template code - Recall model not implemented yet.
+    """
     # Original (N+1 problem):
     # recalls = db.query(Recall).filter_by(barcode=barcode).all()
     # for recall in recalls:
     #     print(recall.manufacturer)  # N additional queries
 
     # Optimized (1 query):
-    return (
-        db.query(Recall)
-        .options(
-            joinedload("manufacturer"),
-            selectinload("incidents"),
-            selectinload("images"),
-        )
-        .filter(Recall.barcode == barcode)
-        .all()
-    )
-
+    # return (
+    #     db.query(Recall)
+    #     .options(
+    #         joinedload("manufacturer"),
+    #         selectinload("incidents"),
+    #         selectinload("images"),
+    #     )
+    #     .filter(Recall.barcode == barcode)
+    #     .all()
+    # )
+    raise NotImplementedError("Recall model not implemented - use RecallDB instead")
 
 
 def optimize_user_dashboard(db: Session, user_id: int):
@@ -321,7 +333,6 @@ def optimize_user_dashboard(db: Session, user_id: int):
             .filter(User.id == user_id)
             .first()
         )
-
 
 
 # Batch operations for better performance

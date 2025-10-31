@@ -230,8 +230,6 @@ class TestSecurityAndValidation:
 
     def test_jwt_token_creation(self) -> None:
         """Test JWT token creation."""
-        from datetime import timedelta
-
 
         from jose import jwt
 
@@ -243,8 +241,6 @@ class TestSecurityAndValidation:
 
     def test_jwt_token_decode(self) -> None:
         """Test JWT token decoding."""
-        from datetime import timedelta
-
 
         from jose import jwt
 
@@ -256,8 +252,6 @@ class TestSecurityAndValidation:
 
     def test_jwt_token_expiration(self) -> None:
         """Test JWT token expiration."""
-        from datetime import timedelta
-
 
         from jose import JWTError, jwt
 
@@ -269,8 +263,6 @@ class TestSecurityAndValidation:
 
     def test_jwt_token_invalid_signature(self) -> None:
         """Test JWT token with invalid signature."""
-        from datetime import timedelta
-
 
         from jose import JWTError, jwt
 

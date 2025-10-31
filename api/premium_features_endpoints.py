@@ -19,8 +19,8 @@ from sqlalchemy.orm import Session
 from api.schemas.common import fail, ok
 from core_infra.auth import get_current_active_user
 
-# LEGACY BABY CODE: FamilyMember removed for Crown Safe
-from core_infra.database import User, get_db  # , FamilyMember
+# LEGACY BABY CODE: FamilyMember removed for Crown Safe (re-enabled for premium features)
+from core_infra.database import FamilyMember, User, get_db
 from core_infra.rate_limiter import limiter
 
 logger = logging.getLogger(__name__)
@@ -492,7 +492,8 @@ async def check_pregnancy_safety_dev(payload: PregnancyCheckRequest, db: Session
 
         # Perform pregnancy safety check
         result = pregnancy_agent.check_product_safety(
-            payload.barcode or payload.product_name or "unknown", payload.trimester,
+            payload.barcode or payload.product_name or "unknown",
+            payload.trimester,
         )
 
         return PregnancyCheckResponse(
@@ -531,7 +532,8 @@ async def check_allergy_safety_dev(payload: AllergyCheckRequest, db: Session = D
 
         # Perform allergy safety check
         result = allergy_agent.check_product_for_family(
-            payload.user_id or 0, payload.barcode or payload.product_name or "unknown",
+            payload.user_id or 0,
+            payload.barcode or payload.product_name or "unknown",
         )
 
         return AllergyCheckResponse(

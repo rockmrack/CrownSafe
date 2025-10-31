@@ -317,43 +317,44 @@ async def data_freshness(request: Request, db: Session = Depends(get_db)):
             request,
         )
 
-        # Get recent ingestion runs
-        recent_runs = (
-            db.query(IngestionRun)
-            .filter(IngestionRun.finished_at >= datetime.now(UTC) - timedelta(hours=24))
-            .order_by(IngestionRun.finished_at.desc())
-            .limit(5)
-            .all()
-        )
-
-        recent_ingestions = [
-            {
-                "agency": run.agency,
-                "mode": run.mode,
-                "status": run.status,
-                "finishedAt": run.finished_at.isoformat() if run.finished_at else None,
-                "itemsProcessed": run.total_items_processed,
-            }
-            for run in recent_runs
-        ]
-
-        # Check for running jobs
-        running_jobs = IngestionRunner.get_running_jobs()
-
-        return create_response(
-            {
-                "summary": {
-                    "totalRecalls": total_recalls,
-                    "lastUpdate": latest_update.isoformat() if latest_update else None,
-                    "agencyCount": len(agencies),
-                    "runningJobs": sum(1 for v in running_jobs.values() if v),
-                },
-                "agencies": agencies,
-                "recentIngestions": recent_ingestions,
-                "runningJobs": [k for k, v in running_jobs.items() if v],
-            },
-            request,
-        )
+        # NOTE: Code below is unreachable and kept for reference only
+        # # Get recent ingestion runs
+        # recent_runs = (
+        #     db.query(IngestionRun)
+        #     .filter(IngestionRun.finished_at >= datetime.now(UTC) - timedelta(hours=24))
+        #     .order_by(IngestionRun.finished_at.desc())
+        #     .limit(5)
+        #     .all()
+        # )
+        #
+        # recent_ingestions = [
+        #     {
+        #         "agency": run.agency,
+        #         "mode": run.mode,
+        #         "status": run.status,
+        #         "finishedAt": run.finished_at.isoformat() if run.finished_at else None,
+        #         "itemsProcessed": run.total_items_processed,
+        #     }
+        #     for run in recent_runs
+        # ]
+        #
+        # # Check for running jobs
+        # running_jobs = IngestionRunner.get_running_jobs()
+        #
+        # return create_response(
+        #     {
+        #         "summary": {
+        #             "totalRecalls": total_recalls,
+        #             "lastUpdate": latest_update.isoformat() if latest_update else None,
+        #             "agencyCount": len(agencies),
+        #             "runningJobs": sum(1 for v in running_jobs.values() if v),
+        #         },
+        #         "agencies": agencies,
+        #         "recentIngestions": recent_ingestions,
+        #         "runningJobs": [k for k, v in running_jobs.items() if v],
+        #     },
+        #     request,
+        # )
 
     except Exception as e:
         logger.exception(f"Freshness check failed: {e}")
