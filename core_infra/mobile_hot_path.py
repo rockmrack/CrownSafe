@@ -153,9 +153,6 @@ class MobileHotPath:
         """
         Pre-compute safety responses for popular products
         """
-        start_time = time.time()
-        precomputed = 0
-
         try:
             # REMOVED FOR CROWN SAFE: Recall warmup no longer applicable
             # from core_infra.database import get_db_session, RecallDB

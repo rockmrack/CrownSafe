@@ -151,16 +151,15 @@ class AzureMonitorIntegration:
             return
 
         try:
-            from azure.monitor.opentelemetry.exporter import (
-                AzureMonitorMetricExporter,
-                AzureMonitorTraceExporter,
-            )
+            # Azure Monitor exporters commented out - future integration
+            # from azure.monitor.opentelemetry.exporter import (
+            #     AzureMonitorMetricExporter,
+            #     AzureMonitorTraceExporter,
+            # )
 
-            # Configure trace exporter
-            trace_exporter = AzureMonitorTraceExporter(connection_string=self.connection_string)
-
-            # Configure metrics exporter
-            metrics_exporter = AzureMonitorMetricExporter(connection_string=self.connection_string)
+            # Configure exporters (currently unused - future integration)
+            # trace_exporter = AzureMonitorTraceExporter(connection_string=self.connection_string)
+            # metrics_exporter = AzureMonitorMetricExporter(connection_string=self.connection_string)
 
             logger.info("Azure Monitor integration initialized")
 

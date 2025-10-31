@@ -186,10 +186,7 @@ def generate_scan_id() -> str:
 
 def validate_image_file(file: UploadFile) -> tuple[bool, Optional[str]]:
     """Validate uploaded image file"""
-    # Check file size (max 10MB)
-    MAX_SIZE = 10 * 1024 * 1024
-
-    # Check content type
+    # Check content type (max 10MB size check removed as unused)
     allowed_types = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
     if file.content_type not in allowed_types:
         return False, f"Invalid file type. Allowed: {', '.join(allowed_types)}"

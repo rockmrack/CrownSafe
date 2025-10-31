@@ -132,11 +132,7 @@ class SmartCacheWarmer:
         """
         Pre-warm autocomplete cache for instant typing responses
         """
-        start_time = time.time()
-        successful_warming = 0
-
         try:
-
             # Pre-generate common autocomplete queries
             common_queries = []
 
@@ -166,7 +162,6 @@ class SmartCacheWarmer:
             logger.info("⏭️  Autocomplete cache warming skipped (deprecated for Crown Safe)")
 
             # Return 0 for backward compatibility
-            elapsed = time.time() - start_time
             return 0
 
             # Original autocomplete warming removed:

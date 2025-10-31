@@ -159,8 +159,6 @@ class ProductMonitoringScheduler:
             # 2. Product name + brand case-insensitive search
             # 3. Model number fallback search
 
-            recalls_found = []
-
             return {
                 "product_id": product.id,
                 "recalls_found": 0,
