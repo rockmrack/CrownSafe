@@ -312,8 +312,8 @@ class SecurityLimitsTester:
                         data.get("error", {}).get("code") == "FORBIDDEN",
                         "Blocked UA returns FORBIDDEN error",
                     )
-                except:
-                    pass
+                except (ValueError, json.JSONDecodeError):
+                    pass  # Response not JSON
 
         # Test normal user agent (should pass)
         response = self.session.get(

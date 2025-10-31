@@ -232,7 +232,7 @@ class TestAPIResponsesDeep:
             # Should not crash when trying to parse
             try:
                 r.json()
-            except:
+            except (ValueError, json.JSONDecodeError):
                 # Empty body is ok for OPTIONS
                 assert True
 

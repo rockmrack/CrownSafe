@@ -46,8 +46,8 @@ class TestDatabaseDeep:
         # Cleanup
         try:
             db.close()
-        except:
-            pass
+        except Exception:
+            pass  # Connection might be closed already
 
     def test_database_query_execution(self):
         """Test that simple queries can be executed"""

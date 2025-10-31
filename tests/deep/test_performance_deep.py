@@ -3,6 +3,7 @@ Deep Performance Tests
 Testing response times, throughput, and resource usage
 """
 
+import json
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -103,7 +104,7 @@ class TestPerformanceDeep:
             try:
                 data = r.json()
                 assert isinstance(data, dict)
-            except:
+            except (ValueError, json.JSONDecodeError):
                 pytest.skip("OpenAPI endpoint not available")
 
     def test_startup_time_check(self):

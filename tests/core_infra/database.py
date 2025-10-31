@@ -283,7 +283,7 @@ def get_db_session(commit_on_exit=True, close_on_exit=True):
             print(f"Duplicate key in test mode: {e}")
         else:
             raise
-    except:
+    except Exception:
         db.rollback()
         raise
     finally:
