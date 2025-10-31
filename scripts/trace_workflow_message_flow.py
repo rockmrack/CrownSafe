@@ -51,8 +51,8 @@ for key in workflow_keys[-3:]:
         print(f"     Status: {data.get('status')}")
         print(f"     Created by: {data.get('original_requester_id', 'Unknown')}")
         print(f"     workflow_id field: {data.get('workflow_id', 'MISSING')}")
-    except:
-        pass
+    except (json.JSONDecodeError, TypeError):
+        pass  # Could not parse workflow data
 
 # 4. Monitor for new workflows
 print("\n⏳ Monitoring for new workflows (10 seconds)...")

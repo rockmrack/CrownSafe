@@ -215,8 +215,8 @@ try:
     if response.status_code == 200:
         print("✅ API Documentation accessible at /docs")
         print("   Share endpoints available for inspection")
-except:
-    pass
+except (requests.RequestException, TimeoutError):
+    pass  # Docs endpoint not critical for testing
 
 # Test if router is registered
 try:

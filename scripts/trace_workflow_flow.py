@@ -33,8 +33,8 @@ async def trace_workflow(workflow_id: str):
                         data = json.loads(value)
                         print(f"     Type: {data.get('message_type', 'N/A')}")
                         print(f"     Status: {data.get('status', 'N/A')}")
-                except:
-                    pass
+                except (json.JSONDecodeError, TypeError):
+                    pass  # Could not parse workflow data
         else:
             print(f"❌ No keys found for pattern: {pattern}")
 
@@ -57,8 +57,8 @@ async def trace_workflow(workflow_id: str):
                     if workflow_id in corr_id:
                         print("   ✅ Found message with workflow ID!")
                         print(f"      Type: {msg_data.get('mcp_header', {}).get('message_type')}")
-                except:
-                    pass
+                except (json.JSONDecodeError, TypeError):
+                    pass  # Could not parse message data
 
 
 # Run it

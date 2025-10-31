@@ -107,7 +107,7 @@ async def test_router_success():
         redis_conn = await redis.Redis(host="localhost", port=6379, decode_responses=False)
         await redis_conn.ping()
         print("✅ Redis connected\n")
-    except:
+    except (redis.ConnectionError, redis.TimeoutError):
         print("❌ Redis not running. Start with: redis-server")
         return 1
 

@@ -4,6 +4,7 @@ Verify BabyShield API deployment
 Tests all critical endpoints after deployment
 """
 
+import json
 import sys
 from datetime import datetime
 
@@ -48,7 +49,7 @@ def test_endpoint(method, path, data, name):
                     return f"✅ {name}: {json_data.get('status', 'ok')}"
                 else:
                     return f"✅ {name}: {response.status_code}"
-            except:
+            except (json.JSONDecodeError, ValueError):
                 # Not JSON, but still successful
                 if path == "/docs":
                     return f"✅ {name}: HTML documentation available"

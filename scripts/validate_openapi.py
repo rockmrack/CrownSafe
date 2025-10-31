@@ -143,7 +143,7 @@ def validate_examples():
                                     # Validate it's proper JSON structure
                                     json.dumps(value)
                                     print(f"   ✅ {path} {method.upper()} - {example_name}")
-                                except:
+                                except (TypeError, ValueError):
                                     print(f"   ❌ {path} {method.upper()} - {example_name} (invalid JSON)")
 
         print(f"   Total examples validated: {example_count}")

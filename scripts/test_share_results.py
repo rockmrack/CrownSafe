@@ -226,7 +226,7 @@ def test_share_results():
         try:
             if os.path.exists("test_share_results.db"):
                 os.remove("test_share_results.db")
-        except:
+        except (OSError, PermissionError):
             pass  # Ignore cleanup errors
 
 

@@ -66,8 +66,8 @@ def check_router_health():
                         "workflow_id_value": data.get("workflow_id", "MISSING"),
                     }
                 )
-            except:
-                pass
+            except (json.JSONDecodeError, TypeError):
+                pass  # Could not parse workflow data
 
         for wf in recent_workflows:
             status_icon = "✅" if wf["has_workflow_id"] and wf["workflow_id_value"] != "N/A" else "❌"

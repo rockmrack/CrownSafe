@@ -4,6 +4,7 @@ Test script for Task 4 - Observability features
 Validates correlation IDs, rate limits, metrics, and error handling
 """
 
+import json
 import os
 import sys
 import time
@@ -70,8 +71,8 @@ class ObservabilityTester:
                         data = response.json()
                         has_trace = "traceId" in data or "trace_id" in data
                         self.test(has_trace, f"{method} {path} has traceId in JSON response")
-                    except:
-                        pass
+                    except (json.JSONDecodeError, ValueError):
+                        pass  # Response is not valid JSON
 
             except Exception as e:
                 print(f"   ⚠️ Error testing {path}: {e}")
@@ -110,7 +111,7 @@ class ObservabilityTester:
                 self.test("code" in data.get("error", {}), "404 error has error code")
                 self.test("message" in data.get("error", {}), "404 error has error message")
                 self.test("traceId" in data, "404 error has traceId")
-            except:
+            except (json.JSONDecodeError, ValueError):
                 self.test(False, "404 response is valid JSON")
 
         # Test validation error (422)
@@ -123,7 +124,7 @@ class ObservabilityTester:
                     data.get("error", {}).get("code") in ["VALIDATION_ERROR", "INVALID_PARAMETERS", "BAD_REQUEST"],
                     "Validation error has appropriate error code",
                 )
-            except:
+            except (json.JSONDecodeError, ValueError):
                 self.test(False, "Validation error response is valid JSON")
 
         return all(self.results[-7:]) if len(self.results) >= 7 else False

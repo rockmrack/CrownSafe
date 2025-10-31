@@ -436,7 +436,7 @@ def test_quarterly_nursery_report():
         try:
             if os.path.exists("test_nursery_report.db"):
                 os.remove("test_nursery_report.db")
-        except:
+        except (OSError, PermissionError):
             pass  # Ignore cleanup errors
 
 
