@@ -389,8 +389,8 @@ async def recognize_product_from_image(
         if image_size_kb > 10240:  # 10MB limit
             raise HTTPException(status_code=400, detail="Image too large (max 10MB)")
 
-        # Generate image ID
-        image_hash = hashlib.md5(image_data).hexdigest()
+        # Generate image ID (MD5 for non-security ID generation only)
+        image_hash = hashlib.md5(image_data, usedforsecurity=False).hexdigest()
         image_id = f"img_{image_hash[:12]}_{int(datetime.now().timestamp())}"
 
         # Use real visual recognition pipeline

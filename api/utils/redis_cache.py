@@ -78,7 +78,7 @@ class RedisSearchCache:
         # Add pagination info if present
         if after_tuple:
             after_str = f"{after_tuple[0]:.6f}:{after_tuple[1]}:{after_tuple[2]}"
-            after_hash = hashlib.md5(after_str.encode()).hexdigest()[:8]
+            after_hash = hashlib.md5(after_str.encode(), usedforsecurity=False).hexdigest()[:8]
             components.append(after_hash)
 
         return ":".join(components)

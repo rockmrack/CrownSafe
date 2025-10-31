@@ -488,7 +488,7 @@ async def get_ticket_status(ticket_number: int):
     # Mock response for now
 
     return TicketStatus(
-        ticket_id=f"TKT-{hashlib.md5(str(ticket_number).encode()).hexdigest()[:8].upper()}",
+        ticket_id=f"TKT-{hashlib.md5(str(ticket_number).encode(), usedforsecurity=False).hexdigest()[:8].upper()}",
         ticket_number=ticket_number,
         status="in_progress",
         priority=Priority.P2_MEDIUM,
