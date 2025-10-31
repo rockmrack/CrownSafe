@@ -15,13 +15,13 @@ from textwrap import dedent
 from typing import Any, Dict, Optional, Tuple, Union, cast
 from urllib.parse import quote
 
-import boto3
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy.orm import Session
 
 from api.schemas.common import ApiResponse
+from core_infra.azure_storage import get_azure_storage_client
 from core_infra.database import get_db
 from db.models.scan_history import SafetyReport, ScanHistory
 from db.models.share_token import ShareToken
@@ -31,9 +31,9 @@ logger = logging.getLogger(__name__)
 # Create router
 share_router = APIRouter(prefix="/api/v1/share", tags=["share-results"])
 
-# S3 Configuration
-S3_BUCKET = os.getenv("S3_BUCKET", "crownsafe-images")
-s3_client = boto3.client("s3", region_name=os.getenv("S3_BUCKET_REGION", "us-east-1"))
+# Azure Blob Storage Configuration
+STORAGE_CONTAINER = os.getenv("AZURE_STORAGE_CONTAINER", "crownsafe-images")
+storage_client = get_azure_storage_client(container_name=STORAGE_CONTAINER)
 
 
 def _is_uuid(s: str) -> bool:
@@ -45,8 +45,8 @@ def _is_uuid(s: str) -> bool:
         return False
 
 
-def _guess_s3_key(user_id: int, report_uuid: str, content_type: str) -> Optional[str]:
-    """Guess S3 key for report by trying common layouts"""
+def _guess_blob_key(user_id: int, report_uuid: str, content_type: str) -> Optional[str]:
+    """Guess Azure Blob key for report by trying common layouts"""
     now = datetime.now(timezone.utc)
     year = now.strftime("%Y")
     month = now.strftime("%m")
@@ -62,13 +62,13 @@ def _guess_s3_key(user_id: int, report_uuid: str, content_type: str) -> Optional
 
     for key in candidates:
         try:
-            s3_client.head_object(Bucket=S3_BUCKET, Key=key)
-            logger.info(f"Found S3 object at key: {key}")
+            storage_client.head_object(blob_name=key)
+            logger.info(f"Found Azure Blob at key: {key}")
             return key
         except Exception:
             continue
 
-    logger.warning(f"No S3 object found for UUID {report_uuid} in any candidate path")
+    logger.warning(f"No Azure Blob found for UUID {report_uuid} in any candidate path")
     return None
 
 
@@ -81,20 +81,20 @@ def _build_share_urls(base_url: str, token: str) -> Tuple[str, str]:
     return share_url, qr_code_url
 
 
-def create_share_token_for_s3(
-    user_id: int, content_type: str, content_ref: str, s3_key: str, ttl_hours: int = 24
+def create_share_token_for_azure_blob(
+    user_id: int, content_type: str, content_ref: str, blob_key: str, ttl_hours: int = 24
 ) -> Tuple[str, ShareToken]:
-    """Create share token for S3-based content without database record"""
+    """Create share token for Azure Blob Storage-based content without database record"""
     token = ShareToken.generate_token()
     expires_at = datetime.utcnow() + timedelta(hours=ttl_hours)
 
-    # Create content snapshot for S3-based report
+    # Create content snapshot for Azure Blob Storage-based report
     content_snapshot = {
         "report_id": content_ref,
         "report_type": content_type,
         "pdf_available": True,
-        "s3_key": s3_key,
-        "created_via": "s3_uuid",
+        "blob_key": blob_key,
+        "created_via": "azure_blob_uuid",
     }
 
     # Create share token record
@@ -260,28 +260,28 @@ async def create_share_link(
     - Secure token generation
     """
     try:
-        # UUID/S3 branch - handle reports that exist in S3 but not in database
+        # UUID/Azure Blob branch - handle reports that exist in Azure Blob Storage but not in database
         if isinstance(request.content_id, str) and _is_uuid(request.content_id):
             logger.info(f"Processing UUID-based share request: {request.content_id}")
 
-            # Try to find the S3 object
-            s3_key = _guess_s3_key(
+            # Try to find the Azure Blob
+            blob_key = _guess_blob_key(
                 request.user_id,
                 request.content_id,
                 request.content_type or "safety_summary",
             )
-            if not s3_key:
+            if not blob_key:
                 raise HTTPException(
                     status_code=404,
                     detail=f"Report not found for UUID: {request.content_id}",
                 )
 
-            # Create share token for S3-based content
-            token, share_token = create_share_token_for_s3(
+            # Create share token for Azure Blob Storage-based content
+            token, share_token = create_share_token_for_azure_blob(
                 user_id=request.user_id,
                 content_type=request.content_type or "safety_summary",
                 content_ref=request.content_id,
-                s3_key=s3_key,
+                blob_key=blob_key,
                 ttl_hours=request.expires_in_hours or 24,
             )
 
@@ -366,25 +366,25 @@ async def create_share_link(
 
             # Check if it's a UUID (new report format)
             if _is_uuid(report_uuid):
-                # UUID path - check if S3 object exists
+                # UUID path - check if Azure Blob exists
                 try:
-                    s3_key = _guess_s3_key(request.user_id, report_uuid, request.content_type)
+                    blob_key = _guess_blob_key(request.user_id, report_uuid, request.content_type)
 
-                    # Check if S3 object exists
-                    s3_client.head_object(Bucket=S3_BUCKET, Key=s3_key)
+                    # Check if Azure Blob exists
+                    storage_client.head_object(blob_name=blob_key)
 
                     # Create content snapshot for UUID-based report
                     content_snapshot = {
                         "report_id": report_uuid,
                         "report_type": request.content_type,
                         "pdf_available": True,
-                        "s3_key": s3_key,
+                        "blob_key": blob_key,
                         "created_via": "uuid",
                     }
                     content_id_to_store = report_uuid
 
                 except Exception as e:
-                    logger.warning(f"S3 object not found for report UUID {report_uuid}: {e}")
+                    logger.warning(f"Azure Blob not found for report UUID {report_uuid}: {e}")
                     raise HTTPException(
                         status_code=404,
                         detail=(
@@ -429,7 +429,7 @@ async def create_share_link(
                         "unique_products": report.unique_products,
                         "recalls_found": report.recalls_found,
                         "high_risk_products": report.high_risk_products,
-                        "pdf_available": bool(report.pdf_path or report.s3_url),
+                        "pdf_available": bool(report.pdf_path or report.blob_url),
                         "created_via": "database",
                     }
                     content_id_to_store = str(numeric_id)

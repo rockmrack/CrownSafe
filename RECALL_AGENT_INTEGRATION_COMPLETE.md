@@ -183,15 +183,15 @@ def is_crown_safe_recall(recall_title: str, recall_description: str, product_cat
 
 ### Sample Filtering Scenarios
 
-| Recall Title | Category | Filtered? | Reason |
-|-------------|----------|-----------|--------|
-| "Hair Relaxer Chemical Burn" | Hair Treatment | ✅ **INCLUDED** | Matches "hair" keyword + "relaxer" category |
-| "Shampoo Contamination Alert" | Shampoo | ✅ **INCLUDED** | Matches "shampoo" category |
-| "Baby Crib Recall - Entrapment" | Nursery Furniture | ❌ **EXCLUDED** | Matches "crib" exclude keyword |
-| "Baby Hair Oil Recall" | Hair Oil | ✅ **INCLUDED** | Matches "hair oil" category (not "baby bottle") |
-| "Car Seat Safety Alert" | Auto Safety | ❌ **EXCLUDED** | Matches "car seat" exclude keyword |
-| "Edge Control Hair Loss" | Styling Product | ✅ **INCLUDED** | Matches "edge control" category + "hair" keyword |
-| "DevaCurl Lawsuit - Hair Damage" | Hair Product | ✅ **INCLUDED** | Matches "hair" keyword |
+| Recall Title                     | Category          | Filtered?      | Reason                                           |
+| -------------------------------- | ----------------- | -------------- | ------------------------------------------------ |
+| "Hair Relaxer Chemical Burn"     | Hair Treatment    | ✅ **INCLUDED** | Matches "hair" keyword + "relaxer" category      |
+| "Shampoo Contamination Alert"    | Shampoo           | ✅ **INCLUDED** | Matches "shampoo" category                       |
+| "Baby Crib Recall - Entrapment"  | Nursery Furniture | ❌ **EXCLUDED** | Matches "crib" exclude keyword                   |
+| "Baby Hair Oil Recall"           | Hair Oil          | ✅ **INCLUDED** | Matches "hair oil" category (not "baby bottle")  |
+| "Car Seat Safety Alert"          | Auto Safety       | ❌ **EXCLUDED** | Matches "car seat" exclude keyword               |
+| "Edge Control Hair Loss"         | Styling Product   | ✅ **INCLUDED** | Matches "edge control" category + "hair" keyword |
+| "DevaCurl Lawsuit - Hair Damage" | Hair Product      | ✅ **INCLUDED** | Matches "hair" keyword                           |
 
 ### Estimated Filtering Ratio
 
@@ -436,18 +436,18 @@ async def test_end_to_end_recall_workflow():
 
 ### Completed Tasks (9/10 = 90%)
 
-| Task | Status | Completion |
-|------|--------|------------|
-| Agent Cleanup | ✅ Complete | 100% |
-| Hair Profile Endpoints | ✅ Complete | 100% |
-| Ingredient Explainer | ✅ Complete | 100% |
-| Cabinet Audit Endpoint | ✅ Complete | 100% |
-| Routine Check Endpoint | ✅ Complete | 100% |
-| **Recall Agent Integration** | ✅ **Complete** | **100%** |
-| Crown Score Engine | ✅ Already Complete | 100% |
-| Database Models | ✅ Already Complete | 100% |
-| Data Population | ⏳ Pending | 0% |
-| Ingredient Content | ⏳ Pending | 0% |
+| Task                         | Status             | Completion |
+| ---------------------------- | ------------------ | ---------- |
+| Agent Cleanup                | ✅ Complete         | 100%       |
+| Hair Profile Endpoints       | ✅ Complete         | 100%       |
+| Ingredient Explainer         | ✅ Complete         | 100%       |
+| Cabinet Audit Endpoint       | ✅ Complete         | 100%       |
+| Routine Check Endpoint       | ✅ Complete         | 100%       |
+| **Recall Agent Integration** | ✅ **Complete**     | **100%**   |
+| Crown Score Engine           | ✅ Already Complete | 100%       |
+| Database Models              | ✅ Already Complete | 100%       |
+| Data Population              | ⏳ Pending          | 0%         |
+| Ingredient Content           | ⏳ Pending          | 0%         |
 
 ### Updated Progress: **90% Complete** (was 80%)
 
