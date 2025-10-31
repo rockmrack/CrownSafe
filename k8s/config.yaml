@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: crownsafe
+  labels:
+    name: crownsafe
+    environment: production
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: crownsafe-config
+  namespace: crownsafe
+data:
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"
+  API_PORT: "8001"
+  ALLOWED_ORIGINS: "https://crownsafe.cureviax.ai,https://app.crownsafe.com"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: crownsafe-secrets
+  namespace: crownsafe
+type: Opaque
+stringData:
+  database-url: "REPLACE_WITH_ACTUAL_DATABASE_URL"
+  redis-url: "REPLACE_WITH_ACTUAL_REDIS_URL"
+  azure-storage-connection-string: "REPLACE_WITH_ACTUAL_AZURE_STORAGE_CONNECTION_STRING"
+  secret-key: "REPLACE_WITH_ACTUAL_SECRET_KEY"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: acr-secret
+  namespace: crownsafe
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: REPLACE_WITH_BASE64_ENCODED_DOCKER_CONFIG
