@@ -357,7 +357,9 @@ async def scan_barcode(
         device_id = device_id or request.device_id
 
         # Generate trace ID (MD5 for non-security ID generation only)
-        trace_id = f"barcode_{hashlib.md5(f'{request.barcode}{datetime.now()}'.encode(), usedforsecurity=False).hexdigest()[:8]}"
+        trace_data = f"{request.barcode}{datetime.now()}".encode()
+        trace_hash = hashlib.md5(trace_data, usedforsecurity=False).hexdigest()[:8]
+        trace_id = f"barcode_{trace_hash}"
     except Exception as e:
         logger.error(f"Error initializing barcode scan: {str(e)}")
         # Return error response instead of raising 500

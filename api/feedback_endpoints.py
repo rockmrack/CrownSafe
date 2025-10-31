@@ -487,8 +487,11 @@ async def get_ticket_status(ticket_number: int):
     # In production, this would query the database
     # Mock response for now
 
+    ticket_hash = hashlib.md5(
+        str(ticket_number).encode(), usedforsecurity=False
+    ).hexdigest()[:8].upper()
     return TicketStatus(
-        ticket_id=f"TKT-{hashlib.md5(str(ticket_number).encode(), usedforsecurity=False).hexdigest()[:8].upper()}",
+        ticket_id=f"TKT-{ticket_hash}",
         ticket_number=ticket_number,
         status="in_progress",
         priority=Priority.P2_MEDIUM,
