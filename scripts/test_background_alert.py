@@ -13,7 +13,7 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 # ─── 1) Import the Celery task to test ─────────────────────────────────────────
-from core_infra.tasks import check_for_new_recalls_and_alert
+from core_infra.tasks import check_for_new_recalls_and_alert  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)

@@ -150,7 +150,7 @@ def get_document_content(doc_id: str, format: str = "markdown") -> tuple[str, st
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>{doc_info["title"]}</title>
             <style>
-                body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+                body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;  # noqa: E501
                        line-height: 1.6; padding: 20px; max-width: 800px; margin: 0 auto; }}
                 h1, h2, h3 {{ color: #333; }}
                 table {{ border-collapse: collapse; width: 100%; margin: 20px 0; }}
@@ -208,9 +208,9 @@ We collect minimal data necessary to provide our service.
 - Export your data
 
 ## Account deletion & data retention
-You can delete your account in the app: **Settings → Account → Delete my account**. This permanently removes your account and personal data from our systems. Limited records required for legal, security or fraud-prevention purposes (e.g., payment or abuse logs) may be retained as permitted by law and are purged on a fixed schedule.
+You can delete your account in the app: **Settings → Account → Delete my account**. This permanently removes your account and personal data from our systems. Limited records required for legal, security or fraud-prevention purposes (e.g., payment or abuse logs) may be retained as permitted by law and are purged on a fixed schedule.  # noqa: E501
 
-If you cannot access the app, you can request deletion via email at [support@babyshield.cureviax.com](mailto:support@babyshield.cureviax.com). We may need to verify your identity before processing your request.
+If you cannot access the app, you can request deletion via email at [support@babyshield.cureviax.com](mailto:support@babyshield.cureviax.com). We may need to verify your identity before processing your request.  # noqa: E501
 
 You may export your data in the app before deletion: `Settings → Account → Export my data`.
 

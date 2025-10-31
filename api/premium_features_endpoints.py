@@ -640,7 +640,7 @@ async def comprehensive_safety_check(request: CombinedSafetyCheckRequest, db: Se
 
                 for alert in allergy_result.get("alerts", []):
                     response["recommendations"].append(
-                        f"ALLERGY WARNING for {alert['member_name']}: Contains {', '.join(alert.get('found_allergens', []))}"
+                        f"ALLERGY WARNING for {alert['member_name']}: Contains {', '.join(alert.get('found_allergens', []))}"  # noqa: E501
                     )
 
         # Add general recommendation

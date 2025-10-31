@@ -12,8 +12,8 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 try:
-    import openai
-    from openai import OpenAI
+    import openai  # noqa: F401
+    from openai import OpenAI  # noqa: F401
 
     OPENAI_AVAILABLE = True
 except ImportError:
@@ -491,7 +491,7 @@ class EnhancedMemoryManager(MemoryManager):
                     pattern = next(p for p in self.temporal_patterns.values() if p.entity == drug)
                     if pattern.confidence_score > 0.7:
                         insights.append(
-                            f"{drug}: {pattern.trend_direction} research trend (confidence: {pattern.confidence_score:.2f})"
+                            f"{drug}: {pattern.trend_direction} research trend (confidence: {pattern.confidence_score:.2f})"  # noqa: E501
                         )
 
             return insights
@@ -533,7 +533,7 @@ class EnhancedMemoryManager(MemoryManager):
             contradiction_results["resolution_suggestions"] = await self._suggest_contradiction_resolutions()
 
             self.logger.info(
-                f"Contradiction detection completed: {len(contradiction_results['contradictions_found'])} contradictions found"
+                f"Contradiction detection completed: {len(contradiction_results['contradictions_found'])} contradictions found"  # noqa: E501
             )
             return contradiction_results
 
@@ -889,7 +889,7 @@ class EnhancedMemoryManager(MemoryManager):
                 if len(gaps) >= 2:  # Multiple entities have this gap
                     avg_priority = sum(g.priority_score for g in gaps) / len(gaps)
                     priority_areas.append(
-                        f"{gap_type.replace('_', ' ').title()}: {len(gaps)} entities affected (avg priority: {avg_priority:.2f})"
+                        f"{gap_type.replace('_', ' ').title()}: {len(gaps)} entities affected (avg priority: {avg_priority:.2f})"  # noqa: E501
                     )
 
             # Add high-priority individual gaps
@@ -965,7 +965,7 @@ class EnhancedMemoryManager(MemoryManager):
             insight_results["recommendations"] = await self._generate_insight_recommendations()
 
             self.logger.info(
-                f"Cross-workflow insight generation completed: {len(insight_results['insights_generated'])} insights generated"
+                f"Cross-workflow insight generation completed: {len(insight_results['insights_generated'])} insights generated"  # noqa: E501
             )
             return insight_results
 
@@ -997,7 +997,7 @@ class EnhancedMemoryManager(MemoryManager):
                         insight_id=f"sglt2_class_outcomes_{datetime.now().strftime('%Y%m%d')}",
                         insight_type="drug_class_pattern",
                         entities_involved=sglt2_drugs,
-                        insight_description=f"SGLT2 inhibitors show consistent patterns in: {', '.join(common_outcomes)}",
+                        insight_description=f"SGLT2 inhibitors show consistent patterns in: {', '.join(common_outcomes)}",  # noqa: E501
                         confidence_score=0.8,
                         supporting_workflows=[f"workflow_{drug}" for drug in sglt2_drugs],
                         actionable_recommendations=[
@@ -1286,7 +1286,7 @@ class EnhancedMemoryManager(MemoryManager):
             )
 
             self.logger.info(
-                f"Research strategy determined: {strategy_analysis['strategy']} (confidence: {strategy_analysis['confidence']:.2f})"
+                f"Research strategy determined: {strategy_analysis['strategy']} (confidence: {strategy_analysis['confidence']:.2f})"  # noqa: E501
             )
 
             # STEP 3: Generate specific recommendations based on strategy
@@ -1460,7 +1460,7 @@ class EnhancedMemoryManager(MemoryManager):
                         }
 
                         self.logger.debug(
-                            f"{strategy['name']}: {len(strategy_matches)} matches, best distance: {evidence_results['search_strategies'][strategy['name']]['best_distance']:.3f}"
+                            f"{strategy['name']}: {len(strategy_matches)} matches, best distance: {evidence_results['search_strategies'][strategy['name']]['best_distance']:.3f}"  # noqa: E501
                         )
 
                 except Exception as e:

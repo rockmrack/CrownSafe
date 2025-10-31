@@ -647,7 +647,7 @@ def _generate_safety_message(
 
     # Check confidence
     if job.confidence_level == ConfidenceLevel.LOW and not always_qualified:
-        return "Image quality too low for accurate analysis. Please take a clearer photo or enter product details manually."
+        return "Image quality too low for accurate analysis. Please take a clearer photo or enter product details manually."  # noqa: E501
 
     # Build message - NEVER say "safe"
     product_desc = extraction.product_name or "this product"

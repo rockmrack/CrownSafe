@@ -45,7 +45,7 @@ def create_app(
         docs_url="/docs" if enable_docs else None,
         redoc_url="/redoc" if enable_docs else None,
         openapi_url="/openapi.json" if enable_docs else None,
-        generate_unique_id_function=lambda route: f"{route.name}_{route.path.replace('/', '_').replace('{', '').replace('}', '').strip('_')}",
+        generate_unique_id_function=lambda route: f"{route.name}_{route.path.replace('/', '_').replace('{', '').replace('}', '').strip('_')}",  # noqa: E501
     )
 
     # Configure logging

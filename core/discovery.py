@@ -10,8 +10,8 @@ from typing import Any, Dict, Optional, Set
 
 print(f"Loading discovery.py (Step 77 Version - Fixed): {__file__}")
 
-from .state import get_connection
-from .utils import create_mcp_error_response, create_mcp_response, safe_json_serialize
+from .state import get_connection  # noqa: E402
+from .utils import create_mcp_error_response, create_mcp_response, safe_json_serialize  # noqa: E402
 
 discovery_logger = logging.getLogger("MCP_DiscoveryService")
 agent_registry: Dict[str, Dict[str, Any]] = {}
@@ -69,7 +69,7 @@ def _get_agent_capabilities(agent_info: Dict[str, Any]) -> Set[str]:
                 )
     elif agent_caps_list:
         discovery_logger.warning(
-            f"  Invalid capabilities format for '{agent_id_for_log}': Expected list, got {type(agent_caps_list)}. Value: {agent_caps_list}"
+            f"  Invalid capabilities format for '{agent_id_for_log}': Expected list, got {type(agent_caps_list)}. Value: {agent_caps_list}"  # noqa: E501
         )
 
     discovery_logger.debug(f"  Extracted capabilities for '{agent_id_for_log}': {capabilities}")
@@ -150,7 +150,7 @@ async def handle_discovery_message(message: Dict[str, Any], sender_id: str):
                         results_in_payload = response_message["payload"].get("results", [])
                         results_count = len(results_in_payload) if isinstance(results_in_payload, list) else -1
                         discovery_logger.info(
-                            f"Final check before sending DISCOVERY_RESPONSE (CorrID: {correlation_id}): status='{status_in_payload}', results_count={results_count}"
+                            f"Final check before sending DISCOVERY_RESPONSE (CorrID: {correlation_id}): status='{status_in_payload}', results_count={results_count}"  # noqa: E501
                         )
 
                 response_to_send = copy.deepcopy(response_message)
@@ -186,7 +186,7 @@ async def handle_registration(
     agent_id_from_payload = payload.get("agent_id")
     if not agent_id_from_payload or not isinstance(agent_id_from_payload, str) or agent_id_from_payload != sender_id:
         discovery_logger.warning(
-            f"Registration failed for sender '{sender_id}' (CorrID: {correlation_id}): Invalid/mismatched agent_id '{agent_id_from_payload}' in payload."
+            f"Registration failed for sender '{sender_id}' (CorrID: {correlation_id}): Invalid/mismatched agent_id '{agent_id_from_payload}' in payload."  # noqa: E501
         )
         error_payload = {
             "error_code": "E002",
@@ -198,7 +198,7 @@ async def handle_registration(
     missing_fields = [field for field in required_fields if field not in payload]
     if missing_fields:
         discovery_logger.warning(
-            f"Registration failed for '{agent_id_from_payload}' (CorrID: {correlation_id}): Incomplete payload. Missing: {missing_fields}"
+            f"Registration failed for '{agent_id_from_payload}' (CorrID: {correlation_id}): Incomplete payload. Missing: {missing_fields}"  # noqa: E501
         )
         error_payload = {
             "error_code": "E003",
@@ -209,7 +209,7 @@ async def handle_registration(
     capabilities_list = payload.get("capabilities", [])
     if not isinstance(capabilities_list, list):
         discovery_logger.warning(
-            f"Registration failed for '{agent_id_from_payload}' (CorrID: {correlation_id}): Invalid 'capabilities' format (expected list)."
+            f"Registration failed for '{agent_id_from_payload}' (CorrID: {correlation_id}): Invalid 'capabilities' format (expected list)."  # noqa: E501
         )
         error_payload = {
             "error_code": "E003",
@@ -226,7 +226,7 @@ async def handle_registration(
 
     registered_caps = _get_agent_capabilities(registration_info)
     discovery_logger.info(
-        f"Agent '{agent_id_from_payload}' (Type: {registration_info.get('agent_type')}) registered/updated. Status: '{registration_info.get('status')}'. Caps: {registered_caps}. Total Agents: {current_registry_size}. (CorrID: {correlation_id})"
+        f"Agent '{agent_id_from_payload}' (Type: {registration_info.get('agent_type')}) registered/updated. Status: '{registration_info.get('status')}'. Caps: {registered_caps}. Total Agents: {current_registry_size}. (CorrID: {correlation_id})"  # noqa: E501
     )
 
     ack_payload = {"status": "registered", "agent_id": agent_id_from_payload}
@@ -243,7 +243,7 @@ async def handle_query(payload: Dict[str, Any], sender_id: str, correlation_id: 
 
     if not query_by_agent_id_val and not query_by_capability_list_val:
         discovery_logger.warning(
-            f"Invalid query from '{sender_id}' (CorrID: {correlation_id}): No query parameters provided (query_by_agent_id or query_by_capability_list)."
+            f"Invalid query from '{sender_id}' (CorrID: {correlation_id}): No query parameters provided (query_by_agent_id or query_by_capability_list)."  # noqa: E501
         )
         error_payload = {
             "error_code": "E101",
@@ -270,7 +270,7 @@ async def handle_query(payload: Dict[str, Any], sender_id: str, correlation_id: 
                 is_connected = get_connection(query_by_agent_id_val) is not None
                 agent_status = (agent_info.get("status", "")).lower()
                 discovery_logger.debug(
-                    f"  Agent '{query_by_agent_id_val}': Connected={is_connected}, Status='{agent_status}' (Required: '{required_status_val}')"
+                    f"  Agent '{query_by_agent_id_val}': Connected={is_connected}, Status='{agent_status}' (Required: '{required_status_val}')"  # noqa: E501
                 )
                 if (required_status_val == "any" or agent_status == required_status_val) and is_connected:
                     # Fixed variable names in dictionary comprehension
@@ -300,7 +300,7 @@ async def handle_query(payload: Dict[str, Any], sender_id: str, correlation_id: 
                     required_caps_set.add(_normalize_capability_name(cap_str_item))
                 else:
                     discovery_logger.warning(
-                        f"  Non-string capability in query_by_capability_list: {cap_str_item} (CorrID: {correlation_id}). Skipping."
+                        f"  Non-string capability in query_by_capability_list: {cap_str_item} (CorrID: {correlation_id}). Skipping."  # noqa: E501
                     )
 
             if not required_caps_set:
@@ -349,7 +349,7 @@ async def handle_query(payload: Dict[str, Any], sender_id: str, correlation_id: 
 
         status_str = "success" if query_results else "not_found"
         discovery_logger.info(
-            f"Query from '{sender_id}' (CorrID: {correlation_id}) processing complete. Final Status: '{status_str}'. Found {len(query_results)} agents."
+            f"Query from '{sender_id}' (CorrID: {correlation_id}) processing complete. Final Status: '{status_str}'. Found {len(query_results)} agents."  # noqa: E501
         )
 
         response_payload = {

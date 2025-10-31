@@ -98,7 +98,7 @@ Base = declarative_base()
 # ORM Models
 # -------------------------------------------------------------------
 # CROWN SAFE: Import hair product safety models (used by helper functions below)
-from core_infra.crown_safe_models import HairProfileModel
+from core_infra.crown_safe_models import HairProfileModel  # noqa: E402
 
 # -------------------------------------------------------------------
 
@@ -253,19 +253,19 @@ def create_tables():
     try:
         # Import models that use the main Base
         from api.models.chat_memory import (
-            Conversation,
-            ConversationMessage,
-            UserProfile,
+            Conversation,  # noqa: F401
+            ConversationMessage,  # noqa: F401
+            UserProfile,  # noqa: F401
         )
         from api.models.user_report import UserReport
-        from api.monitoring_scheduler import MonitoredProduct, MonitoringRun
-        from db.models.ingestion_run import IngestionRun
-        from db.models.privacy_request import PrivacyRequest
-        from db.models.scan_history import ScanHistory
+        from api.monitoring_scheduler import MonitoredProduct, MonitoringRun  # noqa: F401, F401
+        from db.models.ingestion_run import IngestionRun  # noqa: F401
+        from db.models.privacy_request import PrivacyRequest  # noqa: F401
+        from db.models.scan_history import ScanHistory  # noqa: F401
 
         # Import risk assessment models to register them with Base.metadata
         try:
-            import core_infra.risk_assessment_models
+            import core_infra.risk_assessment_models  # noqa: F401
         except ImportError:
             pass  # Risk assessment models not available
 

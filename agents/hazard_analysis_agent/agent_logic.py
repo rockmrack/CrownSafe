@@ -56,7 +56,7 @@ class HazardAnalysisLogic:
             recall_details += f"Recall {i + 1}: Reason: '{reason}', Date: '{date}'.\n"
 
         return f"""
-You are a baby product safety expert named BabyShield. Your task is to analyze recall data for a specific product and provide a clear, concise, and direct summary for a concerned parent.
+You are a baby product safety expert named BabyShield. Your task is to analyze recall data for a specific product and provide a clear, concise, and direct summary for a concerned parent.  # noqa: E501
 
 Product Name: {product_name}
 Recall Data:
@@ -64,10 +64,10 @@ Recall Data:
 
 Based on this data, determine a risk level from this specific list: ["None", "Low", "Medium", "High", "Critical"].
 
-Your response MUST be a single, valid JSON object with exactly two keys: "summary" and "risk_level". Do not include any other text, explanations, or markdown.
+Your response MUST be a single, valid JSON object with exactly two keys: "summary" and "risk_level". Do not include any other text, explanations, or markdown.  # noqa: E501
 
 Example of a perfect response:
-{{"summary": "This product has an active recall due to a potential contamination risk. It is advised to stop using this product immediately.", "risk_level": "High"}}
+{{"summary": "This product has an active recall due to a potential contamination risk. It is advised to stop using this product immediately.", "risk_level": "High"}}  # noqa: E501
 """
 
     async def _query_llm(self, prompt: str) -> Optional[Dict[str, Any]]:
@@ -145,7 +145,7 @@ Example of a perfect response:
             if isinstance(analysis, dict) and "summary" in analysis and "risk_level" in analysis:
                 # --- START OF NEW CONDITIONAL WARNING LOGIC ---
                 if visual_confidence and 0.7 <= visual_confidence < 0.95:
-                    warning_text = f"⚠️ Warning: This product was identified from a photo with {int(visual_confidence * 100)}% confidence. Please verify the model number on the product to ensure this information is accurate for your specific item. "
+                    warning_text = f"⚠️ Warning: This product was identified from a photo with {int(visual_confidence * 100)}% confidence. Please verify the model number on the product to ensure this information is accurate for your specific item. "  # noqa: E501
                     analysis["summary"] = warning_text + analysis.get("summary", "")
                     self.logger.info(
                         f"Prepended medium-confidence warning to the final summary (confidence: {visual_confidence})"

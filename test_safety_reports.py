@@ -28,12 +28,12 @@ print("  2. Quarterly Nursery Report")
 print("  3. Report Unsafe Product")
 print()
 
-from fastapi.testclient import TestClient
-from sqlalchemy import desc, func
+from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy import desc, func  # noqa: E402
 
-from api.main_crownsafe import app
-from core_infra.database import SessionLocal, engine
-from core_infra.enhanced_database_schema import EnhancedRecallDB
+from api.main_crownsafe import app  # noqa: E402
+from core_infra.database import SessionLocal, engine  # noqa: E402
+from core_infra.enhanced_database_schema import EnhancedRecallDB  # noqa: E402
 
 # Verify database connection
 print("=" * 80)
@@ -158,7 +158,7 @@ print("4. Testing Report Generation API:")
 print("   Checking if user scan history tracking works...")
 
 # Check if there's a user scans/history table or endpoint
-from sqlalchemy import inspect
+from sqlalchemy import inspect  # noqa: E402
 
 inspector = inspect(db.bind)
 tables = inspector.get_table_names()

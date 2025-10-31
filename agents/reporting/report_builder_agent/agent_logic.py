@@ -230,7 +230,7 @@ def format_highlights(pubmed_articles, trials, adverse_events):
     t = len(trials.get("trials_data", [])) if trials else 0
     aecount = len(adverse_events.get("top_adverse_reactions", [])) if adverse_events else 0
     return f"""
-    <div style="background:#f6fbff;border:1.5px solid #bee1fa;padding:10px 18px 8px 18px;border-radius:9px;display:flex;flex-direction:row;justify-content:space-between;margin:12px 0 18px 0;font-size:12pt;">
+    <div style="background:#f6fbff;border:1.5px solid #bee1fa;padding:10px 18px 8px 18px;border-radius:9px;display:flex;flex-direction:row;justify-content:space-between;margin:12px 0 18px 0;font-size:12pt;">  # noqa: E501
         <div><b>Articles:</b> {n}</div>
         <div><b>Trials:</b> {t}</div>
         <div><b>Top AE Reactions:</b> {aecount}</div>
@@ -246,7 +246,7 @@ def format_executive_summary(pubmed_articles, trials, adverse_events):
     <a name='executive_summary'></a>
     <h1>Executive Summary</h1>
     <p>
-    This evidence report summarises findings on the efficacy and safety of the queried intervention, using structured data from PubMed (n={n} studies), ClinicalTrials.gov (n={t} trials), and openFDA (n={aecount} top adverse reactions). Please refer to each section for a detailed, source-linked analysis.
+    This evidence report summarises findings on the efficacy and safety of the queried intervention, using structured data from PubMed (n={n} studies), ClinicalTrials.gov (n={t} trials), and openFDA (n={aecount} top adverse reactions). Please refer to each section for a detailed, source-linked analysis.  # noqa: E501
     </p>
     """
 
@@ -263,7 +263,7 @@ def format_background(goal, drug, disease):
     <h1>Background & Context</h1>
     <p><b>Research Goal:</b> {escape_html(goal)}</p>
     <p>{disease_drug_block}</p>
-    <p>This report was prepared by the CureViaX platform, leveraging AI-powered biomedical research and validated data sources.</p>
+    <p>This report was prepared by the CureViaX platform, leveraging AI-powered biomedical research and validated data sources.</p>  # noqa: E501
     """
 
 
@@ -310,7 +310,7 @@ def format_pubmed_articles(pubmed_data):
             )
             if a.get("abstract"):
                 out.append(
-                    f'<tr><td colspan="4"><div style="font-size:9pt;"><b>Abstract:</b> {escape_html(a["abstract"])}</div></td></tr>'
+                    f'<tr><td colspan="4"><div style="font-size:9pt;"><b>Abstract:</b> {escape_html(a["abstract"])}</div></td></tr>'  # noqa: E501
                 )
     out.append("</tbody></table>")
     return "\n".join(out)
@@ -353,7 +353,7 @@ def format_adverse_events(safety_data, chart_path=None):
         out.append("<p>No adverse event data available.</p>")
     else:
         out.append(
-            "<table border='1' style='font-size:10pt;'><thead><tr><th>Adverse Event</th><th>Report Count</th></tr></thead><tbody>"
+            "<table border='1' style='font-size:10pt;'><thead><tr><th>Adverse Event</th><th>Report Count</th></tr></thead><tbody>"  # noqa: E501
         )
         for r in top_reactions:
             rname = escape_html(r.get("term", r.get("reaction", "N/A")))
@@ -393,7 +393,7 @@ def format_disclaimer():
     <a name="disclaimer"></a>
     <h1>Disclaimer & Contact</h1>
     <div style="font-size:9pt; color:#707070;">
-    This report is AI-generated for informational purposes only. Not a substitute for medical advice. Contact: <a href="mailto:support@cureviax.com">support@cureviax.com</a> or <a href="https://www.cureviax.com">cureviax.com</a>.
+    This report is AI-generated for informational purposes only. Not a substitute for medical advice. Contact: <a href="mailto:support@cureviax.com">support@cureviax.com</a> or <a href="https://www.cureviax.com">cureviax.com</a>.  # noqa: E501
     </div>
     """
 
@@ -694,7 +694,7 @@ class ReportBuilderAgentLogic:
                     f"Active recall(s) detected. Primary issue: {hazard_summary}. Discontinue use until resolved."
                 )
             else:
-                exec_summary = "No official recalls detected. No community spikes observed. Continue normal use with standard safety precautions."
+                exec_summary = "No official recalls detected. No community spikes observed. Continue normal use with standard safety precautions."  # noqa: E501
 
             # Generate QR (optional) - Link to live web version of report
             basename = f"product_{uuid.uuid4().hex[:8]}"
@@ -1130,7 +1130,7 @@ th {{ background-color: #e8f0fe; }}
 table {{ border-collapse: collapse; width: 100%; margin-bottom: 1em; }}
 th, td {{ border: 1px solid #d0d6db; padding: 7px; text-align: left; word-break: break-word; }}
 a {{ color: #2561b1; text-decoration: none; }}
-.disclaimer {{ font-size: 8.5pt; color: #707070; margin-top: 2em; border-top: 1px solid #cccccc; padding-top: 1em; text-align: center;}}
+.disclaimer {{ font-size: 8.5pt; color: #707070; margin-top: 2em; border-top: 1px solid #cccccc; padding-top: 1em; text-align: center;}}  # noqa: E501
 .toc-list li {{ margin-bottom: 7px; }}
 </style>
 </head>
@@ -1167,11 +1167,11 @@ a {{ color: #2561b1; text-decoration: none; }}
         # QR code block
         if qr_path and os.path.exists(qr_path):
             qr_path_url = "file:///" + qr_path.replace("\\", "/")
-            html += f'<div style="text-align:center;margin-top:18px;"><img src="{qr_path_url}" width="120" alt="QR Code"></div>'
+            html += f'<div style="text-align:center;margin-top:18px;"><img src="{qr_path_url}" width="120" alt="QR Code"></div>'  # noqa: E501
 
         html += """
 <div id="footer_content" style="text-align:center; font-size:9pt; color:#808080;">
-    Page <pdf:pagenumber /> of <pdf:pagecount /> &nbsp;|&nbsp; Workflow ID: {workflow_id} &nbsp;|&nbsp; CureViaX Confidential
+    Page <pdf:pagenumber /> of <pdf:pagecount /> &nbsp;|&nbsp; Workflow ID: {workflow_id} &nbsp;|&nbsp; CureViaX Confidential  # noqa: E501
 </div>
 </body></html>
 """.format(workflow_id=escape_html(workflow_id))

@@ -23,7 +23,7 @@ async def forward_message(
     msg_type = hdr.get("message_type", "UNKNOWN_TYPE")
 
     logger.info(
-        f"FORWARDING MSG [{label}]: Type='{msg_type}', OriginalSender='{hdr.get('sender_id', 'UNKNOWN')}', Target='{target_agent_id}', CorrID='{corr_id}'"
+        f"FORWARDING MSG [{label}]: Type='{msg_type}', OriginalSender='{hdr.get('sender_id', 'UNKNOWN')}', Target='{target_agent_id}', CorrID='{corr_id}'"  # noqa: E501
     )
 
     message_content_snippet = "Could not serialize for logging"
@@ -77,7 +77,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             corr_id_log = header_for_log.get("correlation_id", "N/A")
     except json.JSONDecodeError:
         logger.warning(
-            f"MCP_ROUTER_RAW_RECV: Could not parse JSON for detailed critical log from '{agent_id}'. Raw: {log_snippet_critical}"
+            f"MCP_ROUTER_RAW_RECV: Could not parse JSON for detailed critical log from '{agent_id}'. Raw: {log_snippet_critical}"  # noqa: E501
         )
     except Exception:  # Catch any other error during this pre-logging parse
         logger.warning(
@@ -108,7 +108,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
 
         if header_sender_id != agent_id:  # Path agent_id must match sender_id in header
             logger.error(
-                f"ROUTER: Sender ID mismatch in message from connection '{agent_id}': Header sender_id is '{header_sender_id}'. Rejecting message."
+                f"ROUTER: Sender ID mismatch in message from connection '{agent_id}': Header sender_id is '{header_sender_id}'. Rejecting message."  # noqa: E501
             )
             # Optionally send an error back to the client
             err_resp = create_mcp_error_response(
@@ -117,7 +117,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
                 target_agent_id=agent_id,
                 payload={
                     "error_code": "E001",
-                    "error_message": f"Header sender_id '{header_sender_id}' does not match connection agent_id '{agent_id}'.",
+                    "error_message": f"Header sender_id '{header_sender_id}' does not match connection agent_id '{agent_id}'.",  # noqa: E501
                 },
             )
             if err_resp:
@@ -133,13 +133,13 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             target_commander_id = None
             all_connected_agents = list(state.get_all_connections().keys())
             logger.debug(
-                f"ROUTER: Searching for CommanderAgent among: {all_connected_agents} for PROCESS_USER_REQUEST from '{agent_id}'"
+                f"ROUTER: Searching for CommanderAgent among: {all_connected_agents} for PROCESS_USER_REQUEST from '{agent_id}'"  # noqa: E501
             )
             for connected_agent_id_str in all_connected_agents:
                 if "commander_agent" in connected_agent_id_str.lower():  # More specific check
                     target_commander_id = connected_agent_id_str
                     logger.info(
-                        f"ROUTER: Found CommanderAgent '{target_commander_id}' to handle PROCESS_USER_REQUEST from '{agent_id}'"
+                        f"ROUTER: Found CommanderAgent '{target_commander_id}' to handle PROCESS_USER_REQUEST from '{agent_id}'"  # noqa: E501
                     )
                     break
 
@@ -213,7 +213,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
         ):  # TASK_ACK was removed from this group as it's usually server->client
             original_requester = target_agent_id_for_task
             logger.info(
-                f"ROUTER HANDLE: {mtype} from='{agent_id}' routing to original_requester='{original_requester}', CorrID='{corr}'"
+                f"ROUTER HANDLE: {mtype} from='{agent_id}' routing to original_requester='{original_requester}', CorrID='{corr}'"  # noqa: E501
             )
             if not original_requester:
                 logger.warning(
@@ -247,7 +247,7 @@ async def handle_message(agent_id: str, message_text: str, websocket: WebSocket)
             return
 
         logger.warning(
-            f"ROUTER HANDLE: Unhandled message_type='{mtype}', TargetService='{target_svc}', From='{agent_id}', CorrID='{corr}'"
+            f"ROUTER HANDLE: Unhandled message_type='{mtype}', TargetService='{target_svc}', From='{agent_id}', CorrID='{corr}'"  # noqa: E501
         )
         err_resp = create_mcp_error_response(
             sender_id="MCP_ROUTER",

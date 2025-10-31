@@ -14,7 +14,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
-from core_infra.database import (
+from core_infra.database import (  # noqa: E402
     SessionLocal,
     User,
     create_tables,
@@ -71,7 +71,7 @@ async def main():
                 print("\n✅✅✅ NON-SUBSCRIBER TEST PASSED: API correctly blocked access with a 403 Forbidden error.")
             else:
                 print(
-                    f"\n❌❌❌ NON-SUBSCRIBER TEST FAILED: Expected status code 403, but got {response_non_subscriber.status_code}."
+                    f"\n❌❌❌ NON-SUBSCRIBER TEST FAILED: Expected status code 403, but got {response_non_subscriber.status_code}."  # noqa: E501
                 )
 
             print("\n" + "#" * 60 + "\n")
@@ -91,7 +91,7 @@ async def main():
                 print("\n✅✅✅ SUBSCRIBER TEST PASSED: API correctly allowed access and the workflow completed.")
             else:
                 print(
-                    f"\n❌❌❌ SUBSCRIBER TEST FAILED: Expected status code 200, but got {response_subscriber.status_code}."
+                    f"\n❌❌❌ SUBSCRIBER TEST FAILED: Expected status code 200, but got {response_subscriber.status_code}."  # noqa: E501
                 )
 
     except httpx.ConnectError:

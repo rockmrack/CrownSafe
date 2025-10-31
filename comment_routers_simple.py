@@ -46,14 +46,14 @@ def comment_routers():
             continue
         elif "# Include Premium Features" in line and "REMOVED FOR CROWN SAFE" not in line:
             new_lines.append(
-                "# REMOVED FOR CROWN SAFE: Premium Features are BabyShield-specific (pregnancy & baby allergy checking)\n"
+                "# REMOVED FOR CROWN SAFE: Premium Features are BabyShield-specific (pregnancy & baby allergy checking)\n"  # noqa: E501
             )
             new_lines.append("# " + line)
             in_premium_block = True
             continue
         elif "# Include Baby Safety Features" in line and "REMOVED FOR CROWN SAFE" not in line:
             new_lines.append(
-                "# REMOVED FOR CROWN SAFE: Baby Safety Features are BabyShield-specific (family members, pregnancy tracking)\n"
+                "# REMOVED FOR CROWN SAFE: Baby Safety Features are BabyShield-specific (family members, pregnancy tracking)\n"  # noqa: E501
             )
             new_lines.append("# " + line)
             in_baby_block = True

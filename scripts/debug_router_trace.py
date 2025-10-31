@@ -12,7 +12,7 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from agents.routing.router_agent.agent_logic import RouterLogic
+from agents.routing.router_agent.agent_logic import RouterLogic  # noqa: E402
 
 # TRACE EVERYTHING
 TRACE_LOG = []

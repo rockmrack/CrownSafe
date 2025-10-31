@@ -6,8 +6,8 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from agents.governance.datagovernance_agent.agent_logic import DataGovernanceAgentLogic
-from agents.governance.legalcontent_agent.agent_logic import LegalContentAgentLogic
+from agents.governance.datagovernance_agent.agent_logic import DataGovernanceAgentLogic  # noqa: E402
+from agents.governance.legalcontent_agent.agent_logic import LegalContentAgentLogic  # noqa: E402
 
 logging.basicConfig(level=logging.INFO)
 

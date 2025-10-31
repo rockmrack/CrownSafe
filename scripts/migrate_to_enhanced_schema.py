@@ -130,7 +130,7 @@ class BabyShieldMigration:
                     recall_class=None,
                     part_number=None,
                     article_number=None,
-                    search_keywords=f"{old_recall.product_name} {old_recall.brand or ''} {old_recall.model_number or ''}".strip(),
+                    search_keywords=f"{old_recall.product_name} {old_recall.brand or ''} {old_recall.model_number or ''}".strip(),  # noqa: E501
                     agency_specific_data=None,
                 )
 

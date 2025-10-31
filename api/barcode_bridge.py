@@ -5,16 +5,16 @@ Task 12: Enhanced Barcode Scan → Result Bridge
 Implements intelligent UPC/EAN matching with fallback search and caching
 """
 
-import hashlib
-import logging
-import re
-from collections import OrderedDict
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, Tuple
+import hashlib  # noqa: E402
+import logging  # noqa: E402
+import re  # noqa: E402
+from collections import OrderedDict  # noqa: E402
+from datetime import datetime, timedelta, timezone  # noqa: E402
+from typing import Any, Dict, List, Optional, Tuple  # noqa: E402
 
-from fastapi import APIRouter, BackgroundTasks, Depends, Header, Query
-from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, Query  # noqa: E402
+from pydantic import BaseModel, Field  # noqa: E402
+from sqlalchemy.orm import Session  # noqa: E402
 
 try:
     from core_infra.database import (

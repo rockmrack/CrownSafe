@@ -93,7 +93,7 @@ class MCPMessage(BaseModel):
         # because the type hint is Dict[str, Any]. So, this explicit check might be redundant
         # or could be made more specific if needed. For now, let Pydantic handle type.
         # if 'payload' in values and not isinstance(values['payload'], dict):
-        #     logger.warning(f"MCPMessage 'payload' was provided but not as a dict (type: {type(values['payload'])}). This might cause issues.")
+        #     logger.warning(f"MCPMessage 'payload' was provided but not as a dict (type: {type(values['payload'])}). This might cause issues.")  # noqa: E501
         # Not forcing to {} here, let Pydantic's type validation for Dict[str, Any] catch it if it's not a dict.
         return values
 

@@ -6,7 +6,7 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from agents.governance.childrenscode_compliance_agent.agent_logic import (
+from agents.governance.childrenscode_compliance_agent.agent_logic import (  # noqa: E402
     ChildrensCode_ComplianceAgentLogic,
 )
 
@@ -63,7 +63,7 @@ def test_childrenscode_compliance_logic():
     print("      Issues Found:")
     for issue in result["issues"]:
         print(
-            f"      - Setting '{issue['setting']}' is '{issue['current_value']}', should be '{issue['required_default']}'"
+            f"      - Setting '{issue['setting']}' is '{issue['current_value']}', should be '{issue['required_default']}'"  # noqa: E501
         )
 
     print("\n--- All tests passed successfully! ChildrensCode_ComplianceAgent is working correctly. ---")

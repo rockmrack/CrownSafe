@@ -239,7 +239,7 @@ async def test_hazard_analysis():
                 print("✅ Hazard Analysis Complete")
                 print(f"Product: {data['product']}")
                 print(
-                    f"Risk Level: {data['overall_risk_level']} {'🟢' if data['overall_risk_level'] == 'LOW' else '🔴' if data['overall_risk_level'] in ['HIGH', 'CRITICAL'] else '🟡'}"
+                    f"Risk Level: {data['overall_risk_level']} {'🟢' if data['overall_risk_level'] == 'LOW' else '🔴' if data['overall_risk_level'] in ['HIGH', 'CRITICAL'] else '🟡'}"  # noqa: E501
                 )
                 print(f"Age Appropriate: {'Yes ✅' if data['age_appropriate'] else 'No ❌'}")
 

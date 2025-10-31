@@ -11,7 +11,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
-from agents.engagement.community_alert_agent.agent_logic import CommunityAlertAgentLogic
+from agents.engagement.community_alert_agent.agent_logic import CommunityAlertAgentLogic  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
@@ -61,7 +61,7 @@ async def main():
             if len(risks_found) >= 4:
                 print("\n" + "=" * 50)
                 print(
-                    f"✅✅✅ TEST PASSED: Agent successfully scraped the page and found {len(risks_found)} risk keywords."
+                    f"✅✅✅ TEST PASSED: Agent successfully scraped the page and found {len(risks_found)} risk keywords."  # noqa: E501
                 )
             else:
                 print("\n" + "=" * 50)

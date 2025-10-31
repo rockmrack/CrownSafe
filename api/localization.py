@@ -111,9 +111,9 @@ TRANSLATIONS = {
         "es-MX": "Habilitar Cámara para Escanear Códigos",
     },
     "scanner.permission.message": {
-        "en-US": "BabyShield needs camera access to scan product barcodes and check for safety recalls. No photos are stored.",
-        "es-ES": "BabyShield necesita acceso a la cámara para escanear códigos de barras y verificar retiros de seguridad. No se almacenan fotos.",
-        "es-MX": "BabyShield necesita acceso a la cámara para escanear códigos de barras y verificar retiros de seguridad. No se almacenan fotos.",
+        "en-US": "BabyShield needs camera access to scan product barcodes and check for safety recalls. No photos are stored.",  # noqa: E501
+        "es-ES": "BabyShield necesita acceso a la cámara para escanear códigos de barras y verificar retiros de seguridad. No se almacenan fotos.",  # noqa: E501
+        "es-MX": "BabyShield necesita acceso a la cámara para escanear códigos de barras y verificar retiros de seguridad. No se almacenan fotos.",  # noqa: E501
     },
     "scanner.instruction": {
         "en-US": "Point camera at product barcode",

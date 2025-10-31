@@ -55,7 +55,7 @@ class Settings(BaseSettings):
             f"[DEBUG] BEFORE: environment={environment}, is_production={is_production}, database_url={database_url}"
         )
         logging.info(
-            f"[DEBUG] DB_*: username={values.get('db_username')}, host={values.get('db_host')}, port={values.get('db_port')}, name={values.get('db_name')}"
+            f"[DEBUG] DB_*: username={values.get('db_username')}, host={values.get('db_host')}, port={values.get('db_port')}, name={values.get('db_name')}"  # noqa: E501
         )
 
         # If we have individual DB components, ALWAYS use them (even if database_url is set to SQLite)

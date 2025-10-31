@@ -35,7 +35,7 @@ try:
     bootstrap_logger.info("Successfully imported local modules (config, state, discovery, router).")
 except ImportError as e:
     bootstrap_logger.critical(
-        f"CRITICAL IMPORT ERROR: Failed to import local modules: {e}. Check module structure, PYTHONPATH, or if running from the correct directory.",
+        f"CRITICAL IMPORT ERROR: Failed to import local modules: {e}. Check module structure, PYTHONPATH, or if running from the correct directory.",  # noqa: E501
         exc_info=True,
     )
     sys.exit(f"Import failure: {e}. MCPRouterService cannot start.")
@@ -84,7 +84,7 @@ async def lifespan(app: FastAPI):
             logger.info("Lifespan: All active WebSocket connections closed.")
         else:
             logger.info(
-                "Lifespan: state.close_all_connections not found or not callable. Manual connection cleanup might be needed if connections persist."
+                "Lifespan: state.close_all_connections not found or not callable. Manual connection cleanup might be needed if connections persist."  # noqa: E501
             )
 
         logger.info("Lifespan: Resource cleanup during shutdown completed.")
@@ -130,7 +130,7 @@ async def websocket_endpoint(websocket: WebSocket, agent_id: str):
         or not callable(handle_message)
     ):
         app_logger.critical(
-            "CRITICAL: state module or handle_message function is not properly initialized/imported. WebSocket endpoint cannot function."
+            "CRITICAL: state module or handle_message function is not properly initialized/imported. WebSocket endpoint cannot function."  # noqa: E501
         )
         await websocket.accept()
         await websocket.close(code=1011, reason="Server configuration error.")
@@ -182,7 +182,7 @@ async def websocket_endpoint(websocket: WebSocket, agent_id: str):
             )
         else:
             app_logger.info(
-                f"Attempted to remove connection for '{agent_id}', but it was not found. Total connections: {len(state.get_all_connections())}"
+                f"Attempted to remove connection for '{agent_id}', but it was not found. Total connections: {len(state.get_all_connections())}"  # noqa: E501
             )
 
 
@@ -231,7 +231,7 @@ if __name__ == "__main__":
     run_reload = False  # PERMANENTLY DISABLED HOT-RELOAD
 
     main_execution_logger.info(
-        f"Uvicorn configured to run on host='{run_host}', port={run_port}, log_level='{run_log_level}', reload={run_reload}"
+        f"Uvicorn configured to run on host='{run_host}', port={run_port}, log_level='{run_log_level}', reload={run_reload}"  # noqa: E501
     )
 
     uvicorn.run(

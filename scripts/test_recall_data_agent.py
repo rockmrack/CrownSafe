@@ -30,9 +30,9 @@ sys.path.insert(0, project_root)
 # -----------------------------------------
 
 # Import DB setup and agent logic
-from agents.recall_data_agent.agent_logic import RecallDataAgentLogic
-from agents.recall_data_agent.models import Recall
-from core_infra.database import Base, engine
+from agents.recall_data_agent.agent_logic import RecallDataAgentLogic  # noqa: E402
+from agents.recall_data_agent.models import Recall  # noqa: E402
+from core_infra.database import Base, engine  # noqa: E402
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

@@ -359,7 +359,7 @@ def ensure_test_users():
         else:
             stmt = text(
                 """
-                INSERT OR REPLACE INTO users (id, email, stripe_customer_id, hashed_password, is_subscribed, is_pregnant)
+                INSERT OR REPLACE INTO users (id, email, stripe_customer_id, hashed_password, is_subscribed, is_pregnant)  # noqa: E501
                 VALUES 
                     (1, 'subscribed@test.com', NULL, 'testhash', 1, 1),
                     (2, 'unsubscribed@test.com', NULL, 'testhash', 0, 0)

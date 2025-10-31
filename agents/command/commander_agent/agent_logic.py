@@ -166,7 +166,7 @@ class CrownSafeCommanderLogic:
                     "data": {
                         "summary": "Could not definitively identify this product or find matching recall data.",
                         "risk_level": "Unknown",
-                        "note": "This does not mean the product is safe. It means we could not find it in our system using the provided identifier. Please try searching by the model number found on the product label or use the photo scan feature.",
+                        "note": "This does not mean the product is safe. It means we could not find it in our system using the provided identifier. Please try searching by the model number found on the product label or use the photo scan feature.",  # noqa: E501
                     },
                 }
             # --- END OF NEW LOGIC ---

@@ -7,19 +7,19 @@ def remove_router_blocks(content):
     """Remove recall alert, recall search, recall detail, and baby feature router blocks"""
 
     # Pattern 1: Remove Recall Alert System block
-    pattern1 = r'# Include Recall Alert System\ntry:.*?except Exception as e:\n    logging\.error\(f"Failed to register recall alert system: \{e\}"\)\n\n'
+    pattern1 = r'# Include Recall Alert System\ntry:.*?except Exception as e:\n    logging\.error\(f"Failed to register recall alert system: \{e\}"\)\n\n'  # noqa: E501
     content = re.sub(pattern1, "", content, flags=re.DOTALL)
 
     # Pattern 2: Remove Recall Search System block
-    pattern2 = r'# Include Recall Search System\ntry:.*?except Exception as e:\n    logging\.error\(f"Failed to register recall search system: \{e\}"\)\n\n'
+    pattern2 = r'# Include Recall Search System\ntry:.*?except Exception as e:\n    logging\.error\(f"Failed to register recall search system: \{e\}"\)\n\n'  # noqa: E501
     content = re.sub(pattern2, "", content, flags=re.DOTALL)
 
     # Pattern 3: Remove recall detail endpoints block
-    pattern3 = r'# Include recall detail endpoints\ntry:.*?except Exception as e:\n    logging\.error\(f"Failed to register recall detail endpoints: \{e\}"\)\n\n'
+    pattern3 = r'# Include recall detail endpoints\ntry:.*?except Exception as e:\n    logging\.error\(f"Failed to register recall detail endpoints: \{e\}"\)\n\n'  # noqa: E501
     content = re.sub(pattern3, "", content, flags=re.DOTALL)
 
     # Pattern 4: Remove Baby Safety Features block
-    pattern4 = r"# Include Baby Safety Features.*?\ntry:.*?except \(ImportError, FileNotFoundError\) as e:.*?# Continue without baby features.*?\n\n"
+    pattern4 = r"# Include Baby Safety Features.*?\ntry:.*?except \(ImportError, FileNotFoundError\) as e:.*?# Continue without baby features.*?\n\n"  # noqa: E501
     content = re.sub(pattern4, "", content, flags=re.DOTALL)
 
     return content

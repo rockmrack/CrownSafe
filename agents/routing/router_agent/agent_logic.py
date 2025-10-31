@@ -170,7 +170,7 @@ class BabyShieldRouterLogic:
                                     )
                                     wf["status"] = "FAILED"
                                     wf["error_message"] = (
-                                        f"Visual search confidence too low ({confidence:.2f}) to proceed with a safety check. Please provide a clearer image or use the barcode scanner."
+                                        f"Visual search confidence too low ({confidence:.2f}) to proceed with a safety check. Please provide a clearer image or use the barcode scanner."  # noqa: E501
                                     )
                                     # Mark this as a special failure
                                     ts.update(

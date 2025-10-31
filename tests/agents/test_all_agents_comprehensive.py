@@ -115,7 +115,7 @@ class TestResults:
             print(f"  Tests Passed: {data['passed']}")
             print(f"  Tests Failed: {data['failed']}")
             print(
-                f"  Success Rate: {data['passed']}/{data['passed'] + data['failed']} ({data['passed'] / (data['passed'] + data['failed']) * 100:.1f}%)"
+                f"  Success Rate: {data['passed']}/{data['passed'] + data['failed']} ({data['passed'] / (data['passed'] + data['failed']) * 100:.1f}%)"  # noqa: E501
             )
 
             for test in data["tests"]:
@@ -130,7 +130,7 @@ class TestResults:
         print("\n" + "=" * 80)
         print(f"TOTAL: {total_passed} passed, {total_failed} failed")
         print(
-            f"OVERALL SUCCESS RATE: {total_passed}/{total_passed + total_failed} ({total_passed / (total_passed + total_failed) * 100:.1f}%)"
+            f"OVERALL SUCCESS RATE: {total_passed}/{total_passed + total_failed} ({total_passed / (total_passed + total_failed) * 100:.1f}%)"  # noqa: E501
         )
         print("=" * 80)
 

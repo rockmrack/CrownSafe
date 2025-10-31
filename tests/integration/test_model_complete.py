@@ -28,7 +28,7 @@ test_engine = create_engine(TEST_DB_URL, connect_args={"check_same_thread": Fals
 TestSessionLocal = sessionmaker(bind=test_engine)
 
 # Override the database dependency
-from core_infra.database import get_db
+from core_infra.database import get_db  # noqa: E402
 
 
 def override_get_db():
@@ -41,7 +41,7 @@ def override_get_db():
 
 
 # Also override get_db_session which is used by safety_check endpoint
-from contextlib import contextmanager
+from contextlib import contextmanager  # noqa: E402
 
 
 @contextmanager
@@ -64,7 +64,7 @@ def override_get_db_session(commit_on_exit=True, close_on_exit=True):
 app.dependency_overrides[get_db] = override_get_db
 
 # Override get_db_session at module level
-import core_infra.database as db_module
+import core_infra.database as db_module  # noqa: E402
 
 original_get_db_session = db_module.get_db_session
 db_module.get_db_session = override_get_db_session

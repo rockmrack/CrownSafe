@@ -223,7 +223,7 @@ async def research_product_safety(
                     source="Reddit r/FormulaFeeders",
                     source_type="forum",
                     title="Parents discussing recall concerns",
-                    content="Multiple parents reporting clumping issues with this batch. Manufacturing date codes 2024-01 through 2024-03 seem affected.",
+                    content="Multiple parents reporting clumping issues with this batch. Manufacturing date codes 2024-01 through 2024-03 seem affected.",  # noqa: E501
                     url="https://reddit.com/r/example",
                     date_found=datetime.now() - timedelta(days=3),
                     relevance_score=0.92,
@@ -260,7 +260,7 @@ async def research_product_safety(
                     source="BabyCenter Community",
                     source_type="forum",
                     title="Product experience thread",
-                    content=f"Has anyone else used {request.product_name}? Working great for us, no issues after 3 months.",
+                    content=f"Has anyone else used {request.product_name}? Working great for us, no issues after 3 months.",  # noqa: E501
                     url="https://babycenter.com/example",
                     date_found=datetime.now() - timedelta(days=7),
                     relevance_score=0.65,

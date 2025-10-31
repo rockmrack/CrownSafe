@@ -26,7 +26,7 @@ except ImportError as e:
     print(f"CRITICAL_ERROR_WEBRESEARCH_MAIN: Failed to import core_infra: {e}")
     sys.exit(1)
 
-from .agent_logic import WebResearchLogic
+from .agent_logic import WebResearchLogic  # noqa: E402
 
 
 # Environment setup

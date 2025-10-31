@@ -29,7 +29,7 @@ test_engine = create_engine(TEST_DB_URL, connect_args={"check_same_thread": Fals
 TestSessionLocal = sessionmaker(bind=test_engine)
 
 # Override the database dependency
-from core_infra.database import get_db
+from core_infra.database import get_db  # noqa: E402
 
 
 def override_get_db():

@@ -16,8 +16,8 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
-from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
-from core_infra.database import Base, RecallDB, SessionLocal, engine
+from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic  # noqa: E402
+from core_infra.database import Base, RecallDB, SessionLocal, engine  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 

@@ -311,7 +311,7 @@ class SearchService:
                 actual_offset = 0
 
             logger.info(
-                f"Search parameters: offset={offset}, cursor={cursor}, actual_offset={actual_offset}, limit={limit}, use_cursor={use_cursor_pagination}"
+                f"Search parameters: offset={offset}, cursor={cursor}, actual_offset={actual_offset}, limit={limit}, use_cursor={use_cursor_pagination}"  # noqa: E501
             )
 
             # Build the query

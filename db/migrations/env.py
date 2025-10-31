@@ -14,10 +14,10 @@ if project_root not in sys.path:
 # Import your models - ALL models must be imported for alembic to detect them
 # These imports are intentionally "unused" but required for Alembic autogenerate
 # ruff: noqa: F401
-from api.models.user_report import UserReport
+from api.models.user_report import UserReport  # noqa: E402
 
 # CROWN SAFE: Import hair product safety models
-from core_infra.crown_safe_models import (
+from core_infra.crown_safe_models import (  # noqa: E402
     BrandCertificationModel,
     HairProductModel,
     HairProfileModel,
@@ -27,11 +27,11 @@ from core_infra.crown_safe_models import (
     ProductScanModel,
     SalonAccountModel,
 )
-from core_infra.database import User
-from core_infra.enhanced_database_schema import Base
+from core_infra.database import User  # noqa: E402
+from core_infra.enhanced_database_schema import Base  # noqa: E402
 
 # Import risk assessment models
-from core_infra.risk_assessment_models import (
+from core_infra.risk_assessment_models import (  # noqa: E402
     CompanyComplianceProfile,
     DataIngestionJob,
     ProductDataSource,
@@ -42,7 +42,7 @@ from core_infra.risk_assessment_models import (
 )
 
 # Import visual agent models
-from core_infra.visual_agent_models import (
+from core_infra.visual_agent_models import (  # noqa: E402
     ImageAnalysisCache,
     ImageExtraction,
     ImageJob,
@@ -53,19 +53,19 @@ from core_infra.visual_agent_models import (
 # LEGACY BABY CODE: FamilyMember and Allergy models removed
 # from core_infra.database import FamilyMember, Allergy
 # Import incident reporting models
-from db.models.incident_report import (
+from db.models.incident_report import (  # noqa: E402
     AgencyNotification,
     IncidentCluster,
     IncidentReport,
 )
-from db.models.ingestion_run import IngestionRun
-from db.models.privacy_request import PrivacyRequest
-from db.models.report_record import ReportRecord
+from db.models.ingestion_run import IngestionRun  # noqa: E402
+from db.models.privacy_request import PrivacyRequest  # noqa: E402
+from db.models.report_record import ReportRecord  # noqa: E402
 
 # Import other db models
-from db.models.scan_history import SafetyReport, ScanHistory
-from db.models.serial_verification import SerialVerification
-from db.models.share_token import ShareToken
+from db.models.scan_history import SafetyReport, ScanHistory  # noqa: E402
+from db.models.serial_verification import SerialVerification  # noqa: E402
+from db.models.share_token import ShareToken  # noqa: E402
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -27,7 +27,7 @@ try:
     logger.info("OpenAI library (v1.0+) available")
 except ImportError:
     try:
-        import openai
+        import openai  # noqa: F401
 
         AVAILABLE_PROVIDERS["openai"] = "old"
         logger.info("OpenAI library (legacy) available")
@@ -35,7 +35,7 @@ except ImportError:
         logger.warning("OpenAI library not installed. Install with: pip install openai")
 
 try:
-    import anthropic
+    import anthropic  # noqa: F401
 
     AVAILABLE_PROVIDERS["anthropic"] = True
     logger.info("Anthropic library available")
@@ -43,7 +43,7 @@ except ImportError:
     logger.warning("Anthropic library not installed. Install with: pip install anthropic")
 
 try:
-    import google.generativeai as genai
+    import google.generativeai as genai  # noqa: F401
 
     AVAILABLE_PROVIDERS["google"] = True
     logger.info("Google AI library available")
@@ -335,7 +335,7 @@ class MockLLMProvider:
                 "approval_likelihood_percent": 92,
                 "decision_prediction": "Approve",
                 "confidence_score": 0.88,
-                "clinical_rationale": "Patient demonstrates clear medical necessity: documented metformin failure with persistent hyperglycemia (HbA1c 9.2%) despite maximum therapy. Endocrinologist management supports appropriate escalation to SGLT2 inhibitor therapy per ADA guidelines.",
+                "clinical_rationale": "Patient demonstrates clear medical necessity: documented metformin failure with persistent hyperglycemia (HbA1c 9.2%) despite maximum therapy. Endocrinologist management supports appropriate escalation to SGLT2 inhibitor therapy per ADA guidelines.",  # noqa: E501
                 "key_supporting_factors": [
                     "Failed metformin at maximum dose",
                     "HbA1c 9.2% significantly above target",
@@ -358,7 +358,7 @@ class MockLLMProvider:
                 "approval_likelihood_percent": 8,
                 "decision_prediction": "Deny",
                 "confidence_score": 0.95,
-                "clinical_rationale": "Patient has not satisfied step therapy requirements. As newly diagnosed T2DM with HbA1c 7.8%, patient should first trial metformin as first-line therapy per clinical guidelines and insurance policy requirements.",
+                "clinical_rationale": "Patient has not satisfied step therapy requirements. As newly diagnosed T2DM with HbA1c 7.8%, patient should first trial metformin as first-line therapy per clinical guidelines and insurance policy requirements.",  # noqa: E501
                 "key_supporting_factors": [],
                 "key_opposing_factors": [
                     "No prior medication trials documented",
@@ -380,7 +380,7 @@ class MockLLMProvider:
                 "approval_likelihood_percent": 0,
                 "decision_prediction": "Deny",
                 "confidence_score": 0.99,
-                "clinical_rationale": "Empagliflozin is not indicated for patient's diagnosed conditions (GERD, GI bleeding). This SGLT2 inhibitor is FDA-approved only for T2DM, heart failure, and CKD. No diabetes diagnosis present.",
+                "clinical_rationale": "Empagliflozin is not indicated for patient's diagnosed conditions (GERD, GI bleeding). This SGLT2 inhibitor is FDA-approved only for T2DM, heart failure, and CKD. No diabetes diagnosis present.",  # noqa: E501
                 "key_supporting_factors": [],
                 "key_opposing_factors": [
                     "No diabetes diagnosis (ICD-10 E11)",
@@ -409,7 +409,7 @@ class MockLLMProvider:
                 template["decision_prediction"] = "Deny"
                 template["confidence_score"] = min(0.9, 1 - score_found)
                 template["clinical_rationale"] = (
-                    f"Low evidence score ({score_found:.0%}) indicates multiple unmet criteria. Step therapy or other requirements not satisfied."
+                    f"Low evidence score ({score_found:.0%}) indicates multiple unmet criteria. Step therapy or other requirements not satisfied."  # noqa: E501
                 )
             else:
                 template["approval_likelihood_percent"] = int(score_found * 100)
@@ -417,7 +417,7 @@ class MockLLMProvider:
 
         # Log what we're returning
         logger.debug(
-            f"MockLLMProvider returning: {template['decision_prediction']} with {template['approval_likelihood_percent']}% likelihood"
+            f"MockLLMProvider returning: {template['decision_prediction']} with {template['approval_likelihood_percent']}% likelihood"  # noqa: E501
         )
 
         # Simulate processing time

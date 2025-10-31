@@ -13,8 +13,8 @@ sys.path.insert(0, project_root)
 # -----------------------------------------
 
 # We need to set up a test database BEFORE we import the agent logic
-from agents.business.monetization_agent.agent_logic import MonetizationAgentLogic
-from core_infra.database import Base, SessionLocal, User, engine
+from agents.business.monetization_agent.agent_logic import MonetizationAgentLogic  # noqa: E402
+from core_infra.database import Base, SessionLocal, User, engine  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 

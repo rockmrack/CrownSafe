@@ -568,7 +568,7 @@ async def submit_data_request(
 
         elif request.request_type == PrivacyRight.PORTABILITY:
             estimated_completion = datetime.now() + timedelta(hours=48)
-            message = "Your data portability request has been received. You will receive your data in a portable format within 48 hours."
+            message = "Your data portability request has been received. You will receive your data in a portable format within 48 hours."  # noqa: E501
 
         else:
             estimated_completion = datetime.now() + timedelta(hours=72)

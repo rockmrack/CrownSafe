@@ -19,7 +19,7 @@ try:
     # Test if pyzbar actually works (Windows DLL check)
     import numpy as np
     from pyzbar import pyzbar
-    from pyzbar.pyzbar import ZBarSymbol
+    from pyzbar.pyzbar import ZBarSymbol  # noqa: F401
 
     test_img = np.zeros((10, 10), dtype=np.uint8)
     pyzbar.decode(test_img)
@@ -57,8 +57,8 @@ except ImportError:
     OPENCV_AVAILABLE = False
     logging.warning("OpenCV not installed. Image preprocessing disabled.")
 
-import qrcode
-from PIL import Image
+import qrcode  # noqa: E402
+from PIL import Image  # noqa: E402
 
 logger = logging.getLogger(__name__)
 

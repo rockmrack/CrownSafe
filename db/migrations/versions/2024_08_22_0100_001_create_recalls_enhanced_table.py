@@ -174,7 +174,7 @@ def upgrade() -> None:
         op.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm"))
         op.execute(
             text(
-                "CREATE INDEX idx_recalls_enhanced_product_name_trgm ON recalls_enhanced USING gin (product_name gin_trgm_ops)"
+                "CREATE INDEX idx_recalls_enhanced_product_name_trgm ON recalls_enhanced USING gin (product_name gin_trgm_ops)"  # noqa: E501
             )
         )
         op.execute(

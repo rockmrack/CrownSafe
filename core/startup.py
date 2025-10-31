@@ -26,7 +26,7 @@ def log_feature_status():
     # Barcode Features
     datamatrix_enabled = os.getenv("ENABLE_DATAMATRIX", "false").lower() == "true"
     logger.info(
-        f"  📊 DataMatrix Barcodes: {'✅ Enabled' if datamatrix_enabled else '❌ Disabled (requires pylibdmtx + system libs)'}"
+        f"  📊 DataMatrix Barcodes: {'✅ Enabled' if datamatrix_enabled else '❌ Disabled (requires pylibdmtx + system libs)'}"  # noqa: E501
     )
 
     # Receipt Validation

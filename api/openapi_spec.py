@@ -33,7 +33,7 @@ def custom_openapi(app: FastAPI):
         - `INTERNAL_ERROR`: Internal server error
         
         ## Pagination
-        Search endpoints support pagination using `cursor` parameter. Include the `nextCursor` from the response to fetch the next page.
+        Search endpoints support pagination using `cursor` parameter. Include the `nextCursor` from the response to fetch the next page.  # noqa: E501
         
         ## Rate Limiting
         No rate limiting is currently enforced in staging environment.

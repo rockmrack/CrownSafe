@@ -39,7 +39,7 @@ async def get_recall_detail(recall_id: str, request: Request, response: Response
                 "ok": False,
                 "error": {
                     "code": "BAD_REQUEST",
-                    "message": "Invalid recall_id format. Only letters, numbers, slashes, dashes, underscores, and dots are allowed.",
+                    "message": "Invalid recall_id format. Only letters, numbers, slashes, dashes, underscores, and dots are allowed.",  # noqa: E501
                 },
             },
         )

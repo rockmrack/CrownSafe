@@ -11,15 +11,15 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 # ─── 1) Imports ─────────────────────────────────────────────────────────────────
-import asyncio
-import json
-import logging
-from unittest.mock import AsyncMock, patch
+import asyncio  # noqa: E402
+import json  # noqa: E402
+import logging  # noqa: E402
+from unittest.mock import AsyncMock, patch  # noqa: E402
 
-from sqlalchemy import text
+from sqlalchemy import text  # noqa: E402
 
-from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic
-from core_infra.database import Allergy, Base, FamilyMember, SessionLocal, User, engine
+from agents.command.commander_agent.agent_logic import BabyShieldCommanderLogic  # noqa: E402
+from core_infra.database import Allergy, Base, FamilyMember, SessionLocal, User, engine  # noqa: E402
 
 # ─── 2) Configuration & Mocks ─────────────────────────────────────────────────
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")

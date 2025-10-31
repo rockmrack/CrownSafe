@@ -18,10 +18,10 @@ print("\n" + "=" * 80)
 print("🔍 DATABASE ROUTING VERIFICATION")
 print("=" * 80 + "\n")
 
-from sqlalchemy import inspect
+from sqlalchemy import inspect  # noqa: E402
 
-from core_infra.database import SessionLocal, engine
-from core_infra.enhanced_database_schema import EnhancedRecallDB
+from core_infra.database import SessionLocal, engine  # noqa: E402
+from core_infra.enhanced_database_schema import EnhancedRecallDB  # noqa: E402
 
 # ============================================================================
 # 1. Verify Database Configuration
@@ -69,7 +69,7 @@ print("   ✅ Production data accessible\n")
 print("3. SearchService Database Connection")
 print("-" * 80)
 
-from api.services.search_service import SearchService
+from api.services.search_service import SearchService  # noqa: E402
 
 search_service = SearchService(db)
 
@@ -99,9 +99,9 @@ db.close()
 print("4. API Endpoint Database Routing")
 print("-" * 80)
 
-from fastapi.testclient import TestClient
+from fastapi.testclient import TestClient  # noqa: E402
 
-from api.main_crownsafe import app
+from api.main_crownsafe import app  # noqa: E402
 
 client = TestClient(app)
 

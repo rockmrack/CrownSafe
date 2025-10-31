@@ -214,9 +214,9 @@ def create_pagination_links(base_url: str, params: PaginationParams, total: int)
 
 
 # Decorator for automatic pagination
-from functools import wraps
+from functools import wraps  # noqa: E402
 
-from fastapi import Depends
+from fastapi import Depends  # noqa: E402
 
 
 def paginated(model_class):

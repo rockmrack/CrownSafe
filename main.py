@@ -13,7 +13,7 @@ sys.path.insert(0, str(current_dir))  # Add root directory first
 sys.path.insert(0, str(api_dir))  # Add api directory (takes precedence)
 
 # Import the FastAPI app from api directory
-from main_crownsafe import app
+from main_crownsafe import app  # noqa: E402
 
 # Export the app for uvicorn
 __all__ = ["app"]

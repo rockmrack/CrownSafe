@@ -8,11 +8,11 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from core_infra.auth.auth_manager import (
+from core_infra.auth.auth_manager import (  # noqa: E402
     create_user,
 )  # Should be your user creation utility
 
-from core_infra.database import Role, User, create_tables, get_db_session
+from core_infra.database import Role, User, create_tables, get_db_session  # noqa: E402
 
 logging.basicConfig(level=logging.INFO)
 

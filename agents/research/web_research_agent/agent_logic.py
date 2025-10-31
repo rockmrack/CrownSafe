@@ -251,7 +251,7 @@ class WebResearchLogic:
         self, api_query_term: str, max_results: int, original_input_query: Optional[str]
     ) -> SearchResult:
         self.logger.warning(
-            f"PUBMED_MOCK: Returning mock data for API query term: '{api_query_term[:50]}...' (Original input: '{original_input_query[:50] if original_input_query else 'N/A'}')"
+            f"PUBMED_MOCK: Returning mock data for API query term: '{api_query_term[:50]}...' (Original input: '{original_input_query[:50] if original_input_query else 'N/A'}')"  # noqa: E501
         )
         mock_articles = [
             PubMedArticle(
@@ -304,7 +304,7 @@ class WebResearchLogic:
                                 error_body = await response.text(errors="replace")
                             except Exception:
                                 pass
-                            err_msg_detail = f"HTTP {response.status} {response.reason}. URL: {response.request_info.url}. Body: {error_body[:500]}"
+                            err_msg_detail = f"HTTP {response.status} {response.reason}. URL: {response.request_info.url}. Body: {error_body[:500]}"  # noqa: E501
                             self.logger.error(err_msg_detail)
                             if response.status == 400:
                                 current_exception = ValueError(err_msg_detail)
@@ -473,7 +473,7 @@ class WebResearchLogic:
 
             if not article_ids:
                 self.logger.info(
-                    f"No PubMed article IDs found for API term: '{constructed_api_query_term}'. Total reported by ESearch: {total_found}"
+                    f"No PubMed article IDs found for API term: '{constructed_api_query_term}'. Total reported by ESearch: {total_found}"  # noqa: E501
                 )
                 articles_data = []
             else:
@@ -505,7 +505,7 @@ class WebResearchLogic:
 
             search_time_ms = (time.perf_counter_ns() - start_time_ns) // 1_000_000
             self.logger.info(
-                f"Fetched {len(articles_data)} articles in {search_time_ms}ms for API term '{constructed_api_query_term[:50]}...'."
+                f"Fetched {len(articles_data)} articles in {search_time_ms}ms for API term '{constructed_api_query_term[:50]}...'."  # noqa: E501
             )
             return SearchResult(
                 query_used_for_api=constructed_api_query_term,
@@ -524,7 +524,7 @@ class WebResearchLogic:
             PermissionError,
             FileNotFoundError,
         ) as e:
-            error_msg = f"API Error in _fetch_pubmed_data for '{constructed_api_query_term[:50]}...': {type(e).__name__} - {str(e)}"
+            error_msg = f"API Error in _fetch_pubmed_data for '{constructed_api_query_term[:50]}...': {type(e).__name__} - {str(e)}"  # noqa: E501
             self.logger.error(error_msg)  # No exc_info as _make_ncbi_request should have logged details
             return SearchResult(
                 query_used_for_api=constructed_api_query_term,
@@ -534,7 +534,7 @@ class WebResearchLogic:
                 original_input_query=original_input_query_for_result,
             )
         except Exception as e_unhandled:
-            error_msg = f"Unexpected error in _fetch_pubmed_data for '{constructed_api_query_term[:50]}...': {type(e_unhandled).__name__} - {str(e_unhandled)}"
+            error_msg = f"Unexpected error in _fetch_pubmed_data for '{constructed_api_query_term[:50]}...': {type(e_unhandled).__name__} - {str(e_unhandled)}"  # noqa: E501
             self.logger.error(error_msg, exc_info=True)
             return SearchResult(
                 query_used_for_api=constructed_api_query_term,
@@ -629,7 +629,7 @@ class WebResearchLogic:
                 original_input_query = "; ".join(original_input_query_parts)
 
             self.logger.info(
-                f"Performing PubMed search for task {task_id} with API term: '{constructed_api_query[:100]}...', max_results: {max_results_validated}"
+                f"Performing PubMed search for task {task_id} with API term: '{constructed_api_query[:100]}...', max_results: {max_results_validated}"  # noqa: E501
             )
             search_result_obj = await self._fetch_pubmed_data(
                 constructed_api_query, max_results_validated, original_input_query
@@ -653,7 +653,7 @@ class WebResearchLogic:
                 "result": result_data_dict,
             }
             self.logger.info(
-                f"PubMed search completed for task {task_id}: {len(search_result_obj.articles)} articles found (ESearch total: {search_result_obj.total_found_by_esearch})."
+                f"PubMed search completed for task {task_id}: {len(search_result_obj.articles)} articles found (ESearch total: {search_result_obj.total_found_by_esearch})."  # noqa: E501
             )
             return {
                 "message_type": MessageType.TASK_COMPLETE.value,

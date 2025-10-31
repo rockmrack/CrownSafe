@@ -221,7 +221,7 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
 
 
 # Response models
-from pydantic import BaseModel
+from pydantic import BaseModel  # noqa: E402
 
 
 class Token(BaseModel):

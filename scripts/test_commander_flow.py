@@ -18,10 +18,10 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from core_infra.mcp_client_library.client import MCPClient
-from core_infra.mcp_client_library.models import MCPMessage
+from core_infra.mcp_client_library.client import MCPClient  # noqa: E402
+from core_infra.mcp_client_library.models import MCPMessage  # noqa: E402
 
-from core_infra.mcp_client_library.exceptions import MCPConnectionError
+from core_infra.mcp_client_library.exceptions import MCPConnectionError  # noqa: E402
 
 # --- Configuration ---
 dotenv_path = os.path.join(project_root, ".env")
@@ -35,7 +35,7 @@ MCP_SERVER_URL_ENV = os.getenv("MCP_SERVER_URL", "ws://127.0.0.1:8001")
 # Research goal (ONLY THIS LINE IS CHANGED)
 USER_RESEARCH_GOAL_STRING = os.getenv(
     "TEST_RESEARCH_GOAL",
-    "Assess Sotagliflozin for patients with Type 2 Diabetes and Chronic Kidney Disease, specifically its effects on glycemic control, progression of kidney disease, major adverse cardiovascular events (MACE), and its overall safety profile based on pivotal clinical trial data.",
+    "Assess Sotagliflozin for patients with Type 2 Diabetes and Chronic Kidney Disease, specifically its effects on glycemic control, progression of kidney disease, major adverse cardiovascular events (MACE), and its overall safety profile based on pivotal clinical trial data.",  # noqa: E501
 )
 USER_REQUEST_PAYLOAD = {"goal": USER_RESEARCH_GOAL_STRING}
 
@@ -196,7 +196,7 @@ async def run_test():
         logger.info("\n" + "=" * 60)
         logger.info("WORKFLOW SUMMARY:")
         logger.info(
-            f"Status: {'COMPLETED' if monitor.workflow_complete else 'FAILED' if monitor.workflow_failed else 'TIMEOUT'}"
+            f"Status: {'COMPLETED' if monitor.workflow_complete else 'FAILED' if monitor.workflow_failed else 'TIMEOUT'}"  # noqa: E501
         )
         logger.info(f"Duration: {(datetime.now() - start_time).total_seconds():.1f} seconds")
         logger.info(f"Task Updates: {len(monitor.task_updates)}")

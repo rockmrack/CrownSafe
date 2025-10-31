@@ -6,7 +6,7 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from agents.premium.pregnancy_product_safety_agent.agent_logic import (
+from agents.premium.pregnancy_product_safety_agent.agent_logic import (  # noqa: E402
     PregnancyProductSafetyAgentLogic,
 )
 

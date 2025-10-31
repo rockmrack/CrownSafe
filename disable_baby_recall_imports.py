@@ -17,28 +17,28 @@ def disable_baby_recall_code():
     patterns_to_comment = [
         # Recall alert system
         (
-            r"(\n# Include Recall Alert System\ntry:\n    from api\.recall_alert_system import recall_alert_router\n\n    app\.include_router\(recall_alert_router\)\n    logging\.info\([^\n]+\)\nexcept Exception as e:\n    logging\.error\([^\n]+\))",
-            r"\n# ===== LEGACY BABY RECALL CODE - DISABLED FOR CROWN SAFE =====\n# Include Recall Alert System\n# try:\n#     from api.recall_alert_system import recall_alert_router\n#\n#     app.include_router(recall_alert_router)\n#     logging.info([DISABLED])\n# except Exception as e:\n#     logging.error([DISABLED])",
+            r"(\n# Include Recall Alert System\ntry:\n    from api\.recall_alert_system import recall_alert_router\n\n    app\.include_router\(recall_alert_router\)\n    logging\.info\([^\n]+\)\nexcept Exception as e:\n    logging\.error\([^\n]+\))",  # noqa: E501
+            r"\n# ===== LEGACY BABY RECALL CODE - DISABLED FOR CROWN SAFE =====\n# Include Recall Alert System\n# try:\n#     from api.recall_alert_system import recall_alert_router\n#\n#     app.include_router(recall_alert_router)\n#     logging.info([DISABLED])\n# except Exception as e:\n#     logging.error([DISABLED])",  # noqa: E501
         ),
         # Recall search system
         (
-            r"(\n# Include Recall Search System\ntry:\n    from api\.recalls_endpoints import router as recalls_router\n\n    app\.include_router\(recalls_router\)\n    logging\.info\([^\n]+\)\nexcept Exception as e:\n    logging\.error\([^\n]+\))",
-            r"\n# Include Recall Search System\n# try:\n#     from api.recalls_endpoints import router as recalls_router\n#\n#     app.include_router(recalls_router)\n#     logging.info([DISABLED])\n# except Exception as e:\n#     logging.error([DISABLED])\n# ===== END LEGACY BABY RECALL CODE =====",
+            r"(\n# Include Recall Search System\ntry:\n    from api\.recalls_endpoints import router as recalls_router\n\n    app\.include_router\(recalls_router\)\n    logging\.info\([^\n]+\)\nexcept Exception as e:\n    logging\.error\([^\n]+\))",  # noqa: E501
+            r"\n# Include Recall Search System\n# try:\n#     from api.recalls_endpoints import router as recalls_router\n#\n#     app.include_router(recalls_router)\n#     logging.info([DISABLED])\n# except Exception as e:\n#     logging.error([DISABLED])\n# ===== END LEGACY BABY RECALL CODE =====",  # noqa: E501
         ),
         # Recall detail endpoints
         (
-            r"(\n# Include recall detail endpoints\ntry:\n    from api\.recall_detail_endpoints import router as recall_detail_router\n\n    app\.include_router\(recall_detail_router\)\n    logging\.info\([^\n]+\)\nexcept Exception as e:\n    logging\.error\([^\n]+\))",
-            r"\n# ===== LEGACY BABY RECALL CODE - DISABLED FOR CROWN SAFE =====\n# Include recall detail endpoints\n# try:\n#     from api.recall_detail_endpoints import router as recall_detail_router\n#\n#     app.include_router(recall_detail_router)\n#     logging.info([DISABLED])\n# except Exception as e:\n#     logging.error([DISABLED])\n# ===== END LEGACY BABY RECALL CODE =====",
+            r"(\n# Include recall detail endpoints\ntry:\n    from api\.recall_detail_endpoints import router as recall_detail_router\n\n    app\.include_router\(recall_detail_router\)\n    logging\.info\([^\n]+\)\nexcept Exception as e:\n    logging\.error\([^\n]+\))",  # noqa: E501
+            r"\n# ===== LEGACY BABY RECALL CODE - DISABLED FOR CROWN SAFE =====\n# Include recall detail endpoints\n# try:\n#     from api.recall_detail_endpoints import router as recall_detail_router\n#\n#     app.include_router(recall_detail_router)\n#     logging.info([DISABLED])\n# except Exception as e:\n#     logging.error([DISABLED])\n# ===== END LEGACY BABY RECALL CODE =====",  # noqa: E501
         ),
         # Premium features
         (
-            r'(\ntry:\n    from api\.premium_features_endpoints import router as premium_router\n\n    app\.include_router\(premium_router\)\n    logging\.info\("Premium Features endpoints registered"\)\nexcept ImportError as e:\n    logging\.warning\([^\n]+\))',
-            r'\n# ===== LEGACY BABY CODE - DISABLED FOR CROWN SAFE =====\n# try:\n#     from api.premium_features_endpoints import router as premium_router\n#\n#     app.include_router(premium_router)\n#     logging.info("Premium Features endpoints registered")\n# except ImportError as e:\n#     logging.warning([DISABLED])',
+            r'(\ntry:\n    from api\.premium_features_endpoints import router as premium_router\n\n    app\.include_router\(premium_router\)\n    logging\.info\("Premium Features endpoints registered"\)\nexcept ImportError as e:\n    logging\.warning\([^\n]+\))',  # noqa: E501
+            r'\n# ===== LEGACY BABY CODE - DISABLED FOR CROWN SAFE =====\n# try:\n#     from api.premium_features_endpoints import router as premium_router\n#\n#     app.include_router(premium_router)\n#     logging.info("Premium Features endpoints registered")\n# except ImportError as e:\n#     logging.warning([DISABLED])',  # noqa: E501
         ),
         # Baby features
         (
-            r"(\ntry:\n    from api\.baby_features_endpoints import router as baby_router\n\n    app\.include_router\(baby_router\)\n    logging\.info\([^\n]+Baby[^\n]+\)\nexcept \(ImportError, FileNotFoundError\) as e:\n    logging\.warning\([^\n]+\)\n    # Continue without baby features[^\n]*)",
-            r"\n# try:\n#     from api.baby_features_endpoints import router as baby_router\n#\n#     app.include_router(baby_router)\n#     logging.info([DISABLED Baby])\n# except (ImportError, FileNotFoundError) as e:\n#     logging.warning([DISABLED])\n#     # Continue without baby features\n# ===== END LEGACY BABY CODE =====",
+            r"(\ntry:\n    from api\.baby_features_endpoints import router as baby_router\n\n    app\.include_router\(baby_router\)\n    logging\.info\([^\n]+Baby[^\n]+\)\nexcept \(ImportError, FileNotFoundError\) as e:\n    logging\.warning\([^\n]+\)\n    # Continue without baby features[^\n]*)",  # noqa: E501
+            r"\n# try:\n#     from api.baby_features_endpoints import router as baby_router\n#\n#     app.include_router(baby_router)\n#     logging.info([DISABLED Baby])\n# except (ImportError, FileNotFoundError) as e:\n#     logging.warning([DISABLED])\n#     # Continue without baby features\n# ===== END LEGACY BABY CODE =====",  # noqa: E501
         ),
     ]
 

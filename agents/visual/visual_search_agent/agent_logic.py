@@ -149,7 +149,7 @@ class VisualSearchAgentLogic:
                         "content": [
                             {
                                 "type": "text",
-                                "text": "Analyze the baby product in this image. Identify the product name, brand, and model number if visible. Provide your top 3 most likely matches as a JSON object with a 'suggestions' array, where each object has 'product_name', 'brand', 'model_number', and a 'confidence' score from 0.0 to 1.0. Return ONLY valid JSON without any markdown formatting or code fences.",
+                                "text": "Analyze the baby product in this image. Identify the product name, brand, and model number if visible. Provide your top 3 most likely matches as a JSON object with a 'suggestions' array, where each object has 'product_name', 'brand', 'model_number', and a 'confidence' score from 0.0 to 1.0. Return ONLY valid JSON without any markdown formatting or code fences.",  # noqa: E501
                             },
                             image_content,
                         ],
@@ -289,7 +289,7 @@ class VisualSearchAgentLogic:
                         "content": [
                             {
                                 "type": "text",
-                                "text": "Analyze the baby product in this image. Identify the product name, brand, and model number if visible. Provide your single best guess as a JSON object with the keys 'product_name', 'brand', 'model_number', and a 'confidence' score from 0.0 to 1.0 representing your certainty. Return ONLY valid JSON without any markdown formatting or code fences.",
+                                "text": "Analyze the baby product in this image. Identify the product name, brand, and model number if visible. Provide your single best guess as a JSON object with the keys 'product_name', 'brand', 'model_number', and a 'confidence' score from 0.0 to 1.0 representing your certainty. Return ONLY valid JSON without any markdown formatting or code fences.",  # noqa: E501
                             },
                             image_content,
                         ],

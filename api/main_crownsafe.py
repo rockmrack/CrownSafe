@@ -148,7 +148,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from api.crown_safe_barcode_endpoints import crown_barcode_router  # noqa: E402
-from api.crown_safe_endpoints import (
+from api.crown_safe_endpoints import (  # noqa: E402
     HairProfileRequest,
     HairProfileResponse,
     ProductAnalysisRequest,

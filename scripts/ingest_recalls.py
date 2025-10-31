@@ -28,17 +28,17 @@ if PROJECT_ROOT not in sys.path:
 
 # Import project modules
 
-from alembic.config import Config
-from sqlalchemy import text
+from alembic.config import Config  # noqa: E402
+from sqlalchemy import text  # noqa: E402
 
-from agents.recall_data_agent.connectors import (
+from agents.recall_data_agent.connectors import (  # noqa: E402
     CPSCConnector,
     EURAPEXConnector,
     FDAConnector,
     NHTSAConnector,
 )
-from alembic import command
-from core_infra.database import get_db_session
+from alembic import command  # noqa: E402
+from core_infra.database import get_db_session  # noqa: E402
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -210,7 +210,7 @@ class RecallDataIngester:
                     processed_count = counts["inserted"] + counts["updated"]
                     _ = counts["failed"]  # failed_count (reserved for logging)
                     logger.info(
-                        f"📊 {agency_name}: {counts['inserted']} inserted, {counts['updated']} updated, {counts['failed']} failed"
+                        f"📊 {agency_name}: {counts['inserted']} inserted, {counts['updated']} updated, {counts['failed']} failed"  # noqa: E501
                     )
 
         except Exception as e:

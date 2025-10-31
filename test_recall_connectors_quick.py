@@ -13,7 +13,7 @@ from datetime import datetime
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 
-from agents.recall_data_agent.connectors import ConnectorRegistry
+from agents.recall_data_agent.connectors import ConnectorRegistry  # noqa: E402
 
 
 async def quick_test():

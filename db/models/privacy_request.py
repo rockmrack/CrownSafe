@@ -79,7 +79,7 @@ class PrivacyRequest(Base):
     )
 
     def __repr__(self):
-        return f"<PrivacyRequest(id={self.id}, kind={self.kind}, email_hash={self.email_hash[:8]}..., status={self.status})>"
+        return f"<PrivacyRequest(id={self.id}, kind={self.kind}, email_hash={self.email_hash[:8]}..., status={self.status})>"  # noqa: E501
 
     def to_dict(self, include_pii: bool = False) -> Dict[str, Any]:
         """

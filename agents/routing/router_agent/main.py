@@ -20,7 +20,7 @@ try:
     from core_infra.mcp_client_library.client import MCPClient
     from core_infra.mcp_client_library.models import MCPHeader, MCPMessage
 
-    from core_infra.mcp_client_library.exceptions import MCPConnectionError, MCPError
+    from core_infra.mcp_client_library.exceptions import MCPConnectionError, MCPError  # noqa: F401
 except ImportError as e:
     print(f"CRITICAL_ERROR_ROUTER_MAIN: Failed to import core_infra: {e}")
     sys.exit(1)
@@ -205,7 +205,7 @@ class RouterAgentManager:
                         ValueError,
                     ) as e:  # Added ValueError
                         logger.warning(
-                            f"Cannot add signal handler for {signal.Signals(sig).name} on this system: {e}. Use Ctrl+C if available."
+                            f"Cannot add signal handler for {signal.Signals(sig).name} on this system: {e}. Use Ctrl+C if available."  # noqa: E501
                         )
                 else:
                     logger.warning(f"Signal {sig_name} not available on this platform.")

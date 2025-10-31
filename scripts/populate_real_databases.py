@@ -11,8 +11,8 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
-from core_infra.database import get_db_session
-from db.models.product_ingredients import (
+from core_infra.database import get_db_session  # noqa: E402
+from db.models.product_ingredients import (  # noqa: E402
     IngredientSafety,
     ProductIngredient,
     ProductNutrition,
@@ -30,7 +30,7 @@ INGREDIENT_SAFETY_DATA = {
     },
     "hydroquinone": {
         "pregnancy_risk_level": "Moderate",
-        "pregnancy_risk_reason": "Significant systemic absorption. Potential risks are not well-studied, so avoidance is recommended.",
+        "pregnancy_risk_reason": "Significant systemic absorption. Potential risks are not well-studied, so avoidance is recommended.",  # noqa: E501
         "pregnancy_source": "MotherToBaby",
         "baby_risk_level": "High",
         "baby_risk_reason": "Not recommended for babies due to skin sensitivity",

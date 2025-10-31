@@ -75,7 +75,7 @@ async def test_method_2_upload_photo():
 
     try:
         # Check if visual endpoints are available
-        from api.visual_agent_endpoints import visual_router
+        from api.visual_agent_endpoints import visual_router  # noqa: F401
 
         logger.info("Visual upload endpoint structure:")
         logger.info("  1. POST /api/v1/visual/upload - Get presigned URL")

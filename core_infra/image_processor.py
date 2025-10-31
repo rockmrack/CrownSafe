@@ -65,7 +65,7 @@ else:
     logging.info("EasyOCR disabled by config")
 
 # Import barcode scanner from Phase 1
-from core_infra.barcode_scanner import scanner as barcode_scanner
+from core_infra.barcode_scanner import scanner as barcode_scanner  # noqa: E402
 
 logger = logging.getLogger(__name__)
 

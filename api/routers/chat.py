@@ -565,7 +565,7 @@ class SuperSmartLLMClient:
         prefix = emotion_prefix.get(context.get("emotion", "neutral"), "")
 
         return {
-            "summary": f"{prefix} Baby care requires attention to many details. Always prioritize safety and consult professionals when unsure.",
+            "summary": f"{prefix} Baby care requires attention to many details. Always prioritize safety and consult professionals when unsure.",  # noqa: E501
             "reasons": [
                 "Baby safety is paramount",
                 "Professional guidance ensures best outcomes",
@@ -714,7 +714,7 @@ class SuperSmartLLMClient:
     def _fallback_response(self) -> Dict[str, Any]:
         """Ultimate fallback response"""
         return {
-            "summary": "I'm here to help with baby safety questions. Please consult your pediatrician for specific medical advice.",
+            "summary": "I'm here to help with baby safety questions. Please consult your pediatrician for specific medical advice.",  # noqa: E501
             "reasons": [
                 "Baby safety is our top priority",
                 "Professional medical advice is always recommended",

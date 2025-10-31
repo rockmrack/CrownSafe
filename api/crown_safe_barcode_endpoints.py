@@ -307,7 +307,7 @@ async def scan_hair_product_barcode(request: BarcodeScanRequest, db: Session = D
                 detail={
                     "error": "product_not_found",
                     "message": f"Product with barcode {request.barcode} not found in Crown Safe database.",
-                    "suggestion": "Try scanning the ingredient list with our image analysis feature, or add this product to our database.",
+                    "suggestion": "Try scanning the ingredient list with our image analysis feature, or add this product to our database.",  # noqa: E501
                 },
             )
 

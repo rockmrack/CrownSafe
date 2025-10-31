@@ -9,8 +9,8 @@ def fix_function6():
         content = f.read()
 
     # Find the function start and end
-    start_marker = "# REMOVED FOR CROWN SAFE: RecallDB model no longer exists (replaced with HairProductModel)\n        # from core_infra.database import RecallDB\n\n        with get_db_session() as db:"
-    end_marker = 'logger.info(f"Ã°Å¸Å½â€° UPC Enhancement Complete: {upc_coverage}% coverage achieved!")\n\n            return result'
+    start_marker = "# REMOVED FOR CROWN SAFE: RecallDB model no longer exists (replaced with HairProductModel)\n        # from core_infra.database import RecallDB\n\n        with get_db_session() as db:"  # noqa: E501
+    end_marker = 'logger.info(f"Ã°Å¸Å½â€° UPC Enhancement Complete: {upc_coverage}% coverage achieved!")\n\n            return result'  # noqa: E501
 
     # New code to insert
     new_code = """# REMOVED FOR CROWN SAFE: RecallDB model no longer exists (replaced with HairProductModel)

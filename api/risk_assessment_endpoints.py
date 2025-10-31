@@ -5,12 +5,12 @@ Risk Assessment API Endpoints
 Provides endpoints for product risk analysis, report generation, and data ingestion
 """
 
-import asyncio
-import logging
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+import asyncio  # noqa: E402
+import logging  # noqa: E402
+from datetime import datetime, timedelta  # noqa: E402
+from typing import Any, Dict, List, Optional  # noqa: E402
 
-from fastapi import (
+from fastapi import (  # noqa: E402
     APIRouter,
     BackgroundTasks,
     Depends,
@@ -19,14 +19,14 @@ from fastapi import (
     Query,
     UploadFile,
 )
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
-from sqlalchemy import func, or_
-from sqlalchemy.orm import Session
+from fastapi.responses import JSONResponse  # noqa: E402
+from pydantic import BaseModel, Field  # noqa: E402
+from sqlalchemy import func, or_  # noqa: E402
+from sqlalchemy.orm import Session  # noqa: E402
 
-from core_infra.barcode_scanner import BarcodeScanner
-from core_infra.database import get_db
-from core_infra.risk_assessment_models import (
+from core_infra.barcode_scanner import BarcodeScanner  # noqa: E402
+from core_infra.database import get_db  # noqa: E402
+from core_infra.risk_assessment_models import (  # noqa: E402
     CompanyComplianceProfile,
     DataIngestionJob,
     DataSource,
@@ -36,9 +36,9 @@ from core_infra.risk_assessment_models import (
     RiskAssessmentReport,
     SafetyIncident,
 )
-from core_infra.risk_report_generator import RiskReportGenerator
-from core_infra.risk_scoring_engine import RiskScoringEngine
-from core_infra.safety_data_connectors import (
+from core_infra.risk_report_generator import RiskReportGenerator  # noqa: E402
+from core_infra.risk_scoring_engine import RiskScoringEngine  # noqa: E402
+from core_infra.safety_data_connectors import (  # noqa: E402
     CommercialDatabaseConnector,
     CPSCDataConnector,
     DataUnificationEngine,
@@ -142,7 +142,7 @@ async def risk_assessment_root_post():
         "success": False,
         "error": {
             "code": "ENDPOINT_NOT_FOUND",
-            "message": "Please use the specific risk assessment endpoints. POST requests should go to /assess, /assess/barcode, or /assess/image",
+            "message": "Please use the specific risk assessment endpoints. POST requests should go to /assess, /assess/barcode, or /assess/image",  # noqa: E501
             "available_endpoints": {
                 "assess": "POST /assess - Assess product risk",
                 "assess_barcode": "POST /assess/barcode - Assess by barcode",

@@ -140,7 +140,7 @@ class OpenAILLMClient:
             Dictionary with a basic response structure
         """
         return {
-            "summary": "Based on the product scan, this appears to be a baby formula product. While I'm experiencing connectivity issues with the AI service, I can provide basic safety guidance.",
+            "summary": "Based on the product scan, this appears to be a baby formula product. While I'm experiencing connectivity issues with the AI service, I can provide basic safety guidance.",  # noqa: E501
             "reasons": [
                 "Product appears to be a regulated baby formula",
                 "No immediate recall alerts in local database",
@@ -153,7 +153,7 @@ class OpenAILLMClient:
                 "Ensure proper storage temperature",
             ],
             "flags": ["baby_formula", "contains_milk", "network_fallback"],
-            "disclaimer": "This is a basic safety assessment. For detailed analysis, please try again in a moment as our AI service reconnects.",
+            "disclaimer": "This is a basic safety assessment. For detailed analysis, please try again in a moment as our AI service reconnects.",  # noqa: E501
             "jurisdiction": {"code": "US", "label": "US FDA/CPSC"},
             "evidence": [
                 {"type": "regulation", "source": "FDA", "id": "baby_formula_regs"},

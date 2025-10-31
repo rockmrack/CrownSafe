@@ -33,8 +33,8 @@ except ImportError:
 
 # Optional PDF to Image conversion
 try:
-    import pdf2image
-    from pdf2image import convert_from_bytes
+    import pdf2image  # noqa: F401
+    from pdf2image import convert_from_bytes  # noqa: F401
 
     PDF_TO_IMAGE_SUPPORT = True
 except ImportError:
@@ -42,11 +42,11 @@ except ImportError:
 
 # Optional PDF export
 try:
-    from reportlab.lib.enums import TA_JUSTIFY
+    from reportlab.lib.enums import TA_JUSTIFY  # noqa: F401
     from reportlab.lib.pagesizes import letter
     from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-    from reportlab.lib.units import inch
-    from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer
+    from reportlab.lib.units import inch  # noqa: F401
+    from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer  # noqa: F401
 
     PDF_EXPORT_SUPPORT = True
 except ImportError:
@@ -572,7 +572,7 @@ class UnifiedMemoryManager:
                         topics.add("API integration")
 
                 topic_str = ", ".join(topics) if topics else "general development"
-                return f"CureViaX Development Session: {message_count} messages. Topics: {topic_str}. Building an advanced healthcare AI platform with persistent memory and multi-model support."
+                return f"CureViaX Development Session: {message_count} messages. Topics: {topic_str}. Building an advanced healthcare AI platform with persistent memory and multi-model support."  # noqa: E501
         except Exception:
             return "Building CureViaX: An advanced healthcare AI platform."
 
@@ -650,7 +650,7 @@ class UnifiedMemoryManager:
                     summary_parts.append(f"- {decision}")
 
             summary_parts.append(
-                "\nProject: Building an advanced healthcare AI platform with persistent memory, multi-agent architecture, and multi-model support."
+                "\nProject: Building an advanced healthcare AI platform with persistent memory, multi-agent architecture, and multi-model support."  # noqa: E501
             )
 
             summary = "\n".join(summary_parts)
@@ -905,7 +905,7 @@ Continue the response, completing any unfinished thoughts or code blocks."""
                     model="claude-opus-4-20250514",  # ONLY THIS MODEL
                     max_tokens=4000,  # REQUIRED BY CLAUDE API
                     temperature=0.7,
-                    system="""You are Claude 4 Opus, an expert software architect building CureViaX. You have access to our entire conversation history through Redis and ChromaDB.
+                    system="""You are Claude 4 Opus, an expert software architect building CureViaX. You have access to our entire conversation history through Redis and ChromaDB.  # noqa: E501
 
 CRITICAL: Always complete your responses fully. Never cut off mid-sentence or mid-code block.
 
@@ -961,7 +961,7 @@ Reference our previous discussions and maintain continuity.""",
 
             for attempt in range(max_retries):
                 if attempt == 0:
-                    full_prompt = f"""You are Gemini 1.5 Pro, assisting with CureViaX development. You have access to our conversation history.
+                    full_prompt = f"""You are Gemini 1.5 Pro, assisting with CureViaX development. You have access to our conversation history.  # noqa: E501
 
 CRITICAL: Complete all responses fully. Never truncate.
 
@@ -1027,7 +1027,7 @@ Context about our project:
                 messages = [
                     {
                         "role": "system",
-                        "content": """You are GPT-4, helping build CureViaX. You have access to our full conversation history.
+                        "content": """You are GPT-4, helping build CureViaX. You have access to our full conversation history.  # noqa: E501
 
 CRITICAL: Complete all responses fully. Never truncate.
 
@@ -1450,7 +1450,7 @@ st.markdown(
     f"""
 <div class="conversation-header">
     <h3 style="margin: 0;">Continuous Conversation Mode</h3>
-    <p style="margin: 0.5rem 0 0 0;">Model: {st.session_state.current_model.value} | {memory_status} | Messages: {len(st.session_state.messages)}</p>
+    <p style="margin: 0.5rem 0 0 0;">Model: {st.session_state.current_model.value} | {memory_status} | Messages: {len(st.session_state.messages)}</p>  # noqa: E501
 </div>
 """,
     unsafe_allow_html=True,

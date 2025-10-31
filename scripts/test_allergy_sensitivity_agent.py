@@ -6,12 +6,12 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from agents.premium.allergy_sensitivity_agent.agent_logic import (
+from agents.premium.allergy_sensitivity_agent.agent_logic import (  # noqa: E402
     AllergySensitivityAgentLogic,
 )
-from core_infra.auth.auth_manager import create_user
+from core_infra.auth.auth_manager import create_user  # noqa: E402
 
-from core_infra.database import (
+from core_infra.database import (  # noqa: E402
     Family,
     FamilyMember,
     User,

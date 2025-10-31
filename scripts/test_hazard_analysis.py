@@ -11,7 +11,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
-from agents.hazard_analysis_agent.agent_logic import HazardAnalysisLogic
+from agents.hazard_analysis_agent.agent_logic import HazardAnalysisLogic  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 

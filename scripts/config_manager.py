@@ -25,10 +25,10 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 try:
-    from config.settings.development import DevelopmentConfig
-    from config.settings.production import ProductionConfig
+    from config.settings.development import DevelopmentConfig  # noqa: F401
+    from config.settings.production import ProductionConfig  # noqa: F401
 
-    from config.settings import BaseConfig, get_config
+    from config.settings import BaseConfig, get_config  # noqa: F401
 except ImportError as e:
     print(f"❌ Error importing configuration: {e}")
     print("Make sure you're running this from the project root directory")

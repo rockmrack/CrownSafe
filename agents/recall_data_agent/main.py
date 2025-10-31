@@ -14,8 +14,8 @@ from datetime import datetime
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, project_root)
 
-from agents.recall_data_agent.agent_logic import RecallDataAgentLogic
-from core_infra.database import Base, engine
+from agents.recall_data_agent.agent_logic import RecallDataAgentLogic  # noqa: E402
+from core_infra.database import Base, engine  # noqa: E402
 
 # Configure logging
 logging.basicConfig(

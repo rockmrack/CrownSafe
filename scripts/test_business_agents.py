@@ -6,8 +6,8 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from agents.business.metrics_agent.agent_logic import MetricsAgentLogic
-from agents.value_add.alternatives_agent.agent_logic import AlternativesAgentLogic
+from agents.business.metrics_agent.agent_logic import MetricsAgentLogic  # noqa: E402
+from agents.value_add.alternatives_agent.agent_logic import AlternativesAgentLogic  # noqa: E402
 
 logging.basicConfig(level=logging.INFO)
 

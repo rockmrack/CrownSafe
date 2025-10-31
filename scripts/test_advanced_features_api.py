@@ -38,7 +38,7 @@ async def test_web_research():
                 print(f"✅ Research Status: {data['status']}")
                 print(f"Product: {data['product_researched']}")
                 print(
-                    f"Safety Score: {data['safety_score']}/100 {'🟢' if data['safety_score'] > 80 else '🟡' if data['safety_score'] > 60 else '🔴'}"
+                    f"Safety Score: {data['safety_score']}/100 {'🟢' if data['safety_score'] > 80 else '🟡' if data['safety_score'] > 60 else '🔴'}"  # noqa: E501
                 )
                 print(f"Findings: {data['findings_count']} from {len(data['sources_searched'])} sources")
                 print(f"Search Time: {data['search_time_ms']}ms")

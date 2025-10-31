@@ -55,9 +55,9 @@ if __name__ == "__main__":
     gen_and_check(headers, uid, "safety_summary")
     print("OK: HEAD Content-Length matches GET for both types.")
 
-from fastapi.testclient import TestClient
+from fastapi.testclient import TestClient  # noqa: E402
 
-from api.main_crownsafe import app
+from api.main_crownsafe import app  # noqa: E402
 
 c = TestClient(app)
 

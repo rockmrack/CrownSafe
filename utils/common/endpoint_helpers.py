@@ -351,4 +351,4 @@ class EndpointWrapper:
 
 
 # Import asyncio for checking coroutines
-import asyncio
+import asyncio  # noqa: E402

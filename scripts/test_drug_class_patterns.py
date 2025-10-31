@@ -441,11 +441,11 @@ class DrugClassPatternTester:
                             f"  Priority areas: {len(priorities) if isinstance(priorities, list) else priorities}"
                         )
                         self.print_info(
-                            f"  Related documents found: {len(related_docs) if isinstance(related_docs, list) else related_docs}"
+                            f"  Related documents found: {len(related_docs) if isinstance(related_docs, list) else related_docs}"  # noqa: E501
                         )
                         self.print_info(f"  Similar drugs identified: {similar_drugs}")
                         self.print_info(
-                            f"  Cross-workflow opportunities: {len(cross_workflow_ops) if isinstance(cross_workflow_ops, list) else cross_workflow_ops}"
+                            f"  Cross-workflow opportunities: {len(cross_workflow_ops) if isinstance(cross_workflow_ops, list) else cross_workflow_ops}"  # noqa: E501
                         )
 
                         # Check existing evidence recognition
@@ -703,7 +703,7 @@ class DrugClassPatternTester:
             # Query for class-level evidence with correct drug names
             results = self.memory.collection.query(
                 query_texts=[
-                    "SGLT2 inhibitors cardiovascular outcomes heart failure class effect meta-analysis comparative effectiveness"
+                    "SGLT2 inhibitors cardiovascular outcomes heart failure class effect meta-analysis comparative effectiveness"  # noqa: E501
                 ],
                 n_results=30,
                 include=["metadatas", "documents"],
@@ -791,7 +791,7 @@ class DrugClassPatternTester:
 
             comp_results = self.memory.collection.query(
                 query_texts=[
-                    "Canagliflozin Dapagliflozin Empagliflozin Sotagliflozin comparative effectiveness cardiovascular outcomes head to head"
+                    "Canagliflozin Dapagliflozin Empagliflozin Sotagliflozin comparative effectiveness cardiovascular outcomes head to head"  # noqa: E501
                 ],
                 n_results=10,
                 include=["metadatas"],
@@ -1002,7 +1002,7 @@ class DrugClassPatternTester:
             # Display comprehensive analysis
             self.print_success("\nSGLT2 KNOWLEDGE BASE SUMMARY:")
             self.print_info(
-                f"  Total SGLT2 documents: {sglt2_stats['total_sglt2_docs']}/{total_docs} ({sglt2_stats['total_sglt2_docs'] / total_docs * 100:.1f}%)"
+                f"  Total SGLT2 documents: {sglt2_stats['total_sglt2_docs']}/{total_docs} ({sglt2_stats['total_sglt2_docs'] / total_docs * 100:.1f}%)"  # noqa: E501
             )
 
             self.print_info("\n  Documents by drug:")
@@ -1133,7 +1133,7 @@ class DrugClassPatternTester:
             self.print_info("  [CHECK] This proves the underlying data and similarity is working perfectly")
         else:
             self.print_error(
-                f"CRITICAL: get_enhanced_research_recommendations returned '{predicted_strategy if predicted_strategy != 'update' else 'unknown'}' strategy"
+                f"CRITICAL: get_enhanced_research_recommendations returned '{predicted_strategy if predicted_strategy != 'update' else 'unknown'}' strategy"  # noqa: E501
             )
             self.print_info("  [X] Method is not leveraging the excellent similarity results")
             self.print_info("  [X] All internal arrays are empty despite rich knowledge base")

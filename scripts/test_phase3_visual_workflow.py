@@ -117,7 +117,7 @@ async def test_medium_confidence_visual_workflow():
 
                 # Apply the warning logic
                 if visual_confidence and 0.7 <= visual_confidence < 0.95:
-                    warning_text = f"⚠️ Warning: This product was identified from a photo with {int(visual_confidence * 100)}% confidence. Please verify the model number on the product to ensure this information is accurate for your specific item. "
+                    warning_text = f"⚠️ Warning: This product was identified from a photo with {int(visual_confidence * 100)}% confidence. Please verify the model number on the product to ensure this information is accurate for your specific item. "  # noqa: E501
                     summary = warning_text + summary
 
                 return {

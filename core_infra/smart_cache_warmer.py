@@ -220,7 +220,7 @@ class SmartCacheWarmer:
             }
 
             self.logger.info(
-                f"✅ Cache warming complete: {product_warming} products + {autocomplete_warming} autocomplete queries in {elapsed:.3f}s"
+                f"✅ Cache warming complete: {product_warming} products + {autocomplete_warming} autocomplete queries in {elapsed:.3f}s"  # noqa: E501
             )
 
             return result

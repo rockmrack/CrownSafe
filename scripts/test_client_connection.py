@@ -15,9 +15,9 @@ sys.path.insert(0, parent_dir)
 
 # --- Imports ---
 # Now import from the client library
-from core_infra.mcp_client_library.client import MCPClient
+from core_infra.mcp_client_library.client import MCPClient  # noqa: E402
 
-from core_infra.mcp_client_library.exceptions import ConnectionError, MCPClientError
+from core_infra.mcp_client_library.exceptions import ConnectionError, MCPClientError  # noqa: E402
 
 # --- Configuration ---
 # Configure basic logging for the script

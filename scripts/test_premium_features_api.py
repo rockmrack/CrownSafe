@@ -113,7 +113,7 @@ async def test_family_members_endpoint():
                 print(f"✅ Current family members: {len(members)}")
                 for member in members:
                     print(
-                        f"  - {member['name']}: Allergies: {', '.join(member['allergies']) if member['allergies'] else 'None'}"
+                        f"  - {member['name']}: Allergies: {', '.join(member['allergies']) if member['allergies'] else 'None'}"  # noqa: E501
                     )
             else:
                 print(f"❌ Error getting members: {response.status_code}")
@@ -234,7 +234,7 @@ async def test_mobile_scan_with_premium():
                 data = response.json()
                 print(f"✅ Status: {data['status']}")
                 print(
-                    f"Safety Level: {data['safety_level']} ({'🟢' if data['safety_level'] == 'SAFE' else '🔴' if data['safety_level'] == 'DANGER' else '🟡'})"
+                    f"Safety Level: {data['safety_level']} ({'🟢' if data['safety_level'] == 'SAFE' else '🔴' if data['safety_level'] == 'DANGER' else '🟡'})"  # noqa: E501
                 )
                 print(f"Response Time: {data.get('response_time_ms', 'N/A')}ms")
 

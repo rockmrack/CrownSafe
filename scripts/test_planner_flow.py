@@ -72,7 +72,7 @@ async def handle_controller_message(message: Dict[str, Any]):
             task_completion_event.set()  # Signal that the planning task is done
         elif message_type == "TASK_ACKNOWLEDGE":
             logger.info(
-                f"Received TASK_ACKNOWLEDGE for planning task (CorrID: {correlation_id}), Status: {payload.get('status')}"
+                f"Received TASK_ACKNOWLEDGE for planning task (CorrID: {correlation_id}), Status: {payload.get('status')}"  # noqa: E501
             )
         else:
             logger.debug(f"Received other message type {message_type} with matching correlation ID.")
@@ -80,7 +80,7 @@ async def handle_controller_message(message: Dict[str, Any]):
         # We might receive messages related to subtasks (like TASK_COMPLETE from WebResearchAgent)
         # routed back to the original sender (this controller). Log them for now.
         logger.debug(
-            f"Received message with non-matching correlation ID: {correlation_id} (Expected: {task_correlation_id}) - Likely subtask result."
+            f"Received message with non-matching correlation ID: {correlation_id} (Expected: {task_correlation_id}) - Likely subtask result."  # noqa: E501
         )
         logger.debug(f"Subtask Result Message: {json.dumps(message, indent=2)}")
 
@@ -128,7 +128,7 @@ async def run_planner_flow():
         )
 
         logger.info(
-            f"Sending TASK_ASSIGN (Subtask ID: {subtask_id_to_send}, Corr ID: {task_correlation_id}) to {TARGET_AGENT_ID}..."
+            f"Sending TASK_ASSIGN (Subtask ID: {subtask_id_to_send}, Corr ID: {task_correlation_id}) to {TARGET_AGENT_ID}..."  # noqa: E501
         )
         await client.send_message(task_message)
         logger.info("Planning task message sent.")

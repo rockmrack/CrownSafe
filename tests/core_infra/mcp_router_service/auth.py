@@ -82,7 +82,7 @@ async def validate_message_authentication(message: Dict[str, Any]) -> bool:
     #     payload = decode_jwt_token(token)
     #     # Add further checks: e.g., does payload['sub'] match sender_id?
     #     if payload.get("sub") != sender_id:
-    #          logger.warning(f"Auth validation failed for message from '{sender_id}': Token subject does not match sender ID.")
+    #          logger.warning(f"Auth validation failed for message from '{sender_id}': Token subject does not match sender ID.")  # noqa: E501
     #          return False
     #     # Potentially check permissions/scopes here based on payload['scp'] or similar
     #     logger.debug(f"Message from '{sender_id}' authenticated successfully via header token.")

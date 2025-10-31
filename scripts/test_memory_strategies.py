@@ -14,19 +14,19 @@ from typing import Any, Dict, List, Optional
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 
-from scripts.test_commander_flow import run_commander_flow
+from scripts.test_commander_flow import run_commander_flow  # noqa: E402
 
 # Test scenarios designed to trigger different strategies
 TEST_SCENARIOS = [
     {
         "name": "SGLT2_Fourth_Drug",
-        "query": "Investigate the efficacy and safety of Ertugliflozin for treating Heart Failure, including at least 10 recent clinical trials and 10 published articles",
+        "query": "Investigate the efficacy and safety of Ertugliflozin for treating Heart Failure, including at least 10 recent clinical trials and 10 published articles",  # noqa: E501
         "expected_strategy": "update",  # Should recognize 3 SGLT2s already in memory
         "rationale": "Fourth SGLT2 inhibitor after Cana/Dapa/Empa - should trigger update strategy",
     },
     {
         "name": "Different_Drug_Class_Same_Condition",
-        "query": "Investigate the efficacy and safety of Lisinopril for treating Heart Failure, including comprehensive safety profile",
+        "query": "Investigate the efficacy and safety of Lisinopril for treating Heart Failure, including comprehensive safety profile",  # noqa: E501
         "expected_strategy": "focused",  # Has heart failure data but new drug class
         "rationale": "ACE inhibitor for heart failure - new drug class but known condition",
     },
@@ -38,7 +38,7 @@ TEST_SCENARIOS = [
     },
     {
         "name": "Completely_New_Drug",
-        "query": "Investigate the efficacy and safety of Tirzepatide for treating Type 2 Diabetes with cardiovascular outcomes",
+        "query": "Investigate the efficacy and safety of Tirzepatide for treating Type 2 Diabetes with cardiovascular outcomes",  # noqa: E501
         "expected_strategy": "comprehensive",  # Completely new drug
         "rationale": "New GLP-1/GIP dual agonist - no existing data",
     },

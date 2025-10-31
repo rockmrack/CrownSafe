@@ -343,7 +343,7 @@ class ProductMonitoringScheduler:
                     db.commit()
 
             logger.info(
-                f"Monitoring run {run_id} completed: {products_checked} checked, {new_recalls_found} new recalls, {notifications_sent} notifications"
+                f"Monitoring run {run_id} completed: {products_checked} checked, {new_recalls_found} new recalls, {notifications_sent} notifications"  # noqa: E501
             )
 
             return {
@@ -416,9 +416,9 @@ class ProductMonitoringScheduler:
 
 
 # Celery task for scheduled monitoring
-import os
+import os  # noqa: E402
 
-from celery import Celery
+from celery import Celery  # noqa: E402
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 celery_app = Celery("monitoring", broker=REDIS_URL, backend=REDIS_URL)

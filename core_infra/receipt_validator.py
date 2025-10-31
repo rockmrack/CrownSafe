@@ -29,7 +29,7 @@ ENABLE_RECEIPT_VALIDATION = os.getenv("ENABLE_RECEIPT_VALIDATION", "false").lowe
 GOOGLE_API_AVAILABLE = False
 if ENABLE_RECEIPT_VALIDATION:
     try:
-        from google.auth.transport.requests import Request
+        from google.auth.transport.requests import Request  # noqa: F401
         from google.oauth2 import service_account
         from googleapiclient.discovery import build
 

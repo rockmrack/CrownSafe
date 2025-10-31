@@ -10,9 +10,9 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-import redis.asyncio as redis
+import redis.asyncio as redis  # noqa: E402
 
-from agents.routing.router_agent.agent_logic import RouterLogic
+from agents.routing.router_agent.agent_logic import RouterLogic  # noqa: E402
 
 # Setup logging to see router messages
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

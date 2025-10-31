@@ -254,7 +254,7 @@ class SearchServiceV2:
             keyset_conditions = f"""
                 ({score_expression} < :last_score
                  OR ({score_expression} = :last_score AND {table}.recall_date < :last_date)
-                 OR ({score_expression} = :last_score AND {table}.recall_date = :last_date AND {table}.recall_id > :last_id))
+                 OR ({score_expression} = :last_score AND {table}.recall_date = :last_date AND {table}.recall_id > :last_id))  # noqa: E501
             """
             where_conditions.append(keyset_conditions)
             params["last_score"] = last_score

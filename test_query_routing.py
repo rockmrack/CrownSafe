@@ -17,11 +17,11 @@ print("END-TO-END QUERY FLOW TEST - Production Database")
 print("=" * 70)
 print()
 
-from fastapi.testclient import TestClient
+from fastapi.testclient import TestClient  # noqa: E402
 
-from api.main_crownsafe import app
-from core_infra.database import SessionLocal
-from core_infra.enhanced_database_schema import EnhancedRecallDB
+from api.main_crownsafe import app  # noqa: E402
+from core_infra.database import SessionLocal  # noqa: E402
+from core_infra.enhanced_database_schema import EnhancedRecallDB  # noqa: E402
 
 # Verify database has recalls
 print("Step 1: Verify production database connection...")

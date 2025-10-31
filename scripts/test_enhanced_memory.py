@@ -13,7 +13,7 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
 # Now import from core_infra
-from core_infra.enhanced_memory_manager import EnhancedMemoryManager
+from core_infra.enhanced_memory_manager import EnhancedMemoryManager  # noqa: E402
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ async def test_enhanced_memory():
             "goal": "Investigate Empagliflozin for Heart Failure treatment",
             "research_data": {
                 "pubmed": {
-                    "content": "Empagliflozin shows significant efficacy in heart failure patients. Clinical trials demonstrate reduced hospitalization."
+                    "content": "Empagliflozin shows significant efficacy in heart failure patients. Clinical trials demonstrate reduced hospitalization."  # noqa: E501
                 },
                 "clinical_trials": {
                     "content": "Multiple randomized controlled trials confirm Empagliflozin safety and efficacy."
@@ -52,11 +52,11 @@ async def test_enhanced_memory():
         print(f"SUCCESS: Standard storage: {results['standard_storage']['status']}")
         print(f"SUCCESS: Temporal analysis: {len(results['temporal_analysis'].get('patterns_detected', []))} patterns")
         print(
-            f"SUCCESS: Contradiction detection: {len(results['contradiction_detection'].get('contradictions_found', []))} contradictions"
+            f"SUCCESS: Contradiction detection: {len(results['contradiction_detection'].get('contradictions_found', []))} contradictions"  # noqa: E501
         )
         print(f"SUCCESS: Gap analysis: {len(results['gap_analysis'].get('gaps_identified', []))} gaps")
         print(
-            f"SUCCESS: Cross-workflow insights: {len(results['cross_workflow_insights'].get('insights_generated', []))} insights"
+            f"SUCCESS: Cross-workflow insights: {len(results['cross_workflow_insights'].get('insights_generated', []))} insights"  # noqa: E501
         )
 
         # Test enhanced analytics

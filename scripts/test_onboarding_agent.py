@@ -11,8 +11,8 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
-from agents.engagement.onboarding_agent.agent_logic import OnboardingAgentLogic
-from core_infra.database import (
+from agents.engagement.onboarding_agent.agent_logic import OnboardingAgentLogic  # noqa: E402
+from core_infra.database import (  # noqa: E402
     SessionLocal,
     User,
     create_tables,

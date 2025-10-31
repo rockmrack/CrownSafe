@@ -12,7 +12,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
-from agents.engagement.push_notification_agent.agent_logic import (
+from agents.engagement.push_notification_agent.agent_logic import (  # noqa: E402
     PushNotificationAgentLogic,
 )
 

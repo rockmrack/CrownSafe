@@ -114,7 +114,7 @@ class FeedbackRequest(BaseModel):
             "example": {
                 "type": "bug_report",
                 "subject": "Search not working",
-                "message": "When I search for 'Graco car seat', no results appear even though I know there was a recall.",
+                "message": "When I search for 'Graco car seat', no results appear even though I know there was a recall.",  # noqa: E501
                 "user_email": "user@example.com",
                 "user_name": "Jane Doe",
                 "app_version": "1.0.0",
@@ -267,7 +267,7 @@ Device: {feedback.device_info or "Unknown"}
 Locale: {feedback.locale}
 Timestamp: {feedback.timestamp}
 
-{f"Reproduction Steps:{chr(10)}{chr(10).join(f'{i + 1}. {step}' for i, step in enumerate(feedback.reproduction_steps))}" if feedback.reproduction_steps else ""}
+{f"Reproduction Steps:{chr(10)}{chr(10).join(f'{i + 1}. {step}' for i, step in enumerate(feedback.reproduction_steps))}" if feedback.reproduction_steps else ""}  # noqa: E501
 
 Response Time: {get_response_time(priority)}
 

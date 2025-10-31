@@ -642,7 +642,7 @@ def seed_hair_products(db: Session) -> int:
             db.add(product)
             count += 1
             print(
-                f"  ✓ Added: {product_data['brand']} - {product_data['product_name']} (UPC: {product_data['upc_barcode']})"
+                f"  ✓ Added: {product_data['brand']} - {product_data['product_name']} (UPC: {product_data['upc_barcode']})"  # noqa: E501
             )
         else:
             print(f"  ⊘ Skipped: {product_data['brand']} - {product_data['product_name']} (already exists)")

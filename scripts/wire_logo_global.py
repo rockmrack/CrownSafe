@@ -33,7 +33,7 @@ helper = r"""
             with open(path, "rb") as f:
                 b64 = base64.b64encode(f.read()).decode("ascii")
             ext = os.path.splitext(path)[1].lower().lstrip(".") or "png"
-            mime = {"png":"image/png","jpg":"image/jpeg","jpeg":"image/jpeg","svg":"image/svg+xml"}.get(ext,"application/octet-stream")
+            mime = {"png":"image/png","jpg":"image/jpeg","jpeg":"image/jpeg","svg":"image/svg+xml"}.get(ext,"application/octet-stream")  # noqa: E501
             return f"data:{mime};base64,{b64}"
         except Exception as e:
             try:

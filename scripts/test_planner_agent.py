@@ -10,7 +10,7 @@ project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
 # Correct import path based on your directory structure
-from agents.planning.planner_agent.agent_logic import MemoryAugmentedPlannerLogic
+from agents.planning.planner_agent.agent_logic import MemoryAugmentedPlannerLogic  # noqa: E402
 
 # Configure logging with more detail
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

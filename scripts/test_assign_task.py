@@ -82,7 +82,7 @@ async def handle_controller_message(message: Dict[str, Any]):
             )
         elif message_type == "STATUS_UPDATE":
             logger.info(
-                f"Received STATUS_UPDATE for correlation_id: {correlation_id}, Description: {payload.get('status_description')}"
+                f"Received STATUS_UPDATE for correlation_id: {correlation_id}, Description: {payload.get('status_description')}"  # noqa: E501
             )
         else:
             logger.debug(f"Received message type {message_type} with matching correlation ID, but not final status.")
@@ -133,7 +133,7 @@ async def run_task_assignment():
         )
 
         logger.info(
-            f"Sending TASK_ASSIGN (Subtask ID: {subtask_id_to_send}, Corr ID: {task_correlation_id}) to {TARGET_AGENT_ID}..."
+            f"Sending TASK_ASSIGN (Subtask ID: {subtask_id_to_send}, Corr ID: {task_correlation_id}) to {TARGET_AGENT_ID}..."  # noqa: E501
         )
         await client.send_message(task_message)
         logger.info("Task message sent.")

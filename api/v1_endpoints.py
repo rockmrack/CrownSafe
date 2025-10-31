@@ -21,10 +21,10 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from sqlalchemy import text
-from sqlalchemy.exc import ProgrammingError
+from sqlalchemy import text  # noqa: E402
+from sqlalchemy.exc import ProgrammingError  # noqa: E402
 
-from core_infra.database import get_db_session  # RecallDB removed - Crown Safe uses HairProductModel
+from core_infra.database import get_db_session  # RecallDB removed - Crown Safe uses HairProductModel  # noqa: E402
 
 logger = logging.getLogger(__name__)
 

@@ -11,7 +11,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 # -----------------------------------------
 
-from agents.product_identifier_agent.agent_logic import ProductIdentifierLogic
+from agents.product_identifier_agent.agent_logic import ProductIdentifierLogic  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
@@ -58,7 +58,7 @@ async def main():
             else:
                 print("\n" + "=" * 50)
                 print(
-                    f"❌ TEST FAILED: The product name '{product_name}' did not contain the expected fragment '{EXPECTED_PRODUCT_NAME_FRAGMENT}'."
+                    f"❌ TEST FAILED: The product name '{product_name}' did not contain the expected fragment '{EXPECTED_PRODUCT_NAME_FRAGMENT}'."  # noqa: E501
                 )
         else:
             print("\n" + "=" * 50)

@@ -25,8 +25,8 @@ print("=" * 80 + "\n")
 print("PART 1: Core Database Connection")
 print("-" * 80)
 
-from core_infra.database import SessionLocal, engine
-from core_infra.enhanced_database_schema import EnhancedRecallDB
+from core_infra.database import SessionLocal, engine  # noqa: E402
+from core_infra.enhanced_database_schema import EnhancedRecallDB  # noqa: E402
 
 print(f"✓ Engine URL: {str(engine.url).replace('MandarunLabadiena25!', '***')}")
 print(f"✓ Dialect: {engine.dialect.name}")
@@ -54,13 +54,13 @@ print("\n✅ PART 1 PASSED: Core database connection verified\n")
 print("PART 2: Search Service Database Access")
 print("-" * 80)
 
-from api.services.search_service import SearchService
+from api.services.search_service import SearchService  # noqa: E402
 
 db = SessionLocal()
 search_service = SearchService(db)
 
 # Test 1: Check if recalls_enhanced table is detected
-from sqlalchemy import inspect
+from sqlalchemy import inspect  # noqa: E402
 
 inspector = inspect(db.bind)
 has_enhanced = inspector.has_table("recalls_enhanced")
@@ -89,9 +89,9 @@ print("\n✅ PART 2 PASSED: SearchService correctly queries production database\
 print("PART 3: API Endpoint Database Routing")
 print("-" * 80)
 
-from fastapi.testclient import TestClient
+from fastapi.testclient import TestClient  # noqa: E402
 
-from api.main_crownsafe import app
+from api.main_crownsafe import app  # noqa: E402
 
 client = TestClient(app)
 
