@@ -3081,6 +3081,38 @@ async def azure_cache_stats():
         )
 
 
+@app.get("/api/v1/monitoring/system-health-dashboard", tags=["monitoring"])
+async def system_health_dashboard_endpoint():
+    """
+    Comprehensive system health dashboard
+    Aggregates all subsystem health metrics and provides overall health score
+    """
+    try:
+        from core_infra.system_health_dashboard import system_health_dashboard
+
+        health_data = system_health_dashboard.get_comprehensive_health()
+
+        # Return appropriate status code based on health
+        status_code = 200
+        if health_data["status"] in ["critical", "warning"]:
+            status_code = 503  # Service Unavailable
+        elif health_data["status"] == "degraded":
+            status_code = 200  # OK but degraded
+
+        return JSONResponse(content=health_data, status_code=status_code)
+
+    except Exception as e:
+        logger.error(f"System health check failed: {e}")
+        return JSONResponse(
+            content={
+                "status": "error",
+                "error": str(e),
+                "timestamp": datetime.utcnow().isoformat(),
+            },
+            status_code=500,
+        )
+
+
 # --- NOTIFICATION SYSTEM ---
 
 
