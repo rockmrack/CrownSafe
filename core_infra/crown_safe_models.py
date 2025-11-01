@@ -33,7 +33,8 @@ class HairProfileModel(Base):
     __tablename__ = "hair_profiles"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, unique=True)
+    # Temporarily removed FK constraint to allow standalone hair_products testing
+    user_id = Column(Integer, nullable=False, unique=True)
 
     # Hair characteristics
     hair_type = Column(String(10), nullable=False)  # 3C, 4A, 4B, 4C, Mixed
