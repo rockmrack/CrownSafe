@@ -18,10 +18,11 @@ from sqlalchemy import (
     String,
     Text,
 )
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-Base = declarative_base()
+# Import shared Base to ensure all models use the same metadata
+from core_infra.base import Base
+
 # ============================================================================
 # USER & PROFILE MODELS
 # ============================================================================

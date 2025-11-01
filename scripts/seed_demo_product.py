@@ -7,15 +7,16 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from core_infra.crown_safe_models import Base, HairProductModel
+from core_infra.base import Base
+from core_infra.crown_safe_models import HairProductModel
 from core_infra.database import SessionLocal, engine
 
 
 def seed_demo_product():
     """Insert a demo hair product into the database."""
     try:
-        # Create all tables from the crown_safe_models Base
-        print("Creating tables from HairProductModel metadata...")
+        # Create all tables from the database.py Base (includes User and all models)
+        print("Creating all database tables...")
         Base.metadata.create_all(bind=engine)
         print("✅ Database tables created/verified")
 
@@ -23,10 +24,12 @@ def seed_demo_product():
         session = SessionLocal()
 
         # Check if product already exists
-        existing = session.query(HairProductModel).filter(
-            HairProductModel.barcode == "012345678905"
-        ).first()
-        
+        existing = (
+            session.query(HairProductModel)
+            .filter(HairProductModel.barcode == "012345678905")
+            .first()
+        )
+
         if existing:
             print(f"⚠️  Product already exists: {existing.name} (barcode: {existing.barcode})")
             session.close()
@@ -55,11 +58,11 @@ def seed_demo_product():
             is_paraben_free=True,
             is_curly_girl_approved=True,
         )
-        
+
         session.add(demo_product)
         session.commit()
         session.refresh(demo_product)
-        
+
         print("✅ Inserted demo product: Moisture Repair Leave-In")
         print(f"   Product ID: {demo_product.product_id}")
         print(f"   Barcode: {demo_product.barcode}")
