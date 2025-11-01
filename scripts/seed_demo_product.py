@@ -7,104 +7,63 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from sqlalchemy import text
-
-from core_infra.database import SessionLocal
+from core_infra.crown_safe_models import Base, HairProductModel
+from core_infra.database import SessionLocal, engine
 
 
 def seed_demo_product():
     """Insert a demo hair product into the database."""
     try:
+        # Create all tables from the crown_safe_models Base
+        print("Creating tables from HairProductModel metadata...")
+        Base.metadata.create_all(bind=engine)
+        print("✅ Database tables created/verified")
+
         # Create session
         session = SessionLocal()
 
-        # Create hair_products table with correct schema matching HairProductModel
-        session.execute(
-            text(
-                """
-            CREATE TABLE IF NOT EXISTS hair_products (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                product_id TEXT UNIQUE NOT NULL,
-                barcode TEXT,
-                name TEXT NOT NULL,
-                brand TEXT NOT NULL,
-                category TEXT NOT NULL,
-                product_type TEXT NOT NULL,
-                description TEXT,
-                size TEXT,
-                ingredients TEXT NOT NULL,
-                ph_level REAL,
-                is_curly_girl_approved INTEGER DEFAULT 0,
-                is_sulfate_free INTEGER DEFAULT 0,
-                is_silicone_free INTEGER DEFAULT 0,
-                is_protein_free INTEGER DEFAULT 0,
-                is_paraben_free INTEGER DEFAULT 0,
-                price REAL,
-                currency TEXT DEFAULT 'USD',
-                available_at TEXT,
-                affiliate_links TEXT,
-                avg_crown_score INTEGER,
-                image_url TEXT,
-                thumbnail_url TEXT,
-                review_count INTEGER DEFAULT 0,
-                avg_rating REAL DEFAULT 0.0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                is_active INTEGER DEFAULT 1
-            )
-        """
-            )
-        )
-        session.commit()
-        print("✅ Database tables created/verified")
-
         # Check if product already exists
-        existing = session.execute(
-            text("SELECT * FROM hair_products WHERE barcode = :barcode"),
-            {"barcode": "012345678905"},
+        existing = session.query(HairProductModel).filter(
+            HairProductModel.barcode == "012345678905"
         ).first()
+        
         if existing:
-            print("⚠️  Product already exists with barcode 012345678905")
+            print(f"⚠️  Product already exists: {existing.name} (barcode: {existing.barcode})")
             session.close()
             return
 
-        # Insert demo product using raw SQL with correct column names
-        session.execute(
-            text(
-                """
-            INSERT INTO hair_products (
-                product_id, name, brand, barcode, category, 
-                product_type, ingredients, ph_level, 
-                avg_crown_score, is_sulfate_free, is_silicone_free,
-                is_paraben_free, is_curly_girl_approved
-            ) VALUES (
-                :product_id, :name, :brand, :barcode, :category,
-                :product_type, :ingredients, :ph,
-                :score, :sulfate_free, :silicone_free,
-                :paraben_free, :cg_approved
-            )
-        """
-            ),
-            {
-                "product_id": "CROWN_DEMO_001",
-                "name": "Moisture Repair Leave-In",
-                "brand": "Crown Labs",
-                "barcode": "012345678905",
-                "category": "Conditioner",
-                "product_type": "Leave-In Conditioner",
-                "ingredients": ('["Water", "Shea Butter", "Cetearyl Alcohol", "Glycerin", "Coconut Oil", "Aloe Vera"]'),
-                "ph": 5.0,
-                "score": 82,
-                "sulfate_free": 1,
-                "silicone_free": 1,
-                "paraben_free": 1,
-                "cg_approved": 1,
-            },
+        # Create demo product using ORM model
+        demo_product = HairProductModel(
+            product_id="CROWN_DEMO_001",
+            name="Moisture Repair Leave-In",
+            brand="Crown Labs",
+            barcode="012345678905",
+            category="Conditioner",
+            product_type="Leave-In Conditioner",
+            ingredients=[
+                "Water",
+                "Shea Butter",
+                "Cetearyl Alcohol",
+                "Glycerin",
+                "Coconut Oil",
+                "Aloe Vera",
+            ],
+            ph_level=5.0,
+            avg_crown_score=82,
+            is_sulfate_free=True,
+            is_silicone_free=True,
+            is_paraben_free=True,
+            is_curly_girl_approved=True,
         )
+        
+        session.add(demo_product)
         session.commit()
+        session.refresh(demo_product)
+        
         print("✅ Inserted demo product: Moisture Repair Leave-In")
-        print("   Barcode: 012345678905")
-        print("   Crown Score: 82")
+        print(f"   Product ID: {demo_product.product_id}")
+        print(f"   Barcode: {demo_product.barcode}")
+        print(f"   Crown Score: {demo_product.avg_crown_score}")
         session.close()
 
     except Exception as e:
