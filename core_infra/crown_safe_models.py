@@ -18,7 +18,6 @@ from sqlalchemy import (
     String,
     Text,
 )
-from sqlalchemy.orm import relationship
 
 # Import shared Base to ensure all models use the same metadata
 from core_infra.base import Base
@@ -284,8 +283,8 @@ class ProductReviewModel(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     is_active = Column(Boolean, default=True)
 
-    # Relationships
-    product = relationship("HairProductModel", back_populates="reviews")
+    # Relationships - commented out to avoid circular import issues
+    # product = relationship("HairProductModel", back_populates="reviews")
 
 
 # ============================================================================
