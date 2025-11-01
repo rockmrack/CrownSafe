@@ -7,9 +7,9 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from core_infra.base import Base
+# Import database first to ensure User model is registered
 from core_infra.crown_safe_models import HairProductModel
-from core_infra.database import SessionLocal, engine
+from core_infra.database import Base, SessionLocal, engine
 
 
 def seed_demo_product():
@@ -24,11 +24,7 @@ def seed_demo_product():
         session = SessionLocal()
 
         # Check if product already exists
-        existing = (
-            session.query(HairProductModel)
-            .filter(HairProductModel.barcode == "012345678905")
-            .first()
-        )
+        existing = session.query(HairProductModel).filter(HairProductModel.barcode == "012345678905").first()
 
         if existing:
             print(f"⚠️  Product already exists: {existing.name} (barcode: {existing.barcode})")
