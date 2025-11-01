@@ -31,6 +31,12 @@ def _is_safe_identifier(name: str, pattern: re.Pattern = identifier_pattern) -> 
     return bool(pattern.fullmatch(name))
 
 
+def _quote_identifier(name: str) -> str:
+    """Wrap an identifier in double quotes with internal quotes escaped."""
+    escaped = name.replace('"', '""')
+    return f'"{escaped}"'
+
+
 print(f"📊 Tables in database: {len(tables)}")
 for table in tables:
     print(f"   - {table[0]}")
@@ -45,15 +51,19 @@ for table in tables:
             print(f"⚠️  Skipping table with unsafe name: {table_name}")
             continue
 
-        cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+        safe_table = _quote_identifier(table_name)
+        count_query = "SELECT COUNT(*) FROM " + safe_table
+        cursor.execute(count_query)
         count = cursor.fetchone()[0]
         print(f"📈 {table_name}: {count:,} rows")
 
         # Show sample for recall tables
         if "recall" in table_name.lower() and count > 0:
-            cursor.execute(f"SELECT * FROM {table_name} LIMIT 1")
+            sample_query = "SELECT * FROM " + safe_table + " LIMIT 1"
+            cursor.execute(sample_query)
             cursor.fetchone()
-            cursor.execute(f"PRAGMA table_info({table_name})")
+            pragma_query = "PRAGMA table_info(" + safe_table + ")"
+            cursor.execute(pragma_query)
             columns = [col[1] for col in cursor.fetchall()]
             print(f"   Sample columns: {', '.join(columns[:5])}...")
 

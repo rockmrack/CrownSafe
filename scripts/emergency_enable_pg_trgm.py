@@ -5,14 +5,16 @@ This bypasses the application startup code.
 
 import os
 import sys
+from urllib.parse import urlparse
 
 import psycopg2
 
-# Get DATABASE_URL from environment or use direct connection
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://babyshield_user:MandarunLabadiena25!@babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com:5432/postgres",
-)
+# Get DATABASE_URL from environment
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    print("❌ DATABASE_URL environment variable is required for this script")
+    sys.exit(1)
 
 print("=" * 60)
 print("EMERGENCY pg_trgm Enablement Script")
@@ -20,24 +22,14 @@ print("=" * 60)
 print()
 
 try:
-    print("🔌 Connecting to production database...")
-    print("   Host: babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com")
-    print("   Database: postgres")
+    parsed = urlparse(DATABASE_URL)
+    print("🔌 Connecting to database...")
+    print(f"   Host: {parsed.hostname or 'unknown'}")
+    print(f"   Database: {(parsed.path or '/').lstrip('/') or 'postgres'}")
     print()
 
     # Parse connection string
-    if DATABASE_URL.startswith("postgresql://"):
-        conn = psycopg2.connect(DATABASE_URL, sslmode="require", connect_timeout=10)
-    else:
-        conn = psycopg2.connect(
-            host="babyshield-prod-db.cx4o4w2uqorf.eu-north-1.rds.amazonaws.com",
-            port=5432,
-            database="postgres",
-            user="babyshield_user",
-            password="MandarunLabadiena25!",
-            sslmode="require",
-            connect_timeout=10,
-        )
+    conn = psycopg2.connect(DATABASE_URL, sslmode="require", connect_timeout=10)
 
     conn.autocommit = True
     cursor = conn.cursor()
@@ -71,12 +63,16 @@ try:
     print("🧪 Testing similarity function...")
     try:
         cursor.execute("SELECT similarity('baby', 'baby');")
-        score = cursor.fetchone()[0]
-        print(f"✅ similarity('baby', 'baby') = {score} (expected: 1.0)")
+        result_same = cursor.fetchone()
+        if result_same is None:
+            raise ValueError("similarity('baby', 'baby') returned no rows")
+        print(f"✅ similarity('baby', 'baby') = {result_same[0]} (expected: 1.0)")
 
         cursor.execute("SELECT similarity('baby', 'babe');")
-        score = cursor.fetchone()[0]
-        print(f"✅ similarity('baby', 'babe') = {score} (expected: ~0.75)")
+        result_close = cursor.fetchone()
+        if result_close is None:
+            raise ValueError("similarity('baby', 'babe') returned no rows")
+        print(f"✅ similarity('baby', 'babe') = {result_close[0]} (expected: ~0.75)")
         print()
         print("✅ similarity() function is working correctly!")
     except Exception as e:
@@ -99,8 +95,8 @@ try:
 
     if indexes:
         print(f"✅ Found {len(indexes)} trgm indexes:")
-        for idx_name, idx_def in indexes:
-            print(f"   - {idx_name}")
+    for idx_name, _idx_def in indexes:
+        print(f"   - {idx_name}")
     else:
         print("❌ No trgm indexes found!")
         print()

@@ -7,7 +7,7 @@ import logging
 import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 try:
@@ -21,6 +21,11 @@ except ImportError:
 from .memory_manager import MemoryManager  # Inherit from MVP-1.4
 
 logger = logging.getLogger(__name__)
+
+
+def utc_now() -> datetime:
+    """Return the current UTC timestamp."""
+    return datetime.now(timezone.utc)
 
 
 @dataclass
@@ -150,7 +155,8 @@ class EnhancedMemoryManager(MemoryManager):
 
             # Research gaps collection
             self.gaps_collection = self.chroma_client.get_or_create_collection(
-                name=f"{self.collection_name}_gaps", metadata={"hnsw:space": "cosine"},
+                name=f"{self.collection_name}_gaps",
+                metadata={"hnsw:space": "cosine"},
             )
 
             # Cross-workflow insights collection
@@ -177,12 +183,15 @@ class EnhancedMemoryManager(MemoryManager):
         # Convert async call to sync for compatibility
         if hasattr(workflow_data, "get"):
             # Extract parameters for standard storage
-            workflow_id = workflow_data.get("workflow_id", f"enhanced_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+            workflow_id = workflow_data.get(
+                "workflow_id",
+                f"enhanced_{utc_now().strftime('%Y%m%d_%H%M%S')}",
+            )
             goal = workflow_data.get("goal", "Enhanced workflow")
             entities = workflow_data.get("extracted_entities", {})
             research_data = workflow_data.get("research_data", {})
             pdf_path = workflow_data.get("pdf_path")
-            timestamp = workflow_data.get("completion_timestamp", datetime.now().isoformat())
+            timestamp = workflow_data.get("completion_timestamp", utc_now().isoformat())
 
             standard_result = self.store_workflow_outputs(
                 workflow_id=workflow_id,
@@ -301,7 +310,9 @@ class EnhancedMemoryManager(MemoryManager):
             return entities
 
     async def _analyze_temporal_patterns(
-        self, entities: dict[str, list[str]], workflow_data: dict[str, Any],
+        self,
+        entities: dict[str, list[str]],
+        workflow_data: dict[str, Any],
     ) -> dict[str, Any]:
         """Analyze temporal patterns in research data."""
         self.logger.info("Starting temporal pattern analysis")
@@ -313,7 +324,7 @@ class EnhancedMemoryManager(MemoryManager):
         }
 
         try:
-            current_time = datetime.now()
+            current_time = utc_now()
 
             # Analyze each drug entity
             for drug in entities.get("drugs", []):
@@ -410,7 +421,10 @@ class EnhancedMemoryManager(MemoryManager):
             return None
 
     async def _detect_temporal_pattern(
-        self, entity: str, historical_docs: list[dict[str, Any]], current_time: datetime,
+        self,
+        entity: str,
+        historical_docs: list[dict[str, Any]],
+        current_time: datetime,
     ) -> TemporalPattern | None:
         """Detect temporal patterns in historical documents."""
         try:
@@ -459,7 +473,6 @@ class EnhancedMemoryManager(MemoryManager):
                 supporting_evidence=[doc["content"][:200] for doc in historical_docs[:3]],
             )
 
-
         except Exception as e:
             self.logger.exception(f"Failed to detect temporal pattern for {entity}: {e}")
             return None
@@ -495,7 +508,9 @@ class EnhancedMemoryManager(MemoryManager):
             return insights
 
     async def _detect_contradictions(
-        self, entities: dict[str, list[str]], workflow_data: dict[str, Any],
+        self,
+        entities: dict[str, list[str]],
+        workflow_data: dict[str, Any],
     ) -> dict[str, Any]:
         """Detect contradictory evidence across research."""
         self.logger.info("Starting contradiction detection")
@@ -592,7 +607,10 @@ class EnhancedMemoryManager(MemoryManager):
             return contradictions
 
     async def _analyze_statement_contradictions(
-        self, entity: str, category: str, statements: list[tuple[str, str]],
+        self,
+        entity: str,
+        category: str,
+        statements: list[tuple[str, str]],
     ) -> list[Contradiction]:
         """Analyze statements for contradictions."""
         contradictions = []
@@ -611,7 +629,7 @@ class EnhancedMemoryManager(MemoryManager):
             }
 
             for i, (statement1, source1) in enumerate(statements):
-                for j, (statement2, source2) in enumerate(statements[i + 1 :], i + 1):
+                for _, (statement2, source2) in enumerate(statements[i + 1 :], i + 1):
                     # Check for opposing terms
                     contradiction_found = False
                     conflicting_claims = []
@@ -631,14 +649,16 @@ class EnhancedMemoryManager(MemoryManager):
                             break
 
                     if contradiction_found:
+                        detected_at = utc_now()
+                        contradiction_id = f"contradiction_{entity}_{category}_{detected_at.strftime('%Y%m%d_%H%M%S')}"
                         contradiction = Contradiction(
-                            contradiction_id=f"contradiction_{entity}_{category}_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+                            contradiction_id=contradiction_id,
                             entity=entity,
                             conflicting_claims=conflicting_claims,
                             evidence_sources=[source1, source2],
                             severity="moderate",  # Default severity
                             confidence_score=0.7,  # Default confidence
-                            detected_at=datetime.now(),
+                            detected_at=detected_at,
                             resolution_suggestions=[
                                 "Review study methodologies for differences",
                                 "Consider population or dosage differences",
@@ -680,12 +700,14 @@ class EnhancedMemoryManager(MemoryManager):
             for entity, contradictions in entity_contradictions.items():
                 if len(contradictions) > 2:
                     suggestions.append(
-                        f"Consider systematic review of {entity} literature due to multiple contradictions",
+                        (f"Consider systematic review of {entity} literature due to multiple contradictions"),
                     )
 
                 severity_counts = Counter(c.severity for c in contradictions)
                 if severity_counts.get("major", 0) > 0:
-                    suggestions.append(f"Prioritize resolution of major contradictions for {entity}")
+                    suggestions.append(
+                        f"Prioritize resolution of major contradictions for {entity}",
+                    )
 
             return suggestions
 
@@ -694,7 +716,9 @@ class EnhancedMemoryManager(MemoryManager):
             return suggestions
 
     async def _identify_research_gaps(
-        self, entities: dict[str, list[str]], workflow_data: dict[str, Any],
+        self,
+        entities: dict[str, list[str]],
+        workflow_data: dict[str, Any],
     ) -> dict[str, Any]:
         """Identify gaps in current research."""
         self.logger.info("Starting research gap identification")
@@ -726,7 +750,10 @@ class EnhancedMemoryManager(MemoryManager):
             gap_results["priority_areas"] = await self._prioritize_research_areas()
             gap_results["research_suggestions"] = await self._generate_research_suggestions()
 
-            self.logger.info(f"Research gap analysis completed: {len(gap_results['gaps_identified'])} gaps identified")
+            self.logger.info(
+                "Research gap analysis completed: %s gaps identified",
+                len(gap_results["gaps_identified"]),
+            )
             return gap_results
 
         except Exception as e:
@@ -739,12 +766,18 @@ class EnhancedMemoryManager(MemoryManager):
 
         try:
             # Get all research for this entity
-            results = self.collection.query(query_texts=[entity], n_results=30, include=["documents", "metadatas"])
+            results = self.collection.query(
+                query_texts=[entity],
+                n_results=30,
+                include=["documents", "metadatas"],
+            )
 
             if not results["documents"] or not results["documents"][0]:
                 # No research found - major gap
+                identified_at = utc_now()
+                gap_id = f"gap_{entity}_no_research_{identified_at.strftime('%Y%m%d')}"
                 gap = ResearchGap(
-                    gap_id=f"gap_{entity}_no_research_{datetime.now().strftime('%Y%m%d')}",
+                    gap_id=gap_id,
                     entity=entity,
                     gap_type="comprehensive",
                     description=f"Limited research data available for {entity}",
@@ -754,7 +787,7 @@ class EnhancedMemoryManager(MemoryManager):
                         f"Design clinical trials for {entity} efficacy",
                         f"Investigate {entity} safety profile",
                     ],
-                    identified_at=datetime.now(),
+                    identified_at=identified_at,
                 )
                 gaps.append(gap)
                 return gaps
@@ -774,13 +807,36 @@ class EnhancedMemoryManager(MemoryManager):
                 doc_lower = doc.lower()
 
                 # Count evidence types
-                if any(term in doc_lower for term in ["clinical trial", "randomized", "controlled study"]):
+                if any(
+                    term in doc_lower
+                    for term in [
+                        "clinical trial",
+                        "randomized",
+                        "controlled study",
+                    ]
+                ):
                     content_analysis["clinical_trials"] += 1
 
-                if any(term in doc_lower for term in ["adverse events", "side effects", "safety", "toxicity"]):
+                if any(
+                    term in doc_lower
+                    for term in [
+                        "adverse events",
+                        "side effects",
+                        "safety",
+                        "toxicity",
+                    ]
+                ):
                     content_analysis["safety_data"] += 1
 
-                if any(term in doc_lower for term in ["mechanism", "pathway", "molecular", "pharmacology"]):
+                if any(
+                    term in doc_lower
+                    for term in [
+                        "mechanism",
+                        "pathway",
+                        "molecular",
+                        "pharmacology",
+                    ]
+                ):
                     content_analysis["mechanism_studies"] += 1
 
                 if any(
@@ -795,7 +851,15 @@ class EnhancedMemoryManager(MemoryManager):
                 ):
                     content_analysis["population_studies"] += 1
 
-                if any(term in doc_lower for term in ["long-term", "follow-up", "longitudinal", "years"]):
+                if any(
+                    term in doc_lower
+                    for term in [
+                        "long-term",
+                        "follow-up",
+                        "longitudinal",
+                        "years",
+                    ]
+                ):
                     content_analysis["long_term_studies"] += 1
 
             # Identify gaps based on low counts
@@ -812,14 +876,19 @@ class EnhancedMemoryManager(MemoryManager):
                 if content_analysis[gap_type] / total_docs < threshold:
                     priority_score = 1.0 - (content_analysis[gap_type] / total_docs) / threshold
 
+                    identified_at = utc_now()
+                    gap_id = f"gap_{entity}_{gap_type}_{identified_at.strftime('%Y%m%d')}"
                     gap = ResearchGap(
-                        gap_id=f"gap_{entity}_{gap_type}_{datetime.now().strftime('%Y%m%d')}",
+                        gap_id=gap_id,
                         entity=entity,
                         gap_type=gap_type,
                         description=f"Limited {gap_type.replace('_', ' ')} data for {entity}",
                         priority_score=min(priority_score, 0.95),
-                        suggested_research=self._generate_gap_specific_suggestions(entity, gap_type),
-                        identified_at=datetime.now(),
+                        suggested_research=self._generate_gap_specific_suggestions(
+                            entity,
+                            gap_type,
+                        ),
+                        identified_at=identified_at,
                     )
                     gaps.append(gap)
 
@@ -926,7 +995,9 @@ class EnhancedMemoryManager(MemoryManager):
                 suggestions.append("Consider systematic review to synthesize existing evidence")
 
             if any(gap.gap_type == "clinical_trials" for gap in self.research_gaps.values()):
-                suggestions.append("Prioritize randomized controlled trials for high-impact questions")
+                suggestions.append(
+                    "Prioritize randomized controlled trials for high-impact questions",
+                )
 
             return suggestions
 
@@ -935,7 +1006,9 @@ class EnhancedMemoryManager(MemoryManager):
             return suggestions
 
     async def _generate_cross_workflow_insights(
-        self, entities: dict[str, list[str]], workflow_data: dict[str, Any],
+        self,
+        entities: dict[str, list[str]],
+        workflow_data: dict[str, Any],
     ) -> dict[str, Any]:
         """Generate advanced cross-workflow insights."""
         self.logger.info("Starting cross-workflow insight generation")
@@ -959,7 +1032,8 @@ class EnhancedMemoryManager(MemoryManager):
             insight_results["recommendations"] = await self._generate_insight_recommendations()
 
             self.logger.info(
-                f"Cross-workflow insight generation completed: {len(insight_results['insights_generated'])} insights generated",  # noqa: E501
+                "Cross-workflow insight generation completed: %s insights generated",
+                len(insight_results["insights_generated"]),
             )
             return insight_results
 
@@ -967,7 +1041,10 @@ class EnhancedMemoryManager(MemoryManager):
             self.logger.exception(f"Cross-workflow insight generation failed: {e}")
             return insight_results
 
-    async def _analyze_drug_class_patterns(self, entities: dict[str, list[str]]) -> list[dict[str, Any]]:
+    async def _analyze_drug_class_patterns(
+        self,
+        entities: dict[str, list[str]],
+    ) -> list[dict[str, Any]]:
         """Analyze patterns across drug classes."""
         insights = []
 
@@ -987,11 +1064,15 @@ class EnhancedMemoryManager(MemoryManager):
                 _ = await self._find_common_indications(sglt2_drugs)  # common_indications
 
                 if common_outcomes:
+                    generated_at = utc_now()
+                    insight_id = f"sglt2_class_outcomes_{generated_at.strftime('%Y%m%d')}"
                     insight = CrossWorkflowInsight(
-                        insight_id=f"sglt2_class_outcomes_{datetime.now().strftime('%Y%m%d')}",
+                        insight_id=insight_id,
                         insight_type="drug_class_pattern",
                         entities_involved=sglt2_drugs,
-                        insight_description=f"SGLT2 inhibitors show consistent patterns in: {', '.join(common_outcomes)}",  # noqa: E501
+                        insight_description=(
+                            f"SGLT2 inhibitors show consistent patterns in: {', '.join(common_outcomes)}"
+                        ),
                         confidence_score=0.8,
                         supporting_workflows=[f"workflow_{drug}" for drug in sglt2_drugs],
                         actionable_recommendations=[
@@ -999,7 +1080,7 @@ class EnhancedMemoryManager(MemoryManager):
                             "Focus research on differentiating factors within SGLT2 class",
                             "Leverage class knowledge for new SGLT2 inhibitor evaluation",
                         ],
-                        generated_at=datetime.now(),
+                        generated_at=generated_at,
                     )
 
                     self.cross_workflow_insights[insight.insight_id] = insight
@@ -1082,15 +1163,16 @@ class EnhancedMemoryManager(MemoryManager):
                             if indication in doc_lower:
                                 indication_patterns[indication] += 1
 
-            return [
-                indication for indication, count in indication_patterns.items() if count >= len(drugs) * 0.5
-            ]
+            return [indication for indication, count in indication_patterns.items() if count >= len(drugs) * 0.5]
 
         except Exception as e:
             self.logger.exception(f"Failed to find common indications: {e}")
             return []
 
-    async def _analyze_indication_patterns(self, entities: dict[str, list[str]]) -> list[dict[str, Any]]:
+    async def _analyze_indication_patterns(
+        self,
+        entities: dict[str, list[str]],
+    ) -> list[dict[str, Any]]:
         """Analyze patterns across indications."""
         insights = []
 
@@ -1112,7 +1194,7 @@ class EnhancedMemoryManager(MemoryManager):
             if len(hf_drugs) >= 2:
                 insight = {
                     "type": "indication_synergy",
-                    "description": f"Multiple drugs show efficacy for heart failure: {', '.join(hf_drugs)}",
+                    "description": (f"Multiple drugs show efficacy for heart failure: {', '.join(hf_drugs)}"),
                     "confidence": 0.7,
                     "recommendations": [
                         "Compare head-to-head efficacy for heart failure",
@@ -1168,25 +1250,25 @@ class EnhancedMemoryManager(MemoryManager):
                 "temporal_patterns": {
                     "total_patterns": len(self.temporal_patterns),
                     "patterns_by_trend": {
-                        trend: len([p for p in self.temporal_patterns.values() if p.trend_direction == trend])
+                        trend: sum(1 for p in self.temporal_patterns.values() if p.trend_direction == trend)
                         for trend in ["increasing", "decreasing", "stable"]
                     },
-                    "high_confidence_patterns": len(
-                        [p for p in self.temporal_patterns.values() if p.confidence_score > 0.8],
+                    "high_confidence_patterns": sum(
+                        1 for p in self.temporal_patterns.values() if p.confidence_score > 0.8
                     ),
                 },
                 "contradictions": {
                     "total_contradictions": len(self.contradictions),
                     "contradictions_by_severity": {
-                        severity: len([c for c in self.contradictions.values() if c.severity == severity])
+                        severity: sum(1 for c in self.contradictions.values() if c.severity == severity)
                         for severity in ["minor", "moderate", "major"]
                     },
-                    "entities_with_contradictions": len(set(c.entity for c in self.contradictions.values())),
+                    "entities_with_contradictions": len({c.entity for c in self.contradictions.values()}),
                 },
                 "research_gaps": {
                     "total_gaps": len(self.research_gaps),
                     "gaps_by_type": {
-                        gap_type: len([g for g in self.research_gaps.values() if g.gap_type == gap_type])
+                        gap_type: sum(1 for g in self.research_gaps.values() if g.gap_type == gap_type)
                         for gap_type in [
                             "clinical_trials",
                             "safety_data",
@@ -1195,13 +1277,13 @@ class EnhancedMemoryManager(MemoryManager):
                             "long_term_studies",
                         ]
                     },
-                    "high_priority_gaps": len([g for g in self.research_gaps.values() if g.priority_score > 0.8]),
+                    "high_priority_gaps": sum(1 for g in self.research_gaps.values() if g.priority_score > 0.8),
                 },
                 "cross_workflow_insights": {
                     "total_insights": len(self.cross_workflow_insights),
                     "insights_by_type": {
-                        insight_type: len(
-                            [i for i in self.cross_workflow_insights.values() if i.insight_type == insight_type],
+                        insight_type: sum(
+                            1 for i in self.cross_workflow_insights.values() if i.insight_type == insight_type
                         )
                         for insight_type in [
                             "drug_class_pattern",
@@ -1209,22 +1291,24 @@ class EnhancedMemoryManager(MemoryManager):
                             "safety_correlation",
                         ]
                     },
-                    "high_confidence_insights": len(
-                        [i for i in self.cross_workflow_insights.values() if i.confidence_score > 0.8],
+                    "high_confidence_insights": sum(
+                        1 for i in self.cross_workflow_insights.values() if i.confidence_score > 0.8
                     ),
                 },
             }
-
 
         except Exception as e:
             self.logger.exception(f"Failed to get enhanced analytics: {e}")
             return {"error": str(e)}
 
-    async def get_enhanced_research_recommendations(self, entities: dict[str, Any]) -> dict[str, Any]:
-        """ENHANCED: Get comprehensive research recommendations based on similarity search and existing evidence.
+    async def get_enhanced_research_recommendations(
+        self,
+        entities: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Enhanced research recommendations leveraging similarity search and existing evidence.
 
-        This is the FIXED version that performs actual similarity searches to find existing evidence
-        for new entities and provides intelligent research strategies.
+        This fixed version performs similarity searches to locate prior evidence for new entities
+        and derives intelligent strategies tailored to the findings.
         """
         self.logger.info("=== ENHANCED RESEARCH RECOMMENDATIONS DEBUG START ===")
 
@@ -1257,13 +1341,19 @@ class EnhancedMemoryManager(MemoryManager):
 
             # STEP 1: Perform similarity search for existing evidence
             existing_evidence_results = await self._find_existing_evidence_for_entity(
-                primary_drug, primary_disease, drug_class,
+                primary_drug,
+                primary_disease,
+                drug_class,
             )
 
-            self.logger.debug(f"Existing evidence analysis: {existing_evidence_results}")
+            self.logger.debug("Existing evidence analysis: %s", existing_evidence_results)
 
             # STEP 2: Determine research strategy based on existing evidence
-            strategy_analysis = self._determine_research_strategy(existing_evidence_results, primary_drug, drug_class)
+            strategy_analysis = self._determine_research_strategy(
+                existing_evidence_results,
+                primary_drug,
+                drug_class,
+            )
 
             recommendations.update(
                 {
@@ -1276,7 +1366,9 @@ class EnhancedMemoryManager(MemoryManager):
             )
 
             self.logger.info(
-                f"Research strategy determined: {strategy_analysis['strategy']} (confidence: {strategy_analysis['confidence']:.2f})",  # noqa: E501
+                "Research strategy determined: %s (confidence: %.2f)",
+                strategy_analysis["strategy"],
+                strategy_analysis["confidence"],
             )
 
             # STEP 3: Generate specific recommendations based on strategy
@@ -1335,10 +1427,16 @@ class EnhancedMemoryManager(MemoryManager):
             recommendations["priority_research"] = unique_suggestions[:10]
 
             self.logger.info("=== ENHANCED RESEARCH RECOMMENDATIONS COMPLETED ===")
-            self.logger.info(f"Strategy: {recommendations['research_strategy']}")
-            self.logger.info(f"Evidence found: {recommendations['related_documents']} documents")
-            self.logger.info(f"Similar drugs: {recommendations['similar_drugs']}")
-            self.logger.info(f"Priority recommendations: {len(recommendations['priority_research'])}")
+            self.logger.info("Strategy: %s", recommendations["research_strategy"])
+            self.logger.info(
+                "Evidence found: %s documents",
+                recommendations["related_documents"],
+            )
+            self.logger.info("Similar drugs: %s", recommendations["similar_drugs"])
+            self.logger.info(
+                "Priority recommendations: %s",
+                len(recommendations["priority_research"]),
+            )
 
             return recommendations
 
@@ -1364,7 +1462,7 @@ class EnhancedMemoryManager(MemoryManager):
         drug_class: str | None = None,
     ) -> dict[str, Any]:
         """Find existing evidence for an entity using multiple similarity search strategies."""
-        self.logger.debug(f"=== FINDING EXISTING EVIDENCE FOR {primary_drug} ===")
+        self.logger.debug("=== FINDING EXISTING EVIDENCE FOR %s ===", primary_drug)
 
         evidence_results = {
             "total_documents": 0,
@@ -1391,7 +1489,7 @@ class EnhancedMemoryManager(MemoryManager):
                 },
                 {
                     "name": "mechanism_search",
-                    "query": f"{primary_drug} mechanism {drug_class}" if drug_class else f"{primary_drug} mechanism",
+                    "query": (f"{primary_drug} mechanism {drug_class}" if drug_class else f"{primary_drug} mechanism"),
                     "weight": 0.7,
                 },
                 {
@@ -1409,7 +1507,7 @@ class EnhancedMemoryManager(MemoryManager):
 
             # Execute each search strategy
             for strategy in search_strategies:
-                self.logger.debug(f"Executing {strategy['name']}: '{strategy['query']}'")
+                self.logger.debug("Executing %s: '%s'", strategy["name"], strategy["query"])
 
                 try:
                     results = self.collection.query(
@@ -1425,30 +1523,41 @@ class EnhancedMemoryManager(MemoryManager):
                             zip(results["metadatas"][0], results["distances"][0], strict=False),
                         ):
                             # Apply similarity threshold filtering
-                            if distance <= self.similarity_thresholds["weak_match"]:  # Only include reasonable matches
+                            if distance <= self.similarity_thresholds["weak_match"]:
+                                # Only include reasonable matches
                                 match_info = {
                                     "metadata": metadata,
                                     "distance": distance,
                                     "strategy": strategy["name"],
                                     "weight": strategy["weight"],
-                                    "weighted_score": (1 - distance) * strategy["weight"],  # Higher is better
-                                    "document": results["documents"][0][i] if i < len(results["documents"][0]) else "",
+                                    # Higher is better
+                                    "weighted_score": (1 - distance) * strategy["weight"],
+                                    "document": (
+                                        results["documents"][0][i] if i < len(results["documents"][0]) else ""
+                                    ),
                                 }
                                 strategy_matches.append(match_info)
                                 all_matches.append(match_info)
 
                         evidence_results["search_strategies"][strategy["name"]] = {
                             "matches_found": len(strategy_matches),
-                            "best_distance": min([m["distance"] for m in strategy_matches])
-                            if strategy_matches
-                            else 1.0,
-                            "avg_distance": sum([m["distance"] for m in strategy_matches]) / len(strategy_matches)
-                            if strategy_matches
-                            else 1.0,
+                            "best_distance": (
+                                min(m["distance"] for m in strategy_matches) if strategy_matches else 1.0
+                            ),
+                            "avg_distance": (
+                                sum(m["distance"] for m in strategy_matches) / len(strategy_matches)
+                                if strategy_matches
+                                else 1.0
+                            ),
                         }
 
+                        strategy_metrics = evidence_results["search_strategies"][strategy["name"]]
+
                         self.logger.debug(
-                            f"{strategy['name']}: {len(strategy_matches)} matches, best distance: {evidence_results['search_strategies'][strategy['name']]['best_distance']:.3f}",  # noqa: E501
+                            "%s: %s matches, best distance: %.3f",
+                            strategy["name"],
+                            len(strategy_matches),
+                            strategy_metrics["best_distance"],
                         )
 
                 except Exception as e:
@@ -1490,9 +1599,11 @@ class EnhancedMemoryManager(MemoryManager):
                             drug_str = str(drug).strip()
                             if drug_str and drug_str.lower() != primary_drug.lower():
                                 # Check if it's likely the same drug class for SGLT2 inhibitors
-                                if (drug_class and "sglt2" in drug_class.lower() and "flozin" in drug_str.lower()) or (
-                                    "flozin" in primary_drug.lower() and "flozin" in drug_str.lower()
-                                ):
+                                same_sglt2_class = (
+                                    drug_class and "sglt2" in drug_class.lower() and "flozin" in drug_str.lower()
+                                )
+                                shared_sglt2_suffix = "flozin" in primary_drug.lower() and "flozin" in drug_str.lower()
+                                if same_sglt2_class or shared_sglt2_suffix:
                                     similar_drugs.add(drug_str)
 
                     # Categorize evidence types
@@ -1503,10 +1614,12 @@ class EnhancedMemoryManager(MemoryManager):
                 evidence_results["evidence_summary"] = dict(evidence_by_category)
 
                 self.logger.debug(
-                    f"Analysis complete: {len(all_matches)} total matches, {len(similar_drugs)} similar drugs found",
+                    "Analysis complete: %s total matches, %s similar drugs found",
+                    len(all_matches),
+                    len(similar_drugs),
                 )
-                self.logger.debug(f"Similar drugs: {list(similar_drugs)}")
-                self.logger.debug(f"Evidence summary: {dict(evidence_by_category)}")
+                self.logger.debug("Similar drugs: %s", list(similar_drugs))
+                self.logger.debug("Evidence summary: %s", dict(evidence_by_category))
 
             else:
                 self.logger.debug("No matches found across all search strategies")
@@ -1524,15 +1637,19 @@ class EnhancedMemoryManager(MemoryManager):
         drug_class: str | None = None,
     ) -> dict[str, Any]:
         """Determine the appropriate research strategy based on existing evidence analysis."""
-        self.logger.debug(f"=== DETERMINING RESEARCH STRATEGY FOR {primary_drug} ===")
+        self.logger.debug("=== DETERMINING RESEARCH STRATEGY FOR %s ===", primary_drug)
 
         total_docs = evidence_results.get("total_documents", 0)
         similar_drugs = evidence_results.get("similar_drugs", [])
         evidence_summary = evidence_results.get("evidence_summary", {})
         search_strategies = evidence_results.get("search_strategies", {})
 
-        self.logger.debug(f"Evidence analysis: {total_docs} docs, {len(similar_drugs)} similar drugs")
-        self.logger.debug(f"Evidence by type: {evidence_summary}")
+        self.logger.debug(
+            "Evidence analysis: %s docs, %s similar drugs",
+            total_docs,
+            len(similar_drugs),
+        )
+        self.logger.debug("Evidence by type: %s", evidence_summary)
 
         # Calculate strategy scores
         strategy_scores = {"comprehensive": 0.0, "focused": 0.0, "update": 0.0}
@@ -1565,7 +1682,7 @@ class EnhancedMemoryManager(MemoryManager):
 
         # Factor 3: Evidence quality (based on search strategy success)
         best_distances = []
-        for strategy_name, strategy_results in search_strategies.items():
+        for strategy_results in search_strategies.values():
             if "best_distance" in strategy_results:
                 best_distances.append(strategy_results["best_distance"])
 
@@ -1604,8 +1721,12 @@ class EnhancedMemoryManager(MemoryManager):
         final_strategy = max(strategy_scores.keys(), key=lambda k: strategy_scores[k])
         final_confidence = min(confidence, 0.95)  # Cap confidence at 95%
 
-        self.logger.debug(f"Strategy scores: {strategy_scores}")
-        self.logger.debug(f"Selected strategy: {final_strategy} (confidence: {final_confidence:.2f})")
+        self.logger.debug("Strategy scores: %s", strategy_scores)
+        self.logger.debug(
+            "Selected strategy: %s (confidence: %.2f)",
+            final_strategy,
+            final_confidence,
+        )
 
         return {
             "strategy": final_strategy,
@@ -1620,10 +1741,17 @@ class EnhancedMemoryManager(MemoryManager):
         }
 
     async def _generate_strategy_specific_recommendations(
-        self, strategy: str, primary_drug: str, evidence_results: dict[str, Any],
+        self,
+        strategy: str,
+        primary_drug: str,
+        evidence_results: dict[str, Any],
     ) -> dict[str, Any]:
         """Generate specific recommendations based on the determined research strategy."""
-        self.logger.debug(f"=== GENERATING {strategy.upper()} STRATEGY RECOMMENDATIONS FOR {primary_drug} ===")
+        self.logger.debug(
+            "=== GENERATING %s STRATEGY RECOMMENDATIONS FOR %s ===",
+            strategy.upper(),
+            primary_drug,
+        )
 
         recommendations = {
             "priority_research": [],
@@ -1669,14 +1797,17 @@ class EnhancedMemoryManager(MemoryManager):
                 ]
 
                 if similar_drugs:
-                    recommendations["cross_workflow_opportunities"] = [
-                        f"Leverage insights from {', '.join(similar_drugs[:3])} for {primary_drug} research",
-                        f"Design comparative studies: {primary_drug} vs {similar_drugs[0]}" if similar_drugs else "",
+                    cross_opportunities = [
+                        (f"Leverage insights from {', '.join(similar_drugs[:3])} for {primary_drug} research"),
+                        f"Design comparative studies: {primary_drug} vs {similar_drugs[0]}",
                         f"Apply class-wide safety insights to {primary_drug} evaluation",
                     ]
-                    recommendations["cross_workflow_opportunities"] = [
-                        r for r in recommendations["cross_workflow_opportunities"] if r
-                    ]  # Remove empty strings
+                else:
+                    cross_opportunities = [
+                        f"Apply class-wide safety insights to {primary_drug} evaluation",
+                    ]
+
+                recommendations["cross_workflow_opportunities"].extend(cross_opportunities)
 
             elif strategy == "update":
                 # Substantial existing evidence, focus on updates and refinements
@@ -1694,16 +1825,20 @@ class EnhancedMemoryManager(MemoryManager):
                     f"Investigate novel {primary_drug} biomarkers",
                 ]
 
+                cross_opportunities = [
+                    f"Update class-wide recommendations incorporating {primary_drug} evidence",
+                    f"Investigate {primary_drug} positioning within therapeutic class",
+                ]
                 if similar_drugs:
-                    recommendations["cross_workflow_opportunities"] = [
-                        f"Conduct network meta-analysis including {primary_drug} and {', '.join(similar_drugs[:3])}",
-                        f"Update class-wide recommendations incorporating {primary_drug} evidence",
-                        f"Investigate {primary_drug} positioning within therapeutic class",
-                        f"Analyze {primary_drug} vs {similar_drugs[0]} in real-world settings" if similar_drugs else "",
-                    ]
-                    recommendations["cross_workflow_opportunities"] = [
-                        r for r in recommendations["cross_workflow_opportunities"] if r
-                    ]
+                    cross_opportunities.insert(
+                        0,
+                        (f"Conduct network meta-analysis including {primary_drug} and {', '.join(similar_drugs[:3])}"),
+                    )
+                    cross_opportunities.append(
+                        (f"Analyze {primary_drug} vs {similar_drugs[0]} in real-world settings"),
+                    )
+
+                recommendations["cross_workflow_opportunities"].extend(cross_opportunities)
 
             # Add general recommendations based on evidence
             if total_docs > 0:
@@ -1716,9 +1851,13 @@ class EnhancedMemoryManager(MemoryManager):
                     f"Explore {primary_drug} differentiation within drug class",
                 )
 
-            self.logger.debug(f"Generated {len(recommendations['priority_research'])} priority recommendations")
             self.logger.debug(
-                f"Generated {len(recommendations['cross_workflow_opportunities'])} cross-workflow opportunities",
+                "Generated %s priority recommendations",
+                len(recommendations["priority_research"]),
+            )
+            self.logger.debug(
+                "Generated %s cross-workflow opportunities",
+                len(recommendations["cross_workflow_opportunities"]),
             )
 
             return recommendations

@@ -7,7 +7,7 @@ import logging
 import os
 import sys
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from dotenv import load_dotenv
 
@@ -44,10 +44,10 @@ logger = logging.getLogger("drug_class_tester")
 
 
 class DrugClassPatternTester:
-    """Test drug class pattern recognition with SGLT2 inhibitors."""
+    """Test drug class pattern recognition with SGLT2 inhibitors"""
 
-    def __init__(self) -> None:
-        self.memory: EnhancedMemoryManager | None = None
+    def __init__(self):
+        self.memory: Optional[EnhancedMemoryManager] = None
 
         # Test drugs in SGLT2 inhibitor class with correct names
         self.sglt2_drugs = [
@@ -80,40 +80,40 @@ class DrugClassPatternTester:
             ],
         }
 
-    def print_header(self, title: str) -> None:
-        """Print formatted headers."""
+    def print_header(self, title: str):
+        """Print formatted headers"""
         print(f"\n{'=' * 80}")
         print(f"[TEST] {title}")
         print(f"{'=' * 80}")
 
-    def print_section(self, title: str) -> None:
-        """Print section headers."""
+    def print_section(self, title: str):
+        """Print section headers"""
         print(f"\n{'-' * 60}")
         print(f"[SECTION] {title}")
         print(f"{'-' * 60}")
 
-    def print_success(self, message: str) -> None:
-        """Print success message."""
+    def print_success(self, message: str):
+        """Print success message"""
         print(f"[PASS] {message}")
 
-    def print_error(self, message: str) -> None:
-        """Print error message."""
+    def print_error(self, message: str):
+        """Print error message"""
         print(f"[FAIL] {message}")
 
-    def print_info(self, message: str) -> None:
-        """Print info message."""
+    def print_info(self, message: str):
+        """Print info message"""
         print(f"[INFO] {message}")
 
-    def print_debug(self, message: str) -> None:
-        """Print debug message."""
+    def print_debug(self, message: str):
+        """Print debug message"""
         print(f"[DEBUG] {message}")
 
-    def print_warning(self, message: str) -> None:
-        """Print warning message."""
+    def print_warning(self, message: str):
+        """Print warning message"""
         print(f"[WARN] {message}")
 
     async def initialize_memory(self) -> bool:
-        """Initialize memory manager."""
+        """Initialize memory manager"""
         self.print_section("Memory Initialization")
 
         # Load environment
@@ -150,8 +150,8 @@ class DrugClassPatternTester:
             self.print_error(f"Failed to initialize MemoryManager: {e}")
             return False
 
-    async def analyze_current_patterns(self) -> dict[str, Any]:
-        """Analyze current drug class patterns in memory."""
+    async def analyze_current_patterns(self) -> Dict[str, Any]:
+        """Analyze current drug class patterns in memory"""
         self.print_section("Current Drug Class Pattern Analysis")
 
         try:
@@ -312,13 +312,13 @@ class DrugClassPatternTester:
             traceback.print_exc()
             return {}
 
-    async def _get_sglt2_cross_workflow_evidence(self) -> list[dict[str, Any]]:
-        """Get SGLT2-specific cross-workflow evidence by querying ChromaDB directly."""
+    async def _get_sglt2_cross_workflow_evidence(self) -> List[Dict[str, Any]]:
+        """Get SGLT2-specific cross-workflow evidence by querying ChromaDB directly"""
         try:
             # Query with correct drug names
             results = self.memory.collection.query(
                 query_texts=[
-                    "SGLT2 inhibitor canagliflozin empagliflozin sotagliflozin dapagliflozin cardiovascular outcomes",
+                    "SGLT2 inhibitor canagliflozin empagliflozin sotagliflozin dapagliflozin cardiovascular outcomes"
                 ],
                 n_results=50,
                 include=["metadatas", "documents"],
@@ -357,7 +357,7 @@ class DrugClassPatternTester:
                             "reference_count": metadata.get("reference_count", 1),
                             "source_type": metadata.get("source_type", "unknown"),
                             "workflows": metadata.get("referenced_in_workflows", []),
-                        },
+                        }
                     )
 
             return sglt2_docs
@@ -366,8 +366,8 @@ class DrugClassPatternTester:
             self.print_warning(f"Failed to get SGLT2 cross-workflow evidence: {e}")
             return []
 
-    async def test_ertugliflozin_simulation(self) -> dict[str, Any]:
-        """Simulate what would happen if we query Ertugliflozin (a new SGLT2) with detailed debugging."""
+    async def test_ertugliflozin_simulation(self) -> Dict[str, Any]:
+        """Simulate what would happen if we query Ertugliflozin (a new SGLT2) with detailed debugging"""
         self.print_section("Ertugliflozin Query Simulation (New SGLT2) - Enhanced Debugging")
 
         try:
@@ -438,14 +438,14 @@ class DrugClassPatternTester:
                         self.print_info(f"  Recommended strategy: {strategy}")
                         self.print_info(f"  Knowledge gaps: {len(gaps) if isinstance(gaps, list) else gaps}")
                         self.print_info(
-                            f"  Priority areas: {len(priorities) if isinstance(priorities, list) else priorities}",
+                            f"  Priority areas: {len(priorities) if isinstance(priorities, list) else priorities}"
                         )
                         self.print_info(
-                            f"  Related documents found: {len(related_docs) if isinstance(related_docs, list) else related_docs}",  # noqa: E501
+                            f"  Related documents found: {len(related_docs) if isinstance(related_docs, list) else related_docs}"
                         )
                         self.print_info(f"  Similar drugs identified: {similar_drugs}")
                         self.print_info(
-                            f"  Cross-workflow opportunities: {len(cross_workflow_ops) if isinstance(cross_workflow_ops, list) else cross_workflow_ops}",  # noqa: E501
+                            f"  Cross-workflow opportunities: {len(cross_workflow_ops) if isinstance(cross_workflow_ops, list) else cross_workflow_ops}"
                         )
 
                         # Check existing evidence recognition
@@ -478,17 +478,17 @@ class DrugClassPatternTester:
                         elif strategy == "focused":
                             self.print_info("GOOD: System recommends focused strategy")
                             self.print_info(
-                                "  [CHECK] This suggests some class recognition even without explicit evidence count",
+                                "  [CHECK] This suggests some class recognition even without explicit evidence count"
                             )
                         elif strategy == "comprehensive" and total_existing > 0:
                             self.print_warning(
-                                "MIXED: System found existing evidence but still recommends comprehensive strategy",
+                                "MIXED: System found existing evidence but still recommends comprehensive strategy"
                             )
                             self.print_info("  [?] This may indicate conservative approach or threshold issues")
                         elif strategy == "unknown":
                             self.print_error("ISSUE: System returned 'unknown' strategy")
                             self.print_info(
-                                "  [X] This suggests get_enhanced_research_recommendations may have failed internally",
+                                "  [X] This suggests get_enhanced_research_recommendations may have failed internally"
                             )
                             self.print_info("  [X] Need to debug the method's internal logic")
                         else:
@@ -512,7 +512,7 @@ class DrugClassPatternTester:
                         }
 
                 except Exception as e:
-                    self.print_error(f"Enhanced recommendations failed: {e!s}")
+                    self.print_error(f"Enhanced recommendations failed: {str(e)}")
                     self.print_debug("Exception details:")
                     import traceback
 
@@ -529,8 +529,8 @@ class DrugClassPatternTester:
             traceback.print_exc()
             return {}
 
-    async def _debug_existing_sglt2_knowledge(self) -> None:
-        """Debug what SGLT2 knowledge exists in the system."""
+    async def _debug_existing_sglt2_knowledge(self):
+        """Debug what SGLT2 knowledge exists in the system"""
         self.print_debug("=== DEBUGGING EXISTING SGLT2 KNOWLEDGE ===")
 
         try:
@@ -570,8 +570,8 @@ class DrugClassPatternTester:
         except Exception as e:
             self.print_debug(f"Failed to debug existing SGLT2 knowledge: {e}")
 
-    async def _debug_ertugliflozin_similarity_search(self) -> None:
-        """Debug what similar content is found for Ertugliflozin."""
+    async def _debug_ertugliflozin_similarity_search(self):
+        """Debug what similar content is found for Ertugliflozin"""
         self.print_debug("=== DEBUGGING ERTUGLIFLOZIN SIMILARITY SEARCH ===")
 
         try:
@@ -587,17 +587,17 @@ class DrugClassPatternTester:
                 self.print_debug(f"  Query {i + 1}: '{query}'")
 
                 results = self.memory.collection.query(
-                    query_texts=[query], n_results=5, include=["metadatas", "distances"],
+                    query_texts=[query], n_results=5, include=["metadatas", "distances"]
                 )
 
                 if results and results["metadatas"] and results["metadatas"][0]:
                     for j, (metadata, distance) in enumerate(
-                        zip(results["metadatas"][0], results["distances"][0], strict=False),
+                        zip(results["metadatas"][0], results["distances"][0], strict=False)
                     ):
                         drug_context = metadata.get("drug_names_context", [])
                         source = metadata.get("source_type", "unknown")
                         self.print_debug(
-                            f"    Result {j + 1}: distance={distance:.3f}, source={source}, drugs={drug_context}",
+                            f"    Result {j + 1}: distance={distance:.3f}, source={source}, drugs={drug_context}"
                         )
                 else:
                     self.print_debug("    No results found")
@@ -605,13 +605,13 @@ class DrugClassPatternTester:
         except Exception as e:
             self.print_debug(f"Failed to debug Ertugliflozin similarity: {e}")
 
-    async def _manual_ertugliflozin_analysis(self) -> dict[str, Any]:
-        """Manual analysis of Ertugliflozin similarity."""
+    async def _manual_ertugliflozin_analysis(self) -> Dict[str, Any]:
+        """Manual analysis of Ertugliflozin similarity"""
         try:
             # Search for related content with correct drug names
             results = self.memory.collection.query(
                 query_texts=[
-                    "SGLT2 inhibitor Ertugliflozin heart failure cardiovascular outcomes sodium glucose cotransporter",
+                    "SGLT2 inhibitor Ertugliflozin heart failure cardiovascular outcomes sodium glucose cotransporter"
                 ],
                 n_results=20,
                 include=["metadatas", "documents", "distances"],
@@ -647,14 +647,14 @@ class DrugClassPatternTester:
                                 "metadata": metadata,
                                 "distance": distances[i] if i < len(distances) else 999,
                                 "drugs": drug_context,
-                            },
+                            }
                         )
 
                     # Show top results
                     if i < 5:
                         distance = distances[i] if i < len(distances) else "N/A"
                         self.print_info(
-                            f"  Result {i + 1} (distance: {distance:.3f}): {metadata.get('source_type', 'unknown')}",
+                            f"  Result {i + 1} (distance: {distance:.3f}): {metadata.get('source_type', 'unknown')}"
                         )
                         self.print_info(f"    Drugs: {drug_context}")
 
@@ -684,15 +684,16 @@ class DrugClassPatternTester:
                     "predicted_strategy": predicted_strategy,
                     "research_strategy": predicted_strategy,  # Add for consistency
                 }
-            self.print_error("No related documents found")
-            return {"research_strategy": "comprehensive", "sglt2_related": 0}
+            else:
+                self.print_error("No related documents found")
+                return {"research_strategy": "comprehensive", "sglt2_related": 0}
 
         except Exception as e:
             self.print_error(f"Manual analysis failed: {e}")
             return {"research_strategy": "comprehensive", "sglt2_related": 0}
 
-    async def test_cross_drug_evidence_retrieval(self) -> dict[str, Any]:
-        """Test retrieval of evidence relevant to multiple SGLT2 inhibitors."""
+    async def test_cross_drug_evidence_retrieval(self) -> Dict[str, Any]:
+        """Test retrieval of evidence relevant to multiple SGLT2 inhibitors"""
         self.print_section("Cross-Drug Evidence Retrieval Test")
 
         try:
@@ -702,7 +703,7 @@ class DrugClassPatternTester:
             # Query for class-level evidence with correct drug names
             results = self.memory.collection.query(
                 query_texts=[
-                    "SGLT2 inhibitors cardiovascular outcomes heart failure class effect meta-analysis comparative effectiveness",  # noqa: E501
+                    "SGLT2 inhibitors cardiovascular outcomes heart failure class effect meta-analysis comparative effectiveness"
                 ],
                 n_results=30,
                 include=["metadatas", "documents"],
@@ -764,17 +765,17 @@ class DrugClassPatternTester:
                                 "id": metadata.get("canonical_id", "unknown")[:30],
                                 "drugs": sglt2_in_doc,
                                 "source": metadata.get("source_type", "unknown"),
-                            },
+                            }
                         )
 
             # Get unique SGLT2 drugs
             unique_sglt2_drugs = set()
-            for drug_list in drug_document_map:
+            for drug_list in drug_document_map.keys():
                 if any(sglt2 in drug_list.lower() for sglt2 in self.sglt2_drugs):
                     unique_sglt2_drugs.add(drug_list)
 
             self.print_success(
-                f"SGLT2 drug diversity: {len(unique_sglt2_drugs)} unique drugs: {sorted(list(unique_sglt2_drugs))}",
+                f"SGLT2 drug diversity: {len(unique_sglt2_drugs)} unique drugs: {sorted(list(unique_sglt2_drugs))}"
             )
             self.print_success(f"Multi-SGLT2 documents: {multi_sglt2_docs_count}/{sglt2_class_docs}")  # FIXED
             self.print_success(f"Class-level SGLT2 documents: {sglt2_class_docs}/{len(metadatas)}")
@@ -790,7 +791,7 @@ class DrugClassPatternTester:
 
             comp_results = self.memory.collection.query(
                 query_texts=[
-                    "Canagliflozin Dapagliflozin Empagliflozin Sotagliflozin comparative effectiveness cardiovascular outcomes head to head",  # noqa: E501
+                    "Canagliflozin Dapagliflozin Empagliflozin Sotagliflozin comparative effectiveness cardiovascular outcomes head to head"
                 ],
                 n_results=10,
                 include=["metadatas"],
@@ -824,14 +825,14 @@ class DrugClassPatternTester:
                                 "id": metadata.get("canonical_id", "unknown")[:30],
                                 "drugs": sglt2_drugs_in_doc,
                                 "source": metadata.get("source_type", "unknown"),
-                            },
+                            }
                         )
 
                 if comp_examples:
                     self.print_info("Examples of comparative evidence:")
                     for i, example in enumerate(comp_examples[:3]):
                         self.print_info(
-                            f"  {i + 1}. {example['id']}... ({example['source']}): compares {example['drugs']}",
+                            f"  {i + 1}. {example['id']}... ({example['source']}): compares {example['drugs']}"
                         )
 
             # Return corrected results
@@ -848,8 +849,8 @@ class DrugClassPatternTester:
             traceback.print_exc()
             return {"success": False, "multi_drug_count": 0, "comparative_examples": []}
 
-    async def analyze_sglt2_knowledge_base(self) -> dict[str, Any]:
-        """Analyze the complete SGLT2 knowledge base."""
+    async def analyze_sglt2_knowledge_base(self) -> Dict[str, Any]:
+        """Analyze the complete SGLT2 knowledge base"""
         self.print_section("SGLT2 Knowledge Base Analysis")
 
         try:
@@ -1001,7 +1002,7 @@ class DrugClassPatternTester:
             # Display comprehensive analysis
             self.print_success("\nSGLT2 KNOWLEDGE BASE SUMMARY:")
             self.print_info(
-                f"  Total SGLT2 documents: {sglt2_stats['total_sglt2_docs']}/{total_docs} ({sglt2_stats['total_sglt2_docs'] / total_docs * 100:.1f}%)",  # noqa: E501
+                f"  Total SGLT2 documents: {sglt2_stats['total_sglt2_docs']}/{total_docs} ({sglt2_stats['total_sglt2_docs'] / total_docs * 100:.1f}%)"
             )
 
             self.print_info("\n  Documents by drug:")
@@ -1056,12 +1057,12 @@ class DrugClassPatternTester:
 
     async def generate_test_summary(
         self,
-        current_patterns: dict[str, Any],
-        ertugliflozin_sim: dict[str, Any],
-        cross_drug_results: dict[str, Any],
-        sglt2_kb: dict[str, Any],
+        current_patterns: Dict[str, Any],
+        ertugliflozin_sim: Dict[str, Any],
+        cross_drug_results: Dict[str, Any],
+        sglt2_kb: Dict[str, Any],
     ) -> None:
-        """Generate comprehensive test summary with corrected logic."""
+        """Generate comprehensive test summary with corrected logic"""
         self.print_header("SGLT2 Inhibitor Class Testing Summary")
 
         # ANALYZE THE ACTUAL RESULTS FROM YOUR LOG
@@ -1132,7 +1133,7 @@ class DrugClassPatternTester:
             self.print_info("  [CHECK] This proves the underlying data and similarity is working perfectly")
         else:
             self.print_error(
-                f"CRITICAL: get_enhanced_research_recommendations returned '{predicted_strategy if predicted_strategy != 'update' else 'unknown'}' strategy",  # noqa: E501
+                f"CRITICAL: get_enhanced_research_recommendations returned '{predicted_strategy if predicted_strategy != 'update' else 'unknown'}' strategy"
             )
             self.print_info("  [X] Method is not leveraging the excellent similarity results")
             self.print_info("  [X] All internal arrays are empty despite rich knowledge base")
@@ -1150,7 +1151,7 @@ class DrugClassPatternTester:
         self.print_error("PRIMARY ISSUE: get_enhanced_research_recommendations() Implementation")
         self.print_info("Evidence from your logs:")
         self.print_info(
-            "  1. Raw response shows all empty arrays: {'priority_research': [], 'gap_addressing': [], ...}",
+            "  1. Raw response shows all empty arrays: {'priority_research': [], 'gap_addressing': [], ...}"
         )
         self.print_info("  2. Manual similarity search works perfectly (20/20 SGLT2 matches)")
         self.print_info("  3. Database has excellent cross-drug evidence")
@@ -1206,8 +1207,8 @@ class DrugClassPatternTester:
         print("  Manual predicted strategy: update (correct)")
         print("  get_enhanced_research_recommendations result: FAILED (empty arrays)")
 
-    async def run_complete_analysis(self) -> None:
-        """Run complete drug class pattern analysis."""
+    async def run_complete_analysis(self):
+        """Run complete drug class pattern analysis"""
         print("[START] SGLT2 Inhibitor Class Pattern Recognition Test")
         print(f"[TIME] Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("[VERSION] test_drug_class_patterns.py v4.2-UNICODE-FIXED")
@@ -1236,8 +1237,8 @@ class DrugClassPatternTester:
         print(f"\n[TIME] Completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 
-async def main() -> None:
-    """Main entry point."""
+async def main():
+    """Main entry point"""
     tester = DrugClassPatternTester()
     await tester.run_complete_analysis()
 

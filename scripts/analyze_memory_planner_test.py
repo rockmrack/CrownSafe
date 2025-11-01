@@ -1,6 +1,7 @@
 # C:\Users\rossd\Downloads\RossNetAgents\scripts\analyze_memory_planner_test.py
 # Version: 4.0-ADVANCED - Enhanced log correlation and workflow tracking
 # Comprehensive Memory-Augmented Planner Test Analysis
+# ruff: noqa: E501
 
 import argparse
 import ast
@@ -9,10 +10,11 @@ import os
 import re
 import sys
 from collections import defaultdict
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator, TextIO
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -128,6 +130,7 @@ class MemoryPlannerAnalyzer:
             self.project_root / "RossNetAgents" / "logs",
             self.project_root / "generated_reports",
             self.project_root / "reports",
+            self.project_root / "analysis_results",
         ]
 
         for root in potential_roots:
@@ -146,6 +149,74 @@ class MemoryPlannerAnalyzer:
             return None
 
         return resolved_candidate if self._is_safe_path(resolved_candidate) else None
+
+    def _ensure_safe_path(
+        self,
+        candidate: Path,
+        *,
+        description: str = "path",
+        must_exist: bool = False,
+    ) -> Path:
+        """Return a path only when it passes safety validation."""
+        safe_candidate = self._resolve_if_safe(candidate)
+        if not safe_candidate:
+            raise ValueError(f"{description} is outside permitted directories: {candidate}")
+
+        if must_exist and not safe_candidate.exists():
+            raise FileNotFoundError(f"{description} not found after validation: {safe_candidate}")
+
+        return safe_candidate
+
+    @contextmanager
+    def _open_text_file(
+        self,
+        candidate: Path,
+        *,
+        mode: str = "r",
+        description: str = "file",
+        **kwargs: Any,
+    ) -> Iterator[TextIO]:
+        """Open a text file only when it passes safety validation."""
+        requires_existing = all(flag not in mode for flag in {"w", "x", "a"})
+        safe_candidate = self._ensure_safe_path(
+            candidate,
+            description=description,
+            must_exist=requires_existing,
+        )
+
+        if "b" not in mode:
+            kwargs.setdefault("encoding", "utf-8")
+            kwargs.setdefault("errors", "ignore" if "r" in mode else "strict")
+
+        file_handle = safe_candidate.open(mode, **kwargs)
+        try:
+            yield file_handle
+        finally:
+            file_handle.close()
+
+    def _sanitize_log_override(self, raw_value: str | None, description: str) -> Path | None:
+        """Validate CLI-provided log override paths."""
+        if not raw_value:
+            return None
+
+        candidates = [Path(raw_value)]
+        if self.logs_dir:
+            candidates.append(self.logs_dir / Path(raw_value))
+
+        for candidate in candidates:
+            safe_candidate = self._resolve_if_safe(candidate)
+            if safe_candidate and safe_candidate.exists():
+                return safe_candidate
+
+        print(f"[WARNING] Ignoring unsafe {description}: {raw_value}")
+        return None
+
+    @staticmethod
+    def _sanitize_filename_component(value: str, fallback: str = "analysis") -> str:
+        """Create a filesystem-safe component for generated filenames."""
+        sanitized = re.sub(r"[^A-Za-z0-9._-]+", "_", value)
+        sanitized = sanitized.strip("._-")
+        return sanitized or fallback
 
     @staticmethod
     def _safe_parse_structured_block(raw_block: str) -> dict[str, Any] | None:
@@ -185,59 +256,6 @@ class MemoryPlannerAnalyzer:
 
         return None
 
-    def _score_log_candidate(
-        self,
-        candidate: LogCandidate,
-        drug_name: str | None = None,
-        workflow_id: str | None = None,
-        reference_time: float | None = None,
-    ) -> float:
-        """Score a log candidate based on multiple factors."""
-        score = 0.0
-
-        # Drug name match (highest priority)
-        if drug_name and candidate.drug_found:
-            score += 40.0
-
-            # Extra points if drug appears in filename
-            if drug_name.lower() in candidate.path.name.lower():
-                score += 10.0
-
-        # Workflow ID match (high priority)
-        if workflow_id and candidate.workflow_found:
-            score += 30.0
-
-        # Entity extraction match
-        if candidate.entities_match:
-            score += 20.0
-
-        # Time proximity to reference (e.g., PDF creation time)
-        if reference_time and candidate.modification_time:
-            # Calculate time difference in minutes
-            time_diff = abs(reference_time - candidate.modification_time) / 60.0
-
-            # Score based on proximity (max 10 points for same minute, decreasing)
-            if time_diff < 1:
-                score += 10.0
-            elif time_diff < 5:
-                score += 8.0
-            elif time_diff < 15:
-                score += 5.0
-            elif time_diff < 30:
-                score += 3.0
-            elif time_diff < 60:
-                score += 1.0
-
-        # Prefer newer files slightly
-        age_hours = (datetime.now().timestamp() - candidate.modification_time) / 3600
-        if age_hours < 1:
-            score += 2.0
-        elif age_hours < 24:
-            score += 1.0
-
-        candidate.score = score
-        return score
-
     def _analyze_log_content(
         self,
         log_path: Path,
@@ -246,9 +264,10 @@ class MemoryPlannerAnalyzer:
         check_depth: int = 50000,
     ) -> LogCandidate:
         """Analyze log content and create a scored candidate."""
-        safe_log_path = self._resolve_if_safe(log_path)
-        if not safe_log_path or not safe_log_path.exists():
-            print(f"[WARNING] Skipping unsafe or missing log file: {log_path}")
+        try:
+            safe_log_path = self._ensure_safe_path(log_path, description="log file", must_exist=True)
+        except (ValueError, FileNotFoundError) as exc:
+            print(f"[WARNING] Skipping log due to safety validation failure: {exc}")
             return LogCandidate(path=log_path)
 
         candidate = LogCandidate(
@@ -257,7 +276,11 @@ class MemoryPlannerAnalyzer:
         )
 
         try:
-            with open(safe_log_path, encoding="utf-8", errors="ignore") as f:
+            with self._open_text_file(
+                safe_log_path,
+                description="log file",
+                errors="ignore",
+            ) as f:
                 # Read limited content for analysis
                 content = f.read(check_depth)
                 candidate.content_preview = content[:500]
@@ -293,24 +316,25 @@ class MemoryPlannerAnalyzer:
         agent_type: str,
         drug_name: str | None = None,
         workflow_id: str | None = None,
-        specific_log_path: str | None = None,
+        specific_log_path: Path | str | None = None,
         time_window_minutes: int = 60,
     ) -> Path | None:
         """Find the most appropriate log file for analysis with advanced scoring."""
         # If specific log path provided, validate and use it when safe
         if specific_log_path:
-            direct_candidate = self._resolve_if_safe(Path(specific_log_path))
+            specific_path = Path(specific_log_path)
+            direct_candidate = self._resolve_if_safe(specific_path)
             if direct_candidate and direct_candidate.exists():
                 print(f"[INFO] Using specified log file: {direct_candidate}")
                 return direct_candidate
 
             if self.logs_dir:
-                nested_candidate = self._resolve_if_safe(self.logs_dir / specific_log_path)
+                nested_candidate = self._resolve_if_safe(self.logs_dir / specific_path)
                 if nested_candidate and nested_candidate.exists():
                     print(f"[INFO] Using specified log file: {nested_candidate}")
                     return nested_candidate
 
-            print(f"[WARNING] Specified log file not found or failed safety checks: {specific_log_path}")
+            print(f"[WARNING] Specified log file not found or failed safety checks: {specific_path}")
 
         # Get reference time from PDF if available
         reference_time = None
@@ -434,7 +458,7 @@ class MemoryPlannerAnalyzer:
         self,
         workflow_id: str | None = None,
         drug_name: str | None = None,
-        planner_log_path: str | None = None,
+        planner_log_path: Path | str | None = None,
     ) -> dict[str, Any]:
         """Analyze planner logs for memory-augmented behavior."""
         print("\n=== ANALYZING PLANNER LOGS ===")
@@ -454,9 +478,10 @@ class MemoryPlannerAnalyzer:
             print(f"[INFO] Searched in: {self.logs_dir}")
             return {}
 
-        safe_planner_log = self._resolve_if_safe(planner_log)
-        if not safe_planner_log:
-            print(f"[ERROR] Selected planner log failed safety validation; skipping: {planner_log}")
+        try:
+            safe_planner_log = self._ensure_safe_path(planner_log, description="planner log", must_exist=True)
+        except (ValueError, FileNotFoundError) as exc:
+            print(f"[ERROR] Planner log failed safety validation: {exc}")
             return {}
 
         print(f"\nAnalyzing: {safe_planner_log.name}")
@@ -480,7 +505,11 @@ class MemoryPlannerAnalyzer:
         }
 
         try:
-            with open(safe_planner_log, encoding="utf-8", errors="ignore") as f:
+            with self._open_text_file(
+                safe_planner_log,
+                description="planner log",
+                errors="ignore",
+            ) as f:
                 content = f.read()
 
                 escaped_drug_name: str | None = None
@@ -745,8 +774,8 @@ class MemoryPlannerAnalyzer:
         self,
         workflow_id: str | None = None,
         drug_name: str | None = None,
-        router_log_path: str | None = None,
-        commander_log_path: str | None = None,
+        router_log_path: Path | str | None = None,
+        commander_log_path: Path | str | None = None,
     ) -> dict[str, Any]:
         """Analyze complete workflow execution efficiency."""
         print("\n=== ANALYZING WORKFLOW EXECUTION ===")
@@ -775,42 +804,51 @@ class MemoryPlannerAnalyzer:
 
         if router_log:
             try:
-                with open(router_log, encoding="utf-8", errors="ignore") as f:
-                    router_content = f.read()
+                safe_router_log = self._ensure_safe_path(router_log, description="router log", must_exist=True)
+            except (ValueError, FileNotFoundError) as exc:
+                print(f"[WARNING] Router log failed safety validation; skipping: {exc}")
+            else:
+                try:
+                    with self._open_text_file(
+                        safe_router_log,
+                        description="router log",
+                        errors="ignore",
+                    ) as f:
+                        router_content = f.read()
 
-                    # Check workflow completion
-                    completion_patterns = [
-                        r"WORKFLOW_COMPLETE",
-                        r"workflow.*completed successfully",
-                        r"All steps completed",
-                        r"Workflow.*COMPLETED",
-                    ]
+                        # Check workflow completion
+                        completion_patterns = [
+                            r"WORKFLOW_COMPLETE",
+                            r"workflow.*completed successfully",
+                            r"All steps completed",
+                            r"Workflow.*COMPLETED",
+                        ]
 
-                    for pattern in completion_patterns:
-                        if re.search(pattern, router_content, re.IGNORECASE):
-                            analysis["workflow_completed"] = True
-                            print("[OK] Workflow completed successfully")
-                            break
+                        for pattern in completion_patterns:
+                            if re.search(pattern, router_content, re.IGNORECASE):
+                                analysis["workflow_completed"] = True
+                                print("[OK] Workflow completed successfully")
+                                break
 
-                    # Extract executed steps
-                    step_patterns = [
-                        r"Executing step[:\s]+(\w+)",
-                        r"Processing step[:\s]+(\w+)",
-                        r"Running step[:\s]+(\w+)",
-                        r"Step (\w+) completed",
-                        r"Completed step[:\s]+(\w+)",
-                    ]
+                        # Extract executed steps
+                        step_patterns = [
+                            r"Executing step[:\s]+(\w+)",
+                            r"Processing step[:\s]+(\w+)",
+                            r"Running step[:\s]+(\w+)",
+                            r"Step (\w+) completed",
+                            r"Completed step[:\s]+(\w+)",
+                        ]
 
-                    executed_steps = set()
-                    for pattern in step_patterns:
-                        step_matches = re.findall(pattern, router_content, re.IGNORECASE)
-                        executed_steps.update(step_matches)
+                        executed_steps = set()
+                        for pattern in step_patterns:
+                            step_matches = re.findall(pattern, router_content, re.IGNORECASE)
+                            executed_steps.update(step_matches)
 
-                    if executed_steps:
-                        analysis["steps_executed"] = list(executed_steps)
-                        print(f"[OK] Steps executed: {', '.join(analysis['steps_executed'])}")
-            except Exception as e:
-                print(f"[ERROR] Error reading router log: {e}")
+                        if executed_steps:
+                            analysis["steps_executed"] = list(executed_steps)
+                            print(f"[OK] Steps executed: {', '.join(analysis['steps_executed'])}")
+                except Exception as e:
+                    print(f"[ERROR] Error reading router log: {e}")
 
         # Check worker agent logs for data retrieval
         worker_configs = [
@@ -832,12 +870,28 @@ class MemoryPlannerAnalyzer:
 
         for primary_name, alt_name, patterns, data_key, api_key in worker_configs:
             worker_log = self._find_best_log_file(primary_name, drug_name, workflow_id) or self._find_best_log_file(
-                alt_name, drug_name, workflow_id,
+                alt_name,
+                drug_name,
+                workflow_id,
             )
 
             if worker_log:
                 try:
-                    with open(worker_log, encoding="utf-8", errors="ignore") as f:
+                    safe_worker_log = self._ensure_safe_path(
+                        worker_log,
+                        description=f"{primary_name} log",
+                        must_exist=True,
+                    )
+                except (ValueError, FileNotFoundError) as exc:
+                    print(f"[WARNING] {primary_name} log failed safety validation; skipping: {exc}")
+                    continue
+
+                try:
+                    with self._open_text_file(
+                        safe_worker_log,
+                        description=f"{primary_name} log",
+                        errors="ignore",
+                    ) as f:
                         content = f.read()
 
                         for pattern in patterns:
@@ -871,25 +925,38 @@ class MemoryPlannerAnalyzer:
 
         if commander_log:
             try:
-                with open(commander_log, encoding="utf-8", errors="ignore") as f:
-                    content = f.read()
+                safe_commander_log = self._ensure_safe_path(
+                    commander_log,
+                    description="commander log",
+                    must_exist=True,
+                )
+            except (ValueError, FileNotFoundError) as exc:
+                print(f"[WARNING] Commander log failed safety validation; skipping: {exc}")
+            else:
+                try:
+                    with self._open_text_file(
+                        safe_commander_log,
+                        description="commander log",
+                        errors="ignore",
+                    ) as f:
+                        content = f.read()
 
-                    storage_patterns = [
-                        r"Successfully stored workflow.*outputs",
-                        r"Storing workflow outputs in memory",
-                        r"store_workflow_outputs.*completed",
-                        r"Enhanced storage completed",
-                        r"Standard memory storage completed",
-                        r"stored.*documents? in memory",
-                    ]
+                        storage_patterns = [
+                            r"Successfully stored workflow.*outputs",
+                            r"Storing workflow outputs in memory",
+                            r"store_workflow_outputs.*completed",
+                            r"Enhanced storage completed",
+                            r"Standard memory storage completed",
+                            r"stored.*documents? in memory",
+                        ]
 
-                    for pattern in storage_patterns:
-                        if re.search(pattern, content, re.IGNORECASE):
-                            analysis["memory_stored"] = True
-                            print("[OK] Workflow outputs stored in memory")
-                            break
-            except Exception as e:
-                print(f"[ERROR] Error reading commander log: {e}")
+                        for pattern in storage_patterns:
+                            if re.search(pattern, content, re.IGNORECASE):
+                                analysis["memory_stored"] = True
+                                print("[OK] Workflow outputs stored in memory")
+                                break
+                except Exception as e:
+                    print(f"[ERROR] Error reading commander log: {e}")
 
         self.analysis_results["workflow_efficiency"] = analysis
         return analysis
@@ -1187,9 +1254,9 @@ class MemoryPlannerAnalyzer:
         self,
         workflow_id: str | None = None,
         drug_name: str = "Empagliflozin",
-        planner_log: str | None = None,
-        router_log: str | None = None,
-        commander_log: str | None = None,
+        planner_log: Path | None = None,
+        router_log: Path | None = None,
+        commander_log: Path | None = None,
     ):
         """Run complete analysis of memory-augmented planner test."""
         print("\n" + "=" * 60)
@@ -1218,7 +1285,6 @@ class MemoryPlannerAnalyzer:
         await self.analyze_memory_impact(drug_name)
         recommendations = self.generate_recommendations(drug_name)
 
-        # Generate summary report
         print("\n" + "=" * 60)
         print("ANALYSIS SUMMARY")
         print("=" * 60)
@@ -1295,16 +1361,41 @@ class MemoryPlannerAnalyzer:
 
         # Save detailed results
         results_dir = Path(project_root) / "analysis_results"
-        results_dir.mkdir(exist_ok=True)
+        try:
+            safe_results_dir = self._ensure_safe_path(
+                results_dir,
+                description="analysis results directory",
+                must_exist=False,
+            )
+        except ValueError as exc:
+            print(f"\n[ERROR] Unable to determine safe directory for analysis results: {exc}")
+            return self.analysis_results
+
+        safe_results_dir.mkdir(exist_ok=True)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        results_file = results_dir / f"memory_planner_analysis_{drug_name}_{timestamp}.json"
+        safe_drug_component = self._sanitize_filename_component(drug_name)
+        results_file = safe_results_dir / f"memory_planner_analysis_{safe_drug_component}_{timestamp}.json"
 
         try:
-            with open(results_file, "w") as f:
+            safe_results_file = self._ensure_safe_path(
+                results_file,
+                description="analysis results file",
+                must_exist=False,
+            )
+        except ValueError as exc:
+            print(f"\n[ERROR] Refusing to write results outside allowed directories: {exc}")
+            return self.analysis_results
+
+        try:
+            with self._open_text_file(
+                safe_results_file,
+                mode="w",
+                description="analysis results file",
+            ) as f:
                 json.dump(self.analysis_results, f, indent=2, default=str)
 
-            print(f"\n[OK] Detailed results saved to: {results_file}")
+            print(f"\n[OK] Detailed results saved to: {safe_results_file}")
         except Exception as e:
             print(f"\n[ERROR] Could not save results file: {e}")
 
@@ -1381,21 +1472,33 @@ Examples:
 
     # Override logs directory if specified
     if args.logs_dir:
-        custom_logs_dir = analyzer._resolve_if_safe(Path(args.logs_dir))
-        if custom_logs_dir and custom_logs_dir.is_dir():
-            analyzer.logs_dir = custom_logs_dir
-            print(f"[INFO] Using custom logs directory: {custom_logs_dir}")
+        try:
+            custom_logs_dir = analyzer._ensure_safe_path(
+                Path(args.logs_dir),
+                description="custom logs directory",
+                must_exist=True,
+            )
+        except (ValueError, FileNotFoundError) as exc:
+            print(f"[WARNING] Ignoring custom logs directory: {exc}")
         else:
-            print(f"[WARNING] Ignoring custom logs directory due to safety checks: {args.logs_dir}")
+            if custom_logs_dir.is_dir():
+                analyzer.logs_dir = custom_logs_dir
+                print(f"[INFO] Using custom logs directory: {custom_logs_dir}")
+            else:
+                print(f"[WARNING] Custom logs directory is not a directory: {custom_logs_dir}")
+
+    planner_override = analyzer._sanitize_log_override(args.planner_log, "planner log override")
+    router_override = analyzer._sanitize_log_override(args.router_log, "router log override")
+    commander_override = analyzer._sanitize_log_override(args.commander_log, "commander log override")
 
     # Run analysis
     asyncio.run(
         analyzer.run_complete_analysis(
             workflow_id=args.workflow,
             drug_name=args.drug,
-            planner_log=args.planner_log,
-            router_log=args.router_log,
-            commander_log=args.commander_log,
+            planner_log=planner_override,
+            router_log=router_override,
+            commander_log=commander_override,
         ),
     )
 

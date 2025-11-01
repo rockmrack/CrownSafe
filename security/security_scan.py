@@ -8,6 +8,12 @@ import os
 import re
 from datetime import datetime
 from pathlib import Path
+from typing import Any
+
+
+def _case_insensitive_pattern(word: str) -> str:
+    """Build a case-insensitive regex for the provided word."""
+    return "".join(f"[{char.lower()}{char.upper()}]" if char.isalpha() else re.escape(char) for char in word)
 
 
 class SecurityScanner:
@@ -15,7 +21,7 @@ class SecurityScanner:
 
     def __init__(self) -> None:
         self.base_path = Path.cwd()
-        self.findings = {
+        self.findings: dict[str, Any] = {
             "secrets": [],
             "vulnerabilities": [],
             "data_handling": [],
@@ -25,6 +31,7 @@ class SecurityScanner:
         }
 
         # Secret patterns to detect
+        password_pattern = _case_insensitive_pattern("password") + r"\s*[:=]\s*['\"][^'\"]+['\"]"
         self.secret_patterns = {
             "AWS Access Key": r"AKIA[0-9A-Z]{16}",
             "AWS Secret Key": r"[0-9a-zA-Z/+=]{40}",
@@ -32,7 +39,7 @@ class SecurityScanner:
             "Private Key": r"-----BEGIN (RSA|EC|OPENSSH) PRIVATE KEY-----",
             "JWT Secret": r'[jJ][wW][tT]_?[sS][eE][cC][rR][eE][tT]\s*[:=]\s*["\'][^"\']+["\']',
             "Database URL": r'(postgres|postgresql|mysql|mongodb)://[^"\'\s]+',
-            "Password": r'[pP][aA][sS][sS][wW][oO][rR][dD]\s*[:=]\s*["\'][^"\']+["\']',
+            "Password": password_pattern,
             "Token": r'[tT][oO][kK][eE][nN]\s*[:=]\s*["\'][0-9a-zA-Z]{20,}["\']',
             "Stripe Key": r"sk_live_[0-9a-zA-Z]{24,}",
             "GitHub Token": r"ghp_[0-9a-zA-Z]{36}",
@@ -95,7 +102,10 @@ class SecurityScanner:
                             matches = re.finditer(pattern, content)
                             for match in matches:
                                 # Check if it's an environment variable reference
-                                if "os.environ" in content[max(0, match.start() - 20) : match.end() + 20]:
+                                snippet_start = max(0, match.start() - 20)
+                                snippet_end = match.end() + 20
+                                snippet = content[snippet_start:snippet_end]
+                                if "os.environ" in snippet:
                                     continue
 
                                 secrets_found.append(
@@ -261,7 +271,8 @@ class SecurityScanner:
                     data_checks["data_retention"] = True
 
                 # Check for secure deletion
-                if "delete" in content.lower() and ("secure" in content.lower() or "permanent" in content.lower()):
+                lower_content = content.lower()
+                if "delete" in lower_content and ("secure" in lower_content or "permanent" in lower_content):
                     data_checks["secure_deletion"] = True
 
         # Summary
@@ -475,7 +486,10 @@ class SecurityScanner:
                 "security_score": 0,
             },
             "compliance": {
-                "no_email_storage": not self.findings.get("data_handling", {}).get("email_storage", True),
+                "no_email_storage": not self.findings.get("data_handling", {}).get(
+                    "email_storage",
+                    True,
+                ),
                 "user_id_only": self.findings.get("data_handling", {}).get("user_id_only", False),
                 "provider_sub": self.findings.get("data_handling", {}).get("provider_sub", False),
             },
@@ -484,7 +498,7 @@ class SecurityScanner:
         # Calculate security score
         configs = self.findings.get("configuration", {})
         if configs:
-            report["statistics"]["security_score"] = sum(1 for v in configs.values() if v) / len(configs) * 100
+            report["statistics"]["security_score"] = sum(1 for value in configs.values() if value) / len(configs) * 100
 
         # Print summary
         print(f"\n🔍 Secrets Found: {report['statistics']['secrets_found']}")
@@ -528,7 +542,6 @@ class SecurityScanner:
 
         # Generate report
         return self.generate_report()
-
 
 
 def main() -> int:

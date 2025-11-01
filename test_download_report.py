@@ -3,11 +3,34 @@ Tests the complete report generation and download workflow.
 """
 
 import json
+import re
+from pathlib import Path
 
 import requests
 
 BASE_URL = "http://localhost:8001"  # Change to production URL if testing production
 # BASE_URL = "https://babyshield.cureviax.ai"
+
+
+def _sanitize_filename_component(value: object, fallback: str = "report") -> str:
+    """Return a filesystem-safe component derived from user-controlled values."""
+
+    raw_value = str(value) if value is not None else ""
+    sanitized = re.sub(r"[^A-Za-z0-9._-]+", "_", raw_value)
+    sanitized = sanitized.strip("._-")
+    return sanitized or fallback
+
+
+def _resolve_report_path(report_id: object) -> Path:
+    """Build a safe output path for downloaded reports."""
+
+    component = _sanitize_filename_component(report_id)
+    downloads_dir = Path.cwd() / "downloaded_reports"
+    downloads_dir.mkdir(exist_ok=True)
+    candidate = (downloads_dir / f"test_report_{component}.pdf").resolve()
+    if not candidate.is_relative_to(downloads_dir.resolve()):  # pragma: no cover - safety gate
+        raise ValueError(f"Refusing to write outside download directory: {candidate}")
+    return candidate
 
 
 def test_download_report_workflow() -> None:
@@ -82,10 +105,14 @@ def test_download_report_workflow() -> None:
                             print("   ✅ Correct content type (PDF)")
 
                             # Save to file for inspection
-                            filename = f"test_report_{report_id}.pdf"
-                            with open(filename, "wb") as f:
-                                f.write(download_response.content)
-                            print(f"   💾 Saved to: {filename}")
+                            try:
+                                output_path = _resolve_report_path(report_id)
+                            except ValueError as path_error:  # pragma: no cover - guard rail
+                                print(f"   ❌ Invalid file path: {path_error}")
+                            else:
+                                with output_path.open("wb") as file_handle:
+                                    file_handle.write(download_response.content)
+                                print(f"   💾 Saved to: {output_path}")
 
                             # Verify PDF header
                             if download_response.content[:4] == b"%PDF":

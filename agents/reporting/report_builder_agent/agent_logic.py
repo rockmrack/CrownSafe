@@ -70,7 +70,7 @@ except ImportError:
     qrcode = None
 
 try:
-    from jinja2 import Environment, FileSystemLoader
+    from jinja2 import Environment, FileSystemLoader, select_autoescape
 
     JINJA2_AVAILABLE = True
 except ImportError:
@@ -435,7 +435,10 @@ class ReportBuilderAgentLogic:
 
         # Initialize Jinja2 environment with the correct templates directory
         try:
-            self.jinja_env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
+            self.jinja_env = Environment(
+                loader=FileSystemLoader(str(TEMPLATES_DIR)),
+                autoescape=select_autoescape(["html", "htm", "xml"]),
+            )
             self.logger.info(f"Jinja2 environment initialized with templates from: {TEMPLATES_DIR}")
 
             # Check if pa_summary_template.html exists
@@ -599,7 +602,7 @@ class ReportBuilderAgentLogic:
         # Prepare context for the template
         context = {
             "prediction_data": data,
-            "report_date": datetime.now().strftime("%Y-%m-%d %H:%M UTC"),
+            "report_date": datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC"),
             "workflow_id": workflow_id or f"WF_{str(uuid.uuid4())[:8]}",
             "logo_path": f"file:///{LOGO_PATH.replace(chr(92), '/')}",
         }
@@ -1320,7 +1323,8 @@ a {{ color: #2561b1; text-decoration: none; }}
             ]:
                 if key in dependency_results:
                     drug_safety_data_from_deps = self._extract_data_from_dependency_result(
-                        dependency_results[key], "safety",
+                        dependency_results[key],
+                        "safety",
                     )
                     if drug_safety_data_from_deps:
                         self.logger.info(f"Found safety data under key: {key}")

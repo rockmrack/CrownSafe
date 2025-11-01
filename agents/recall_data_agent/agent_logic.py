@@ -5,7 +5,7 @@ Version: 3.0 - Adapted for Crown Safe (Hair/Cosmetic Products).
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from sqlalchemy import or_
@@ -197,7 +197,7 @@ class RecallDataAgentLogic:
                 - errors: List of any errors encountered
 
         """
-        start_time = datetime.now()
+        start_time = datetime.now(timezone.utc)
         self.logger.info(f"[{self.agent_id}] Starting new ingestion cycle...")
 
         try:
@@ -211,7 +211,7 @@ class RecallDataAgentLogic:
                     "total_fetched": 0,
                     "total_upserted": 0,
                     "total_skipped": 0,
-                    "duration_seconds": (datetime.now() - start_time).total_seconds(),
+                    "duration_seconds": (datetime.now(timezone.utc) - start_time).total_seconds(),
                 }
 
             self.logger.info(f"[{self.agent_id}] Fetched {len(all_recalls)} total recalls from all agencies")
@@ -241,7 +241,7 @@ class RecallDataAgentLogic:
                     "total_upserted": 0,
                     "total_skipped": 0,
                     "total_filtered": filtered_count,
-                    "duration_seconds": (datetime.now() - start_time).total_seconds(),
+                    "duration_seconds": (datetime.now(timezone.utc) - start_time).total_seconds(),
                 }
 
             # Upsert into database (only Crown Safe relevant recalls)
@@ -288,7 +288,7 @@ class RecallDataAgentLogic:
             finally:
                 db.close()
 
-            duration = (datetime.now() - start_time).total_seconds()
+            duration = (datetime.now(timezone.utc) - start_time).total_seconds()
 
             self.logger.info(
                 f"[{self.agent_id}] Ingestion complete. "
@@ -313,7 +313,7 @@ class RecallDataAgentLogic:
             return {
                 "status": "error",
                 "error": error_msg,
-                "duration_seconds": (datetime.now() - start_time).total_seconds(),
+                "duration_seconds": (datetime.now(timezone.utc) - start_time).total_seconds(),
             }
 
     def get_statistics(self) -> dict[str, Any]:

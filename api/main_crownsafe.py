@@ -1106,7 +1106,6 @@ def get_safety_hub_articles(
             },
         )
 
-
     except Exception as e:
         logger.error(f"Failed to fetch safety articles: {e}", exc_info=True)
         # Return fallback data instead of 500 error

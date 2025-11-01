@@ -10,6 +10,12 @@ def _is_safe_identifier(name: str, pattern: re.Pattern = identifier_pattern) -> 
     return bool(pattern.fullmatch(name))
 
 
+def _quote_identifier(name: str) -> str:
+    """Wrap an identifier in double quotes with internal quotes escaped."""
+    escaped = name.replace('"', '""')
+    return f'"{escaped}"'
+
+
 # Check all database files
 db_files = ["babyshield_recalls.db", "babyshield_dev.db", "babyshield.db"]
 
@@ -44,17 +50,21 @@ for db_file in db_files:
                         print(f"   ⚠️  Skipping table with unsafe name: {table}")
                         continue
 
-                    cursor.execute(f"SELECT COUNT(*) FROM {table}")
+                    safe_table = _quote_identifier(table)
+                    count_query = "SELECT COUNT(*) FROM " + safe_table
+                    cursor.execute(count_query)
                     count = cursor.fetchone()[0]
                     print(f"   📊 {table}: {count:,} rows")
                     total_recalls += count
 
                     if count > 0:
                         # Show sample
-                        cursor.execute(f"SELECT * FROM {table} LIMIT 1")
+                        sample_query = "SELECT * FROM " + safe_table + " LIMIT 1"
+                        cursor.execute(sample_query)
                         sample = cursor.fetchone()
                         if sample:
-                            cursor.execute(f"PRAGMA table_info({table})")
+                            pragma_query = "PRAGMA table_info(" + safe_table + ")"
+                            cursor.execute(pragma_query)
                             cols = [c[1] for c in cursor.fetchall()]
                             print(f"      Columns: {', '.join(cols[:5])}...")
                 except Exception as e:

@@ -7,7 +7,7 @@ import asyncio
 import logging
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -46,7 +46,8 @@ async def run_manual_ingestion():
         return {"status": "error", "error": str(e)}
 
     # Initialize agent
-    agent_id = f"manual_ingestor_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    agent_id = f"manual_ingestor_{timestamp}"
     agent = RecallDataAgentLogic(agent_id=agent_id)
 
     # Run ingestion cycle
@@ -76,7 +77,12 @@ async def run_manual_ingestion():
         logger.info("DATABASE STATISTICS")
         logger.info(f"Total Recalls in Database: {stats.get('total_recalls', 0)}")
         logger.info("Recalls by Agency:")
-        for agency, count in sorted(stats.get("by_agency", {}).items(), key=lambda x: x[1], reverse=True):
+        sorted_agencies = sorted(
+            stats.get("by_agency", {}).items(),
+            key=lambda item: item[1],
+            reverse=True,
+        )
+        for agency, count in sorted_agencies:
             logger.info(f"  {agency}: {count}")
 
     logger.info("=" * 80)
@@ -125,7 +131,9 @@ def main() -> None:
     """Main entry point."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="BabyShield RecallDataAgent - Manual Ingestion Tool")
+    parser = argparse.ArgumentParser(
+        description="BabyShield RecallDataAgent - Manual Ingestion Tool",
+    )
     parser.add_argument(
         "--test",
         action="store_true",

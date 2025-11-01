@@ -150,7 +150,8 @@ class EnhancedMemoryManager(MemoryManager):
 
             # Research gaps collection
             self.gaps_collection = self.chroma_client.get_or_create_collection(
-                name=f"{self.collection_name}_gaps", metadata={"hnsw:space": "cosine"},
+                name=f"{self.collection_name}_gaps",
+                metadata={"hnsw:space": "cosine"},
             )
 
             # Cross-workflow insights collection
@@ -177,12 +178,12 @@ class EnhancedMemoryManager(MemoryManager):
         # Convert async call to sync for compatibility
         if hasattr(workflow_data, "get"):
             # Extract parameters for standard storage
-            workflow_id = workflow_data.get("workflow_id", f"enhanced_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+            workflow_id = workflow_data.get("workflow_id", f"enhanced_{utc_now().strftime('%Y%m%d_%H%M%S')}")
             goal = workflow_data.get("goal", "Enhanced workflow")
             entities = workflow_data.get("extracted_entities", {})
             research_data = workflow_data.get("research_data", {})
             pdf_path = workflow_data.get("pdf_path")
-            timestamp = workflow_data.get("completion_timestamp", datetime.now().isoformat())
+            timestamp = workflow_data.get("completion_timestamp", utc_now().isoformat())
 
             standard_result = self.store_workflow_outputs(
                 workflow_id=workflow_id,
@@ -301,7 +302,9 @@ class EnhancedMemoryManager(MemoryManager):
             return entities
 
     async def _analyze_temporal_patterns(
-        self, entities: dict[str, list[str]], workflow_data: dict[str, Any],
+        self,
+        entities: dict[str, list[str]],
+        workflow_data: dict[str, Any],
     ) -> dict[str, Any]:
         """Analyze temporal patterns in research data."""
         self.logger.info("Starting temporal pattern analysis")
@@ -313,7 +316,7 @@ class EnhancedMemoryManager(MemoryManager):
         }
 
         try:
-            current_time = datetime.now()
+            current_time = utc_now()
 
             # Analyze each drug entity
             for drug in entities.get("drugs", []):
@@ -410,7 +413,10 @@ class EnhancedMemoryManager(MemoryManager):
             return None
 
     async def _detect_temporal_pattern(
-        self, entity: str, historical_docs: list[dict[str, Any]], current_time: datetime,
+        self,
+        entity: str,
+        historical_docs: list[dict[str, Any]],
+        current_time: datetime,
     ) -> TemporalPattern | None:
         """Detect temporal patterns in historical documents."""
         try:
@@ -459,7 +465,6 @@ class EnhancedMemoryManager(MemoryManager):
                 supporting_evidence=[doc["content"][:200] for doc in historical_docs[:3]],
             )
 
-
         except Exception as e:
             self.logger.exception(f"Failed to detect temporal pattern for {entity}: {e}")
             return None
@@ -495,7 +500,9 @@ class EnhancedMemoryManager(MemoryManager):
             return insights
 
     async def _detect_contradictions(
-        self, entities: dict[str, list[str]], workflow_data: dict[str, Any],
+        self,
+        entities: dict[str, list[str]],
+        workflow_data: dict[str, Any],
     ) -> dict[str, Any]:
         """Detect contradictory evidence across research."""
         self.logger.info("Starting contradiction detection")
@@ -592,7 +599,10 @@ class EnhancedMemoryManager(MemoryManager):
             return contradictions
 
     async def _analyze_statement_contradictions(
-        self, entity: str, category: str, statements: list[tuple[str, str]],
+        self,
+        entity: str,
+        category: str,
+        statements: list[tuple[str, str]],
     ) -> list[Contradiction]:
         """Analyze statements for contradictions."""
         contradictions = []
@@ -632,13 +642,13 @@ class EnhancedMemoryManager(MemoryManager):
 
                     if contradiction_found:
                         contradiction = Contradiction(
-                            contradiction_id=f"contradiction_{entity}_{category}_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+                            contradiction_id=f"contradiction_{entity}_{category}_{utc_now().strftime('%Y%m%d_%H%M%S')}",
                             entity=entity,
                             conflicting_claims=conflicting_claims,
                             evidence_sources=[source1, source2],
                             severity="moderate",  # Default severity
                             confidence_score=0.7,  # Default confidence
-                            detected_at=datetime.now(),
+                            detected_at=utc_now(),
                             resolution_suggestions=[
                                 "Review study methodologies for differences",
                                 "Consider population or dosage differences",
@@ -694,7 +704,9 @@ class EnhancedMemoryManager(MemoryManager):
             return suggestions
 
     async def _identify_research_gaps(
-        self, entities: dict[str, list[str]], workflow_data: dict[str, Any],
+        self,
+        entities: dict[str, list[str]],
+        workflow_data: dict[str, Any],
     ) -> dict[str, Any]:
         """Identify gaps in current research."""
         self.logger.info("Starting research gap identification")
@@ -744,7 +756,7 @@ class EnhancedMemoryManager(MemoryManager):
             if not results["documents"] or not results["documents"][0]:
                 # No research found - major gap
                 gap = ResearchGap(
-                    gap_id=f"gap_{entity}_no_research_{datetime.now().strftime('%Y%m%d')}",
+                    gap_id=f"gap_{entity}_no_research_{utc_now().strftime('%Y%m%d')}",
                     entity=entity,
                     gap_type="comprehensive",
                     description=f"Limited research data available for {entity}",
@@ -754,7 +766,7 @@ class EnhancedMemoryManager(MemoryManager):
                         f"Design clinical trials for {entity} efficacy",
                         f"Investigate {entity} safety profile",
                     ],
-                    identified_at=datetime.now(),
+                    identified_at=utc_now(),
                 )
                 gaps.append(gap)
                 return gaps
@@ -813,13 +825,13 @@ class EnhancedMemoryManager(MemoryManager):
                     priority_score = 1.0 - (content_analysis[gap_type] / total_docs) / threshold
 
                     gap = ResearchGap(
-                        gap_id=f"gap_{entity}_{gap_type}_{datetime.now().strftime('%Y%m%d')}",
+                        gap_id=f"gap_{entity}_{gap_type}_{utc_now().strftime('%Y%m%d')}",
                         entity=entity,
                         gap_type=gap_type,
                         description=f"Limited {gap_type.replace('_', ' ')} data for {entity}",
                         priority_score=min(priority_score, 0.95),
                         suggested_research=self._generate_gap_specific_suggestions(entity, gap_type),
-                        identified_at=datetime.now(),
+                        identified_at=utc_now(),
                     )
                     gaps.append(gap)
 
@@ -935,7 +947,9 @@ class EnhancedMemoryManager(MemoryManager):
             return suggestions
 
     async def _generate_cross_workflow_insights(
-        self, entities: dict[str, list[str]], workflow_data: dict[str, Any],
+        self,
+        entities: dict[str, list[str]],
+        workflow_data: dict[str, Any],
     ) -> dict[str, Any]:
         """Generate advanced cross-workflow insights."""
         self.logger.info("Starting cross-workflow insight generation")
@@ -988,7 +1002,7 @@ class EnhancedMemoryManager(MemoryManager):
 
                 if common_outcomes:
                     insight = CrossWorkflowInsight(
-                        insight_id=f"sglt2_class_outcomes_{datetime.now().strftime('%Y%m%d')}",
+                        insight_id=f"sglt2_class_outcomes_{utc_now().strftime('%Y%m%d')}",
                         insight_type="drug_class_pattern",
                         entities_involved=sglt2_drugs,
                         insight_description=f"SGLT2 inhibitors show consistent patterns in: {', '.join(common_outcomes)}",  # noqa: E501
@@ -999,7 +1013,7 @@ class EnhancedMemoryManager(MemoryManager):
                             "Focus research on differentiating factors within SGLT2 class",
                             "Leverage class knowledge for new SGLT2 inhibitor evaluation",
                         ],
-                        generated_at=datetime.now(),
+                        generated_at=utc_now(),
                     )
 
                     self.cross_workflow_insights[insight.insight_id] = insight
@@ -1082,9 +1096,7 @@ class EnhancedMemoryManager(MemoryManager):
                             if indication in doc_lower:
                                 indication_patterns[indication] += 1
 
-            return [
-                indication for indication, count in indication_patterns.items() if count >= len(drugs) * 0.5
-            ]
+            return [indication for indication, count in indication_patterns.items() if count >= len(drugs) * 0.5]
 
         except Exception as e:
             self.logger.exception(f"Failed to find common indications: {e}")
@@ -1215,7 +1227,6 @@ class EnhancedMemoryManager(MemoryManager):
                 },
             }
 
-
         except Exception as e:
             self.logger.exception(f"Failed to get enhanced analytics: {e}")
             return {"error": str(e)}
@@ -1257,7 +1268,9 @@ class EnhancedMemoryManager(MemoryManager):
 
             # STEP 1: Perform similarity search for existing evidence
             existing_evidence_results = await self._find_existing_evidence_for_entity(
-                primary_drug, primary_disease, drug_class,
+                primary_drug,
+                primary_disease,
+                drug_class,
             )
 
             self.logger.debug(f"Existing evidence analysis: {existing_evidence_results}")
@@ -1619,7 +1632,10 @@ class EnhancedMemoryManager(MemoryManager):
         }
 
     async def _generate_strategy_specific_recommendations(
-        self, strategy: str, primary_drug: str, evidence_results: dict[str, Any],
+        self,
+        strategy: str,
+        primary_drug: str,
+        evidence_results: dict[str, Any],
     ) -> dict[str, Any]:
         """Generate specific recommendations based on the determined research strategy."""
         self.logger.debug(f"=== GENERATING {strategy.upper()} STRATEGY RECOMMENDATIONS FOR {primary_drug} ===")

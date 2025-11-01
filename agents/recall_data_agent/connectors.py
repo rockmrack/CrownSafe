@@ -7,7 +7,7 @@ import asyncio
 import logging
 import os
 import ssl
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import aiohttp
@@ -29,6 +29,11 @@ def create_ssl_context():
     return ssl_context
 
 
+def parse_date_utc(value: str, fmt: str):
+    """Parse a date string and attach UTC timezone before returning a date."""
+    return datetime.strptime(value, fmt).replace(tzinfo=timezone.utc).date()
+
+
 # ================================
 # 🇺🇸 UNITED STATES AGENCIES (6)
 # ================================
@@ -43,7 +48,7 @@ class CPSCConnector:
         """Fetch recalls from CPSC SaferProducts API."""
         logger.info("Fetching recent recalls from CPSC...")
         recalls: list[Recall] = []
-        start_date = (datetime.now() - timedelta(days=365 * 5)).strftime("%Y-%m-%d")  # 5 years
+        start_date = (datetime.now(timezone.utc) - timedelta(days=365 * 5)).strftime("%Y-%m-%d")  # 5 years
 
         params = {"format": "json", "RecallDateStart": start_date}
 
@@ -75,7 +80,7 @@ class CPSCConnector:
                                 brand=product.get("Brand"),
                                 model_number=product.get("Model"),
                                 upc=product.get("UPC"),
-                                recall_date=datetime.strptime(recall_date_str, "%Y-%m-%d").date(),
+                                recall_date=parse_date_utc(recall_date_str, "%Y-%m-%d"),
                                 hazard=item.get("Hazards", [{}])[0].get("Name") if item.get("Hazards") else None,  # noqa: E501
                                 recall_reason=item.get("Description"),
                                 remedy=item.get("Remedies", [{}])[0].get("Name") if item.get("Remedies") else None,  # noqa: E501
@@ -139,7 +144,7 @@ class FDAConnector:
                                         product_name=item.get("product_description", "Unknown Product"),  # noqa: E501
                                         brand=item.get("recalling_firm"),
                                         lot_number=item.get("code_info"),
-                                        recall_date=datetime.strptime(recall_date_str, "%Y%m%d").date(),  # noqa: E501
+                                        recall_date=parse_date_utc(recall_date_str, "%Y%m%d"),  # noqa: E501
                                         recall_reason=item.get("reason_for_recall"),
                                         recall_class=item.get("classification"),
                                         country=item.get("country"),
@@ -174,7 +179,7 @@ class NHTSAConnector:
         recalls: list[Recall] = []
 
         # Fetch recent years
-        current_year = datetime.now().year
+        current_year = datetime.now(timezone.utc).year
         years = [str(year) for year in range(current_year - 5, current_year + 1)]
 
         try:
@@ -196,7 +201,7 @@ class NHTSAConnector:
                                         vehicle_model=item.get("Model"),
                                         model_year=str(item.get("ModelYear")),
                                         manufacturer=item.get("Manufacturer"),
-                                        recall_date=datetime.strptime(item.get("ReportReceivedDate"), "%Y%m%d").date(),  # noqa: E501
+                                        recall_date=parse_date_utc(item.get("ReportReceivedDate"), "%Y%m%d"),  # noqa: E501
                                         hazard=item.get("Consequence"),
                                         recall_reason=item.get("Summary"),
                                         remedy=item.get("Remedy"),
@@ -245,10 +250,12 @@ class USDA_FSIS_Connector:
                                 product_name=item.get("product_description", "Unknown"),
                                 brand=item.get("brand_name"),
                                 lot_number=item.get("case_lot_code"),
-                                production_date=datetime.strptime(item.get("production_date"), "%Y-%m-%d").date()  # noqa: E501
-                                if item.get("production_date")
-                                else None,
-                                recall_date=datetime.strptime(recall_date_str, "%Y-%m-%d").date(),
+                                production_date=(
+                                    parse_date_utc(item.get("production_date"), "%Y-%m-%d")
+                                    if item.get("production_date")
+                                    else None
+                                ),
+                                recall_date=parse_date_utc(recall_date_str, "%Y-%m-%d"),
                                 recall_reason=item.get("reason"),
                                 hazard_category="food",
                                 url=item.get("url"),
@@ -297,7 +304,7 @@ class HealthCanadaConnector:
                                 brand=item.get("brand_name"),
                                 model_number=item.get("model_number"),
                                 upc=item.get("upc"),
-                                recall_date=datetime.strptime(item.get("date_published"), "%Y-%m-%d").date(),  # noqa: E501
+                                recall_date=parse_date_utc(item.get("date_published"), "%Y-%m-%d"),  # noqa: E501
                                 hazard=item.get("hazard"),
                                 recall_reason=item.get("issue"),
                                 remedy=item.get("what_to_do"),
@@ -379,7 +386,7 @@ class EU_RAPEX_Connector:
                                 brand=fields.get("brand"),
                                 model_number=fields.get("model_type"),
                                 ean_code=fields.get("ean"),
-                                recall_date=datetime.strptime(recall_date_str, "%Y-%m-%d").date(),
+                                recall_date=parse_date_utc(recall_date_str, "%Y-%m-%d"),
                                 hazard=fields.get("risk_type"),
                                 hazard_category=fields.get("product_category"),
                                 country=fields.get("country_of_origin"),

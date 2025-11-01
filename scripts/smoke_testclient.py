@@ -1,6 +1,7 @@
 import json
 import os
 import pathlib
+import secrets
 import sys
 from uuid import uuid4
 
@@ -34,7 +35,7 @@ def main() -> int:
 
     # Auth: register → token → me
     email = f"test+{uuid4().hex[:8]}@example.com"
-    password = "P@ssw0rd!"
+    password = os.environ.get("SMOKE_TEST_PASSWORD") or f"Auto_{secrets.token_urlsafe(12)}"
     r_reg = record(
         "register",
         client.post(

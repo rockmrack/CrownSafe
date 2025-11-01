@@ -3,6 +3,7 @@ Trap attackers and gather intelligence on attack patterns.
 """
 
 import logging
+import secrets
 import time
 
 from fastapi import APIRouter, Request
@@ -14,6 +15,11 @@ router = APIRouter()
 # Track honeypot hits for intelligence gathering
 honeypot_hits: dict[str, int] = {}
 attack_intelligence: dict[str, list] = {"ips": [], "patterns": [], "user_agents": []}
+
+
+def _generate_fake_secret(prefix: str) -> str:
+    """Generate dynamic honeypot secrets to avoid static values."""
+    return f"{prefix}_{secrets.token_urlsafe(8)}"
 
 
 def record_honeypot_hit(request: Request, honeypot_type: str) -> None:
@@ -33,35 +39,46 @@ def record_honeypot_hit(request: Request, honeypot_type: str) -> None:
         attack_intelligence["patterns"].append(honeypot_type)
 
     logger.warning(
-        f"🕳️ HONEYPOT HIT: {honeypot_type} from {client_ip} (hit #{honeypot_hits[client_ip]}) UA: {user_agent}",
+        "🕳️ HONEYPOT HIT: %s from %s (hit #%d) UA: %s",
+        honeypot_type,
+        client_ip,
+        honeypot_hits[client_ip],
+        user_agent,
     )
 
     # Auto-block after multiple hits
     if honeypot_hits[client_ip] >= 3:
-        logger.error(f"🚨 AUTO-BLOCKING IP {client_ip} after {honeypot_hits[client_ip]} honeypot hits")
+        logger.error(
+            "🚨 AUTO-BLOCKING IP %s after %d honeypot hits",
+            client_ip,
+            honeypot_hits[client_ip],
+        )
         # In production, this would add to IP blocklist
 
 
 def create_convincing_response(honeypot_type: str) -> JSONResponse:
     """Create convincing responses to waste attacker time."""
+    timestamp = int(time.time())
+    fake_admin_session = f"admin_session_{timestamp}"
+    fake_cookie = f"trap_{timestamp}"
     responses = {
         "admin_login": {
             "status": "success",
             "message": "Loading admin dashboard...",
             "redirect": "/admin/dashboard",
-            "session": "admin_session_" + str(int(time.time())),
-            "csrf_token": "fake_csrf_token_" + str(int(time.time())),
+            "session": fake_admin_session,
+            "csrf_token": _generate_fake_secret("fake_csrf_token"),
         },
         "config_file": {
             "database": {
                 "host": "localhost",
                 "username": "admin",
-                "password": "fake_password_123",
+                "password": _generate_fake_secret("fake_password"),
                 "database": "babyshield_honeypot",
             },
             "api_keys": {
-                "openai": "sk-fake_key_for_honeypot",
-                "aws": "AKIA_FAKE_KEY_FOR_HONEYPOT",
+                "openai": f"sk-{_generate_fake_secret('honeypot_key')}",
+                "aws": f"AKIA{secrets.token_hex(8).upper()}",
             },
         },
         "backup_file": {
@@ -91,9 +108,9 @@ def create_convincing_response(honeypot_type: str) -> JSONResponse:
         status_code=200,
         content=responses.get(honeypot_type, {"status": "success"}),
         headers={
-            "Set-Cookie": f"honeypot_session=trap_{int(time.time())}; Path=/",
+            "Set-Cookie": f"honeypot_session={fake_cookie}; Path=/",
             "X-Honeypot-Type": honeypot_type,
-            "X-Trap-ID": f"trap_{int(time.time())}",
+            "X-Trap-ID": fake_cookie,
         },
     )
 
@@ -141,15 +158,19 @@ async def admin_login_honeypot(request: Request):
 async def env_file_honeypot(request: Request):
     """Fake environment file to trap config seekers."""
     record_honeypot_hit(request, "config_file")
-
-    fake_env = """# BabyShield Environment Configuration
-DATABASE_URL=postgresql://admin:fake_password@localhost:5432/babyshield_honeypot
-OPENAI_API_KEY=sk-fake_openai_key_for_honeypot_detection
-AWS_ACCESS_KEY_ID=AKIA_FAKE_ACCESS_KEY_HONEYPOT
-AWS_SECRET_ACCESS_KEY=fake_secret_key_for_honeypot_trap
-REDIS_URL=redis://admin:fake_redis_pass@localhost:6379
-SECRET_KEY=fake_jwt_secret_key_honeypot_trap
-"""
+    dynamic_env = {
+        "DATABASE_URL": f"postgresql://admin:{_generate_fake_secret('fakepass')}@localhost:5432/babyshield_honeypot",
+        "OPENAI_API_KEY": f"sk-{_generate_fake_secret('fake_openai_key')}",
+        "AWS_ACCESS_KEY_ID": f"AKIA{secrets.token_hex(8).upper()}",
+        "AWS_SECRET_ACCESS_KEY": _generate_fake_secret("fake_aws_secret"),
+        "REDIS_URL": f"redis://admin:{_generate_fake_secret('fake_redis_pass')}@localhost:6379",
+        "SECRET_KEY": _generate_fake_secret("fake_jwt_secret"),
+    }
+    fake_env = (
+        "# BabyShield Environment Configuration\n"
+        + "\n".join(f"{key}={value}" for key, value in dynamic_env.items())
+        + "\n"
+    )
 
     return HTMLResponse(content=fake_env, headers={"X-Honeypot": "env_file"})
 

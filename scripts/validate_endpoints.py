@@ -192,12 +192,34 @@ class EndpointValidator:
 
         return "\n".join(report)
 
+    def _resolve_output_path(self, filename: str) -> Path:
+        """Resolve the user provided filename to a safe location."""
+
+        candidate = Path(filename).expanduser()
+        if not candidate.is_absolute():
+            candidate = Path.cwd() / candidate
+
+        try:
+            resolved = candidate.resolve(strict=False)
+        except OSError as exc:
+            raise ValueError(f"Invalid output path '{filename}': {exc}") from exc
+
+        base_dir = Path.cwd().resolve()
+        try:
+            resolved.relative_to(base_dir)
+        except ValueError as exc:
+            raise ValueError(f"Refusing to write report outside the current working directory: {resolved}") from exc
+
+        return resolved
+
     def save_report(self, filename: str) -> None:
         """Save report to file."""
         report = self.generate_report()
-        with open(filename, "w", encoding="utf-8") as f:
-            f.write(report)
-        logger.info(f"Report saved to {filename}")
+        output_path = self._resolve_output_path(filename)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with output_path.open("w", encoding="utf-8") as file_handle:
+            file_handle.write(report)
+        logger.info("Report saved to %s", output_path)
 
 
 async def main() -> None:
@@ -224,7 +246,11 @@ async def main() -> None:
     print("\n" + report)
 
     # Save to file
-    validator.save_report(args.output)
+    try:
+        validator.save_report(args.output)
+    except ValueError as exc:
+        logger.error("Failed to save report: %s", exc)
+        sys.exit(1)
 
     # Exit with non-zero if any failures
     failed = sum(1 for r in validator.results if not r["success"])
