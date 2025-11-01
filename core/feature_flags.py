@@ -24,7 +24,7 @@ FEATURE_CHAT_ROLLOUT_PCT = env_float("BS_FEATURE_CHAT_ROLLOUT_PCT", 0.10)  # 10%
 
 
 def _bucket(user_key: str) -> float:
-    h = hashlib.sha1(user_key.encode("utf-8")).hexdigest()
+    h = hashlib.sha256(user_key.encode("utf-8")).hexdigest()
     # 0..9999 -> 0.0000..0.9999
     return int(h[:4], 16) / 65535.0
 

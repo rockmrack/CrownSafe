@@ -49,7 +49,12 @@ class RedisSearchCache:
         if self.redis:
             await self.redis.close()
 
-    def _make_cache_key(self, filters_hash: str, as_of: str, after_tuple: tuple | None = None) -> str:
+    def _make_cache_key(
+        self,
+        filters_hash: str,
+        as_of: str,
+        after_tuple: tuple | None = None,
+    ) -> str:
         """Generate cache key for search results.
 
         Args:
@@ -75,12 +80,17 @@ class RedisSearchCache:
         # Add pagination info if present
         if after_tuple:
             after_str = f"{after_tuple[0]:.6f}:{after_tuple[1]}:{after_tuple[2]}"
-            after_hash = hashlib.md5(after_str.encode(), usedforsecurity=False).hexdigest()[:8]
+            after_hash = hashlib.sha256(after_str.encode()).hexdigest()[:12]
             components.append(after_hash)
 
         return ":".join(components)
 
-    async def get(self, filters_hash: str, as_of: str, after_tuple: tuple | None = None) -> dict[str, Any] | None:
+    async def get(
+        self,
+        filters_hash: str,
+        as_of: str,
+        after_tuple: tuple | None = None,
+    ) -> dict[str, Any] | None:
         """Get cached search results.
 
         Args:

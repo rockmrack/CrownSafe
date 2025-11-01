@@ -70,6 +70,7 @@ class BabyShieldCacheManager:
             return
 
         try:
+            assert redis is not None
             self.redis_client = redis.from_url(
                 self.redis_url,
                 decode_responses=True,
@@ -93,9 +94,16 @@ class BabyShieldCacheManager:
 
     def _generate_cache_key(self, prefix: str, identifier: str, **kwargs) -> str:
         """Generate deterministic cache key with additional parameters."""
-        # Create a hash of the identifier and any additional params
-        key_data = f"{identifier}:{json.dumps(sorted(kwargs.items()), separators=(',', ':'))}"
-        key_hash = hashlib.md5(key_data.encode()).hexdigest()[:12]
+        key_payload = json.dumps(
+            {
+                "identifier": identifier,
+                "params": sorted(kwargs.items()),
+            },
+            default=str,
+            separators=(",", ":"),
+            sort_keys=True,
+        )
+        key_hash = hashlib.sha256(key_payload.encode("utf-8")).hexdigest()[:24]
         return f"{prefix}{key_hash}:{identifier}"
 
     def get(self, cache_type: str, identifier: str, **kwargs) -> dict[str, Any] | None:
@@ -241,7 +249,13 @@ def get_cached(cache_type: str, identifier: str, **kwargs) -> dict[str, Any] | N
     return result.get("data") if result else None
 
 
-def set_cached(cache_type: str, identifier: str, data: Any, ttl: int | None = None, **kwargs) -> bool:
+def set_cached(
+    cache_type: str,
+    identifier: str,
+    data: Any,
+    ttl: int | None = None,
+    **kwargs,
+) -> bool:
     """Set cached data."""
     return cache_manager.set(cache_type, identifier, data, ttl, **kwargs)
 
@@ -287,7 +301,17 @@ def cache_result(cache_type: str, ttl: int | None = None, key_func=None):
             if key_func:
                 cache_key = key_func(*args, **kwargs)
             else:
-                cache_key = f"{func.__name__}_{hash(str(args) + str(sorted(kwargs.items())))}"
+                key_payload = json.dumps(
+                    {
+                        "func": func.__name__,
+                        "args": args,
+                        "kwargs": sorted(kwargs.items()),
+                    },
+                    default=str,
+                    separators=(",", ":"),
+                    sort_keys=True,
+                )
+                cache_key = hashlib.sha256(key_payload.encode("utf-8")).hexdigest()
 
             # Try to get from cache first
             cached_result = get_cached(cache_type, cache_key)

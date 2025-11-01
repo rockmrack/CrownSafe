@@ -7,8 +7,8 @@ Uses in-memory TTL caches to reduce database load for frequently accessed data.
 import hashlib
 import json
 import logging
-from functools import wraps
 from collections.abc import Callable
+from functools import wraps
 
 from cachetools import TTLCache
 
@@ -36,7 +36,7 @@ def generate_cache_key(*args, **kwargs) -> str:
         **kwargs: Keyword arguments
 
     Returns:
-        MD5 hash of serialized arguments
+        SHA-256 hash of serialized arguments
 
     """
     try:
@@ -50,11 +50,11 @@ def generate_cache_key(*args, **kwargs) -> str:
             sort_keys=True,
         )
         # Generate hash
-        return hashlib.md5(key_data.encode()).hexdigest()
+        return hashlib.sha256(key_data.encode("utf-8")).hexdigest()
     except Exception as e:
         logger.warning(f"Failed to generate cache key: {e}")
         # Fallback to string representation
-        return hashlib.md5(str((args, kwargs)).encode()).hexdigest()
+        return hashlib.sha256(str((args, kwargs)).encode("utf-8")).hexdigest()
 
 
 def cached_query(cache: TTLCache, key_func: Callable | None = None):

@@ -25,13 +25,17 @@ class EncryptionManager:
 
     def __init__(self, key: str | None = None) -> None:
         if key:
-            self.key = key.encode() if isinstance(key, str) else key
+            resolved_key = key.encode() if isinstance(key, str) else key
         else:
-            self.key = ENCRYPTION_KEY.encode() if isinstance(ENCRYPTION_KEY, str) else ENCRYPTION_KEY
+            resolved_key = ENCRYPTION_KEY.encode() if isinstance(ENCRYPTION_KEY, str) else ENCRYPTION_KEY
 
+        if resolved_key is None:
+            raise ValueError("Encryption key is not configured")
+
+        self.key: bytes = resolved_key
         self.cipher = Fernet(self.key)
 
-    def encrypt(self, data: str) -> str:
+    def encrypt(self, data: str | None) -> str | None:
         """Encrypt string data."""
         if not data:
             return None
@@ -39,7 +43,7 @@ class EncryptionManager:
         encrypted = self.cipher.encrypt(data.encode())
         return base64.urlsafe_b64encode(encrypted).decode()
 
-    def decrypt(self, encrypted_data: str) -> str:
+    def decrypt(self, encrypted_data: str | None) -> str | None:
         """Decrypt string data."""
         if not encrypted_data:
             return None
@@ -53,12 +57,12 @@ class EncryptionManager:
             print(f"Decryption error: {e}")
             return None
 
-    def encrypt_dict(self, data: dict) -> str:
+    def encrypt_dict(self, data: dict) -> str | None:
         """Encrypt dictionary as JSON."""
         json_str = json.dumps(data)
         return self.encrypt(json_str)
 
-    def decrypt_dict(self, encrypted_data: str) -> dict:
+    def decrypt_dict(self, encrypted_data: str | None) -> dict:
         """Decrypt JSON dictionary."""
         decrypted = self.decrypt(encrypted_data)
         if decrypted:
@@ -164,7 +168,7 @@ def anonymize_data(data: dict, fields_to_anonymize: list) -> dict:
         if field in anonymized:
             if isinstance(anonymized[field], str):
                 # Generate consistent anonymous value
-                anonymized[field] = f"anon_{hashlib.md5(anonymized[field].encode()).hexdigest()[:8]}"
+                anonymized[field] = "anon_" + hashlib.sha256(anonymized[field].encode()).hexdigest()[:8]
             elif isinstance(anonymized[field], (int, float)):
                 # Randomize numeric values
                 anonymized[field] = hash(str(anonymized[field])) % 1000000
