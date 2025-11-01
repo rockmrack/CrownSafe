@@ -43,7 +43,7 @@ pytest-redis>=3.0.2  # Relaxed for pydantic v2 compatibility
 
 # Mocking & Fixtures
 responses==0.24.1
-freezegun==1.4.0  # Time mocking
+freezegun==1.5.5  # Time mocking
 pytest-freezegun==0.4.2
 
 # Coverage & Reporting
