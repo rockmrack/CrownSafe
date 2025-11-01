@@ -7,14 +7,12 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-# Import ALL models to ensure they register with Base
+# Import database first - this imports base.Base and defines User
+from core_infra.database import SessionLocal, User, engine  # noqa: F401
+
+# Now import crown_safe models which will use the same Base
 from core_infra.base import Base
 from core_infra.crown_safe_models import HairProductModel
-from core_infra.database import (  # noqa: F401 - Import User to register it
-    SessionLocal,
-    User,
-    engine,
-)
 
 
 def seed_demo_product():
