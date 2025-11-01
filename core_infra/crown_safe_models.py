@@ -60,9 +60,10 @@ class HairProfileModel(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Relationships
-    user = relationship("User", back_populates="hair_profile")
-    scans = relationship("ProductScanModel", back_populates="hair_profile")
+    # Relationships - use late binding to avoid import order issues
+    # The relationship will be configured when User model is imported
+    # user = relationship("User", back_populates="hair_profile")
+    # scans = relationship("ProductScanModel", back_populates="hair_profile")
 
 
 # ============================================================================
