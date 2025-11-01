@@ -205,7 +205,7 @@ class ProductScanModel(Base):
     scan_id = Column(String(50), unique=True, nullable=False, index=True)
 
     # Relationships
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    user_id = Column(Integer, nullable=False, index=True)
     hair_profile_id = Column(Integer, ForeignKey("hair_profiles.id"))
     product_id = Column(Integer, ForeignKey("hair_products.id"), index=True)
 
@@ -256,7 +256,7 @@ class ProductReviewModel(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     # Relationships
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, nullable=False)
     product_id = Column(Integer, ForeignKey("hair_products.id"), nullable=False, index=True)
 
     # Review data
