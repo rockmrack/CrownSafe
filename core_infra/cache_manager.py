@@ -214,7 +214,9 @@ class BabyShieldCacheManager:
                 "keyspace_hits": info.get("keyspace_hits", 0),
                 "keyspace_misses": info.get("keyspace_misses", 0),
                 "total_keys": sum(
-                    db.get("keys", 0) for db in info.get("keyspace", {}).values() if isinstance(db, dict)
+                    db.get("keys", 0)
+                    for db in info.get("keyspace", {}).values()
+                    if isinstance(db, dict)
                 ),
                 "hit_rate": round(
                     info.get("keyspace_hits", 0)

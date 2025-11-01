@@ -27,7 +27,11 @@ class EncryptionManager:
         if key:
             resolved_key = key.encode() if isinstance(key, str) else key
         else:
-            resolved_key = ENCRYPTION_KEY.encode() if isinstance(ENCRYPTION_KEY, str) else ENCRYPTION_KEY
+            resolved_key = (
+                ENCRYPTION_KEY.encode()
+                if isinstance(ENCRYPTION_KEY, str)
+                else ENCRYPTION_KEY
+            )
 
         if resolved_key is None:
             raise ValueError("Encryption key is not configured")
@@ -168,7 +172,8 @@ def anonymize_data(data: dict, fields_to_anonymize: list) -> dict:
         if field in anonymized:
             if isinstance(anonymized[field], str):
                 # Generate consistent anonymous value
-                anonymized[field] = "anon_" + hashlib.sha256(anonymized[field].encode()).hexdigest()[:8]
+                hash_hex = hashlib.sha256(anonymized[field].encode()).hexdigest()
+                anonymized[field] = "anon_" + hash_hex[:8]
             elif isinstance(anonymized[field], (int, float)):
                 # Randomize numeric values
                 anonymized[field] = hash(str(anonymized[field])) % 1000000
