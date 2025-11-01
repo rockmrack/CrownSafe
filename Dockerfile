@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
     build-essential \
     cmake \
+    libzbar0 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -113,11 +114,15 @@ RUN if [ ! -f startup.py ]; then \
     echo 'os.environ.setdefault("API_PORT", "8001")' >> startup.py && \
     echo 'os.environ.setdefault("TEST_MODE", "false")' >> startup.py && \
     echo 'try:' >> startup.py && \
-    echo '    from api.main_babyshield import app' >> startup.py && \
-    echo '    print("Starting main_babyshield app")' >> startup.py && \
+    echo '    from api.main_crownsafe import app' >> startup.py && \
+    echo '    print("Starting CrownSafe API (main_crownsafe)")' >> startup.py && \
     echo 'except ImportError:' >> startup.py && \
-    echo '    from api.main_babyshield_simplified import app' >> startup.py && \
-    echo '    print("Starting simplified app")' >> startup.py && \
+    echo '    try:' >> startup.py && \
+    echo '        from api.main_babyshield import app' >> startup.py && \
+    echo '        print("Starting BabyShield API (main_babyshield)")' >> startup.py && \
+    echo '    except ImportError:' >> startup.py && \
+    echo '        from api.main_babyshield_simplified import app' >> startup.py && \
+    echo '        print("Starting simplified app")' >> startup.py && \
     echo 'uvicorn.run(app, host="0.0.0.0", port=8001)' >> startup.py; \
     fi
 
