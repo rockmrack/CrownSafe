@@ -126,9 +126,9 @@ class HairProductModel(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     is_active = Column(Boolean, default=True)
 
-    # Relationships
-    scans = relationship("ProductScanModel", back_populates="product")
-    reviews = relationship("ProductReviewModel", back_populates="product")
+    # Relationships - commented out to avoid circular import issues
+    # scans = relationship("ProductScanModel", back_populates="product")
+    # reviews = relationship("ProductReviewModel", back_populates="product")
 
 
 # ============================================================================
@@ -238,9 +238,9 @@ class ProductScanModel(Base):
     # Metadata
     scanned_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
 
-    # Relationships
-    hair_profile = relationship("HairProfileModel", back_populates="scans")
-    product = relationship("HairProductModel", back_populates="scans")
+    # Relationships - commented out to avoid circular import issues
+    # hair_profile = relationship("HairProfileModel", back_populates="scans")
+    # product = relationship("HairProductModel", back_populates="scans")
 
 
 # ============================================================================
