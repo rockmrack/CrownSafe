@@ -18,23 +18,39 @@ def seed_demo_product():
         # Create session
         session = SessionLocal()
 
-        # Create hair_products table manually to avoid relationship issues
+        # Create hair_products table with correct schema matching HairProductModel
         session.execute(
             text(
                 """
             CREATE TABLE IF NOT EXISTS hair_products (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                product_name TEXT NOT NULL,
+                product_id TEXT UNIQUE NOT NULL,
+                barcode TEXT,
+                name TEXT NOT NULL,
                 brand TEXT NOT NULL,
-                upc_barcode TEXT,
-                category TEXT,
-                ingredients_list TEXT,
+                category TEXT NOT NULL,
+                product_type TEXT NOT NULL,
+                description TEXT,
+                size TEXT,
+                ingredients TEXT NOT NULL,
                 ph_level REAL,
-                product_image_url TEXT,
-                manufacturer TEXT,
-                average_crown_score INTEGER,
-                scan_count INTEGER DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                is_curly_girl_approved INTEGER DEFAULT 0,
+                is_sulfate_free INTEGER DEFAULT 0,
+                is_silicone_free INTEGER DEFAULT 0,
+                is_protein_free INTEGER DEFAULT 0,
+                is_paraben_free INTEGER DEFAULT 0,
+                price REAL,
+                currency TEXT DEFAULT 'USD',
+                available_at TEXT,
+                affiliate_links TEXT,
+                avg_crown_score INTEGER,
+                image_url TEXT,
+                thumbnail_url TEXT,
+                review_count INTEGER DEFAULT 0,
+                avg_rating REAL DEFAULT 0.0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                is_active INTEGER DEFAULT 1
             )
         """
             )
@@ -44,7 +60,7 @@ def seed_demo_product():
 
         # Check if product already exists
         existing = session.execute(
-            text("SELECT * FROM hair_products WHERE upc_barcode = :barcode"),
+            text("SELECT * FROM hair_products WHERE barcode = :barcode"),
             {"barcode": "012345678905"},
         ).first()
         if existing:
@@ -52,31 +68,37 @@ def seed_demo_product():
             session.close()
             return
 
-        # Insert demo product using raw SQL to avoid ORM relationship issues
+        # Insert demo product using raw SQL with correct column names
         session.execute(
             text(
                 """
             INSERT INTO hair_products (
-                product_name, brand, upc_barcode, category, 
-                ingredients_list, ph_level, manufacturer, 
-                average_crown_score, scan_count
+                product_id, name, brand, barcode, category, 
+                product_type, ingredients, ph_level, 
+                avg_crown_score, is_sulfate_free, is_silicone_free,
+                is_paraben_free, is_curly_girl_approved
             ) VALUES (
-                :name, :brand, :barcode, :category,
-                :ingredients, :ph, :manufacturer,
-                :score, :scans
+                :product_id, :name, :brand, :barcode, :category,
+                :product_type, :ingredients, :ph,
+                :score, :sulfate_free, :silicone_free,
+                :paraben_free, :cg_approved
             )
         """
             ),
             {
+                "product_id": "CROWN_DEMO_001",
                 "name": "Moisture Repair Leave-In",
                 "brand": "Crown Labs",
                 "barcode": "012345678905",
-                "category": "leave-in conditioner",
-                "ingredients": '["water", "shea butter", "cetearyl alcohol", "parfum"]',
+                "category": "Conditioner",
+                "product_type": "Leave-In Conditioner",
+                "ingredients": ('["Water", "Shea Butter", "Cetearyl Alcohol", "Glycerin", "Coconut Oil", "Aloe Vera"]'),
                 "ph": 5.0,
-                "manufacturer": "Crown Labs R&D",
                 "score": 82,
-                "scans": 14,
+                "sulfate_free": 1,
+                "silicone_free": 1,
+                "paraben_free": 1,
+                "cg_approved": 1,
             },
         )
         session.commit()

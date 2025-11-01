@@ -79,7 +79,8 @@ class BarcodeScanResponse(BaseModel):
     crown_score: CrownScoreBreakdown
     recommendations: list[str] = Field(default_factory=list, description="Personalized recommendations")
     similar_products: list[dict[str, Any]] = Field(
-        default_factory=list, description="Better alternatives if score is low",
+        default_factory=list,
+        description="Better alternatives if score is low",
     )
     scan_timestamp: str
 
@@ -112,7 +113,7 @@ def lookup_product_in_database(barcode: str, db: Session) -> HairProductModel | 
         # Search for exact match or normalized match
         return (
             db.query(HairProductModel)
-            .filter((HairProductModel.upc_barcode == barcode) | (HairProductModel.upc_barcode == normalized_barcode))
+            .filter((HairProductModel.barcode == barcode) | (HairProductModel.barcode == normalized_barcode))
             .first()
         )
 
@@ -143,7 +144,8 @@ async def extract_ingredients_from_image(image_data: bytes, product_name: str | 
 
 
 def calculate_crown_score_from_product(
-    product: HairProductModel, hair_profile: HairProfileModel | None,
+    product: HairProductModel,
+    hair_profile: HairProfileModel | None,
 ) -> dict[str, Any]:
     """Calculate Crown Score for a product using user's hair profile.
 
@@ -160,9 +162,9 @@ def calculate_crown_score_from_product(
 
         # Build product data for engine
         product_data = {
-            "product_name": product.product_name,
+            "product_name": product.name,
             "brand": product.brand,
-            "ingredients": product.ingredients_list or [],
+            "ingredients": product.ingredients or [],
             "category": product.category,
             "ph_level": product.ph_level,
         }
@@ -253,10 +255,10 @@ def find_similar_products(product: HairProductModel, crown_score: int, db: Sessi
 
         return [
             {
-                "product_name": p.product_name,
+                "product_name": p.name,
                 "brand": p.brand,
-                "upc_barcode": p.upc_barcode,
-                "average_crown_score": p.average_crown_score,
+                "upc_barcode": p.barcode,
+                "average_crown_score": p.avg_crown_score,
                 "category": p.category,
             }
             for p in similar
@@ -349,13 +351,13 @@ async def scan_hair_product_barcode(request: BarcodeScanRequest, db: Session = D
 
         # 7. Build response
         product_info = ProductInfo(
-            product_name=product.product_name,
+            product_name=product.name,
             brand=product.brand,
-            upc_barcode=product.upc_barcode,
+            upc_barcode=product.barcode,
             category=product.category,
-            ingredients_list=product.ingredients_list or [],
-            product_image_url=product.product_image_url,
-            manufacturer=product.manufacturer,
+            ingredients_list=product.ingredients or [],
+            product_image_url=product.image_url,
+            manufacturer=None,  # Not in current model
         )
 
         crown_score_breakdown = CrownScoreBreakdown(
@@ -401,7 +403,7 @@ async def scan_hair_product_barcode(request: BarcodeScanRequest, db: Session = D
         return ApiResponse(
             success=True,
             data=response_data.model_dump(),
-            message=f"Product analyzed: {product.product_name} scored {score_result['total_score']}/100",
+            message=f"Product analyzed: {product.name} scored {score_result['total_score']}/100",
         )
 
     except HTTPException:
@@ -532,21 +534,21 @@ async def get_product_by_barcode(barcode: str, db: Session = Depends(get_db_sess
             )
 
         product_data = {
-            "product_name": product.product_name,
+            "product_name": product.name,
             "brand": product.brand,
-            "upc_barcode": product.upc_barcode,
+            "upc_barcode": product.barcode,
             "category": product.category,
-            "ingredients_count": len(product.ingredients_list or []),
-            "average_crown_score": product.average_crown_score,
-            "scan_count": product.scan_count,
-            "product_image_url": product.product_image_url,
-            "manufacturer": product.manufacturer,
+            "ingredients_count": len(product.ingredients or []),
+            "average_crown_score": product.avg_crown_score,
+            "scan_count": 0,  # Not tracking this yet
+            "product_image_url": product.image_url,
+            "manufacturer": None,  # Not in current model
         }
 
         return ApiResponse(
             success=True,
             data=product_data,
-            message=f"Product found: {product.product_name}",
+            message=f"Product found: {product.name}",
         )
 
     except HTTPException:
